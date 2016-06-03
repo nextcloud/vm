@@ -315,7 +315,7 @@ ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print
 # Success!
 echo -e "\e[32m"
 echo    "+--------------------------------------------------------------------+"
-echo    "|      Congratulations! You have sucessfully installed Nextcloud!     |"
+echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
 echo    "|                                                                    |"
 echo -e "|         \e[0mLogin to Nextcloud in your browser:\e[36m" $ADDRESS2"\e[32m           |"
 echo    "|                                                                    |"
