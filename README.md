@@ -8,8 +8,8 @@
 * [Daniel Hanson](https://github.com/enoch85)
 
 
-## Build Requrements
-Theese requrements are only applied if you build from the scripts
+## Build Requirements
+Theese requirements are only applied if you build from the scripts
 * Ubuntu Server 16.04 Server
 * OpenSSH (preffered)
 
