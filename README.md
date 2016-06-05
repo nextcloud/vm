@@ -15,7 +15,7 @@ Theese requirements are only applied if you build from the scripts
 
 
 ## Machine configuration
-Please check the configuration here: https://techandme.fsgo.se/machine-setup-nextcloud/ (coming soon)
+Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/ (coming soon)
 
 
 ## FAQ
