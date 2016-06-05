@@ -9,9 +9,9 @@
 
 
 ## Build Requirements
-Theese requirements are only applied if you build from the scripts
+These requirements are only applied if you build from the scripts
 * Ubuntu Server 16.04 Server
-* OpenSSH (preffered)
+* OpenSSH (preferred)
 
 
 ## Machine configuration
@@ -21,4 +21,3 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 ## FAQ
 
 Coming soon!
-

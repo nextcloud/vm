@@ -96,7 +96,7 @@ a:active {
 <h3>ncadmin</h3>
 <p>Default Password:</p>
 <h3>nextcloud</h3>
-<p>Note: The setup script will ask you to change the default password to your own. It's also recomended to change the default user. Do this by adding another admin user, log out from ncadmin, and login with your new user, then delete ncadmin.</p>
+<p>Note: The setup script will ask you to change the default password to your own. It's also recommended to change the default user. Do this by adding another admin user, log out from ncadmin, and login with your new user, then delete ncadmin.</p>
 <br>
 <center>
 <h3> How to mount the VM and and login:</h3>
@@ -119,7 +119,7 @@ a:active {
  <p>
  </ul>
 </h3>
-<p>Note: Please accept the warning in the browser if you connect via HTTPS. It is recomended
+<p>Note: Please accept the warning in the browser if you connect via HTTPS. It is recommended
 <br> to <a href="https://www.techandme.se/publish-your-server-online" target="_blank">buy your own certificate and replace the self-signed certificate to your own.</a>
 <br>
 <p>Note: Before you can login you have to run the setup script, as descirbed in the video above.
