@@ -62,18 +62,18 @@ else
         exit 1
 fi
 
-# Check if repo is availible
+# Check if repo is available
 if wget -q --spider "$NCREPO" > /dev/null; then
         echo "Nextcloud repo OK"
 else
-        echo "Nextcloud repo is not availible, exiting..."
+        echo "Nextcloud repo is not available, exiting..."
         exit 1
 fi
 
 if wget -q --spider "$NCREPOKEY" > /dev/null; then
         echo "Nextcloud repo key OK"
 else
-        echo "Nextcloud repo key is not availible, exiting..."
+        echo "Nextcloud repo key is not available, exiting..."
         exit 1
 fi
 
@@ -526,7 +526,7 @@ fi
 chmod +x -R $SCRIPTS
 chown root:root -R $SCRIPTS
 
-# Allow $UNIXUSER to run theese scripts
+# Allow $UNIXUSER to run these scripts
 chown $UNIXUSER:$UNIXUSER $SCRIPTS/instruction.sh
 chown $UNIXUSER:$UNIXUSER $SCRIPTS/history.sh
 
