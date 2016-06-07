@@ -1,10 +1,9 @@
 #!/bin/sh
 
 IFCONFIG="/sbin/ifconfig"
-IP="/sbin/ip"
 INTERFACES="/etc/network/interfaces"
 
-IFACE=$($IP -o link show | awk '{print $2,$9}' | grep "UP" | cut -d ":" -f 1)
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
 GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")

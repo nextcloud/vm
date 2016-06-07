@@ -7,9 +7,7 @@ NCPATH=$WWW_ROOT/nextcloud
 NCDATA=/var/ncdata
 SCRIPTS=/var/scripts
 PW_FILE=/var/mysql_password.txt # Keep in sync with nextcloud_install_production.sh
-IP="/sbin/ip"
-IFACE=$($IP -o link show | awk '{print $2,$9}' | grep "UP" | cut -d ":" -f 1)
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm"
@@ -26,6 +24,10 @@ UNIXPASS=nextcloud
         exit 1
 fi
 
+# Set correct interface
+sed -i "s|ens33|$IFACE|g" /etc/network/interfaces
+service networking restart
+
 # Check network
 echo "Testing if network is OK..."
 sleep 2
@@ -41,6 +43,8 @@ wget -q --spider http://github.com
 		echo "the network settings of the VM."
 	       	exit 1
 	fi
+
+ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
 

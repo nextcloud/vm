@@ -29,8 +29,7 @@ NCDATA=/var/ncdata
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
-IP="/sbin/ip"
-IFACE=$($IP -o link show | awk '{print $2,$9}' | grep "UP" | cut -d ":" -f 1)
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # Repositories
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm"
@@ -400,6 +399,11 @@ sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /et
 wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
 apt-get update
 apt-get install webmin -y
+
+# Add extra security
+wget -q $STATIC/security.sh -P $SCRIPTS
+bash $SCRIPTS/security.sh
+rm $SCRIPTS/security.sh
 
 # Install Unzip
 apt-get install unzip -y
