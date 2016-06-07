@@ -44,6 +44,16 @@ wget -q --spider http://github.com
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
 
+       # Get the latest nextcloud_update.sh
+        if [ -f $SCRIPTS/update.sh ];
+                then
+                rm $SCRIPTS/update.sh
+                wget -q $STATIC/update.sh -P $SCRIPTS
+                else
+        wget -q $STATIC/update.sh -P $SCRIPTS
+fi
+
+
         # phpMyadmin
         if [ -f $SCRIPTS/phpmyadmin_install_ubuntu16.sh ];
                 then
@@ -303,7 +313,7 @@ echo System will now upgrade...
 sleep 2
 echo
 echo
-bash $SCRIPTS/nextcloud_update.sh
+bash $SCRIPTS/update.sh
 
 # Cleanup 1
 apt-get autoremove -y
