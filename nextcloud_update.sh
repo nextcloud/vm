@@ -5,6 +5,8 @@
 # Tested on Ubuntu Server 14.04 & 16.04.
 #
 
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+
 # Put your theme name here:
 THEME_NAME=""
 
