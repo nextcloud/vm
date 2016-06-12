@@ -10,6 +10,8 @@ SCRIPTS=/var/scripts
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
+mkdir -p $SCRIPTS
+
 if [ -f $FILE ];
 then
         rm $SCRIPTS/$FILE
@@ -21,5 +23,11 @@ else
 fi
 
 chmod +x $SCRIPTS/$FILE
+
+# Remove potenial copy of the same file
+if [ -f $SCRIPTS/$FILE.1 ];
+then
+        rm $SCRIPTS/$FILE.1
+fi
 
 exit

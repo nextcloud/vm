@@ -51,6 +51,23 @@ else
 SPAMHAUS
 fi
 
+if [ -f $SPAMHAUS ];
+then
+        echo "Adding Whitelist IP-ranges..."
+        cat << SPAMHAUSconf >> "$SPAMHAUS"
+
+# Whitelisted IP-ranges
+192.168.0.0/16
+172.16.0.0/12
+10.0.0.0/8
+SPAMHAUSconf
+else
+        echo "No file exists, so not adding anything to whitelist"
+fi
+
+# Enable $SPAMHAUS
+sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
+
 service apache2 restart
 if [[ $? > 0 ]]
 then
