@@ -22,7 +22,7 @@ MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n
 PW_FILE=/var/mysql_password.txt
 # Directories
 SCRIPTS=/var/scripts
-HTML=/var/www
+HTML=/var/www/html
 NCPATH=$HTML/nextcloud
 NCDATA=/var/ncdata
 # Apache vhosts
@@ -410,15 +410,15 @@ bash $SCRIPTS/security.sh
 rm $SCRIPTS/security.sh
 
 # Download and install Documents
-if [ -d $NCPATH/apps/documents ]; then
-sleep 1
-else
-wget -q https://github.com/nextcloud/documents/archive/master.zip -P $NCPATH/apps
-cd $NCPATH/apps
-unzip -q master.zip
-rm master.zip
-mv documents-master/ documents/
-fi
+#if [ -d $NCPATH/apps/documents ]; then
+#sleep 1
+#else
+#wget -q https://github.com/nextcloud/documents/archive/master.zip -P $NCPATH/apps
+#cd $NCPATH/apps
+#unzip -q master.zip
+#rm master.zip
+#mv documents-master/ documents/
+#fi
 
 # Enable documents
 #if [ -d $NCPATH/apps/documents ]; then
