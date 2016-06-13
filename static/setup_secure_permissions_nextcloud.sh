@@ -1,5 +1,5 @@
 #!/bin/bash
-ncpath='/var/www/nextcloud'
+ncpath='/var/www/html/nextcloud'
 htuser='www-data'
 htgroup='www-data'
 rootuser='root'
