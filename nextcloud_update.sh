@@ -10,7 +10,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 # Put your theme name here:
 THEME_NAME=""
 
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/static"
+STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 

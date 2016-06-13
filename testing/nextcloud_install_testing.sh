@@ -2,7 +2,7 @@
 
 # Tech and Me, ©2016 - www.techandme.se
 #
-# This install from Nextcloud repos with PHP 7, MySQL 5.7 and Apche 2.4.
+# This install from Nextcloud daily build with PHP 7, MySQL 5.7 and Apche 2.4.
 # Ubuntu 16.04 is required.
 
 set -e
@@ -34,8 +34,8 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # Repositories
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-NCREPO="https://download.nextcloud.org/download/repositories/stable/Ubuntu_16.04"
-NCREPOKEY="$NCREPO/Release.key"
+NCDAILY="https://download.nextcloud.com/server/daily/"
+DAILYVERSION="nextcloud-9-daily-2016-06-13"
 # Commands
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
 # Linux user, and Nextcloud user
@@ -62,17 +62,10 @@ else
 fi
 
 # Check if repo is available
-if wget -q --spider "$NCREPO" > /dev/null; then
+if wget -q --spider "$NCDAILY" > /dev/null; then
         echo "Nextcloud repo OK"
 else
         echo "Nextcloud repo is not available, exiting..."
-        exit 1
-fi
-
-if wget -q --spider "$NCREPOKEY" > /dev/null; then
-        echo "Nextcloud repo key OK"
-else
-        echo "Nextcloud repo key is not available, exiting..."
         exit 1
 fi
 
@@ -236,12 +229,9 @@ apt-get install -y \
         php-smbclient
 
 # Download and install Nextcloud
-wget -nv $NCREPOKEY -O Release.key
-apt-key add - < Release.key && rm Release.key
-sh -c "echo 'deb $NCREPO/ /' >> /etc/apt/sources.list.d/nextcloud.list"
-apt-get update && apt-get install nextcloud -y
-
-mkdir -p $NCDATA
+wget $NCDAILY/$DAILYVERSION.zip -P $HTML
+unzip $HTML/$DAILYVERSION.zip -d $HTML
+rm $HTML/$DAILYVERSION.zip
 
 # Secure permissions
 wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
@@ -358,7 +348,7 @@ else
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
 
-### LNCATION OF CERT FILES ###
+### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
