@@ -76,5 +76,4 @@ then
         exit 1
 else
 	echo "Security added!"
-	exit 0
 fi

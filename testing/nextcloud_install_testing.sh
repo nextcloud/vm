@@ -236,7 +236,8 @@ apt-get install -y \
 	php7.0-sqlite3 \
 	php7.0-curl \
 	php7.0-xml \
-	php7.0-zip
+	php7.0-zip \
+	php7.0-mbstring
 
 # Install Unzip
 apt-get install unzip -y
@@ -420,40 +421,40 @@ mv documents-master/ documents/
 fi
 
 # Enable documents
-if [ -d $NCPATH/apps/documents ]; then
-sudo -u www-data php $NCPATH/occ app:enable documents
-sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-fi
+#if [ -d $NCPATH/apps/documents ]; then
+#sudo -u www-data php $NCPATH/occ app:enable documents
+#sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
+#fi
 
 # Download and install Contacts
-if [ -d $NCPATH/apps/contacts ]; then
-sleep 1
-else
-wget -q $CONVER_REPO/$CONVER/$CONVER_FILE -P $NCPATH/apps
-tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-cd $NCPATH/apps
-rm $CONVER_FILE
-fi
+#if [ -d $NCPATH/apps/contacts ]; then
+#sleep 1
+#else
+#wget -q $CONVER_REPO/$CONVER/$CONVER_FILE -P $NCPATH/apps
+#tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
+#cd $NCPATH/apps
+#rm $CONVER_FILE
+#fi
 
 # Enable Contacts
-if [ -d $NCPATH/apps/contacts ]; then
-sudo -u www-data php $NCPATH/occ app:enable contacts
-fi
+#if [ -d $NCPATH/apps/contacts ]; then
+#sudo -u www-data php $NCPATH/occ app:enable contacts
+#fi
 
 # Download and install Calendar
-if [ -d $NCPATH/apps/calendar ]; then
-sleep 1
-else
-wget -q $CALVER_REPO/$CALVER/$CALVER_FILE -P $NCPATH/apps
-tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
-cd $NCPATH/apps
-rm $CALVER_FILE
-fi
+#if [ -d $NCPATH/apps/calendar ]; then
+#sleep 1
+#else
+#wget -q $CALVER_REPO/$CALVER/$CALVER_FILE -P $NCPATH/apps
+#tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
+#cd $NCPATH/apps
+#rm $CALVER_FILE
+#fi
 
 # Enable Calendar
-if [ -d $NCPATH/apps/calendar ]; then
-sudo -u www-data php $NCPATH/occ app:enable calendar
-fi
+#if [ -d $NCPATH/apps/calendar ]; then
+#sudo -u www-data php $NCPATH/occ app:enable calendar
+#fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
