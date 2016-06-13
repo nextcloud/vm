@@ -2,7 +2,7 @@
 
 # Tech and Me - ©2016, https://www.techandme.se/
 
-WWW_ROOT=/var/www/html
+WWW_ROOT=/var/www
 NCPATH=$WWW_ROOT/nextcloud
 NCDATA=/var/ncdata
 SCRIPTS=/var/scripts
@@ -152,7 +152,7 @@ fi
         chmod 750 $WWW_ROOT/index.php && chown www-data:www-data $WWW_ROOT/index.php
 
         # Change 000-default to $WEB_ROOT
-#        sed -i "s|DocumentRoot /var/www/html|DocumentRoot $WWW_ROOT|g" /etc/apache2/sites-available/000-default.conf
+        sed -i "s|DocumentRoot /var/www/html|DocumentRoot $WWW_ROOT|g" /etc/apache2/sites-available/000-default.conf
 
 # Make $SCRIPTS excutable
 chmod +x -R $SCRIPTS

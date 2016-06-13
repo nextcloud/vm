@@ -22,7 +22,7 @@ MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n
 PW_FILE=/var/mysql_password.txt
 # Directories
 SCRIPTS=/var/scripts
-HTML=/var/www/html
+HTML=/var/www
 NCPATH=$HTML/nextcloud
 NCDATA=/var/ncdata
 # Apache vhosts
