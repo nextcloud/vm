@@ -226,7 +226,14 @@ apt-get install -y \
 	php-mcrypt \
 	php-pear \
 	php-ldap \
-        php-smbclient
+        php-smbclient \
+	php-gd \
+	php-curl \
+	php-mb \
+	php-zip
+
+# Install Unzip
+apt-get install unzip -y
 
 # Download and install Nextcloud
 wget $NCDAILY/$DAILYVERSION.zip -P $HTML
@@ -394,9 +401,6 @@ apt-get install webmin -y
 wget -q $STATIC/security.sh -P $SCRIPTS
 bash $SCRIPTS/security.sh
 rm $SCRIPTS/security.sh
-
-# Install Unzip
-apt-get install unzip -y
 
 # Download and install Documents
 if [ -d $NCPATH/apps/documents ]; then
