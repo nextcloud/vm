@@ -144,9 +144,9 @@ fi
         if [ -f $SCRIPTS/index.php ];
                 then
                 rm $SCRIPTS/index.php
-                wget -q $GITHUB_REPO/index.php -P $SCRIPTS
+                wget -q $GITHUB_REPO/testing/index.php -P $SCRIPTS
                 else
-        wget -q $GITHUB_REPO/index.php -P $SCRIPTS
+        wget -q $GITHUB_REPO/testing/index.php -P $SCRIPTS
 fi
         mv $SCRIPTS/index.php $WWW_ROOT/index.php && rm -f $WWW_ROOT/html/index.html
         chmod 750 $WWW_ROOT/index.php && chown www-data:www-data $WWW_ROOT/index.php

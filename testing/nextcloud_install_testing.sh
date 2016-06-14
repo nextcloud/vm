@@ -488,6 +488,15 @@ fi
                 else
         wget -q $STATIC/instruction.sh -P $SCRIPTS
 fi
+
+# Get nextcloud-startup-script.sh
+        if [ -f $SCRIPTS/nextcloud-startup-script.sh ];
+                then
+                echo "nextcloud-startup-script.sh exists"
+                else
+        wget -q $GITHUB_REPO/testing/nextcloud-startup-script.sh -P $SCRIPTS
+fi
+
 # Clears command history on every login
         if [ -f $SCRIPTS/history.sh ];
                 then
