@@ -25,11 +25,22 @@ UNIXPASS=nextcloud
 fi
 
 # Set correct interface
+<<<<<<< HEAD
 CURRENTIFACE1=$(cat /etc/network/interfaces | sed -n '/lo/,/iface/p' | awk '{print $3}'| sed "3d" | sed "1d")
 CURRENTIFACE2=$(cat /etc/network/interfaces| sed -n '/iface/,/inet/p' | awk '{print $2}' | sed "1d" | sed "2d" | sed "1d")
 sed -i "s|$CURRENTIFACE1|$IFACE|g" /etc/network/interfaces
 sed -i "s|$CURRENTIFACE2|$IFACE|g" /etc/network/interfaces
 service networking restart
+=======
+if grep -Fxq "eth0" /etc/network/interfaces
+then
+    sed -i "s|eth0|$IFACE|g" /etc/network/interfaces
+    service networking restart
+else
+    sed -i "s|ens33|$IFACE|g" /etc/network/interfaces
+    service networking restart
+fi
+>>>>>>> 575469868ec50e2d25c9de7d9ab5dc7e3e7448fe
 
 # Check network
 echo "Testing if network is OK..."
