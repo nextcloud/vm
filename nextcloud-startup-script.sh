@@ -26,24 +26,24 @@ fi
 
 # Check if the user ncadmin exists, if not create it. This option for installs other then the pre-configured VM
 ret=false
-getent passwd ncadmin >/dev/null 2>&1 && ret=true
+getent passwd $UNIXUSER >/dev/null 2>&1 && ret=true
 if $ret; then
         echo
-        echo "User exists..."
+        echo "User $UNIXUSER exists..."
         echo
 else
-adduser --gecos GECOS ncadmin << EOF
-ncloud
-ncloud
+adduser --gecos GECOS $UNIXUSER << EOF
+$UNIXPASS
+$UNIXPASS
 
 
 
 
 y
 EOF
-usermod -aG sudo ncadmin
+	usermod -aG sudo $UNIXUSER
 	echo
-	echo "User ncadmin created..."
+	echo "User $UNIXUSER created..."
 	echo
 fi
 
