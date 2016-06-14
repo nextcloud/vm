@@ -25,8 +25,14 @@ UNIXPASS=nextcloud
 fi
 
 # Set correct interface
-sed -i "s|ens33|$IFACE|g" /etc/network/interfaces
-service networking restart
+if grep -Fxq "eth0" /etc/network/interfaces
+then
+    sed -i "s|eth0|$IFACE|g" /etc/network/interfaces
+    service networking restart
+else
+    sed -i "s|ens33|$IFACE|g" /etc/network/interfaces
+    service networking restart
+fi
 
 # Check network
 echo "Testing if network is OK..."
