@@ -24,29 +24,6 @@ UNIXPASS=nextcloud
         exit 1
 fi
 
-# Check if the user ncadmin exists, if not create it. This option for installs other then the pre-configured VM
-ret=false
-getent passwd $UNIXUSER >/dev/null 2>&1 && ret=true
-if $ret; then
-        echo
-        echo "User $UNIXUSER exists..."
-        echo
-else
-adduser --gecos GECOS $UNIXUSER << EOF
-$UNIXPASS
-$UNIXPASS
-
-
-
-
-y
-EOF
-	usermod -aG sudo $UNIXUSER
-	echo
-	echo "User $UNIXUSER created..."
-	echo
-fi
-
 # Set correct interface
 if grep -Fxq "eth0" /etc/network/interfaces
 then
