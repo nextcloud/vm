@@ -27,7 +27,7 @@ fi
 # Set correct interface
 <<<<<<< HEAD
 CURRENTIFACE1=$(cat /etc/network/interfaces | sed -n '/lo/,/iface/p' | awk '{print $3}'| sed "3d" | sed "1d")
-CURRENTIFACE2=$(cat /etc/network/interfaces| sed -n '/iface/,/inet/p' | awk '{print $2}' | sed "1d" | sed "2d" | sed "1d")
+CURRENTIFACE2=$(cat /etc/network/interfaces | sed -n '/iface/,/inet/p' | awk '{print $2}' | sed "1d" | sed "2d" | sed "1d")
 sed -i "s|$CURRENTIFACE1|$IFACE|g" /etc/network/interfaces
 sed -i "s|$CURRENTIFACE2|$IFACE|g" /etc/network/interfaces
 service networking restart
