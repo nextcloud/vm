@@ -30,7 +30,7 @@ else mkdir -p $SCRIPTS
 fi
 
 # Get packages to be able to install Redis
-apt-get update && sudo apt-get install build-essential -q -y
+apt-get update -q2 && sudo apt-get install build-essential -q -y
 apt-get install tcl8.5 -q -y
 apt-get install php-pear php7.0-dev -q -y
 
@@ -110,7 +110,7 @@ apt-get purge -y \
 	php7.0-dev* \
 	build-essential*
 
-apt-get update
+apt-get update -q2
 apt-get autoremove -y
 apt-get autoclean
 
