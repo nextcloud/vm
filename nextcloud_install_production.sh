@@ -2,7 +2,7 @@
 
 # Tech and Me, ©2016 - www.techandme.se
 #
-# This install from Nextcloud repos with PHP 7, MySQL 5.7 and Apche 2.4.
+# This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apche 2.4.
 # Ubuntu 16.04 is required.
 
 set -e
@@ -31,11 +31,11 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-# Repositories
+# Repositories and Version
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-NCREPO="https://download.nextcloud.org/download/repositories/stable/Ubuntu_16.04"
-NCREPOKEY="$NCREPO/Release.key"
+NCSTABLE="https://download.nextcloud.com/server/releases/nextcloud-"
+STABLEVERSION="9.0.50"
 # Commands
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
 # Linux user, and Nextcloud user
@@ -62,17 +62,10 @@ else
 fi
 
 # Check if repo is available
-if wget -q --spider "$NCREPO" > /dev/null; then
+if wget -q --spider "$NCSTABLE" > /dev/null; then
         echo "Nextcloud repo OK"
 else
         echo "Nextcloud repo is not available, exiting..."
-        exit 1
-fi
-
-if wget -q --spider "$NCREPOKEY" > /dev/null; then
-        echo "Nextcloud repo key OK"
-else
-        echo "Nextcloud repo key is not available, exiting..."
         exit 1
 fi
 
@@ -229,19 +222,30 @@ service apache2 restart
 # Install PHP 7.0
 apt-get update -q2
 apt-get install -y \
-        php \
-	php-mcrypt \
-	php-pear \
-	php-ldap \
-        php-smbclient
+        libapache2-mod-php7.0 \
+	php7.0-common \
+	php7.0-mysql \
+	php7.0-intl \
+	php7.0-mcrypt \
+	php7.0-ldap \
+	php7.0-imap \
+	php7.0-cli \
+	php7.0-gd \
+	php7.0-pgsql \
+	php7.0-json \
+	php7.0-sqlite3 \
+	php7.0-curl \
+	php7.0-xml \
+	php7.0-zip \
+	php7.0-mbstring
+
+# Install Unzip
+apt-get install unzip -y
 
 # Download and install Nextcloud
-wget -nv $NCREPOKEY -O Release.key
-apt-key add - < Release.key && rm Release.key
-sh -c "echo 'deb $NCREPO/ /' >> /etc/apt/sources.list.d/nextcloud.list"
-apt-get update -q2 && apt-get install nextcloud -y
-
-mkdir -p $NCDATA
+wget $NCSTABLE/$STABLEVERSION.zip -P $HTML
+unzip $HTML/$STABLEVERSION.zip -d $HTML
+rm $HTML/$STABLEVERSION.zip
 
 # Secure permissions
 wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
@@ -358,7 +362,7 @@ else
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
 
-### LNCATION OF CERT FILES ###
+### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
@@ -405,55 +409,52 @@ wget -q $STATIC/security.sh -P $SCRIPTS
 bash $SCRIPTS/security.sh
 rm $SCRIPTS/security.sh
 
-# Install Unzip
-apt-get install unzip -y
-
 # Download and install Documents
-if [ -d $NCPATH/apps/documents ]; then
-sleep 1
-else
-wget -q https://github.com/nextcloud/documents/archive/master.zip -P $NCPATH/apps
-cd $NCPATH/apps
-unzip -q master.zip
-rm master.zip
-mv documents-master/ documents/
-fi
+#if [ -d $NCPATH/apps/documents ]; then
+#sleep 1
+#else
+#wget -q https://github.com/nextcloud/documents/archive/master.zip -P $NCPATH/apps
+#cd $NCPATH/apps
+#unzip -q master.zip
+#rm master.zip
+#mv documents-master/ documents/
+#fi
 
 # Enable documents
-if [ -d $NCPATH/apps/documents ]; then
-sudo -u www-data php $NCPATH/occ app:enable documents
-sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-fi
+#if [ -d $NCPATH/apps/documents ]; then
+#sudo -u www-data php $NCPATH/occ app:enable documents
+#sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
+#fi
 
 # Download and install Contacts
-if [ -d $NCPATH/apps/contacts ]; then
-sleep 1
-else
-wget -q $CONVER_REPO/$CONVER/$CONVER_FILE -P $NCPATH/apps
-tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-cd $NCPATH/apps
-rm $CONVER_FILE
-fi
+#if [ -d $NCPATH/apps/contacts ]; then
+#sleep 1
+#else
+#wget -q $CONVER_REPO/$CONVER/$CONVER_FILE -P $NCPATH/apps
+#tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
+#cd $NCPATH/apps
+#rm $CONVER_FILE
+#fi
 
 # Enable Contacts
-if [ -d $NCPATH/apps/contacts ]; then
-sudo -u www-data php $NCPATH/occ app:enable contacts
-fi
+#if [ -d $NCPATH/apps/contacts ]; then
+#sudo -u www-data php $NCPATH/occ app:enable contacts
+#fi
 
 # Download and install Calendar
-if [ -d $NCPATH/apps/calendar ]; then
-sleep 1
-else
-wget -q $CALVER_REPO/$CALVER/$CALVER_FILE -P $NCPATH/apps
-tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
-cd $NCPATH/apps
-rm $CALVER_FILE
-fi
+#if [ -d $NCPATH/apps/calendar ]; then
+#sleep 1
+#else
+#wget -q $CALVER_REPO/$CALVER/$CALVER_FILE -P $NCPATH/apps
+#tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
+#cd $NCPATH/apps
+#rm $CALVER_FILE
+#fi
 
 # Enable Calendar
-if [ -d $NCPATH/apps/calendar ]; then
-sudo -u www-data php $NCPATH/occ app:enable calendar
-fi
+#if [ -d $NCPATH/apps/calendar ]; then
+#sudo -u www-data php $NCPATH/occ app:enable calendar
+#fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
@@ -487,6 +488,15 @@ fi
                 else
         wget -q $STATIC/instruction.sh -P $SCRIPTS
 fi
+
+# Get nextcloud-startup-script.sh
+        if [ -f $SCRIPTS/nextcloud-startup-script.sh ];
+                then
+                echo "nextcloud-startup-script.sh exists"
+                else
+        wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
+fi
+
 # Clears command history on every login
         if [ -f $SCRIPTS/history.sh ];
                 then
