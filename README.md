@@ -1,23 +1,28 @@
 # Nextcloud VM
 [![irc](https://img.shields.io/badge/irc%20channel-%23nextcloud--vm%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=nextcloud-vm)
 
-[![Build Status](https://travis-ci.org/nextcloud/news.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
-
-
 ## Maintainers
-* [Daniel Hanson](https://github.com/enoch85)
+* [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
+* [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
+* You? :)
 
 
 ## Build Requirements
-These requirements are only applied if you build from the scripts
+These requirements are only applied if you build from the scripts and 
 * Ubuntu Server 16.04 Server
 * OpenSSH (preferred)
 
+If you install this on a clean Ubuntu 16.04 VM, the only script you need to run is "nextcloud_install_production.sh". All the other scripts are fetched from this repository during the installation.
+
+It would be really nice if someone could develop the scripts so that they worked "out of the box", ẃithout having to use a "base VM" with Ubuntu 16.04 pre-installed.
 
 ## Machine configuration
-Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/ (coming soon)
-
+Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
 
 ## FAQ
 
-Coming soon!
+Start asking questions so that we can add them here.
+
+## Expected stable release
+
+Nextcloud 10
