@@ -8,13 +8,13 @@
 
 
 ## Build Requirements
-These requirements are only applied if you build from the scripts and 
+These requirements are only applied if you build from the scripts:
 * Ubuntu Server 16.04 Server
 * OpenSSH (preferred)
 
 If you install this on a clean Ubuntu 16.04 VM, the only script you need to run is "nextcloud_install_production.sh". All the other scripts are fetched from this repository during the installation.
 
-It would be really nice if someone could develop the scripts so that they worked "out of the box", ẃithout having to use a "base VM" with Ubuntu 16.04 pre-installed.
+It would be really nice if someone could develop the scripts so that they worked "out of the box", ẃithout having to use a "base VM" with Ubuntu 16.04 pre-installed. Vagrant is an option.
 
 ## Machine configuration
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
