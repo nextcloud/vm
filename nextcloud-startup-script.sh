@@ -320,7 +320,8 @@ echo System will now upgrade...
 sleep 2
 echo
 echo
-bash $SCRIPTS/update.sh
+apt-get update -q2
+aptitude full-upgrade -y
 
 # Cleanup 1
 apt-get autoremove -y
