@@ -7,6 +7,8 @@
 
 set -e
 
+# Nextcloud version
+STABLEVERSION="nextcloud-9.0.51"
 # Ubuntu version
 DISTRO=$(grep -ic "Ubuntu 16.04 LTS" /etc/lsb-release)
 # Nextcloud apps
@@ -24,6 +26,7 @@ PW_FILE=/var/mysql_password.txt
 SCRIPTS=/var/scripts
 HTML=/var/www
 NCPATH=$HTML/nextcloud
+GPGDIR=/tmp/gpg
 NCDATA=/var/ncdata
 # Apache vhosts
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
@@ -31,11 +34,10 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-# Repositories and Version
+# Repositories
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-NCSTABLE="https://download.nextcloud.com/server/releases/nextcloud-"
-STABLEVERSION="9.0.50"
+NCREPO="https://download.nextcloud.com/server/releases/"
 # Commands
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
 # Linux user, and Nextcloud user
@@ -61,8 +63,8 @@ else
         exit 1
 fi
 
-# Check if repo is available
-if wget -q --spider "$NCSTABLE" > /dev/null; then
+# Check if key is available
+if wget -q --spider "$NCREPO" > /dev/null; then
         echo "Nextcloud repo OK"
 else
         echo "Nextcloud repo is not available, exiting..."
@@ -242,8 +244,18 @@ apt-get install -y \
 # Install Unzip
 apt-get install unzip -y
 
+# Get key to validate Nextcloud
+mkdir -p $GPGDIR
+wget  $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
+wget https://nextcloud.com/nextcloud.asc -P $GPGDIR
+chmod -R 600 $GPGDIR
+chown ncadmin:ncadmin $GPGDIR
+gpg  --homedir $GPGDIR --import $GPGDIR/nextcloud.asc
+gpg  --homedir $GPGDIR --verify $GPGDIR/$STABLEVERSION.zip.asc $GPGDIR/$STABLEVERSION.zip
+rm -r $GPGDIR
+
 # Download and install Nextcloud
-wget $NCSTABLE/$STABLEVERSION.zip -P $HTML
+wget $NCREPO/$STABLEVERSION.zip -P $HTML
 unzip $HTML/$STABLEVERSION.zip -d $HTML
 rm $HTML/$STABLEVERSION.zip
 
