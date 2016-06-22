@@ -28,6 +28,7 @@ HTML=/var/www
 NCPATH=$HTML/nextcloud
 GPGDIR=/tmp/gpg
 NCDATA=/var/ncdata
+
 # Apache vhosts
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
@@ -38,6 +39,7 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 NCREPO="https://download.nextcloud.com/server/releases/"
+GPGKEY="https://nextcloud.com/nextcloud.asc"
 # Commands
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
 # Linux user, and Nextcloud user
@@ -248,16 +250,18 @@ apt-get install unzip -y
 wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
 mkdir -p $GPGDIR
 wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
-wget -q https://nextcloud.com/nextcloud.asc -P $GPGDIR
+wget -q $GPGKEY -P $GPGDIR
 chmod -R 600 $GPGDIR
 gpg  --homedir $GPGDIR --import $GPGDIR/nextcloud.asc
-gpg  --homedir $GPGDIR --verify $GPDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
+gpg  --homedir $GPGDIR --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
+echo "$?"
 if [[ $? > 0 ]]
 then
-	echo "Package OK!"
+        echo "Package NOT OK! Installation is aborted..."
+        exit 1
 else
-	echo "Package NOT OK! Installation is aborted..."
-	exit 1
+        echo "Package OK!"
+fi
 
 #Cleanup
 rm -r $GPGDIR
