@@ -244,18 +244,25 @@ apt-get install -y \
 # Install Unzip
 apt-get install unzip -y
 
-# Get key to validate Nextcloud
+# Download and validate Nextcloud package
+wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
 mkdir -p $GPGDIR
-wget  $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
-wget https://nextcloud.com/nextcloud.asc -P $GPGDIR
+wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
+wget -q https://nextcloud.com/nextcloud.asc -P $GPGDIR
 chmod -R 600 $GPGDIR
-chown ncadmin:ncadmin $GPGDIR
 gpg  --homedir $GPGDIR --import $GPGDIR/nextcloud.asc
-gpg  --homedir $GPGDIR --verify $GPGDIR/$STABLEVERSION.zip.asc $GPGDIR/$STABLEVERSION.zip
+gpg  --homedir $GPGDIR --verify $GPDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
+if [[ $? > 0 ]]
+then
+	echo "Package OK!"
+else
+	echo "Package NOT OK! Installation is aborted..."
+	exit 1
+
+#Cleanup
 rm -r $GPGDIR
 
-# Download and install Nextcloud
-wget $NCREPO/$STABLEVERSION.zip -P $HTML
+# Extract package
 unzip $HTML/$STABLEVERSION.zip -d $HTML
 rm $HTML/$STABLEVERSION.zip
 
