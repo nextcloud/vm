@@ -10,9 +10,13 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 # Put your theme name here:
 THEME_NAME=""
 
+# Static values
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
+HTML=/var/www
+SECURE="$SCRIPTS/setup_secure_permissions_owncloud.sh"
+DATA=/var/ocdata
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
@@ -28,10 +32,77 @@ fi
 # System Upgrade
 sudo apt-get update -q2
 sudo aptitude full-upgrade -y
-sudo -u www-data php $NCPATH/occ upgrade
+echo
+echo "System is now upgraded, now the script will upgrade Nextcloud."
+echo "Which version do you want to upgrade to?"
+read NCVERSION
 
-# Disable maintenance mode
-sudo -u www-data php $NCPATH/occ maintenance:mode --off
+echo "Upgrading to $NCVERSION in 15 seconds... Press CTRL+C to abort."
+echo "Disclamer: Tech and Me is not responsible for any dataloss"
+echo "Data and config files are backed up, but things could go wrong."
+sleep 15
+
+# Backup data
+rsync -Aaxv $DATA $HTML
+rsync -Aax $NCPATH/config $HTML
+rsync -Aax $NCPATH/themes $HTML
+rsync -Aax $NCPATH/apps $HTML
+if [[ $? > 0 ]]
+then
+    	echo "Backup was not OK. Please check $HTML and see if the folders are backed up properly"
+    	exit 1
+else
+	echo -e "\e[32m"
+    	echo "Backup OK!"
+    	echo -e "\e[0m"
+fi
+wget https://download.nextcloud.org/community/testing/nextcloud-$NCVERSION.tar.bz2 -P $HTML
+
+if [ -f $HTML/nextcloud-$NCVERSION.tar.bz2 ];
+then
+        echo "$HTML/nextcloud-$NCVERSION exists"
+else
+        echo "Aborting,something went wrong with the download"
+   	exit 1
+fi
+
+if [ -d $NCPATH/config/ ]; then
+        echo "config/ exists" 
+else
+        echo "Something went wrong with backing up your old ownCloud instance, please check in $HTML if data/ and config/ folders exist."
+   	exit 1
+fi
+
+if [ -d $NCPATH/themes/ ]; then
+        echo "themes/ exists" 
+else
+        echo "Something went wrong with backing up your old ownCloud instance, please check in $HTML if data/ and config/ folders exist."
+   	exit 1
+fi
+
+if [ -d $NCPATH/apps/ ]; then
+        echo "apps/ exists" 
+else
+        echo "Something went wrong with backing up your old ownCloud instance, please check in $HTML if data/ and config/ folders exist."
+   	exit 1
+fi
+
+if [ -d $DATA/ ]; then
+        echo "data/ exists" && sleep 2
+        rm -rf $NCPATH
+        tar -xjf $HTML/nextcloud-$NCVERSION.tar.bz2 -C $HTML 
+        rm $HTML/nextcloud-$NCVERSION.tar.bz2
+        cp -R $HTML/themes $NCPATH/ && rm -rf $HTML/themes
+        cp -Rv $HTML/data $DATA && rm -rf $HTML/data
+        cp -R $HTML/config $NCPATH/ && rm -rf $HTML/config
+        cp -R $HTML/apps $NCPATH/ && rm -rf $HTML/apps
+        bash $SECURE
+        sudo -u www-data php $NCPATH/occ maintenance:mode --off
+        sudo -u www-data php $NCPATH/occ upgrade
+else
+        echo "Something went wrong with backing up your old ownCloud instance, please check in $HTML if data/ and config/ folders exist."
+   	exit 1
+fi
 
 # Enable Apps
 sudo -u www-data php $NCPATH/occ app:enable calendar
