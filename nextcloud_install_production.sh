@@ -254,7 +254,6 @@ wget -q $GPGKEY -P $GPGDIR
 chmod -R 600 $GPGDIR
 gpg  --homedir $GPGDIR --import $GPGDIR/nextcloud.asc
 gpg  --homedir $GPGDIR --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
-echo "$?"
 if [[ $? > 0 ]]
 then
         echo "Package NOT OK! Installation is aborted..."
@@ -263,11 +262,11 @@ else
         echo "Package OK!"
 fi
 
-#Cleanup
+# Cleanup
 rm -r $GPGDIR
 
 # Extract package
-unzip $HTML/$STABLEVERSION.zip -d $HTML
+unzip -q $HTML/$STABLEVERSION.zip -d $HTML
 rm $HTML/$STABLEVERSION.zip
 
 # Secure permissions
