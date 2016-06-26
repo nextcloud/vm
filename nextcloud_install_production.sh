@@ -36,7 +36,7 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # Repositories
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 NCREPO="https://download.nextcloud.com/server/releases/"
 GPGKEY="https://nextcloud.com/nextcloud.asc"
@@ -478,9 +478,6 @@ rm $SCRIPTS/security.sh
 #sudo -u www-data php $NCPATH/occ app:enable calendar
 #fi
 
-# Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
-bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
-
 # Change roots .bash_profile
         if [ -f $SCRIPTS/change-root-profile.sh ];
                 then
@@ -587,6 +584,9 @@ if [ -f /root/*.sh ];
 then
 	rm /root/*.sh
 fi
+
+# Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
+bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Reboot
 reboot

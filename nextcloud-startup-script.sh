@@ -10,7 +10,7 @@ PW_FILE=/var/mysql_password.txt # Keep in sync with nextcloud_install_production
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/lets-encrypt"
 UNIXUSER=ncadmin
@@ -25,10 +25,8 @@ UNIXPASS=nextcloud
 fi
 
 # Set correct interface
-CURRENTIFACE1=$(cat /etc/network/interfaces | sed -n '/lo/,/iface/p' | awk '{print $3}'| sed "3d" | sed "1d")
-CURRENTIFACE2=$(cat /etc/network/interfaces | sed -n '/iface/,/inet/p' | awk '{print $2}' | sed "1d" | sed "2d" | sed "1d")
-sed -i "s|$CURRENTIFACE1|$IFACE|g" /etc/network/interfaces
-sed -i "s|$CURRENTIFACE2|$IFACE|g" /etc/network/interfaces
+{ sed '/# The primary network interface/q' /etc/network/interfaces; printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"; } > /etc/network/interfaces.new
+mv /etc/network/interfaces.new /etc/network/interfaces
 service networking restart
 
 # Check network
@@ -41,9 +39,7 @@ wget -q --spider http://github.com
 	else
 		echo
 		echo "Network NOT OK. You must have a working Network connection to run this script."
-		echo "You could try to change network settings of this VM to 'Bridged Mode'".
-		echo "If that doesn't help, please try to un-check 'Replicate physical host' in"
-		echo "the network settings of the VM."
+		echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
 	       	exit 1
 	fi
 
@@ -122,7 +118,7 @@ fi
         if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ];
                 then
                 rm $SCRIPTS/setup_secure_permissions_nextcloud.sh
-                wget -q $STATIC/setup_secure_permissions_nextcloud.sh
+                wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
                 else
         wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
 fi
@@ -166,15 +162,15 @@ chown $UNIXUSER:$UNIXUSER $SCRIPTS/nextcloud.sh
 
 clear
 echo "+--------------------------------------------------------------------+"
-echo "| This script will configure your Nextcloud and activate SSL.         |"
+echo "| This script will configure your Nextcloud and activate SSL.        |"
 echo "| It will also do the following:                                     |"
 echo "|                                                                    |"
 echo "| - Generate new SSH keys for the server                             |"
 echo "| - Generate new MySQL password                                      |"
 echo "| - Install phpMyadmin and make it secure                            |"
 echo "| - Upgrade your system to latest version                            |"
-echo "| - Set secure permissions to Nextcloud                               |"
-echo "| - Set new passwords to Ubuntu Server and Nextcloud                  |"
+echo "| - Set secure permissions to Nextcloud                              |"
+echo "| - Set new passwords to Ubuntu Server and Nextcloud                 |"
 echo "| - Set new keyboard layout                                          |"
 echo "| - Change timezone                                                  |"
 echo "| - Set static IP to the system (you have to set the same IP in      |"
@@ -366,7 +362,7 @@ cat /dev/null > /var/log/apache2/error.log
 cat /dev/null > /var/log/cronjobs_success.log
 sed -i "s|sudo -i||g" /home/$UNIXUSER/.bash_profile
 cat /dev/null > /etc/rc.local
-cat << RCLNCAL > "/etc/rc.local"
+cat << RCLOCAL > "/etc/rc.local"
 #!/bin/sh -e
 #
 # rc.local
@@ -382,7 +378,7 @@ cat << RCLNCAL > "/etc/rc.local"
 
 exit 0
 
-RCLNCAL
+RCLOCAL
 
 clear
 echo
