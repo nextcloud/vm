@@ -23,6 +23,6 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 
 Start asking questions so that we can add them here.
 
-## Expected stable release
+## First look
 
-Nextcloud 10
+![alt tag](https://raw.githubusercontent.com/nextcloud/screenshots/master/vm/welcome_screen.png)
