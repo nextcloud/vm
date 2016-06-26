@@ -78,7 +78,7 @@ a:active {
 <div class="logo">
 </div>
 <div class="logotext">
-<h2>Nextcloud VM - <a href="https://www.techandme.se/pre-configured-nextcloud-installaton/" target="_blank">Tech and Me</a></h2>
+<h2>Nextcloud VM - <a href="https://www.techandme.se/nextcloud-vm/" target="_blank">Tech and Me</a></h2>
 </div>
 <br>
 <div class="information">
@@ -89,7 +89,7 @@ a:active {
 
 </div>
 
-<h2><a href="https://www.techandme.se/user-and-password/" target="_blank">Login</a> to Nextcloud</h2>
+<h2><a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login</a> to Nextcloud</h2>
 
 <div class="information">
 <p>Default User:</p>
