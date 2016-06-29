@@ -426,11 +426,6 @@ wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
 apt-get update -q2
 apt-get install webmin -y
 
-# Add extra security
-wget -q $STATIC/security.sh -P $SCRIPTS
-bash $SCRIPTS/security.sh
-rm $SCRIPTS/security.sh
-
 # Download and install Documents
 #if [ -d $NCPATH/apps/documents ]; then
 #sleep 1

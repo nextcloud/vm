@@ -24,6 +24,7 @@ UNIXPASS=nextcloud
         exit 1
 fi
 
+echo "Setting correct interface..."
 # Set correct interface
 { sed '/# The primary network interface/q' /etc/network/interfaces; printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"; } > /etc/network/interfaces.new
 mv /etc/network/interfaces.new /etc/network/interfaces
@@ -46,6 +47,15 @@ wget -q --spider http://github.com
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
+
+       # Get security script
+        if [ -f $SCRIPTS/security.sh ];
+                then
+                rm $SCRIPTS/security.sh
+                wget -q $STATIC/security.sh -P $SCRIPTS
+                else
+        wget -q $STATIC/security.sh -P $SCRIPTS
+fi
 
        # Get the latest nextcloud_update.sh
         if [ -f $SCRIPTS/update.sh ];
@@ -251,6 +261,27 @@ rm $SCRIPTS/change_mysql_pass.sh
 bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 clear
+
+# Add extra security
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
+then
+        bash $SCRIPTS/security.sh
+        rm $SCRIPTS/security.sh
+else
+echo
+    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+fi
+
 
 # Set keyboard layout
 echo "Current keyboard layout is Swedish"
