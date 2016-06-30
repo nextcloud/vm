@@ -48,6 +48,15 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
 
+       # Get script for temporary fixes
+        if [ -f $SCRIPTS/temporary.sh ];
+                then
+                rm $SCRIPTS/temporary-fix.sh
+                wget -q $STATIC/temporary-fix.sh -P $SCRIPTS
+                else
+        wget -q $STATIC/temporary-fix.sh -P $SCRIPTS
+        fi
+
        # Get security script
         if [ -f $SCRIPTS/security.sh ];
                 then
@@ -348,6 +357,10 @@ echo
 echo
 apt-get update -q2
 aptitude full-upgrade -y
+
+# Add temporary fix if needed
+bash $SCRIPTS/temporary-fix.sh
+rm $SCRIPTS/temporary-fix.sh
 
 # Cleanup 1
 apt-get autoremove -y

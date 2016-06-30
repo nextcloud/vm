@@ -34,15 +34,8 @@ apt-get update -q2 && sudo apt-get install build-essential -q -y
 apt-get install tcl8.5 -q -y
 apt-get install php-pear php7.0-dev -q -y
 
-# Install Git and clone repo
-apt-get install git -y -q
-git clone -b php7 https://github.com/phpredis/phpredis.git
-
-# Build Redis PHP module
-sudo mv phpredis/ /etc/ && cd /etc/phpredis
-phpize
-./configure
-make && make install
+# Install PHPmodule
+pecl install -Z redis
 if [[ $? > 0 ]]
 then
     echo "PHP module installation failed"
@@ -53,12 +46,14 @@ else
     echo "PHP module installation OK!"
     echo -e "\e[0m"
 fi
-touch /etc/php/7.0/mods-available/redis.ini
-echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
-phpenmod redis
+# Set globally doesn't work for some reason
+# touch /etc/php/7.0/mods-available/redis.ini
+# echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
+# phpenmod redis
+# Setting direct to apache2 works if 'libapache2-mod-php7.0' is installed
+echo 'extension=redis.so' >> /etc/php/7.0/apache2/php.ini
 service apache2 restart
-cd ..
-rm -rf phpredis
+
 
 # Install Redis
 apt-get install redis-server -y

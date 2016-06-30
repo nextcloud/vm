@@ -166,9 +166,6 @@ fi
 # Update system
 apt-get update -q2
 
-# Remove LXD (always shows up as failed during boot)
-apt-get purge lxd -y
-
 # Set locales
 apt-get install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
@@ -290,15 +287,15 @@ crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php >
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
-sed -i "s|max_execution_time = 30|max_execution_time = 3500|g" /etc/php/7.0/cli/php.ini
+sed -i "s|max_execution_time = 30|max_execution_time = 3500|g" /etc/php/7.0/apache2/php.ini
 # max_input_time
-sed -i "s|max_input_time = 60|max_input_time = 3600|g" /etc/php/7.0/cli/php.ini
+sed -i "s|max_input_time = 60|max_input_time = 3600|g" /etc/php/7.0/apache2/php.ini
 # memory_limit
-sed -i "s|memory_limit = 128M|memory_limit = 512M|g" /etc/php/7.0/cli/php.ini
+sed -i "s|memory_limit = 128M|memory_limit = 512M|g" /etc/php/7.0/apache2/php.ini
 # post_max
-sed -i "s|post_max_size = 8M|post_max_size = 1100M|g" /etc/php/7.0/cli/php.ini
+sed -i "s|post_max_size = 8M|post_max_size = 1100M|g" /etc/php/7.0/apache2/php.ini
 # upload_max
-sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 1000M|g" /etc/php/7.0/cli/php.ini
+sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 1000M|g" /etc/php/7.0/apache2/php.ini
 
 # Install Figlet
 apt-get install figlet -y
@@ -568,6 +565,9 @@ rm $SCRIPTS/redis-server-ubuntu16.sh
 # Upgrade
 apt-get update -q2
 aptitude full-upgrade -y
+
+# Remove LXD (always shows up as failed during boot)
+apt-get purge lxd -y
 
 # Cleanup
 echo "$CLEARBOOT"
