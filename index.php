@@ -78,14 +78,13 @@ a:active {
 <div class="logo">
 </div>
 <div class="logotext">
-<h2>Nextcloud VM - <a href="https://www.techandme.se/nextcloud-vm/" target="_blank">Tech and Me</a></h2>
+<h2><a href="https://github.com/nextcloud/vm" target="_blank">Nextcloud VM</a> - by <a href="https://nextcloud.com" target="_blank">Nextcloud Community</a></h2>
 </div>
 <br>
 <div class="information">
 <p>Thank you for downloading the pre-configured Nextcloud VM! If you see this page, you have successfully mounted the Nextcloud VM on the computer that will act as host for Nextcloud.</p>
 <p>To complete the installation, please run the setup script. You can find login details in the middle of this page.
-<p>Don't hesitate to ask if you have any questions. My email is: <a href="mailto:daniel@techandme.se?Subject=Before%20login%20-%20Nextcloud%20VM" target="_top">daniel@techandme.se</a> You can also check the <a href="https://www.techandme.se/complete-install-instructions-nextcloud/" target="_blank">complete install instructions</a>.</p>
-<p>Please <a href="https://www.techandme.se/thank_you">donate</a> if you like it. All the donations will go to server costs and developing, making this VM even better.</p>
+<p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://nextcloud.com/support/" target="_blank">support</a> channels. You can also check the <a href="https://www.techandme.se/complete-install-instructions-nextcloud/" target="_blank">complete install instructions</a>.</p>
 
 </div>
 
