@@ -3,7 +3,7 @@
 clear
 cat << INST1
 +-----------------------------------------------------------------------+
-| Thank you for downloading this Nextcloud VM made by Tech and Me!      |
+| Thank you for downloading this Nextcloud VM made by the Nextcloud Community!      |
 |                                                                       |
 INST1
 echo -e "|"  "\e[32mTo run the startup script type the sudoer password. This will either\e[0m  |"
