@@ -69,21 +69,21 @@ fi
 if [ -d $NCPATH/config/ ]; then
         echo "config/ exists" 
 else
-        echo "Something went wrong with backing up your old ownCloud instance, please check in $HTML if data/ and config/ folders exist."
+        echo "Something went wrong with backing up your old nextcloud instance, please check in $HTML if data/ and config/ folders exist."
    	exit 1
 fi
 
 if [ -d $NCPATH/themes/ ]; then
         echo "themes/ exists" 
 else
-        echo "Something went wrong with backing up your old ownCloud instance, please check in $HTML if data/ and config/ folders exist."
+        echo "Something went wrong with backing up your old nextcloud instance, please check in $HTML if data/ and config/ folders exist."
    	exit 1
 fi
 
 if [ -d $NCPATH/apps/ ]; then
         echo "apps/ exists" 
 else
-        echo "Something went wrong with backing up your old ownCloud instance, please check in $HTML if data/ and config/ folders exist."
+        echo "Something went wrong with backing up your old nextcloud instance, please check in $HTML if data/ and config/ folders exist."
    	exit 1
 fi
 
@@ -100,7 +100,7 @@ if [ -d $DATA/ ]; then
         sudo -u www-data php $NCPATH/occ maintenance:mode --off
         sudo -u www-data php $NCPATH/occ upgrade
 else
-        echo "Something went wrong with backing up your old ownCloud instance, please check in $HTML if data/ and config/ folders exist."
+        echo "Something went wrong with backing up your old nextcloud instance, please check in $HTML if data/ and config/ folders exist."
    	exit 1
 fi
 
@@ -155,7 +155,7 @@ sudo update-grub
 
 # Write to log
 touch /var/log/cronjobs_success.log
-echo "OWNCLOUD UPDATE success-`date +"%Y%m%d"`" >> /var/log/cronjobs_success.log
+echo "NEXTCLOUD UPDATE success-`date +"%Y%m%d"`" >> /var/log/cronjobs_success.log
 echo
 echo Nextcloud version:
 sudo -u www-data php $NCPATH/occ status
