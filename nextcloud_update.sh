@@ -15,8 +15,8 @@ STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
-SECURE="$SCRIPTS/setup_secure_permissions_owncloud.sh"
-DATA=/var/ocdata
+SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
+DATA=/var/ncdata
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
@@ -56,7 +56,7 @@ else
     	echo "Backup OK!"
     	echo -e "\e[0m"
 fi
-wget https://download.nextcloud.org/community/testing/nextcloud-$NCVERSION.tar.bz2 -P $HTML
+wget https://download.nextcloud.com/server/releases/nextcloud/nexcloud-$NCVERSION.tar.bz2 -P $HTML
 
 if [ -f $HTML/nextcloud-$NCVERSION.tar.bz2 ];
 then
