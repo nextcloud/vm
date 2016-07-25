@@ -10,7 +10,7 @@ set -e
 # Nextcloud version
 STABLEVERSION="nextcloud-9.0.52"
 # Ubuntu version
-DISTRO=$(grep -ic "Ubuntu 16.04 LTS" /etc/lsb-release)
+DISTRO=$(grep -ic "Ubuntu 16.04.1 LTS" /etc/lsb-release)
 # Nextcloud apps
 CONVER=v1.3.0.0
 CONVER_FILE=contacts.tar.gz
@@ -58,9 +58,9 @@ fi
 
 if [ $DISTRO -eq 1 ]
 then
-        echo "Ubuntu 16.04 LTS OK!"
+        echo "Ubuntu 16.04.1 LTS OK!"
 else
-        echo "Ubuntu 16.04 LTS is required to run this script."
+        echo "Ubuntu 16.04.1 LTS is required to run this script."
         echo "Please install that distro and try again."
         exit 1
 fi

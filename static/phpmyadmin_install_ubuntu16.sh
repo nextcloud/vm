@@ -2,7 +2,7 @@
 
 # Tech and Me, ©2016 - www.techandme.se
 
-DISTRO=$(grep -ic "Ubuntu 16.04 LTS" /etc/lsb-release)
+DISTRO=$(grep -ic "Ubuntu 16.04.1 LTS" /etc/lsb-release)
 PHPMYADMINDIR=/usr/share/phpmyadmin
 WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
@@ -23,9 +23,9 @@ fi
 
 if [ $DISTRO -eq 1 ]
 then
-        echo "Ubuntu 16.04 LTS OK!"
+        echo "Ubuntu 16.04.1 LTS OK!"
 else
-        echo "Ubuntu 16.04 LTS is required to run this script."
+        echo "Ubuntu 16.04.1 LTS is required to run this script."
         echo "Please install that distro and try again."
         exit 1
 fi

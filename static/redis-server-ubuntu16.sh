@@ -3,7 +3,7 @@
 # Tech and Me - www.techandme.se - ©2016
 # Ubuntu 16.04 with php 7
 
-DISTRO=$(grep -ic "Ubuntu 16.04 LTS" /etc/lsb-release)
+DISTRO=$(grep -ic "Ubuntu 16.04.1 LTS" /etc/lsb-release)
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 REDIS_CONF=/etc/redis/redis.conf
@@ -16,9 +16,9 @@ REDIS_SOCK=/var/run/redis/redis.sock
 
 if [ $DISTRO -eq 1 ]
 then
-        echo "Ubuntu 16.04 LTS OK!"
+        echo "Ubuntu 16.04.1 LTS OK!"
 else
-        echo "Ubuntu 16.04 LTS is required to run this script."
+        echo "Ubuntu 16.04.1 LTS is required to run this script."
         echo "Please install that distro and try again."
         exit 1
 fi
