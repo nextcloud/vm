@@ -34,11 +34,11 @@ sudo apt-get update -q2
 sudo aptitude full-upgrade -y
 echo
 echo "System is now upgraded, now the script will upgrade Nextcloud."
-echo "Which version do you want to upgrade to?"
+echo "Which version do you want to upgrade to? Type it like this: 9.0.54"
 read NCVERSION
 
 echo "Upgrading to $NCVERSION in 15 seconds... Press CTRL+C to abort."
-echo "Disclamer: Tech and Me is not responsible for any dataloss"
+echo "Disclamer: Tech and Me or Nextcloud is not responsible for any dataloss"
 echo "Data and config files are backed up, but things could go wrong."
 sleep 15
 

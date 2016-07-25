@@ -8,7 +8,7 @@
 set -e
 
 # Nextcloud version
-STABLEVERSION="nextcloud-9.0.52"
+STABLEVERSION="nextcloud-9.0.53"
 # Ubuntu version
 DISTRO=$(grep -ic "Ubuntu 16.04.1 LTS" /etc/lsb-release)
 # Nextcloud apps
