@@ -12,12 +12,12 @@ STABLEVERSION="nextcloud-9.0.53"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Nextcloud apps
-CONVER=v1.3.1.0
+CONVER=$(wget -q https://raw.githubusercontent.com/owncloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
-CALVER=v1.3.1
+CONVER_REPO=https://github.com/owncloud/contacts/releases/download
+CALVER=$(wget -q https://raw.githubusercontent.com/owncloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 CALVER_FILE=calendar.tar.gz
-CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
+CALVER_REPO=https://github.com/owncloud/calendar/releases/download
 # Passwords
 SHUF=$(shuf -i 13-15 -n 1)
 MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
@@ -445,51 +445,51 @@ apt-get update -q2
 apt-get install webmin -y
 
 # Download and install Documents
-#if [ -d $NCPATH/apps/documents ]; then
-#sleep 1
-#else
-#wget -q https://github.com/nextcloud/documents/archive/master.zip -P $NCPATH/apps
-#cd $NCPATH/apps
-#unzip -q master.zip
-#rm master.zip
-#mv documents-master/ documents/
-#fi
+if [ -d $NCPATH/apps/documents ]; then
+sleep 1
+else
+wget -q https://github.com/owncloud/documents/archive/master.zip -P $NCPATH/apps
+cd $NCPATH/apps
+unzip -q master.zip
+rm master.zip
+mv documents-master/ documents/
+fi
 
 # Enable documents
-#if [ -d $NCPATH/apps/documents ]; then
-#sudo -u www-data php $NCPATH/occ app:enable documents
-#sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-#fi
+if [ -d $NCPATH/apps/documents ]; then
+sudo -u www-data php $NCPATH/occ app:enable documents
+sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
+fi
 
 # Download and install Contacts
-#if [ -d $NCPATH/apps/contacts ]; then
-#sleep 1
-#else
-#wget -q $CONVER_REPO/$CONVER/$CONVER_FILE -P $NCPATH/apps
-#tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-#cd $NCPATH/apps
-#rm $CONVER_FILE
-#fi
+if [ -d $NCPATH/apps/contacts ]; then
+sleep 1
+else
+wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
+tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
+cd $NCPATH/apps
+rm $CONVER_FILE
+fi
 
 # Enable Contacts
-#if [ -d $NCPATH/apps/contacts ]; then
-#sudo -u www-data php $NCPATH/occ app:enable contacts
-#fi
+if [ -d $NCPATH/apps/contacts ]; then
+sudo -u www-data php $NCPATH/occ app:enable contacts
+fi
 
 # Download and install Calendar
-#if [ -d $NCPATH/apps/calendar ]; then
-#sleep 1
-#else
-#wget -q $CALVER_REPO/$CALVER/$CALVER_FILE -P $NCPATH/apps
-#tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
-#cd $NCPATH/apps
-#rm $CALVER_FILE
-#fi
+if [ -d $NCPATH/apps/calendar ]; then
+sleep 1
+else
+wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
+tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
+cd $NCPATH/apps
+rm $CALVER_FILE
+fi
 
 # Enable Calendar
-#if [ -d $NCPATH/apps/calendar ]; then
-#sudo -u www-data php $NCPATH/occ app:enable calendar
-#fi
+if [ -d $NCPATH/apps/calendar ]; then
+sudo -u www-data php $NCPATH/occ app:enable calendar
+fi
 
 # Change roots .bash_profile
         if [ -f $SCRIPTS/change-root-profile.sh ];
