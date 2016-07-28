@@ -25,7 +25,7 @@ else
         exit 1
 fi
 
-if [ $DISTRO -ge $DISTRO2 ]
+if [ $DISTRO -gt $DISTRO2 ]
 then
         sleep 1
 else
