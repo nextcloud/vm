@@ -10,12 +10,14 @@ set -e
 # Nextcloud version
 STABLEVERSION="nextcloud-9.0.53"
 # Ubuntu version
-DISTRO=$(grep -ic "Ubuntu 16.04.1 LTS" /etc/lsb-release)
+DISTRO=$(grep -ic "16.04" /etc/lsb-release)
+DISTRO2=$(grep -ic "16.04.4" /etc/lsb-release)
+OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Nextcloud apps
-CONVER=v1.3.0.0
+CONVER=v1.3.1.0
 CONVER_FILE=contacts.tar.gz
 CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
-CALVER=v1.3.0
+CALVER=v1.3.1
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 # Passwords
@@ -55,12 +57,21 @@ UNIXPASS=nextcloud
 fi
 
 # Check Ubuntu version
-
-if [ $DISTRO -eq 1 ]
+echo "Checking server OS and version..."
+if [ $OS -eq 1 ]
 then
-        echo "Ubuntu 16.04.1 LTS OK!"
+        sleep 1
 else
-        echo "Ubuntu 16.04.1 LTS is required to run this script."
+        echo "Ubuntu Server is required to run this script."
+        echo "Please install that distro and try again."
+        exit 1
+fi
+
+if [ $DISTRO -ge $DISTRO2 ]
+then
+        sleep 1
+else
+        echo "Ubuntu 16.04.X LTS is required to run this script."
         echo "Please install that distro and try again."
         exit 1
 fi

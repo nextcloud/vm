@@ -3,7 +3,9 @@
 # Tech and Me - www.techandme.se - ©2016
 # Ubuntu 16.04 with php 7
 
-DISTRO=$(grep -ic "Ubuntu 16.04.1 LTS" /etc/lsb-release)
+DISTRO=$(grep -ic "16.04" /etc/lsb-release)
+DISTRO2=$(grep -ic "16.04.4" /etc/lsb-release)
+OS=$(grep -ic "Ubuntu" /etc/issue.net)
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 REDIS_CONF=/etc/redis/redis.conf
@@ -13,12 +15,21 @@ REDIS_SOCK=/var/run/redis/redis.sock
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
 # Check Ubuntu version
-
-if [ $DISTRO -eq 1 ]
+echo "Checking server OS and version..."
+if [ $OS -eq 1 ]
 then
-        echo "Ubuntu 16.04.1 LTS OK!"
+        sleep 1
 else
-        echo "Ubuntu 16.04.1 LTS is required to run this script."
+        echo "Ubuntu Server is required to run this script."
+        echo "Please install that distro and try again."
+        exit 1
+fi
+
+if [ $DISTRO -ge $DISTRO2 ]
+then
+        sleep 1
+else
+        echo "Ubuntu 16.04.X LTS is required to run this script."
         echo "Please install that distro and try again."
         exit 1
 fi

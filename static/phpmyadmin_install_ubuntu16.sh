@@ -2,7 +2,9 @@
 
 # Tech and Me, ©2016 - www.techandme.se
 
-DISTRO=$(grep -ic "Ubuntu 16.04.1 LTS" /etc/lsb-release)
+DISTRO=$(grep -ic "16.04" /etc/lsb-release)
+DISTRO2=$(grep -ic "16.04.4" /etc/lsb-release)
+OS=$(grep -ic "Ubuntu" /etc/issue.net)
 PHPMYADMINDIR=/usr/share/phpmyadmin
 WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
@@ -20,12 +22,21 @@ SAVEPATH=""
 fi
 
 # Check Ubuntu version
-
-if [ $DISTRO -eq 1 ]
+echo "Checking server OS and version..."
+if [ $OS -eq 1 ]
 then
-        echo "Ubuntu 16.04.1 LTS OK!"
+        sleep 1
 else
-        echo "Ubuntu 16.04.1 LTS is required to run this script."
+        echo "Ubuntu Server is required to run this script."
+        echo "Please install that distro and try again."
+        exit 1
+fi
+
+if [ $DISTRO -ge $DISTRO2 ]
+then
+        sleep 1
+else
+        echo "Ubuntu 16.04.X LTS is required to run this script."
         echo "Please install that distro and try again."
         exit 1
 fi
