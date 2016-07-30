@@ -15,13 +15,8 @@ body {
 	align: center;
 	text-align: center;
 	background: #0082c9; /* Old browsers */
-	background: -moz-linear-gradient(top, #0082c9 0%, #35537a 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0082c9), color-stop(100%,#35537a)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #0082c9 0%,#35537a 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #0082c9 0%,#35537a 100%); /* Opera11.10+ */
-	background: -ms-linear-gradient(top, #0082c9 0%,#35537a 100%); /* IE10+ */
-	background: linear-gradient(top, #0082c9 0%,#35537a 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0082c9', endColorstr='#35537a',GradientType=0 ); /* IE6-9 */
+	background-image: url('https://raw.githubusercontent.com/nextcloud/server/master/core/img/background.jpg');
+	background-size: cover;
 }
 div.logotext   {
 	width: 50%;
@@ -83,7 +78,7 @@ a:active {
 <br>
 <div class="information">
 <p>Thank you for downloading the pre-configured Nextcloud VM! If you see this page, you have successfully mounted the Nextcloud VM on the computer that will act as host for Nextcloud.</p>
-<p>To complete the installation, please run the setup script. You can find login details in the middle of this page.
+<p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.
 <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://nextcloud.com/support/" target="_blank">support</a> channels. You can also check the <a href="https://www.techandme.se/complete-install-instructions-nextcloud/" target="_blank">complete install instructions</a>.</p>
 
 </div>
