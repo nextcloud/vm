@@ -25,4 +25,4 @@ Start asking questions so that we can add them here.
 
 ## First look
 
-![alt tag](https://raw.githubusercontent.com/nextcloud/screenshots/master/vm/welcome_screen.png)
+![alt tag](https://raw.githubusercontent.com/nextcloud/vm/master/first-look.jpg-large)
