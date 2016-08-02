@@ -259,7 +259,12 @@ apt-get install -y \
 	php7.0-curl \
 	php7.0-xml \
 	php7.0-zip \
-	php7.0-mbstring
+	php7.0-mbstring \
+	php-smbclient
+
+# Enable SMB client
+echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
+echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 
 # Install Unzip
 apt-get install unzip -y
