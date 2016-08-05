@@ -612,6 +612,11 @@ fi
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
+# Run the update script to get the latest updates
+# This keeps nextcloud_install_production.sh clean and makes a universal updater
+wget https://raw.githubusercontent.com/ezraholm50/vm/master/version_upgrade.sh -P $SCRIPTS
+bash $SCRIPTS/version_upgrade.sh
+
 # Reboot
 reboot
 
