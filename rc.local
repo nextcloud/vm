@@ -1,0 +1,32 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+mkdir -p /var/scripts
+
+if 		[ -f /var/scripts/nextcloud_install_production.sh ];
+        then
+                echo "nextcloud_install_production.sh exists"
+        else
+        	wget -q --no-check-certificate https://github.com/ezraholm50/vm/raw/master/nextcloud_install_production.sh -P /var/scripts
+fi
+if [[ $? > 0 ]]
+then
+	echo "Download of scripts failed. System will reboot in 10 seconds..."
+	sleep 10
+	reboot
+else
+	echo "nextcloud_install_production.sh downloaded..."
+	sleep 1
+fi
+
+exit 0
