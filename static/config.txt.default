@@ -1,6 +1,6 @@
-## Tech and me 2016 RPI2 config - If you overclock, we can't be held 
+## Tech and me 2016 RPI config - If you overclock, we can't be held 
 ## responsible for any damage or loss what so ever.
-## Ubuntu Core 15.10 (should work on any OS, place in BOOT partition)
+## Ubuntu Core 16.04 (should work on any OS, place in BOOT partition)
 ################################################################################
 ##  Raspberry Pi Configuration Settings
 ##
