@@ -10,9 +10,9 @@ PW_FILE=/var/mysql_password.txt # Keep in sync with nextcloud_install_production
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/lets-encrypt"
+GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/vm/master"
+STATIC="https://raw.githubusercontent.com/ezraholm50/vm/master/static"
+LETS_ENC="https://raw.githubusercontent.com/ezraholm50/vm/master/lets-encrypt"
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
 
