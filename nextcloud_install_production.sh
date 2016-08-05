@@ -117,12 +117,12 @@ then
 	exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' ubuntu-server 2>/dev/null | grep -c "ok installed") -eq 0 ];
-then
-        echo "'ubuntu-server' is not installed, this doesn't seem to be a server."
-        echo "Please install the server version of Ubuntu and restart the script"
-        exit 1 
-fi
+#if [ $(dpkg-query -W -f='${Status}' ubuntu-server 2>/dev/null | grep -c "ok installed") -eq 0 ];
+#then
+#        echo "'ubuntu-server' is not installed, this doesn't seem to be a server."
+#        echo "Please install the server version of Ubuntu and restart the script"
+#        exit 1 
+#fi
 
 # Create $UNIXUSER if not existing
 if id "$UNIXUSER" >/dev/null 2>&1
