@@ -36,8 +36,8 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # Repositories
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
+GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/vm/master"
+STATIC="https://raw.githubusercontent.com/ezraholm50/vm/master/static"
 NCREPO="https://download.nextcloud.com/server/releases/"
 GPGKEY="https://nextcloud.com/nextcloud.asc"
 # Commands
