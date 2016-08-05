@@ -24,6 +24,21 @@ UNIXPASS=nextcloud
         exit 1
 fi
 
+# Final resize
+resize2fs /dev/mmcblk0p2
+
+# Install swapfile of 2 GB
+if 		[ -f /swapfile ];
+	then
+      		sleep 1
+      	else
+      		fallocate -l 2048M /swapfile # create swapfile and set size
+      		chmod 600 /swapfile # give it the right permissions
+      		mkswap /swapfile # format as swap
+      		swapon /swapfile # announce to system
+      		echo "/swapfile none swap defaults 0 0" >> /etc/fstab # let the system know what file to use as swap after reboot
+fi
+
 echo "Setting correct interface..."
 # Set correct interface
 { sed '/# The primary network interface/q' /etc/network/interfaces; printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"; } > /etc/network/interfaces.new
