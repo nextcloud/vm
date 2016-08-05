@@ -35,6 +35,10 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+
+# Devices
+DEV="/dev/mmcblk0"
+
 # Repositories
 GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/vm/master"
 STATIC="https://raw.githubusercontent.com/ezraholm50/vm/master/static"
@@ -181,11 +185,23 @@ else
 	echo "Network OK."
 fi
 
-# Update system
-apt-get update -q2
+# Update and upgrade
+apt-get -fy autoclean \
+	autoremove \
+	update \
+	upgrade \
+	install
+dpkg --configure --pending
 
-# Install ntp
-apt-get install ntp-y
+# Install various packages
+apt-get install -y ntp \
+		module-init-tools \
+		miredo \
+		libminiupnpc10
+
+# Only use swap to prevent out of memory.
+echo "vm.swappiness = 0" >> /etc/sysctl.conf
+sysctl -p
 
 # Set locales
 apt-get install language-pack-en-base -y
@@ -616,6 +632,28 @@ bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 # This keeps nextcloud_install_production.sh clean and makes a universal updater
 wget https://raw.githubusercontent.com/ezraholm50/vm/master/version_upgrade.sh -P $SCRIPTS
 bash $SCRIPTS/version_upgrade.sh
+
+# Resize sd card
+fdisk $device << EOF
+d
+2
+w
+EOF
+sync
+
+fdisk $device << EOF
+n
+p
+2
+
+
+w
+EOF
+sync
+partprobe
+
+# Let us know where using the SD as ROOT partition
+toch /var/scripts/SD
 
 # Reboot
 reboot
