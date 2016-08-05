@@ -11,7 +11,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 THEME_NAME=""
 
 # Static values
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
+STATIC="https://raw.githubusercontent.com/ezraholm50/vm/master"
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
