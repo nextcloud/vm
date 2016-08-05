@@ -184,6 +184,9 @@ fi
 # Update system
 apt-get update -q2
 
+# Install ntp
+apt-get install ntp-y
+
 # Set locales
 apt-get install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
