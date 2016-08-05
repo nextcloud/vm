@@ -17,8 +17,6 @@ source /etc/network/interfaces.d/*
 
 # The primary network interface
         iface $IFACE inet static
-                pre-up /sbin/ethtool -K $IFACE tso off
-                pre-up /sbin/ethtool -K $IFACE gso off
 
 # Best practice is to change the static address
 # to something outside your DHCP range.
