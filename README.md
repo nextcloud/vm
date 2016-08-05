@@ -1,4 +1,4 @@
-# Nextcloud VM
+# Nextcloud for your RaspberryPI 2 or 3
 [![irc](https://img.shields.io/badge/irc%20channel-%23nextcloud--vm%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=nextcloud-vm)
 
 ## Maintainers
