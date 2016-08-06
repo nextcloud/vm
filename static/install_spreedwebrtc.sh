@@ -44,6 +44,7 @@ apt-get upgrade -y
 # Install spreed (Unstable is used as there are some systemd errors in ubuntu 16.04)
 apt-add-repository ppa:strukturag/spreed-webrtc-unstable
 apt-get update
+apt-get install spreed-webrtc-bin -y
 apt-get install spreed-webrtc -y
 
 # Change server conf.
