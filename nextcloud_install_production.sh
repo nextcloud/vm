@@ -44,8 +44,10 @@ GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/vm/master"
 STATIC="https://raw.githubusercontent.com/ezraholm50/vm/master/static"
 NCREPO="https://download.nextcloud.com/server/releases/"
 GPGKEY="https://nextcloud.com/nextcloud.asc"
+
 # Commands
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
+
 # Linux user, and Nextcloud user
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
@@ -654,6 +656,10 @@ partprobe
 
 # Let us know where using the SD as ROOT partition
 toch /var/scripts/SD
+
+# Cleanup login screen
+rm /etc/update-motd.d/00-header
+rm /etc/update-motd.d/10-help-text
 
 # Reboot
 reboot
