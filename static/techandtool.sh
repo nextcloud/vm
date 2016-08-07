@@ -566,12 +566,68 @@ fi
 ################################################ Update
 
 do_update() {
-  	apt-get autoclean
-  	apt-get autoremove
-  	apt-get update
-  	apt-get upgrade -y
-  	apt-get -f install
-  	dpkg --configure --pending
+
+   {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <( apt-get autoclean )
+    } | whiptail --title "Progress" --gauge "Please wait while auto cleaning" 6 60 0
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <( apt-get autoremove -y )
+    } | whiptail --title "Progress" --gauge "Please wait while auto removing unneeded dependancies " 6 60 0
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <( apt-get update )
+    } | whiptail --title "Progress" --gauge "Please wait while updating " 6 60 0
+
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <( apt-get apt-get upgrade -y )
+    } | whiptail --title "Progress" --gauge "Please wait while ugrading " 6 60 0
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <( 	apt-get -f install -y )
+    } | whiptail --title "Progress" --gauge "Please wait while forcing install of dependancies " 6 60 0
+
+	dpkg --configure --pending
+
+	mkdir -p /var/scripts
+
+	if [ -f /var/scripts/techandtool.sh ]
+then
+    rm /var/scripts/techandtool.sh
+fi
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <( 	wget https://github.com/ezraholm50/vm/raw/master/static/techandtool.sh -P /var/scripts )
+    } | whiptail --title "Progress" --gauge "Please wait while downloading latest version Tech and Tool " 6 60 0
+	
+
+	exit | bash /var/scripts/techandtool.sh 
+
 }
 
 ################################################ About
@@ -594,7 +650,9 @@ while true; do
     "1 Apps" "Nextcloud" \
     "2 Tools" "Various tools" \
     "3 Update & upgrade" "Updates and upgrades packages and get the latest version of this tool" \
-    "4 About Multi Installer" "Information about this tool" \
+    "4 Reboot" "Reboots your machine" \
+    "5 Shutdown" "Shutsdown your machine" \
+    "6 About Tech and Tool" "Information about this tool" \
     3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -604,7 +662,9 @@ while true; do
       1\ *) do_apps ;;
       2\ *) do_tools;;
       3\ *) do_update ;;
-      4\ *) do_about ;;
+      4\ *) do_reboot ;;
+      5\ *) do_poweroff ;;
+      6\ *) do_about ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
  else
@@ -612,3 +672,10 @@ while true; do
   fi
 done
 
+do_reboot() {
+	reboot
+}
+
+do_poweroff() {
+	shutdown now
+}
