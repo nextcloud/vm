@@ -71,6 +71,21 @@ if [ "$(whoami)" != "root" ]; then
         exit
 fi
 
+################################################ Ask to reboot 1.7
+
+ASK_TO_REBOOT=0
+
+do_finish() {
+  if [ $ASK_TO_REBOOT -eq 1 ]; then
+    whiptail --yesno "Would you like to reboot now?" 20 60 2
+    if [ $? -eq 0 ]; then # yes
+      sync
+      reboot
+    fi
+  fi
+  exit 0
+}
+
 ################################################ Apps 2
 
 do_apps() {
@@ -300,10 +315,7 @@ if [ -d "$certfiles" ]; then
 	service apache2 restart
 	bash /var/scripts/test-new-config.sh
 # Message
-whiptail --msgbox "\
-Succesfully installed Collabora online docker, now please head over to your Nextcloud apps and admin panel
-and enable the Collabora online connector app and change the URL to whatever subdomain you choose to run Collabora on.\
-" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
+whiptail --msgbox "Succesfully installed Collabora online docker, now please head over to your Nextcloud apps and admin paneland enable the Collabora online connector app and change the URL to whatever subdomain you choose to run Collabora on." $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
 
         exit 0
 else
@@ -586,7 +598,7 @@ while true; do
     3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
-    do_finish
+	do_finish
   elif [ $RET -eq 0 ]; then
     case "$FUN" in
       1\ *) do_apps ;;
@@ -595,7 +607,8 @@ while true; do
       4\ *) do_about ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
-  else
-    exit 1
+ else
+   exit 1
   fi
 done
+
