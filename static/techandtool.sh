@@ -439,7 +439,7 @@ do_tools() {
 
 do_ifconfig() {
 whiptail --msgbox "\
-Interface:$IFACE
+Interface: $IFACE
 LAN IP: $ADDRESS
 Netmask: $NETMASK
 Gateway: $GATEWAY\
