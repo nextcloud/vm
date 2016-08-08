@@ -570,19 +570,36 @@ do_change_timezone() {
 ################################ Wifi 3.5
 
 do_wlan() {
-	IWLIST=$(iwlist wlan0 scanning|grep -i 'essid')
+	WIFACE=$(lshw -c network | grep "wl" | awk '{print $3}')
+	c /etc/network/interfaces /etc/network/interfaces.bak
+	echo "auto $WIFACE" >> /etc/network/interfaces
+	echo "allow-hotplug $WIFACE" >> /etc/network/interfaces
+	echo "iface $WIFACE inet dhcp" >> /etc/network/interfaces
+	ifup -a
+
+
+	IWLIST=$(iwlist $WIFACE scanning|grep -i 'essid')
 	whiptail --msgbox "Next you will be shown a list with wireless access points, copy yours.." $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
 	whiptail --msgbox "$IWLIST" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
 	WLAN=$(whiptail --title "SSID, network name? (case sensetive)" --inputbox "Navigate with TAB to hit ok to enter input" 10 60 3>&1 1>&2 2>&3)
 	WLANPASS=$(whiptail --title "Wlan password? (case sensetive)" --passwordbox "Navigate with TAB to hit ok to enter input" 10 60 3>&1 1>&2 2>&3)
-	if [ $exitstatus = 0 ]; then
+	OLDSETTINGS=$(cat /etc/network/interfaces.bak)
 	
+
 	if [ $(dpkg-query -W -f='${Status}' linux-firmware 2>/dev/null | grep -c "ok installed") -eq 1 ];
 then
         echo "Linux-firmware is already installed!"
 
 else
 	apt-get install linux-firmware -y
+fi
+
+	if [ $(dpkg-query -W -f='${Status}' wireless-tools 2>/dev/null | grep -c "ok installed") -eq 1 ];
+then
+        echo "wireless-tools is already installed!"
+
+else
+	apt-get install wireless-tools -y
 fi
 
 	if [ $(dpkg-query -W -f='${Status}' wpasupplicant 2>/dev/null | grep -c "ok installed") -eq 1 ];
@@ -592,19 +609,64 @@ then
 else
 	apt-get install wpasupplicant -y
 fi
+
+cat <<-NETWORK > "/etc/network/interfaces"
+$OLDSETTINGS
+
+auto $WIFACE
+allow-hotplug $WIFACE
+iface $WIFACE inet dhcp
+        wpa-ssid $WLAN
+        wpa-psk $WLANPASS
+NETWORK
+
+
+
 	
-	ifup wlan0
-	iwconfig wlan0 essid $WLAN key s:$WLANPASS
-	ifdown wlan0
-	ifup wlan0
-	dhcpcd -r
-	dhcpcd wlan0
-	else
-    	echo "You chose Cancel."
-	fi
+#	ifup $WIFACE
+#	iwconfig $WIFACE essid $WLAN key s:$WLANPASS
+#	ifdown $WIFACE
+#	ifup $WIFACE
+#	dhcpcd -r
+#	dhcpcd $WIFACE
 }
 
-################################ Show folder content and permissions 3.6
+################################ Raspberry specific 3.6
+
+do_Raspberry() {
+  FUN=$(whiptail --title "Tech and Tool - https://www.techandme.se" --menu "Raspberry" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT \
+    "R1 Resize SD" "" \
+    "R2 External USB" "Use an USB HD/SSD as root" \
+    "R3 RPI-update" "Update the RPI firmware and kernel" \
+    3>&1 1>&2 2>&3)
+  RET=$?
+  if [ $RET -eq 1 ]; then
+    return 0
+  elif [ $RET -eq 0 ]; then
+    case "$FUN" in
+      R1\ *) do_xxx ;;
+      R2\ *) do_xxx ;;
+      R3\ *) do_xxx ;;
+      *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
+    esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
+  fi
+}
+
+##################### Resize SD 3.61
+
+##################### External USB 3.62
+
+##################### RPI-update 3.63
+
+################################ Show folder size 3.7
+
+do_foldersize() {
+	FSIZE=$(whiptail --title "Folder to list?" --inputbox "Eg. /mnt/yourfolder" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT 3>&1 1>&2 2>&3)
+	FSIZE1=$(ls -la $FSIZE)
+	whiptail --msgbox "$FSIZE1" 30 $WT_WIDTH $WT_MENU_HEIGHT	
+}
+
+################################ Show folder content and permissions 3.8
 
 do_listdir() {
 	LISTDIR=$(whiptail --title "Directory to list? Eg. /mnt/yourfolder" --inputbox "Navigate with TAB to hit ok to enter input" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT 3>&1 1>&2 2>&3)
@@ -612,6 +674,64 @@ do_listdir() {
 	whiptail --msgbox "$LISTDIR1" 30 $WT_WIDTH $WT_MENU_HEIGHT
 	
 }
+
+################################ Show connected devices 3.9
+
+do_blkid() {
+  BLKID=$(blkid)
+  whiptail --msgbox "$BLKID" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
+}
+
+################################ Show disk usage 3.10
+
+do_df() {
+  DF=$(df -h)
+  whiptail --msgbox "$DF" 20 $WT_WIDTH $WT_MENU_HEIGHT
+}
+
+################################ Show system performance 3.11
+
+do_htop() {
+	if [ $(dpkg-query -W -f='${Status}' htop 2>/dev/null | grep -c "ok installed") -eq 1 ];
+then
+        sleep 0
+
+else
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get install htop -y)
+    } | whiptail --title "Progress" --gauge "Please wait while installing htop" 6 60 0
+
+fi
+	
+	htop
+}
+
+################################ Disable IPV6 3.12
+
+ if grep -q net.ipv6.conf.all.disable_ipv6 = 1 "/etc/sysctl.conf"; then
+   sleep 0
+ else
+ echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
+ fi
+
+ if grep -q net.ipv6.conf.default.disable_ipv6 = 1 "/etc/sysctl.conf"; then
+   sleep 0
+ else
+ echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf
+ fi
+ 
+  if grep -q net.ipv6.conf.lo.disable_ipv6 = 1 = 1 "/etc/sysctl.conf"; then
+   sleep 0
+ else
+ echo "net.ipv6.conf.lo.disable_ipv6 = 1" >> /etc/sysctl.conf
+ fi
+ 
+whiptail --msgbox "IPV6 is now disabled..." 30 $WT_WIDTH $WT_MENU_HEIGHT
 
 ################################################ Update
 
