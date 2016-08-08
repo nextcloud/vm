@@ -124,6 +124,11 @@ do_finish() {
   exit 0
 }
 
+################################################ Locations 1.8
+
+REPO="https://github.com/ezraholm50/vm/raw/master"
+SCRIPTS="/var/scripts"
+
 ################################################ Apps 2
 
 do_apps() {
