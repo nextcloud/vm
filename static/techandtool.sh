@@ -779,7 +779,7 @@ do_rpi_update() {
 
 do_foldersize() {
 	FSIZE=$(whiptail --title "Folder to list?" --inputbox "Eg. /mnt/yourfolder" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT 3>&1 1>&2 2>&3)
-	FSIZE1=$(ls -la $FSIZE)
+	FSIZE1=$(du -sh $FSIZE)
 	whiptail --msgbox "$FSIZE1" 30 $WT_WIDTH $WT_MENU_HEIGHT	
 }
 
@@ -941,7 +941,7 @@ while true; do
     "2 Tools" "Various tools" \
     "3 Update & upgrade" "Updates and upgrades packages and get the latest version of this tool" \
     "4 Reboot" "Reboots your machine" \
-    "5 Shutdown" "Shutsdown your machine" \
+    "5 Shutdown" "Shutdown your machine" \
     "6 About Tech and Tool" "Information about this tool" \
     3>&1 1>&2 2>&3)
   RET=$?
