@@ -672,7 +672,7 @@ do_Raspberry() {
   elif [ $RET -eq 0 ]; then
     case "$FUN" in
       R1\ *) do_expand_rootfs ;;
-      R2\ *) do_external)usb ;;
+      R2\ *) do_external_usb ;;
       R3\ *) do_rpi_update ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
