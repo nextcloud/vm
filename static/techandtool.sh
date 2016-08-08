@@ -570,65 +570,79 @@ do_change_timezone() {
 ################################ Wifi 3.5
 
 do_wlan() {
-	WIFACE=$(lshw -c network | grep "wl" | awk '{print $3}')
-	c /etc/network/interfaces /etc/network/interfaces.bak
-	echo "auto $WIFACE" >> /etc/network/interfaces
-	echo "allow-hotplug $WIFACE" >> /etc/network/interfaces
-	echo "iface $WIFACE inet dhcp" >> /etc/network/interfaces
-	ifup -a
+	 whiptail --yesno "Would you like to use advanced options?" 20 60 2
+    if [ $? -eq 0 ]; then # yes
 
-
-	IWLIST=$(iwlist $WIFACE scanning|grep -i 'essid')
-	whiptail --msgbox "Next you will be shown a list with wireless access points, copy yours.." $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
-	whiptail --msgbox "$IWLIST" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
-	WLAN=$(whiptail --title "SSID, network name? (case sensetive)" --inputbox "Navigate with TAB to hit ok to enter input" 10 60 3>&1 1>&2 2>&3)
-	WLANPASS=$(whiptail --title "Wlan password? (case sensetive)" --passwordbox "Navigate with TAB to hit ok to enter input" 10 60 3>&1 1>&2 2>&3)
-	OLDSETTINGS=$(cat /etc/network/interfaces.bak)
-	
-
-	if [ $(dpkg-query -W -f='${Status}' linux-firmware 2>/dev/null | grep -c "ok installed") -eq 1 ];
+		if [ $(dpkg-query -W -f='${Status}' wicd-curses 2>/dev/null | grep -c "ok installed") -eq 1 ];
 then
-        echo "Linux-firmware is already installed!"
+         whiptail --msgbox "wicd-curses is already installed!" 20 60 1
+
+else
+	apt-get update
+	apt-get install wicd-curses -y
+	wicd-curses
+fi
+
+else
+
+		if [ $(dpkg-query -W -f='${Status}' linux-firmware 2>/dev/null | grep -c "ok installed") -eq 1 ];
+then
+         whiptail --msgbox "Linux-firmware is already installed!" 20 60 1
 
 else
 	apt-get install linux-firmware -y
 fi
 
+	if [ $(dpkg-query -W -f='${Status}' network-manager 2>/dev/null | grep -c "ok installed") -eq 1 ];
+then
+        whiptail --msgbox "Network manager is already installed!" 20 60 1
+
+else
+	apt-get install network-manager -y
+fi
+
 	if [ $(dpkg-query -W -f='${Status}' wireless-tools 2>/dev/null | grep -c "ok installed") -eq 1 ];
 then
-        echo "wireless-tools is already installed!"
+         whiptail --msgbox "wireless-tools is already installed!" 20 60 1
 
 else
 	apt-get install wireless-tools -y
 fi
 
-	if [ $(dpkg-query -W -f='${Status}' wpasupplicant 2>/dev/null | grep -c "ok installed") -eq 1 ];
-then
-        echo "Wpasupplicant is already installed!"
+	sed -i 's|managed=false|managed=true|g' /etc/NetworkManager/NetworkManager.conf
+	/etc/init.d/network-manager restart
 
-else
-	apt-get install wpasupplicant -y
-fi
+	WIFACE=$(lshw -c network | grep "wl" | awk '{print $3}')
+	cp /etc/network/interfaces /etc/network/interfaces.bak
+	echo "auto $WIFACE" >> /etc/network/interfaces
+	echo "allow-hotplug $WIFACE" >> /etc/network/interfaces
+	echo "iface $WIFACE inet dhcp" >> /etc/network/interfaces
+	ifup $WIFACE
 
+	IWLIST=$(nmcli dev wifi)
+	OLDSETTINGS=$(cat /etc/network/interfaces.bak)
+	whiptail --msgbox "In the next screen copy your wifi network SSID (CTRL + SHIFT + C)" 20 60 1
+	whiptail --msgbox "$IWLIST" 30 80 1
+	WLAN=$(whiptail --title "SSID, network name? (case sensetive)" --inputbox "Navigate with TAB to hit ok to enter input" 10 60 3>&1 1>&2 2>&3)
+	WLANPASS=$(whiptail --title "Wlan password? (case sensetive)" --passwordbox "Navigate with TAB to hit ok to enter input" 10 60 3>&1 1>&2 2>&3)
+	
 cat <<-NETWORK > "/etc/network/interfaces"
 $OLDSETTINGS
 
 auto $WIFACE
 allow-hotplug $WIFACE
 iface $WIFACE inet dhcp
-        wpa-ssid $WLAN
-        wpa-psk $WLANPASS
+wireless-essid $WLAN
+wireless-key $WLANPASS
 NETWORK
 
-
-
-	
-#	ifup $WIFACE
-#	iwconfig $WIFACE essid $WLAN key s:$WLANPASS
-#	ifdown $WIFACE
-#	ifup $WIFACE
-#	dhcpcd -r
-#	dhcpcd $WIFACE
+	ifup $WIFACE
+	nmcli dev wifi connect $WLAN password $WLANPASS
+	ifdown $WIFACE
+	ifup $WIFACE
+	dhcpcd -r
+	dhcpcd $WIFACE
+fi
 }
 
 ################################ Raspberry specific 3.6
