@@ -576,6 +576,7 @@ do_wlan() {
 		if [ $(dpkg-query -W -f='${Status}' wicd-curses 2>/dev/null | grep -c "ok installed") -eq 1 ];
 then
          whiptail --msgbox "wicd-curses is already installed!" 20 60 1
+         wicd-curses
 
 else
 	apt-get update
