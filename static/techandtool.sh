@@ -9,29 +9,29 @@
     "T5 Connect to WLAN" "Please have a wifi dongle/card plugged in before start" \
 
 ##### Index ######
-- 1 Variable
-- 1.1 Network
-- 1.2 Collabora
-- 1.3 Spreed-webrtc
-- 1.4 Whiptail
-- 1.5 Root check
-- 1.6 Ask to reboot
-- 1.7 
-- 1.8
-- 1.9
-- 2 Apps
-- 2.1 Collabora
-- 2.2 Spreed-webrtc
-- 2.3 Gpxpod
-- 2.4
-- 2.5
-- 2.6
-- 3 Tools
-- 3.1 Show LAN details
-- 3.2 Show WAN details
-- 3.3 Change Hostname
-- 3.4 Internationalisation
-- 3.5 Connect to WLAN
+#- 1 Variable
+#- 1.1 Network
+#- 1.2 Collabora
+#- 1.3 Spreed-webrtc
+#- 1.4 Whiptail
+#- 1.5 Root check
+#- 1.6 Ask to reboot
+#- 1.7 
+#- 1.8
+#- 1.9
+#- 2 Apps
+#- 2.1 Collabora
+#- 2.2 Spreed-webrtc
+#- 2.3 Gpxpod
+#- 2.4
+#- 2.5
+#- 2.6
+#- 3 Tools
+#- 3.1 Show LAN details
+#- 3.2 Show WAN details
+#- 3.3 Change Hostname
+#- 3.4 Internationalisation
+#- 3.5 Connect to WLAN
 #- 3.6 Raspberry specific
 #- 3.7 Show folder size
 #- 3.8 Show folder content with permissions
@@ -40,9 +40,9 @@
 #- 3.11 Show system performance
 #- 3.12 Disable IPV6
 #- 3.13 
-- 4 About this tool
-- 5 Tech and Tool
--
+#- 4 About this tool
+#- 5 Tech and Tool
+
 ################################################ Variable 1
 ################################ Network 1.1
 
