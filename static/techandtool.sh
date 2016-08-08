@@ -588,8 +588,23 @@ then
          wicd-curses
 
 else
-	apt-get update
-	apt-get install wicd-curses -y
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get update)
+    } | whiptail --title "Progress" --gauge "Please wait while updating" 6 60 0
+    
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get install wicd-curses -y)
+    } | whiptail --title "Progress" --gauge "Please wait while installing wicd-curses" 6 60 0
+    
 	wicd-curses
 fi
 
@@ -600,7 +615,13 @@ then
          whiptail --msgbox "Linux-firmware is already installed!" 20 60 1
 
 else
-	apt-get install linux-firmware -y
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get install linux-firmware -y)
+    } | whiptail --title "Progress" --gauge "Please wait while installing linux firmware" 6 60 0
 fi
 
 	if [ $(dpkg-query -W -f='${Status}' network-manager 2>/dev/null | grep -c "ok installed") -eq 1 ];
@@ -608,7 +629,13 @@ then
         whiptail --msgbox "Network manager is already installed!" 20 60 1
 
 else
-	apt-get install network-manager -y
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get install network-manager -y)
+    } | whiptail --title "Progress" --gauge "Please wait while installing network manager" 6 60 0
 fi
 
 	if [ $(dpkg-query -W -f='${Status}' wireless-tools 2>/dev/null | grep -c "ok installed") -eq 1 ];
@@ -616,7 +643,13 @@ then
          whiptail --msgbox "wireless-tools is already installed!" 20 60 1
 
 else
-	apt-get install wireless-tools -y
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(	apt-get install wireless-tools -y)
+    } | whiptail --title "Progress" --gauge "Please wait while installing wireless tools" 6 60 0
 fi
 
 	sed -i 's|managed=false|managed=true|g' /etc/NetworkManager/NetworkManager.conf
@@ -778,9 +811,24 @@ do_rpi_update() {
 ################################ Show folder size 3.7
 
 do_foldersize() {
+	
 	FSIZE=$(whiptail --title "Folder to list?" --inputbox "Eg. /mnt/yourfolder" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT 3>&1 1>&2 2>&3)
-	FSIZE1=$(du -sh $FSIZE)
-	whiptail --msgbox "$FSIZE1" 30 $WT_WIDTH $WT_MENU_HEIGHT	
+
+	if [ $(dpkg-query -W -f='${Status}' ncdu 2>/dev/null | grep -c "ok installed") -eq 1 ];
+then
+        whiptail --msgbox "ncdu is already installed!" 20 60 1
+	ncdu $FSIZE
+else
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(	apt-get install ncdu -y)
+    } | whiptail --title "Progress" --gauge "Please wait while installing ncdu" 6 60 0
+fi
+
+	ncdu $FSIZE
 }
 
 ################################ Show folder content and permissions 3.8
@@ -811,7 +859,7 @@ do_df() {
 do_htop() {
 	if [ $(dpkg-query -W -f='${Status}' htop 2>/dev/null | grep -c "ok installed") -eq 1 ];
 then
-        sleep 0
+        htop
 
 else
 
@@ -824,7 +872,6 @@ else
     } | whiptail --title "Progress" --gauge "Please wait while installing htop" 6 60 0
 
 fi
-	
 	htop
 }
 
