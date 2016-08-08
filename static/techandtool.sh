@@ -472,6 +472,12 @@ do_tools() {
     "T3 Change Hostname" "" \
     "T4 Internationalisation Options" "Change language, time, date and keyboard layout" \
     "T5 Connect to WLAN" "Please have a wifi dongle/card plugged in before start" \
+    "T6 Show folder size" ""\
+    "T7 Show folder conten" "with permissions" \
+    "T8 Show connected devices" "blkid" \
+    "T9 Show disks usage" "df -h" \
+    "T10 Show system performance" "HTOP" \
+    "T11 Disable IPV6" "Via sysctl.conf"\
     3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -483,7 +489,13 @@ do_tools() {
       T3\ *) do_change_hostname ;;
       T4\ *) do_internationalisation_menu ;;
       T5\ *) do_wlan ;;
-      *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
+      T6\ *) do_foldersize ;;
+      T7\ *) do_listdir ;;
+      T8\ *) do_blkid ;;
+      T9\ *) do_df ;;
+      T10\ *) do_htop ;;
+      T11\ *) do_disable_ipv6 ;;
+    *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
   fi
 }
@@ -817,6 +829,8 @@ fi
 
 ################################ Disable IPV6 3.12
 
+do_disable_ipv6() {
+
  if grep -q net.ipv6.conf.all.disable_ipv6 = 1 "/etc/sysctl.conf"; then
    sleep 0
  else
@@ -836,6 +850,7 @@ fi
  fi
  
 whiptail --msgbox "IPV6 is now disabled..." 30 $WT_WIDTH $WT_MENU_HEIGHT
+}
 
 ################################################ Update
 
