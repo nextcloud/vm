@@ -812,12 +812,9 @@ do_rpi_update() {
 
 do_foldersize() {
 	
-	FSIZE=$(whiptail --title "Folder to list?" --inputbox "Eg. /mnt/yourfolder" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT 3>&1 1>&2 2>&3)
-
 	if [ $(dpkg-query -W -f='${Status}' ncdu 2>/dev/null | grep -c "ok installed") -eq 1 ];
 then
-        whiptail --msgbox "ncdu is already installed!" 20 60 1
-	ncdu $FSIZE
+        ncdu /
 else
     {
     i=1
@@ -826,9 +823,10 @@ else
         echo $i
     done < <(	apt-get install ncdu -y)
     } | whiptail --title "Progress" --gauge "Please wait while installing ncdu" 6 60 0
+	
+	ncdu /
+	
 fi
-
-	ncdu $FSIZE
 }
 
 ################################ Show folder content and permissions 3.8
