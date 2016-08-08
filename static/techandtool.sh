@@ -2,12 +2,6 @@
 #
 # Tech and Me, 2016 - www.techandme.se
 # Whiptail menu to install various Nextcloud app and do other useful stuf.
-    "T1 Show LAN IP, Gateway, Netmask" "Ifconfig" \
-    "T2 Show WAN IP" "External IP address" \
-    "T3 Change Hostname" "" \
-    "T4 Internationalisation Options" "Change language, time, date and keyboard layout" \
-    "T5 Connect to WLAN" "Please have a wifi dongle/card plugged in before start" \
-
 ##### Index ######
 #- 1 Variable
 #- 1.1 Network
@@ -33,6 +27,9 @@
 #- 3.4 Internationalisation
 #- 3.5 Connect to WLAN
 #- 3.6 Raspberry specific
+#- 3.61 Resize root fs
+#- 3.62 External USB HD
+#- 3.63 RPI-update
 #- 3.7 Show folder size
 #- 3.8 Show folder content with permissions
 #- 3.9 Show connected devices
@@ -761,6 +758,10 @@ EOF
 }
 
 ##################### External USB 3.62
+
+do_external_usb() {
+	sleep 1
+}
 
 ##################### RPI-update 3.63
 
