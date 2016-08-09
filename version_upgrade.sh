@@ -15,7 +15,7 @@ VERSION=$(cat $SCRIPTS/version)
 fi
 
 ### V1.1 ###
- if grep -q 1.0 "$File"; then
+ if grep -q 1.0 "$SCRIPTS/version"; then
    rm $SCRIPTS/version
    echo "1.1" > $SCRIPTS/version
    echo
@@ -35,7 +35,7 @@ fi
  fi
 
 ### V1.2 ###
- if grep -q 1.1 "$File"; then
+ if grep -q 1.1 "$SCRIPTS/version"; then
    rm $SCRIPTS/version
    echo "1.2" > $SCRIPTS/version
    echo
