@@ -3,7 +3,7 @@
 # Tech and Me, ©2016 - www.techandme.se
 #
 # This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apche 2.4.
-# Ubuntu 16.04 is required.
+# Ubuntu 16.04 is required. (Other distro's will likely not work, but could eg. debian)
 
 set -e
 
