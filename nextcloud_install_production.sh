@@ -707,7 +707,7 @@ DEVSPUUID=$(blkid -o value -s UUID $DEVSP)
 # Swap
 mkswap -L PI_SWAP $DEVSP # format as swap
 swapon $DEVSP # announce to system
-echo "$DEVSP none swap sw 0 0" >> /etc/fstab
+echo "UUID=$DEVSPUUID none swap sw 0 0" >> /etc/fstab
 sync
 partprobe
 
@@ -727,7 +727,7 @@ umount /mnt
     } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
 
 	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab 
-
+	echo "UUID=$DEVHDUUID  /               ext4   defaults,noatime  0       1" >> /etc/fstab
 	mount $DEVHD /mnt
 
 clear
@@ -781,7 +781,7 @@ GDEVSPUUID=$(blkid -o value -s UUID $DEVSP)
 # Swap
 mkswap -L PI_SWAP $DEVSP # format as swap
 swapon $DEVSP # announce to system
-echo "$GDEVSPUUID none swap sw 0 0" >> /etc/fstab
+echo "UUID=$GDEVSPUUID none swap sw 0 0" >> /etc/fstab
 sync
 partprobe
 
@@ -801,7 +801,7 @@ umount /mnt
     } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
 
 	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab 
-
+	echo "UUID=$GDEVHDUUID  /               ext4   defaults,noatime  0       1" >> /etc/fstab
 	mount $DEVHD /mnt
 
 clear
