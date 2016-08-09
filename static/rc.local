@@ -12,22 +12,6 @@
 # By default this script does nothing.
 
 # Fix a network bug
-if 		[ -f /var/scripts/network-fix.sh ];
-        then
-                echo "network-fix.sh exists"
-        else
-        	wget -q --no-check-certificate https://github.com/ezraholm50/vm/raw/master/static/network-fix.sh -P /var/scripts
-fi
-if [[ $? > 0 ]]
-then
-	echo "Download of scripts failed. System will reboot in 10 seconds..."
-	sleep 10
-	reboot
-else
-	echo "network-fix.sh downloaded..."
-	sleep 1
-fi
-
 bash /var/scripts/network-fix.sh
 
 # Grab install scripts
