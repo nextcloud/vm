@@ -9,8 +9,10 @@ set -e
 
 # Nextcloud version
 STABLEVERSION="nextcloud-9.0.53"
+
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
+
 # Nextcloud apps
 CONVER=$(wget -q https://raw.githubusercontent.com/owncloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 CONVER_FILE=contacts.tar.gz
@@ -18,10 +20,12 @@ CONVER_REPO=https://github.com/owncloud/contacts/releases/download
 CALVER=$(wget -q https://raw.githubusercontent.com/owncloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/owncloud/calendar/releases/download
+
 # Passwords
 SHUF=$(shuf -i 13-15 -n 1)
 MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
 PW_FILE=/var/mysql_password.txt
+
 # Directories
 SCRIPTS=/var/scripts
 HTML=/var/www
@@ -32,12 +36,18 @@ NCDATA=/var/ncdata
 # Apache vhosts
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
+
 # Network
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 # Devices
 DEVICE="/dev/mmcblk0"
+DEV="/dev/sda"
+DEVHD="/dev/sda2"
+DEVHDUUID=$(blkid -o value -s UUID $DEVHD)
+DEVSP="/dev/sda1"
+DEVSPUUID=$(blkid -o value -s UUID $DEVSP)
 
 # Repositories
 GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
@@ -613,6 +623,10 @@ aptitude full-upgrade -y
 # Remove LXD (always shows up as failed during boot)
 apt-get purge lxd -y
 
+# Cleanup login screen
+rm /etc/update-motd.d/00-header
+rm /etc/update-motd.d/10-help-text
+
 # Cleanup
 echo "$CLEARBOOT"
 apt-get autoremove -y
@@ -635,15 +649,46 @@ bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 wget $REPO/version_upgrade.sh -P $SCRIPTS
 bash $SCRIPTS/version_upgrade.sh
 
-# Resize sd card
-fdisk $DEVICE << EOF
-d
-2
+# External USB
+BLKID=$(blkid)
+
+whiptail --yesno "Do you want to use an external HD/SSD and run the root partition off of it?" 20 60 1
+ if [ $? -eq 0 ]; then # yes
+	whiptail --msgbox "Please use an external power supply (USB HUB) to power your HD/SSD. This will increase the RPI's performance at peaks.)" 20 60 1
+	whiptail --msgbox "Now please connect the HD/SSD to the RPI and make sure its the only storage device (USB keyboard dongle is fine, just no other USB STORAGE or HD's. Having multiple devices plugged in will mess up the installation and you will have to start over." 20 60 1 
+	whiptail --yesno --title Is your device listed here as /dev/sda? "$BLKID" 20 60 1
+ if [ $? -eq 1 ]; then
+	whiptail --msgbox "Something went wrong, please run Tech and Tool to try it again, when the install is finished: sudo bash /var/scripts/techandtool.sh" 20 60 1
+	reboot
+fi
+	whiptail --msgbox "All of your data will be deleted if you continue please backup/save your files on the HD/SSD that we are going to use first" 20 60 1	
+	whiptail --yesno "Has your HD/SSD less capacity then 2TB?" --yes-button "Yes less" --no-button "No more" 20 60 1
+ if [ $? -eq 0 ]; then # Yes use msdos
+
+# Disable swap if it is setup before
+if 		[ -f /swapfile ];
+	then
+      		swapoff -a
+      		rm /swapfile
+      		sed -i 's|/swapfile none swap defaults 0 0|#/swapfile none swap defaults 0 0|g' /etc/fstab
+fi
+
+# Step 1
+fdisk $DEV << EOF
+wipefs
+EOF
+
+fdisk $DEV << EOF
+o
+n
+p
+1
+
++4000M
 w
 EOF
-sync
 
-fdisk $DEVICE << EOF
+fdisk $DEV << EOF
 n
 p
 2
@@ -654,12 +699,142 @@ EOF
 sync
 partprobe
 
-# Let us know we're using the SD as ROOT partition
-toch /var/scripts/SD
+# Swap
+mkswap -L PI_SWAP $DEVSP # format as swap
+swapon $DEVSP # announce to system
+echo "$DEVSP none swap sw 0 0" >> /etc/fstab
+sync
+partprobe
 
-# Cleanup login screen
-rm /etc/update-motd.d/00-header
-rm /etc/update-motd.d/10-help-text
+# Set cmdline.txt
+mount /dev/mmcblk0p1 /mnt
+sed -i 's|root=/dev/mmcblk0p2|root=PARTUUID=$DEVHDUUID|g' /mnt/cmdline.txt
+umount /mnt
+
+# External HD
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(echo -ne '\n' | sudo mke2fs -t ext4 -b 4096 -L 'PI_ROOT' $DEVHD)
+    } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
+
+	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab 
+
+	mount $DEVHD /mnt
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(rsync -aAXv --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt)
+    } | whiptail --title "Progress" --gauge "Please wait while moving from SD to HD/SSD" 6 60 0
+
+	touch /var/scripts/HD
+	umount /mnt
+
+ else ########################################## Use GPT
+
+# Disable swap if it is setup before
+if 		[ -f /swapfile ];
+	then
+      		swapoff -a
+      		rm /swapfile
+      		sed -i 's|/swapfile none swap defaults 0 0|#/swapfile none swap defaults 0 0|g' /etc/fstab
+fi
+
+# Step 1
+fdisk $DEV << EOF
+wipefs
+EOF
+
+fdisk $DEV << EOF
+g
+n
+p
+1
+
++4000M
+w
+EOF
+
+fdisk $DEV << EOF
+n
+p
+2
+
+
+w
+EOF
+sync
+partprobe
+
+# Swap
+mkswap -L PI_SWAP $DEVSP # format as swap
+swapon $DEVSP # announce to system
+echo "$DEVSPUUID none swap sw 0 0" >> /etc/fstab
+sync
+partprobe
+
+# Set cmdline.txt
+mount /dev/mmcblk0p1 /mnt
+sed -i 's|root=/dev/mmcblk0p2|root=PARTUUID=$DEVHDUUID|g' /mnt/cmdline.txt
+umount /mnt
+
+# External HD
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(echo -ne '\n' | sudo mke2fs -t ext4 -b 4096 -L 'PI_ROOT' $DEVHD)
+    } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
+
+	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab 
+
+	mount $DEVHD /mnt
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(rsync -aAXv --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt)
+    } | whiptail --title "Progress" --gauge "Please wait while moving from SD to HD/SSD" 6 60 0
+
+	touch /var/scripts/HD
+	umount /mnt
+
+ fi # End of 2TB or less
+
+else # No in use external HD?
+
+	fdisk $DEVICE << EOF
+	d
+	2
+	w
+	EOF
+	sync
+
+	fdisk $DEVICE << EOF
+	n
+	p
+	2
+
+
+	w
+	EOF
+	sync
+	partprobe
+
+	# Let us know we're using the SD as ROOT partition
+	toch /var/scripts/SD
+
+ fi
 
 # Reboot
 reboot

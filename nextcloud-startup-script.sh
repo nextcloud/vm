@@ -10,9 +10,10 @@ PW_FILE=/var/mysql_password.txt # Keep in sync with nextcloud_install_production
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/vm/master"
-STATIC="https://raw.githubusercontent.com/ezraholm50/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/ezraholm50/vm/master/lets-encrypt"
+TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master"
+GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
+STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
+LETS_ENC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/lets-encrypt"
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
 
@@ -25,18 +26,14 @@ UNIXPASS=nextcloud
 fi
 
 # Final resize
-resize2fs /dev/mmcblk0p2
-
-# Install swapfile of 2 GB
-if 		[ -f /swapfile ];
-	then
-      		sleep 1
-      	else
-      		fallocate -l 2048M /swapfile # create swapfile and set size
-      		chmod 600 /swapfile # give it the right permissions
-      		mkswap /swapfile # format as swap
-      		swapon /swapfile # announce to system
-      		echo "/swapfile none swap defaults 0 0" >> /etc/fstab # let the system know what file to use as swap after reboot
+if 		[ -f $SCRIPTS/SD ]; then
+		rm $SCRIPTS/SD
+		resize2fs /dev/mmcblk0p2
+		fallocate -l 2048M /swapfile # create swapfile and set size
+                chmod 600 /swapfile # give it the right permissions
+                mkswap /swapfile # format as swap
+                swapon /swapfile # announce to system
+                echo "/swapfile none swap defaults 0 0" >> /etc/fstab 
 fi
 
 echo "Setting correct interface..."
@@ -79,6 +76,15 @@ echo "Getting scripts from GitHub to be able to run the first setup..."
                 wget -q $STATIC/security.sh -P $SCRIPTS
                 else
         wget -q $STATIC/security.sh -P $SCRIPTS
+fi
+
+       # Get Tech and Tool
+        if [ -f $TECHANDTOOL/techandtool.sh ];
+                then
+                rm $TECHANDTOOL/techandtool.sh
+                wget -q $TECHANDTOOL/techandtool.sh -P $SCRIPTS
+                else
+        wget -q $TECHANDTOOL/techandtool.sh -P $SCRIPTS
 fi
 
        # Get the latest nextcloud_update.sh
