@@ -730,13 +730,10 @@ umount /mnt
 
 	mount $DEVHD /mnt
 
-    {
-    i=1
-    while read -r line; do
-        i=$(( $i + 1 ))
-        echo $i
-    done < <(rsync -aAXv --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt)
-    } | whiptail --title "Progress" --gauge "Please wait while moving from SD to HD/SSD" 6 60 0
+clear
+echo "Please wait while moving from SD to HD/SSD"
+echo
+rsync -aAXv --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt
 
 	touch /var/scripts/HD
 	umount /mnt
@@ -807,13 +804,10 @@ umount /mnt
 
 	mount $DEVHD /mnt
 
-    {
-    i=1
-    while read -r line; do
-        i=$(( $i + 1 ))
-        echo $i
-    done < <(rsync -aAXv --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt)
-    } | whiptail --title "Progress" --gauge "Please wait while moving from SD to HD/SSD" 6 60 0
+clear
+echo "Please wait while moving from SD to HD/SSD"
+echo
+rsync -aAXv --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt
 
 	touch /var/scripts/HD
 	umount /mnt
