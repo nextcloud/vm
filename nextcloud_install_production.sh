@@ -713,7 +713,7 @@ partprobe
 
 # Set cmdline.txt
 mount /dev/mmcblk0p1 /mnt
-sed -i 's|root=/dev/mmcblk0p2|root=PARTUUID=$DEVHDUUID|g' /mnt/cmdline.txt
+sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$DEVHDUUID|g" /mnt/cmdline.txt
 umount /mnt
 
 # External HD
@@ -787,7 +787,7 @@ partprobe
 
 # Set cmdline.txt
 mount /dev/mmcblk0p1 /mnt
-sed -i 's|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g' /mnt/cmdline.txt
+sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g" /mnt/cmdline.txt
 umount /mnt
 
 # External HD
