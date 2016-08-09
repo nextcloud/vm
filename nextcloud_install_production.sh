@@ -45,9 +45,7 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 DEVICE="/dev/mmcblk0"
 DEV="/dev/sda"
 DEVHD="/dev/sda2"
-DEVHDUUID=$(blkid -o value -s UUID $DEVHD)
 DEVSP="/dev/sda1"
-DEVSPUUID=$(blkid -o value -s UUID $DEVSP)
 
 # Repositories
 GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
@@ -198,11 +196,11 @@ else
 fi
 
 # Update and upgrade
-apt-get -fy autoclean \
+apt-get -y autoclean \
 	autoremove \
 	update \
-	upgrade \
-	install
+	upgrade
+apt-get -f install -y
 dpkg --configure --pending
 
 # Install various packages
@@ -481,21 +479,21 @@ apt-get update -q2
 apt-get install webmin -y
 
 # Download and install Documents
-if [ -d $NCPATH/apps/documents ]; then
-sleep 1
-else
-wget -q https://github.com/owncloud/documents/archive/master.zip -P $NCPATH/apps
-cd $NCPATH/apps
-unzip -q master.zip
-rm master.zip
-mv documents-master/ documents/
-fi
+#if [ -d $NCPATH/apps/documents ]; then
+#sleep 1
+#else
+#wget -q https://github.com/owncloud/documents/archive/master.zip -P $NCPATH/apps
+#cd $NCPATH/apps
+#unzip -q master.zip
+#rm master.zip
+#mv documents-master/ documents/
+#fi
 
 # Enable documents
-if [ -d $NCPATH/apps/documents ]; then
-sudo -u www-data php $NCPATH/occ app:enable documents
-sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-fi
+#if [ -d $NCPATH/apps/documents ]; then
+#sudo -u www-data php $NCPATH/occ app:enable documents
+#sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
+#fi
 
 # Download and install Contacts
 if [ -d $NCPATH/apps/contacts ]; then
@@ -644,6 +642,9 @@ fi
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
+# Set version for the upgrade scripts to work
+echo "1.0" > $SCRIPTS/version
+
 # Run the update script to get the latest updates
 # This keeps nextcloud_install_production.sh clean and makes a universal updater
 wget $REPO/version_upgrade.sh -P $SCRIPTS
@@ -698,6 +699,10 @@ w
 EOF
 sync
 partprobe
+
+# Vars  
+DEVHDUUID=$(blkid -o value -s UUID $DEVHD)
+DEVSPUUID=$(blkid -o value -s UUID $DEVSP)
 
 # Swap
 mkswap -L PI_SWAP $DEVSP # format as swap
@@ -772,16 +777,20 @@ EOF
 sync
 partprobe
 
+# Vars  
+GDEVHDUUID=$(blkid -o value -s UUID $DEVHD)
+GDEVSPUUID=$(blkid -o value -s UUID $DEVSP)
+
 # Swap
 mkswap -L PI_SWAP $DEVSP # format as swap
 swapon $DEVSP # announce to system
-echo "$DEVSPUUID none swap sw 0 0" >> /etc/fstab
+echo "$GDEVSPUUID none swap sw 0 0" >> /etc/fstab
 sync
 partprobe
 
 # Set cmdline.txt
 mount /dev/mmcblk0p1 /mnt
-sed -i 's|root=/dev/mmcblk0p2|root=PARTUUID=$DEVHDUUID|g' /mnt/cmdline.txt
+sed -i 's|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g' /mnt/cmdline.txt
 umount /mnt
 
 # External HD
