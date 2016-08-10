@@ -729,20 +729,26 @@ EOF
 sync
 partprobe
 
-# Vars  
-GDEVHDUUID=$(blkid -o value -s UUID $DEVHD)
-GDEVSPUUID=$(blkid -o value -s UUID $DEVSP)
+# Vars 
+#GDEVSPUUID=$(uuidgen)
+#GDEVHDUUID=$(uuidgen)
+GDEVHDUUID=$(blkid -o value -s PARTUUID $DEVHD)
+GDEVSPUUID=$(blkid -o value -s PARTUUID $DEVSP)
+
+#tune2fs $DEVHD -U $GDEVHDUUID
+#tune2fs $DEVSP -U $GDEVSPUUID
+update-grub
 
 # Swap
 mkswap -L PI_SWAP $DEVSP # format as swap
 swapon $DEVSP # announce to system
-echo "$GDEVSPUUID none swap sw 0 0" >> /etc/fstab
+echo "UUID=$GDEVSPUUID none swap sw 0 0" >> /etc/fstab
 sync
 partprobe
 
 # Set cmdline.txt
 mount /dev/mmcblk0p1 /mnt
-sed -i 's|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g' /mnt/cmdline.txt
+sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g" /mnt/cmdline.txt
 umount /mnt
 
 # External HD
@@ -762,7 +768,7 @@ umount /mnt
 clear
 echo "Moving from SD to HD/SSD, this can take a while!"
 echo
-rsync -aAXv --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt
+rsync -aAXv --exclude={"/boot/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt
 
 	touch /var/scripts/HD
 	umount /mnt
