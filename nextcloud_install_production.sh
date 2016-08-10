@@ -625,6 +625,26 @@ apt-get purge lxd -y
 rm /etc/update-motd.d/00-header
 rm /etc/update-motd.d/10-help-text
 
+# Cleanup rc.local
+cat /dev/null > /etc/rc.local
+cat << RCLOCAL > "/etc/rc.local"
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+exit 0
+
+RCLOCAL
+
 # Cleanup
 echo "$CLEARBOOT"
 apt-get autoremove -y
@@ -645,9 +665,13 @@ bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 # Set version for the upgrade scripts to work
 echo "1.0" > $SCRIPTS/version
 
+# Set upgrade script to run weekly
+echo "wget $GITHUB_REPO/version_upgrade.sh -P $SCRIPTS" > /etc/cron.weekly/version_upgrade
+echo "bash $SCRIPTS/version_upgrade.sh" >> /etc/cron.weekly/version_upgrade
+
 # Run the update script to get the latest updates
 # This keeps nextcloud_install_production.sh clean and makes a universal updater
-wget $REPO/version_upgrade.sh -P $SCRIPTS
+wget $GITHUB_REPO/version_upgrade.sh -P $SCRIPTS
 bash $SCRIPTS/version_upgrade.sh
 
 # External USB
@@ -657,92 +681,15 @@ whiptail --yesno "Do you want to use an external HD/SSD and run the root partiti
  if [ $? -eq 0 ]; then # yes
 	whiptail --msgbox "Please use an external power supply (USB HUB) to power your HD/SSD. This will increase the RPI's performance at peaks.)" 20 60 1
 	whiptail --msgbox "Now please connect the HD/SSD to the RPI and make sure its the only storage device (USB keyboard dongle is fine, just no other USB STORAGE or HD's. Having multiple devices plugged in will mess up the installation and you will have to start over." 20 60 1 
-	whiptail --yesno --title Is your device listed here as /dev/sda? "$BLKID" 20 60 1
+	whiptail --title "Is your device listed here as /dev/sda?" --yesno "$BLKID" 20 130 1
  if [ $? -eq 1 ]; then
 	whiptail --msgbox "Something went wrong, please run Tech and Tool to try it again, when the install is finished: sudo bash /var/scripts/techandtool.sh" 20 60 1
 	reboot
 fi
 	whiptail --msgbox "All of your data will be deleted if you continue please backup/save your files on the HD/SSD that we are going to use first" 20 60 1	
-	whiptail --yesno "Has your HD/SSD less capacity then 2TB?" --yes-button "Yes less" --no-button "No more" 20 60 1
- if [ $? -eq 0 ]; then # Yes use msdos
 
 # Disable swap if it is setup before
-if 		[ -f /swapfile ];
-	then
-      		swapoff -a
-      		rm /swapfile
-      		sed -i 's|/swapfile none swap defaults 0 0|#/swapfile none swap defaults 0 0|g' /etc/fstab
-fi
-
-# Step 1
-fdisk $DEV << EOF
-wipefs
-EOF
-
-fdisk $DEV << EOF
-o
-n
-p
-1
-
-+4000M
-w
-EOF
-
-fdisk $DEV << EOF
-n
-p
-2
-
-
-w
-EOF
-sync
-partprobe
-
-# Vars  
-DEVHDUUID=$(blkid -o value -s UUID $DEVHD)
-DEVSPUUID=$(blkid -o value -s UUID $DEVSP)
-
-# Swap
-mkswap -L PI_SWAP $DEVSP # format as swap
-swapon $DEVSP # announce to system
-echo "UUID=$DEVSPUUID none swap sw 0 0" >> /etc/fstab
-sync
-partprobe
-
-# Set cmdline.txt
-mount /dev/mmcblk0p1 /mnt
-sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$DEVHDUUID|g" /mnt/cmdline.txt
-umount /mnt
-
-# External HD
-
-    {
-    i=1
-    while read -r line; do
-        i=$(( $i + 1 ))
-        echo $i
-    done < <(echo -ne '\n' | sudo mke2fs -t ext4 -b 4096 -L 'PI_ROOT' $DEVHD)
-    } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
-
-	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab 
-	echo "UUID=$DEVHDUUID  /               ext4   defaults,noatime  0       1" >> /etc/fstab
-	mount $DEVHD /mnt
-
-clear
-echo "Please wait while moving from SD to HD/SSD"
-echo
-rsync -aAXv --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt
-
-	touch /var/scripts/HD
-	umount /mnt
-
- else ########################################## Use GPT
-
-# Disable swap if it is setup before
-if 		[ -f /swapfile ];
-	then
+if 		[ -f /swapfile ]; then
       		swapoff -a
       		rm /swapfile
       		sed -i 's|/swapfile none swap defaults 0 0|#/swapfile none swap defaults 0 0|g' /etc/fstab
@@ -781,13 +728,13 @@ GDEVSPUUID=$(blkid -o value -s UUID $DEVSP)
 # Swap
 mkswap -L PI_SWAP $DEVSP # format as swap
 swapon $DEVSP # announce to system
-echo "UUID=$GDEVSPUUID none swap sw 0 0" >> /etc/fstab
+echo "$GDEVSPUUID none swap sw 0 0" >> /etc/fstab
 sync
 partprobe
 
 # Set cmdline.txt
 mount /dev/mmcblk0p1 /mnt
-sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g" /mnt/cmdline.txt
+sed -i 's|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g' /mnt/cmdline.txt
 umount /mnt
 
 # External HD
@@ -801,41 +748,40 @@ umount /mnt
     } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
 
 	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab 
-	echo "UUID=$GDEVHDUUID  /               ext4   defaults,noatime  0       1" >> /etc/fstab
+
 	mount $DEVHD /mnt
 
 clear
-echo "Please wait while moving from SD to HD/SSD"
+echo "Moving from SD to HD/SSD, this can take a while!"
 echo
 rsync -aAXv --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt
 
 	touch /var/scripts/HD
 	umount /mnt
+	reboot
 
- fi # End of 2TB or less
+else # No, in use external HD?
 
-else # No in use external HD?
+fdisk $DEVICE << EOF
+d
+2
+w
+EOF
+sync
 
-	fdisk $DEVICE << EOF
-	d
-	2
-	w
-	EOF
-	sync
-
-	fdisk $DEVICE << EOF
-	n
-	p
-	2
+fdisk $DEVICE << EOF
+n
+p
+2
 
 
-	w
-	EOF
-	sync
-	partprobe
+w
+EOF
+sync
+partprobe
 
-	# Let us know we're using the SD as ROOT partition
-	toch /var/scripts/SD
+# Let us know we're using the SD as ROOT partition
+toch /var/scripts/SD
 
  fi
 
