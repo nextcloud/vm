@@ -15,7 +15,8 @@ https://www.nextcloud.com - https://www.techandme.se
         LAN IP:   $ADDRESS
         Version:  $V
 
-To launch a useful installer, in the next screen type: techandtool\
-" 21 60 1
+Useful installer, in the next screen type: techandtool
+Upgrade NextBerry, in the next screen type: nextberry-upgrade\
+" 22 60 1
 exit 0
 

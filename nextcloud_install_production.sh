@@ -614,6 +614,10 @@ chown $UNIXUSER:$UNIXUSER $SCRIPTS/history.sh
 bash $SCRIPTS/redis-server-ubuntu16.sh
 rm $SCRIPTS/redis-server-ubuntu16.sh
 
+# Add aliases
+echo "alias techandtool='sudo bash /var/scripts/techandtool.sh'" >> /home/ncadmin/.bashrc
+echo "alias nextberry-upgrade='sudo bash /var/scripts/version_upgrade.sh'" >> /home/ncadmin/.bashrc
+
 # Upgrade
 apt-get update -q2
 aptitude full-upgrade -y
@@ -666,7 +670,9 @@ bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 echo "1.0" > $SCRIPTS/version
 
 # Set upgrade script to run weekly
-echo "wget $GITHUB_REPO/version_upgrade.sh -P $SCRIPTS" > /etc/cron.weekly/version_upgrade
+echo "rm $SCRIPTS/techandtool.sh" > /etc/cron.daily/techandtool
+echo "wget $TECHANDTOOL -P $SCRIPTS" >> /etc/cron.daily/techandtool
+echo "wget $GITHUB_REPO/version_upgrade.sh -P $SCRIPTS" > /etc/cron.daily/version_upgrade
 echo "bash $SCRIPTS/version_upgrade.sh" >> /etc/cron.weekly/version_upgrade
 
 # Run the update script to get the latest updates
