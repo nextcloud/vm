@@ -20,7 +20,7 @@ CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/owncloud/calendar/releases/download
 # Passwords
 SHUF=$(shuf -i 13-15 -n 1)
-MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
+MYSQL_PASS=$(cmd /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
 PW_FILE=/var/mysql_password.txt
 # Directories
 SCRIPTS=/var/scripts
@@ -34,7 +34,6 @@ SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # Repositories
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
@@ -56,7 +55,7 @@ fi
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if [ $OS -eq 1 ]
+if [ "$OS" -eq 1 ]
 then
         sleep 1
 else
@@ -171,9 +170,9 @@ if ! [ -x "$(command -v ifup)" ]; then
 else
 	echo 'ifupdown is installed.' >&2
 fi
-sudo ifdown $IFACE && sudo ifup $IFACE
+sudo "ifdown $IFACE" && sudo "ifup $IFACE"
 nslookup google.com
-if [[ $? > 0 ]]
+if [[ $? -gt 0 ]]
 then
 	echo "Network NOT OK. You must have a working Network connection to run this script."
         exit 1
@@ -277,7 +276,7 @@ wget -q $GPGKEY -P $GPGDIR
 chmod -R 600 $GPGDIR
 gpg  --homedir $GPGDIR --import $GPGDIR/nextcloud.asc
 gpg  --homedir $GPGDIR --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
-if [[ $? > 0 ]]
+if [[ $? -gt 0 ]]
 then
         echo "Package NOT OK! Installation is aborted..."
         exit 1
@@ -470,7 +469,7 @@ fi
 if [ -d $NCPATH/apps/contacts ]; then
 sleep 1
 else
-wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
+wget -q "$CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps"
 tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
 cd $NCPATH/apps
 rm $CONVER_FILE
@@ -485,7 +484,7 @@ fi
 if [ -d $NCPATH/apps/calendar ]; then
 sleep 1
 else
-wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
+wget -q "$CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps"
 tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
 cd $NCPATH/apps
 rm $CALVER_FILE
@@ -544,7 +543,7 @@ fi
 
 # Change root profile
         	bash $SCRIPTS/change-root-profile.sh
-if [[ $? > 0 ]]
+if [[ $? -gt 0 ]]
 then
 	echo "change-root-profile.sh were not executed correctly."
 	sleep 10
@@ -555,7 +554,7 @@ else
 fi
 # Change $UNIXUSER profile
         	bash $SCRIPTS/change-ncadmin-profile.sh
-if [[ $? > 0 ]]
+if [[ $? -gt 0 ]]
 then
 	echo "change-ncadmin-profile.sh were not executed correctly."
 	sleep 10
@@ -596,12 +595,12 @@ apt-get purge lxd -y
 echo "$CLEARBOOT"
 apt-get autoremove -y
 apt-get autoclean
-if [ -f /home/$UNIXUSER/*.sh ];
+if [ -f "/home/$UNIXUSER/*.sh" ];
 then
 	rm /home/$UNIXUSER/*.sh
 fi
 
-if [ -f /root/*.sh ];
+if [ -f "/root/*.sh" ];
 then
 	rm /root/*.sh
 fi
