@@ -52,6 +52,7 @@ GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
 STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
 NCREPO="https://download.nextcloud.com/server/releases"
 GPGKEY="https://nextcloud.com/nextcloud.asc"
+TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master/techandtool.sh"
 
 # Commands
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
