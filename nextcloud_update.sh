@@ -35,7 +35,7 @@ sudo aptitude full-upgrade -y
 echo
 echo "System is now upgraded, now the script will upgrade Nextcloud."
 echo "Which version do you want to upgrade to? Type it like this: 9.0.54"
-read NCVERSION
+read -r NCVERSION
 
 echo "Upgrading to $NCVERSION in 15 seconds... Press CTRL+C to abort."
 echo "Disclamer: Tech and Me or Nextcloud is not responsible for any dataloss"
@@ -47,7 +47,7 @@ rsync -Aaxv $DATA $HTML
 rsync -Aax $NCPATH/config $HTML
 rsync -Aax $NCPATH/themes $HTML
 rsync -Aax $NCPATH/apps $HTML
-if [[ $? > 0 ]]
+if [[ $? -gt 0 ]]
 then
     	echo "Backup was not OK. Please check $HTML and see if the folders are backed up properly"
     	exit 1
@@ -56,9 +56,9 @@ else
     	echo "Backup OK!"
     	echo -e "\e[0m"
 fi
-wget https://download.nextcloud.com/server/releases/nextcloud/nexcloud-$NCVERSION.tar.bz2 -P $HTML
+wget "https://download.nextcloud.com/server/releases/nextcloud/nexcloud-$NCVERSION.tar.bz2" -P "$HTML"
 
-if [ -f $HTML/nextcloud-$NCVERSION.tar.bz2 ];
+if [ -f "$HTML/nextcloud-$NCVERSION.tar.bz2" ];
 then
         echo "$HTML/nextcloud-$NCVERSION exists"
 else
@@ -90,8 +90,8 @@ fi
 if [ -d $DATA/ ]; then
         echo "data/ exists" && sleep 2
         rm -rf $NCPATH
-        tar -xjf $HTML/nextcloud-$NCVERSION.tar.bz2 -C $HTML 
-        rm $HTML/nextcloud-$NCVERSION.tar.bz2
+        tar -xjf "$HTML/nextcloud-$NCVERSION.tar.bz2" -C "$HTML"
+        rm "$HTML/nextcloud-$NCVERSION.tar.bz2"
         cp -R $HTML/themes $NCPATH/ && rm -rf $HTML/themes
         cp -Rv $HTML/data $DATA && rm -rf $HTML/data
         cp -R $HTML/config $NCPATH/ && rm -rf $HTML/config
