@@ -27,13 +27,14 @@ fi
 
 # Final resize
 if 		[ -f $SCRIPTS/SD ]; then
-		rm $SCRIPTS/SD
-		resize2fs /dev/mmcblk0p2
-		fallocate -l 2048M /swapfile # create swapfile and set size
-                chmod 600 /swapfile # give it the right permissions
-                mkswap /swapfile # format as swap
-                swapon /swapfile # announce to system
-                echo "/swapfile none swap defaults 0 0" >> /etc/fstab 
+#		rm $SCRIPTS/SD
+#		resize2fs /dev/mmcblk0p2
+#		fallocate -l 2048M /swapfile # create swapfile and set size
+#                chmod 600 /swapfile # give it the right permissions
+#                mkswap /swapfile # format as swap
+#                swapon /swapfile # announce to system
+#                echo "/swapfile none swap defaults 0 0" >> /etc/fstab 
+apt-get install zram-config
 fi
 
 echo "Setting correct interface..."

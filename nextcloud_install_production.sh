@@ -211,8 +211,9 @@ apt-get install -y ntp \
 		libminiupnpc10
 
 # Only use swap to prevent out of memory.
-echo "vm.swappiness = 1" >> /etc/sysctl.conf
+echo "vm.swappiness = 0" >> /etc/sysctl.conf
 sysctl -p
+sudo apt-get install zram-config
 
 # Set locales
 apt-get install language-pack-en-base -y
