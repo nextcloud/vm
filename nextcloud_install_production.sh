@@ -274,8 +274,8 @@ wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
 mkdir -p $GPGDIR
 wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
 chmod -R 600 $GPGDIR
-gpg --homedir $GPGDIR --keyserver ha.pool.sks-keyservers.net --recv-keys "$OpenPGP_fingerprint"
-gpg --homedir $GPGDIR --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
+gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$OpenPGP_fingerprint"
+gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
 if [[ $? > 0 ]]
 then
         echo "Package NOT OK! Installation is aborted..."
