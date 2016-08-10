@@ -748,7 +748,7 @@ umount /mnt
     } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
 
 	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab 
-
+	echo "UUID=$GDEVHDUUID  /               ext4   defaults,noatime  0       1" >> /etc/fstab
 	mount $DEVHD /mnt
 
 clear
