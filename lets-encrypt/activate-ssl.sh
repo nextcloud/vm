@@ -119,7 +119,7 @@ then
         wget https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P $SCRIPTS
         chmod +x $SCRIPTS/test-new-config.sh
 else
-        wget hhtps://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P $SCRIPTS
+        wget https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P $SCRIPTS
         chmod +x $SCRIPTS/test-new-config.sh
 fi
 
