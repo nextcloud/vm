@@ -7,7 +7,7 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 dir_before_letsencrypt=/etc
 letsencryptpath=/etc/letsencrypt
 certfiles=$letsencryptpath/live
-ssl_conf="/etc/apache2/sites-available/nextcloud_ssl_domain.conf"
+ssl_conf="/etc/apache2/sites-available/$domain.conf"
 SCRIPTS=/var/scripts
 
 # Check if root
@@ -116,10 +116,10 @@ SCRIPTS=/var/scripts
 if [ -f $SCRIPTS/test-new-config.sh ];
 then
         rm $SCRIPTS/test-new-config.sh
-        wget https://raw.githubusercontent.com/enoch85/Nextcloud-VM/master/lets-encrypt/test-new-config.sh -P $SCRIPTS
+        wget https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P $SCRIPTS
         chmod +x $SCRIPTS/test-new-config.sh
 else
-        wget https://raw.githubusercontent.com/enoch85/Nextcloud-VM/master/lets-encrypt/test-new-config.sh -P $SCRIPTS
+        wget hhtps://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P $SCRIPTS
         chmod +x $SCRIPTS/test-new-config.sh
 fi
 
