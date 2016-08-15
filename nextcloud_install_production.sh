@@ -157,6 +157,69 @@ else
 	exit 1
 fi
 
+# Wifi or not?
+whiptail --msgbox "Do you want to connect to wifi? Its recommended to use a wired connection for your NextBerry server!" --yes-button "WIFI" --no-button "WIRED" 20 60 1
+if [ $? -eq 0 ]; then # yes
+
+whiptail --msgbox "In the next screen navigate with the arrow keys (right arrow for config) and don't for get to select auto connect at the networks config settings." 20 60 2
+    
+		if [ $(dpkg-query -W -f='${Status}' wicd-curses 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+		
+		if [ $(dpkg-query -W -f='${Status}' linux-firmware 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+
+	echo "Linux-firmware is already installed!"
+else
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get install linux-firmware -y)
+    } | whiptail --title "Progress" --gauge "Please wait while installing linux firmware" 6 60 0
+fi
+
+         echo "wicd-curses is already installed!"
+         wicd-curses
+else
+
+	if [ $(dpkg-query -W -f='${Status}' linux-firmware 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+
+	echo "Linux-firmware is already installed!"
+else
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get install linux-firmware -y)
+    } | whiptail --title "Progress" --gauge "Please wait while installing linux firmware" 6 60 0
+fi
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get update)
+    } | whiptail --title "Progress" --gauge "Please wait while updating" 6 60 0
+
+    {
+    i=1
+    while read -r line; do
+        i=$(( $i + 1 ))
+        echo $i
+    done < <(apt-get install wicd-curses -y)
+    } | whiptail --title "Progress" --gauge "Please wait while installing wicd-curses" 6 60 0
+
+	wicd-curses
+fi
+
+else
+	echo
+	echo "We'll use a wired connection..."
+	echo
+fi
+
 # Create $SCRIPTS dir
       	if [ -d $SCRIPTS ]; then
       		sleep 1
