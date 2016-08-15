@@ -222,7 +222,6 @@ apt-get install -y ntp \
 # Only use swap to prevent out of memory.
 echo "vm.swappiness = 0" >> /etc/sysctl.conf
 sysctl -p
-sudo apt-get install zram-config
 
 # Set locales
 apt-get install language-pack-en-base -y
@@ -705,12 +704,15 @@ whiptail --yesno "Do you want to use an external HD/SSD and run the root partiti
 fi
 	whiptail --msgbox "All of your data will be deleted if you continue please backup/save your files on the HD/SSD that we are going to use first" 20 60 1	
 
-# Disable swap if it is setup before
+# Disable swap file, if it is setup before. Where using a swap partition now but only to prevent out of memory errors
 if 		[ -f /swapfile ]; then
       		swapoff -a
       		rm /swapfile
       		sed -i 's|/swapfile none swap defaults 0 0|#/swapfile none swap defaults 0 0|g' /etc/fstab
 fi
+
+# Install zram
+sudo apt-get install zram-config
 
 # Step 1
 fdisk $DEV << EOF
@@ -806,7 +808,10 @@ partprobe
 # Let us know we're using the SD as ROOT partition
 toch /var/scripts/SD
 
- fi
+# Install zram
+sudo apt-get install zram-config
+
+fi
 
 # Reboot
 reboot

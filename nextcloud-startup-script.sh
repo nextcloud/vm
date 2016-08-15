@@ -28,7 +28,6 @@ fi
 # Final resize
 if 		[ -f $SCRIPTS/SD ]; then
 		resize2fs /dev/mmcblk0p2
-		apt-get install zram-config
 fi
 
 echo "Setting correct interface..."
