@@ -27,14 +27,8 @@ fi
 
 # Final resize
 if 		[ -f $SCRIPTS/SD ]; then
-#		rm $SCRIPTS/SD
-#		resize2fs /dev/mmcblk0p2
-#		fallocate -l 2048M /swapfile # create swapfile and set size
-#                chmod 600 /swapfile # give it the right permissions
-#                mkswap /swapfile # format as swap
-#                swapon /swapfile # announce to system
-#                echo "/swapfile none swap defaults 0 0" >> /etc/fstab 
-apt-get install zram-config
+		resize2fs /dev/mmcblk0p2
+		apt-get install zram-config
 fi
 
 echo "Setting correct interface..."
@@ -314,7 +308,7 @@ fi
 clear
 
 # Set keyboard layout
-echo "Current keyboard layout is Swedish"
+echo "Current keyboard layout is English"
 echo "You must change keyboard layout to your language"
 echo -e "\e[32m"
 read -p "Press any key to change keyboard layout... " -n1 -s
@@ -324,7 +318,7 @@ echo
 clear
 
 # Change Timezone
-echo "Current timezone is Europe/Stockholm"
+echo "Current timezone is Europe/Amsterdam"
 echo "You must change timezone to your timezone"
 echo -e "\e[32m"
 read -p "Press any key to change timezone... " -n1 -s

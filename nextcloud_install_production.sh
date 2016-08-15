@@ -617,8 +617,8 @@ bash $SCRIPTS/redis-server-ubuntu16.sh
 rm $SCRIPTS/redis-server-ubuntu16.sh
 
 # Add aliases
-echo "alias techandtool='sudo bash /var/scripts/techandtool.sh'" >> /home/ncadmin/.bashrc
-echo "alias nextberry-upgrade='sudo bash /var/scripts/version_upgrade.sh'" >> /home/ncadmin/.bashrc
+echo "alias techandtool='sudo bash /var/scripts/techandtool.sh'" >> /home/ncadmin/.bash_aliases
+echo "alias nextberry-upgrade='sudo bash /var/scripts/version_upgrade.sh'" >> /home/ncadmin/.bash_aliases
 
 # Upgrade
 apt-get update -q2
