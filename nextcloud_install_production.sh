@@ -5,6 +5,13 @@
 # This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apche 2.4.
 # Ubuntu 16.04 is required. (Other distro's will likely not work, but could eg. debian)
 
+if [ "$(id -nu)" != "root" ]; then
+    sudo -k
+    PASS=$(whiptail --passwordbox --nocancel "Welcome to the NextBerry-RPI fork of the official Nextcloud VM. The installation will take about an hour. Please check the screen once in a while! https://www.techandme.se Next you will be asked for the sudo password in order to start the installation.\n\n[sudo] Password: nextcloud" 15 60 3>&1 1>&2 2>&3)
+    exec sudo -S -p '' "$0" "$@" <<< "$PASS"
+    exit 1
+fi
+
 set -e
 
 # Nextcloud version
