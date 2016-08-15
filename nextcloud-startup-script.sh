@@ -470,6 +470,27 @@ echo
     echo -e "\e[0m"
 fi
 
+# Wifi
+#IFACEWIFI=$(lshw -c network | grep "wl" | awk '{print $3}')
+#IFACEWIRED=$(lshw -c network | grep "en" | awk '{print $3}')
+
+whiptail --yesno "Do you want to connect to wifi? Its recommended to use a wired connection for your NextBerry server!" --yes-button "Wireless" --no-button "Wired" 20 60 1
+	if [ $? -eq 0 ];         then # yes
+
+                        apt-get install linux-firmware wicd-curses wicd-daemon wicd-cli -y
+                        #ifdown "$IFACEWIRED"
+                        #sed -i "s|'$IFACEWIRED'|'$IFACEWIFI'|g" /etc/network/interfaces
+			whiptail --msgbox "In the next screen navigate with the arrow keys (right arrow for config) and don't for get to select auto connect at the networks config settings." 20 60 2
+                        wicd-curses
+                        #ifup "$IFACEWIFI"
+                        whiptail --msgbox "Due to the new interface the DHCP server gave you a new ip:\n\n'$ADDRESS' \n\n If the NIC starts with 'wl', you're good to go and you can unplug the ethernet cable: \n\n '$IFACE'" 12 60 1
+
+	else
+        		echo
+        		echo "We'll use a wired connection..."
+        		echo
+	fi
+
 # Reboot
 reboot
 
