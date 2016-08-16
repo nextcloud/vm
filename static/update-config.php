@@ -1,4 +1,6 @@
 #!/usr/bin/php
+# This shebang was unrecognized. Note that ShellCheck only handles sh/bash/ksh.
+# Cant make any sense out of the other errors at line 19 here
 
 # Credit to: https://github.com/jnweiger
 
@@ -17,7 +19,7 @@ if ($argc < 3)
   }
 
 
-if (!is_file($argv[1]))
+if (! is_file($argv[1]))
   {
     # do not create the file, if missing. 
     # Wrong permissions are deadly for nextcloud.

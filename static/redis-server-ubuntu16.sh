@@ -10,11 +10,11 @@ REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis.sock
 
 # Must be root
-[[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+[[ $(id -u) -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if [ $OS -eq 1 ]
+if [ "$OS" -eq 1 ]
 then
         sleep 1
 else
@@ -54,7 +54,7 @@ apt-get install php-pear php7.0-dev -q -y
 
 # Install PHPmodule
 pecl install -Z redis
-if [[ $? > 0 ]]
+if [[ $? -gt 0 ]]
 then
     echo "PHP module installation failed"
     sleep 5
@@ -75,7 +75,7 @@ service apache2 restart
 
 # Install Redis
 apt-get install redis-server -y
-if [[ $? > 0 ]]
+if [[ $? -gt 0 ]]
 then
     echo "Installation failed."
     sleep 5

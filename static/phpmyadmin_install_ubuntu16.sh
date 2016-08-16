@@ -21,7 +21,7 @@ fi
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if [ $OS -eq 1 ]
+if [ "$OS" -eq 1 ]
 then
         sleep 1
 else
@@ -57,10 +57,10 @@ sleep 2
 
 # Install phpmyadmin
 echo 'phpmyadmin phpmyadmin/dbconfig-install boolean true' | debconf-set-selections
-echo 'phpmyadmin phpmyadmin/app-password-confirm password $PW_FILE' | debconf-set-selections
-echo 'phpmyadmin phpmyadmin/mysql/admin-pass password $PW_FILE' | debconf-set-selections
-echo 'phpmyadmin phpmyadmin/mysql/app-pass password $PW_FILE' | debconf-set-selections
-echo 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2' | debconf-set-selections
+echo "phpmyadmin phpmyadmin/app-password-confirm password $PW_FILE" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-pass password $PW_FILE" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password $PW_FILE" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
 apt-get update -q2
 apt-get install -y -q \
 	php-gettext \
@@ -129,7 +129,7 @@ Alias /phpmyadmin $PHPMYADMINDIR
     <IfModule mod_authz_core.c>
         <IfModule mod_authn_file.c>
             AuthType Basic
-            AuthName "phpMyAdmin Setup"
+            AuthName 'phpMyAdmin Setup'
             AuthUserFile /etc/phpmyadmin/htpasswd.setup
         </IfModule>
         Require valid-user

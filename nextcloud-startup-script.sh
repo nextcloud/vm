@@ -9,7 +9,6 @@ SCRIPTS=/var/scripts
 PW_FILE=/var/mysql_password.txt # Keep in sync with nextcloud_install_production.sh
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/lets-encrypt"
@@ -33,7 +32,7 @@ service networking restart
 # Check network
 echo "Testing if network is OK..."
 sleep 2
-sudo ifdown $IFACE && sudo ifup $IFACE
+sudo ifdown "$IFACE" && sudo ifup "$IFACE"
 wget -q --spider http://github.com
 	if [ $? -eq 0 ]; then
     		echo -e "\e[32mOnline!\e[0m"
@@ -200,7 +199,7 @@ echo "|                                                                    |"
 echo "| ####################### Tech and Me - 2016 ####################### |"
 echo "+--------------------------------------------------------------------+"
 echo -e "\e[32m"
-read -p "Press any key to start the script..." -n1 -s
+read -pr "Press any key to start the script..." -n1 -s
 clear
 echo -e "\e[0m"
 
@@ -215,17 +214,17 @@ echo -e "Write this down, you will need it to set static IP"
 echo -e "in your router later. It's included in this guide:"
 echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
 echo -e "\e[32m"
-read -p "Press any key to set static IP..." -n1 -s
+read -pr "Press any key to set static IP..." -n1 -s
 clear
 echo -e "\e[0m"
-ifdown $IFACE
+ifdown "$IFACE"
 sleep 2
-ifup $IFACE
+ifup "$IFACE"
 sleep 2
 bash $SCRIPTS/ip.sh
-ifdown $IFACE
+ifdown "$IFACE"
 sleep 2
-ifup $IFACE
+ifup "$IFACE"
 sleep 2
 echo
 echo "Testing if network is OK..."
@@ -237,14 +236,14 @@ echo
 echo -e "\e[0mIf the output is \e[32mConnected! \o/\e[0m everything is working."
 echo -e "\e[0mIf the output is \e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
 echo -e "\e[32m"
-read -p "Press any key to open /etc/network/interfaces..." -n1 -s
+read -pr "Press any key to open /etc/network/interfaces..." -n1 -s
 echo -e "\e[0m"
 nano /etc/network/interfaces
 clear
 echo "Testing if network is OK..."
-ifdown $IFACE
+ifdown "$IFACE"
 sleep 2
-ifup $IFACE
+ifup "$IFACE"
 sleep 2
 echo
 bash $SCRIPTS/test_connection.sh
@@ -272,7 +271,7 @@ clear
 
 # Add extra security
 function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
+    read -pr "$1 ([y]es or [N]o): "
     case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
         y|yes) echo "yes" ;;
         *)     echo "no" ;;
@@ -286,7 +285,7 @@ else
 echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
     echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
+    read -pr "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
 fi
 clear
@@ -295,7 +294,7 @@ clear
 echo "Current keyboard layout is Swedish"
 echo "You must change keyboard layout to your language"
 echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
+read -pr "Press any key to change keyboard layout... " -n1 -s
 echo -e "\e[0m"
 dpkg-reconfigure keyboard-configuration
 echo
@@ -305,7 +304,7 @@ clear
 echo "Current timezone is Europe/Stockholm"
 echo "You must change timezone to your timezone"
 echo -e "\e[32m"
-read -p "Press any key to change timezone... " -n1 -s
+read -pr "Press any key to change timezone... " -n1 -s
 echo -e "\e[0m"
 dpkg-reconfigure tzdata
 echo
@@ -319,10 +318,10 @@ echo -e "\e[0m"
 echo "For better security, change the Linux password for [$UNIXUSER]"
 echo "The current password is [$UNIXPASS]"
 echo -e "\e[32m"
-read -p "Press any key to change password for Linux... " -n1 -s
+read -pr "Press any key to change password for Linux... " -n1 -s
 echo -e "\e[0m"
 sudo passwd $UNIXUSER
-if [[ $? > 0 ]]
+if [[ $? -gt 0 ]]
 then
     sudo passwd $UNIXUSER
 else
@@ -335,10 +334,10 @@ echo -e "\e[0m"
 echo "For better security, change the Nextcloud password for [$UNIXUSER]"
 echo "The current password is [$UNIXPASS]"
 echo -e "\e[32m"
-read -p "Press any key to change password for Nextcloud... " -n1 -s
+read -pr "Press any key to change password for Nextcloud... " -n1 -s
 echo -e "\e[0m"
 sudo -u www-data php $NCPATH/occ user:resetpassword $UNIXUSER
-if [[ $? > 0 ]]
+if [[ $? -gt 0 ]]
 then
     sudo -u www-data php $NCPATH/occ user:resetpassword $UNIXUSER
 else
@@ -383,7 +382,7 @@ echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2016 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
 echo
-read -p "Press any key to continue..." -n1 -s
+read -pr "Press any key to continue..." -n1 -s
 echo -e "\e[0m"
 echo
 
@@ -437,7 +436,7 @@ LETSENC
 
 # Let's Encrypt
 function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
+    read -pr "$1 ([y]es or [N]o): "
     case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
         y|yes) echo "yes" ;;
         *)     echo "no" ;;
@@ -450,7 +449,7 @@ else
 echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
+    read -pr "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
 fi
 
