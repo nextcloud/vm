@@ -449,21 +449,21 @@ apt-get update -q2
 apt-get install webmin -y
 
 # Download and install Documents
-if [ -d $NCPATH/apps/documents ]; then
-sleep 1
-else
-wget -q https://github.com/owncloud/documents/archive/master.zip -P $NCPATH/apps
-cd $NCPATH/apps
-unzip -q master.zip
-rm master.zip
-mv documents-master/ documents/
-fi
+#if [ -d $NCPATH/apps/documents ]; then
+#sleep 1
+#else
+#wget -q https://github.com/owncloud/documents/archive/master.zip -P $NCPATH/apps
+#cd $NCPATH/apps
+#unzip -q master.zip
+#rm master.zip
+#mv documents-master/ documents/
+#fi
 
 # Enable documents
-if [ -d $NCPATH/apps/documents ]; then
-sudo -u www-data php $NCPATH/occ app:enable documents
+#if [ -d $NCPATH/apps/documents ]; then
+#sudo -u www-data php $NCPATH/occ app:enable documents
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-fi
+#fi
 
 # Download and install Contacts
 if [ -d $NCPATH/apps/contacts ]; then
