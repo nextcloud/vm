@@ -39,7 +39,7 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 NCREPO="https://download.nextcloud.com/server/releases/"
-GPGKEY="https://nextcloud.com/nextcloud.asc"
+OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Commands
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
 # Linux user, and Nextcloud user
@@ -273,10 +273,9 @@ apt-get install unzip -y
 wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
 mkdir -p $GPGDIR
 wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
-wget -q $GPGKEY -P $GPGDIR
 chmod -R 600 $GPGDIR
-gpg  --homedir $GPGDIR --import $GPGDIR/nextcloud.asc
-gpg  --homedir $GPGDIR --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
+gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$OpenPGP_fingerprint"
+gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
 if [[ $? > 0 ]]
 then
         echo "Package NOT OK! Installation is aborted..."
