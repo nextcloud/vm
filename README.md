@@ -10,6 +10,10 @@
 ## Image
 [Image link](https://cloud.waaromzomoeilijk.nl/index.php/s/OPKV9vvY1hsYRQe)
 
+## Documentation
+[How to](https://github.com/ezraholm50/NextBerry/wiki)
+
+
 ## Build Requirements
 These requirements are only applied if you build from the scripts:
 * Ubuntu Server 16.04.X Server
@@ -19,10 +23,6 @@ If you install this on a clean Ubuntu 16.04.X VM, the only script you need to ru
 
 ## Machine configuration
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
-
-## FAQ
-
-Start asking questions so that we can add them here.
 
 ## First look
 
