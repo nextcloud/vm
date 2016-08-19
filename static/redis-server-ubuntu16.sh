@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 # Tech and Me - www.techandme.se - ©2016
 # Ubuntu 16.04 with php 7
