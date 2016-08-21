@@ -10,6 +10,6 @@ echo
 echo
 echo "WAN IPv4: $WANIP4"
 echo "WAN IPv6: $WANIP6"
-echo "LAN IP: 	$ADDRESS"
+echo "LAN IP: $ADDRESS"
 echo
 exit 0
