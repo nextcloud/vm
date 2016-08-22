@@ -1,4 +1,5 @@
 # Nextcloud for your RaspberryPI 2 or 3
+test
 [![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
 
 ## Maintainers
