@@ -56,7 +56,7 @@ else
     	echo "Backup OK!"
     	echo -e "\e[0m"
 fi
-wget https://download.nextcloud.com/server/releases/nextcloud/nexcloud-$NCVERSION.tar.bz2 -P $HTML
+wget https://download.nextcloud.com/server/releases/nextcloud-$NCVERSION.tar.bz2 -P $HTML
 
 if [ -f $HTML/nextcloud-$NCVERSION.tar.bz2 ];
 then
