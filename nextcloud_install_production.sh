@@ -8,7 +8,7 @@
 set -e
 
 # Nextcloud version
-STABLEVERSION="nextcloud-9.0.53"
+STABLEVERSION="nextcloud-10.0.0"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Nextcloud apps
