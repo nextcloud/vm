@@ -14,14 +14,17 @@ These requirements are only applied if you build from the scripts:
 
 If you install this on a clean Ubuntu 16.04.X VM, the only script you need to run is "nextcloud_install_production.sh". All the other scripts are fetched from this repository during the installation.
 
-It would be really nice if someone could develop the scripts so that they worked "out of the box", ẃithout having to use a "base VM" with Ubuntu 16.04 pre-installed. Vagrant is an option.
+It would be really nice if someone could develop the scripts so that they worked "out of the box", without having to use a "base VM" with Ubuntu 16.04 pre-installed. Vagrant is an option.
 
 ## Machine configuration
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
 
 ## FAQ
 
-Start asking questions so that we can add them here.
+Keep asking questions so that we can add them here.
+
+Q: Which Hyper-V generation should we chose when creating a machine to load this image?
+A: You currently need to use a 1st generation machine
 
 ## First look
 
