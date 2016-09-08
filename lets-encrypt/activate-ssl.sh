@@ -122,11 +122,6 @@ else
         chmod +x $SCRIPTS/test-new-config.sh
 fi
 
-# Check if $ssl_conf exits, and if, then delete
-if [ -f $ssl_conf ];
-then
-        rm $ssl_conf
-fi
 echo
 # Ask for domain name
 cat << ENTERDOMAIN
@@ -167,6 +162,12 @@ fi
 
 #Fix issue #28
 ssl_conf="/etc/apache2/sites-available/$domain.conf"
+
+# Check if $ssl_conf exists, and if, then delete
+if [ -f $ssl_conf ];
+then
+        rm $ssl_conf
+fi
 
 # Change ServerName in apache.conf
 sed -i "s|ServerName nextcloud|ServerName $domain|g" /etc/apache2/apache2.conf
