@@ -245,7 +245,7 @@ fi
 # Check if $certfiles exists
 if [ -d "$certfiles" ]; then
 # Activate new config
-        bash /var/scripts/test-new-config.sh
+        bash /var/scripts/test-new-config.sh $domain.conf
 	exit 0
 else
         echo -e "\e[96m"
@@ -268,7 +268,7 @@ fi
 # Check if $certfiles exists
 if [ -d "$certfiles" ]; then
 # Activate new config
-	bash /var/scripts/test-new-config.sh
+	bash /var/scripts/test-new-config.sh $domain.conf
         exit 0
 else
 	echo -e "\e[96m"
@@ -291,7 +291,7 @@ fi
 # Check if $certfiles exists
 if [ -d "$certfiles" ]; then
 # Activate new config
-        bash /var/scripts/test-new-config.sh
+        bash /var/scripts/test-new-config.sh $domain.conf
         exit 0
 
 else
@@ -315,7 +315,7 @@ fi
 # Check if $certfiles exists
 if [ -d "$certfiles" ]; then
 # Activate new config
-        bash /var/scripts/test-new-config.sh
+        bash /var/scripts/test-new-config.sh $domain.conf
 
         exit 0
 else
