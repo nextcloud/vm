@@ -8,7 +8,7 @@ SCRIPTS=/var/scripts
         echo -e "\e[32m"
         read -p "Press any key to continue... " -n1 -s
         echo -e "\e[0m"
-        a2ensite nextcloud_ssl_domain.conf
+        a2ensite $1
         a2dissite nextcloud_ssl_domain_self_signed.conf
         service apache2 restart
 if [[ "$?" == "0" ]];
@@ -48,7 +48,7 @@ rm $SCRIPTS/activate-ssl.sh
 
 else
 # If it fails, revert changes back to normal
-        a2dissite nextcloud_ssl_domain.conf
+        a2dissite $1
         a2ensite nextcloud_ssl_domain_self_signed.conf
         service apache2 restart
         echo -e "\e[96m"
