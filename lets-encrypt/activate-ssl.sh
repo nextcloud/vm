@@ -7,7 +7,6 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 dir_before_letsencrypt=/etc
 letsencryptpath=/etc/letsencrypt
 certfiles=$letsencryptpath/live
-ssl_conf="/etc/apache2/sites-available/$domain.conf"
 SCRIPTS=/var/scripts
 
 # Check if root
@@ -165,6 +164,9 @@ ENTERDOMAIN2
     	read domain
     	echo
 fi
+
+#Fix issue #28
+ssl_conf="/etc/apache2/sites-available/$domain.conf"
 
 # Change ServerName in apache.conf
 sed -i "s|ServerName nextcloud|ServerName $domain|g" /etc/apache2/apache2.conf
