@@ -54,16 +54,6 @@ UNIXPASS=nextcloud
         exit 1
 fi
 
-# Set keyboard layout
-echo "Current keyboard layout is Swedish"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
-dpkg-reconfigure keyboard-configuration
-echo
-clear
-
 # Check Ubuntu version
 echo "Checking server OS and version..."
 if [ $OS -eq 1 ]
@@ -133,6 +123,16 @@ then
         echo "Please install the server version of Ubuntu and restart the script"
         exit 1 
 fi
+
+# Set keyboard layout
+echo "Current keyboard layout is Swedish"
+echo "You must change keyboard layout to your language"
+echo -e "\e[32m"
+read -p "Press any key to change keyboard layout... " -n1 -s
+echo -e "\e[0m"
+dpkg-reconfigure keyboard-configuration
+echo
+clear
 
 # Create $UNIXUSER if not existing
 if id "$UNIXUSER" >/dev/null 2>&1
