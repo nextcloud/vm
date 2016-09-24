@@ -23,9 +23,22 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 
 Keep asking questions so that we can add them here.
 
-Q: Which Hyper-V generation should we chose when creating a machine to load this image?
-A: You currently need to use a 1st generation machine
+**Q:** Which Hyper-V generation should we chose when creating a machine to load this image?
+<br />
+**A:** You currently need to use a 1st generation machine.
+
+**Q:** Do you have a pre-configured Hyper-V VM?
+<br />
+**A:** Yes we have, you can download it here: https://shop.techandme.se/index.php/product/nextcloud-vm-microsoft-hyper-v-vhd/
+
+**Q:** I want a bigger version of this VM, where can I find that?
+<br />
+**A:** You can download it here: https://shop.techandme.se/index.php/product/nextcloud-vm-500gb/
+
+**Q:** I have found a bug that I want to report, where do I do that?
+<br />
+**A:** Just submit your report here: https://github.com/nextcloud/vm/issues/new
 
 ## First look
 
-![alt tag](https://raw.githubusercontent.com/nextcloud/vm/master/first-look.jpg-large)
+![alt tag](https://raw.githubusercontent.com/nextcloud/screenshots/master/vm/first-look.jpg-large)
