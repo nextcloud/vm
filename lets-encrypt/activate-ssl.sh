@@ -7,7 +7,6 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 dir_before_letsencrypt=/etc
 letsencryptpath=/etc/letsencrypt
 certfiles=$letsencryptpath/live
-ssl_conf="/etc/apache2/sites-available/$domain.conf"
 SCRIPTS=/var/scripts
 
 # Check if root
@@ -123,11 +122,6 @@ else
         chmod +x $SCRIPTS/test-new-config.sh
 fi
 
-# Check if $ssl_conf exits, and if, then delete
-if [ -f $ssl_conf ];
-then
-        rm $ssl_conf
-fi
 echo
 # Ask for domain name
 cat << ENTERDOMAIN
@@ -164,6 +158,15 @@ ENTERDOMAIN2
 	echo
     	read domain
     	echo
+fi
+
+#Fix issue #28
+ssl_conf="/etc/apache2/sites-available/$domain.conf"
+
+# Check if $ssl_conf exists, and if, then delete
+if [ -f $ssl_conf ];
+then
+        rm $ssl_conf
 fi
 
 # Change ServerName in apache.conf
@@ -242,7 +245,7 @@ fi
 # Check if $certfiles exists
 if [ -d "$certfiles" ]; then
 # Activate new config
-        bash /var/scripts/test-new-config.sh
+        bash /var/scripts/test-new-config.sh $domain.conf
 	exit 0
 else
         echo -e "\e[96m"
@@ -265,7 +268,7 @@ fi
 # Check if $certfiles exists
 if [ -d "$certfiles" ]; then
 # Activate new config
-	bash /var/scripts/test-new-config.sh
+	bash /var/scripts/test-new-config.sh $domain.conf
         exit 0
 else
 	echo -e "\e[96m"
@@ -288,7 +291,7 @@ fi
 # Check if $certfiles exists
 if [ -d "$certfiles" ]; then
 # Activate new config
-        bash /var/scripts/test-new-config.sh
+        bash /var/scripts/test-new-config.sh $domain.conf
         exit 0
 
 else
@@ -312,7 +315,7 @@ fi
 # Check if $certfiles exists
 if [ -d "$certfiles" ]; then
 # Activate new config
-        bash /var/scripts/test-new-config.sh
+        bash /var/scripts/test-new-config.sh $domain.conf
 
         exit 0
 else
