@@ -12,22 +12,22 @@ SCRIPTS=/var/scripts
 
 mkdir -p $SCRIPTS
 
-if [ -f $FILE ];
+if [ -f $FILE ]
 then
-        rm $SCRIPTS/$FILE
-        wget -q https://raw.githubusercontent.com/nextcloud/vm/master/$FILE -P $SCRIPTS
-        bash $SCRIPTS/$FILE
+    rm $SCRIPTS/$FILE
+    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/$FILE -P $SCRIPTS
+    bash $SCRIPTS/$FILE
 else
-        wget -q https://raw.githubusercontent.com/nextcloud/vm/master/$FILE -P $SCRIPTS
-        bash $SCRIPTS/$FILE
+    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/$FILE -P $SCRIPTS
+    bash $SCRIPTS/$FILE
 fi
 
 chmod +x $SCRIPTS/$FILE
 
 # Remove potenial copy of the same file
-if [ -f $SCRIPTS/$FILE.1 ];
+if [ -f $SCRIPTS/$FILE.1 ]
 then
-        rm $SCRIPTS/$FILE.1
+    rm $SCRIPTS/$FILE.1
 fi
 
 exit

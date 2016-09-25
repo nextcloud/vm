@@ -26,12 +26,12 @@ chmod +x ${ncpath}/occ
 
 printf "chmod/chown .htaccess\n"
 if [ -f ${ncpath}/.htaccess ]
- then
-  chmod 0644 ${ncpath}/.htaccess
-  chown ${rootuser}:${htgroup} ${ncpath}/.htaccess
+then
+    chmod 0644 ${ncpath}/.htaccess
+    chown ${rootuser}:${htgroup} ${ncpath}/.htaccess
 fi
 if [ -f ${NCDATA}/.htaccess ]
- then
-  chmod 0644 ${NCDATA}/.htaccess
-  chown ${rootuser}:${htgroup} ${NCDATA}/.htaccess
+then
+    chmod 0644 ${NCDATA}/.htaccess
+    chown ${rootuser}:${htgroup} ${NCDATA}/.htaccess
 fi

@@ -16,12 +16,13 @@ LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
 
-	# Check if root
-	if [ "$(whoami)" != "root" ]; then
-        echo
-        echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud-startup-script.sh"
-        echo
-        exit 1
+# Check if root
+if [ "$(whoami)" != "root" ]
+then
+    echo
+    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud-startup-script.sh"
+    echo
+    exit 1
 fi
 
 echo "Setting correct interface..."
@@ -34,142 +35,160 @@ service networking restart
 echo "Testing if network is OK..."
 sleep 2
 sudo ifdown $IFACE && sudo ifup $IFACE
-wget -q --spider http://github.com
-	if [ $? -eq 0 ]; then
-    		echo -e "\e[32mOnline!\e[0m"
-	else
-		echo
-		echo "Network NOT OK. You must have a working Network connection to run this script."
-		echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
-	       	exit 1
-	fi
+    wget -q --spider http://github.com
+if [ $? -eq 0 ]
+then
+    echo -e "\e[32mOnline!\e[0m"
+else
+    echo
+    echo "Network NOT OK. You must have a working Network connection to run this script."
+    echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
+    exit 1
+fi
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
 
-       # Get script for temporary fixes
-        if [ -f $SCRIPTS/temporary.sh ];
-                then
-                rm $SCRIPTS/temporary-fix.sh
-                wget -q $STATIC/temporary-fix.sh -P $SCRIPTS
-                else
-        wget -q $STATIC/temporary-fix.sh -P $SCRIPTS
-        fi
-
-       # Get security script
-        if [ -f $SCRIPTS/security.sh ];
-                then
-                rm $SCRIPTS/security.sh
-                wget -q $STATIC/security.sh -P $SCRIPTS
-                else
-        wget -q $STATIC/security.sh -P $SCRIPTS
+# Get script for temporary fixes
+if [ -f $SCRIPTS/temporary.sh ]
+then
+    rm $SCRIPTS/temporary-fix.sh
+    wget -q $STATIC/temporary-fix.sh -P $SCRIPTS
+else
+    wget -q $STATIC/temporary-fix.sh -P $SCRIPTS
 fi
 
-       # Get the latest nextcloud_update.sh
-        if [ -f $SCRIPTS/update.sh ];
-                then
-                rm $SCRIPTS/update.sh
-                wget -q $STATIC/update.sh -P $SCRIPTS
-                else
-        wget -q $STATIC/update.sh -P $SCRIPTS
+# Get security script
+if [ -f $SCRIPTS/security.sh ]
+then
+    rm $SCRIPTS/security.sh
+    wget -q $STATIC/security.sh -P $SCRIPTS
+else
+    wget -q $STATIC/security.sh -P $SCRIPTS
 fi
 
-        # phpMyadmin
-        if [ -f $SCRIPTS/phpmyadmin_install_ubuntu16.sh ];
-                then
-                rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
-                wget -q $STATIC/phpmyadmin_install_ubuntu16.sh -P $SCRIPTS
-                else
-        wget -q $STATIC/phpmyadmin_install_ubuntu16.sh -P $SCRIPTS
-fi
-	# Update Config
-        if [ -f $SCRIPTS/update-config.php ];
-                then
-                rm $SCRIPTS/update-config.php
-                wget -q $STATIC/update-config.php -P $SCRIPTS
-                else
-       	wget -q $STATIC/update-config.php -P $SCRIPTS
+# Get the latest nextcloud_update.sh
+if [ -f $SCRIPTS/update.sh ]
+then
+    rm $SCRIPTS/update.sh
+    wget -q $STATIC/update.sh -P $SCRIPTS
+else
+    wget -q $STATIC/update.sh -P $SCRIPTS
 fi
 
-        # Activate SSL
-        if [ -f $SCRIPTS/activate-ssl.sh ];
-                then
-                rm $SCRIPTS/activate-ssl.sh
-                wget -q $LETS_ENC/activate-ssl.sh -P $SCRIPTS
-                else
-        wget -q $LETS_ENC/activate-ssl.sh -P $SCRIPTS
-fi
-        # The update script
-        if [ -f $SCRIPTS/nextcloud_update.sh ];
-                then
-                rm $SCRIPTS/nextcloud_update.sh
-                wget -q $GITHUB_REPO/nextcloud_update.sh -P $SCRIPTS
-                else
-        wget -q $GITHUB_REPO/nextcloud_update.sh -P $SCRIPTS
-fi
-        # Sets trusted domain in when nextcloud-startup-script.sh is finished
-        if [ -f $SCRIPTS/trusted.sh ];
-                then
-                rm $SCRIPTS/trusted.sh
-                wget -q $STATIC/trusted.sh -P $SCRIPTS
-                else
-        wget -q $STATIC/trusted.sh -P $SCRIPTS
-fi
-                # Sets static IP to UNIX
-        if [ -f $SCRIPTS/ip.sh ];
-                then
-                rm $SCRIPTS/ip.sh
-                wget -q $STATIC/ip.sh -P $SCRIPTS
-                else
-      	wget -q $STATIC/ip.sh -P $SCRIPTS
-fi
-                # Tests connection after static IP is set
-        if [ -f $SCRIPTS/test_connection.sh ];
-                then
-                rm $SCRIPTS/test_connection.sh
-                wget -q $STATIC/test_connection.sh -P $SCRIPTS
-                else
-        wget -q $STATIC/test_connection.sh -P $SCRIPTS
-fi
-                # Sets secure permissions after upgrade
-        if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ];
-                then
-                rm $SCRIPTS/setup_secure_permissions_nextcloud.sh
-                wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
-                else
-        wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
-fi
-		# Change MySQL password
-        if [ -f $SCRIPTS/change_mysql_pass.sh ];
-                then
-                rm $SCRIPTS/change_mysql_pass.sh
-                wget -q $STATIC/change_mysql_pass.sh
-                else
-        wget -q $STATIC/change_mysql_pass.sh -P $SCRIPTS
-fi
-                # Get figlet Tech and Me
-        if [ -f $SCRIPTS/nextcloud.sh ];
-                then
-                rm $SCRIPTS/nextcloud.sh
-                wget -q $STATIC/nextcloud.sh -P $SCRIPTS
-                else
-        wget -q $STATIC/nextcloud.sh -P $SCRIPTS
+# phpMyadmin
+if [ -f $SCRIPTS/phpmyadmin_install_ubuntu16.sh ]
+then
+    rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
+    wget -q $STATIC/phpmyadmin_install_ubuntu16.sh -P $SCRIPTS
+else
+    wget -q $STATIC/phpmyadmin_install_ubuntu16.sh -P $SCRIPTS
 fi
 
-        # Get the Welcome Screen when http://$address
-        if [ -f $SCRIPTS/index.php ];
-                then
-                rm $SCRIPTS/index.php
-                wget -q $GITHUB_REPO/index.php -P $SCRIPTS
-                else
-        wget -q $GITHUB_REPO/index.php -P $SCRIPTS
-fi
-        mv $SCRIPTS/index.php $WWW_ROOT/index.php && rm -f $WWW_ROOT/html/index.html
-        chmod 750 $WWW_ROOT/index.php && chown www-data:www-data $WWW_ROOT/index.php
 
-        # Change 000-default to $WEB_ROOT
-        sed -i "s|DocumentRoot /var/www/html|DocumentRoot $WWW_ROOT|g" /etc/apache2/sites-available/000-default.conf
+# Update Config
+if [ -f $SCRIPTS/update-config.php ]
+then
+    rm $SCRIPTS/update-config.php
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+else
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+fi
+
+# Activate SSL
+if [ -f $SCRIPTS/activate-ssl.sh ]
+then
+    rm $SCRIPTS/activate-ssl.sh
+    wget -q $LETS_ENC/activate-ssl.sh -P $SCRIPTS
+else
+    wget -q $LETS_ENC/activate-ssl.sh -P $SCRIPTS
+fi
+
+
+# The update script
+if [ -f $SCRIPTS/nextcloud_update.sh ]
+then
+    rm $SCRIPTS/nextcloud_update.sh
+    wget -q $GITHUB_REPO/nextcloud_update.sh -P $SCRIPTS
+else
+    wget -q $GITHUB_REPO/nextcloud_update.sh -P $SCRIPTS
+fi
+
+
+# Sets trusted domain in when nextcloud-startup-script.sh is finished
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    rm $SCRIPTS/trusted.sh
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+else
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+fi
+
+
+# Sets static IP to UNIX
+if [ -f $SCRIPTS/ip.sh ]
+then
+    rm $SCRIPTS/ip.sh
+    wget -q $STATIC/ip.sh -P $SCRIPTS
+else
+    wget -q $STATIC/ip.sh -P $SCRIPTS
+fi
+
+
+# Tests connection after static IP is set
+if [ -f $SCRIPTS/test_connection.sh ]
+then
+    rm $SCRIPTS/test_connection.sh
+    wget -q $STATIC/test_connection.sh -P $SCRIPTS
+else
+    wget -q $STATIC/test_connection.sh -P $SCRIPTS
+fi
+
+
+# Sets secure permissions after upgrade
+if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
+then
+    rm $SCRIPTS/setup_secure_permissions_nextcloud.sh
+    wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
+else
+    wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
+fi
+
+
+# Change MySQL password
+if [ -f $SCRIPTS/change_mysql_pass.sh ]
+then
+    rm $SCRIPTS/change_mysql_pass.sh
+    wget -q $STATIC/change_mysql_pass.sh
+else
+    wget -q $STATIC/change_mysql_pass.sh -P $SCRIPTS
+fi
+
+
+# Get figlet Tech and Me
+if [ -f $SCRIPTS/nextcloud.sh ]
+then
+    rm $SCRIPTS/nextcloud.sh
+    wget -q $STATIC/nextcloud.sh -P $SCRIPTS
+else
+    wget -q $STATIC/nextcloud.sh -P $SCRIPTS
+fi
+
+# Get the Welcome Screen when http://$address
+if [ -f $SCRIPTS/index.php ]
+then
+    rm $SCRIPTS/index.php
+    wget -q $GITHUB_REPO/index.php -P $SCRIPTS
+else
+    wget -q $GITHUB_REPO/index.php -P $SCRIPTS
+fi
+
+mv $SCRIPTS/index.php $WWW_ROOT/index.php && rm -f $WWW_ROOT/html/index.html
+chmod 750 $WWW_ROOT/index.php && chown www-data:www-data $WWW_ROOT/index.php
+
+# Change 000-default to $WEB_ROOT
+sed -i "s|DocumentRoot /var/www/html|DocumentRoot $WWW_ROOT|g" /etc/apache2/sites-available/000-default.conf
 
 # Make $SCRIPTS excutable
 chmod +x -R $SCRIPTS
@@ -280,10 +299,10 @@ function ask_yes_or_no() {
 }
 if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
 then
-        bash $SCRIPTS/security.sh
-        rm $SCRIPTS/security.sh
+    bash $SCRIPTS/security.sh
+    rm $SCRIPTS/security.sh
 else
-echo
+    echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
@@ -304,39 +323,39 @@ clear
 
 if [ "$UNIXUSER" = "ncadmin" ]
 then
-# Change password
-echo -e "\e[0m"
-echo "For better security, change the Linux password for [$UNIXUSER]"
-echo "The current password is [$UNIXPASS]"
-echo -e "\e[32m"
-read -p "Press any key to change password for Linux... " -n1 -s
-echo -e "\e[0m"
-sudo passwd $UNIXUSER
-if [[ $? > 0 ]]
-then
+    # Change password
+    echo -e "\e[0m"
+    echo "For better security, change the Linux password for [$UNIXUSER]"
+    echo "The current password is [$UNIXPASS]"
+    echo -e "\e[32m"
+    read -p "Press any key to change password for Linux... " -n1 -s
+    echo -e "\e[0m"
     sudo passwd $UNIXUSER
-else
-    sleep 2
-fi
-echo
-clear
+    if [[ $? > 0 ]]
+    then
+        sudo passwd $UNIXUSER
+    else
+        sleep 2
+    fi
+    echo
+    clear
 
-echo -e "\e[0m"
-echo "For better security, change the Nextcloud password for [$UNIXUSER]"
-echo "The current password is [$UNIXPASS]"
-echo -e "\e[32m"
-read -p "Press any key to change password for Nextcloud... " -n1 -s
-echo -e "\e[0m"
-sudo -u www-data php $NCPATH/occ user:resetpassword $UNIXUSER
-if [[ $? > 0 ]]
-then
+    echo -e "\e[0m"
+    echo "For better security, change the Nextcloud password for [$UNIXUSER]"
+    echo "The current password is [$UNIXPASS]"
+    echo -e "\e[32m"
+    read -p "Press any key to change password for Nextcloud... " -n1 -s
+    echo -e "\e[0m"
     sudo -u www-data php $NCPATH/occ user:resetpassword $UNIXUSER
+    if [[ $? > 0 ]]
+    then
+        sudo -u www-data php $NCPATH/occ user:resetpassword $UNIXUSER
+    else
+        sleep 2
+    fi
+    clear
 else
-    sleep 2
-fi
-clear
-else
-echo "Not changing password as you already changed <user> and <pass> in the script"
+    echo "Not changing password as you already changed <user> and <pass> in the script"
 fi
 clear
 
@@ -435,9 +454,9 @@ function ask_yes_or_no() {
 }
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
-        bash $SCRIPTS/activate-ssl.sh
+    bash $SCRIPTS/activate-ssl.sh
 else
-echo
+    echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s

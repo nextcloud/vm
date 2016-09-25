@@ -47,22 +47,23 @@ UNIXUSER=ncadmin
 UNIXPASS=nextcloud
 
 # Check if root
-        if [ "$(whoami)" != "root" ]; then
-        echo
-        echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud_install_production.sh"
-        echo
-        exit 1
+if [ "$(whoami)" != "root" ]
+then
+    echo
+    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud_install_production.sh"
+    echo
+    exit 1
 fi
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
 if [ $OS -eq 1 ]
 then
-        sleep 1
+    sleep 1
 else
-        echo "Ubuntu Server is required to run this script."
-        echo "Please install that distro and try again."
-        exit 1
+    echo "Ubuntu Server is required to run this script."
+    echo "Please install that distro and try again."
+    exit 1
 fi
 
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
@@ -84,44 +85,45 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if key is available
-if wget -q --spider "$NCREPO" > /dev/null; then
-        echo "Nextcloud repo OK"
+if wget -q --spider "$NCREPO" > /dev/null
+then
+    echo "Nextcloud repo OK"
 else
-        echo "Nextcloud repo is not available, exiting..."
-        exit 1
+    echo "Nextcloud repo is not available, exiting..."
+    exit 1
 fi
 
 # Check if it's a clean server
 echo "Checking if it's a clean server..."
-if [ $(dpkg-query -W -f='${Status}' mysql-common 2>/dev/null | grep -c "ok installed") -eq 1 ];
+if [ $(dpkg-query -W -f='${Status}' mysql-common 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
-        echo "MySQL is installed, it must be a clean server."
-        exit 1
+    echo "MySQL is installed, it must be a clean server."
+    exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ];
+if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
-        echo "Apache2 is installed, it must be a clean server."
-        exit 1
+    echo "Apache2 is installed, it must be a clean server."
+    exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' php 2>/dev/null | grep -c "ok installed") -eq 1 ];
+if [ $(dpkg-query -W -f='${Status}' php 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
-        echo "PHP is installed, it must be a clean server."
-        exit 1
+    echo "PHP is installed, it must be a clean server."
+    exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' nextcloud 2>/dev/null | grep -c "ok installed") -eq 1 ];
+if [ $(dpkg-query -W -f='${Status}' nextcloud 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
-	echo "Nextcloud is installed, it must be a clean server."
-	exit 1
+    echo "Nextcloud is installed, it must be a clean server."
+    exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' ubuntu-server 2>/dev/null | grep -c "ok installed") -eq 0 ];
+if [ $(dpkg-query -W -f='${Status}' ubuntu-server 2>/dev/null | grep -c "ok installed") -eq 0 ]
 then
-        echo "'ubuntu-server' is not installed, this doesn't seem to be a server."
-        echo "Please install the server version of Ubuntu and restart the script"
-        exit 1 
+    echo "'ubuntu-server' is not installed, this doesn't seem to be a server."
+    echo "Please install the server version of Ubuntu and restart the script"
+    exit 1
 fi
 
 # Set keyboard layout
@@ -137,58 +139,62 @@ clear
 # Create $UNIXUSER if not existing
 if id "$UNIXUSER" >/dev/null 2>&1
 then
-        echo "$UNIXUSER already exists!"
+    echo "$UNIXUSER already exists!"
 else
-	adduser --disabled-password --gecos "" $UNIXUSER
-        echo -e "$UNIXUSER:$UNIXPASS" | chpasswd
-        usermod -aG sudo $UNIXUSER
+    adduser --disabled-password --gecos "" $UNIXUSER
+    echo -e "$UNIXUSER:$UNIXPASS" | chpasswd
+    usermod -aG sudo $UNIXUSER
 fi
 
-if [ -d /home/$UNIXUSER ];
+if [ -d /home/$UNIXUSER ]
 then
-	echo "$UNIXUSER OK!"
+    echo "$UNIXUSER OK!"
 else
-	echo "Something went wrong when creating the user... Script will exit."
-	exit 1
+    echo "Something went wrong when creating the user... Script will exit."
+    exit 1
 fi
 
 # Create $SCRIPTS dir
-      	if [ -d $SCRIPTS ]; then
-      		sleep 1
-      		else
-      	mkdir -p $SCRIPTS
+if [ -d $SCRIPTS ]
+then
+    sleep 1
+else
+    mkdir -p $SCRIPTS
 fi
 
 # Change DNS
-if ! [ -x "$(command -v resolvconf)" ]; then
-	apt-get install resolvconf -y -q
-	dpkg-reconfigure resolvconf
+if ! [ -x "$(command -v resolvconf)" ]
+then
+    apt-get install resolvconf -y -q
+    dpkg-reconfigure resolvconf
 else
-	echo 'reolvconf is installed.' >&2
+    echo 'reolvconf is installed.' >&2
 fi
 
 echo "nameserver 8.8.8.8" > /etc/resolvconf/resolv.conf.d/base
 echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
-if ! [ -x "$(command -v nslookup)" ]; then
-	apt-get install dnsutils -y -q
+if ! [ -x "$(command -v nslookup)" ]
+then
+    apt-get install dnsutils -y -q
 else
-	echo 'dnsutils is installed.' >&2
+    echo 'dnsutils is installed.' >&2
 fi
-if ! [ -x "$(command -v ifup)" ]; then
-	apt-get install ifupdown -y -q
+if ! [ -x "$(command -v ifup)" ]
+then
+    apt-get install ifupdown -y -q
 else
-	echo 'ifupdown is installed.' >&2
+    echo 'ifupdown is installed.' >&2
 fi
 sudo ifdown $IFACE && sudo ifup $IFACE
 nslookup google.com
 if [[ $? > 0 ]]
 then
-	echo "Network NOT OK. You must have a working Network connection to run this script."
-        exit 1
+    echo "Network NOT OK. You must have a working Network connection to run this script."
+    exit 1
 else
-	echo "Network OK."
+    echo "Network OK."
 fi
 
 # Update system
@@ -254,23 +260,23 @@ service apache2 restart
 # Install PHP 7.0
 apt-get update -q2
 apt-get install -y \
-        libapache2-mod-php7.0 \
-	php7.0-common \
-	php7.0-mysql \
-	php7.0-intl \
-	php7.0-mcrypt \
-	php7.0-ldap \
-	php7.0-imap \
-	php7.0-cli \
-	php7.0-gd \
-	php7.0-pgsql \
-	php7.0-json \
-	php7.0-sqlite3 \
-	php7.0-curl \
-	php7.0-xml \
-	php7.0-zip \
-	php7.0-mbstring \
-	php-smbclient
+    libapache2-mod-php7.0 \
+    php7.0-common \
+    php7.0-mysql \
+    php7.0-intl \
+    php7.0-mcrypt \
+    php7.0-ldap \
+    php7.0-imap \
+    php7.0-cli \
+    php7.0-gd \
+    php7.0-pgsql \
+    php7.0-json \
+    php7.0-sqlite3 \
+    php7.0-curl \
+    php7.0-xml \
+    php7.0-zip \
+    php7.0-mbstring \
+    php-smbclient
 
 # Enable SMB client
 echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
@@ -288,10 +294,10 @@ gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$OpenPGP_fingerprint"
 gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
 if [[ $? > 0 ]]
 then
-        echo "Package NOT OK! Installation is aborted..."
-        exit 1
+    echo "Package NOT OK! Installation is aborted..."
+    exit 1
 else
-        echo "Package OK!"
+    echo "Package OK!"
 fi
 
 # Cleanup
@@ -307,7 +313,14 @@ bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Install Nextcloud
 cd $NCPATH
-sudo -u www-data php occ maintenance:install --data-dir "$NCDATA" --database "mysql" --database-name "nextcloud_db" --database-user "root" --database-pass "$MYSQL_PASS" --admin-user "$UNIXUSER" --admin-pass "$UNIXPASS"
+sudo -u www-data php occ maintenance:install \
+    --data-dir "$NCDATA" \
+    --database "mysql" \
+    --database-name "nextcloud_db" \
+    --database-user "root" \
+    --database-pass "$MYSQL_PASS" \
+    --admin-user "$UNIXUSER" \
+    --admin-pass "$UNIXPASS"
 echo
 echo "Nextcloud version:"
 sudo -u www-data php $NCPATH/occ status
@@ -333,12 +346,12 @@ sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 1000M|g" /etc/php/7.0/a
 apt-get install figlet -y
 
 # Generate $HTTP_CONF
-if [ -f $HTTP_CONF ];
-        then
-        echo "Virtual Host exists"
+if [ -f $HTTP_CONF ]
+    then
+    echo "Virtual Host exists"
 else
-        touch "$HTTP_CONF"
-        cat << HTTP_CREATE > "$HTTP_CONF"
+    touch "$HTTP_CONF"
+    cat << HTTP_CREATE > "$HTTP_CONF"
 <VirtualHost *:80>
 
 ### YOUR SERVER ADDRESS ###
@@ -372,17 +385,17 @@ else
 
 </VirtualHost>
 HTTP_CREATE
-echo "$HTTP_CONF was successfully created"
-sleep 3
+    echo "$HTTP_CONF was successfully created"
+    sleep 3
 fi
 
 # Generate $SSL_CONF
-if [ -f $SSL_CONF ];
-        then
-        echo "Virtual Host exists"
+if [ -f $SSL_CONF ]
+    then
+    echo "Virtual Host exists"
 else
-        touch "$SSL_CONF"
-        cat << SSL_CREATE > "$SSL_CONF"
+    touch "$SSL_CONF"
+    cat << SSL_CREATE > "$SSL_CONF"
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
@@ -421,8 +434,8 @@ else
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
 SSL_CREATE
-echo "$SSL_CONF was successfully created"
-sleep 3
+    echo "$SSL_CONF was successfully created"
+    sleep 3
 fi
 
 # Enable new config
@@ -459,127 +472,133 @@ apt-get update -q2
 apt-get install webmin -y
 
 # Download and install Documents
-#if [ -d $NCPATH/apps/documents ]; then
-#sleep 1
+#if [ -d $NCPATH/apps/documents ]
+#   then
+#   sleep 1
 #else
-#wget -q https://github.com/owncloud/documents/archive/master.zip -P $NCPATH/apps
-#cd $NCPATH/apps
-#unzip -q master.zip
-#rm master.zip
-#mv documents-master/ documents/
+#   wget -q https://github.com/owncloud/documents/archive/master.zip -P $NCPATH/apps
+#   cd $NCPATH/apps
+#   unzip -q master.zip
+#   rm master.zip
+#   mv documents-master/ documents/
 #fi
 
 # Enable documents
-#if [ -d $NCPATH/apps/documents ]; then
-#sudo -u www-data php $NCPATH/occ app:enable documents
+#if [ -d $NCPATH/apps/documents ]
+#   then
+#   sudo -u www-data php $NCPATH/occ app:enable documents
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 #fi
 
 # Download and install Contacts
-if [ -d $NCPATH/apps/contacts ]; then
-sleep 1
+if [ -d $NCPATH/apps/contacts ]
+then
+    sleep 1
 else
-wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
-tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-cd $NCPATH/apps
-rm $CONVER_FILE
+    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
+    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
+    cd $NCPATH/apps
+    rm $CONVER_FILE
 fi
 
 # Enable Contacts
-if [ -d $NCPATH/apps/contacts ]; then
-sudo -u www-data php $NCPATH/occ app:enable contacts
+if [ -d $NCPATH/apps/contacts ]
+then
+    sudo -u www-data php $NCPATH/occ app:enable contacts
 fi
 
 # Download and install Calendar
-if [ -d $NCPATH/apps/calendar ]; then
-sleep 1
+if [ -d $NCPATH/apps/calendar ]
+then
+    sleep 1
 else
-wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
-tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
-cd $NCPATH/apps
-rm $CALVER_FILE
+    wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
+    tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
+    cd $NCPATH/apps
+    rm $CALVER_FILE
 fi
 
 # Enable Calendar
-if [ -d $NCPATH/apps/calendar ]; then
-sudo -u www-data php $NCPATH/occ app:enable calendar
+if [ -d $NCPATH/apps/calendar ]
+then
+    sudo -u www-data php $NCPATH/occ app:enable calendar
 fi
 
 # Change roots .bash_profile
-        if [ -f $SCRIPTS/change-root-profile.sh ];
-                then
-                echo "change-root-profile.sh exists"
-                else
-        wget -q $STATIC/change-root-profile.sh -P $SCRIPTS
+if [ -f $SCRIPTS/change-root-profile.sh ]
+then
+    echo "change-root-profile.sh exists"
+else
+    wget -q $STATIC/change-root-profile.sh -P $SCRIPTS
 fi
 # Change $UNIXUSER .bash_profile
-        if [ -f $SCRIPTS/change-ncadmin-profile.sh ];
-                then
-                echo "change-ncadmin-profile.sh  exists"
-                else
-        wget -q $STATIC/change-ncadmin-profile.sh -P $SCRIPTS
+if [ -f $SCRIPTS/change-ncadmin-profile.sh ]
+then
+    echo "change-ncadmin-profile.sh  exists"
+else
+    wget -q $STATIC/change-ncadmin-profile.sh -P $SCRIPTS
 fi
 # Get startup-script for root
-        if [ -f $SCRIPTS/nextcloud-startup-script.sh ];
-                then
-                echo "nextcloud-startup-script.sh exists"
-                else
-        wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
+if [ -f $SCRIPTS/nextcloud-startup-script.sh ]
+then
+    echo "nextcloud-startup-script.sh exists"
+else
+    wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
 fi
 
 # Welcome message after login (change in /home/$UNIXUSER/.profile
-        if [ -f $SCRIPTS/instruction.sh ];
-                then
-                echo "instruction.sh exists"
-                else
-        wget -q $STATIC/instruction.sh -P $SCRIPTS
+if [ -f $SCRIPTS/instruction.sh ]
+then
+    echo "instruction.sh exists"
+else
+    wget -q $STATIC/instruction.sh -P $SCRIPTS
 fi
 
 # Get nextcloud-startup-script.sh
-        if [ -f $SCRIPTS/nextcloud-startup-script.sh ];
-                then
-                echo "nextcloud-startup-script.sh exists"
-                else
-        wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
+if [ -f $SCRIPTS/nextcloud-startup-script.sh ]
+then
+    echo "nextcloud-startup-script.sh exists"
+else
+    wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
 fi
 
 # Clears command history on every login
-        if [ -f $SCRIPTS/history.sh ];
-                then
-                echo "history.sh exists"
-                else
-        wget -q $STATIC/history.sh -P $SCRIPTS
+if [ -f $SCRIPTS/history.sh ]
+then
+    echo "history.sh exists"
+else
+    wget -q $STATIC/history.sh -P $SCRIPTS
 fi
 
 # Change root profile
-        	bash $SCRIPTS/change-root-profile.sh
+bash $SCRIPTS/change-root-profile.sh
 if [[ $? > 0 ]]
 then
-	echo "change-root-profile.sh were not executed correctly."
-	sleep 10
+    echo "change-root-profile.sh were not executed correctly."
+    sleep 10
 else
-	echo "change-root-profile.sh script executed OK."
-	rm $SCRIPTS/change-root-profile.sh
-	sleep 2
+    echo "change-root-profile.sh script executed OK."
+    rm $SCRIPTS/change-root-profile.sh
+    sleep 2
 fi
 # Change $UNIXUSER profile
-        	bash $SCRIPTS/change-ncadmin-profile.sh
+bash $SCRIPTS/change-ncadmin-profile.sh
 if [[ $? > 0 ]]
 then
-	echo "change-ncadmin-profile.sh were not executed correctly."
-	sleep 10
+    echo "change-ncadmin-profile.sh were not executed correctly."
+    sleep 10
 else
-	echo "change-ncadmin-profile.sh executed OK."
-	rm $SCRIPTS/change-ncadmin-profile.sh
-	sleep 2
+    echo "change-ncadmin-profile.sh executed OK."
+    rm $SCRIPTS/change-ncadmin-profile.sh
+    sleep 2
 fi
 
 # Get script for Redis
-        if [ -f $SCRIPTS/redis-server-ubuntu16.sh ];
-                then
-                echo "redis-server-ubuntu16.sh exists"
-                else
-        wget -q $STATIC/redis-server-ubuntu16.sh -P $SCRIPTS
+if [ -f $SCRIPTS/redis-server-ubuntu16.sh ]
+then
+    echo "redis-server-ubuntu16.sh exists"
+else
+    wget -q $STATIC/redis-server-ubuntu16.sh -P $SCRIPTS
 fi
 
 # Make $SCRIPTS excutable
@@ -605,14 +624,14 @@ apt-get purge lxd -y
 echo "$CLEARBOOT"
 apt-get autoremove -y
 apt-get autoclean
-if [ -f /home/$UNIXUSER/*.sh ];
+if [ -f /home/$UNIXUSER/*.sh ]
 then
-	rm /home/$UNIXUSER/*.sh
+    rm /home/$UNIXUSER/*.sh
 fi
 
-if [ -f /root/*.sh ];
+if [ -f /root/*.sh ]
 then
-	rm /root/*.sh
+    rm /root/*.sh
 fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)

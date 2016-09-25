@@ -19,7 +19,7 @@ if ($argc < 3)
 
 if (!is_file($argv[1]))
   {
-    # do not create the file, if missing. 
+    # do not create the file, if missing.
     # Wrong permissions are deadly for nextcloud.
     ## FIXME: get some proper errno or strerror() please?
     print($argv[1] . ": \$CONFIG cannot be loaded?\n");
