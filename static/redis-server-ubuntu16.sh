@@ -99,10 +99,10 @@ cat <<ADD_TO_CONFIG>> $NCPATH/config/config.php
   'memcache.locking' => '\\OC\\Memcache\\Redis',
   'redis' =>
   array (
-  'host' => '$REDIS_SOCK',
-  'port' => 0,
-  'timeout' => 0,
-  'dbindex' => 0,
+    'host' => '$REDIS_SOCK',
+    'port' => 0,
+    'timeout' => 0,
+    'dbindex' => 0,
   ),
 );
 ADD_TO_CONFIG

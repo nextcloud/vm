@@ -511,7 +511,7 @@ fi
 if [ -d $NCPATH/apps/calendar ]
 then
     sleep 1
-    else
+else
     wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
     tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
     cd $NCPATH/apps
