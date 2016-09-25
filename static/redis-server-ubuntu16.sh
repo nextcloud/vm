@@ -16,11 +16,11 @@ REDIS_SOCK=/var/run/redis/redis.sock
 echo "Checking server OS and version..."
 if [ $OS -eq 1 ]
 then
-        sleep 1
+    sleep 1
 else
-        echo "Ubuntu Server is required to run this script."
-        echo "Please install that distro and try again."
-        exit 1
+    echo "Ubuntu Server is required to run this script."
+    echo "Please install that distro and try again."
+    exit 1
 fi
 
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
@@ -42,9 +42,11 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if dir exists
-if [ -d $SCRIPTS ];
-then sleep 1
-else mkdir -p $SCRIPTS
+if [ -d $SCRIPTS ]
+then
+    sleep 1
+else
+    mkdir -p $SCRIPTS
 fi
 
 # Get packages to be able to install Redis
@@ -60,7 +62,7 @@ then
     sleep 5
     exit 1
 else
-		echo -e "\e[32m"
+    echo -e "\e[32m"
     echo "PHP module installation OK!"
     echo -e "\e[0m"
 fi
@@ -81,7 +83,7 @@ then
     sleep 5
     exit 1
 else
-                echo -e "\e[32m"
+    echo -e "\e[32m"
     echo "Redis installation OK!"
     echo -e "\e[0m"
 fi
@@ -106,11 +108,11 @@ cat <<ADD_TO_CONFIG>> $NCPATH/config/config.php
 ADD_TO_CONFIG
 
 # Redis performance tweaks
-if	grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
+if grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 then
-	echo "vm.overcommit_memory correct"
+    echo "vm.overcommit_memory correct"
 else
-	echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
+    echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 fi
 sed -i "s|# unixsocket /var/run/redis/redis.sock|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm 700|unixsocketperm 777|g" $REDIS_CONF
@@ -119,9 +121,9 @@ redis-cli SHUTDOWN
 
 # Cleanup
 apt-get purge -y \
-	git \
-	php7.0-dev* \
-	build-essential*
+    git \
+    php7.0-dev* \
+    build-essential*
 
 apt-get update -q2
 apt-get autoremove -y

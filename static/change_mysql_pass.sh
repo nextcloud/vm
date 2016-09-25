@@ -12,11 +12,11 @@ echo "Generating new MySQL root password..."
 mysqladmin -u root -p$OLDMYSQL password $NEWMYSQLPASS > /dev/null 2>&1
 if [ $? -eq 0 ]
 then
-        echo -e "\e[32mYour new MySQL root password is: $NEWMYSQLPASS\e[0m"
-        echo "$NEWMYSQLPASS" > $PW_FILE
+    echo -e "\e[32mYour new MySQL root password is: $NEWMYSQLPASS\e[0m"
+    echo "$NEWMYSQLPASS" > $PW_FILE
 else
-        echo "Changing MySQL root password failed."
-        echo "Your old password is: $OLDMYSQL"
+    echo "Changing MySQL root password failed."
+    echo "Your old password is: $OLDMYSQL"
 fi
 sleep 1
 
