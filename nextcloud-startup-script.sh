@@ -223,6 +223,16 @@ read -p "Press any key to start the script..." -n1 -s
 clear
 echo -e "\e[0m"
 
+# Set keyboard layout
+echo "Current keyboard layout is Swedish"
+echo "You must change keyboard layout to your language"
+echo -e "\e[32m"
+read -p "Press any key to change keyboard layout... " -n1 -s
+echo -e "\e[0m"
+dpkg-reconfigure keyboard-configuration
+echo
+clear
+
 # Change IP
 echo -e "\e[0m"
 echo "The script will now configure your IP to be static."
@@ -308,16 +318,6 @@ else
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
 fi
-clear
-
-# Set keyboard layout
-echo "Current keyboard layout is Swedish"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
-dpkg-reconfigure keyboard-configuration
-echo
 clear
 
 # Change Timezone
