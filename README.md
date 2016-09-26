@@ -27,4 +27,4 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 
 ## First look
 
-![alt tag](https://raw.githubusercontent.com/nextcloud/vm/master/first-look.jpg-large)
+![alt tag](https://raw.githubusercontent.com/nextcloud/screenshots/master/vm/first-look.jpg)
