@@ -5,7 +5,10 @@
 # This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apche 2.4.
 # Ubuntu 16.04 is required.
 
-set -e
+# Check for errors and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+CHECKFORERRORS=0
 
 # Nextcloud version
 STABLEVERSION="nextcloud-10.0.0"
@@ -45,6 +48,14 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cu
 # Linux user, and Nextcloud user
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
+
+# set -e
+if [ $CHECKFORERRORS -eq 1 ]
+then
+    set -e
+else
+    sleep 1
+fi
 
 # Check if root
 if [ "$(whoami)" != "root" ]
