@@ -8,7 +8,11 @@
 # Check for errors and abort if something isn't right
 # 1 = ON
 # 0 = OFF
+<<<<<<< HEAD
 DEBUG=0
+=======
+CHECKFORERRORS=0
+>>>>>>> d57ea70ba74a0058239e74c9003dd8fe5ec91f7e
 
 # Nextcloud version
 STABLEVERSION="nextcloud-10.0.0"
@@ -53,7 +57,10 @@ UNIXPASS=nextcloud
 if [ $CHECKFORERRORS -eq 1 ]
 then
     set -e
+<<<<<<< HEAD
     set -x
+=======
+>>>>>>> d57ea70ba74a0058239e74c9003dd8fe5ec91f7e
 else
     sleep 1
 fi
