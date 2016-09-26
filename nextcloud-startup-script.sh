@@ -269,6 +269,7 @@ echo -e "\e[32m"
 read -p "Press any key to open /etc/network/interfaces..." -n1 -s
 echo -e "\e[0m"
 nano /etc/network/interfaces
+service networking restart
 clear
 echo "Testing if network is OK..."
 ifdown $IFACE
