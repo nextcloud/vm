@@ -33,7 +33,7 @@ cat << STARTMSG
 |       you run this script!                                    |
 |                                                               |
 |       You also have to open port 443 against this VMs         |
-|       IP address: $ADDRESS - do this in your router.          |
+|       IP address: $ADDRESS - do this in your router.      |
 |       Here is a guide: https://goo.gl/Uyuf65                  |
 |                                                               |
 |       This script is located in /var/scripts and you          |

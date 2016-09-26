@@ -29,8 +29,8 @@ gateway $GATEWAY
 # This is an autoconfigured IPv6 interface
 # iface $IFACE inet6 auto
 
-# Exit and save:    [CTRL+X] + [Y] + [ENTER]
-# Exit without saving:    [CTRL+X]
+# Exit and save:	[CTRL+X] + [Y] + [ENTER]
+# Exit without saving:	[CTRL+X]
 
 IPCONFIG
 
