@@ -4,6 +4,8 @@ CLEANDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud ur
 EDITORDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" 10 60 3>&1 1>&2 2>&3)
 HTTPS_EXIST="/etc/apache2/sites-available/'$EXISTINGDOMAIN'"
 HTTPS_CONF="/etc/apache2/sites-available/'$EDITORDOMAIN'"
+LETSENCRYPTPATH=/etc/letsencrypt
+CERTFILES=$LETSENCRYPTPATH/live
 SCRIPTS=/var/scripts
 
 # Message
@@ -68,9 +70,9 @@ else
 
   # SSL configuration, you may want to take the easy route instead and use Lets Encrypt!
   SSLEngine on
-  SSLCertificateFile /path/to/signed_certificate
-  SSLCertificateChainFile /path/to/intermediate_certificate
-  SSLCertificateKeyFile /path/to/private/key
+  SSLCertificateChainFile $certfiles/$DOMAIN/chain.pem
+  SSLCertificateFile $certfiles/$DOMAIN/cert.pem
+  SSLCertificateKeyFile $certfiles/$DOMAIN/privkey.pem
   SSLProtocol             all -SSLv2 -SSLv3
   SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
   SSLHonorCipherOrder     on
@@ -125,9 +127,4 @@ sleep 5
 wget https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/activate-ssl.sh -P $SCRIPTS
 bash activate-ssl.sh
 rm activate-ssl.sh
-
-
-
-
-
 
