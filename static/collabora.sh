@@ -125,6 +125,6 @@ fi
 echo "You now need to create a SSL certificate for the subdomain that will host Collabora..."
 sleep 5
 wget https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/activate-ssl.sh -P $SCRIPTS
-bash activate-ssl.sh
-rm activate-ssl.sh
+bash $SCRIPTS/activate-ssl.sh
+rm $SCRIPTS/activate-ssl.sh
 
