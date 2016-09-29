@@ -284,6 +284,12 @@ clear
 # Change Trusted Domain and CLI
 bash $SCRIPTS/trusted.sh
 
+# Pretty URLs
+echo "Setting RewriteBase to "/" in config.php..."
+chown www-data:www-data $NCPATH/config/config.php
+sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
+sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
+
 echo "Generating new SSH keys for the server..."
 echo
 sleep 1
@@ -377,6 +383,7 @@ echo
 echo
 apt-get update -q2
 aptitude full-upgrade -y
+bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
