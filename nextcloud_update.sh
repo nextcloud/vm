@@ -39,10 +39,11 @@ read NCVERSION
 
 echo "Upgrading to $NCVERSION in 15 seconds... Press CTRL+C to abort."
 echo "Disclamer: Tech and Me or Nextcloud is not responsible for any dataloss"
-echo "Config files are backed up and Data isn't removed, but things could go wrong."
+echo "Config files are backed up and $NCDATA isn't removed, but things could go wrong."
 sleep 15
 
 # Backup data
+rm -R $BACKUP
 mkdir -p $BACKUP
 echo "Backing up data..."
 rsync -Aax $NCPATH/config $BACKUP
