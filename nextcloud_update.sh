@@ -39,7 +39,7 @@ read NCVERSION
 
 echo "Upgrading to $NCVERSION in 15 seconds... Press CTRL+C to abort."
 echo "Disclamer: Tech and Me or Nextcloud is not responsible for any dataloss"
-echo "Data and config files are backed up, but things could go wrong."
+echo "Config files are backed up and Data isn't removed, but things could go wrong."
 sleep 15
 
 # Backup data
@@ -90,9 +90,9 @@ then
     rm -rf $NCPATH
     tar -xjf $HTML/nextcloud-$NCVERSION.tar.bz2 -C $HTML
     rm $HTML/nextcloud-$NCVERSION.tar.bz2
-    cp -R $BACKUP/themes $NCPATH/ && rm -rf $HTML/themes
-    cp -R $BACKUP/config $NCPATH/ && rm -rf $HTML/config
-    cp -R $BACKUP/apps $NCPATH/ && rm -rf $HTML/apps
+    cp -R $BACKUP/themes $NCPATH/
+    cp -R $BACKUP/config $NCPATH/
+    cp -R $BACKUP/apps $NCPATH/
     bash $SECURE
     sudo -u www-data php $NCPATH/occ maintenance:mode --off
     sudo -u www-data php $NCPATH/occ upgrade
