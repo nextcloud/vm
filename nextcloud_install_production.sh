@@ -14,13 +14,6 @@ DEBUG=0
 STABLEVERSION="nextcloud-10.0.0"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
-# Nextcloud apps
-CONVER=$(wget -q https://raw.githubusercontent.com/owncloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/owncloud/contacts/releases/download
-CALVER=$(wget -q https://raw.githubusercontent.com/owncloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CALVER_FILE=calendar.tar.gz
-CALVER_REPO=https://github.com/owncloud/calendar/releases/download
 # Passwords
 SHUF=$(shuf -i 13-15 -n 1)
 MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
@@ -483,6 +476,14 @@ sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /et
 wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
 apt-get update -q2
 apt-get install webmin -y
+
+# Nextcloud apps
+CONVER=$(wget -q https://raw.githubusercontent.com/owncloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
+CONVER_FILE=contacts.tar.gz
+CONVER_REPO=https://github.com/owncloud/contacts/releases/download
+CALVER=$(wget -q https://raw.githubusercontent.com/owncloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
+CALVER_FILE=calendar.tar.gz
+CALVER_REPO=https://github.com/owncloud/calendar/releases/download
 
 # Download and install Documents
 #if [ -d $NCPATH/apps/documents ]
