@@ -14,9 +14,9 @@ THEME_NAME=""
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
+BACKUP=/var/NCBACKUP
 HTML=/var/www
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
-DATA=/var/ncdata
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
@@ -34,7 +34,7 @@ sudo apt-get update -q2
 sudo aptitude full-upgrade -y
 echo
 echo "System is now upgraded, now the script will upgrade Nextcloud."
-echo "Which version do you want to upgrade to? Type it like this: 9.0.54"
+echo "Which version do you want to upgrade to? Type it like this: 10.0.1"
 read NCVERSION
 
 echo "Upgrading to $NCVERSION in 15 seconds... Press CTRL+C to abort."
@@ -43,13 +43,14 @@ echo "Data and config files are backed up, but things could go wrong."
 sleep 15
 
 # Backup data
-rsync -Aaxv $DATA $HTML
-rsync -Aax $NCPATH/config $HTML
-rsync -Aax $NCPATH/themes $HTML
-rsync -Aax $NCPATH/apps $HTML
+mkdir -p $BACKUP
+echo "Backing up data..."
+rsync -Aax $NCPATH/config $BACKUP
+rsync -Aax $NCPATH/themes $BACKUP
+rsync -Aax $NCPATH/apps $BACKUP
 if [[ $? > 0 ]]
 then
-    echo "Backup was not OK. Please check $HTML and see if the folders are backed up properly"
+    echo "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
 else
     echo -e "\e[32m"
@@ -60,53 +61,48 @@ wget https://download.nextcloud.com/server/releases/nextcloud-$NCVERSION.tar.bz2
 
 if [ -f $HTML/nextcloud-$NCVERSION.tar.bz2 ]
 then
-    echo "$HTML/nextcloud-$NCVERSION exists"
+    echo "$HTML/nextcloud-$NCVERSION.tar.bz2 exists"
 else
     echo "Aborting,something went wrong with the download"
     exit 1
 fi
 
-if [ -d $NCPATH/config/ ]
+if [ -d $BACKUP/config/ ]
 then
-    echo "config/ exists"
+    echo "$BACKUP/config/ exists"
 else
-    echo "Something went wrong with backing up your old nextcloud instance, please check in $HTML if data/ and config/ folders exist."
+    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if config/ folder exist."
     exit 1
 fi
 
-if [ -d $NCPATH/themes/ ]
+if [ -d $BACKUP/themes/ ]
 then
-    echo "themes/ exists"
+    echo "$BACKUP/themes/ exists"
 else
-    echo "Something went wrong with backing up your old nextcloud instance, please check in $HTML if data/ and config/ folders exist."
+    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if themes/ folder exist."
     exit 1
 fi
 
-if [ -d $NCPATH/apps/ ]
+# Let the magic begin...
+if [ -d $BACKUP/apps/ ]
 then
-    echo "apps/ exists"
-else
-    echo "Something went wrong with backing up your old nextcloud instance, please check in $HTML if data/ and config/ folders exist."
-    exit 1
-fi
-
-if [ -d $DATA/ ]
-then
-    echo "data/ exists" && sleep 2
+    echo "$BACKUP/apps/ exists, removing old Nextcloud instance in 5 seconds..." && sleep 5
     rm -rf $NCPATH
     tar -xjf $HTML/nextcloud-$NCVERSION.tar.bz2 -C $HTML
     rm $HTML/nextcloud-$NCVERSION.tar.bz2
-    cp -R $HTML/themes $NCPATH/ && rm -rf $HTML/themes
-    cp -Rv $HTML/data $DATA && rm -rf $HTML/data
-    cp -R $HTML/config $NCPATH/ && rm -rf $HTML/config
-    cp -R $HTML/apps $NCPATH/ && rm -rf $HTML/apps
+    cp -R $BACKUP/themes $NCPATH/ && rm -rf $HTML/themes
+    cp -R $BACKUP/config $NCPATH/ && rm -rf $HTML/config
+    cp -R $BACKUP/apps $NCPATH/ && rm -rf $HTML/apps
     bash $SECURE
     sudo -u www-data php $NCPATH/occ maintenance:mode --off
     sudo -u www-data php $NCPATH/occ upgrade
 else
-    echo "Something went wrong with backing up your old nextcloud instance, please check in $HTML if data/ and config/ folders exist."
+    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if apps/ folders exist."
     exit 1
 fi
+
+# Change owner of $BACKUP folder to root
+chown -R root:root $BACKUP
 
 # Enable Apps
 sudo -u www-data php $NCPATH/occ app:enable calendar
