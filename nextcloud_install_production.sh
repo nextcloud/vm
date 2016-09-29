@@ -11,7 +11,7 @@
 DEBUG=0
 
 # Nextcloud version
-STABLEVERSION="nextcloud-10.0.0"
+STABLEVERSION="nextcloud-10.0.1"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Passwords
