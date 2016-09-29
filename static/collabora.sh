@@ -2,8 +2,8 @@
 DOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\.yourdomain\.com" 10 60 cloud\.yourdomain\.com 3>&1 1>&2 2>&3)
 CLEANDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, now make sure it look normal" 10 60 cloud.yourdomain.com 3>&1 1>&2 2>&3)
 EDITORDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" 10 60 3>&1 1>&2 2>&3)
-HTTPS_EXIST="/etc/apache2/sites-available/'$EXISTINGDOMAIN'"
-HTTPS_CONF="/etc/apache2/sites-available/'$EDITORDOMAIN'"
+HTTPS_EXIST="/etc/apache2/sites-available/$EXISTINGDOMAIN.conf"
+HTTPS_CONF="/etc/apache2/sites-available/$EDITORDOMAIN"
 LETSENCRYPTPATH=/etc/letsencrypt
 CERTFILES=$LETSENCRYPTPATH/live
 SCRIPTS=/var/scripts
@@ -66,7 +66,7 @@ else
 	touch "$HTTPS_CONF"
         cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
-  ServerName $EDITORDOMAIN
+  ServerName $EDITORDOMAIN:443
 
   # SSL configuration, you may want to take the easy route instead and use Lets Encrypt!
   SSLEngine on
@@ -122,8 +122,10 @@ fi
 fi
 
 # Let's Encrypt
+echo
 echo "You now need to create a SSL certificate for the subdomain that will host Collabora..."
-sleep 5
+echo
+sleep 10
 wget https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/activate-ssl.sh -P $SCRIPTS
 bash $SCRIPTS/activate-ssl.sh
 rm $SCRIPTS/activate-ssl.sh
