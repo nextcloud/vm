@@ -2,6 +2,11 @@
 
 # Tech and Me - ©2016, https://www.techandme.se/
 
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+
 WWW_ROOT=/var/www
 NCPATH=$WWW_ROOT/nextcloud
 NCDATA=/var/ncdata
@@ -15,6 +20,15 @@ STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
+
+# DEBUG mode
+if [ $DEBUG -eq 1 ]
+then
+    set -e
+    set -x
+else
+    sleep 1
+fi
 
 # Check if root
 if [ "$(whoami)" != "root" ]
