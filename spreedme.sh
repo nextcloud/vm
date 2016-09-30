@@ -12,14 +12,14 @@ SPREEDCONF="/etc/spreed/webrtc.conf"
 # Install spreed-webrtc
 apt-add-repository ppa:strukturag/spreed-webrtc
 apt-get update
-apt-get install spreed-webrtc -y
+apt-get install spreed-webrtc unzip -y
 
 # Download and install Spreed
 if [ -d $NCDIR/apps/spreedme ]; then
 echo "Spreed-webrtc exists..."
 else
 wget -q $SPREEDVER_REPO -P $NCDIR/apps
-tar -zxf $NCDIR/apps/$SPREED_FILE -C $NCDIR/apps
+unzip -q $NCDIR/apps/$SPREED_FILE -d $NCDIR/apps
 mv $NCDIR/apps/nextcloud-spreedme-master $NCDIR/apps/spreedme
 rm $NCDIR/apps/$SPREEDVER_FILE
 fi
@@ -29,7 +29,7 @@ if [ -d $NCDIR/apps/spreedme ]; then
 sudo -u www-data php $NCDIR/occ app:enable spreedme
 fi
 
-CAT <<-SPREEDCONF > "$SPREEDCONF"
+cat <<-SPREEDCONF > "$SPREEDCONF"
 ; Minimal Spreed WebRTC for Nextcloud server configuration
 
 [app]
