@@ -5,8 +5,9 @@ SPREEDDOMAIN=$(whiptail --title "Spreed domain" --inputbox "Leave empty for auto
 SPREEDPORT=""
 VHOST443="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 LISTENADDRESS="$ADDRESS"
-SPREEDVER_REPO="https://github.com/strukturag/nextcloud-spreedme/master"
-SPREED_FILE="nextcloud-spreedme-master.zip"
+APPVER="0.3.2"
+SPREEDVER_REPO="https://github.com/strukturag/nextcloud-spreedme/archive/v$APPVER.zip"
+SPREED_FILE="v$APPVER.zip"
 SPREEDCONF="/etc/spreed/webrtc.conf"
 
 # Install spreed-webrtc
@@ -20,8 +21,8 @@ echo "Spreed-webrtc exists..."
 else
 wget -q $SPREEDVER_REPO -P $NCDIR/apps
 unzip -q $NCDIR/apps/$SPREED_FILE -d $NCDIR/apps
-mv $NCDIR/apps/nextcloud-spreedme-master $NCDIR/apps/spreedme
-rm $NCDIR/apps/$SPREEDVER_FILE
+mv $NCDIR/apps/nextcloud-spreedme-$APPVER $NCDIR/apps/spreedme
+rm $NCDIR/apps/$SPREED_FILE
 fi
 
 # Enable Spreedme
@@ -80,7 +81,8 @@ cp "$NCDIR"/apps/spreedme/extra/static/config/OwnCloudConfig.js.in "$NCDIR"/apps
 sed -i "s|OWNCLOUD_ORIGIN: '',|OWNCLOUD_ORIGIN: $SPREEDDOMAIN,|g" "$NCDIR"/apps/spreedme/extra/static/config/OwnCloudConfig.js
 
 # Restart spreed server
-service spreedwebrtc restart
+service spreedwebrtc stop
+service spreedwebrtc start
 
 # Vhost configuration 443
 sed -i 's|</VirtualHost>||g' "$VHOST443"
