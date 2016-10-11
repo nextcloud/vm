@@ -28,15 +28,22 @@ then
     crontab -u root -l | { cat; echo "@monthly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 cat << CRONTAB > "/var/scripts/letsencryptrenew.sh"
 #!/bin/sh
+set -x
 systemctl stop apache2.service
-set -e
-if ! /etc/letsencrypt/letsencrypt-auto renew > /var/log/letsencrypt/renew.log 2>&1 ; then
-       echo Automated renewal failed:
-       cat /var/log/letsencrypt/renew.log
-       exit 1
+if ! /opt/letsencrypt/letsencrypt-auto renew > /var/log/letsencrypt/renew.log 2>&1 ; then
+        echo Automated renewal failed:
+        cat /var/log/letsencrypt/renew.log
+        exit 1
+fi
+systemctl start apache2.service
+if [[ $? == 0 ]]
+then
+        echo "Let's Encrypt SUCCESS!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+else
+        echo "Let's Encrypt FAILED!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+        reboot
 fi
 
-systemctl start apache2.service
 CRONTAB
 
 # Makeletsencryptrenew.sh executable
