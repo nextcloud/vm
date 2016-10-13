@@ -29,7 +29,7 @@ NCDATA=/var/ncdata
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # Repositories
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
