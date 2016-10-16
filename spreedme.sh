@@ -86,7 +86,7 @@ service spreedwebrtc start
 
 # Vhost configuration 443
 sed -i 's|</VirtualHost>||g' "$VHOST443"
-CAT <<-VHOST >> "$VHOST443"
+cat <<-VHOST >> "$VHOST443"
 <Location /webrtc>
       ProxyPass http://"$LISTENADDRESS":"$LISTENPORT"/webrtc
       ProxyPassReverse /webrtc
