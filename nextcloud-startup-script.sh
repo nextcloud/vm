@@ -64,6 +64,15 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
 
+# Get spreedme script
+if [ -f $SCRIPTS/spreedme.sh ]
+then
+    rm $SCRIPTS/spreedme.sh
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
+else
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
+fi
+
 # Get script for temporary fixes
 if [ -f $SCRIPTS/temporary.sh ]
 then
