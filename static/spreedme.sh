@@ -80,7 +80,7 @@ else
     rm $SPREEDME_FILE
     mv nextcloud-spreedme-$SPREEDME_VER spreedme
 fi
-sudo -u www-data php $NCPATH/occ app:enable nextcloud-spreedme
+sudo -u www-data php $NCPATH/occ app:enable spreedme
 
 # Generate secret keys
 #
