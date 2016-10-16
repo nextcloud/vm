@@ -106,6 +106,8 @@ fi
 chown -R root:root $BACKUP
 
 # Enable Apps
+snap refresh spreedme
+sudo -u www-data php $NCPATH/occ app:enable spreedme
 sudo -u www-data php $NCPATH/occ app:enable calendar
 sudo -u www-data php $NCPATH/occ app:enable contacts
 sudo -u www-data php $NCPATH/occ app:enable documents
