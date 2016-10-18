@@ -102,20 +102,18 @@ a2enmod proxy \
 VHOST=/etc/apache2/spreedme.conf
 
 cat << VHOST > "$VHOST"
+<Location /webrtc>
+    ProxyPass https://127.0.0.1:8080/webrtc
+    ProxyPassReverse /webrtc
+</Location>
 
-    <Location /webrtc>
-        ProxyPass https://127.0.0.1:8080/webrtc
-        ProxyPassReverse /webrtc
-    </Location>
-
-    <Location /webrtc/ws>
-        ProxyPass ws://127.0.0.1:8080/webrtc/ws
-    </Location>
+<Location /webrtc/ws>
+    ProxyPass ws://127.0.0.1:8080/webrtc/ws
+</Location>
 
     ProxyVia On
     ProxyPreserveHost On
     RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
-
 VHOST
 if grep -Fxq "Include $VHOST" /etc/apache2/apache2.conf
 then
@@ -133,7 +131,15 @@ then
     echo "Something is wrong, the installation did not finish correctly"
     exit 1
 else
+    echo
     echo "Success! SpreedMe is installed."
+    echo "Please do the final settings in the Admin section by following these instructions:"
+    echo "https://github.com/nextcloud/spreedme-snap#3-configure-the-spreedme-app"
+    echo
     exit 0
 fi
+echo -e "\e[32m"
+read -p "Press any key to continue..." -n1 -s
 clear
+echo -e "\e[0m"
+
