@@ -104,7 +104,8 @@ a2enmod proxy \
 #ACTIVE_VHOST=$(apache2ctl -S | grep 80 | cut -f5,5 -d"/" | cut -f1 -d":")
 #ACTIVE_VHOST_SSL=$(apache2ctl -S | grep 443 | cut -f5,5 -d"/" | cut -f1 -d":")
 
-VHOST=/etc/apache2/spreedme.conf
+VHOST="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
+sed -i 's/.*</VirtualHost>.*//g' "$VHOST"
 
 cat << VHOST > "$VHOST"
 <Location /webrtc>
@@ -119,14 +120,8 @@ cat << VHOST > "$VHOST"
     ProxyVia On
     ProxyPreserveHost On
     RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
+</VirtualHost>
 VHOST
-if grep -Fxq "Include $VHOST" /etc/apache2/apache2.conf
-then
-    echo "Include directive are enabled in apache2.conf"
-    sleep 1
-else
-    sed -i "145i Include $VHOST" "/etc/apache2/apache2.conf"
-fi
 
 # Restart services
 service apache2 restart
