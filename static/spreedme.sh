@@ -137,9 +137,7 @@ then
     exit 1
 else
     echo
-    echo "Success! SpreedMe is installed."
-    echo "Please do the final settings in the Admin section by following these instructions:"
-    echo "https://github.com/nextcloud/spreedme-snap#3-configure-the-spreedme-app"
+    echo "Success! SpreedMe is now installed and configured."
     echo
     exit 0
 fi
