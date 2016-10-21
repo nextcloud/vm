@@ -296,7 +296,7 @@ wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
 mkdir -p $GPGDIR
 wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
 chmod -R 600 $GPGDIR
-gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$OpenPGP_fingerprint"
+gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
 gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
 if [[ $? > 0 ]]
 then
