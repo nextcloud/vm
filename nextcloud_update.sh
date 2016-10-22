@@ -54,15 +54,18 @@ echo
 sleep 15
 
 # Backup data
+echo "Backing up data..."
+DATE=`date +%Y-%m-%d-%H%M%S`
 if [ -d $BACKUP ]
 then
+    mkdir -p /var/NCBACKUP_OLD/$DATE
+    mv $BACKUP/* /var/NCBACKUP_OLD/$DATE
     rm -R $BACKUP
     mkdir -p $BACKUP
 fi
-echo "Backing up data..."
-rsync -Aax $NCPATH/config $BACKUP
-rsync -Aax $NCPATH/themes $BACKUP
-rsync -Aax $NCPATH/apps $BACKUP
+rsync -Aax $OCPATH/config $BACKUP
+rsync -Aax $OCPATH/themes $BACKUP
+rsync -Aax $OCPATH/apps $BACKUP
 if [[ $? > 0 ]]
 then
     echo "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
