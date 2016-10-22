@@ -63,9 +63,9 @@ then
     rm -R $BACKUP
     mkdir -p $BACKUP
 fi
-rsync -Aax $OCPATH/config $BACKUP
-rsync -Aax $OCPATH/themes $BACKUP
-rsync -Aax $OCPATH/apps $BACKUP
+rsync -Aax $NCPATH/config $BACKUP
+rsync -Aax $NCPATH/themes $BACKUP
+rsync -Aax $NCPATH/apps $BACKUP
 if [[ $? > 0 ]]
 then
     echo "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
