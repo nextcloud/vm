@@ -12,6 +12,7 @@ THEME_NAME=""
 
 # Static values
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
+DOWNLOADREPO="https://download.nextcloud.com/server/releases"
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 BACKUP=/var/NCBACKUP
@@ -36,15 +37,28 @@ echo
 echo "System is now upgraded, now the script will upgrade Nextcloud."
 echo "Which version do you want to upgrade to? Type it like this: 10.0.1"
 read NCVERSION
-
+wget -q --spider $DOWNLOADREPO/nextcloud-$NCVERSION.tar.bz2
+        if [ $? -eq 0 ]; then
+                echo -e "\e[32m$NCVERSION exists!\e[0m"
+        else
+                echo
+                echo "$NCVERSION doesn't exist. Please check available versions here:"
+                echo "$DOWNLOADREPO"
+                echo
+                exit 1
+        fi
 echo "Upgrading to $NCVERSION in 15 seconds... Press CTRL+C to abort."
-echo "Disclamer: Tech and Me or Nextcloud is not responsible for any dataloss"
-echo "Config files are backed up and $NCDATA isn't removed, but things could go wrong."
+echo "Disclamer: Tech and Me or Nextcloud are not responsible for any dataloss."
+echo "Config files are backed up to $BACKUP and $NCDATA aren't removed, but things could go wrong."
+echo
 sleep 15
 
 # Backup data
-rm -R $BACKUP
-mkdir -p $BACKUP
+if [ -d $BACKUP ]
+then
+    rm -R $BACKUP
+    mkdir -p $BACKUP
+fi
 echo "Backing up data..."
 rsync -Aax $NCPATH/config $BACKUP
 rsync -Aax $NCPATH/themes $BACKUP
@@ -58,7 +72,7 @@ else
     echo "Backup OK!"
     echo -e "\e[0m"
 fi
-wget https://download.nextcloud.com/server/releases/nextcloud-$NCVERSION.tar.bz2 -P $HTML
+wget $DOWNLOADREPO/nextcloud-$NCVERSION.tar.bz2 -P $HTML
 
 if [ -f $HTML/nextcloud-$NCVERSION.tar.bz2 ]
 then
