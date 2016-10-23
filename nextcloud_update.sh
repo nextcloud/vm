@@ -37,12 +37,15 @@ echo
 echo "System is now upgraded, now the script will upgrade Nextcloud."
 echo "Which version do you want to upgrade to? Type it like this: 10.0.1"
 read NCVERSION
+echo 
+echo "Checking if $NCVERSION exists..."
 wget -q --spider $DOWNLOADREPO/nextcloud-$NCVERSION.tar.bz2
 if [ $? -eq 0 ]; then
-    echo -e "\e[32m$NCVERSION exists!\e[0m"
+    echo -e "\e[32mSUCCESS! Version $NCVERSION exists at Nextloud download server!\e[0m"
+    echo
 else
     echo
-    echo "$NCVERSION doesn't exist. Please check available versions here:"
+    echo -e "\e[91mVersion $NCVERSION doesn't exist.\e[0m Please check available versions here:"
     echo "$DOWNLOADREPO"
     echo
     exit 1
