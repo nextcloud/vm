@@ -15,13 +15,13 @@ HTML=/var/www
 NCPATH=$HTML/nextcloud
 SCRIPTS=/var/scripts
 BACKUP=/var/NCBACKUP
-# Versions
-CURRENTVERSION=$(php $NCPATH/status.php | grep "versionstring" | awk '{print $3}')
-NCVERSION=$(curl -s $DOWNLOADREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
-# Static values
+#Static Values
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 DOWNLOADREPO="https://download.nextcloud.com/server/releases"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
+# Versions
+CURRENTVERSION=$(php $NCPATH/status.php | grep "versionstring" | awk '{print $3}')
+NCVERSION=$(curl -s $DOWNLOADREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
