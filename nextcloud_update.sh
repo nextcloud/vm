@@ -18,6 +18,7 @@ NCPATH=/var/www/nextcloud
 BACKUP=/var/NCBACKUP
 HTML=/var/www
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
+VERSION=$(php $NCPATH/status.php | grep "versionstring" | awk '{print $3}')
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
@@ -34,10 +35,13 @@ fi
 sudo apt-get update -q2
 sudo aptitude full-upgrade -y
 echo
-echo "System is now upgraded, now the script will upgrade Nextcloud."
-echo "Which version do you want to upgrade to? Type it like this: 10.0.1"
+echo "The system had now been upgraded, now the script will upgrade Nextcloud."
+echo "Current version is: $VERSION, you can NOT downgrade."
+echo "Which version do you want to upgrade to? You can check available versions here:"
+echo "$DOWNLOADREPO"
+echo "Type it in the same way as the current version ($VERSION) with the dots and numbers:"
 read NCVERSION
-echo 
+echo
 echo "Checking if $NCVERSION exists..."
 wget -q --spider $DOWNLOADREPO/nextcloud-$NCVERSION.tar.bz2
 if [ $? -eq 0 ]; then
