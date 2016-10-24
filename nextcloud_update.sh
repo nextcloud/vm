@@ -17,11 +17,11 @@ SCRIPTS=/var/scripts
 BACKUP=/var/NCBACKUP
 #Static Values
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-DOWNLOADREPO="https://download.nextcloud.com/server/releases"
+NCREPO="https://download.nextcloud.com/server/releases"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Versions
 CURRENTVERSION=$(php $NCPATH/status.php | grep "versionstring" | awk '{print $3}')
-NCVERSION=$(curl -s $DOWNLOADREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+NCVERSION=$(curl -s $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
@@ -39,16 +39,14 @@ sudo apt-get update -q2
 sudo aptitude full-upgrade -y
 
 # Upgrade Nextcloud
-echo "Upgrading Nextcloud..."
-echo "Checking latest released version: $NCVERSION, and if it exists on the download server..."
-wget -q --spider $DOWNLOADREPO/nextcloud-$NCVERSION.tar.bz2
+echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
+wget -q --spider $NCREPO/nextcloud-$NCVERSION.tar.bz2
 if [ $? -eq 0 ]; then
-    echo -e "\e[32mSUCCESS! Nextcloud $NCVERSION exists at Nextloud download server!\e[0m"
-    echo
+    echo -e "\e[32mSUCCESS!\e[0m"
 else
     echo
     echo -e "\e[91mNextcloud $NCVERSION doesn't exist.\e[0m"
-    echo "Please check available versions here: $DOWNLOADREPO"
+    echo "Please check available versions here: $NCREPO"
     echo
     exit 1
 fi
@@ -57,13 +55,14 @@ fi
 if [[ "$NCVERSION" > "$CURRENTVERSION" ]]
 then
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
-    echo "New version available! Upgrade continues..."
+    echo -e "\e[32mNew version available! Upgrade continues...\e[0m"
 else
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo "No need to upgrade, this script will exit..."
     exit 0
 fi
-echo "Upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort."
+echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..." 
+echo "Press CTRL+C to abort."
 sleep 10
 
 # Backup data
@@ -88,7 +87,7 @@ else
     echo "Backup OK!"
     echo -e "\e[0m"
 fi
-wget $DOWNLOADREPO/nextcloud-$NCVERSION.tar.bz2 -P $HTML
+wget $NCREPO/nextcloud-$NCVERSION.tar.bz2 -P $HTML
 
 if [ -f $HTML/nextcloud-$NCVERSION.tar.bz2 ]
 then
@@ -117,7 +116,11 @@ fi
 # Let the magic begin...
 if [ -d $BACKUP/apps/ ]
 then
-    echo "$BACKUP/apps/ exists, removing old Nextcloud instance in 5 seconds..." && sleep 5
+    echo "$BACKUP/apps/ exists"
+    echo 
+    echo -e "\e[32mAll files are backed up.\e[0m"
+    sudo -u www-data php $NCPATH/occ maintenance:mode --on
+    echo "Removing old Nextcloud instance in 5 seconds..." && sleep 5
     rm -rf $NCPATH
     tar -xjf $HTML/nextcloud-$NCVERSION.tar.bz2 -C $HTML
     rm $HTML/nextcloud-$NCVERSION.tar.bz2
@@ -186,6 +189,7 @@ sudo update-grub
 
 if [[ "$NCVERSION" == "$CURRENTVERSION" ]]
 then
+    echo
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo "UPGRADE SUCCESS!"
     echo "NEXTCLOUD UPDATE success-`date +"%Y%m%d"`" >> /var/log/cronjobs_success.log
@@ -195,7 +199,9 @@ then
     # sudo reboot
     exit 0
 else
+    echo
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo "UPGRADE FAILED!"
+    echo "Your files are still backed up at $BACKUP. No worries!"
     exit 1
 fi
