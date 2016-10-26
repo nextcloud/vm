@@ -17,7 +17,6 @@ NCPATH=/var/www/nextcloud
 BACKUP=/var/NCBACKUP
 HTML=/var/www
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
-SNAPDIR=/var/snap/spreedme
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
