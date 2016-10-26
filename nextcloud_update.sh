@@ -15,6 +15,7 @@ HTML=/var/www
 NCPATH=$HTML/nextcloud
 SCRIPTS=/var/scripts
 BACKUP=/var/NCBACKUP
+SNAPDIR=/var/snap/spreedme
 #Static Values
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 NCREPO="https://download.nextcloud.com/server/releases"
@@ -139,6 +140,13 @@ fi
 chown -R root:root $BACKUP
 
 # Enable Apps
+if [ -d $SNAPDIR ]
+then
+    snap refresh spreedme
+    sudo -u www-data php $NCPATH/occ app:enable spreedme
+else
+    sleep 1
+fi
 sudo -u www-data php $NCPATH/occ app:enable calendar
 sudo -u www-data php $NCPATH/occ app:enable contacts
 sudo -u www-data php $NCPATH/occ app:enable documents
