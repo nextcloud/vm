@@ -108,7 +108,7 @@ VHOST=/etc/apache2/spreedme.conf
 
 cat << VHOST > "$VHOST"
 <Location /webrtc>
-    ProxyPass https://127.0.0.1:8080/webrtc
+    ProxyPass http://127.0.0.1:8080/webrtc
     ProxyPassReverse /webrtc
 </Location>
 
