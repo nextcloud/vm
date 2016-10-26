@@ -17,6 +17,7 @@ NCPATH=/var/www/nextcloud
 BACKUP=/var/NCBACKUP
 HTML=/var/www
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
+SNAPDIR=/var/snap/spreedme
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
@@ -106,8 +107,13 @@ fi
 chown -R root:root $BACKUP
 
 # Enable Apps
-snap refresh spreedme
-sudo -u www-data php $NCPATH/occ app:enable spreedme
+if [ -d $SNAPDIR ]
+then
+    snap refresh spreedme
+    sudo -u www-data php $NCPATH/occ app:enable spreedme
+else
+    sleep 1
+fi
 sudo -u www-data php $NCPATH/occ app:enable calendar
 sudo -u www-data php $NCPATH/occ app:enable contacts
 sudo -u www-data php $NCPATH/occ app:enable documents
