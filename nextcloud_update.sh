@@ -39,6 +39,17 @@ fi
 sudo apt-get update -q2
 sudo aptitude full-upgrade -y
 
+# Set secure permissions
+FILE="$SECURE"
+if [ -f $FILE ]
+then
+    echo "Script exists"
+else
+    mkdir -p $SCRIPTS
+    wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
+    chmod +x $SECURE
+fi
+
 # Upgrade Nextcloud
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
 wget -q --spider $NCREPO/nextcloud-$NCVERSION.tar.bz2
@@ -173,17 +184,8 @@ else
     echo "Theme set"
 fi
 
-# Set secure permissions
-FILE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
-if [ -f $FILE ]
-then
-    echo "Script exists"
-else
-    mkdir -p $SCRIPTS
-    wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
-    chmod +x $SCRIPTS/setup_secure_permissions_nextcloud.sh
-fi
-sudo bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+# Set secure permissions again
+bash $SECURE
 
 # Repair
 sudo -u www-data php $NCPATH/occ maintenance:repair
