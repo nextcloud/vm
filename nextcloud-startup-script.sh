@@ -421,13 +421,10 @@ fi
 clear
 
 # Upgrade system
-echo System will now upgrade...
+echo "System will now upgrade..."
 sleep 2
 echo
-echo
-apt-get update -q2
-aptitude full-upgrade -y
-bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+bash $SCRIPTS/update.sh
 
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
