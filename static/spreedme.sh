@@ -83,9 +83,14 @@ fi
 sudo -u www-data php $NCPATH/occ app:enable spreedme
 
 # Generate secret keys
-#
-# HOW? Generate from CLI and copy key to server.conf would be the best.
-#
+SHAREDSECRET=$(openssl rand -hex 32)
+sed -i "s|sharedsecret_secret = .*|sharedsecret_secret = '$SHAREDSECRET'|g" "$SNAPDIR/current/server.conf"
+
+# Populate the else empty config file (uses database for content by default)
+cp "$NCPATH/apps/spreedme/config/config.php.in" "$NCPATH/apps/spreedme/config/config.php"
+
+# Place the key in the NC app config
+sed -i "s/.*SPREED_WEBRTC_SHAREDSECRET.*/       const SPREED_WEBRTC_SHAREDSECRET = '$SHAREDSECRET';/g" "$NCPATH/apps/spreedme/config/config.php"
 
 # Enable Apache mods
 a2enmod proxy \
@@ -102,20 +107,18 @@ a2enmod proxy \
 VHOST=/etc/apache2/spreedme.conf
 
 cat << VHOST > "$VHOST"
+<Location /webrtc>
+    ProxyPass http://127.0.0.1:8080/webrtc
+    ProxyPassReverse /webrtc
+</Location>
 
-    <Location /webrtc>
-        ProxyPass https://127.0.0.1:8080/webrtc
-        ProxyPassReverse /webrtc
-    </Location>
-
-    <Location /webrtc/ws>
-        ProxyPass ws://127.0.0.1:8080/webrtc/ws
-    </Location>
+<Location /webrtc/ws>
+    ProxyPass ws://127.0.0.1:8080/webrtc/ws
+</Location>
 
     ProxyVia On
     ProxyPreserveHost On
     RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
-
 VHOST
 if grep -Fxq "Include $VHOST" /etc/apache2/apache2.conf
 then
@@ -133,7 +136,13 @@ then
     echo "Something is wrong, the installation did not finish correctly"
     exit 1
 else
-    echo "Success! SpreedMe is installed."
+    echo
+    echo "Success! SpreedMe is now installed and configured."
+    echo
     exit 0
 fi
+echo -e "\e[32m"
+read -p "Press any key to continue..." -n1 -s
 clear
+echo -e "\e[0m"
+
