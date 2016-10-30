@@ -56,8 +56,7 @@ fi
 # Install Nextcloud Spreedme Snap
 if [ -d $SNAPDIR ]
 then
-    echo "SpreeMe snap already seems to be installed. This script will remove the old snap and install the new one in 10 seconds."
-    sleep 10
+    echo "SpreeMe Snap already seems to be installed and wil now be re-installed..."
     snap remove spreedme
     snap install spreedme
 else
@@ -71,8 +70,16 @@ SPREEDME_REPO=https://github.com/strukturag/nextcloud-spreedme/archive
 
 if [ -d $NCPATH/apps/spreedme ]
 then
-    echo "SpreedMe app already installed"
-    sleep 1
+    # Remove
+    sudo -u www-data php $NCPATH/occ app:disable spreedme
+    echo "SpreedMe app already seems to be installed and will now be re-installed..."
+    rm -R $NCPATH/apps/spreedme
+    # Reinstall
+    wget -q $SPREEDME_REPO/$SPREEDME_FILE -P $NCPATH/apps
+    tar -zxf $NCPATH/apps/$SPREEDME_FILE -C $NCPATH/apps
+    cd $NCPATH/apps
+    rm $SPREEDME_FILE
+    mv nextcloud-spreedme-$SPREEDME_VER spreedme
 else
     wget -q $SPREEDME_REPO/$SPREEDME_FILE -P $NCPATH/apps
     tar -zxf $NCPATH/apps/$SPREEDME_FILE -C $NCPATH/apps
