@@ -101,10 +101,10 @@ cp "$NCPATH/apps/spreedme/config/config.php.in" "$NCPATH/apps/spreedme/config/co
 sed -i "s|.*SPREED_WEBRTC_SHAREDSECRET.*|       const SPREED_WEBRTC_SHAREDSECRET = '$SHAREDSECRET';|g" "$NCPATH/apps/spreedme/config/config.php"
 
 # Allow to create temporary links
-sed -i "s|.*OWNCLOUD_TEMPORARY_PASSWORD_LOGIN_ENABLED.*|       const OWNCLOUD_TEMPORARY_PASSWORD_LOGIN_ENABLED = true;|g" "$NCPATH/apps/spreedme/config/config.php"
+sed -i "s|const OWNCLOUD_TEMPORARY_PASSWORD_LOGIN_ENABLED.*|const OWNCLOUD_TEMPORARY_PASSWORD_LOGIN_ENABLED = true;|g" "$NCPATH/apps/spreedme/config/config.php"
 
 #  Set temporary links hash
-sed -i "s|.*OWNCLOUD_TEMPORARY_PASSWORD_SIGNING_KEY.*|       const OWNCLOUD_TEMPORARY_PASSWORD_SIGNING_KEY = '$TEMPLINK';|g" "$NCPATH/apps/spreedme/config/config.php"
+sed -i "s|const OWNCLOUD_TEMPORARY_PASSWORD_SIGNING_KEY.*|const OWNCLOUD_TEMPORARY_PASSWORD_SIGNING_KEY = '$TEMPLINK';|g" "$NCPATH/apps/spreedme/config/config.php"
 
 
 # Enable Apache mods
