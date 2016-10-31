@@ -97,10 +97,7 @@ sed -i "s|sharedsecret_secret = .*|sharedsecret_secret = $SHAREDSECRET|g" "$SNAP
 cp "$NCPATH/apps/spreedme/config/config.php.in" "$NCPATH/apps/spreedme/config/config.php"
 
 # Place the key in the NC app config
-sed -i "s/.*SPREED_WEBRTC_SHAREDSECRET.*/       const SPREED_WEBRTC_SHAREDSECRET = $SHAREDSECRET;/g" "$NCPATH/apps/spreedme/config/config.php"
-
-# Set hostname as ORGIN
-sed -i "s|const SPREED_WEBRTC_ORIGIN.*|const SPREED_WEBRTC_ORIGIN = 'https://$(hostname)';|g" "$NCPATH/apps/spreedme/config/config.php"
+sed -i "s|.*SPREED_WEBRTC_SHAREDSECRET.*|       const SPREED_WEBRTC_SHAREDSECRET = $SHAREDSECRET;|g" "$NCPATH/apps/spreedme/config/config.php"
 
 # Enable Apache mods
 a2enmod proxy \
@@ -148,6 +145,8 @@ then
 else
     echo
     echo "Success! SpreedMe is now installed and configured."
+    echo "You may have to change SPREED_WEBRTC_ORIGIN in:" 
+    echo "$NCPATH/apps/spreedme/config/config.php"
     echo
     exit 0
 fi
