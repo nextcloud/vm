@@ -134,6 +134,7 @@ cat << VHOST > "$VHOST"
     ProxyVia On
     ProxyPreserveHost On
     RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
+    # RequestHeader set X-Forwarded-Proto 'https' # Use this if you are behind a (Nginx) reverse proxy with http backends
 VHOST
 if grep -Fxq "Include $VHOST" /etc/apache2/apache2.conf
 then
