@@ -99,6 +99,9 @@ cp "$NCPATH/apps/spreedme/config/config.php.in" "$NCPATH/apps/spreedme/config/co
 # Place the key in the NC app config
 sed -i "s/.*SPREED_WEBRTC_SHAREDSECRET.*/       const SPREED_WEBRTC_SHAREDSECRET = $SHAREDSECRET;/g" "$NCPATH/apps/spreedme/config/config.php"
 
+# Set hostname as ORGIN
+sed -i "s|const SPREED_WEBRTC_ORIGIN.*|const SPREED_WEBRTC_ORIGIN = 'https://$(hostname)';|g" "$NCPATH/apps/spreedme/config/config.php"
+
 # Enable Apache mods
 a2enmod proxy \
         proxy_wstunnel \
