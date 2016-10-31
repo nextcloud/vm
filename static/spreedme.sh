@@ -97,7 +97,7 @@ sed -i "s|sharedsecret_secret = .*|sharedsecret_secret = $SHAREDSECRET|g" "$SNAP
 cp "$NCPATH/apps/spreedme/config/config.php.in" "$NCPATH/apps/spreedme/config/config.php"
 
 # Place the key in the NC app config
-sed -i "s/.*SPREED_WEBRTC_SHAREDSECRET.*/       const SPREED_WEBRTC_SHAREDSECRET = $SHAREDSECRET;/g" "$NCPATH/apps/spreedme/config/config.php"
+sed -i "s/.*SPREED_WEBRTC_SHAREDSECRET.*/       const SPREED_WEBRTC_SHAREDSECRET = '$SHAREDSECRET';/g" "$NCPATH/apps/spreedme/config/config.php"
 
 # Enable Apache mods
 a2enmod proxy \
