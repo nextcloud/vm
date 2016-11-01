@@ -53,6 +53,7 @@ fi
 
 echo
 echo "Installing and securing phpMyadmin..."
+echo "This may take a while, please don't abort."
 echo
 sleep 2
 
@@ -169,10 +170,14 @@ cat << CONFIG_CREATE >> "$CONFIG"
 CONFIG_CREATE
 
 service apache2 restart
-
-echo
-echo "$PHPMYADMIN_CONF was successfully secured."
-echo
-sleep 3
-
-exit 0
+if [[ $? > 0 ]]
+then 
+    echo "Apache2 could not restart..."
+    echo "The script will exit."
+    exit 1
+else
+    echo
+    echo "$PHPMYADMIN_CONF was successfully secured."
+    echo
+    sleep 3
+fi
