@@ -313,8 +313,9 @@ chown www-data:www-data $NCPATH/config/config.php
 sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
 
-echo "Generating new SSH keys for the server..."
+# Generate new SSH Keys
 echo
+echo "Generating new SSH keys for the server..."
 sleep 1
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
@@ -325,6 +326,7 @@ bash $SCRIPTS/change_mysql_pass.sh
 rm $SCRIPTS/change_mysql_pass.sh
 
 # Install phpMyadmin
+echo
 bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 clear
