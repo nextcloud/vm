@@ -21,6 +21,7 @@ then
 fi
 
 # Check Ubuntu version
+echo
 echo "Checking server OS and version..."
 if [ $OS -eq 1 ]
 then
