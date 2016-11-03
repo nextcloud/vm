@@ -331,26 +331,73 @@ bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 clear
 
-# Install SpreedMe
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-if [[ "yes" == $(ask_yes_or_no "Do you want to install SpreedMe?") ]]
+#!/bin/bash
+
+function calendar {
+# Download and install Calendar
+if [ -d $NCPATH/apps/calendar ]
 then
+    sleep 1
+else
+    wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
+    tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
+    cd $NCPATH/apps
+    rm $CALVER_FILE
+fi
+
+# Enable Calendar
+if [ -d $NCPATH/apps/calendar ]
+then
+    sudo -u www-data php $NCPATH/occ app:enable calendar
+fi
+
+}
+
+function contacts {
+# Download and install Contacts
+if [ -d $NCPATH/apps/contacts ]
+then
+    sleep 1
+else
+    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
+    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
+    cd $NCPATH/apps
+    rm $CONVER_FILE
+fi
+
+# Enable Contacts
+if [ -d $NCPATH/apps/contacts ]
+then
+    sudo -u www-data php $NCPATH/occ app:enable contacts
+fi
+}
+
+
+function spreedme {
     bash $SCRIPTS/spreedme.sh
     rm $SCRIPTS/spreedme.sh
-else
-    echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/spreedme.sh"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
-fi
-clear
+
+}
+
+whiptail --title "Which apps do you want to install?" --checklist --separate-output "" 10 40 3 \
+"Calendar" "              " on \
+"Contacts" "              " on \
+"Spreed.Me" "              " on 2>results
+
+while read choice
+do
+        case $choice in
+                Calendar) calendar
+                ;;
+                Contacts) contacts
+                ;;
+                Spreed.Me) spreedme
+                ;;
+                *)
+                ;;
+        esac
+done < results
+
 
 # Add extra security
 function ask_yes_or_no() {
