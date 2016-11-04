@@ -477,67 +477,6 @@ wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
 apt-get update -q2
 apt-get install webmin -y
 
-# Nextcloud apps
-CONVER=$(wget -q https://raw.githubusercontent.com/nextcloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/owncloud/contacts/releases/download
-CALVER=$(wget -q https://raw.githubusercontent.com/nextcloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CALVER_FILE=calendar.tar.gz
-CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
-
-# Download and install Documents
-#if [ -d $NCPATH/apps/documents ]
-#   then
-#   sleep 1
-#else
-#   wget -q https://github.com/owncloud/documents/archive/master.zip -P $NCPATH/apps
-#   cd $NCPATH/apps
-#   unzip -q master.zip
-#   rm master.zip
-#   mv documents-master/ documents/
-#fi
-
-# Enable documents
-#if [ -d $NCPATH/apps/documents ]
-#   then
-#   sudo -u www-data php $NCPATH/occ app:enable documents
-sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-#fi
-
-# Download and install Contacts
-if [ -d $NCPATH/apps/contacts ]
-then
-    sleep 1
-else
-    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CONVER_FILE
-fi
-
-# Enable Contacts
-if [ -d $NCPATH/apps/contacts ]
-then
-    sudo -u www-data php $NCPATH/occ app:enable contacts
-fi
-
-# Download and install Calendar
-if [ -d $NCPATH/apps/calendar ]
-then
-    sleep 1
-else
-    wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CALVER_FILE
-fi
-
-# Enable Calendar
-if [ -d $NCPATH/apps/calendar ]
-then
-    sudo -u www-data php $NCPATH/occ app:enable calendar
-fi
-
 # Change roots .bash_profile
 if [ -f $SCRIPTS/change-root-profile.sh ]
 then
