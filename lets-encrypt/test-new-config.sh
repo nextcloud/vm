@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SCRIPTS=/var/scripts
+STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 
 # Activate the new config
 echo -e "\e[0m"
@@ -46,6 +47,28 @@ CRONTAB
 
 # Makeletsencryptrenew.sh executable
 chmod +x $SCRIPTS/letsencryptrenew.sh
+
+# Update Config
+if [ -f $SCRIPTS/update-config.php ]
+then
+    rm $SCRIPTS/update-config.php
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+else
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+fi
+
+# Sets trusted domain in when nextcloud-startup-script.sh is finished
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    rm $SCRIPTS/trusted.sh
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+else
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+fi
+
+bash $SCRIPTS/trusted.sh
+rm $SCRIPTS/trusted.sh
+rm $SCRIPTS/update-config.php
 
 # Cleanup
 rm $SCRIPTS/test-new-config.sh
