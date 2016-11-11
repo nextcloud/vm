@@ -38,9 +38,9 @@ fi
 service apache2 start
 if [[ $? -eq 0 ]]
 then
-        echo "Let's Encrypt SUCCESS!--$(date)" >> /var/log/letsencrypt/cronjob.log
+        echo "Let's Encrypt SUCCESS!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
 else
-        echo "Let's Encrypt FAILED!--$(date)" >> /var/log/letsencrypt/cronjob.log
+        echo "Let's Encrypt FAILED!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
         reboot
 fi
 CRONTAB
