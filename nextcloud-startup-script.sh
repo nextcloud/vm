@@ -39,16 +39,28 @@ then
     exit 1
 fi
 
+
+# Check network
+echo "Testing if network is OK..."
+sleep 2
+service networking restart
+    wget -q --spider http://github.com
+if [ $? -eq 0 ]
+then
+    echo -e "\e[32mOnline!\e[0m"
+else
 echo "Setting correct interface..."
 # Set correct interface
 { sed '/# The primary network interface/q' /etc/network/interfaces; printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"; } > /etc/network/interfaces.new
 mv /etc/network/interfaces.new /etc/network/interfaces
 service networking restart
+fi
 
 # Check network
 echo "Testing if network is OK..."
 sleep 2
 sudo ifdown $IFACE && sudo ifup $IFACE
+service networking restart
     wget -q --spider http://github.com
 if [ $? -eq 0 ]
 then
