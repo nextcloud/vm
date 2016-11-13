@@ -279,7 +279,7 @@ echo -e "Write this down, you will need it to set static IP"
 echo -e "in your router later. It's included in this guide:"
 echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
 echo -e "Please note that we will backup the interfaces file to:"
-echo -e "/etc/network/interfaces.bak"
+echo -e "/etc/network/interfaces.backup"
 echo -e "\e[32m"
 read -p "Press any key to set static IP..." -n1 -s
 cp /etc/network/interfaces /etc/network/interfaces.backup
