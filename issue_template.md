@@ -29,9 +29,9 @@ Tell us what happens instead
 Insert your webserver log here
 ```
 
-#### Log file (data/owncloud.log)
+#### Log file (data/nextcloud.log)
 ```
-Insert your ownCloud.log file here
+Insert your Nextcloud.log file here
 ```
 
 
