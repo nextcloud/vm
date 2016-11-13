@@ -43,6 +43,7 @@ fi
 # Check network
 echo "Testing if network is OK..."
 sleep 2
+sudo ifdown $IFACE && sudo ifup $IFACE
 service networking restart
     wget -q --spider http://github.com
 if [ $? -eq 0 ]
