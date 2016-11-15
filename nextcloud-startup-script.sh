@@ -39,16 +39,27 @@ then
     exit 1
 fi
 
+
+# Check network
+echo "Testing if network is OK..."
+sleep 2
+service networking restart
+    wget -q --spider http://github.com
+if [ $? -eq 0 ]
+then
+    echo -e "\e[32mOnline!\e[0m"
+else
 echo "Setting correct interface..."
 # Set correct interface
 { sed '/# The primary network interface/q' /etc/network/interfaces; printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"; } > /etc/network/interfaces.new
 mv /etc/network/interfaces.new /etc/network/interfaces
 service networking restart
+fi
 
 # Check network
 echo "Testing if network is OK..."
 sleep 2
-sudo ifdown $IFACE && sudo ifup $IFACE
+service networking restart
     wget -q --spider http://github.com
 if [ $? -eq 0 ]
 then
@@ -266,8 +277,11 @@ echo -e "\e[0m"
 echo -e "Write this down, you will need it to set static IP"
 echo -e "in your router later. It's included in this guide:"
 echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
+echo -e "Please note that we will backup the interfaces file to:"
+echo -e "/etc/network/interfaces.backup"
 echo -e "\e[32m"
 read -p "Press any key to set static IP..." -n1 -s
+cp /etc/network/interfaces /etc/network/interfaces.backup
 clear
 echo -e "\e[0m"
 ifdown $IFACE
