@@ -277,8 +277,11 @@ echo -e "\e[0m"
 echo -e "Write this down, you will need it to set static IP"
 echo -e "in your router later. It's included in this guide:"
 echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
+echo -e
 echo -e "Please note that we will backup the interfaces file to:"
 echo -e "/etc/network/interfaces.backup"
+echo -e "If you run this script on a remote VPS the IP is probably wrong. "
+echo -e "But no worries - we will restore the interfaces.backup in the end of this script."
 echo -e "\e[32m"
 read -p "Press any key to set static IP..." -n1 -s
 cp /etc/network/interfaces /etc/network/interfaces.backup
@@ -465,25 +468,6 @@ apt-get autoclean
 echo "$CLEARBOOT"
 clear
 
-ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
-# Success!
-echo -e "\e[32m"
-echo    "+--------------------------------------------------------------------+"
-echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
-echo    "|                                                                    |"
-echo -e "|         \e[0mLogin to Nextcloud in your browser:\e[36m" $ADDRESS2"\e[32m           |"
-echo    "|                                                                    |"
-echo -e "|         \e[0mPublish your server online! \e[36mhttps://goo.gl/iUGE2U\e[32m          |"
-echo    "|                                                                    |"
-echo -e "|      \e[0mYour MySQL password is stored in: \e[36m$PW_FILE\e[32m     |"
-echo    "|                                                                    |"
-echo -e "|    \e[91m#################### Tech and Me - 2016 ####################\e[32m    |"
-echo    "+--------------------------------------------------------------------+"
-echo
-read -p "Press any key to continue..." -n1 -s
-echo -e "\e[0m"
-echo
-
 # Cleanup 2
 sudo -u www-data php $NCPATH/occ maintenance:repair
 rm $SCRIPTS/ip.sh
@@ -519,6 +503,42 @@ cat << RCLOCAL > "/etc/rc.local"
 exit 0
 
 RCLOCAL
+
+ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
+# Success!
+echo -e "\e[32m"
+echo    "+--------------------------------------------------------------------+"
+echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
+echo    "|                                                                    |"
+echo -e "|         \e[0mLogin to Nextcloud in your browser:\e[36m" $ADDRESS2"\e[32m           |"
+echo    "|                                                                    |"
+echo -e "|         \e[0mPublish your server online! \e[36mhttps://goo.gl/iUGE2U\e[32m          |"
+echo    "|                                                                    |"
+echo -e "|      \e[0mYour MySQL password is stored in: \e[36m$PW_FILE\e[32m     |"
+echo    "|                                                                    |"
+echo -e "|    \e[91m#################### Tech and Me - 2016 ####################\e[32m    |"
+echo    "+--------------------------------------------------------------------+"
+echo
+echo
+
+# VPS?
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "yes" == $(ask_yes_or_no "Do you run this on a *remote* VPS?") ]]
+then
+    echo "Ok, then your IP are probably wrong, we will use the backup file to recover it so that you can connect after reboot"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+    mv /etc/network/interfaces.backup /etc/network/interfaces
+else
+    sleep 1
+fi
 
 clear
 echo
