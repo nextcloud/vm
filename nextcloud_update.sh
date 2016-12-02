@@ -160,7 +160,6 @@ else
 fi
 sudo -u www-data php $NCPATH/occ app:enable calendar
 sudo -u www-data php $NCPATH/occ app:enable contacts
-sudo -u www-data php $NCPATH/occ app:enable documents
 
 # Increase max filesize (expects that changes are made in /etc/php5/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
