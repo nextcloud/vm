@@ -480,7 +480,7 @@ apt-get install webmin -y
 # Nextcloud apps
 CONVER=$(wget -q https://raw.githubusercontent.com/nextcloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/owncloud/contacts/releases/download
+CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
 CALVER=$(wget -q https://raw.githubusercontent.com/nextcloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
