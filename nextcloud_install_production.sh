@@ -487,23 +487,7 @@ CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
-# Download and install Contacts
-if [ -d $NCPATH/apps/contacts ]
-then
-    sleep 1
-else
-    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CONVER_FILE
-fi
-
-# Enable Contacts
-if [ -d $NCPATH/apps/contacts ]
-then
-    sudo -u www-data php $NCPATH/occ app:enable contacts
-fi
-
+function calendar {
 # Download and install Calendar
 if [ -d $NCPATH/apps/calendar ]
 then
@@ -520,6 +504,54 @@ if [ -d $NCPATH/apps/calendar ]
 then
     sudo -u www-data php $NCPATH/occ app:enable calendar
 fi
+
+}
+
+function contacts {
+# Download and install Contacts
+if [ -d $NCPATH/apps/contacts ]
+then
+    sleep 1
+else
+    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
+    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
+    cd $NCPATH/apps
+    rm $CONVER_FILE
+fi
+
+# Enable Contacts
+if [ -d $NCPATH/apps/contacts ]
+then
+    sudo -u www-data php $NCPATH/occ app:enable contacts
+fi
+}
+
+
+function spreedme {
+    bash $SCRIPTS/spreedme.sh
+    rm $SCRIPTS/spreedme.sh
+
+}
+
+whiptail --title "Which apps do you want to install?" --checklist --separate-output "" 10 40 3 \
+"Calendar" "              " on \
+"Contacts" "              " on \
+"Spreed.Me" "              " on 2>results
+
+while read choice
+do
+        case $choice in
+                Calendar) calendar
+                ;;
+                Contacts) contacts
+                ;;
+                Spreed.Me) spreedme
+                ;;
+                *)
+                ;;
+        esac
+done < results
+
 
 # Change roots .bash_profile
 if [ -f $SCRIPTS/change-root-profile.sh ]
