@@ -485,6 +485,15 @@ CALVER=$(wget -q https://raw.githubusercontent.com/nextcloud/calendar/master/app
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 
+# Get spreedme script
+if [ -f $SCRIPTS/spreedme.sh ]
+then
+    rm $SCRIPTS/spreedme.sh
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
+else
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
+fi
+
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
 function calendar {
