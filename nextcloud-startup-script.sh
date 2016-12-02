@@ -321,9 +321,6 @@ bash $SCRIPTS/test_connection.sh
 sleep 2
 clear
 
-# Change Trusted Domain and CLI
-bash $SCRIPTS/trusted.sh
-
 # Pretty URLs
 echo "Setting RewriteBase to "/" in config.php..."
 chown www-data:www-data $NCPATH/config/config.php
@@ -471,7 +468,6 @@ clear
 # Cleanup 2
 sudo -u www-data php $NCPATH/occ maintenance:repair
 rm $SCRIPTS/ip.sh
-rm $SCRIPTS/trusted.sh
 rm $SCRIPTS/test_connection.sh
 rm $SCRIPTS/update-config.php
 rm $SCRIPTS/instruction.sh
@@ -570,6 +566,10 @@ else
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
 fi
+
+# Change Trusted Domain and CLI
+bash $SCRIPTS/trusted.sh
+rm $SCRIPTS/trusted.sh
 
 # Reboot
 reboot
