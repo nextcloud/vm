@@ -469,7 +469,6 @@ clear
 sudo -u www-data php $NCPATH/occ maintenance:repair
 rm $SCRIPTS/ip.sh
 rm $SCRIPTS/test_connection.sh
-rm $SCRIPTS/update-config.php
 rm $SCRIPTS/instruction.sh
 rm $NCDATA/nextcloud.log
 rm $SCRIPTS/nextcloud-startup-script.sh
@@ -570,6 +569,7 @@ fi
 # Change Trusted Domain and CLI
 bash $SCRIPTS/trusted.sh
 rm $SCRIPTS/trusted.sh
+rm $SCRIPTS/update-config.php
 
 # Reboot
 reboot
