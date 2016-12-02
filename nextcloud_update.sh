@@ -64,7 +64,7 @@ else
 fi
 
 # Check if new version is larger than current version installed.
-if [[ "$NCVERSION" > "$CURRENTVERSION" ]]
+if [[ "$NCVERSION" < "$CURRENTVERSION" ]]
 then
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo -e "\e[32mNew version available! Upgrade continues...\e[0m"
