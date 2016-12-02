@@ -434,7 +434,6 @@ then
 else
     echo "Not changing password as you already changed <user> and <pass> in the script"
 fi
-clear
 
 # Upgrade system
 echo "System will now upgrade..."
@@ -501,6 +500,7 @@ RCLOCAL
 
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 # Success!
+clear
 echo -e "\e[32m"
 echo    "+--------------------------------------------------------------------+"
 echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
