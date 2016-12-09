@@ -21,7 +21,7 @@ STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 NCREPO="https://download.nextcloud.com/server/releases"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Versions
-CURRENTVERSION=$(php $NCPATH/status.php | grep "versionstring" | awk '{print $3}')
+CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 
 # Must be root
