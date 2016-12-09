@@ -196,6 +196,9 @@ sudo apt-get autoclean
 # Update GRUB, just in case
 sudo update-grub
 
+service apache2 restart
+sleep 2
+
 if [[ "$NCVERSION" == "$CURRENTVERSION" ]]
 then
     echo
