@@ -196,9 +196,6 @@ sudo apt-get autoclean
 # Update GRUB, just in case
 sudo update-grub
 
-service apache2 restart
-sleep 2
-
 if [[ "$NCVERSION" == "$CURRENTVERSION" ]]
 then
     echo
@@ -213,6 +210,7 @@ then
 else
     echo
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
+    sudo -u www-data php $NCPATH/occ status
     echo "UPGRADE FAILED!"
     echo "Your files are still backed up at $BACKUP. No worries!"
     exit 1
