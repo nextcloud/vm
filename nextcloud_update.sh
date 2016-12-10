@@ -201,19 +201,21 @@ CURRENTVERSION_after=$(sudo -u www-data php $NCPATH/occ status | grep "versionst
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
 then
     echo
-    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
+    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after."
     echo "UPGRADE SUCCESS!"
     echo "NEXTCLOUD UPDATE success-`date +"%Y%m%d"`" >> /var/log/cronjobs_success.log
     sudo -u www-data php $NCPATH/occ status
     sudo -u www-data php $NCPATH/occ maintenance:mode --off
+    echo "Thank you for using Tech and Me's updater!"
     ## Un-hash this if you want the system to reboot
     # sudo reboot
     exit 0
 else
     echo
-    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
+    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after."
     sudo -u www-data php $NCPATH/occ status
     echo "UPGRADE FAILED!"
     echo "Your files are still backed up at $BACKUP. No worries!"
+    echo "Please report this issue to https://github.com/nextcloud/vm/issues"
     exit 1
 fi
