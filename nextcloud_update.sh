@@ -196,7 +196,9 @@ sudo apt-get autoclean
 # Update GRUB, just in case
 sudo update-grub
 
-if [[ "$NCVERSION" == "$CURRENTVERSION" ]]
+CURRENTVERSION_after=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+
+if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
 then
     echo
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
