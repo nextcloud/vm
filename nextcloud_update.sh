@@ -56,21 +56,16 @@ else
 fi
 
 # Check if new version is larger than current version installed.
-function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
-if [ $(version $NCVERSION) -gt $(version $CURRENTVERSION) ]
+function version_gt() { local v1 v2 IFS=.; read -ra v1 <<< "$1"; read -ra v2 <<< "$2"; printf -v v1 %03d "${v1[@]}"; printf -v v2 %03d "${v2[@]}"; [[ $v1 > $v2 ]]; }
+if version_gt "$NCVERSION" "$CURRENTVERSION"
 then
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo -e "\e[32mNew version available! Upgrade continues...\e[0m"
-elif [ $(version $$NCVERSION) -lt $(version $CURRENTVERSION) ]; then
-    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
-    echo "No need to upgrade, this script will exit..."
-    exit 0
 else
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo "No need to upgrade, this script will exit..."
     exit 0
 fi
-
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..." 
 echo "Press CTRL+C to abort."
 sleep 10
@@ -195,7 +190,6 @@ sudo apt-get autoclean
 sudo update-grub
 
 CURRENTVERSION_after=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
 then
     echo
