@@ -514,8 +514,7 @@ echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2016 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
 echo
-echo
-
+echo -e "\e[0m"
 # VPS?
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
@@ -534,10 +533,10 @@ then
 else
     sleep 1
 fi
-
 clear
 echo
 echo
+
 cat << LETSENC
 +-----------------------------------------------+
 |  Ok, now the last part - a proper SSL cert.   |
