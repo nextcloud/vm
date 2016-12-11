@@ -27,17 +27,9 @@ NCVERSION=$(curl -s $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
-# Check if aptitude is installed
-if [ $(dpkg-query -W -f='${Status}' aptitude 2>/dev/null | grep -c "ok installed") -eq 1 ]
-then
-    echo "Aptitude installed"
-else
-    apt-get install aptitude -y
-fi
-
 # System Upgrade
-sudo apt-get update -q2
-sudo aptitude full-upgrade -y
+apt update
+apt dist-upgrade -y
 
 # Set secure permissions
 FILE="$SECURE"
