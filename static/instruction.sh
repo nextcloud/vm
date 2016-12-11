@@ -18,7 +18,7 @@ cat << INST2
 | updates Nextcloud, sets secure permissions, and logs the successful   |
 | update to /var/log/cronjobs_success.log                               |
 | Detailed instructions for setting this up can be found here:          |
-| https://www.techandme.se/set-automatic-nextcloud-updates/             |
+| https://www.techandme.se/nextcloud-update-is-now-fully-automated/     |
 |                                                                       |
 |  ####################### Tech and Me - 2016 ########################  |
 +-----------------------------------------------------------------------+
