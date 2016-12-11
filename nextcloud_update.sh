@@ -56,15 +56,21 @@ else
 fi
 
 # Check if new version is larger than current version installed.
-if [[ "$NCVERSION" > "$CURRENTVERSION" ]]
+function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
+if [ $(version $NCVERSION) -gt $(version $CURRENTVERSION) ]
 then
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo -e "\e[32mNew version available! Upgrade continues...\e[0m"
+elif [ $(version $$NCVERSION) -lt $(version $CURRENTVERSION) ]; then
+    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
+    echo "No need to upgrade, this script will exit..."
+    exit 0
 else
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo "No need to upgrade, this script will exit..."
     exit 0
 fi
+
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..." 
 echo "Press CTRL+C to abort."
 sleep 10
