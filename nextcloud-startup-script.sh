@@ -73,15 +73,9 @@ fi
 
 # Get the best mirrors for Ubuntu based on location
 echo "Locating the best mirrors..."
-curl -s http://mirrors.ubuntu.com/mirrors.txt | xargs -n1 -I {} sh -c 'echo `curl -r 0-102400 -s -w %{speed_download} -o /dev/null {}/ls-lR.gz` {}' |sort -g -r |head -1| awk '{ print $2  }'$
-mirrors=$(cat mirrors.txt)
-sed -i "s|http://se.archive.ubuntu.com/ubuntu/|'$mirrors'|g" /etc/apt/sources.list
-rm mirrors.txt
-## Plan B
-#sed -i "1s|^|deb mirror://mirrors.ubuntu.com/mirrors.txt xenial main restricted universe multiverse\n|" /etc/apt/sources.list
-#sed -i "1s|^|deb mirror://mirrors.ubuntu.com/mirrors.txt xenial-updates main restricted universe multiverse\n|" /etc/apt/sources.list
-#sed -i "1s|^|deb mirror://mirrors.ubuntu.com/mirrors.txt xenial-backports main restricted universe multiverse\n|" /etc/apt/sources.list
-#sed -i "1s|^|deb mirror://mirrors.ubuntu.com/mirrors.txt xenial-security main restricted universe multiverse\n|" /etc/apt/sources.list
+apt-select
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+sudo mv sources.list /etc/apt/
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
