@@ -447,6 +447,10 @@ sleep 2
 echo
 bash $SCRIPTS/update.sh
 
+# Fixes https://github.com/nextcloud/vm/issues/58
+a2dismod status
+service apache restart
+
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 VALUE="# php_value upload_max_filesize 513M"
