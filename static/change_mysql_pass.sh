@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 # Tech and Me, ©2016 - www.techandme.se
 
