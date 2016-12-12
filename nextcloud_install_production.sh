@@ -187,16 +187,13 @@ fi
 
 echo "Locating the best mirrors..."
 apt update -q2
-apt install -y \
-    git
-    python-pip
+apt install python-pip -y
 pip install \
-    --upgrade pip
+    --upgrade pip \
     apt-select
 apt-select
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 sudo mv sources.list /etc/apt/
-rm sources.list
 clear
 
 # Set keyboard layout
