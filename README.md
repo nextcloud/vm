@@ -23,6 +23,10 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 
 Keep asking questions so that we can add them here.
 
+**Q:** The script says: "WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts"
+<br />
+**A:** http://askubuntu.com/a/463966
+
 **Q:** I get NETWORK NOT OK when booting the VM. How do I solve that?
 <br />
 **A:** There are a few causes to this error, all of them are your own network och firewall settings.
