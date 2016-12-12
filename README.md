@@ -28,12 +28,12 @@ Keep asking questions so that we can add them here.
 **A:** There are a few causes to this error, all of them are your own network och firewall settings.
 <br />
 - Remove the VM NIC adapter in settings on VMware/Virtualbox and then re-adding a NIC adapter.
-https://uploads.disquscdn.com/images/5f46105a5fd905aece3ff53121543f99c015488b0768f10011659a93fc3fbc70.png?w=800&h=420
+![alt_tag](https://goo.gl/gWg9JN)
 <br />
 - Check your firewall so that it doesn't block this specific IP
 <br />
 - Check your router/firewall that you have DHCP enabled.
-<br />
+
 **Q:** Which Hyper-V generation should we chose when creating a machine to load this image?
 <br />
 **A:** You currently need to use a 1st generation machine.
