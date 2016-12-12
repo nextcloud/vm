@@ -183,11 +183,11 @@ bash $SECURE
 sudo -u www-data php $NCPATH/occ maintenance:repair
 
 # Cleanup un-used packages
-sudo apt autoremove -y
-sudo apt autoclean
+apt autoremove -y
+apt autoclean
 
 # Update GRUB, just in case
-sudo update-grub
+update-grub
 
 CURRENTVERSION_after=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
