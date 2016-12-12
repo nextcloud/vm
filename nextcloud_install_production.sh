@@ -124,13 +124,6 @@ then
     exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' ubuntu-server 2>/dev/null | grep -c "ok installed") -eq 0 ]
-then
-    echo "'ubuntu-server' is not installed, this doesn't seem to be a server."
-    echo "Please install the server version of Ubuntu and restart the script"
-    exit 1
-fi
-
 # Create $UNIXUSER if not existing
 if id "$UNIXUSER" >/dev/null 2>&1
 then
@@ -191,12 +184,11 @@ then
 else
     echo "Network OK."
 fi
-clear
 
 echo "Locating the best mirrors..."
 apt update -q2
 apt install -y \
-    git 
+    git
     python-pip
 pip install \
     --upgrade pip
@@ -204,6 +196,8 @@ pip install \
 apt-select
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 sudo mv sources.list /etc/apt/
+rm sources.list
+clear
 
 # Set keyboard layout
 echo "Current keyboard layout is Swedish"
