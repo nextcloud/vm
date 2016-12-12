@@ -22,7 +22,7 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 ## FAQ
 
 Keep asking questions so that we can add them here.
-<br />
+
 **Q:** I get NETWORK NOT OK when booting the VM. How do I solve that?
 <br />
 **A:** There are a few causes to this error, all of them are your own network och firewall settings.
