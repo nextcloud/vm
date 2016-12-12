@@ -185,6 +185,10 @@ else
     echo "Network OK."
 fi
 
+# Set locales
+apt install language-pack-en-base -y
+sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+
 # Set keyboard layout
 echo "Current keyboard layout is Swedish"
 echo "You must change keyboard layout to your language"
@@ -205,17 +209,9 @@ pip install \
 apt-select
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 sudo mv sources.list /etc/apt/
-clear
 
 # Update system
 apt update -q2
-
-# Set locales
-apt install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-
-# Install aptitude
-apt install aptitude -y
 
 # Write MySQL pass to file and keep it safe
 echo "$MYSQL_PASS" > $PW_FILE
@@ -657,7 +653,7 @@ rm $SCRIPTS/redis-server-ubuntu16.sh
 
 # Upgrade
 apt update -q2
-aptitude full-upgrade -y
+apt full-upgrade -y
 
 # Remove LXD (always shows up as failed during boot)
 apt purge lxd -y
