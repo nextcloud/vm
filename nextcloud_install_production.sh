@@ -193,6 +193,18 @@ else
 fi
 clear
 
+echo "Locating the best mirrors..."
+apt update -q2
+apt install -y \
+    git 
+    python-pip
+pip install \
+    --upgrade pip
+    apt-select
+apt-select
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+sudo mv sources.list /etc/apt/
+
 # Set keyboard layout
 echo "Current keyboard layout is Swedish"
 echo "You must change keyboard layout to your language"
