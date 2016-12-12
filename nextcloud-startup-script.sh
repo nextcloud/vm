@@ -71,6 +71,13 @@ else
     exit 1
 fi
 
+# Get the best mirrors for Ubuntu based on location
+echo "Locating the best mirrors..."
+curl -s http://mirrors.ubuntu.com/mirrors.txt | xargs -n1 -I {} sh -c 'echo `curl -r 0-102400 -s -w %{speed_download} -o /dev/null {}/ls-lR.gz` {}' |sort -g -r |head -1| awk '{ print $2  }'$
+mirrors=$(cat mirrors.txt)
+sed -i "s|http://se.archive.ubuntu.com/ubuntu/|'$mirrors'|g" /etc/apt/sources.list
+rm mirrors.txt
+
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
