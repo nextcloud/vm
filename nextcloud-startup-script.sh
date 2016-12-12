@@ -76,7 +76,6 @@ echo "Locating the best mirrors..."
 apt-select
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 sudo mv sources.list /etc/apt/
-rm sources.list
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
