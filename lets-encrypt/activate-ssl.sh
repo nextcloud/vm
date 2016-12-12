@@ -108,7 +108,7 @@ if [ $GIT_IS_AVAILABLE -eq 1 ]
 then
     sleep 1
 else
-    apt-get install git -y -q
+    apt install git -y -q
 fi
 
 # Fetch latest version of test-new-config.sh

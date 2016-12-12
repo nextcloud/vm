@@ -10,21 +10,21 @@ SCRIPTS=/var/scripts
 whiptail --msgbox "Please before you start make sure port 443 is directly forwarded to this machine or open!" 20 60 2
 
 # Update & upgrade
-apt-get update
-apt-get upgrade -y
-apt-get -f install -y
+apt update
+apt upgrade -y
+apt -f install -y
 
 # Check if docker is installed
 	if [ $(dpkg-query -W -f='${Status}' docker.io 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
 				echo "Docker.io is installed..."
 else
-				apt-get install docker.io -y
+				apt install docker.io -y
 fi
 
 	if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
 				echo "Git is installed..."
 else
-				apt-get install git -y
+				apt install git -y
 fi
 
 
@@ -43,7 +43,7 @@ else
     while read -r line; do
         i=$(( $i + 1 ))
         echo $i
-    done < <(apt-get install apache2 -y)
+    done < <(apt install apache2 -y)
     } | whiptail --title "Progress" --gauge "Please wait while installing Apache2" 6 60 0
 
 fi

@@ -13,7 +13,7 @@ NCDATA=/var/ncdata
 SCRIPTS=/var/scripts
 PW_FILE=/var/mysql_password.txt # Keep in sync with nextcloud_install_production.sh
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
+CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
@@ -469,8 +469,8 @@ bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
 
 # Cleanup 1
-apt-get autoremove -y
-apt-get autoclean
+apt autoremove -y
+apt autoclean
 echo "$CLEARBOOT"
 clear
 

@@ -11,7 +11,7 @@ APACHE2=/etc/apache2/apache2.conf
 set -e
 
 # Protect against DDOS
-apt-get -y install libapache2-mod-evasive
+apt -y install libapache2-mod-evasive
 mkdir -p /var/log/apache2/evasive
 chown -R www-data:root /var/log/apache2/evasive
 if [ -f $ENVASIVE ]
@@ -31,10 +31,10 @@ ENVASIVE
 fi
 
 # Protect against Slowloris
-apt-get -y install libapache2-mod-qos
+apt -y install libapache2-mod-qos
 
 # Protect against DNS Injection
-apt-get -y install libapache2-mod-spamhaus
+apt -y install libapache2-mod-spamhaus
 if [ -f $SPAMHAUS ]
 then
     echo "Spamhaus mod exists"

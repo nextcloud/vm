@@ -183,8 +183,8 @@ bash $SECURE
 sudo -u www-data php $NCPATH/occ maintenance:repair
 
 # Cleanup un-used packages
-sudo apt-get autoremove -y
-sudo apt-get autoclean
+sudo apt autoremove -y
+sudo apt autoclean
 
 # Update GRUB, just in case
 sudo update-grub
