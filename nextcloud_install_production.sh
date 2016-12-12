@@ -185,6 +185,17 @@ else
     echo "Network OK."
 fi
 
+# Set keyboard layout
+echo "Current keyboard layout is Swedish"
+echo "You must change keyboard layout to your language"
+echo -e "\e[32m"
+read -p "Press any key to change keyboard layout... " -n1 -s
+echo -e "\e[0m"
+dpkg-reconfigure keyboard-configuration
+echo
+clear
+
+# Check where the best mirrors are and update
 echo "Locating the best mirrors..."
 apt update -q2
 apt install python-pip -y
@@ -194,16 +205,6 @@ pip install \
 apt-select
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 sudo mv sources.list /etc/apt/
-clear
-
-# Set keyboard layout
-echo "Current keyboard layout is Swedish"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
-dpkg-reconfigure keyboard-configuration
-echo
 clear
 
 # Update system
