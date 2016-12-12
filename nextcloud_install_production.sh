@@ -189,16 +189,6 @@ fi
 apt install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
-# Set keyboard layout
-echo "Current keyboard layout is Swedish"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
-dpkg-reconfigure keyboard-configuration
-echo
-clear
-
 # Check where the best mirrors are and update
 echo "Locating the best mirrors..."
 apt update -q2
@@ -209,6 +199,17 @@ pip install \
 apt-select
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 sudo mv sources.list /etc/apt/
+clear
+
+# Set keyboard layout
+echo "Current keyboard layout is Swedish"
+echo "You must change keyboard layout to your language"
+echo -e "\e[32m"
+read -p "Press any key to change keyboard layout... " -n1 -s
+echo -e "\e[0m"
+dpkg-reconfigure keyboard-configuration
+echo
+clear
 
 # Update system
 apt update -q2
