@@ -24,10 +24,6 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 
-echo "There is a bug in the updater script right now that breaks the update to Nextcloud 11."
-echo "We will solve this and then update the script. The issue should be solved by tomorrow (2016-12-14)"
-echo "In the future, always run 'sudo bash /var/scripts/update.sh'."
-
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
@@ -117,15 +113,6 @@ fi
 if [ -d $BACKUP/themes/ ]
 then
     echo "$BACKUP/themes/ exists"
-else
-    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if themes/ folder exist."
-    exit 1
-fi
-
-# Let the magic begin...
-if [ -d $BACKUP/apps/ ]
-then
-    echo "$BACKUP/apps/ exists"
     echo 
     echo -e "\e[32mAll files are backed up.\e[0m"
     sudo -u www-data php $NCPATH/occ maintenance:mode --on
@@ -135,12 +122,11 @@ then
     rm $HTML/nextcloud-$NCVERSION.tar.bz2
     cp -R $BACKUP/themes $NCPATH/
     cp -R $BACKUP/config $NCPATH/
-    cp -R $BACKUP/apps $NCPATH/
     bash $SECURE
     sudo -u www-data php $NCPATH/occ maintenance:mode --off
     sudo -u www-data php $NCPATH/occ upgrade
 else
-    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if apps/ folders exist."
+    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if the folders exist."
     exit 1
 fi
 
@@ -150,7 +136,9 @@ chown -R root:root $BACKUP
 # Enable Apps
 if [ -d $SNAPDIR ]
 then
-    snap refresh spreedme
+    wget $STATIC/spreedme.sh -P $SCRIPTS
+    bash $SCRIPTS/spreedme.sh
+    rm $SCRIPTS/spreedme.sh
     sudo -u www-data php $NCPATH/occ app:enable spreedme
 else
     sleep 1
