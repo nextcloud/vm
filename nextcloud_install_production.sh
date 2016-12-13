@@ -331,7 +331,7 @@ sudo -u www-data php occ maintenance:install \
     --data-dir "$NCDATA" \
     --database "mysql" \
     --database-name "nextcloud_db" \
-    --database-user "root" \
+    --database-user "nc_mysql" \
     --database-pass "$NC_MYSQL_PASS" \
     --admin-user "$UNIXUSER" \
     --admin-pass "$UNIXPASS"
