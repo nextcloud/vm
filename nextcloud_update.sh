@@ -24,6 +24,10 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 
+echo "There is a bug in the updater script right now that breaks the update to Nextcloud 11."
+echo "We will solve this and then update the script. The issue should be solved by tomorrow (2016-12-14)"
+echo "In the future, always run 'sudo bash /var/scripts/update.sh'."
+
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
