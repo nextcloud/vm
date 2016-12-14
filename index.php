@@ -129,7 +129,7 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
-                <a href="https://www.techandme.se/user-and-password/" target="_blank">Login details</a>
+                <a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login details</a>
             </h3>
             <p>Note: Webmin is installed when you run the setup script. To access Webmin externally you have to open port 10000 in your router.</p>
         </div>
@@ -146,7 +146,7 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
-                <a href="https://www.techandme.se/user-and-password/" target="_blank">Login details</a>
+                <a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login details</a>
             </h3>
             <p>Note: Your external IP is set as approved in /etc/apache2/conf-available/phpmyadmin.conf, all other access is forbidden.</p>
         </div>
