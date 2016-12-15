@@ -1,5 +1,5 @@
 #!/bin/bash
-wget -q --spider http://google.com
+curl -s http://google.com > /dev/null
 if [ $? -eq 0 ]
 then
 ntpdate -s 1.se.pool.ntp.org

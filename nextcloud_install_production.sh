@@ -91,7 +91,7 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if key is available
-if wget -q --spider "$NCREPO" > /dev/null
+if curl -s "$NCREPO" > /dev/null
 then
     echo "Nextcloud repo OK"
 else
