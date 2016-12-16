@@ -509,6 +509,7 @@ exit 0
 RCLOCAL
 
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
+
 # Success!
 clear
 echo -e "\e[32m"
@@ -580,7 +581,11 @@ bash $SCRIPTS/trusted.sh
 rm $SCRIPTS/trusted.sh
 rm $SCRIPTS/update-config.php
 
+# Prefer IPv6
+sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+
 # Reboot
+echo "System will now reboot..."
 reboot
 
 exit 0
