@@ -29,7 +29,7 @@ Keep asking questions so that we can add them here.
 
 **Q:** I get NETWORK NOT OK when booting the VM. How do I solve that?
 <br />
-**A:** There are a few causes to this error, all of them are your own network och firewall settings.
+**A:** There are a few causes to this error, most of them are your own network och firewall settings.
 <br />
 - Remove the VM NIC adapter in settings on VMware/Virtualbox and then re-adding a NIC adapter.
 ![alt_tag](https://goo.gl/gWg9JN)
