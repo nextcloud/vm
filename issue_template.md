@@ -24,14 +24,16 @@ Tell us what happens instead
 **Updated from an older installed version or fresh install:**
 
 ## Logs
-#### Web server error log
+<!--
+Please use http://hastebin.com/ for long error messages or logs. Thanks!
+-->
+
+#### Log file (/var/ncdata/nextcloud.log)
 ```
-Insert your webserver log here
+Insert your nextcloud.log file here
 ```
 
-#### Log file (data/nextcloud.log)
+#### Installation log (command output)
 ```
-Insert your Nextcloud.log file here
+Insert the CLI output here
 ```
-
-
