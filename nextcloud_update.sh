@@ -55,6 +55,20 @@ else
     exit 1
 fi
 
+# Major versions unsupported
+echo
+echo "Please note that updates between multiple major versions are unsupported, for example:"
+echo "Original version: 9.0.54"
+echo "Upgraded version: 11.0.0"
+echo
+echo "It is best to keep your Nextcloud server upgraded regularly, and to install all point releases"
+echo "and major releases without skipping any of them, as skipping releases increases the risk of"
+echo "errors. Major releases are 9, 10, and 11. Point releases are intermediate releases for each"
+echo "major release. For example, 9.0.52 and 10.0.2 are point releases." 
+echo
+echo "Checking versions in 20 seconds.."
+sleep 20
+
 # Check if new version is larger than current version installed.
 function version_gt() { local v1 v2 IFS=.; read -ra v1 <<< "$1"; read -ra v2 <<< "$2"; printf -v v1 %03d "${v1[@]}"; printf -v v2 %03d "${v2[@]}"; [[ $v1 > $v2 ]]; }
 if version_gt "$NCVERSION" "$CURRENTVERSION"
@@ -107,6 +121,14 @@ then
     echo "$BACKUP/config/ exists"
 else
     echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if config/ folder exist."
+    exit 1
+fi
+
+if [ -d $BACKUP/apps/ ]
+then
+    echo "$BACKUP/apps/ exists"
+else
+    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if apps/ folder exist."
     exit 1
 fi
 
