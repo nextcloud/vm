@@ -688,6 +688,7 @@ fi
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Reboot
+echo "Installation done, system will now reboot..."
 reboot
 
 exit 0
