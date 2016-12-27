@@ -152,9 +152,6 @@ else
     exit 1
 fi
 
-# Change owner of $BACKUP folder to root
-chown -R root:root $BACKUP
-
 # Enable Apps
 if [ -d $SNAPDIR ]
 then
@@ -166,44 +163,14 @@ else
     sleep 1
 fi
 
-CONVER=$(wget -q https://raw.githubusercontent.com/nextcloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
-CALVER=$(wget -q https://raw.githubusercontent.com/nextcloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CALVER_FILE=calendar.tar.gz
-CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
+# Recover apps that exists in the backed up apps folder
+wget -q $STATIC/recover_apps.py -P $SCRIPTS
+chmod +x $SCRIPTS/recover_apps.py
+python $SCRIPTS/recover_apps.py
+rm $SCRIPTS/recover_apps.py
 
-# Download and install Calendar
-if [ -d $NCPATH/apps/calendar ]
-then
-    sleep 1
-else
-    wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CALVER_FILE
-fi
-# Enable Calendar
-if [ -d $NCPATH/apps/calendar ]
-then
-    sudo -u www-data php $NCPATH/occ app:enable calendar
-fi
-
-# Download and install Contacts
-if [ -d $NCPATH/apps/contacts ]
-then
-    sleep 1
-else
-    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CONVER_FILE
-fi
-# Enable Contacts
-if [ -d $NCPATH/apps/contacts ]
-then
-    sudo -u www-data php $NCPATH/occ app:enable contacts
-fi
+# Change owner of $BACKUP folder to root
+chown -R root:root $BACKUP
 
 # Increase max filesize (expects that changes are made in /etc/php5/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
@@ -249,7 +216,6 @@ then
     echo "NEXTCLOUD UPDATE success-`date +"%Y%m%d"`" >> /var/log/cronjobs_success.log
     sudo -u www-data php $NCPATH/occ status
     sudo -u www-data php $NCPATH/occ maintenance:mode --off
-    echo "Please re-activate your apps."
     echo
     echo "Thank you for using Tech and Me's updater!"
     ## Un-hash this if you want the system to reboot
