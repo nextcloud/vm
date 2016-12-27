@@ -144,7 +144,6 @@ then
     rm $HTML/nextcloud-$NCVERSION.tar.bz2
     cp -R $BACKUP/themes $NCPATH/
     cp -R $BACKUP/config $NCPATH/
-    bash $SCRIPTS/recover_apps.py
     bash $SECURE
     sudo -u www-data php $NCPATH/occ maintenance:mode --off
     sudo -u www-data php $NCPATH/occ upgrade
@@ -166,6 +165,9 @@ then
 else
     sleep 1
 fi
+
+# Recover apps that exists in the backed up apps folder
+bash $SCRIPTS/recover_apps.py
 
 # Increase max filesize (expects that changes are made in /etc/php5/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
