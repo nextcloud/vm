@@ -167,7 +167,9 @@ else
 fi
 
 # Recover apps that exists in the backed up apps folder
+wget -q $STATIC/recover_apps.py -P $SCRIPTS
 bash $SCRIPTS/recover_apps.py
+rm $SCRIPTS/recover_apps.py
 
 # Increase max filesize (expects that changes are made in /etc/php5/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
