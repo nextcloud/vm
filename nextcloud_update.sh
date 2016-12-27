@@ -168,7 +168,7 @@ fi
 
 # Recover apps that exists in the backed up apps folder
 wget -q $STATIC/recover_apps.py -P $SCRIPTS
-bash $SCRIPTS/recover_apps.py
+python $SCRIPTS/recover_apps.py
 rm $SCRIPTS/recover_apps.py
 
 # Increase max filesize (expects that changes are made in /etc/php5/apache2/php.ini)
@@ -215,7 +215,6 @@ then
     echo "NEXTCLOUD UPDATE success-`date +"%Y%m%d"`" >> /var/log/cronjobs_success.log
     sudo -u www-data php $NCPATH/occ status
     sudo -u www-data php $NCPATH/occ maintenance:mode --off
-    echo "Please re-activate your apps."
     echo
     echo "Thank you for using Tech and Me's updater!"
     ## Un-hash this if you want the system to reboot
