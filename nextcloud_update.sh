@@ -168,6 +168,7 @@ fi
 
 # Recover apps that exists in the backed up apps folder
 wget -q $STATIC/recover_apps.py -P $SCRIPTS
+chmod +x $SCRIPTS/recover_apps.py
 python $SCRIPTS/recover_apps.py
 rm $SCRIPTS/recover_apps.py
 
