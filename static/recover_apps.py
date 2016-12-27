@@ -7,7 +7,7 @@ shipped_url  = 'http://raw.githubusercontent.com/nextcloud/server/master/core/sh
 json_data    = json.load(urllib2.urlopen(shipped_url))
 shipped_apps = json_data['shippedApps'] + json_data['alwaysEnabled']
 
-installed_dirs = set(os.path.basename(path) for path in glob.glob(nc_path + '*'))
+installed_dirs = set(os.path.basename(path) for path in glob.glob(backup_path + '*'))
 missing_dirs   = installed_dirs.difference(shipped_apps)
 
 for d in missing_dirs:
