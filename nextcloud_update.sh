@@ -152,9 +152,6 @@ else
     exit 1
 fi
 
-# Change owner of $BACKUP folder to root
-chown -R root:root $BACKUP
-
 # Enable Apps
 if [ -d $SNAPDIR ]
 then
@@ -171,6 +168,9 @@ wget -q $STATIC/recover_apps.py -P $SCRIPTS
 chmod +x $SCRIPTS/recover_apps.py
 python $SCRIPTS/recover_apps.py
 rm $SCRIPTS/recover_apps.py
+
+# Change owner of $BACKUP folder to root
+chown -R root:root $BACKUP
 
 # Increase max filesize (expects that changes are made in /etc/php5/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
