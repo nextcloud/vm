@@ -11,4 +11,5 @@ installed_dirs = set(os.path.basename(path) for path in glob.glob(nc_path + '*')
 missing_dirs   = installed_dirs.difference(shipped_apps)
 
 for d in missing_dirs:
-    subprocess.call(['echo', 'rsync', '-Aax', os.path.join(backup_path, d), nc_path])
+    subprocess.call(['rsync', '-Aax', os.path.join(backup_path, d), nc_path])
+    subprocess.call(['sudo', '-u', 'www-data', '/var/www/nextcloud/occ', 'app:enable', d])
