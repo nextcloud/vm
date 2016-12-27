@@ -144,6 +144,7 @@ then
     rm $HTML/nextcloud-$NCVERSION.tar.bz2
     cp -R $BACKUP/themes $NCPATH/
     cp -R $BACKUP/config $NCPATH/
+    bash $SCRIPTS/recover_apps.py
     bash $SECURE
     sudo -u www-data php $NCPATH/occ maintenance:mode --off
     sudo -u www-data php $NCPATH/occ upgrade
@@ -164,45 +165,6 @@ then
     sudo -u www-data php $NCPATH/occ app:enable spreedme
 else
     sleep 1
-fi
-
-CONVER=$(wget -q https://raw.githubusercontent.com/nextcloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
-CALVER=$(wget -q https://raw.githubusercontent.com/nextcloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CALVER_FILE=calendar.tar.gz
-CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
-
-# Download and install Calendar
-if [ -d $NCPATH/apps/calendar ]
-then
-    sleep 1
-else
-    wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CALVER_FILE
-fi
-# Enable Calendar
-if [ -d $NCPATH/apps/calendar ]
-then
-    sudo -u www-data php $NCPATH/occ app:enable calendar
-fi
-
-# Download and install Contacts
-if [ -d $NCPATH/apps/contacts ]
-then
-    sleep 1
-else
-    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CONVER_FILE
-fi
-# Enable Contacts
-if [ -d $NCPATH/apps/contacts ]
-then
-    sudo -u www-data php $NCPATH/occ app:enable contacts
 fi
 
 # Increase max filesize (expects that changes are made in /etc/php5/apache2/php.ini)
