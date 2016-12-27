@@ -329,9 +329,10 @@ clear
 
 # Pretty URLs
 echo "Setting RewriteBase to "/" in config.php..."
-chown www-data:www-data $NCPATH/config/config.php
+chown -R www-data:www-data $NCPATH
 sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
+bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Generate new SSH Keys
 echo
