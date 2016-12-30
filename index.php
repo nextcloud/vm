@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Nextloud VM</title>
+        <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
         <style>
             body {
                 background-color: #0082c9;
