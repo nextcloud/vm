@@ -183,6 +183,11 @@ else
     echo "$ssl_conf was successfully created"
     sleep 3
     cat << SSL_CREATE > "$ssl_conf"
+<VirtualHost *:80>
+    ServerName $domain
+    Redirect / https://$domain
+</VirtualHost>
+
 <VirtualHost *:443>
 
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"

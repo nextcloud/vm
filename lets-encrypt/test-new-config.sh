@@ -11,6 +11,7 @@ read -p "Press any key to continue... " -n1 -s
 echo -e "\e[0m"
 a2ensite $1
 a2dissite nextcloud_ssl_domain_self_signed.conf
+a2dissite nextcloud_http_domain_self_signed.conf
 service apache2 restart
 if [[ "$?" == "0" ]]
 then
@@ -48,6 +49,25 @@ CRONTAB
 # Makeletsencryptrenew.sh executable
 chmod +x $SCRIPTS/letsencryptrenew.sh
 
+# Cleanup
+rm $SCRIPTS/test-new-config.sh
+rm $SCRIPTS/activate-ssl.sh
+
+else
+# If it fails, revert changes back to normal
+    a2dissite $1
+    a2ensite nextcloud_ssl_domain_self_signed.conf
+    a2ensite nextcloud_http_domain_self_signed.conf
+    service apache2 restart
+    echo -e "\e[96m"
+    echo "Couldn't load new config, reverted to old settings. Self-signed SSL is OK!"
+    echo -e "\e[0m"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+    exit 1
+fi
+
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
 then
@@ -57,7 +77,7 @@ else
     wget -q $STATIC/update-config.php -P $SCRIPTS
 fi
 
-# Sets trusted domain in when nextcloud-startup-script.sh is finished
+# Sets trusted domain in config.php
 if [ -f $SCRIPTS/trusted.sh ]
 then
     rm $SCRIPTS/trusted.sh
@@ -69,23 +89,5 @@ fi
 bash $SCRIPTS/trusted.sh
 rm $SCRIPTS/trusted.sh
 rm $SCRIPTS/update-config.php
-
-# Cleanup
-rm $SCRIPTS/test-new-config.sh
-rm $SCRIPTS/activate-ssl.sh
-
-else
-# If it fails, revert changes back to normal
-    a2dissite $1
-    a2ensite nextcloud_ssl_domain_self_signed.conf
-    service apache2 restart
-    echo -e "\e[96m"
-    echo "Couldn't load new config, reverted to old settings. Self-signed SSL is OK!"
-    echo -e "\e[0m"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
-    exit 1
-fi
 
 exit 0
