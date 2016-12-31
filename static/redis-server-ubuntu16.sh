@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me - www.techandme.se - ©2016
+# Tech and Me - www.techandme.se - ©2017
 # Ubuntu 16.04 with php 7
 
 OS=$(grep -ic "Ubuntu" /etc/issue.net)

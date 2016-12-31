@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me, ©2016 - www.techandme.se
+# Tech and Me, ©2017 - www.techandme.se
 
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 PHPMYADMINDIR=/usr/share/phpmyadmin

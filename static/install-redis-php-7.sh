@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me - www.techandme.se - ©2016
+# Tech and Me - www.techandme.se - ©2017
 
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud

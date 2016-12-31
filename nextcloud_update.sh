@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-## Tech and Me ## - ©2016, https://www.techandme.se/
+## Tech and Me ## - ©2017, https://www.techandme.se/
 #
 # Tested on Ubuntu Server 14.04 & 16.04.
 #
