@@ -22,7 +22,7 @@ NCREPO="https://download.nextcloud.com/server/releases"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Versions
 CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-NCVERSION=$(curl -s $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+NCVERSION=$(curl -s --max-time 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
@@ -44,7 +44,7 @@ fi
 
 # Upgrade Nextcloud
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
-curl -s $NCREPO/nextcloud-$NCVERSION.tar.bz2 > /dev/null
+curl -s --max-time 900 $NCREPO/nextcloud-$NCVERSION.tar.bz2 > /dev/null
 if [ $? -eq 0 ]; then
     echo -e "\e[32mSUCCESS!\e[0m"
 else
