@@ -296,6 +296,9 @@ echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 # Install Unzip
 apt install unzip -y
 
+# Install VM-tools
+apt install open-vm-tools -y
+
 # Download and validate Nextcloud package
 wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
 mkdir -p $GPGDIR
