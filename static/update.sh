@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Tech and Me ## - ©2016, https://www.techandme.se/
+## Tech and Me ## - ©2017, https://www.techandme.se/
 #
 # Tested on Ubuntu Server 14.04 & 16.04.
 
@@ -12,7 +12,7 @@ SCRIPTS=/var/scripts
 
 mkdir -p $SCRIPTS
 
-if [ -f $FILE ]
+if [ -f $SCRIPTS/$FILE ]
 then
     rm $SCRIPTS/$FILE
     wget -q https://raw.githubusercontent.com/nextcloud/vm/master/$FILE -P $SCRIPTS

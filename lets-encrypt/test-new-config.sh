@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SCRIPTS=/var/scripts
+STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 
 # Activate the new config
 echo -e "\e[0m"
@@ -10,6 +11,7 @@ read -p "Press any key to continue... " -n1 -s
 echo -e "\e[0m"
 a2ensite $1
 a2dissite nextcloud_ssl_domain_self_signed.conf
+a2dissite nextcloud_http_domain_self_signed.conf
 service apache2 restart
 if [[ "$?" == "0" ]]
 then
@@ -26,17 +28,22 @@ then
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
     crontab -u root -l | { cat; echo "@monthly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
-cat << CRONTAB > "/var/scripts/letsencryptrenew.sh"
+cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
-systemctl stop apache2.service
-set -e
+service apache2 stop
 if ! /etc/letsencrypt/letsencrypt-auto renew > /var/log/letsencrypt/renew.log 2>&1 ; then
-       echo Automated renewal failed:
-       cat /var/log/letsencrypt/renew.log
-       exit 1
+        echo Automated renewal failed:
+        cat /var/log/letsencrypt/renew.log
+        exit 1
 fi
-
-systemctl start apache2.service
+service apache2 start
+if [[ $? -eq 0 ]]
+then
+        echo "Let's Encrypt SUCCESS!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+else
+        echo "Let's Encrypt FAILED!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+        reboot
+fi
 CRONTAB
 
 # Makeletsencryptrenew.sh executable
@@ -50,6 +57,7 @@ else
 # If it fails, revert changes back to normal
     a2dissite $1
     a2ensite nextcloud_ssl_domain_self_signed.conf
+    a2ensite nextcloud_http_domain_self_signed.conf
     service apache2 restart
     echo -e "\e[96m"
     echo "Couldn't load new config, reverted to old settings. Self-signed SSL is OK!"
@@ -59,5 +67,27 @@ else
     echo -e "\e[0m"
     exit 1
 fi
+
+# Update Config
+if [ -f $SCRIPTS/update-config.php ]
+then
+    rm $SCRIPTS/update-config.php
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+else
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+fi
+
+# Sets trusted domain in config.php
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    rm $SCRIPTS/trusted.sh
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+else
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+fi
+
+bash $SCRIPTS/trusted.sh
+rm $SCRIPTS/trusted.sh
+rm $SCRIPTS/update-config.php
 
 exit 0

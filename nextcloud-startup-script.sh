@@ -1,20 +1,34 @@
 #!/bin/bash
 
-# Tech and Me - ©2016, https://www.techandme.se/
+# Tech and Me - ©2017, https://www.techandme.se/
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
 
 WWW_ROOT=/var/www
 NCPATH=$WWW_ROOT/nextcloud
 NCDATA=/var/ncdata
 SCRIPTS=/var/scripts
 PW_FILE=/var/mysql_password.txt # Keep in sync with nextcloud_install_production.sh
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
+
+# DEBUG mode
+if [ $DEBUG -eq 1 ]
+then
+    set -e
+    set -x
+else
+    sleep 1
+fi
 
 # Check if root
 if [ "$(whoami)" != "root" ]
@@ -25,17 +39,28 @@ then
     exit 1
 fi
 
+
+# Check network
+echo "Testing if network is OK..."
+sleep 2
+service networking restart
+    curl -s http://github.com > /dev/null
+if [ $? -eq 0 ]
+then
+    echo -e "\e[32mOnline!\e[0m"
+else
 echo "Setting correct interface..."
 # Set correct interface
 { sed '/# The primary network interface/q' /etc/network/interfaces; printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"; } > /etc/network/interfaces.new
 mv /etc/network/interfaces.new /etc/network/interfaces
 service networking restart
+fi
 
 # Check network
 echo "Testing if network is OK..."
 sleep 2
-sudo ifdown $IFACE && sudo ifup $IFACE
-    wget -q --spider http://github.com
+service networking restart
+    curl -s http://github.com > /dev/null
 if [ $? -eq 0 ]
 then
     echo -e "\e[32mOnline!\e[0m"
@@ -46,9 +71,24 @@ else
     exit 1
 fi
 
+# Get the best mirrors for Ubuntu based on location
+echo "Locating the best mirrors..."
+apt-select
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+sudo mv sources.list /etc/apt/
+
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
+
+# Get spreedme script
+if [ -f $SCRIPTS/spreedme.sh ]
+then
+    rm $SCRIPTS/spreedme.sh
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
+else
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
+fi
 
 # Get script for temporary fixes
 if [ -f $SCRIPTS/temporary.sh ]
@@ -216,7 +256,7 @@ echo "|                                                                    |"
 echo "|   The script will take about 10 minutes to finish,                 |"
 echo "|   depending on your internet connection.                           |"
 echo "|                                                                    |"
-echo "| ####################### Tech and Me - 2016 ####################### |"
+echo "| ####################### Tech and Me - 2017 ####################### |"
 echo "+--------------------------------------------------------------------+"
 echo -e "\e[32m"
 read -p "Press any key to start the script..." -n1 -s
@@ -243,8 +283,14 @@ echo -e "\e[0m"
 echo -e "Write this down, you will need it to set static IP"
 echo -e "in your router later. It's included in this guide:"
 echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
+echo -e
+echo -e "Please note that we will backup the interfaces file to:"
+echo -e "/etc/network/interfaces.backup"
+echo -e "If you run this script on a remote VPS the IP is probably wrong. "
+echo -e "But no worries - we will restore the interfaces.backup in the end of this script."
 echo -e "\e[32m"
 read -p "Press any key to set static IP..." -n1 -s
+cp /etc/network/interfaces /etc/network/interfaces.backup
 clear
 echo -e "\e[0m"
 ifdown $IFACE
@@ -281,11 +327,16 @@ bash $SCRIPTS/test_connection.sh
 sleep 2
 clear
 
-# Change Trusted Domain and CLI
-bash $SCRIPTS/trusted.sh
+# Pretty URLs
+echo "Setting RewriteBase to "/" in config.php..."
+chown -R www-data:www-data $NCPATH
+sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
+sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
+bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
-echo "Generating new SSH keys for the server..."
+# Generate new SSH Keys
 echo
+echo "Generating new SSH keys for the server..."
 sleep 1
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
@@ -296,8 +347,30 @@ bash $SCRIPTS/change_mysql_pass.sh
 rm $SCRIPTS/change_mysql_pass.sh
 
 # Install phpMyadmin
+echo
 bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
+clear
+
+# Install SpreedMe
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "yes" == $(ask_yes_or_no "Do you want to install SpreedMe?") ]]
+then
+    bash $SCRIPTS/spreedme.sh
+    rm $SCRIPTS/spreedme.sh
+else
+    echo
+    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/spreedme.sh"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+fi
 clear
 
 # Add extra security
@@ -368,15 +441,16 @@ then
 else
     echo "Not changing password as you already changed <user> and <pass> in the script"
 fi
-clear
 
 # Upgrade system
-echo System will now upgrade...
+echo "System will now upgrade..."
 sleep 2
 echo
-echo
-apt-get update -q2
-aptitude full-upgrade -y
+bash $SCRIPTS/update.sh
+
+# Fixes https://github.com/nextcloud/vm/issues/58
+a2dismod status
+service apache restart
 
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
@@ -396,36 +470,15 @@ bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
 
 # Cleanup 1
-apt-get autoremove -y
-apt-get autoclean
+apt autoremove -y
+apt autoclean
 echo "$CLEARBOOT"
 clear
-
-ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
-# Success!
-echo -e "\e[32m"
-echo    "+--------------------------------------------------------------------+"
-echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
-echo    "|                                                                    |"
-echo -e "|         \e[0mLogin to Nextcloud in your browser:\e[36m" $ADDRESS2"\e[32m           |"
-echo    "|                                                                    |"
-echo -e "|         \e[0mPublish your server online! \e[36mhttps://goo.gl/iUGE2U\e[32m          |"
-echo    "|                                                                    |"
-echo -e "|      \e[0mYour MySQL password is stored in: \e[36m$PW_FILE\e[32m     |"
-echo    "|                                                                    |"
-echo -e "|    \e[91m#################### Tech and Me - 2016 ####################\e[32m    |"
-echo    "+--------------------------------------------------------------------+"
-echo
-read -p "Press any key to continue..." -n1 -s
-echo -e "\e[0m"
-echo
 
 # Cleanup 2
 sudo -u www-data php $NCPATH/occ maintenance:repair
 rm $SCRIPTS/ip.sh
-rm $SCRIPTS/trusted.sh
 rm $SCRIPTS/test_connection.sh
-rm $SCRIPTS/update-config.php
 rm $SCRIPTS/instruction.sh
 rm $NCDATA/nextcloud.log
 rm $SCRIPTS/nextcloud-startup-script.sh
@@ -456,9 +509,46 @@ exit 0
 
 RCLOCAL
 
+ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
+
+# Success!
+clear
+echo -e "\e[32m"
+echo    "+--------------------------------------------------------------------+"
+echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
+echo    "|                                                                    |"
+echo -e "|         \e[0mLogin to Nextcloud in your browser:\e[36m" $ADDRESS2"\e[32m           |"
+echo    "|                                                                    |"
+echo -e "|         \e[0mPublish your server online! \e[36mhttps://goo.gl/iUGE2U\e[32m          |"
+echo    "|                                                                    |"
+echo -e "|      \e[0mYour MySQL password is stored in: \e[36m$PW_FILE\e[32m     |"
+echo    "|                                                                    |"
+echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
+echo    "+--------------------------------------------------------------------+"
+echo
+echo -e "\e[0m"
+# VPS?
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "yes" == $(ask_yes_or_no "Do you run this on a *remote* VPS?") ]]
+then
+    echo "Ok, then your IP are probably wrong, we will use the backup file to recover it so that you can connect after reboot"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+    mv /etc/network/interfaces.backup /etc/network/interfaces
+else
+    sleep 1
+fi
 clear
 echo
 echo
+
 cat << LETSENC
 +-----------------------------------------------+
 |  Ok, now the last part - a proper SSL cert.   |
@@ -487,7 +577,16 @@ else
     echo -e "\e[0m"
 fi
 
+# Change Trusted Domain and CLI
+bash $SCRIPTS/trusted.sh
+rm $SCRIPTS/trusted.sh
+rm $SCRIPTS/update-config.php
+
+# Prefer IPv6
+sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+
 # Reboot
+echo "System will now reboot..."
 reboot
 
 exit 0

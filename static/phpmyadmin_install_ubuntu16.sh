@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me, ©2016 - www.techandme.se
+# Tech and Me, ©2017 - www.techandme.se
 
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 PHPMYADMINDIR=/usr/share/phpmyadmin
@@ -21,6 +21,7 @@ then
 fi
 
 # Check Ubuntu version
+echo
 echo "Checking server OS and version..."
 if [ $OS -eq 1 ]
 then
@@ -53,6 +54,7 @@ fi
 
 echo
 echo "Installing and securing phpMyadmin..."
+echo "This may take a while, please don't abort."
 echo
 sleep 2
 
@@ -62,8 +64,8 @@ echo 'phpmyadmin phpmyadmin/app-password-confirm password $PW_FILE' | debconf-se
 echo 'phpmyadmin phpmyadmin/mysql/admin-pass password $PW_FILE' | debconf-set-selections
 echo 'phpmyadmin phpmyadmin/mysql/app-pass password $PW_FILE' | debconf-set-selections
 echo 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2' | debconf-set-selections
-apt-get update -q2
-apt-get install -y -q \
+apt update -q2
+apt install -y -q \
     php-gettext \
     phpmyadmin
 
@@ -169,10 +171,14 @@ cat << CONFIG_CREATE >> "$CONFIG"
 CONFIG_CREATE
 
 service apache2 restart
-
-echo
-echo "$PHPMYADMIN_CONF was successfully secured."
-echo
-sleep 3
-
-exit 0
+if [[ $? > 0 ]]
+then 
+    echo "Apache2 could not restart..."
+    echo "The script will exit."
+    exit 1
+else
+    echo
+    echo "$PHPMYADMIN_CONF was successfully secured."
+    echo
+    sleep 3
+fi

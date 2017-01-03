@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me, ©2016 - www.techandme.se
+# Tech and Me, ©2017 - www.techandme.se
 #
 # This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apche 2.4.
 # Ubuntu 16.04 is required.
@@ -10,20 +10,20 @@
 # 0 = OFF
 DEBUG=0
 
+# Repositories
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
+NCREPO="https://download.nextcloud.com/server/releases/"
+OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
-STABLEVERSION="nextcloud-10.0.0"
+NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+STABLEVERSION="nextcloud-$NCVERSION"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
-# Nextcloud apps
-CONVER=$(wget -q https://raw.githubusercontent.com/owncloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/owncloud/contacts/releases/download
-CALVER=$(wget -q https://raw.githubusercontent.com/owncloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-CALVER_FILE=calendar.tar.gz
-CALVER_REPO=https://github.com/owncloud/calendar/releases/download
 # Passwords
 SHUF=$(shuf -i 13-15 -n 1)
 MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
+NC_MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
 PW_FILE=/var/mysql_password.txt
 # Directories
 SCRIPTS=/var/scripts
@@ -36,15 +36,9 @@ NCDATA=/var/ncdata
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3}')
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-# Repositories
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-NCREPO="https://download.nextcloud.com/server/releases/"
-OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
-# Commands
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge)
+
 # Linux user, and Nextcloud user
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
@@ -66,6 +60,9 @@ then
     echo
     exit 1
 fi
+
+# Prefer IPv4
+sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
@@ -97,7 +94,7 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if key is available
-if wget -q --spider "$NCREPO" > /dev/null
+if curl -s "$NCREPO" > /dev/null
 then
     echo "Nextcloud repo OK"
 else
@@ -131,13 +128,6 @@ then
     exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' ubuntu-server 2>/dev/null | grep -c "ok installed") -eq 0 ]
-then
-    echo "'ubuntu-server' is not installed, this doesn't seem to be a server."
-    echo "Please install the server version of Ubuntu and restart the script"
-    exit 1
-fi
-
 # Create $UNIXUSER if not existing
 if id "$UNIXUSER" >/dev/null 2>&1
 then
@@ -167,7 +157,7 @@ fi
 # Change DNS
 if ! [ -x "$(command -v resolvconf)" ]
 then
-    apt-get install resolvconf -y -q
+    apt install resolvconf -y -q
     dpkg-reconfigure resolvconf
 else
     echo 'reolvconf is installed.' >&2
@@ -179,13 +169,13 @@ echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base
 # Check network
 if ! [ -x "$(command -v nslookup)" ]
 then
-    apt-get install dnsutils -y -q
+    apt install dnsutils -y -q
 else
     echo 'dnsutils is installed.' >&2
 fi
 if ! [ -x "$(command -v ifup)" ]
 then
-    apt-get install ifupdown -y -q
+    apt install ifupdown -y -q
 else
     echo 'ifupdown is installed.' >&2
 fi
@@ -198,6 +188,21 @@ then
 else
     echo "Network OK."
 fi
+
+# Set locales
+apt install language-pack-en-base -y
+sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+
+# Check where the best mirrors are and update
+echo "Locating the best mirrors..."
+apt update -q2
+apt install python-pip -y
+pip install \
+    --upgrade pip \
+    apt-select
+apt-select
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+sudo mv sources.list /etc/apt/
 clear
 
 # Set keyboard layout
@@ -211,14 +216,7 @@ echo
 clear
 
 # Update system
-apt-get update -q2
-
-# Set locales
-apt-get install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-
-# Install aptitude
-apt-get install aptitude -y
+apt update -q2
 
 # Write MySQL pass to file and keep it safe
 echo "$MYSQL_PASS" > $PW_FILE
@@ -226,13 +224,13 @@ chmod 600 $PW_FILE
 chown root:root $PW_FILE
 
 # Install MYSQL 5.7
-apt-get install software-properties-common -y
+apt install software-properties-common -y
 echo "mysql-server-5.7 mysql-server/root_password password $MYSQL_PASS" | debconf-set-selections
 echo "mysql-server-5.7 mysql-server/root_password_again password $MYSQL_PASS" | debconf-set-selections
-apt-get install mysql-server-5.7 -y
+apt install mysql-server-5.7 -y
 
 # mysql_secure_installation
-apt-get -y install expect
+apt -y install expect
 SECURE_MYSQL=$(expect -c "
 set timeout 10
 spawn mysql_secure_installation
@@ -253,10 +251,10 @@ send \"y\r\"
 expect eof
 ")
 echo "$SECURE_MYSQL"
-apt-get -y purge expect
+apt -y purge expect
 
 # Install Apache
-apt-get install apache2 -y
+apt install apache2 -y
 a2enmod rewrite \
         headers \
         env \
@@ -271,8 +269,8 @@ sudo hostnamectl set-hostname nextcloud
 service apache2 restart
 
 # Install PHP 7.0
-apt-get update -q2
-apt-get install -y \
+apt update -q2
+apt install -y \
     libapache2-mod-php7.0 \
     php7.0-common \
     php7.0-mysql \
@@ -296,14 +294,14 @@ echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
 echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 
 # Install Unzip
-apt-get install unzip -y
+apt install unzip -y
 
 # Download and validate Nextcloud package
 wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
 mkdir -p $GPGDIR
 wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
 chmod -R 600 $GPGDIR
-gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$OpenPGP_fingerprint"
+gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
 gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
 if [[ $? > 0 ]]
 then
@@ -324,14 +322,20 @@ rm $HTML/$STABLEVERSION.zip
 wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
+# Manually create new DB
+mysql \
+-u root \
+-p$MYSQL_PASS \
+-e "create database nextcloud_db; GRANT ALL PRIVILEGES ON nextcloud_db.* TO nc_mysql@localhost IDENTIFIED BY '$NC_MYSQL_PASS'"
+
 # Install Nextcloud
 cd $NCPATH
 sudo -u www-data php occ maintenance:install \
     --data-dir "$NCDATA" \
     --database "mysql" \
     --database-name "nextcloud_db" \
-    --database-user "root" \
-    --database-pass "$MYSQL_PASS" \
+    --database-user "nc_mysql" \
+    --database-pass "$NC_MYSQL_PASS" \
     --admin-user "$UNIXUSER" \
     --admin-pass "$UNIXPASS"
 echo
@@ -356,7 +360,7 @@ sed -i "s|post_max_size = 8M|post_max_size = 1100M|g" /etc/php/7.0/apache2/php.i
 sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 1000M|g" /etc/php/7.0/apache2/php.ini
 
 # Install Figlet
-apt-get install figlet -y
+apt install figlet -y
 
 # Generate $HTTP_CONF
 if [ -f $HTTP_CONF ]
@@ -473,53 +477,37 @@ sudo -u www-data php $NCPATH/occ config:system:set mail_smtpname --value="www.te
 sudo -u www-data php $NCPATH/occ config:system:set mail_smtppassword --value="vinr vhpa jvbh hovy"
 
 # Install Libreoffice Writer to be able to read MS documents.
-sudo apt-get install --no-install-recommends libreoffice-writer -y
+sudo apt install --no-install-recommends libreoffice-writer -y
 
 # Install packages for Webmin
-apt-get install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
+apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
 
 # Install Webmin
 sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
 wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
-apt-get update -q2
-apt-get install webmin -y
+apt update -q2
+apt install webmin -y
 
-# Download and install Documents
-#if [ -d $NCPATH/apps/documents ]
-#   then
-#   sleep 1
-#else
-#   wget -q https://github.com/owncloud/documents/archive/master.zip -P $NCPATH/apps
-#   cd $NCPATH/apps
-#   unzip -q master.zip
-#   rm master.zip
-#   mv documents-master/ documents/
-#fi
+# Nextcloud apps
+CONVER=$(wget -q https://raw.githubusercontent.com/nextcloud/contacts/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
+CONVER_FILE=contacts.tar.gz
+CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
+CALVER=$(wget -q https://raw.githubusercontent.com/nextcloud/calendar/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
+CALVER_FILE=calendar.tar.gz
+CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 
-# Enable documents
-#if [ -d $NCPATH/apps/documents ]
-#   then
-#   sudo -u www-data php $NCPATH/occ app:enable documents
-sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-#fi
-
-# Download and install Contacts
-if [ -d $NCPATH/apps/contacts ]
+# Get spreedme script
+if [ -f $SCRIPTS/spreedme.sh ]
 then
-    sleep 1
+    rm $SCRIPTS/spreedme.sh
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
 else
-    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CONVER_FILE
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
 fi
 
-# Enable Contacts
-if [ -d $NCPATH/apps/contacts ]
-then
-    sudo -u www-data php $NCPATH/occ app:enable contacts
-fi
+sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
+function calendar {
 # Download and install Calendar
 if [ -d $NCPATH/apps/calendar ]
 then
@@ -536,6 +524,54 @@ if [ -d $NCPATH/apps/calendar ]
 then
     sudo -u www-data php $NCPATH/occ app:enable calendar
 fi
+
+}
+
+function contacts {
+# Download and install Contacts
+if [ -d $NCPATH/apps/contacts ]
+then
+    sleep 1
+else
+    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
+    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
+    cd $NCPATH/apps
+    rm $CONVER_FILE
+fi
+
+# Enable Contacts
+if [ -d $NCPATH/apps/contacts ]
+then
+    sudo -u www-data php $NCPATH/occ app:enable contacts
+fi
+}
+
+
+function spreedme {
+    bash $SCRIPTS/spreedme.sh
+    rm $SCRIPTS/spreedme.sh
+
+}
+
+whiptail --title "Which apps do you want to install?" --checklist --separate-output "" 10 40 3 \
+"Calendar" "              " on \
+"Contacts" "              " on \
+"Spreed.Me" "              " on 2>results
+
+while read choice
+do
+        case $choice in
+                Calendar) calendar
+                ;;
+                Contacts) contacts
+                ;;
+                Spreed.Me) spreedme
+                ;;
+                *)
+                ;;
+        esac
+done < results
+
 
 # Change roots .bash_profile
 if [ -f $SCRIPTS/change-root-profile.sh ]
@@ -627,16 +663,17 @@ bash $SCRIPTS/redis-server-ubuntu16.sh
 rm $SCRIPTS/redis-server-ubuntu16.sh
 
 # Upgrade
-apt-get update -q2
-aptitude full-upgrade -y
+apt update -q2
+apt full-upgrade -y
 
 # Remove LXD (always shows up as failed during boot)
-apt-get purge lxd -y
+apt purge lxd -y
 
 # Cleanup
+CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
 echo "$CLEARBOOT"
-apt-get autoremove -y
-apt-get autoclean
+apt autoremove -y
+apt autoclean
 if [ -f /home/$UNIXUSER/*.sh ]
 then
     rm /home/$UNIXUSER/*.sh
@@ -651,6 +688,7 @@ fi
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Reboot
+echo "Installation done, system will now reboot..."
 reboot
 
 exit 0

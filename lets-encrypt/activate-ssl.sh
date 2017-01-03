@@ -1,6 +1,6 @@
-#!bin/bash
+#!/bin/bash
 
-# Tech and Me ©2016 - www.techandme.se
+# Tech and Me ©2017 - www.techandme.se
 
 NCPATH=/var/www/nextcloud
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
@@ -108,7 +108,7 @@ if [ $GIT_IS_AVAILABLE -eq 1 ]
 then
     sleep 1
 else
-    apt-get install git -y -q
+    apt install git -y -q
 fi
 
 # Fetch latest version of test-new-config.sh
@@ -183,6 +183,11 @@ else
     echo "$ssl_conf was successfully created"
     sleep 3
     cat << SSL_CREATE > "$ssl_conf"
+<VirtualHost *:80>
+    ServerName $domain
+    Redirect / https://$domain
+</VirtualHost>
+
 <VirtualHost *:443>
 
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"

@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Nextloud VM</title>
+        <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
         <style>
             body {
                 background-color: #0082c9;
@@ -98,7 +99,7 @@
             <p>Before you can use Nextcloud you have to run the setup script to complete the installation. This is easily done by just typing 'nextcloud' when you log in to the terminal for the first time.</p>
             <p>The full path to the setup script is: /var/scripts/nextcloud-startup-script.sh. When the script is finnished it will be deleted, as it's only used the first time you boot the machine.</p>
             <center>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/jhbkTQ9yA-4" frameborder="0" allowfullscreen></iframe>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/-3fKEu2HhJo" frameborder="0" allowfullscreen></iframe>
             </center>
         </div>
 
@@ -129,7 +130,7 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
-                <a href="https://www.techandme.se/user-and-password/" target="_blank">Login details</a>
+                <a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login details</a>
             </h3>
             <p>Note: Webmin is installed when you run the setup script. To access Webmin externally you have to open port 10000 in your router.</p>
         </div>
@@ -146,7 +147,7 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
-                <a href="https://www.techandme.se/user-and-password/" target="_blank">Login details</a>
+                <a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login details</a>
             </h3>
             <p>Note: Your external IP is set as approved in /etc/apache2/conf-available/phpmyadmin.conf, all other access is forbidden.</p>
         </div>
