@@ -1,10 +1,10 @@
 #!/bin/bash
-WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
-WANIP6=$(curl -s https://6.ifcfg.me/)
+WANIP4=$(curl -s ipinfo.io/ip -m 5)
+WANIP6=$(curl -s 6.ifcfg.me -m 5)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 clear
 figlet -f small Nextcloud
-echo "           https://www.nextcloud.com"
+echo "     https://www.nextcloud.com"
 echo
 echo
 echo
