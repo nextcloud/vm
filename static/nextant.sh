@@ -3,7 +3,7 @@
 
 # Setting variables
 SOLR_VERSION=6.3.0
-NEXTANT_VERSION=1.0.3
+NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
 
 NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
