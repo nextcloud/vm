@@ -2,20 +2,20 @@
 # Solr Server & Nextant App Installation
 
 # Setting variables
-SORL_VERSION=6.3.0
+SOLR_VERSION=6.3.0
 NEXTANT_VERSION=1.0.3
 
 NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
-SOLR_RELEASE=solr-$SORL_VERSION.tgz
-SOLR_DL=http://mirrors.ircam.fr/pub/apache/lucene/solr/$SORL_VERSION/$SOLR_RELEASE
+SOLR_RELEASE=solr-$SOLR_VERSION.tgz
+SOLR_DL=http://mirrors.ircam.fr/pub/apache/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
 NC_USER=ncadmin
 NT_HOME=/home/$NC_USER
 NCPATH=/var/www/nextcloud/
 NC_APPS_PATH=$NCPATH/apps/
 SOLR_HOME=$NT_HOME/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
-SOLR_DSCONF=/opt/solr-$SORL_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
+SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
 SCRIPTS=/var/scripts
 
 # Must be root
@@ -28,19 +28,17 @@ sleep 3
 apt install default-jre -y
 
 # Getting and installing Apache Solr
-echo "Installing Apache Sorl..."
+echo "Installing Apache Solr..."
 mkdir $SOLR_HOME
 cd $SOLR_HOME
 wget -q $SOLR_DL
 tar -zxf $SOLR_RELEASE
-./solr-$SORL_VERSION/bin/install_solr_service.sh $SOLR_RELEASE
-#rm -rf $SOLR_HOME/$SOLR_RELEASE
-#should we remove solr home folder?
+./solr-$SOLR_VERSION/bin/install_solr_service.sh $SOLR_RELEASE
 if [ $? -eq 0 ]
 then
-    sleep 1
+    rm -rf $SOLR_HOME/$SOLR_RELEASE
 else
-    echo "Sorl failed to install, somthing is wrong with the Sorl installation"
+    echo "Solr failed to install, somthing is wrong with the Solr installation"
     exit 1
 fi
 
@@ -58,7 +56,7 @@ if [ $? -eq 0 ]
 then
     sudo -u solr /opt/solr/bin/solr create -c nextant 
 else
-    echo "Sorl failed to start, somthing is wrong with the Sorl installation"
+    echo "Solr failed to start, somthing is wrong with the Solr installation"
     exit 1
 fi
 
@@ -79,7 +77,7 @@ if [ $? -eq 0 ]
 then
     sleep 1
 else
-    echo "Sorl failed to restart, somthing is wrong with the Sorl installation"
+    echo "Solr failed to restart, somthing is wrong with the Solr installation"
     exit 1
 fi
 
