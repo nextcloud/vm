@@ -26,6 +26,15 @@ sleep 3
 # Installing requirements
 apt install default-jre -y
 
+# Check if it's a clean install
+if [ -d $SOLR_HOME ]
+then
+    echo
+    echo "It seems like $SOLR_HOME already exists. Have you already run this script?"
+    echo "If yes, revert all the settings and try again, it must be a clean install."
+    exit 1
+fi
+
 # Getting and installing Apache Solr
 echo "Installing Apache Solr..."
 mkdir -p $SOLR_HOME
@@ -37,7 +46,7 @@ if [ $? -eq 0 ]
 then
     rm -rf $SOLR_HOME/$SOLR_RELEASE
 else
-    echo "Solr failed to install, somthing is wrong with the Solr installation"
+    echo "Solr failed to install, something is wrong with the Solr installation"
     exit 1
 fi
 
@@ -55,7 +64,7 @@ if [ $? -eq 0 ]
 then
     sudo -u solr /opt/solr/bin/solr create -c nextant 
 else
-    echo "Solr failed to start, somthing is wrong with the Solr installation"
+    echo "Solr failed to start, something is wrong with the Solr installation"
     exit 1
 fi
 
@@ -76,7 +85,7 @@ if [ $? -eq 0 ]
 then
     sleep 1
 else
-    echo "Solr failed to restart, somthing is wrong with the Solr installation"
+    echo "Solr failed to restart, something is wrong with the Solr installation"
     exit 1
 fi
 
