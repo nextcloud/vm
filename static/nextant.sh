@@ -4,11 +4,10 @@
 # Setting variables
 SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -P -m 1 -o '<span class="tag-name">.+/\K.+?(?=</span>)')
 NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
-
 NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
 SOLR_RELEASE=solr-$SOLR_VERSION.tgz
-SOLR_DL=http://mirrors.ircam.fr/pub/apache/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
+SOLR_DL=http://www-eu.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
 NC_USER=ncadmin
 NT_HOME=/home/$NC_USER
 NCPATH=/var/www/nextcloud/
@@ -29,7 +28,7 @@ apt install default-jre -y
 
 # Getting and installing Apache Solr
 echo "Installing Apache Solr..."
-mkdir $SOLR_HOME
+mkdir -p $SOLR_HOME
 cd $SOLR_HOME
 wget -q $SOLR_DL
 tar -zxf $SOLR_RELEASE
