@@ -20,12 +20,6 @@ SCRIPTS=/var/scripts
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
-echo "Starting to setup Solr & Nextant on Nextcloud..."
-sleep 3
-
-# Installing requirements
-apt install default-jre -y
-
 # Check if it's a clean install
 if [ -d $SOLR_HOME ]
 then
@@ -34,6 +28,12 @@ then
     echo "If yes, revert all the settings and try again, it must be a clean install."
     exit 1
 fi
+
+echo "Starting to setup Solr & Nextant on Nextcloud..."
+sleep 3
+
+# Installing requirements
+apt install default-jre -y
 
 # Getting and installing Apache Solr
 echo "Installing Apache Solr..."
