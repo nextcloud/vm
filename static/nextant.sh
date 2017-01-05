@@ -2,7 +2,7 @@
 # Solr Server & Nextant App Installation
 
 # Setting variables
-SOLR_VERSION=6.3.0
+SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -P -m 1 -o '<span class="tag-name">.+/\K.+?(?=</span>)')
 NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
 
 NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
