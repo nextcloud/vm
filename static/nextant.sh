@@ -2,17 +2,20 @@
 # Solr Server & Nextant App Installation
 
 # Setting variables
-NT_RELEASE=nextant-master-1.0.3.tar.gz
-NT_DL=https://github.com/nextcloud/nextant/releases/download/v1.0.3/$NT_RELEASE
-SOLR_RELEASE=solr-6.3.0.tgz
-SOLR_DL=http://mirrors.ircam.fr/pub/apache/lucene/solr/6.3.0/$SOLR_RELEASE
+SOLR_VERSION=6.3.0
+NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
+
+NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
+NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
+SOLR_RELEASE=solr-$SOLR_VERSION.tgz
+SOLR_DL=http://mirrors.ircam.fr/pub/apache/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
 NC_USER=ncadmin
 NT_HOME=/home/$NC_USER
 NCPATH=/var/www/nextcloud/
 NC_APPS_PATH=$NCPATH/apps/
 SOLR_HOME=$NT_HOME/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
-SOLR_DSCONF=/opt/solr-6.3.0/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
+SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
 SCRIPTS=/var/scripts
 
 # Must be root
@@ -25,23 +28,37 @@ sleep 3
 apt install default-jre -y
 
 # Getting and installing Apache Solr
-echo "Installing Apache Sorl..."
+echo "Installing Apache Solr..."
 mkdir $SOLR_HOME
 cd $SOLR_HOME
 wget -q $SOLR_DL
 tar -zxf $SOLR_RELEASE
-./solr-6.3.0/bin/install_solr_service.sh $SOLR_RELEASE # add test after this
-#rm -rf $SOLR_HOME/$SOLR_RELEASE
-#should we remove solr home folder?
+./solr-$SOLR_VERSION/bin/install_solr_service.sh $SOLR_RELEASE
+if [ $? -eq 0 ]
+then
+    rm -rf $SOLR_HOME/$SOLR_RELEASE
+else
+    echo "Solr failed to install, somthing is wrong with the Solr installation"
+    exit 1
+fi
 
 sudo sed -i '35,37  s/"jetty.host" \//"jetty.host" default="127.0.0.1" \//' $SOLR_JETTY
 
 iptables -A INPUT -p tcp -s localhost --dport 8983 -j ACCEPT
 iptables -A INPUT -p tcp --dport 8983 -j DROP
-#shouldn't this rules be saved somewhere to reload on reboot?
+# Not tested
+#sudo apt install iptables-persistent
+#sudo service iptables-persistent start
+#sudo iptables-save > /etc/iptables.conf
 
 service solr start
-sudo -u solr /opt/solr/bin/solr create -c nextant 
+if [ $? -eq 0 ]
+then
+    sudo -u solr /opt/solr/bin/solr create -c nextant 
+else
+    echo "Solr failed to start, somthing is wrong with the Solr installation"
+    exit 1
+fi
 
 # Add search suggestions feature
 sed -i '2i <!DOCTYPE config [' $SOLR_DSCONF
@@ -55,7 +72,14 @@ echo "
 
 echo 'SOLR_OPTS="$SOLR_OPTS -Dsolr.allow.unsafe.resourceloading=true"' | sudo tee -a /etc/default/solr.in.sh
 
-service solr restart # add test here
+service solr restart
+if [ $? -eq 0 ]
+then
+    sleep 1
+else
+    echo "Solr failed to restart, somthing is wrong with the Solr installation"
+    exit 1
+fi
 
 # Get nextant app for nextcloud
 wget -q -P $NC_APPS_PATH $NT_DL
@@ -63,7 +87,13 @@ cd $NC_APPS_PATH
 tar zxf $NT_RELEASE
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 rm -r $NT_RELEASE
-sudo -u www-data php $NCPATH/occ app:enable nextant # add test here
-
-echo "Nextant is now installed and enabled."
-echo "Please go to: Admin Settings --> Additional Settings, and configure the app"
+sudo -u www-data php $NCPATH/occ app:enable nextant 
+if [ $? -eq 0 ]
+then
+    echo "Nextant app is now installed and enabled."
+    echo "Please go to: Admin Settings --> Additional Settings, and configure the app"
+    sleep 5
+else
+    echo "Nextant app install failed"
+    exit 1
+fi
