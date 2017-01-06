@@ -109,7 +109,7 @@ tar zxf $NT_RELEASE
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 rm -r $NT_RELEASE
 sudo -u www-data php $NCPATH/occ app:enable nextant
-sudo -u www-data php $NCPATH/occ nextant:index
+
 if [ $? -eq 0 ]
 then
     echo "Nextant app is now installed and enabled."
