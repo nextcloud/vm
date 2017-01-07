@@ -10,7 +10,7 @@ SOLR_RELEASE=solr-$SOLR_VERSION.tgz
 SOLR_DL=http://www-eu.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
 NC_USER=ncadmin
 NT_HOME=/home/$NC_USER
-NCPATH=/var/www/nextcloud/
+NCPATH=/var/www/nextcloud
 NC_APPS_PATH=$NCPATH/apps/
 SOLR_HOME=$NT_HOME/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
@@ -19,6 +19,16 @@ SCRIPTS=/var/scripts
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+
+# Make sure there is an Nextcloud installation
+if [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
+then
+	sleep 1
+else
+	echo "It seems there is no Nextcloud server installed, please check your installation."
+	sleep 3
+exit 1
+fi
 
 # Check if it's a clean install
 if [ -d $SOLR_HOME ]
@@ -36,15 +46,17 @@ sleep 3
 apt install default-jre -y
 
 # Getting and installing Apache Solr
-echo "Installing Apache Solr..."
+echo "Installing Apache Solr"
+echo "It might take some time depending on your bandwith, please be patient..."
 mkdir -p $SOLR_HOME
 cd $SOLR_HOME
-wget -q $SOLR_DL
+wget -q $SOLR_DL --show-progress
 tar -zxf $SOLR_RELEASE
 ./solr-$SOLR_VERSION/bin/install_solr_service.sh $SOLR_RELEASE
 if [ $? -eq 0 ]
 then
     rm -rf $SOLR_HOME/$SOLR_RELEASE
+    wget -q https://raw.githubusercontent.com/apache/lucene-solr/master/solr/bin/install_solr_service.sh -P $SCRIPTS/
 else
     echo "Solr failed to install, something is wrong with the Solr installation"
     exit 1
@@ -70,7 +82,7 @@ fi
 
 # Add search suggestions feature
 sed -i '2i <!DOCTYPE config [' $SOLR_DSCONF
-sed -i '3i   <!ENTITY nextant_component SYSTEM "/var/www/nextcloud/apps/nextant/config/nextant_solrconfig.xml"\>' $SOLR_DSCONF
+sed -i "3i   <\!ENTITY nextant_component SYSTEM \"$NCPATH/apps/nextant/config/nextant_solrconfig.xml\"\>" $SOLR_DSCONF
 sed -i '4i   ]>' $SOLR_DSCONF
 
 sed -i '$d' $SOLR_DSCONF | sed -i '$d' $SOLR_DSCONF
@@ -95,7 +107,8 @@ cd $NC_APPS_PATH
 tar zxf $NT_RELEASE
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 rm -r $NT_RELEASE
-sudo -u www-data php $NCPATH/occ app:enable nextant 
+sudo -u www-data php $NCPATH/occ app:enable nextant
+
 if [ $? -eq 0 ]
 then
     echo "Nextant app is now installed and enabled."
