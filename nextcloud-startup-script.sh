@@ -510,12 +510,12 @@ function collabora {
     rm $SCRIPTS/collabora.sh
 }
 
-function calendar {
+function nextant {
     bash $SCRIPTS/nextant.sh
     rm $SCRIPTS/nextant.sh
 }
 
-function contacts {
+function passman {
     bash $SCRIPTS/passman.sh
     rm $SCRIPTS/passman.sh
 }
