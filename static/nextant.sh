@@ -50,7 +50,7 @@ echo "Installing Apache Solr"
 echo "It might take some time depending on your bandwith, please be patient..."
 mkdir -p $SOLR_HOME
 cd $SOLR_HOME
-wget -q $SOLR_DL
+wget -q $SOLR_DL --show-progress
 tar -zxf $SOLR_RELEASE
 ./solr-$SOLR_VERSION/bin/install_solr_service.sh $SOLR_RELEASE
 if [ $? -eq 0 ]
