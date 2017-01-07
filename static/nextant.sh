@@ -22,11 +22,9 @@ SCRIPTS=/var/scripts
 
 #Make sure there is an Nextcloud installation
 if [ -f $NCPATH/occ ]; then
-	echo "The current Nextcloud server installed is..."
-	sudo -u www-data php $NCPATH/occ -V
-	sleep 3
+	sleep 1
 else
-	echo "It seems there is no Nextcloud server installed, please check you installation."
+	echo "It seems there is no Nextcloud server installed, please check your installation."
 	sleep 3
 exit 1
 fi
@@ -58,6 +56,7 @@ tar -zxf $SOLR_RELEASE
 if [ $? -eq 0 ]
 then
     rm -rf $SOLR_HOME/$SOLR_RELEASE
+    wget -q https://raw.githubusercontent.com/apache/lucene-solr/master/solr/bin/install_solr_service.sh -P $SCRIPTS/
 else
     echo "Solr failed to install, something is wrong with the Solr installation"
     exit 1
@@ -114,7 +113,6 @@ if [ $? -eq 0 ]
 then
     echo "Nextant app is now installed and enabled."
     echo "Please go to: Admin Settings --> Additional Settings, and configure the app"
-    echo -e "Finally run \033[0;32msudo -u www-data php /var/www/nextant/occ nextant:index \033[0mto get nextant running."
     sleep 5
 else
     echo "Nextant app install failed"
