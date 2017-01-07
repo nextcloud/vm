@@ -47,7 +47,6 @@ apt install default-jre -y
 
 # Getting and installing Apache Solr
 echo "Installing Apache Solr"
-sleep 2
 echo "It might take some time depending on your bandwith, please be patient..."
 mkdir -p $SOLR_HOME
 cd $SOLR_HOME
