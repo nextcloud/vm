@@ -489,25 +489,65 @@ bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 clear
 
-# Install SpreedMe
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
+# Whiptail auto-size
+calc_wt_size() {
+  WT_HEIGHT=17
+  WT_WIDTH=$(tput cols)
+
+  if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
+    WT_WIDTH=80
+  fi
+  if [ "$WT_WIDTH" -gt 178 ]; then
+    WT_WIDTH=120
+  fi
+  WT_MENU_HEIGHT=$((WT_HEIGHT-7))
 }
-if [[ "yes" == $(ask_yes_or_no "Do you want to install SpreedMe?") ]]
-then
+
+# Install Apps
+
+function collabora {
+    bash $SCRIPTS/collabora.sh
+    rm $SCRIPTS/collabora.sh
+}
+
+function calendar {
+    bash $SCRIPTS/nextant.sh
+    rm $SCRIPTS/nextant.sh
+}
+
+function contacts {
+    bash $SCRIPTS/passman.sh
+    rm $SCRIPTS/passman.sh
+}
+
+
+function spreedme {
     bash $SCRIPTS/spreedme.sh
     rm $SCRIPTS/spreedme.sh
-else
-    echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/spreedme.sh"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
-fi
+
+}
+
+whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Collabora (Online editing) [BETA]" "   " OFF \
+"Nextant (Full text search)" "   " ON \
+"Passman (Password storage)" "   " ON \
+"Spreed.ME (Video calls)" "   " ON 2>results
+
+while read choice
+do
+        case $choice in
+                Collabora) collabora
+                ;;
+                Nextant) nextant
+                ;;
+                Passman) passman
+                ;;
+                Spreed.ME) spreedme
+                ;;
+                *)
+                ;;
+        esac
+done < results
 clear
 
 # Add extra security
