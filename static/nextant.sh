@@ -21,8 +21,7 @@ SCRIPTS=/var/scripts
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
 # Make sure there is an Nextcloud installation
-installed=$(sudo -u www-data php $NCPATH/occ -V)
-if [ "$installed" -eq 0 ]
+if [ "$(sudo -u www-data php /var/www/nextcloud/occ -V)" ]
 then
 	sleep 1
 else
