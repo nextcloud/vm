@@ -39,10 +39,9 @@ then
     exit 1
 fi
 
-
 # Check network
 echo "Testing if network is OK..."
-sleep 2
+sleep 1
 service networking restart
     curl -s http://github.com > /dev/null
 if [ $? -eq 0 ]
@@ -58,7 +57,7 @@ fi
 
 # Check network
 echo "Testing if network is OK..."
-sleep 2
+sleep 1
 service networking restart
     curl -s http://github.com > /dev/null
 if [ $? -eq 0 ]
@@ -81,6 +80,57 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
 
+# Get passman script
+if [ -f $SCRIPTS/passman.sh ]
+then
+    rm $SCRIPTS/passman.sh
+    wget -q $STATIC/passman.sh -P $SCRIPTS
+else
+    wget -q $STATIC/passman.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/passman.sh ]
+then
+    sleep 0.1
+else
+    echo "passman failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
+
+# Get nextant script
+if [ -f $SCRIPTS/nextant.sh ]
+then
+    rm $SCRIPTS/nextant.sh
+    wget -q $STATIC/nextant.sh -P $SCRIPTS
+else
+    wget -q $STATIC/nextant.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/nextant.sh ]
+then
+    sleep 0.1
+else
+    echo "nextant failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again." 
+    exit 1
+fi
+
+# Get collabora script
+if [ -f $SCRIPTS/collabora.sh ]
+then
+    rm $SCRIPTS/collabora.sh
+    wget -q $STATIC/collabora.sh -P $SCRIPTS
+else
+    wget -q $STATIC/collabora.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/collabora.sh ]
+then
+    sleep 0.1
+else
+    echo "collabora failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
+
 # Get spreedme script
 if [ -f $SCRIPTS/spreedme.sh ]
 then
@@ -88,6 +138,14 @@ then
     wget -q $STATIC/spreedme.sh -P $SCRIPTS
 else
     wget -q $STATIC/spreedme.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/spreedme.sh ]
+then
+    sleep 0.1
+else
+    echo "spreedme failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
 fi
 
 # Get script for temporary fixes
@@ -98,6 +156,14 @@ then
 else
     wget -q $STATIC/temporary-fix.sh -P $SCRIPTS
 fi
+if [ -f $SCRIPTS/temporary-fix.sh ]
+then
+    sleep 0.1
+else
+    echo "temporary-fix failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
 
 # Get security script
 if [ -f $SCRIPTS/security.sh ]
@@ -106,6 +172,14 @@ then
     wget -q $STATIC/security.sh -P $SCRIPTS
 else
     wget -q $STATIC/security.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/security.sh ]
+then
+    sleep 0.1
+else
+    echo "security failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
 fi
 
 # Get the latest nextcloud_update.sh
@@ -116,6 +190,14 @@ then
 else
     wget -q $STATIC/update.sh -P $SCRIPTS
 fi
+if [ -f $SCRIPTS/update.sh ]
+then
+    sleep 0.1
+else
+    echo "nextcloud_update failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
 
 # phpMyadmin
 if [ -f $SCRIPTS/phpmyadmin_install_ubuntu16.sh ]
@@ -125,7 +207,14 @@ then
 else
     wget -q $STATIC/phpmyadmin_install_ubuntu16.sh -P $SCRIPTS
 fi
-
+if [ -f $SCRIPTS/phpmyadmin_install_ubuntu16.sh ]
+then
+    sleep 0.1
+else
+    echo "phpmyadmin_install_ubuntu16 failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
@@ -134,6 +223,14 @@ then
     wget -q $STATIC/update-config.php -P $SCRIPTS
 else
     wget -q $STATIC/update-config.php -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/update-config.php ]
+then
+    sleep 0.1
+else
+    echo "update-config failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
 fi
 
 # Activate SSL
@@ -144,17 +241,14 @@ then
 else
     wget -q $LETS_ENC/activate-ssl.sh -P $SCRIPTS
 fi
-
-
-# The update script
-if [ -f $SCRIPTS/nextcloud_update.sh ]
+if [ -f $SCRIPTS/activate-ssl.sh ]
 then
-    rm $SCRIPTS/nextcloud_update.sh
-    wget -q $GITHUB_REPO/nextcloud_update.sh -P $SCRIPTS
+    sleep 0.1
 else
-    wget -q $GITHUB_REPO/nextcloud_update.sh -P $SCRIPTS
+    echo "activate-ssl failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
 fi
-
 
 # Sets trusted domain in when nextcloud-startup-script.sh is finished
 if [ -f $SCRIPTS/trusted.sh ]
@@ -164,7 +258,14 @@ then
 else
     wget -q $STATIC/trusted.sh -P $SCRIPTS
 fi
-
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    sleep 0.1
+else
+    echo "trusted failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
 
 # Sets static IP to UNIX
 if [ -f $SCRIPTS/ip.sh ]
@@ -174,7 +275,14 @@ then
 else
     wget -q $STATIC/ip.sh -P $SCRIPTS
 fi
-
+if [ -f $SCRIPTS/ip.sh ]
+then
+    sleep 0.1
+else
+    echo "ip failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
 
 # Tests connection after static IP is set
 if [ -f $SCRIPTS/test_connection.sh ]
@@ -184,7 +292,14 @@ then
 else
     wget -q $STATIC/test_connection.sh -P $SCRIPTS
 fi
-
+if [ -f $SCRIPTS/test_connection.sh ]
+then
+    sleep 0.1
+else
+    echo "test_connection failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
 
 # Sets secure permissions after upgrade
 if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
@@ -194,7 +309,14 @@ then
 else
     wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
 fi
-
+if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
+then
+    sleep 0.1
+else
+    echo "setup_secure_permissions_nextcloud failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
 
 # Change MySQL password
 if [ -f $SCRIPTS/change_mysql_pass.sh ]
@@ -204,7 +326,14 @@ then
 else
     wget -q $STATIC/change_mysql_pass.sh -P $SCRIPTS
 fi
-
+if [ -f $SCRIPTS/change_mysql_pass.sh ]
+then
+    sleep 0.1
+else
+    echo "change_mysql_pass failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
 
 # Get figlet Tech and Me
 if [ -f $SCRIPTS/nextcloud.sh ]
@@ -214,7 +343,14 @@ then
 else
     wget -q $STATIC/nextcloud.sh -P $SCRIPTS
 fi
-
+if [ -f $SCRIPTS/nextcloud.sh ]
+then
+    sleep 0.1
+else
+    echo "nextcloud failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
 # Get the Welcome Screen when http://$address
 if [ -f $SCRIPTS/index.php ]
 then
@@ -245,6 +381,7 @@ echo "|                                                                    |"
 echo "| - Generate new SSH keys for the server                             |"
 echo "| - Generate new MySQL password                                      |"
 echo "| - Install phpMyadmin and make it secure                            |"
+echo "| - Install selected apps and automatically configure them           |"
 echo "| - Upgrade your system to latest version                            |"
 echo "| - Set secure permissions to Nextcloud                              |"
 echo "| - Set new passwords to Ubuntu Server and Nextcloud                 |"
