@@ -41,7 +41,6 @@ fi
 
 # Check network
 echo "Testing if network is OK..."
-sleep 1
 service networking restart
     curl -s http://github.com > /dev/null
 if [ $? -eq 0 ]
@@ -57,7 +56,6 @@ fi
 
 # Check network
 echo "Testing if network is OK..."
-sleep 1
 service networking restart
     curl -s http://github.com > /dev/null
 if [ $? -eq 0 ]
@@ -74,7 +72,10 @@ fi
 echo "Locating the best mirrors..."
 apt-select
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+if [ -f sources.list ]
+then
 sudo mv sources.list /etc/apt/
+fi
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
@@ -382,7 +383,7 @@ echo "| - Generate new SSH keys for the server                             |"
 echo "| - Generate new MySQL password                                      |"
 echo "| - Install phpMyadmin and make it secure                            |"
 echo "| - Install selected apps and automatically configure them           |"
-echo "| - Upgrade your system to latest version                            |"
+echo "| - Upgrade your system and Nextcloud to latest version              |"
 echo "| - Set secure permissions to Nextcloud                              |"
 echo "| - Set new passwords to Ubuntu Server and Nextcloud                 |"
 echo "| - Set new keyboard layout                                          |"
@@ -431,20 +432,20 @@ cp /etc/network/interfaces /etc/network/interfaces.backup
 clear
 echo -e "\e[0m"
 ifdown $IFACE
-sleep 2
+sleep 1
 ifup $IFACE
-sleep 2
+sleep 1
 bash $SCRIPTS/ip.sh
 ifdown $IFACE
-sleep 2
+sleep 1
 ifup $IFACE
-sleep 2
+sleep 1
 echo
 echo "Testing if network is OK..."
 sleep 1
 echo
 bash $SCRIPTS/test_connection.sh
-sleep 2
+sleep 1
 echo
 echo -e "\e[0mIf the output is \e[32mConnected! \o/\e[0m everything is working."
 echo -e "\e[0mIf the output is \e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
@@ -456,12 +457,12 @@ service networking restart
 clear
 echo "Testing if network is OK..."
 ifdown $IFACE
-sleep 2
+sleep 1
 ifup $IFACE
-sleep 2
+sleep 1
 echo
 bash $SCRIPTS/test_connection.sh
-sleep 2
+sleep 1
 clear
 
 # Pretty URLs
@@ -504,7 +505,6 @@ calc_wt_size() {
 }
 
 # Install Apps
-
 function collabora {
     bash $SCRIPTS/collabora.sh
     rm $SCRIPTS/collabora.sh
@@ -529,9 +529,9 @@ function spreedme {
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Collabora (Online editing) [BETA]" "   " OFF \
-"Nextant (Full text search)" "   " ON \
-"Passman (Password storage)" "   " ON \
-"Spreed.ME (Video calls)" "   " ON 2>results
+"Nextant (Full text search)" "   " OFF \
+"Passman (Password storage)" "   " OFF \
+"Spreed.ME (Video calls)" "   " OFF 2>results
 
 while read choice
 do
@@ -723,8 +723,6 @@ else
     sleep 1
 fi
 clear
-echo
-echo
 
 cat << LETSENC
 +-----------------------------------------------+
