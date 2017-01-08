@@ -107,13 +107,12 @@ wget -q -P $NC_APPS_PATH $NT_DL
 cd $NC_APPS_PATH
 tar zxf $NT_RELEASE
 # Check if permission script exists, if not get it.
-	if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
-		bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
-	else
-		wget -q $STATIC/setup_secure_permissions_nextcloud.sh
-		chmod +x $SCRIPTS/setup_secure_permissions_nextcloud.sh
-		bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
-	fi
+if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
+    bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+else
+    wget -q $STATIC/setup_secure_permissions_nextcloud.sh
+    bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+fi
 rm -r $NT_RELEASE
 sudo -u www-data php $NCPATH/occ app:enable nextant
 
