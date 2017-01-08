@@ -2,6 +2,7 @@
 # Solr Server & Nextant App Installation
 
 # Setting variables
+STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -P -m 1 -o '<span class="tag-name">.+/\K.+?(?=</span>)')
 NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
 NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
@@ -105,7 +106,13 @@ fi
 wget -q -P $NC_APPS_PATH $NT_DL
 cd $NC_APPS_PATH
 tar zxf $NT_RELEASE
-bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+# Check if permission script exists, if not get it.
+if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
+    bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+else
+    wget -q $STATIC/setup_secure_permissions_nextcloud.sh
+    bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+fi
 rm -r $NT_RELEASE
 sudo -u www-data php $NCPATH/occ app:enable nextant
 
