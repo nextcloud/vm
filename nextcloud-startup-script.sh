@@ -528,10 +528,10 @@ function spreedme {
 }
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Collabora (Online editing) [BETA]" "   " OFF \
-"Nextant (Full text search)" "   " OFF \
-"Passman (Password storage)" "   " OFF \
-"Spreed.ME (Video calls)" "   " OFF 2>results
+"Collabora" "(Online editing) [BETA]   " OFF \
+"Nextant" "(Full text search)   " OFF \
+"Passman" "(Password storage)   " OFF \
+"Spreed.ME" "(Video calls)   " OFF 2>results
 
 while read choice
 do
