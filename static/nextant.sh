@@ -109,9 +109,9 @@ tar zxf $NT_RELEASE
 # Check if permission script exists, if not get it.
 if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
 then
-bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+    bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 else
-    wget -q $STATIC/setup_secure_permissions_nextcloud.sh
+    wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
     bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 fi
 rm -r $NT_RELEASE
