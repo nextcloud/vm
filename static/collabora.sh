@@ -117,8 +117,8 @@ else
   SSLHonorCipherOrder     on
 
   # Encoded slashes need to be allowed
-  AllowEncodedSlashes On
-
+  AllowEncodedSlashes NoDecode
+  
   # Container uses a unique non-signed certificate
   SSLProxyEngine On
   SSLProxyVerify None
@@ -138,7 +138,7 @@ else
   ProxyPassReverse    /hosting/discovery https://127.0.0.1:9980/hosting/discovery
 
   # Main websocket
-  ProxyPassMatch   "/lool/(.*)/ws$"      wss://127.0.0.1:9980/lool/$1/ws
+  ProxyPassMatch "/lool/(.*)/ws$" wss://127.0.0.1:9980/lool/$1/ws nocanon
   
   # Admin Console websocket
   ProxyPass   /lool/adminws wss://127.0.0.1:9980/lool/adminws
