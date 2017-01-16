@@ -171,7 +171,7 @@ sudo service apache2 stop
 cd /etc
 git clone https://github.com/certbot/certbot.git
 cd /etc/certbot
-./letsencrypt-auto certonly --agree-tos --standalone -d $EDITORDOMAIN
+./letsencrypt-auto certonly --agree-tos --standalone -d $CLEANDOMAIN
 # Check if $certfiles exists
 if [ -d "$HTTPS_CONF" ]
 then
