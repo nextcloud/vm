@@ -1,6 +1,7 @@
 #!/bin/bash
 # Collabora auto installer
 
+SCRIPTS=/var/scripts
 # Check if root
 if [ "$(whoami)" != "root" ]
 then
@@ -22,8 +23,6 @@ LETSENCRYPTPATH=/etc/letsencrypt
 CERTFILES=$LETSENCRYPTPATH/live
 # WANIP
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
-# Misc
-SCRIPTS=/var/scripts
 
 # Whiptail auto size
 calc_wt_size() {
