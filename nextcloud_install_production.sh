@@ -23,7 +23,6 @@ OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Passwords
 SHUF=$(shuf -i 13-15 -n 1)
 MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
-NC_MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
 PW_FILE=/var/mysql_password.txt
 # Directories
 SCRIPTS=/var/scripts
@@ -325,20 +324,14 @@ rm $HTML/$STABLEVERSION.zip
 wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
-# Manually create new DB
-mysql \
--u root \
--p$MYSQL_PASS \
--e "create database nextcloud_db; GRANT ALL PRIVILEGES ON nextcloud_db.* TO nc_mysql@localhost IDENTIFIED BY '$NC_MYSQL_PASS'"
-
 # Install Nextcloud
 cd $NCPATH
 sudo -u www-data php occ maintenance:install \
     --data-dir "$NCDATA" \
     --database "mysql" \
     --database-name "nextcloud_db" \
-    --database-user "nc_mysql" \
-    --database-pass "$NC_MYSQL_PASS" \
+    --database-user "root" \
+    --database-pass "$MYSQL_PASS" \
     --admin-user "$UNIXUSER" \
     --admin-pass "$UNIXPASS"
 echo
