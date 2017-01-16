@@ -3,13 +3,10 @@
 
 ## Variable's
 # Docker URL
-DOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
-# Letsencrypt domains (we need to find a solution to add this Letsencrypt request to the main request for the NC domain)
-CLEANDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, now make sure it look normal" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
-EDITORDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-# Vhosts
-HTTPS_EXIST="/etc/apache2/sites-available/$CLEANDOMAIN.conf"
-HTTPS_CONF="/etc/apache2/sites-available/$EDITORDOMAIN.conf"
+SUBDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+NCDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&$
+# Vhost
+HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Letsencrypt
 LETSENCRYPTPATH=/etc/letsencrypt
 CERTFILES=$LETSENCRYPTPATH/live
@@ -72,7 +69,7 @@ fi
 
 # Install Collabora docker
 docker pull collabora/code
-docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$DOMAIN" --restart always --cap-add MKNOD collabora/code
+docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always --cap-add MKNOD collabora/code
 
 # Install Apache2
 	if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ];
@@ -105,13 +102,13 @@ else
 	touch "$HTTPS_CONF"
         cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
-  ServerName $EDITORDOMAIN:443
+  ServerName $SUBDOMAIN:443
 
   # SSL configuration, you may want to take the easy route instead and use Lets Encrypt!
   SSLEngine on
-  SSLCertificateChainFile $CERTFILES/$EDITORDOMAIN/chain.pem
-  SSLCertificateFile $CERTFILES/$EDITORDOMAIN/cert.pem
-  SSLCertificateKeyFile $CERTFILES/$EDITORDOMAIN/privkey.pem
+  SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
+  SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
+  SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
   SSLProtocol             all -SSLv2 -SSLv3
   SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
   SSLHonorCipherOrder     on
@@ -171,7 +168,7 @@ sudo service apache2 stop
 cd /etc
 git clone https://github.com/certbot/certbot.git
 cd /etc/certbot
-./letsencrypt-auto certonly --agree-tos --standalone -d $CLEANDOMAIN
+./letsencrypt-auto certonly --agree-tos --standalone -d $SUBDOMAIN
 # Check if $certfiles exists
 if [ -d "$HTTPS_CONF" ]
 then
