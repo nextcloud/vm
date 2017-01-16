@@ -1,6 +1,15 @@
 #!/bin/bash
 # Collabora auto installer
 
+# Check if root
+if [ "$(whoami)" != "root" ]
+then
+    echo
+    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/collabora.sh"
+    echo
+    exit 1
+fi
+
 ## Variable's
 # Docker URL
 SUBDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
@@ -15,15 +24,6 @@ CERTFILES=$LETSENCRYPTPATH/live
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 # Misc
 SCRIPTS=/var/scripts
-
-# Check if root
-if [ "$(whoami)" != "root" ]
-then
-    echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/collabora.sh"
-    echo
-    exit 1
-fi
 
 # Whiptail auto size
 calc_wt_size() {
