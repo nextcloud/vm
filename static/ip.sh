@@ -19,7 +19,11 @@ iface lo inet loopback
 iface $IFACE inet static
 pre-up /sbin/ethtool -K $IFACE tso off
 pre-up /sbin/ethtool -K $IFACE gso off
-mtu 1400 # Fixes https://github.com/nextcloud/vm/issues/92
+
+# If you are expeireing issues with loading web frontend, you should 
+# enable this by removing the hash infront of 'mtu 1400'.
+# Fixes https://github.com/nextcloud/vm/issues/92
+# mtu 1400 
 
 # Best practice is to change the static address
 # to something outside your DHCP range.
