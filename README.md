@@ -4,6 +4,7 @@
 ## Maintainers
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
+* [Ark74](https://github.com/Ark74)
 * You? :)
 
 
