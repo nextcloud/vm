@@ -70,7 +70,7 @@ apt install -y -q \
     phpmyadmin
 
 # Remove Password file
-rm $PW_FILE
+rm /var/mysql_password.txt
 
 # Secure phpMyadmin
 if [ -f $PHPMYADMIN_CONF ]
