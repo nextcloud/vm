@@ -14,7 +14,6 @@ mysqladmin -u root -p$OLDMYSQL password $NEWMYSQLPASS > /dev/null 2>&1
 if [ $? -eq 0 ]
 then
     echo -e "\e[32mYour new MySQL root password is: $NEWMYSQLPASS\e[0m"
-    echo "$NEWMYSQLPASS" > $PW_FILE
     cat << LOGIN > "$MYCNF"
 [client]
 password='$NEWMYSQLPASS'
