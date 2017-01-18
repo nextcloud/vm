@@ -5,6 +5,7 @@
 SHUF=$(shuf -i 17-20 -n 1)
 NEWMYSQLPASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
 PW_FILE=/var/mysql_password.txt
+MYCNF=/root/.my.cnf
 OLDMYSQL=$(cat $PW_FILE)
 
 echo "Generating new MySQL root password..."
@@ -13,12 +14,21 @@ mysqladmin -u root -p$OLDMYSQL password $NEWMYSQLPASS > /dev/null 2>&1
 if [ $? -eq 0 ]
 then
     echo -e "\e[32mYour new MySQL root password is: $NEWMYSQLPASS\e[0m"
-    echo "$NEWMYSQLPASS" > $PW_FILE
+    cat << LOGIN > "$MYCNF"
+[client]
+password='$NEWMYSQLPASS'
+LOGIN
+    chmod 0600 $MYCNF
 else
     echo "Changing MySQL root password failed."
     echo "Your old password is: $OLDMYSQL"
+    cat << LOGIN > "$MYCNF"
+[client]
+password='$OLDMYSQLPASS'
+LOGIN
+    chmod 0600 $MYCNF
 fi
-sleep 1
 
-exit 0
+# Remove unessecary password file
+rm $PW_FILE
 
