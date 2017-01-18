@@ -17,7 +17,7 @@ then
     echo "$NEWMYSQLPASS" > $PW_FILE
     cat << LOGIN > "$MYCNF"
 [client]
-password="'$NEWMYSQLPASS'"
+password='$NEWMYSQLPASS'
 LOGIN
 chmod 0600 $MYCNF
 else
