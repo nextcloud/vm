@@ -19,6 +19,8 @@ then
 password='$NEWMYSQLPASS'
 LOGIN
     chmod 0600 $MYCNF
+    rm $PW_FILE
+    exit 1
 else
     echo "Changing MySQL root password failed."
     echo "Your old password is: $OLDMYSQL"
@@ -27,8 +29,7 @@ else
 password='$OLDMYSQLPASS'
 LOGIN
     chmod 0600 $MYCNF
+    rm $PW_FILE
+    exit 1
 fi
-
-# Remove unessecary password file
-rm $PW_FILE
 
