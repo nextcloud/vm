@@ -14,9 +14,10 @@ SCRIPTS=/var/scripts
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
+TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master"
+GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
+STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
+LETS_ENC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/lets-encrypt"
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
 
@@ -29,6 +30,34 @@ else
     sleep 1
 fi
 
+# Whiptail size
+WT_HEIGHT=17
+WT_WIDTH=$(tput cols)
+
+if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
+  WT_WIDTH=80
+fi
+if [ "$WT_WIDTH" -gt 178 ]; then
+  WT_WIDTH=120
+fi
+WT_MENU_HEIGHT=$((WT_HEIGHT-7))
+
+# Whiptail check
+if [ $(dpkg-query -W -f='${Status}' whiptail 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+      echo "Whiptail is already installed..."
+      clear
+else
+
+  {
+  i=1
+  while read -r line; do
+      i=$(( i + 1 ))
+      echo $i
+  done < <(apt update; apt install whiptail -y)
+} | whiptail --title "Progress" --gauge "Please wait while installing Whiptail..." 6 60 0
+
+fi
+
 # Check if root
 if [ "$(whoami)" != "root" ]
 then
@@ -37,6 +66,10 @@ then
     echo
     exit 1
 fi
+
+# Reconfigure SSH (security)
+rm -v /etc/ssh/ssh_host_*
+dpkg-reconfigure openssh-server
 
 # Check network
 echo "Testing if network is OK..."
@@ -110,7 +143,7 @@ then
     sleep 0.1
 else
     echo "nextant failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again." 
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -706,24 +739,8 @@ echo    "+--------------------------------------------------------------------+"
 echo
 echo -e "\e[0m"
 
+#### Needs testing
 # VPS?
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-if [[ "yes" == $(ask_yes_or_no "Do you run this on a *remote* VPS?") ]]
-then
-    echo "Ok, then your IP are probably wrong, we will use the backup file to recover it so that you can connect after reboot"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
-    mv /etc/network/interfaces.backup /etc/network/interfaces
-else
-    sleep 1
-fi
 clear
 
 cat << LETSENC

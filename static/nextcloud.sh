@@ -3,9 +3,9 @@ WANIP4=$(curl -s ipinfo.io/ip -m 5)
 WANIP6=$(curl -s 6.ifcfg.me -m 5)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 clear
-figlet -f small Nextcloud
+figlet -f small NextBerry
 echo "     https://www.nextcloud.com"
-echo
+echo "     https://www.techandme.se"
 echo
 echo
 echo "WAN IPv4: $WANIP4"

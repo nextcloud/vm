@@ -11,9 +11,10 @@
 DEBUG=0
 
 # Repositories
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-NCREPO="https://download.nextcloud.com/server/releases/"
+GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
+STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
+NCREPO="https://download.nextcloud.com/server/releases"
+TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master/techandtool.sh"
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
 NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
@@ -30,17 +31,20 @@ HTML=/var/www
 NCPATH=$HTML/nextcloud
 GPGDIR=/tmp/gpg
 NCDATA=/var/ncdata
-
 # Apache vhosts
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-
 # Linux user, and Nextcloud user
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
+# Devices
+DEVICE="/dev/mmcblk0"
+DEV="/dev/sda"
+DEVHD="/dev/sda2"
+DEVSP="/dev/sda1"
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -205,7 +209,7 @@ sudo mv sources.list /etc/apt/
 clear
 
 # Set keyboard layout
-echo "Current keyboard layout is Swedish"
+echo "Current keyboard layout is English"
 echo "You must change keyboard layout to your language"
 echo -e "\e[32m"
 read -p "Press any key to change keyboard layout... " -n1 -s
@@ -214,8 +218,23 @@ dpkg-reconfigure keyboard-configuration
 echo
 clear
 
-# Update system
+# Update and upgrade
+apt autoclean
+apt	autoremove -y
 apt update -q2
+apt full-upgrade -y
+apt install -fy
+dpkg --configure --pending
+
+# Install various packages
+apt install -y ntp \
+		            module-init-tools \
+		            miredo \
+		            libminiupnpc10
+
+# Only use swap to prevent out of memory. Speed and less tear on SD
+echo "vm.swappiness = 0" >> /etc/sysctl.conf
+sysctl -p
 
 # Write MySQL pass to file and keep it safe
 echo "$MYSQL_PASS" > $PW_FILE
@@ -487,15 +506,6 @@ sudo -u www-data php $NCPATH/occ config:system:set mail_smtppassword --value="vi
 # Install Libreoffice Writer to be able to read MS documents.
 sudo apt install --no-install-recommends libreoffice-writer -y
 
-# Install packages for Webmin
-apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
-
-# Install Webmin
-sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
-wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
-apt update -q2
-apt install webmin -y
-
 # Nextcloud apps
 CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CONVER_FILE=contacts.tar.gz
@@ -676,6 +686,10 @@ apt full-upgrade -y
 
 # Remove LXD (always shows up as failed during boot)
 apt purge lxd -y
+
+# Cleanup login screen
+rm /etc/update-motd.d/00-header
+rm /etc/update-motd.d/10-help-text
 
 # Cleanup
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)

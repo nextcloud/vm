@@ -1,10 +1,18 @@
-# Nextcloud VM
-[![irc](https://img.shields.io/badge/irc%20channel-%23nextcloud--vm%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
+# Nextcloud for your RaspberryPI 2 or 3
+
+[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
 
 ## Maintainers
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
 * You? :)
+
+
+## Image
+[Image link](https://cloud.waaromzomoeilijk.nl/index.php/s/OPKV9vvY1hsYRQe)
+
+## Documentation
+[How to](https://github.com/ezraholm50/NextBerry/wiki)
 
 
 ## Build Requirements
@@ -14,13 +22,13 @@ These requirements are only applied if you build from the scripts:
 
 If you install this on a clean Ubuntu 16.04.X VM, the only script you need to run is "nextcloud_install_production.sh". All the other scripts are fetched from this repository during the installation.
 
-It would be really nice if someone could develop the scripts so that they worked "out of the box", without having to use a "base VM" with Ubuntu 16.04 pre-installed. Vagrant is an option.
-
 ## Machine configuration
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
 
-## FAQ
+## First look
+![alt tag](https://raw.githubusercontent.com/nextcloud/screenshots/master/vm/first-look.jpg)
 
+## FAQ
 Keep asking questions so that we can add them here.
 
 **Q:** The script says: "WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts"
@@ -52,8 +60,4 @@ Keep asking questions so that we can add them here.
 
 **Q:** I have found a bug that I want to report, where do I do that?
 <br />
-**A:** Just submit your report here: https://github.com/nextcloud/vm/issues/new
-
-## First look
-
-![alt tag](https://raw.githubusercontent.com/nextcloud/screenshots/master/vm/first-look.jpg)
+**A:** Just submit your report here: https://github.com/ezraholm50/NextBerry/issues/new
