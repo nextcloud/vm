@@ -23,7 +23,7 @@ LOGIN
     exit 0
 else
     echo "Changing MySQL root password failed."
-    echo "Your old password is: $OLDMYSQL
+    echo "Your old password is: $OLDMYSQL"
     cat << LOGIN > "$MYCNF"
 [client]
 password='$OLDMYSQLPASS'
