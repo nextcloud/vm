@@ -11,7 +11,6 @@ WWW_ROOT=/var/www
 NCPATH=$WWW_ROOT/nextcloud
 NCDATA=/var/ncdata
 SCRIPTS=/var/scripts
-PW_FILE=/var/mysql_password.txt
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
@@ -659,7 +658,6 @@ rm $SCRIPTS/test_connection.sh
 rm $SCRIPTS/instruction.sh
 rm $NCDATA/nextcloud.log
 rm $SCRIPTS/nextcloud-startup-script.sh
-rm $PW_FILE
 sed -i "s|instruction.sh|nextcloud.sh|g" /home/$UNIXUSER/.bash_profile
 cat /dev/null > ~/.bash_history
 cat /dev/null > /var/spool/mail/root
