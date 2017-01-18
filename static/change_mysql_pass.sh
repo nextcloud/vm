@@ -19,12 +19,16 @@ then
 [client]
 password='$NEWMYSQLPASS'
 LOGIN
-chmod 0600 $MYCNF
+    chmod 0600 $MYCNF
+    rm $PW_FILE
+    exit 0
 else
     echo "Changing MySQL root password failed."
     echo "Your old password is: $OLDMYSQL"
+    echo "Please write it down now as $PW_FILE will be removed"
+    echo -e "\e[32m"
+    read -p "Press any key to continue..." -n1 -s
+    echo -e "\e[0m"
+    exit 1
 fi
-sleep 1
-
-exit 0
 
