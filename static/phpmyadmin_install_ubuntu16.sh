@@ -69,6 +69,9 @@ apt install -y -q \
     php-gettext \
     phpmyadmin
 
+# Remove Password file
+rm $PW_FILE
+
 # Secure phpMyadmin
 if [ -f $PHPMYADMIN_CONF ]
     then
