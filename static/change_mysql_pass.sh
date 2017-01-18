@@ -24,8 +24,7 @@ LOGIN
     exit 0
 else
     echo "Changing MySQL root password failed."
-    echo "Your old password is: $OLDMYSQL"
-    echo "Please write it down now as $PW_FILE will be removed"
+    echo "Your old password is: $OLDMYSQL and stored in $PW_FILE"
     echo -e "\e[32m"
     read -p "Press any key to continue..." -n1 -s
     echo -e "\e[0m"
