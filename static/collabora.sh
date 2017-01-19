@@ -173,6 +173,7 @@ then
     sleep 2
 else
     echo "Unable to create vhost, exiting..."
+    echo "Please report this issue here https://github.com/nextcloud/vm/issues/new"
     exit
 fi
 
@@ -196,7 +197,7 @@ then
     echo -e "Certs are generated!"
 else
     echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, please upload your logs to https://github.com/nextcloud/vm"
+    echo -e "It seems like no certs were generated, please report this issue here https://github.com/nextcloud/vm/issues/new"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
