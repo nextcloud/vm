@@ -218,11 +218,8 @@ dpkg --configure --pending
 apt install -y ntp \
 		            module-init-tools \
 		            miredo \
-<<<<<<< HEAD
                 rsync \
-=======
                 zram-config \
->>>>>>> 32450cc45c3260e769316fe74517e1e58c5de467
 		            libminiupnpc10
 
 # Only use swap to prevent out of memory. Speed and less tear on SD
