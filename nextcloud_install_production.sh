@@ -196,18 +196,6 @@ fi
 apt install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
-# Check where the best mirrors are and update
-echo "Locating the best mirrors..."
-apt update -q2
-apt install python-pip -y
-pip install \
-    --upgrade pip \
-    apt-select
-apt-select
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-sudo mv sources.list /etc/apt/
-clear
-
 # Set keyboard layout
 echo "Current keyboard layout is English"
 echo "You must change keyboard layout to your language"
@@ -221,7 +209,7 @@ clear
 # Update and upgrade
 apt autoclean
 apt	autoremove -y
-apt update -q2
+apt update
 apt full-upgrade -y
 apt install -fy
 dpkg --configure --pending
@@ -230,6 +218,7 @@ dpkg --configure --pending
 apt install -y ntp \
 		            module-init-tools \
 		            miredo \
+                rsync \
 		            libminiupnpc10
 
 # Only use swap to prevent out of memory. Speed and less tear on SD
@@ -287,7 +276,7 @@ sudo hostnamectl set-hostname nextcloud
 service apache2 restart
 
 # Install PHP 7.0
-apt update -q2
+apt update
 apt install -y \
     libapache2-mod-php7.0 \
     php7.0-common \
@@ -314,30 +303,28 @@ echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 # Install Unzip
 apt install unzip -y
 
-# Install VM-tools
-apt install open-vm-tools -y
-
 # Download and validate Nextcloud package
-wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
-mkdir -p $GPGDIR
-wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
-chmod -R 600 $GPGDIR
-gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
-gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
-if [[ $? > 0 ]]
-then
-    echo "Package NOT OK! Installation is aborted..."
-    exit 1
-else
-    echo "Package OK!"
-fi
+#wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
+#mkdir -p $GPGDIR
+#wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
+#chmod -R 600 $GPGDIR
+#gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
+#gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
+#if [[ $? > 0 ]]
+#then
+#    echo "Package NOT OK! Installation is aborted..."
+#    exit 1
+#else
+#    echo "Package OK!"
+#fi
 
 # Cleanup
-rm -r $GPGDIR
+#rm -r $GPGDIR
 
 # Extract package
-unzip -q $HTML/$STABLEVERSION.zip -d $HTML
-rm $HTML/$STABLEVERSION.zip
+wget https://download.nextcloud.com/server/releases/nextcloud-11.0.1.zip
+unzip -q $HTML/nextcloud-11.0.1.zip -d $HTML
+rm $HTML/nextcloud-11.0.1.zip
 
 # Secure permissions
 wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
@@ -681,7 +668,7 @@ bash $SCRIPTS/redis-server-ubuntu16.sh
 rm $SCRIPTS/redis-server-ubuntu16.sh
 
 # Upgrade
-apt update -q2
+apt update
 apt full-upgrade -y
 
 # Remove LXD (always shows up as failed during boot)
