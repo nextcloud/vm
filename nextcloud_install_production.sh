@@ -17,7 +17,7 @@ NCREPO="https://download.nextcloud.com/server/releases"
 TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master/techandtool.sh"
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
-NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+NCVERSION=$(curl -s --max-time 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 STABLEVERSION="nextcloud-$NCVERSION"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
@@ -305,27 +305,26 @@ echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 apt install unzip -y
 
 # Download and validate Nextcloud package
-#wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
-#mkdir -p $GPGDIR
-#wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
-#chmod -R 600 $GPGDIR
-#gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
-#gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
-#if [[ $? > 0 ]]
-#then
-#    echo "Package NOT OK! Installation is aborted..."
-#    exit 1
-#else
-#    echo "Package OK!"
-#fi
+wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
+mkdir -p $GPGDIR
+wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
+chmod -R 600 $GPGDIR
+gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
+gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
+if [[ $? > 0 ]]
+then
+    echo "Package NOT OK! Installation is aborted..."
+    exit 1
+else
+    echo "Package OK!"
+fi
 
 # Cleanup
-#rm -r $GPGDIR
+rm -r $GPGDIR
 
 # Extract package
-wget https://download.nextcloud.com/server/releases/nextcloud-11.0.1.zip
-unzip -q $HTML/nextcloud-11.0.1.zip -d $HTML
-rm $HTML/nextcloud-11.0.1.zip
+unzip -q $HTML/$STABLEVERSION.zip -d $HTML
+rm $HTML/$STABLEVERSION.zip
 
 # Secure permissions
 wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
