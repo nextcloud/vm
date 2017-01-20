@@ -115,43 +115,12 @@ rsync -aAXv --exclude={"/boot/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","
 
 	touch /var/scripts/HD
 	umount /mnt
-	sed -e '10,28d' /root/.profile
+	sed -e '10,31d' /root/.profile
 	whiptail --msgbox "Success, we will now reboot to finish switching /root..." 20 60 1
 	reboot
 else
 	 whiptail --msgbox "Could not detect external storage, please start over..." 20 60 1
 fi
-}
-
-get_can_expand() {
-  get_init_sys
-  if [ $SYSTEMD -eq 1 ]; then
-    ROOT_PART=$(mount | sed -n 's|^/dev/\(.*\) on / .*|\1|p')
-  else
-    if ! [ -h /dev/root ]; then
-      echo 1
-      exit
-    fi
-    ROOT_PART=$(readlink /dev/root)
-  fi
-
-  PART_NUM=${ROOT_PART#mmcblk0p}
-  if [ "$PART_NUM" = "$ROOT_PART" ]; then
-    echo 1
-    exit
-  fi
-
-  if [ "$PART_NUM" -ne 2 ]; then
-    echo 1
-    exit
-  fi
-
-  LAST_PART_NUM=$(parted /dev/mmcblk0 -ms unit s p | tail -n 1 | cut -f 1 -d:)
-  if [ $LAST_PART_NUM -ne $PART_NUM ]; then
-    echo 1
-    exit
-  fi
-  echo 0
 }
 
 do_expand_rootfs() {
@@ -235,10 +204,8 @@ EOF
  	sed -e '10,31d' /root/.profile
   chmod +x /etc/init.d/resize2fs_once &&
   update-rc.d resize2fs_once defaults &&
-  if [ "$INTERACTIVE" = True ]; then
     whiptail --msgbox "Success, we will now reboot to finish resizing..." 20 60 1
 		reboot
-  fi
 }
 
 # Everything else needs to be run as root
