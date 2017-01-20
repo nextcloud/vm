@@ -19,6 +19,7 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
 NCVERSION=$(curl -s --max-time 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 STABLEVERSION="nextcloud-$NCVERSION"
+NEXTBERRYVERSION="1.0"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Passwords
@@ -63,6 +64,9 @@ then
     echo
     exit 1
 fi
+
+# Set NextBerry version for the updater tool
+echo "$NEXTBERRYVERSION" > $SCRIPTS/.version-nc
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -192,18 +196,14 @@ else
     echo "Network OK."
 fi
 
+# Erase some dev tracks
+cat /dev/null > /var/log/syslog
+
 # Set locales
 apt install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Set keyboard layout
-echo "Current keyboard layout is English"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
 dpkg-reconfigure keyboard-configuration
-echo
 clear
 
 # Update and upgrade

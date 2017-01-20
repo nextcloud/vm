@@ -115,7 +115,40 @@ rsync -aAXv --exclude={"/boot/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","
 
 	touch /var/scripts/HD
 	umount /mnt
-	sed -e '10,31d' /root/.profile
+
+  # Previous line is more prone to errors: sed -e '10,31d' /root/.profile
+cat <<EOF > /root/.profile
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ "$BASH" ]; then
+  if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+  fi
+fi
+
+mesg n || true
+
+mkdir -p /var/scripts
+
+if              [ -f /var/scripts/nextcloud_install_production.sh ];	then
+
+		rm /var/scripts/nextcloud_install_production.sh
+else
+                wget https://raw.githubusercontent.com/ezraholm50/NextBerry/master/nextcloud_install_production.sh -P /var/scripts
+                chmod +x /var/scripts/nextcloud_install_production.sh
+fi
+if [[ $? > 0 ]]
+then
+        echo "Download of scripts failed. System will reboot in 10 seconds..."
+        sleep 10
+        reboot
+else
+	clear
+fi
+
+bash /var/scripts/nextcloud_install_production.sh
+EOF
+
 	whiptail --msgbox "Success, we will now reboot to finish switching /root..." 20 60 1
 	reboot
 else
@@ -201,7 +234,41 @@ case "\$1" in
     ;;
 esac
 EOF
- 	sed -e '10,31d' /root/.profile
+
+
+# Previous line is more prone to errors: sed -e '10,31d' /root/.profile
+cat <<EOF > /root/.profile
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ "$BASH" ]; then
+  if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+  fi
+fi
+
+mesg n || true
+
+mkdir -p /var/scripts
+
+if              [ -f /var/scripts/nextcloud_install_production.sh ];	then
+
+		rm /var/scripts/nextcloud_install_production.sh
+else
+                wget https://raw.githubusercontent.com/ezraholm50/NextBerry/master/nextcloud_install_production.sh -P /var/scripts
+                chmod +x /var/scripts/nextcloud_install_production.sh
+fi
+if [[ $? > 0 ]]
+then
+        echo "Download of scripts failed. System will reboot in 10 seconds..."
+        sleep 10
+        reboot
+else
+	clear
+fi
+
+bash /var/scripts/nextcloud_install_production.sh
+EOF
+
   chmod +x /etc/init.d/resize2fs_once &&
   update-rc.d resize2fs_once defaults &&
     whiptail --msgbox "Success, we will now reboot to finish resizing..." 20 60 1

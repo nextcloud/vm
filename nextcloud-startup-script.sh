@@ -67,10 +67,6 @@ then
     exit 1
 fi
 
-# Reconfigure SSH (security)
-rm -v /etc/ssh/ssh_host_*
-dpkg-reconfigure openssh-server
-
 # Check network
 echo "Testing if network is OK..."
 service networking restart
@@ -434,7 +430,7 @@ clear
 echo -e "\e[0m"
 
 # Set keyboard layout
-echo "Current keyboard layout is Swedish"
+echo "Current keyboard layout is English"
 echo "You must change keyboard layout to your language"
 echo -e "\e[32m"
 read -p "Press any key to change keyboard layout... " -n1 -s
