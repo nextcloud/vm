@@ -232,7 +232,7 @@ case "\$1" in
     ;;
 esac
 EOF
- 	sed -e '10,28d' /root/.profile
+ 	sed -e '10,31d' /root/.profile
   chmod +x /etc/init.d/resize2fs_once &&
   update-rc.d resize2fs_once defaults &&
   if [ "$INTERACTIVE" = True ]; then
