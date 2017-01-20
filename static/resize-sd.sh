@@ -116,6 +116,7 @@ rsync -aAXv --exclude={"/boot/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","
 	touch /var/scripts/HD
 	umount /mnt
 	sed -e '10,28d' /root/.profile
+	whiptail --msgbox "Success, we will now reboot to finish switching /root..." 20 60 1
 	reboot
 else
 	 whiptail --msgbox "Could not detect external storage, please start over..." 20 60 1
@@ -235,25 +236,14 @@ EOF
   chmod +x /etc/init.d/resize2fs_once &&
   update-rc.d resize2fs_once defaults &&
   if [ "$INTERACTIVE" = True ]; then
-    whiptail --msgbox "Root partition has been resized.\nThe filesystem will be enlarged upon the next reboot" 20 60 2
+    whiptail --msgbox "Success, we will now reboot to finish resizing..." 20 60 1
+		reboot
   fi
-}
-
-do_finish() {
-  disable_raspi_config_at_boot
-  if [ $ASK_TO_REBOOT -eq 1 ]; then
-    whiptail --yesno "Would you like to reboot now?" 20 60 2
-    if [ $? -eq 0 ]; then # yes
-      sync
-      reboot
-    fi
-  fi
-  exit 0
 }
 
 # Everything else needs to be run as root
 if [ $(id -u) -ne 0 ]; then
-  printf "Script must be run as root. Try 'sudo raspi-config'\n"
+  printf "Script must be run as root. Try 'sudo bash resize-sd.sh'\n"
   exit 1
 fi
 
