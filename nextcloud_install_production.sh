@@ -65,6 +65,35 @@ then
     exit 1
 fi
 
+# Setup firewall-rules
+cat <<EOF > "/usr/sbin/firewall-rules"
+#!/bin/bash
+FW=$(ufw status)
+
+# Whiptail auto-size
+calc_wt_size() {
+  WT_HEIGHT=17
+  WT_WIDTH=$(tput cols)
+
+  if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
+    WT_WIDTH=80
+  fi
+  if [ "$WT_WIDTH" -gt 178 ]; then
+    WT_WIDTH=120
+  fi
+  WT_MENU_HEIGHT=$((WT_HEIGHT-7))
+}
+
+whiptail --msgbox "$FW" --scrolltext --title "Firewall rules" "$WT_HEIGHT" "$WT_WIDTH"
+EOF
+
+chmod +x /usr/sbin/firewall-rules
+ufw enable
+ufw default deny incoming
+ufw limit 22/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp
+
 # Set NextBerry version for the updater tool
 echo "$NEXTBERRYVERSION" > $SCRIPTS/.version-nc
 
@@ -201,6 +230,7 @@ cat /dev/null > /var/log/syslog
 
 # Set locales
 apt install language-pack-en-base -y
+sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Set keyboard layout
 dpkg-reconfigure keyboard-configuration

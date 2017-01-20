@@ -16,7 +16,9 @@ echo "WAN IPv4: $WANIP4"
 echo "WAN IPv6: $WANIP6"
 echo "LAN IPv4: $ADDRESS"
 echo
+echo "To view your firewall rules type: sudo firewall-rules"
 if [ "$GITHUBVERSION" -gt "$CURRENTVERSION" ]; then
+          echo
           echo "NextBerry update available, run: sudo nextberry-upgrade"
 
           if              [ -f /var/scripts/nextberry-upgrade.sh ];	then

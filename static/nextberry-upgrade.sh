@@ -6,7 +6,17 @@ VERSIONFILE="/var/scripts/.version-nc"
 if grep -q "1.1 applied" "$VERSIONFILE"; then
   echo "1.1 already applied..."
 else
-  Patches etc here...
+  # Patches etc here...
+
+  # Update and upgrade
+  apt autoclean
+  apt	autoremove -y
+  apt update
+  apt full-upgrade -y
+  apt install -fy
+  dpkg --configure --pending
+
+  # Set what version is installed
   echo "1.1 applied" >> "$VERSIONFILE"
 fi
 
@@ -14,7 +24,17 @@ fi
 if grep -q "1.2 applied" "$VERSIONFILE"; then
   echo "1.2 already applied..."
 else
-  Patches etc here...
+  # Patches etc here...
+
+  # Update and upgrade
+  apt autoclean
+  apt	autoremove -y
+  apt update
+  apt full-upgrade -y
+  apt install -fy
+  dpkg --configure --pending
+
+  # Set what version is installed
   echo "1.2 applied" >> "$VERSIONFILE"
 fi
 
