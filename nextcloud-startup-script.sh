@@ -600,7 +600,7 @@ fi
 clear
 
 # Change Timezone
-echo "Current timezone is Europe/Stockholm"
+echo "Current timezone is $(cat /etc/timezone)"
 echo "You must change timezone to your timezone"
 echo -e "\e[32m"
 read -p "Press any key to change timezone... " -n1 -s
