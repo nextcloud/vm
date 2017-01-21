@@ -89,12 +89,6 @@ echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
 sync
 partprobe
 
-# Set cmdline.txt
-GDEVHDUUID=$(blkid -o value -s PARTUUID $DEVHD)
-mount /dev/mmcblk0p1 /mnt
-sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g" /mnt/cmdline.txt
-umount /mnt
-
 # External HD
     {
     i=1
@@ -165,6 +159,9 @@ else
 fi
 
 echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
+GDEVHDUUID=$(blkid -o value -s PARTUUID $DEVHD)
+sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g" /mnt/cmdline.txt
+
 rm /boot/config.txt
 wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/
 
@@ -313,7 +310,7 @@ EOF
     mount /dev/mmcblk0p1 /boot
   fi
 
-  echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
+  echo "smsc95xx.turbo_mode=N net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
   rm /boot/config.txt
   wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/
 
