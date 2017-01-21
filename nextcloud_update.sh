@@ -30,6 +30,7 @@ NCVERSION=$(curl -s --max-time 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*
 # System Upgrade
 apt update
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+sudo rm /var/lib/apt/lists/* -R
 
 # Set secure permissions
 FILE="$SECURE"
