@@ -15,9 +15,12 @@ else
   apt full-upgrade -y
   apt install -fy
   dpkg --configure --pending
+  bash /var/scripts/update.sh
 
   # Set what version is installed
   echo "1.1 applied" >> "$VERSIONFILE"
+  # Change current version var
+  sed -i 's|1.0|1.1|g' "$VERSIONFILE"
 fi
 
 # V1.2
@@ -33,9 +36,12 @@ else
   apt full-upgrade -y
   apt install -fy
   dpkg --configure --pending
+  bash /var/scripts/update.sh
 
   # Set what version is installed
   echo "1.2 applied" >> "$VERSIONFILE"
+  # Change current version var
+  sed -i 's|1.0|1.1|g' "$VERSIONFILE"
 fi
 
 exit

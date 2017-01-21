@@ -149,6 +149,25 @@ fi
 bash /var/scripts/nextcloud_install_production.sh
 EOF
 
+# Overclock
+if [ -f /boot/cmdline.txt ]
+then
+  echo "cmdline.txt exists"
+else
+  mount /dev/mmcblk0p1 /boot
+fi
+
+if [ -f /boot/config.txt ]
+then
+  echo "config.txt exists"
+else
+  mount /dev/mmcblk0p1 /boot
+fi
+
+echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
+rm /boot/config.txt
+wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/
+
 	whiptail --msgbox "Success, we will now reboot to finish switching /root..." 20 60 1
 	reboot
 else
@@ -235,7 +254,6 @@ case "\$1" in
 esac
 EOF
 
-
 # Previous line is more prone to errors: sed -e '10,31d' /root/.profile
 cat <<EOF > /root/.profile
 # ~/.profile: executed by Bourne-compatible login shells.
@@ -271,6 +289,34 @@ EOF
 
   chmod +x /etc/init.d/resize2fs_once &&
   update-rc.d resize2fs_once defaults &&
+
+  # Swap
+  fallocate -l 1G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile
+  echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
+  sync
+  partprobe
+
+  # Overclock
+  if [ -f /boot/cmdline.txt ]
+  then
+    echo "cmdline.txt exists"
+  else
+    mount /dev/mmcblk0p1 /boot
+  fi
+
+  if [ -f /boot/config.txt ]
+  then
+    echo "config.txt exists"
+  else
+    mount /dev/mmcblk0p1 /boot
+  fi
+
+  echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
+  rm /boot/config.txt
+  wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/
+
     whiptail --msgbox "Success, we will now reboot to finish resizing..." 20 60 1
 		reboot
 }
