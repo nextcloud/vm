@@ -19,7 +19,7 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
 NCVERSION=$(curl -s --max-time 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 STABLEVERSION="nextcloud-$NCVERSION"
-NEXTBERRYVERSION="1.0"
+NEXTBERRYVERSION="10" # Needs to be this format for if [ x -gt x ] then...
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Passwords
@@ -64,6 +64,9 @@ then
     echo
     exit 1
 fi
+
+# Set /etc/hosts
+sed -i 's|127.0.0.1       localhost|127.0.0.1       localhost nextcloud|' /etc/hosts
 
 # Setup firewall-rules
 wget -q "$STATIC/firewall-rules" -P /usr/sbin/
@@ -516,18 +519,8 @@ CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 
-# Get spreedme script
-if [ -f $SCRIPTS/spreedme.sh ]
-then
-    rm $SCRIPTS/spreedme.sh
-    wget -q $STATIC/spreedme.sh -P $SCRIPTS
-else
-    wget -q $STATIC/spreedme.sh -P $SCRIPTS
-fi
-
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
-function calendar {
 # Download and install Calendar
 if [ -d $NCPATH/apps/calendar ]
 then
@@ -545,9 +538,6 @@ then
     sudo -u www-data php $NCPATH/occ app:enable calendar
 fi
 
-}
-
-function contacts {
 # Download and install Contacts
 if [ -d $NCPATH/apps/contacts ]
 then
@@ -564,34 +554,6 @@ if [ -d $NCPATH/apps/contacts ]
 then
     sudo -u www-data php $NCPATH/occ app:enable contacts
 fi
-}
-
-
-function spreedme {
-    bash $SCRIPTS/spreedme.sh
-    rm $SCRIPTS/spreedme.sh
-
-}
-
-whiptail --title "Which apps do you want to install?" --checklist --separate-output "" 10 40 3 \
-"Calendar" "              " on \
-"Contacts" "              " on \
-"Spreed.Me" "              " on 2>results
-
-while read choice
-do
-        case $choice in
-                Calendar) calendar
-                ;;
-                Contacts) contacts
-                ;;
-                Spreed.Me) spreedme
-                ;;
-                *)
-                ;;
-        esac
-done < results
-
 
 # Change roots .bash_profile
 if [ -f $SCRIPTS/change-root-profile.sh ]

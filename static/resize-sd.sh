@@ -160,7 +160,7 @@ fi
 
 echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
 GDEVHDUUID=$(blkid -o value -s PARTUUID $DEVHD)
-sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g" /mnt/cmdline.txt
+sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g" /boot/cmdline.txt
 
 rm /boot/config.txt
 wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/

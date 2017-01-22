@@ -2,8 +2,8 @@
 VERSIONFILE="/var/scripts/.version-nc"
 
 ################### V1.1 ####################
-if grep -q "1.1 applied" "$VERSIONFILE"; then
-  echo "1.1 already applied..."
+if grep -q "11 applied" "$VERSIONFILE"; then
+  echo "11 already applied..."
 else
   # Update and upgrade
   apt autoclean
@@ -19,14 +19,14 @@ else
                   update-notifier-common
 
   # Set what version is installed
-  echo "1.1 applied" >> "$VERSIONFILE"
+  echo "11 applied" >> "$VERSIONFILE"
   # Change current version var
-  sed -i 's|1.0|1.1|g' "$VERSIONFILE"
+  sed -i 's|10|11|g' "$VERSIONFILE"
 fi
 
 ################### V1.2 ####################
-if grep -q "1.2 applied" "$VERSIONFILE"; then
-  echo "1.2 already applied..."
+if grep -q "12 applied" "$VERSIONFILE"; then
+  echo "12 already applied..."
 else
   # Update and upgrade
   apt autoclean
@@ -40,9 +40,9 @@ else
   # Actual version additions
 
   # Set what version is installed
-  echo "1.2 applied" >> "$VERSIONFILE"
+  echo "12 applied" >> "$VERSIONFILE"
   # Change current version var
-  sed -i 's|1.0|1.1|g' "$VERSIONFILE"
+  sed -i 's|10|11|g' "$VERSIONFILE"
 fi
 
 exit
