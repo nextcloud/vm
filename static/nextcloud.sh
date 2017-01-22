@@ -23,11 +23,10 @@ if [ "$GITHUBVERSION" -gt "$CURRENTVERSION" ]; then
 
           if              [ -f /var/scripts/nextberry-upgrade.sh ];	then
           		rm /var/scripts/nextcloud_install_production.sh
-          else
+          fi
               wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/nextberry-upgrade.sh -P "$SCRIPTS"
               mv "$SCRIPTS"/nextberry-upgrade.sh /usr/sbin/nextberry-upgrade
               chmod +x /usr/sbin/nextberry-upgrade
-          fi
           if [[ $? > 0 ]]
           then
                   echo "Download of update script failed. Please file a bug report on https://www.github.com/ezraholm50/NextBerry/"
