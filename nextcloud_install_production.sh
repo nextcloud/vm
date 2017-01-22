@@ -66,29 +66,9 @@ then
 fi
 
 # Setup firewall-rules
-cat <<EOF > "/usr/sbin/firewall-rules"
-#!/bin/bash
-FW=$(ufw status)
-
-# Whiptail auto-size
-calc_wt_size() {
-  WT_HEIGHT=17
-  WT_WIDTH=$(tput cols)
-
-  if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
-    WT_WIDTH=80
-  fi
-  if [ "$WT_WIDTH" -gt 178 ]; then
-    WT_WIDTH=120
-  fi
-  WT_MENU_HEIGHT=$((WT_HEIGHT-7))
-}
-
-whiptail --msgbox "$FW" --scrolltext --title "Firewall rules" "$WT_HEIGHT" "$WT_WIDTH"
-EOF
-
+wget -q "$STATIC/firewall-rules" -P /usr/sbin/
 chmod +x /usr/sbin/firewall-rules
-ufw enable
+echo "y" | sudo ufw enable
 ufw default deny incoming
 ufw limit 22/tcp
 ufw allow 80/tcp
@@ -245,12 +225,17 @@ apt install -fy
 dpkg --configure --pending
 
 # Install various packages
-apt install -y ntp \
+apt install -y ntpdate \
 		            module-init-tools \
 		            miredo \
                 rsync \
                 zram-config \
+                ca-certificates \
+                unzip \
 		            libminiupnpc10
+
+# Fix time issues
+ntpdate -u ntp.ubuntu.com
 
 # Only use swap to prevent out of memory. Speed and less tear on SD
 echo "vm.swappiness = 0" >> /etc/sysctl.conf
@@ -331,9 +316,6 @@ apt install -y \
 echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
 echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 
-# Install Unzip
-apt install unzip -y
-
 # Download and validate Nextcloud package
 wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
 mkdir -p $GPGDIR
@@ -362,6 +344,9 @@ bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Install Nextcloud
 cd $NCPATH
+clear
+echo "Installing Nextcloud, this can take a while please hold on..."
+echo
 sudo -u www-data php occ maintenance:install \
     --data-dir "$NCDATA" \
     --database "mysql" \

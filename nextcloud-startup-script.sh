@@ -588,6 +588,7 @@ function ask_yes_or_no() {
 }
 if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
 then
+    DEBIAN_FRONTEND=noninteractive apt install postfix
     bash $SCRIPTS/security.sh
     rm $SCRIPTS/security.sh
 else
@@ -673,6 +674,22 @@ fi
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
+
+# Run NextBerry version upgrades
+if  [ -f "$SCRIPTS"/nextberry-upgrade.sh ];	then
+		  rm "$SCRIPTS"/nextberry-upgrade.sh
+      wget "$STATIC/nextberry-upgrade.sh" -P /var/scripts
+else
+      wget "$STATIC/nextberry-upgrade.sh" -P /var/scripts
+fi
+if [[ $? > 0 ]]
+then
+        echo "Download of scripts failed. System will reboot in 10 seconds..."
+        sleep 10
+        reboot
+else
+  	 bash "$SCRIPTS"/nextberry-upgrade.sh
+fi
 
 # Cleanup 1
 apt autoremove -y
