@@ -19,7 +19,7 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
 NCVERSION=$(curl -s --max-time 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 STABLEVERSION="nextcloud-$NCVERSION"
-NEXTBERRYVERSION="10" # Needs to be this format for if [ x -gt x ] then...
+NEXTBERRYVERSION="010" # Needs to be this format for if [ x -gt x ] then...
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Passwords
