@@ -235,6 +235,7 @@ apt install -y ntpdate \
                 zram-config \
                 ca-certificates \
                 unzip \
+                landscape-common \
 		            libminiupnpc10
 
 # Fix time issues
