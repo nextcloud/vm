@@ -486,6 +486,10 @@ rm $SCRIPTS/change_mysql_pass.sh
 # Enable UTF8mb4 (4-byte support)
 NCDB=nextcloud_db
 PW_FILE=/var/mysql_password.txt
+echo "[mysqld]" >> /root/.my.cnf
+echo "innodb_large_prefix=on" >> /root/.my.cnf
+echo "innodb_file_format=barracuda" >> /root/.my.cnf
+echo "innodb_file_per_table=1" >> /root/.my.cnf
 echo
 echo "Enabling UTF8mb4 support on $NCDB...."
 sudo /etc/init.d/mysql restart
