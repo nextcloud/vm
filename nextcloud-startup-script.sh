@@ -481,9 +481,9 @@ dpkg-reconfigure openssh-server
 # Generate new MySQL password
 echo
 bash $SCRIPTS/change_mysql_pass.sh
-rm $SCRIPTS/change_mysql_pass.sh
 if [ $? -eq 0 ]
 then
+rm $SCRIPTS/change_mysql_pass.sh
 echo "[mysqld]" >> /root/.my.cnf
 echo "innodb_large_prefix=on" >> /root/.my.cnf
 echo "innodb_file_format=barracuda" >> /root/.my.cnf
