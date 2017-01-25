@@ -483,6 +483,22 @@ echo
 bash $SCRIPTS/change_mysql_pass.sh
 rm $SCRIPTS/change_mysql_pass.sh
 
+# Enable UTF8mb4 (4-byte support)
+NCDB=nextcloud_db
+PW_FILE=/var/mysql_password.txt
+echo
+echo "Enabling UTF8mb4 support on $NCDB...."
+sudo /etc/init.d/mysql restart
+RESULT=`mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB`
+if [ "$RESULT" == "$NCDB" ]; then
+    mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+fi
+if [ $? -eq 0 ]
+then
+sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
+sudo -u www-data $NCPATH/occ maintenance:repair
+fi
+
 # Install phpMyadmin
 echo
 bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
