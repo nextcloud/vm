@@ -18,17 +18,24 @@ then
     cat << LOGIN > "$MYCNF"
 [client]
 password='$NEWMYSQLPASS'
+[mysqld]
+innodb_large_prefix=on
+innodb_file_format=barracuda
+innodb_file_per_table=1
 LOGIN
     chmod 0600 $MYCNF
-    exit 1
+    exit 0
 else
     echo "Changing MySQL root password failed."
     echo "Your old password is: $OLDMYSQL"
     cat << LOGIN > "$MYCNF"
 [client]
 password='$OLDMYSQLPASS'
+[mysqld]
+innodb_large_prefix=on
+innodb_file_format=barracuda
+innodb_file_per_table=1
 LOGIN
     chmod 0600 $MYCNF
     exit 1
 fi
-
