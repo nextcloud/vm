@@ -289,8 +289,8 @@ apt install -y \
     php-smbclient
 
 # Enable SMB client
-echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
-echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
+# echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
+# echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 
 # Install Unzip
 apt install unzip -y
