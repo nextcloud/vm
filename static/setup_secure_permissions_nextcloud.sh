@@ -7,7 +7,7 @@ NCDATA='/var/ncdata'
 
 printf "Creating possible missing Directories\n"
 mkdir -p $ncpath/data
-mkdir -p $ncpath/assets
+mkdir -p $ncpath/updater
 mkdir -p $NCDATA
 
 printf "chmod Files and Directories\n"
