@@ -109,6 +109,74 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo "Getting scripts from GitHub to be able to run the first setup..."
 
+# Get passman script
+if [ -f $SCRIPTS/passman.sh ]
+then
+    rm $SCRIPTS/passman.sh
+    wget -q $STATIC/passman.sh -P $SCRIPTS
+else
+    wget -q $STATIC/passman.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/passman.sh ]
+then
+    sleep 0.1
+else
+    echo "passman failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
+
+# Get nextant script
+if [ -f $SCRIPTS/nextant.sh ]
+then
+    rm $SCRIPTS/nextant.sh
+    wget -q $STATIC/nextant.sh -P $SCRIPTS
+else
+    wget -q $STATIC/nextant.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/nextant.sh ]
+then
+    sleep 0.1
+else
+    echo "nextant failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
+
+# Get collabora script
+if [ -f $SCRIPTS/collabora.sh ]
+then
+    rm $SCRIPTS/collabora.sh
+    wget -q $STATIC/collabora.sh -P $SCRIPTS
+else
+    wget -q $STATIC/collabora.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/collabora.sh ]
+then
+    sleep 0.1
+else
+    echo "collabora failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
+
+# Get spreedme script
+if [ -f $SCRIPTS/spreedme.sh ]
+then
+    rm $SCRIPTS/spreedme.sh
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
+else
+    wget -q $STATIC/spreedme.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/spreedme.sh ]
+then
+    sleep 0.1
+else
+    echo "spreedme failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
+
 # Get script for temporary fixes
 if [ -f $SCRIPTS/temporary.sh ]
 then
@@ -464,6 +532,52 @@ calc_wt_size() {
   WT_MENU_HEIGHT=$((WT_HEIGHT-7))
 }
 
+# Install Apps
+function collabora {
+    bash $SCRIPTS/collabora.sh
+    rm $SCRIPTS/collabora.sh
+}
+
+function nextant {
+    bash $SCRIPTS/nextant.sh
+    rm $SCRIPTS/nextant.sh
+}
+
+function passman {
+    bash $SCRIPTS/passman.sh
+    rm $SCRIPTS/passman.sh
+}
+
+
+function spreedme {
+    bash $SCRIPTS/spreedme.sh
+    rm $SCRIPTS/spreedme.sh
+
+}
+
+whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Collabora" "(Online editing) [BETA]   " OFF \
+"Nextant" "(Full text search)   " OFF \
+"Passman" "(Password storage)   " OFF \
+"Spreed.ME" "(Video calls)   " OFF 2>results
+
+while read choice
+do
+        case $choice in
+                Collabora) collabora
+                ;;
+                Nextant) nextant
+                ;;
+                Passman) passman
+                ;;
+                Spreed.ME) spreedme
+                ;;
+                *)
+                ;;
+        esac
+done < results
+clear
+
 # Add extra security
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
@@ -474,7 +588,6 @@ function ask_yes_or_no() {
 }
 if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
 then
-    DEBIAN_FRONTEND=noninteractive apt install postfix
     bash $SCRIPTS/security.sh
     rm $SCRIPTS/security.sh
 else
@@ -487,7 +600,7 @@ fi
 clear
 
 # Change Timezone
-echo "Current timezone is $(cat /etc/timezone)"
+echo "Current timezone is Europe/Stockholm"
 echo "You must change timezone to your timezone"
 echo -e "\e[32m"
 read -p "Press any key to change timezone... " -n1 -s
@@ -560,22 +673,6 @@ fi
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
-
-# Run NextBerry version upgrades
-if  [ -f "$SCRIPTS"/nextberry-upgrade.sh ];	then
-		  rm "$SCRIPTS"/nextberry-upgrade.sh
-      wget "$STATIC/nextberry-upgrade.sh" -P /var/scripts
-else
-      wget "$STATIC/nextberry-upgrade.sh" -P /var/scripts
-fi
-if [[ $? > 0 ]]
-then
-        echo "Download of scripts failed. System will reboot in 10 seconds..."
-        sleep 10
-        reboot
-else
-  	 bash "$SCRIPTS"/nextberry-upgrade.sh
-fi
 
 # Cleanup 1
 apt autoremove -y

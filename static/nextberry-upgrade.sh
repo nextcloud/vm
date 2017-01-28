@@ -148,17 +148,17 @@ else
   # New interface config without IPV6
   cat << NETWORK > "/etc/network/interfaces"
   auto lo
-  WIFACE lo inet loopback
+  "$WIFACE" lo inet loopback
 
   allow-hotplug "$WIFACE"
   auto "$WIFACE"
   WIFACE "$WIFACE" inet static
-  $IP
-  $MASK
-  $GW
+  "$IP"
+  "$MASK"
+  "$GW"
               dns-nameservers 8.8.8.8 8.8.4.4
   wpa-conf /etc/wpa_supplicant.conf
-  WIFACE default inet dhcp
+  "$WIFACE" default inet dhcp
   NETWORK
 
   # Bring up Wifi
