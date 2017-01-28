@@ -84,7 +84,10 @@ else
     apt install docker.io -y
 fi
 
-if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 1 ]
+# Check if Git is installed
+    git --version 2>&1 >/dev/null
+    GIT_IS_AVAILABLE=$?
+if [ $GIT_IS_AVAILABLE -eq 0 ]
 then
     sleep 1
 else
