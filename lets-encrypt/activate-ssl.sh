@@ -5,7 +5,7 @@
 NCPATH=/var/www/nextcloud
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 dir_before_letsencrypt=/etc
-letsencryptpath=/etc/letsencrypt
+letsencryptpath=$dir_before_letsencrypt/letsencrypt
 certfiles=$letsencryptpath/live
 SCRIPTS=/var/scripts
 
