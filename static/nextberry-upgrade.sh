@@ -176,8 +176,6 @@ else
 
   chmod +x /usr/sbin/wireless
 
-  # Unattended-upgrades
-
   # Set what version is installed
   echo "11 applied" >> "$VERSIONFILE"
   # Change current version var
@@ -198,6 +196,7 @@ fi
 #  bash /var/scripts/update.sh
 #
 #  # Actual version additions
+#  # Unattended-upgrades
 #
 #  # Set what version is installed
 #  echo "12 applied" >> "$VERSIONFILE"

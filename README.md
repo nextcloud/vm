@@ -2,11 +2,13 @@
 
 [![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
 
+## What is NextBerry?
+[More info](https://www.techandme.se/nextberry-vm/)
+
 ## Maintainers
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
 * You? :)
-
 
 ## Image
 [Image link](https://cloud.techandme.se/s/uMwUovc0iPn9DcA)
@@ -18,9 +20,6 @@
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
 
 Note: this build does not inlude Webmin.
-
-## First look
-![alt tag](https://raw.githubusercontent.com/nextcloud/screenshots/master/vm/first-look.jpg)
 
 ## FAQ
 [FAQ](https://github.com/ezraholm50/NextBerry/wiki/FAQ)
