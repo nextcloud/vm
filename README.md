@@ -11,10 +11,13 @@
 * You? :)
 
 ## Image
-[Image link](https://cloud.techandme.se/s/uMwUovc0iPn9DcA)
+[Image link](https://cloud.techandme.se/s/eMyKMP38fbfJ5aK)
 
 ## Documentation
 [How to](https://github.com/ezraholm50/NextBerry/wiki)
+
+## Version info
+[Versions](https://github.com/ezraholm50/NextBerry/wiki/Versions)
 
 ## Machine configuration
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
