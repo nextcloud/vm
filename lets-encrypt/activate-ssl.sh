@@ -103,8 +103,7 @@ fi
 # Install git
     git --version 2>&1 >/dev/null
     GIT_IS_AVAILABLE=$?
-# ...
-if [ $GIT_IS_AVAILABLE -eq 1 ]
+if [ $GIT_IS_AVAILABLE -eq 0 ]
 then
     sleep 1
 else
