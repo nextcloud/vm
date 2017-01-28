@@ -20,7 +20,7 @@ chown -R ${htuser}:${htgroup} ${ncpath}/apps/
 chown -R ${htuser}:${htgroup} ${ncpath}/config/
 chown -R ${htuser}:${htgroup} ${NCDATA}/
 chown -R ${htuser}:${htgroup} ${ncpath}/themes/
-chown -R ${htuser}:${htgroup} ${ncpath}/assets/
+chown -R ${htuser}:${htgroup} ${ncpath}/updater/
 
 chmod +x ${ncpath}/occ
 
