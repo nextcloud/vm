@@ -20,7 +20,7 @@ then
 password='$NEWMYSQLPASS'
 LOGIN
     chmod 0600 $MYCNF
-    exit 1
+    exit 0
 else
     echo "Changing MySQL root password failed."
     echo "Your old password is: $OLDMYSQL"
@@ -31,4 +31,3 @@ LOGIN
     chmod 0600 $MYCNF
     exit 1
 fi
-
