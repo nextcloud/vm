@@ -8,6 +8,7 @@
 ## Maintainers
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
+* [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
 * You? :)
 
 ## Image
