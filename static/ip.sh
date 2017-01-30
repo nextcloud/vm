@@ -19,11 +19,7 @@ iface lo inet loopback
 # The primary network interface
 iface $IFACE inet static
 
-<<<<<<< HEAD
 # If you are expeireing issues with loading web frontend, you should
-=======
-# If you are experiencing issues with loading web frontend, you should 
->>>>>>> 63f7ba39e7151100c59b234ccff338088ba1d536
 # enable this by removing the hash infront of 'mtu 1400'.
 # Fixes https://github.com/nextcloud/vm/issues/92
 # mtu 1400
