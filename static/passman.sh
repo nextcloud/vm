@@ -5,7 +5,7 @@ HTML=/var/www
 NCPATH=$HTML/nextcloud
 SCRIPTS=/var/scripts
 # Requires "v2.0.0" tag-standard
-PASSVER=$(curl -s https://github.com/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep 'tag_name' | cut -d" -f4 | sed -e "s|v||g")
 PASSVER_FILE=passman_$PASSVER.tar.gz
 PASSVER_REPO=https://github.com/nextcloud/passman/releases/download
 
