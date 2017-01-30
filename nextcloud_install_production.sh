@@ -11,13 +11,15 @@
 DEBUG=0
 
 # Repositories
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-NCREPO="https://download.nextcloud.com/server/releases/"
+GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
+STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
+NCREPO="https://download.nextcloud.com/server/releases"
+TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master/techandtool.sh"
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
-NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+NCVERSION=$(curl -s --max-time 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 STABLEVERSION="nextcloud-$NCVERSION"
+NEXTBERRYVERSION="010" # Needs to be this format for if [ x -gt x ] then...
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Passwords
@@ -30,17 +32,20 @@ HTML=/var/www
 NCPATH=$HTML/nextcloud
 GPGDIR=/tmp/gpg
 NCDATA=/var/ncdata
-
 # Apache vhosts
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-
 # Linux user, and Nextcloud user
 UNIXUSER=ncadmin
 UNIXPASS=nextcloud
+# Devices
+DEVICE="/dev/mmcblk0"
+DEV="/dev/sda"
+DEVHD="/dev/sda2"
+DEVSP="/dev/sda1"
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -59,6 +64,21 @@ then
     echo
     exit 1
 fi
+
+# Set /etc/hosts
+sed -i 's|127.0.0.1       localhost|127.0.0.1       localhost nextcloud|' /etc/hosts
+
+# Setup firewall-rules
+wget -q "$STATIC/firewall-rules" -P /usr/sbin/
+chmod +x /usr/sbin/firewall-rules
+echo "y" | sudo ufw enable
+ufw default deny incoming
+ufw limit 22/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp
+
+# Set NextBerry version for the updater tool
+echo "$NEXTBERRYVERSION" > $SCRIPTS/.version-nc
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -188,34 +208,42 @@ else
     echo "Network OK."
 fi
 
+# Erase some dev tracks
+cat /dev/null > /var/log/syslog
+
 # Set locales
 apt install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-
-# Check where the best mirrors are and update
-echo "Locating the best mirrors..."
-apt update -q2
-apt install python-pip -y
-pip install \
-    --upgrade pip \
-    apt-select
-apt-select
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-sudo mv sources.list /etc/apt/
-clear
+sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Set keyboard layout
-echo "Current keyboard layout is Swedish"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
 dpkg-reconfigure keyboard-configuration
-echo
 clear
 
-# Update system
-apt update -q2
+# Update and upgrade
+apt autoclean
+apt	autoremove -y
+apt update
+apt full-upgrade -y
+apt install -fy
+dpkg --configure --pending
+
+# Install various packages
+apt install -y ntpdate \
+		            module-init-tools \
+		            miredo \
+                rsync \
+                zram-config \
+                ca-certificates \
+                unzip \
+                landscape-common \
+		            libminiupnpc10
+
+# Fix time issues
+ntpdate -u ntp.ubuntu.com
+
+# Only use swap to prevent out of memory. Speed and less tear on SD
+echo "vm.swappiness = 0" >> /etc/sysctl.conf
+sysctl -p
 
 # Write MySQL pass to file and keep it safe
 echo "$MYSQL_PASS" > $PW_FILE
@@ -268,7 +296,7 @@ sudo hostnamectl set-hostname nextcloud
 service apache2 restart
 
 # Install PHP 7.0
-apt update -q2
+apt update
 apt install -y \
     libapache2-mod-php7.0 \
     php7.0-common \
@@ -291,12 +319,6 @@ apt install -y \
 # Enable SMB client
 # echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
 # echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
-
-# Install Unzip
-apt install unzip -y
-
-# Install VM-tools
-apt install open-vm-tools -y
 
 # Download and validate Nextcloud package
 wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
@@ -326,6 +348,9 @@ bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Install Nextcloud
 cd $NCPATH
+clear
+echo "Installing Nextcloud, this can take a while please hold on..."
+echo
 sudo -u www-data php occ maintenance:install \
     --data-dir "$NCDATA" \
     --database "mysql" \
@@ -487,15 +512,6 @@ sudo -u www-data php $NCPATH/occ config:system:set mail_smtppassword --value="vi
 # Install Libreoffice Writer to be able to read MS documents.
 sudo apt install --no-install-recommends libreoffice-writer -y
 
-# Install packages for Webmin
-apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
-
-# Install Webmin
-sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
-wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
-apt update -q2
-apt install webmin -y
-
 # Nextcloud apps
 CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CONVER_FILE=contacts.tar.gz
@@ -504,18 +520,8 @@ CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 
-# Get spreedme script
-if [ -f $SCRIPTS/spreedme.sh ]
-then
-    rm $SCRIPTS/spreedme.sh
-    wget -q $STATIC/spreedme.sh -P $SCRIPTS
-else
-    wget -q $STATIC/spreedme.sh -P $SCRIPTS
-fi
-
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
-function calendar {
 # Download and install Calendar
 if [ -d $NCPATH/apps/calendar ]
 then
@@ -533,9 +539,6 @@ then
     sudo -u www-data php $NCPATH/occ app:enable calendar
 fi
 
-}
-
-function contacts {
 # Download and install Contacts
 if [ -d $NCPATH/apps/contacts ]
 then
@@ -552,34 +555,6 @@ if [ -d $NCPATH/apps/contacts ]
 then
     sudo -u www-data php $NCPATH/occ app:enable contacts
 fi
-}
-
-
-function spreedme {
-    bash $SCRIPTS/spreedme.sh
-    rm $SCRIPTS/spreedme.sh
-
-}
-
-whiptail --title "Which apps do you want to install?" --checklist --separate-output "" 10 40 3 \
-"Calendar" "              " on \
-"Contacts" "              " on \
-"Spreed.Me" "              " on 2>results
-
-while read choice
-do
-        case $choice in
-                Calendar) calendar
-                ;;
-                Contacts) contacts
-                ;;
-                Spreed.Me) spreedme
-                ;;
-                *)
-                ;;
-        esac
-done < results
-
 
 # Change roots .bash_profile
 if [ -f $SCRIPTS/change-root-profile.sh ]
@@ -671,11 +646,15 @@ bash $SCRIPTS/redis-server-ubuntu16.sh
 rm $SCRIPTS/redis-server-ubuntu16.sh
 
 # Upgrade
-apt update -q2
+apt update
 apt full-upgrade -y
 
 # Remove LXD (always shows up as failed during boot)
 apt purge lxd -y
+
+# Cleanup login screen
+rm /etc/update-motd.d/00-header
+rm /etc/update-motd.d/10-help-text
 
 # Cleanup
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
