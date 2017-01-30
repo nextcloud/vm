@@ -18,7 +18,7 @@
 [How to](https://github.com/ezraholm50/NextBerry/wiki)
 
 ## Version info
-[Versions](https://github.com/ezraholm50/NextBerry/wiki/Versions)
+[Versions](https://github.com/ezraholm50/NextBerry/releases)
 
 ## Machine configuration
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
