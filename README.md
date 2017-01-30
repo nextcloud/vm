@@ -8,7 +8,10 @@
 ## Maintainers
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
+<<<<<<< HEAD
 * [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
+=======
+>>>>>>> parent of 60c5abe... Merge pull request #22 from ezraholm50/maintainer
 * You? :)
 
 ## Image
