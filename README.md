@@ -12,7 +12,7 @@
 * You? :)
 
 ## Image
-[Image link](https://cloud.techandme.se/s/eMyKMP38fbfJ5aK)
+[Image link](https://cloud.waaromzomoeilijk.nl/s/dxFxgOqs6crjQYe)
 
 ## Documentation
 [How to](https://github.com/ezraholm50/NextBerry/wiki)
