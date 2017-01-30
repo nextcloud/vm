@@ -41,6 +41,9 @@ calc_wt_size() {
 # Notification
 whiptail --msgbox "Please before you start make sure port 443 is directly forwarded to this machine or open!" "$WT_HEIGHT" "$WT_WIDTH"
 
+# Get the latest packages
+apt update -q2
+
 # Check if 443 is open using nmap, if not notify the user
 if [ $(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
@@ -84,7 +87,10 @@ else
     apt install docker.io -y
 fi
 
-if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 1 ]
+# Check if Git is installed
+    git --version 2>&1 >/dev/null
+    GIT_IS_AVAILABLE=$?
+if [ $GIT_IS_AVAILABLE -eq 0 ]
 then
     sleep 1
 else

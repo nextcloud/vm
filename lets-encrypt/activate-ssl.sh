@@ -5,7 +5,7 @@
 NCPATH=/var/www/nextcloud
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 dir_before_letsencrypt=/etc
-letsencryptpath=/etc/letsencrypt
+letsencryptpath=$dir_before_letsencrypt/letsencrypt
 certfiles=$letsencryptpath/live
 SCRIPTS=/var/scripts
 
@@ -103,11 +103,11 @@ fi
 # Install git
     git --version 2>&1 >/dev/null
     GIT_IS_AVAILABLE=$?
-# ...
-if [ $GIT_IS_AVAILABLE -eq 1 ]
+if [ $GIT_IS_AVAILABLE -eq 0 ]
 then
     sleep 1
 else
+    apt update -q2
     apt install git -y -q
 fi
 

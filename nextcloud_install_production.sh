@@ -317,8 +317,8 @@ apt install -y \
     php-smbclient
 
 # Enable SMB client
-echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
-echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
+# echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
+# echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 
 # Download and validate Nextcloud package
 wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
@@ -670,6 +670,11 @@ if [ -f /root/*.sh ]
 then
     rm /root/*.sh
 fi
+
+# Install virtual kernels
+apt install linux-tools-virtual-hwe-16.04-edge linux-cloud-tools-virtual-hwe-16.04-edge  -y
+apt install linux-image-virtual-hwe-16.04-edge -y
+apt install linux-virtual-hwe-16.04-edge -y
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
