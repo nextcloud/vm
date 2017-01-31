@@ -480,7 +480,7 @@ dpkg-reconfigure openssh-server
 
 # Generate new MySQL password
 echo
-bash $SCRIPTS/change_mysql_pass.sh
+bash $SCRIPTS/change_mysql_pass.sh && wait
 if [ $? -eq 0 ]
 then
 rm $SCRIPTS/change_mysql_pass.sh
@@ -488,7 +488,6 @@ echo "[mysqld]" >> /root/.my.cnf
 echo "innodb_large_prefix=on" >> /root/.my.cnf
 echo "innodb_file_format=barracuda" >> /root/.my.cnf
 echo "innodb_file_per_table=1" >> /root/.my.cnf
-sleep 3
 fi
 
 # Enable UTF8mb4 (4-byte support)
@@ -497,7 +496,7 @@ PW_FILE=/var/mysql_password.txt
 echo
 echo "Enabling UTF8mb4 support on $NCDB...."
 sudo /etc/init.d/mysql restart
-RESULT=`mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB`
+RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
     mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 fi
