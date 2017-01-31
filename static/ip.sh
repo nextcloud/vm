@@ -19,11 +19,6 @@ iface lo inet loopback
 # The primary network interface
 iface $IFACE inet static
 
-# If you are expericing issues with loading web frontend, you should
-# enable this by removing the hash infront of 'mtu 1400'.
-# Fixes https://github.com/nextcloud/vm/issues/92
-# mtu 1400
-
 # Best practice is to change the static address
 # to something outside your DHCP range.
 address $ADDRESS

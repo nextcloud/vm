@@ -98,7 +98,7 @@ partprobe
     done < <(echo -ne '\n' | sudo mke2fs -t ext4 -b 4096 -L 'PI_ROOT' $DEVHD)
     } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
 
-	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab
+	sed -i 's|.*mmcblk0p2.*||g' /etc/fstab
   GDEVHDUUID=$(blkid -o value -s PARTUUID $DEVHD)
 	echo "PARTUUID=$GDEVHDUUID  /               ext4   defaults,noatime  0       1" >> /etc/fstab
 	mount $DEVHD /mnt

@@ -179,7 +179,7 @@ then
     apt install resolvconf -y -q
     dpkg-reconfigure resolvconf
 else
-    echo 'reolvconf is installed.' >&2
+    echo 'resolvconf is installed.' >&2
 fi
 
 echo "nameserver 8.8.8.8" > /etc/resolvconf/resolv.conf.d/base
