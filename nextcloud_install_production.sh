@@ -39,8 +39,9 @@ IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 # Linux user, and Nextcloud user
-UNIXUSER=ncadmin
-UNIXPASS=nextcloud
+UNIXUSER=$SUDO_USER
+NCPASS=nextcloud
+NCUSER=ncadmin
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -127,19 +128,19 @@ then
     exit 1
 fi
 
-# Create $UNIXUSER if not existing
-if id "$UNIXUSER" >/dev/null 2>&1
+# Create $NCUSER if not existing
+if id "$NCUSER" >/dev/null 2>&1
 then
-    echo "$UNIXUSER already exists!"
+    echo "$NCUSER already exists!"
 else
-    adduser --disabled-password --gecos "" $UNIXUSER
-    echo -e "$UNIXUSER:$UNIXPASS" | chpasswd
-    usermod -aG sudo $UNIXUSER
+    adduser --disabled-password --gecos "" $NCUSER
+    echo -e "$NCUSER:$NCPASS" | chpasswd
+    usermod -aG sudo $NCUSER
 fi
 
-if [ -d /home/$UNIXUSER ]
+if [ -d /home/$NCUSER ]
 then
-    echo "$UNIXUSER OK!"
+    echo "$NCUSER OK!"
 else
     echo "Something went wrong when creating the user... Script will exit."
     exit 1
@@ -332,8 +333,8 @@ sudo -u www-data php occ maintenance:install \
     --database-name "nextcloud_db" \
     --database-user "root" \
     --database-pass "$MYSQL_PASS" \
-    --admin-user "$UNIXUSER" \
-    --admin-pass "$UNIXPASS"
+    --admin-user "$NCUSER" \
+    --admin-pass "$NCPASS"
 echo
 echo "Nextcloud version:"
 sudo -u www-data php $NCPATH/occ status
