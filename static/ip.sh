@@ -13,17 +13,16 @@ source /etc/network/interfaces.d/*
 
 # The loopback network interface
 auto lo $IFACE
+allow-hotplug $IFACE
 iface lo inet loopback
 
 # The primary network interface
 iface $IFACE inet static
-pre-up /sbin/ethtool -K $IFACE tso off
-pre-up /sbin/ethtool -K $IFACE gso off
 
 # If you are experiencing issues with loading web frontend, you should 
 # enable this by removing the hash infront of 'mtu 1400'.
 # Fixes https://github.com/nextcloud/vm/issues/92
-# mtu 1400 
+# mtu 1400
 
 # Best practice is to change the static address
 # to something outside your DHCP range.

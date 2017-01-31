@@ -1,7 +1,7 @@
 <!--
 Thank you for reporting your issue to us!
 
-Please report only issues corresponding to the VM for Nextcloud 9 or later. If you found a bug that is related to core, 
+Please report only issues corresponding to NextBerry for Nextcloud 11 or later. If you found a bug that is related to core, 
 you can file your report here: https://github.com/nextcloud/server
 -->
 ## Steps to reproduce
@@ -19,7 +19,7 @@ Tell us what happens instead
 
 **Server version:** (see your admin page)
 
-**VM version**
+**Raspberry 2 or 3?**
 
 **Updated from an older installed version or fresh install:**
 
