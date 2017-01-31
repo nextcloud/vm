@@ -18,8 +18,12 @@ TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master"
 GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
 STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
 LETS_ENC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/lets-encrypt"
-UNIXUSER=ncadmin
-UNIXPASS=nextcloud
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
+LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
+UNIXUSER=$SUDO_USER
+NCPASS=nextcloud
+NCUSER=ncadmin
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -651,12 +655,9 @@ echo
 sleep 3
 clear
 
-if [ "$UNIXUSER" = "ncadmin" ]
-then
     # Change password
     echo -e "\e[0m"
     echo "For better security, change the Linux password for [$UNIXUSER]"
-    echo "The current password is [$UNIXPASS]"
     echo -e "\e[32m"
     read -p "Press any key to change password for Linux... " -n1 -s
     echo -e "\e[0m"
@@ -671,22 +672,19 @@ then
     clear
 
     echo -e "\e[0m"
-    echo "For better security, change the Nextcloud password for [$UNIXUSER]"
-    echo "The current password is [$UNIXPASS]"
+    echo "For better security, change the Nextcloud password for [$NCUSER]"
+    echo "The current password for $NCUSER is [$NCPASS]"
     echo -e "\e[32m"
     read -p "Press any key to change password for Nextcloud... " -n1 -s
     echo -e "\e[0m"
-    sudo -u www-data php $NCPATH/occ user:resetpassword $UNIXUSER
+    sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
     if [[ $? > 0 ]]
     then
-        sudo -u www-data php $NCPATH/occ user:resetpassword $UNIXUSER
+        sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
     else
         sleep 2
     fi
-    clear
-else
-    echo "Not changing password as you already changed <user> and <pass> in the script"
-fi
+clear
 
 # Upgrade system
 echo "System will now upgrade..."
