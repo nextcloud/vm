@@ -39,7 +39,7 @@ IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 # Linux user, and Nextcloud user
-UNIXUSER=$(whoami)
+UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
 
