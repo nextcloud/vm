@@ -1,6 +1,6 @@
 #!/bin/bash
 
-UNIXUSER=$SUDO_USER
+UNIXUSER=$LOGNAME
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 
 rm /home/$UNIXUSER/.profile

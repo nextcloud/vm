@@ -17,7 +17,7 @@ PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
-UNIXUSER=$SUDO_USER
+UNIXUSER=$LOGNAME
 NCPASS=nextcloud
 NCUSER=ncadmin
 
@@ -411,58 +411,82 @@ dpkg-reconfigure keyboard-configuration
 echo
 clear
 
-# Change IP
-echo -e "\e[0m"
-echo "The script will now configure your IP to be static."
-echo -e "\e[36m"
-echo -e "\e[1m"
-echo "Your internal IP is: $ADDRESS"
-echo -e "\e[0m"
-echo -e "Write this down, you will need it to set static IP"
-echo -e "in your router later. It's included in this guide:"
-echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-echo -e
-echo -e "Please note that we will backup the interfaces file to:"
-echo -e "/etc/network/interfaces.backup"
-echo -e "If you run this script on a remote VPS the IP is probably wrong. "
-echo -e "But no worries - we will restore the interfaces.backup in the end of this script."
-echo -e "\e[32m"
-read -p "Press any key to set static IP..." -n1 -s
-cp /etc/network/interfaces /etc/network/interfaces.backup
+# Set hostname and ServerName
+echo "Setting hostname..."
+FQN=$(host -TtA $(hostname -s)|grep "has address"|awk '{print $1}') ; \
+if [[ "$FQN" == "" ]]
+then
+    FQN=$(hostname -s)
+fi
+sudo sh -c "echo 'ServerName $FQN' >> /etc/apache2/apache2.conf"
+sudo hostnamectl set-hostname $FQN
+service apache2 restart
+cat << ETCHOSTS > "/etc/hosts"
+127.0.1.1 $FQN.localdomain $FQN
+127.0.0.1 localhost
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ETCHOSTS
 clear
-echo -e "\e[0m"
-ifdown $IFACE
-sleep 1
-ifup $IFACE
-sleep 1
-bash $SCRIPTS/ip.sh
-ifdown $IFACE
-sleep 1
-ifup $IFACE
-sleep 1
-echo
-echo "Testing if network is OK..."
-sleep 1
-echo
-bash $SCRIPTS/test_connection.sh
-sleep 1
-echo
-echo -e "\e[0mIf the output is \e[32mConnected! \o/\e[0m everything is working."
-echo -e "\e[0mIf the output is \e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
-echo -e "\e[32m"
-read -p "Press any key to open /etc/network/interfaces..." -n1 -s
-echo -e "\e[0m"
-nano /etc/network/interfaces
-service networking restart
-clear
-echo "Testing if network is OK..."
-ifdown $IFACE
-sleep 1
-ifup $IFACE
-sleep 1
-echo
-bash $SCRIPTS/test_connection.sh
-sleep 1
+
+if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
+then
+    echo
+    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
+    echo
+    sleep 5
+    # Change IP
+    echo -e "\e[0m"
+    echo "The script will now configure your IP to be static."
+    echo -e "\e[36m"
+    echo -e "\e[1m"
+    echo "Your internal IP is: $ADDRESS"
+    echo -e "\e[0m"
+    echo -e "Write this down, you will need it to set static IP"
+    echo -e "in your router later. It's included in this guide:"
+    echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
+    echo -e "\e[32m"
+    read -p "Press any key to set static IP..." -n1 -s
+    clear
+    echo -e "\e[0m"
+    ifdown $IFACE
+    sleep 1
+    ifup $IFACE
+    sleep 1
+    bash $SCRIPTS/ip.sh
+    ifdown $IFACE
+    sleep 1
+    ifup $IFACE
+    sleep 1
+    echo
+    echo "Testing if network is OK..."
+    sleep 1
+    echo
+    bash $SCRIPTS/test_connection.sh
+    sleep 1
+    echo
+    echo -e "\e[0mIf the output is \e[32mConnected! \o/\e[0m everything is working."
+    echo -e "\e[0mIf the output is \e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
+    echo -e "\e[32m"
+    read -p "Press any key to open /etc/network/interfaces..." -n1 -s
+    echo -e "\e[0m"
+    nano /etc/network/interfaces
+    service networking restart
+    clear
+    echo "Testing if network is OK..."
+    ifdown $IFACE
+    sleep 1
+    ifup $IFACE
+    sleep 1
+    echo
+    bash $SCRIPTS/test_connection.sh
+    sleep 1
+else
+    sleep 1
+fi
 clear
 
 # Pretty URLs
@@ -732,17 +756,6 @@ function ask_yes_or_no() {
         *)     echo "no" ;;
     esac
 }
-if [[ "yes" == $(ask_yes_or_no "Do you run this on a *remote* VPS?") ]]
-then
-    echo "Ok, then your IP are probably wrong, we will use the backup file to recover it so that you can connect after reboot"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
-    mv /etc/network/interfaces.backup /etc/network/interfaces
-else
-    sleep 1
-fi
-clear
 
 cat << LETSENC
 +-----------------------------------------------+
