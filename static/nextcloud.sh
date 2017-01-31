@@ -34,14 +34,14 @@ echo "                                              sudo fs-size"
 echo "==============================================================================="
 if [ "$GITHUBVERSION" -gt "$CURRENTVERSION" ]; then
           echo
-          echo "NextBerry update available, run: sudo bash /home/ncadmin/nextberry-upgrade"
+          echo "NextBerry update available, run: sudo bash /home/ncadmin/nextberry-upgrade.sh"
           echo "==============================================================================="
 
           if              [ -f /home/ncadmin/nextberry-upgrade.sh ];	then
           		rm /home/ncadmin/nextberry-upgrade.sh
           fi
               wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/nextberry-upgrade.sh -P /home/ncadmin/
-              chmod +x /home/ncadmin/nextberry-upgrade
+              chmod +x /home/ncadmin/nextberry-upgrade.sh
           if [[ $? > 0 ]]
           then
                   echo "Download of update script failed. Please file a bug report on https://www.github.com/ezraholm50/NextBerry/"

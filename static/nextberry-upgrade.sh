@@ -1,6 +1,8 @@
 #!/bin/bash
 VERSIONFILE="/var/scripts/.version-nc"
 SCRIPTS="/var/scripts"
+GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
+STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
 
 # Check if root
 if [ "$(whoami)" != "root" ]
@@ -69,111 +71,21 @@ else
   #chmod +x /usr/sbin/wireless
 
   # Wpa_supplicant
-  CAT << WIRELESS > "/usr/sbin/wireless"
-  #!/bin/bash
-    WIFACE=$(lshw -c network | grep "wl" | awk '{print $3; exit}')
-  clear
-
-  # Check if root
-  if [ "$(whoami)" != "root" ]
+  if [ -f $SCRIPTS/wireless.sh ]
   then
-      echo
-      echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextberry-upgrade.sh"
-      echo
+      rm $SCRIPTS/wireless.sh
+      wget -q $STATIC/wireless.sh -P $SCRIPTS
+  else
+      wget -q $STATIC/wireless.sh -P $SCRIPTS
+  fi
+  if [ -f $SCRIPTS/wireless.sh ]
+  then
+      sleep 0.1
+  else
+      echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextberry-upgrade.sh' again."
       exit 1
   fi
-
-  a=0
-  b=0
-  x=0
-  while read line
-  do
-     case $line in
-      *ESSID* )
-          line=${line#*ESSID:}
-          essid[$a]=${line//\"/}
-          a=$((a + 1))
-          ;;
-      *Address*)
-          line=${line#*Address:}
-          address[$b]=$line
-          b=$((b + 1))
-          ;;
-     esac
-  done < <(iwlist scan 2>/dev/null) #the redirect gets rid of "lo        Interface doesn't support scanning."
-
-  while [ $x -lt ${#essid[@]} ];do
-    echo "======================================"
-    echo ${essid[$x]} --- ${address[$x]}
-    echo "======================================"
-    (( x++ ))
-  done
-
-  # Ask for SSID
-  echo
-  echo "Please copy/paste (select text and hit CTRL+C and then CTRL+V) your wifi network:"
-  read SSID
-
-  # Ask for PASS
-  clear
-  echo
-  echo "Please enter the password for network: $SSID"
-  read PASSWORD
-
-  # Create config file
-  cat << WPA > "/etc/wpa_supplicant.conf"
-  # /etc/wpa_supplicant.conf
-
-  ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-  update_config=1
-
-  network={
-  ssid="$SSID"
-  psk="$PASSWORD"
-  proto=RSN
-  key_mgmt=WPA-PSK
-  pairwise=CCMP
-  auth_alg=OPEN
-  }
-  WPA
-
-  # Bringdown eth0 before removing and backing up old config
-  ifdown eth0
-  mv /etc/network/interfaces /etc/network/interfaces.bak
-
-  IP=$(grep address /etc/network/interfaces.bak)
-  MASK=$(grep netmask /etc/network/interfaces.bak)
-  GW=$(grep gateway /etc/network/interfaces.bak)
-
-  # New interface config without IPV6
-  cat << NETWORK > "/etc/network/interfaces"
-  auto lo
-  "$WIFACE" lo inet loopback
-
-  allow-hotplug "$WIFACE"
-  auto "$WIFACE"
-  WIFACE "$WIFACE" inet static
-  "$IP"
-  "$MASK"
-  "$GW"
-              dns-nameservers 8.8.8.8 8.8.4.4
-  wpa-conf /etc/wpa_supplicant.conf
-  "$WIFACE" default inet dhcp
-  NETWORK
-
-  # Bring up Wifi
-  ifup "$WIFACE"
-
-  # Create a revert script
-  cat << REVERT > "/usr/sbin/revert-wifi"
-  ifdown "$WIFACE"
-  rm /etc/network/interfaces
-  mv /etc/network/interfaces.bak /etc/network/interfaces
-  ifup eth0
-  REVERT
-  chmod +x /usr/sbin/revert-wifi
-  WIRELESS
-
+  mv $SCRIPTS/wireless.sh /usr/sbin/wireless
   chmod +x /usr/sbin/wireless
 
   # Set what version is installed
