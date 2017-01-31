@@ -87,6 +87,7 @@ else
   echo "11 applied" >> "$VERSIONFILE"
   # Change current version var
   sed -i 's|010|011|g' "$VERSIONFILE"
+  sed -i 's|V1.0|V1.1|g' "$VERSIONFILE"
 fi
 
 ################### V1.2 ####################
@@ -108,7 +109,8 @@ fi
 #  # Set what version is installed
 #  echo "12 applied" >> "$VERSIONFILE"
 #  # Change current version var
-#  sed -i 's|010|011|g' "$VERSIONFILE"
+#  sed -i 's|011|012|g' "$VERSIONFILE"
+#  sed -i 's|V1.1|V1.2|g' "$VERSIONFILE"
 #fi
 
 exit

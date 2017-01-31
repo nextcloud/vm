@@ -1,6 +1,7 @@
 #!/bin/bash
 REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/"
 CURRENTVERSION=$(sed '1q;d' /var/scripts/.version-nc)
+CLEANVERSION=$(sed '2q;d' /var/scripts/.version-nc)
 GITHUBVERSION=$(curl -s $REPO/version)
 SCRIPTS="/var/scripts"
 TEMP=$(vcgencmd measure_temp)
@@ -13,7 +14,7 @@ WANIP6=$(curl -s 6.ifcfg.me -m 5)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 RELEASE=$(lsb_release -s -d)
 clear
-figlet -f small NextBerry
+figlet -f small NextBerry $CLEANVERSION
 echo "https://www.techandme.se"
 echo "==============================================================================="
 echo "RPI: $TEMP - CPU freq: $CPUFREQ - $COREVOLT - MEM: $MEMGPU $MEMARM"
