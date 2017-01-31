@@ -39,7 +39,7 @@ IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 # Linux user, and Nextcloud user
-UNIXUSER=$SUDO_USER
+UNIXUSER=$LOGNAME
 NCPASS=nextcloud
 NCUSER=ncadmin
 
@@ -251,11 +251,6 @@ a2enmod rewrite \
         mime \
         ssl \
         setenvif
-
-# Set hostname and ServerName
-sudo sh -c "echo 'ServerName nextcloud' >> /etc/apache2/apache2.conf"
-sudo hostnamectl set-hostname nextcloud
-service apache2 restart
 
 # Install PHP 7.0
 apt update -q2
