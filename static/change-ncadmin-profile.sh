@@ -1,6 +1,6 @@
 #!/bin/bash
 
-UNIXUSER=ncadmin
+UNIXUSER=$(whoami)
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 
 rm /home/$UNIXUSER/.profile
