@@ -128,23 +128,12 @@ then
     exit 1
 fi
 
-# Create $NCUSER if not existing
-if id "$NCUSER" >/dev/null 2>&1
-then
-    echo "$NCUSER already exists!"
-else
-    adduser --disabled-password --gecos "" $NCUSER
-    echo -e "$NCUSER:$NCPASS" | chpasswd
-    usermod -aG sudo $NCUSER
-fi
-
-if [ -d /home/$NCUSER ]
-then
-    echo "$NCUSER OK!"
-else
-    echo "Something went wrong when creating the user... Script will exit."
-    exit 1
-fi
+# Show current user
+echo
+echo "Current user with sudo permissions is: $UNIXUSER".
+echo "This script will set everything up with that user, FYI."
+sleep 3
+echo
 
 # Create $SCRIPTS dir
 if [ -d $SCRIPTS ]
