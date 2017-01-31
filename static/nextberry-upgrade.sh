@@ -88,6 +88,9 @@ else
   mv $SCRIPTS/wireless.sh /usr/sbin/wireless
   chmod +x /usr/sbin/wireless
 
+  # Remove first MOTD
+  rm /etc/update-motd.d/50-landscape-sysinfo
+
   # Set what version is installed
   echo "11 applied" >> "$VERSIONFILE"
   # Change current version var
