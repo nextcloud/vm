@@ -330,6 +330,23 @@ else
     exit 1
 fi
 
+# Get latest updates of NextBerry
+if [ -f $SCRIPTS/nextberry-upgrade.sh ]
+then
+    rm $SCRIPTS/nextberry-upgrade.sh
+    wget -q $STATIC/nextberry-upgrade.sh -P $SCRIPTS
+else
+    wget -q $STATIC/nextberry-upgrade.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/nextberry-upgrade.sh ]
+then
+    sleep 0.1
+else
+    echo "nextberry-upgrade.sh failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
+
 # Sets secure permissions after upgrade
 if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
 then
@@ -380,6 +397,7 @@ else
     echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
     exit 1
 fi
+
 # Get the Welcome Screen when http://$address
 if [ -f $SCRIPTS/index.php ]
 then
@@ -692,6 +710,8 @@ else
         sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
 fi
 
+# Install latest updates
+bash $SCRIPTS/nextberry-upgrade.sh
 
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
