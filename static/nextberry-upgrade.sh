@@ -41,22 +41,14 @@ else
   bash /var/scripts/update.sh
 
   # Actual version additions
+  apt update
   apt install -y  unattended-upgrades \
                   update-notifier-common \
-                  python-pip \
                   build-essential \
-                  python-dev \
                   lm-sensors \
                   landscape-common \
                   ncdu
                   #wicd-curses
-
-  # NextBerry stats
-  pip install --upgrade pip
-  pip install psutil logutils bottle batinfo https://bitbucket.org/gleb_zhulik/py3sensors/get/tip.tar.gz zeroconf netifaces pymdstat influxdb elasticsearch potsdb statsd pystache docker-py pysnmp pika py-cpuinfo bernhard
-  pip install glances
-  echo "sudo glances" > /usr/sbin/nextberry-stats
-  chmod +x /usr/sbin/nextberry-stats
 
   # NCDU
   echo "sudo ncdu /" > /usr/sbin/fs-size

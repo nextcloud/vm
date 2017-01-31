@@ -28,8 +28,7 @@ echo "==========================================================================
 echo "To view your firewall rules, type:            sudo firewall-rules"
 echo "To connect to a wifi network type:            sudo wireless"
 echo "To revert the wifi settings and use a wire:   sudo revert-wifi"
-echo "To monitor your system, type:                 sudo nextberry-stats"
-echo "                                              sudo htop"
+echo "To monitor your system, type:                 sudo htop"
 echo "                                              sudo fs-size"
 echo "==============================================================================="
 if [ "$GITHUBVERSION" -gt "$CURRENTVERSION" ]; then
