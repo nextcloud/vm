@@ -99,6 +99,7 @@ partprobe
     } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
 
 	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab
+  GDEVHDUUID=$(blkid -o value -s PARTUUID $DEVHD)
 	echo "PARTUUID=$GDEVHDUUID  /               ext4   defaults,noatime  0       1" >> /etc/fstab
 	mount $DEVHD /mnt
 
@@ -159,7 +160,6 @@ else
 fi
 
 echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
-GDEVHDUUID=$(blkid -o value -s PARTUUID $DEVHD)
 sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g" /boot/cmdline.txt
 
 rm /boot/config.txt
