@@ -47,7 +47,8 @@ else
                   build-essential \
                   lm-sensors \
                   landscape-common \
-                  ncdu
+                  ncdu \
+                  wireless-tools
                   #wicd-curses
 
   # NCDU

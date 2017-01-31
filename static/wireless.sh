@@ -1,5 +1,5 @@
 #!/bin/bash
-  WIFACE=$(lshw -c network | grep "wl" | awk '{print $3; exit}')
+WIFACE=$(lshw -c network | grep "wl" | awk '{print $3; exit}')
 clear
 
 # Check if root
@@ -11,6 +11,15 @@ then
     exit 1
 fi
 
+# Temp network config
+cat << TEMP >> "/etc/network/interfaces"
+allow-hotplug "$WIFACE"
+auto "$WIFACE"
+iface "$WIFACE" inet dhcp
+TEMP
+ifup "$WIFACE"
+
+# Iwlist scan
 a=0
 b=0
 x=0
@@ -68,6 +77,9 @@ WPA
 # Bringdown eth0 before removing and backing up old config
 ifdown eth0
 mv /etc/network/interfaces /etc/network/interfaces.bak
+sed -i 's|allow-hotplug "$WIFACE"||g' /etc/network/interfaces.bak
+sed -i 's|auto "$WIFACE"||g' /etc/network/interfaces.bak
+sed -i 's|iface "$WIFACE" inet dhcp||g' /etc/network/interfaces.bak
 
 IP=$(grep address /etc/network/interfaces.bak)
 MASK=$(grep netmask /etc/network/interfaces.bak)
@@ -76,11 +88,11 @@ GW=$(grep gateway /etc/network/interfaces.bak)
 # New interface config without IPV6
 cat << NETWORK > "/etc/network/interfaces"
 auto lo
-"$WIFACE" lo inet loopback
+iface lo inet loopback
 
 allow-hotplug "$WIFACE"
 auto "$WIFACE"
-WIFACE "$WIFACE" inet static
+iface "$WIFACE" inet static
 "$IP"
 "$MASK"
 "$GW"
