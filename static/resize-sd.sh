@@ -40,7 +40,7 @@ calc_wt_size() {
 
 do_usb() {
 	get_init_sys
-	whiptail --msgbox "Please use an external power supply (USB HUB) to power your HDD/SSD. This will increase the RPI's performance at peaks.)\n\n All of your data will be deleted if you continue please backup/save your files on the HD/SSD that we are going to use first\n\n Now please connect the HD/SSD to the RPI and make sure its the only storage device (USB keyboard dongle is fine, just no other USB STORAGE or HD's.\n\n Having multiple devices plugged in will mess up the installation and you will have to start over." $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
+	whiptail --msgbox "Please use an external power supply (USB HUB) to power your HDD/SSD. This will increase the RPI's performance.)\n\n All of your data will be deleted if you continue please backup/save your files on the HD/SSD that we are going to use first\n\n Now please connect the HD/SSD to the RPI and make sure its the only storage device (USB keyboard dongle is fine, just no other USB STORAGE or HD's.\n\n Having multiple devices plugged in will mess up the installation and you will have to start over." $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
 
 # Check if /dev/sda is present
 lsblk | grep sda
@@ -49,7 +49,7 @@ if [ $? -eq 0 ]; then # yes
 if 		[ -f /swapfile ]; then
       		swapoff -a
       		rm /swapfile
-      		sed -i 's|.*swapfile.*||g' /etc/fstab
+      		sed -i 's|.*swap.*||g' /etc/fstab
 fi
 
 # Wipe disk and create new partition
@@ -59,6 +59,8 @@ DEVHD="/dev/sda2"
 fdisk $DEV << EOF
 wipefs
 EOF
+sync
+partprobe
 
 fdisk $DEV << EOF
 o
@@ -69,6 +71,8 @@ p
 +10M
 w
 EOF
+sync
+partprobe
 
 fdisk $DEV << EOF
 n
@@ -81,26 +85,12 @@ EOF
 sync
 partprobe
 
-# Swap
-fallocate -l 2G /swapfile
-chmod 600 /swapfile
-mkswap /swapfile
-echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
-sync
-partprobe
-
 # External HD
-    {
-    i=1
-    while read -r line; do
-        i=$(( $i + 1 ))
-        echo $i
-    done < <(echo -ne '\n' | sudo mke2fs -t ext4 -b 4096 -L 'PI_ROOT' $DEVHD)
-    } | whiptail --title "Progress" --gauge "Please wait while creating ext4 filesystem" 6 60 0
-
+  mke2fs -t ext4 -b 4096 -L 'PI_ROOT' $DEVHD
 	sed -i 's|.*mmcblk0p2.*||g' /etc/fstab
   GDEVHDUUID=$(blkid -o value -s PARTUUID $DEVHD)
 	echo "PARTUUID=$GDEVHDUUID  /               ext4   defaults,noatime  0       1" >> /etc/fstab
+  echo "$GDEVHDUUID" > $SCRIPTS/.hduuid
 	mount $DEVHD /mnt
 
 clear
@@ -108,11 +98,8 @@ echo "Moving from SD to HD/SSD, this can take a while! Sit back and relax..."
 echo
 rsync -aAXv --exclude={"/boot/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} / /mnt
 
-	touch /var/scripts/HD
-	umount /mnt
-
-  # Previous line is more prone to errors: sed -e '10,31d' /root/.profile
-cat <<EOF > /root/.profile
+# Previous line is more prone to errors: sed -e '10,31d' /root/.profile
+cat <<EOF > /mnt/root/.profile
 # ~/.profile: executed by Bourne-compatible login shells.
 
 if [ "$BASH" ]; then
@@ -159,13 +146,13 @@ else
   mount /dev/mmcblk0p1 /boot
 fi
 
-echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
-sed -i "s|root=/dev/mmcblk0p2|root=PARTUUID=$GDEVHDUUID|g" /boot/cmdline.txt
+echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=PARTUUID=$GDEVHDUUID rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
 
 rm /boot/config.txt
 wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/
 
 	whiptail --msgbox "Success, we will now reboot to finish switching /root..." 20 60 1
+  umount /mnt
 	reboot
 else
 	 whiptail --msgbox "Could not detect external storage, please start over..." 20 60 1
@@ -286,14 +273,6 @@ EOF
 
   chmod +x /etc/init.d/resize2fs_once &&
   update-rc.d resize2fs_once defaults &&
-
-  # Swap
-  fallocate -l 1G /swapfile
-  chmod 600 /swapfile
-  mkswap /swapfile
-  echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
-  sync
-  partprobe
 
   # Overclock
   if [ -f /boot/cmdline.txt ]

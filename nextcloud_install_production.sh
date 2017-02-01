@@ -44,6 +44,7 @@ DEVICE="/dev/mmcblk0"
 DEV="/dev/sda"
 DEVHD="/dev/sda2"
 DEVSP="/dev/sda1"
+GDEVHDUUID=$(cat $SCRIPTS/.hduuid)
 # Linux user, and Nextcloud user
 UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
@@ -66,22 +67,6 @@ then
     echo
     exit 1
 fi
-
-# Set /etc/hosts
-sed -i 's|127.0.0.1       localhost|127.0.0.1       localhost nextcloud|' /etc/hosts
-
-# Setup firewall-rules
-wget -q "$STATIC/firewall-rules" -P /usr/sbin/
-chmod +x /usr/sbin/firewall-rules
-echo "y" | sudo ufw enable
-ufw default deny incoming
-ufw limit 22/tcp
-ufw allow 80/tcp
-ufw allow 443/tcp
-
-# Set NextBerry version for the updater tool
-echo "$NEXTBERRYVERSION" > $SCRIPTS/.version-nc
-echo "$NEXTBERRYVERSIONCLEAN" > $SCRIPTS/.version-nc
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -176,6 +161,51 @@ else
     mkdir -p $SCRIPTS
 fi
 
+# Set swapfile
+if grep -q "$GDEVHDUUID" "$SCRIPTS/.hduuid"; then
+  # Swap
+  fallocate -l 2G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile
+  echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
+  swapon /swapfile
+  sudo chown root:root /swapfile
+  sudo chmod 0600 /swapfile
+  sync
+  partprobe
+else
+# Swap
+  fallocate -l 1G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile
+  echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
+  swapon /swapfile
+  sudo chown root:root /swapfile
+  sudo chmod 0600 /swapfile
+  sync
+  partprobe
+fi
+
+# Only use swap to prevent out of memory. Speed and less tear on SD
+echo "vm.swappiness = 10" >> /etc/sysctl.conf
+sysctl -p
+
+# Set /etc/hosts
+sed -i 's|127.0.0.1       localhost|127.0.0.1       localhost nextcloud|' /etc/hosts
+
+# Setup firewall-rules
+wget -q "$STATIC/firewall-rules" -P /usr/sbin/
+chmod +x /usr/sbin/firewall-rules
+echo "y" | sudo ufw enable
+ufw default deny incoming
+ufw limit 22/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp
+
+# Set NextBerry version for the updater tool
+echo "$NEXTBERRYVERSION" > $SCRIPTS/.version-nc
+echo "$NEXTBERRYVERSIONCLEAN" > $SCRIPTS/.version-nc
+
 # Change DNS
 if ! [ -x "$(command -v resolvconf)" ]
 then
@@ -243,10 +273,6 @@ apt install -y ntpdate \
 
 # Fix time issues
 ntpdate -u ntp.ubuntu.com
-
-# Only use swap to prevent out of memory. Speed and less tear on SD
-echo "vm.swappiness = 0" >> /etc/sysctl.conf
-sysctl -p
 
 # Write MySQL pass to file and keep it safe
 echo "$MYSQL_PASS" > $PW_FILE

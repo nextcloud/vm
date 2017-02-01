@@ -21,7 +21,7 @@ echo "RPI: $TEMP - CPU freq: $CPUFREQ - $COREVOLT - MEM: $MEMGPU $MEMARM"
 echo "==============================================================================="
 printf "Operating system: %s (%s %s %s)\n" "$RELEASE" "$(uname -o)" "$(uname -r)" "$(uname -m)"
 echo "==============================================================================="
-/usr/bin/landscape-sysinfo
+/usr/bin/landscape-sysinfo  --exclude-sysinfo-plugins=LandscapeLink
 echo "==============================================================================="
 echo "WAN IPv4: $WANIP4 - WAN IPv6: $WANIP6"
 echo "LAN IPv4: $ADDRESS"
