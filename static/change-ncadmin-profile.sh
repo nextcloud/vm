@@ -1,9 +1,9 @@
 #!/bin/bash
 
 UNIXUSER=$SUDO_USER
-UNIXUSER_PROFILE="~/.bash_profile"
+UNIXUSER_PROFILE="$HOME/.bash_profile"
 
-rm ~/.profile
+rm $HOME/.profile
 
 cat <<-UNIXUSER-PROFILE > "$UNIXUSER_PROFILE"
 # ~/.profile: executed by the command interpreter for login shells.
