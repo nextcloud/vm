@@ -45,30 +45,12 @@ else
   apt install -y  build-essential \
                   lm-sensors \
                   landscape-common \
-                  ncdu \
-                  wireless-tools
+                  ncdu
+
 
   # NCDU
   echo "sudo ncdu /" > /usr/sbin/fs-size
   chmod +x /usr/sbin/fs-size
-
-  # Wpa_supplicant
-  if [ -f $SCRIPTS/wireless.sh ]
-  then
-      rm $SCRIPTS/wireless.sh
-      wget -q $STATIC/wireless.sh -P $SCRIPTS
-  else
-      wget -q $STATIC/wireless.sh -P $SCRIPTS
-  fi
-  if [ -f $SCRIPTS/wireless.sh ]
-  then
-      sleep 0.1
-  else
-      echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextberry-upgrade.sh' again."
-      exit 1
-  fi
-  mv $SCRIPTS/wireless.sh /usr/sbin/wireless
-  chmod +x /usr/sbin/wireless
 
   # Remove first MOTD
   rm /etc/update-motd.d/50-landscape-sysinfo
@@ -123,6 +105,31 @@ else
   echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextberry-upgrade.sh' again."
   exit 1
 fi
+
+  # New wifi setup
+  apt update
+  sudo usermod -a -G netdev ncadmin
+  DEBIAN_FRONTEND=noninteractive apt install -y wicd-curses
+
+  if [ -f $SCRIPTS/wireless.sh ]
+then
+    rm $SCRIPTS/wireless.sh
+    wget -q $STATIC/wireless.sh -P $SCRIPTS
+else
+    wget -q $STATIC/wireless.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/wireless.sh ]
+then
+    sleep 0.1
+else
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextberry-upgrade.sh' again."
+    exit 1
+fi
+mv $SCRIPTS/wireless.sh /usr/sbin/wireless
+chmod +x /usr/sbin/wireless
+
+# Rpi config
+echo "vcgencmd get_config int" > /usr/sbin/rpi-conf 
 
   # Set what version is installed
   echo "12 applied" >> "$VERSIONFILE"

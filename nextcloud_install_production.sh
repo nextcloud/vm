@@ -226,7 +226,6 @@ cat /dev/null > /var/log/syslog
 
 # Set locales
 apt install language-pack-en-base -y
-sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Set keyboard layout
 echo "Current keyboard layout is: $(localectl status | grep "Layout" | awk '{print $3}')"
