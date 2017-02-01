@@ -18,9 +18,6 @@ TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master"
 GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
 STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
 LETS_ENC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/lets-encrypt"
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
 UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
@@ -98,15 +95,6 @@ else
     echo "Network NOT OK. You must have a working Network connection to run this script."
     echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
     exit 1
-fi
-
-# Get the best mirrors for Ubuntu based on location
-echo "Locating the best mirrors..."
-apt-select
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-if [ -f sources.list ]
-then
-sudo mv sources.list /etc/apt/
 fi
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
@@ -485,18 +473,6 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ETCHOSTS
 
-# VPS?
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-
-if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
-then
-    echo
     # Change IP
     echo -e "\e[0m"
     echo "OK, we assume you run this locally and we will now configure your IP to be static"
@@ -543,10 +519,6 @@ then
     echo
     bash $SCRIPTS/test_connection.sh
     sleep 1
-else
-    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
-    sleep 5
-fi
 
 # Pretty URLs
 echo "Setting RewriteBase to "/" in config.php..."

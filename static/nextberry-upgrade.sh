@@ -42,9 +42,7 @@ else
 
   # Actual version additions
   apt update
-  apt install -y  unattended-upgrades \
-                  update-notifier-common \
-                  build-essential \
+  apt install -y  build-essential \
                   lm-sensors \
                   landscape-common \
                   ncdu \
@@ -92,26 +90,33 @@ else
 fi
 
 ################### V1.2 ####################
-#if grep -q "12 applied" "$VERSIONFILE"; then
-#  echo "12 already applied..."
-#else
-#  # Update and upgrade
-#  apt autoclean
-#  apt	autoremove -y
-#  apt update
-#  apt full-upgrade -y
-#  apt install -fy
-#  dpkg --configure --pending
-#  bash /var/scripts/update.sh
-#
-#  # Actual version additions
-#  # Unattended-upgrades
-#
-#  # Set what version is installed
-#  echo "12 applied" >> "$VERSIONFILE"
-#  # Change current version var
-#  sed -i 's|011|012|g' "$VERSIONFILE"
-#  sed -i 's|V1.1|V1.2|g' "$VERSIONFILE"
-#fi
+if grep -q "12 applied" "$VERSIONFILE"; then
+  echo "12 already applied..."
+else
+  # Update and upgrade
+  apt autoclean
+  apt	autoremove -y
+  apt update
+  apt full-upgrade -y
+  apt install -fy
+  dpkg --configure --pending
+  bash /var/scripts/update.sh
+
+  # Install packages
+  apt install -y  unattended-upgrades \
+                  update-notifier-common \
+
+
+  # Actual version additions
+  # Unattended-upgrades
+  echo "APT::Periodic::Update-Package-Lists "1";" > /etc/apt/apt.conf.d/20auto-upgrades
+  echo "APT::Periodic::Unattended-Upgrade "1";"" >> /etc/apt/apt.conf.d/20auto-upgrades
+
+  # Set what version is installed
+  echo "12 applied" >> "$VERSIONFILE"
+  # Change current version var
+  sed -i 's|011|012|g' "$VERSIONFILE"
+  sed -i 's|V1.1|V1.2|g' "$VERSIONFILE"
+fi
 
 exit

@@ -40,7 +40,7 @@ calc_wt_size() {
 
 do_usb() {
 	get_init_sys
-	whiptail --msgbox "Please use an external power supply (USB HUB) to power your HDD/SSD. This will increase the RPI's performance.)\n\n All of your data will be deleted if you continue please backup/save your files on the HD/SSD that we are going to use first\n\n Now please connect the HD/SSD to the RPI and make sure its the only storage device (USB keyboard dongle is fine, just no other USB STORAGE or HD's.\n\n Having multiple devices plugged in will mess up the installation and you will have to start over." $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
+	whiptail --msgbox "Please use an external power supply (USB HUB) to power your HDD/SSD. This will increase the RPI's performance.\n\n All of your data will be deleted if you continue please backup/save your files on the HD/SSD that we are going to use first\n\n Now please connect the HD/SSD to the RPI and make sure its the only storage device (USB keyboard dongle is fine, just no other USB STORAGE or HD's.\n\n Having multiple devices plugged in will mess up the installation and you will have to start over." $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT
 
 # Check if /dev/sda is present
 lsblk | grep sda
@@ -86,11 +86,10 @@ sync
 partprobe
 
 # External HD
-  mke2fs -t ext4 -b 4096 -L 'PI_ROOT' $DEVHD
-	sed -i 's|.*mmcblk0p2.*||g' /etc/fstab
+  mke2fs -F -F -t ext4 -b 4096 -L 'PI_ROOT' $DEVHD
+	sed -i 's|/dev/mmcblk0p2|#/dev/mmcblk0p2|g' /etc/fstab
   GDEVHDUUID=$(blkid -o value -s PARTUUID $DEVHD)
 	echo "PARTUUID=$GDEVHDUUID  /               ext4   defaults,noatime  0       1" >> /etc/fstab
-  echo "$GDEVHDUUID" > $SCRIPTS/.hduuid
 	mount $DEVHD /mnt
 
 clear
@@ -151,7 +150,7 @@ echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0
 rm /boot/config.txt
 wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/
 
-	whiptail --msgbox "Success, we will now reboot to finish switching /root..." 20 60 1
+	whiptail --msgbox "Success, we will now reboot to finish switching /root...\n\n Please make sure you do not have a Wifi dongle plugged in before you press enter.\n\n This will make the next script fail, first finish using an ethernet cable.\n\n Afterwards you can setup a Wifi connection." 20 60 1
   umount /mnt
 	reboot
 else
@@ -293,13 +292,13 @@ EOF
   rm /boot/config.txt
   wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/
 
-    whiptail --msgbox "Success, we will now reboot to finish resizing..." 20 60 1
+    whiptail --msgbox "Success, we will now reboot to finish resizing...\n\n Please make sure you do not have a Wifi dongle plugged in before you press enter.\n\n This will make the next script fail, first finish using an ethernet cable.\n\n Afterwards you can setup a Wifi connection." 20 60 1
 		reboot
 }
 
 # Everything else needs to be run as root
 if [ $(id -u) -ne 0 ]; then
-  printf "Script must be run as root. Try 'sudo bash resize-sd.sh'\n"
+  printf "Script must be run as root. Try 'sudo bash /var/scripts/resize-sd.sh'\n"
   exit 1
 fi
 

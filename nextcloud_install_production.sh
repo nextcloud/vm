@@ -44,7 +44,6 @@ DEVICE="/dev/mmcblk0"
 DEV="/dev/sda"
 DEVHD="/dev/sda2"
 DEVSP="/dev/sda1"
-GDEVHDUUID=$(cat $SCRIPTS/.hduuid)
 # Linux user, and Nextcloud user
 UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
@@ -157,29 +156,15 @@ else
 fi
 
 # Set swapfile
-if grep -q "$GDEVHDUUID" "$SCRIPTS/.hduuid"; then
-  # Swap
-  fallocate -l 2G /swapfile
-  chmod 600 /swapfile
-  mkswap /swapfile
-  echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
-  swapon /swapfile
-  sudo chown root:root /swapfile
-  sudo chmod 0600 /swapfile
-  sync
-  partprobe
-else
-# Swap
-  fallocate -l 1G /swapfile
-  chmod 600 /swapfile
-  mkswap /swapfile
-  echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
-  swapon /swapfile
-  sudo chown root:root /swapfile
-  sudo chmod 0600 /swapfile
-  sync
-  partprobe
-fi
+fallocate -l 1G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
+swapon /swapfile
+sudo chown root:root /swapfile
+sudo chmod 0600 /swapfile
+sync
+partprobe
 
 # Only use swap to prevent out of memory. Speed and less tear on SD
 echo "vm.swappiness = 10" >> /etc/sysctl.conf
