@@ -11,7 +11,7 @@ SOLR_RELEASE=solr-$SOLR_VERSION.tgz
 SOLR_DL=http://www-eu.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
 NCPATH=/var/www/nextcloud
 NC_APPS_PATH=$NCPATH/apps/
-SOLR_HOME=$HOME/solr_install/
+SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
 SCRIPTS=/var/scripts
@@ -54,7 +54,7 @@ tar -zxf $SOLR_RELEASE
 ./solr-$SOLR_VERSION/bin/install_solr_service.sh $SOLR_RELEASE
 if [ $? -eq 0 ]
 then
-    rm -rf $SOLR_HOME/$SOLR_RELEASE
+    rm -rf $SOLR_HOME
     wget -q https://raw.githubusercontent.com/apache/lucene-solr/master/solr/bin/install_solr_service.sh -P $SCRIPTS/
 else
     echo "Solr failed to install, something is wrong with the Solr installation"

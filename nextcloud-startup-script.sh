@@ -709,14 +709,15 @@ rm $SCRIPTS/test_connection.sh
 rm $SCRIPTS/instruction.sh
 rm $NCDATA/nextcloud.log
 rm $SCRIPTS/nextcloud-startup-script.sh
-sed -i "s|instruction.sh|nextcloud.sh|g" $HOME/.bash_profile
-cat /dev/null > $HOME/.bash_history
+sed -i "s|instruction.sh|nextcloud.sh|g" /home/$UNIXUSER/.bash_profile
+cat /dev/null > /root/.bash_history
+cat /dev/null > /home/$UNIXUSER/.bash_history
 cat /dev/null > /var/spool/mail/root
 cat /dev/null > /var/spool/mail/$UNIXUSER
 cat /dev/null > /var/log/apache2/access.log
 cat /dev/null > /var/log/apache2/error.log
 cat /dev/null > /var/log/cronjobs_success.log
-sed -i "s|sudo -i||g" $HOME/.bash_profile
+sed -i "s|sudo -i||g" /root/.bash_profile
 cat /dev/null > /etc/rc.local
 cat << RCLOCAL > "/etc/rc.local"
 #!/bin/sh -e

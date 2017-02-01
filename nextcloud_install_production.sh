@@ -64,8 +64,8 @@ fi
 # Show current user
 echo
 echo "Current user with sudo permissions is: $UNIXUSER".
-echo "This script will set everything up with that user."
-echo "If the field after ":" is blank you are probably running as a pure root user."
+echo "This script will set up everything with that user."
+echo "If the field after ':' is blank you are probably running as a pure root user."
 echo "It's possible to install with root, but there will be minor errors."
 
 echo "Please create a user with sudo permissions if you want an optimal installation."
@@ -198,6 +198,9 @@ pip install \
 apt-select
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 sudo mv sources.list /etc/apt/
+
+# Pepare for Keyboard detection
+apt install x11-xkb-utils -y
 clear
 
 # Set keyboard layout
