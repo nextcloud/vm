@@ -111,6 +111,7 @@ fi
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
+echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
 
 # Get passman script
@@ -431,15 +432,18 @@ echo "| It will also do the following:                                     |"
 echo "|                                                                    |"
 echo "| - Generate new SSH keys for the server                             |"
 echo "| - Generate new MySQL password                                      |"
+echo "| - Configure UTF8mb4 (4-byte support for MySQL)                     |"
 echo "| - Install phpMyadmin and make it secure                            |"
 echo "| - Install selected apps and automatically configure them           |"
+echo "| - Detect and set hostname                                          |"
 echo "| - Upgrade your system and Nextcloud to latest version              |"
 echo "| - Set secure permissions to Nextcloud                              |"
-echo "| - Set new passwords to Ubuntu Server and Nextcloud                 |"
+echo "| - Set new passwords to Linux and Nextcloud                         |"
 echo "| - Set new keyboard layout                                          |"
 echo "| - Change timezone                                                  |"
 echo "| - Set static IP to the system (you have to set the same IP in      |"
 echo "|   your router) https://www.techandme.se/open-port-80-443/          |"
+echo "|   We don't set static IP if you run this on a *remote* VPS.        |"
 echo "|                                                                    |"
 echo "|   The script will take about 10 minutes to finish,                 |"
 echo "|   depending on your internet connection.                           |"
@@ -452,7 +456,7 @@ clear
 echo -e "\e[0m"
 
 # Set keyboard layout
-echo "Current keyboard layout is English"
+echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 echo "You must change keyboard layout to your language"
 echo -e "\e[32m"
 read -p "Press any key to change keyboard layout... " -n1 -s
@@ -461,59 +465,88 @@ dpkg-reconfigure keyboard-configuration
 echo
 clear
 
-# Change IP
-echo -e "\e[0m"
-echo "The script will now configure your IP to be static."
-echo -e "\e[36m"
-echo -e "\e[1m"
-echo "Your internal IP is: $ADDRESS"
-echo -e "\e[0m"
-echo -e "Write this down, you will need it to set static IP"
-echo -e "in your router later. It's included in this guide:"
-echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-echo -e
-echo -e "Please note that we will backup the interfaces file to:"
-echo -e "/etc/network/interfaces.backup"
-echo -e "If you run this script on a remote VPS the IP is probably wrong. "
-echo -e "But no worries - we will restore the interfaces.backup in the end of this script."
-echo -e "\e[32m"
-read -p "Press any key to set static IP..." -n1 -s
-cp /etc/network/interfaces /etc/network/interfaces.backup
-clear
-echo -e "\e[0m"
-ifdown $IFACE
-sleep 1
-ifup $IFACE
-sleep 1
-bash $SCRIPTS/ip.sh
-ifdown $IFACE
-sleep 1
-ifup $IFACE
-sleep 1
-echo
-echo "Testing if network is OK..."
-sleep 1
-echo
-bash $SCRIPTS/test_connection.sh
-sleep 1
-echo
-echo -e "\e[0mIf the output is \e[32mConnected! \o/\e[0m everything is working."
-echo -e "\e[0mIf the output is \e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
-echo -e "\e[32m"
-read -p "Press any key to open /etc/network/interfaces..." -n1 -s
-echo -e "\e[0m"
-nano /etc/network/interfaces
-service networking restart
-clear
-echo "Testing if network is OK..."
-ifdown $IFACE
-sleep 1
-ifup $IFACE
-sleep 1
-echo
-bash $SCRIPTS/test_connection.sh
-sleep 1
-clear
+# Set hostname and ServerName
+echo "Setting hostname..."
+FQN=$(host -TtA $(hostname -s)|grep "has address"|awk '{print $1}') ; \
+if [[ "$FQN" == "" ]]
+then
+    FQN=$(hostname -s)
+fi
+sudo sh -c "echo 'ServerName $FQN' >> /etc/apache2/apache2.conf"
+sudo hostnamectl set-hostname $FQN
+service apache2 restart
+cat << ETCHOSTS > "/etc/hosts"
+127.0.1.1 $FQN.localdomain $FQN
+127.0.0.1 localhost
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ETCHOSTS
+
+# VPS?
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+
+if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
+then
+    echo
+    # Change IP
+    echo -e "\e[0m"
+    echo "OK, we assume you run this locally and we will now configure your IP to be static"
+    echo -e "\e[36m"
+    echo -e "\e[1m"
+    echo "Your internal IP is: $ADDRESS"
+    echo -e "\e[0m"
+    echo -e "Write this down, you will need it to set static IP"
+    echo -e "in your router later. It's included in this guide:"
+    echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
+    echo -e "\e[32m"
+    read -p "Press any key to set static IP..." -n1 -s
+    clear
+    echo -e "\e[0m"
+    ifdown $IFACE
+    sleep 1
+    ifup $IFACE
+    sleep 1
+    bash $SCRIPTS/ip.sh
+    ifdown $IFACE
+    sleep 1
+    ifup $IFACE
+    sleep 1
+    echo
+    echo "Testing if network is OK..."
+    sleep 1
+    echo
+    bash $SCRIPTS/test_connection.sh
+    sleep 1
+    echo
+    echo -e "\e[0mIf the output is \e[32mConnected! \o/\e[0m everything is working."
+    echo -e "\e[0mIf the output is \e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
+    echo -e "\e[32m"
+    read -p "Press any key to open /etc/network/interfaces..." -n1 -s
+    echo -e "\e[0m"
+    nano /etc/network/interfaces
+    service networking restart
+    clear
+    echo "Testing if network is OK..."
+    ifdown $IFACE
+    sleep 1
+    ifup $IFACE
+    sleep 1
+    echo
+    bash $SCRIPTS/test_connection.sh
+    sleep 1
+else
+    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
+    sleep 5
+fi
 
 # Pretty URLs
 echo "Setting RewriteBase to "/" in config.php..."
@@ -708,9 +741,12 @@ else
         sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
 fi
 
+<<<<<<< HEAD
 # Install latest updates
 bash $SCRIPTS/nextberry-upgrade.sh
 
+=======
+>>>>>>> 8d27a672103ffd86a20c42e8f75eb4f6bb095cea
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
@@ -729,7 +765,8 @@ rm $SCRIPTS/instruction.sh
 rm $NCDATA/nextcloud.log
 rm $SCRIPTS/nextcloud-startup-script.sh
 sed -i "s|instruction.sh|nextcloud.sh|g" /home/$UNIXUSER/.bash_profile
-cat /dev/null > ~/.bash_history
+cat /dev/null > /root/.bash_history
+cat /dev/null > /home/$UNIXUSER/.bash_history
 cat /dev/null > /var/spool/mail/root
 cat /dev/null > /var/spool/mail/$UNIXUSER
 cat /dev/null > /var/log/apache2/access.log
@@ -774,10 +811,16 @@ echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
 echo
+<<<<<<< HEAD
 echo -e "\e[0m"
 
 #### Needs testing
 # VPS?
+=======
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+>>>>>>> 8d27a672103ffd86a20c42e8f75eb4f6bb095cea
 clear
 
 cat << LETSENC
@@ -817,7 +860,7 @@ rm $SCRIPTS/update-config.php
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
-echo "System will now reboot..."
+echo "Installation is now done. System will now reboot..."
 reboot
 
 exit 0

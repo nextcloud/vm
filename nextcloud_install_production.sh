@@ -68,6 +68,19 @@ then
     exit 1
 fi
 
+# Show current user
+echo
+echo "Current user with sudo permissions is: $UNIXUSER".
+echo "This script will set up everything with that user."
+echo "If the field after ':' is blank you are probably running as a pure root user."
+echo "It's possible to install with root, but there will be minor errors."
+echo
+echo "Please create a user with sudo permissions if you want an optimal installation."
+echo "This script continues in 30 seconds, press CTRL+C to abort..."
+sleep 30
+echo
+
+
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
@@ -132,24 +145,6 @@ fi
 if [ $(dpkg-query -W -f='${Status}' nextcloud 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
     echo "Nextcloud is installed, it must be a clean server."
-    exit 1
-fi
-
-# Create $NCUSER if not existing
-if id "$NCUSER" >/dev/null 2>&1
-then
-    echo "$NCUSER already exists!"
-else
-    adduser --disabled-password --gecos "" $NCUSER
-    echo -e "$NCUSER:$NCPASS" | chpasswd
-    usermod -aG sudo $NCUSER
-fi
-
-if [ -d /home/$NCUSER ]
-then
-    echo "$NCUSER OK!"
-else
-    echo "Something went wrong when creating the user... Script will exit."
     exit 1
 fi
 
@@ -249,6 +244,11 @@ apt install language-pack-en-base -y
 sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Set keyboard layout
+echo "Current keyboard layout is: $(localectl status | grep "Layout" | awk '{print $3}')"
+echo "You must change keyboard layout to your language"
+echo -e "\e[32m"
+read -p "Press any key to change keyboard layout... " -n1 -s
+echo -e "\e[0m"
 dpkg-reconfigure keyboard-configuration
 clear
 
@@ -318,11 +318,6 @@ a2enmod rewrite \
         mime \
         ssl \
         setenvif
-
-# Set hostname and ServerName
-sudo sh -c "echo 'ServerName nextcloud' >> /etc/apache2/apache2.conf"
-sudo hostnamectl set-hostname nextcloud
-service apache2 restart
 
 # Install PHP 7.0
 apt update
@@ -607,7 +602,7 @@ else
     wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
 fi
 
-# Welcome message after login (change in /home/$UNIXUSER/.profile
+# Welcome message after login (change in $HOME/.profile
 if [ -f $SCRIPTS/instruction.sh ]
 then
     echo "instruction.sh exists"
@@ -690,9 +685,9 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cu
 echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
-if [ -f /home/$UNIXUSER/*.sh ]
+if [ -f $HOME/*.sh ]
 then
-    rm /home/$UNIXUSER/*.sh
+    rm $HOME/*.sh
 fi
 
 if [ -f /root/*.sh ]

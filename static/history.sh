@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cat /dev/null > ~/.bash_history
+cat /dev/null > $HOME/.bash_history
 
 exit 0
