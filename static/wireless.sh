@@ -1,5 +1,7 @@
 #!/bin/bash
 WIFACE=$(lshw -c network | grep "wl" | awk '{print $3; exit}')
+STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
+SCRIPTS=/var/scripts
 clear
 
 # Check if root
@@ -110,5 +112,43 @@ ifdown "$WIFACE"
 rm /etc/network/interfaces
 mv /etc/network/interfaces.bak /etc/network/interfaces
 ifup eth0
+
+# Sets trusted domain in when the script is finished
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    rm $SCRIPTS/trusted.sh
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+else
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    sleep 0.1
+else
+    echo "trusted failed"
+    echo "Script failed to download. Please run: 'sudo wireless' again."
+    exit 1
+fi
+
+bash $SCRIPTS/trusted.sh
 REVERT
 chmod +x /usr/sbin/revert-wifi
+
+# Sets trusted domain in when the script is finished
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    rm $SCRIPTS/trusted.sh
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+else
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    sleep 0.1
+else
+    echo "trusted failed"
+    echo "Script failed to download. Please run: 'sudo wireless' again."
+    exit 1
+fi
+
+bash $SCRIPTS/trusted.sh

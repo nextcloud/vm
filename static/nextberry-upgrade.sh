@@ -47,19 +47,10 @@ else
                   landscape-common \
                   ncdu \
                   wireless-tools
-                  #wicd-curses
 
   # NCDU
   echo "sudo ncdu /" > /usr/sbin/fs-size
   chmod +x /usr/sbin/fs-size
-
-  # Wicd-curses
-  #echo "whiptail --msgbox "To see how to use this tool see: http://blog.ubidots.com/setup-wifi-on-raspberry-pi-using-wicd" 20 60" > /usr/sbin/wireless
-  #echo "sudo wicd-curses" >> /usr/sbin/wireless
-  #echo "whiptail --msgbox "If you are connected to a wireless network please set a static IP in your router.\n\n You can find your IP.\n\n https://www.techandme.se/open-port-80-443/" 20 60" >> /usr/sbin/wireless
-  #echo "clear" >> /usr/sbin/wireless
-  #echo "bash $SCRIPTS/nextcloud.sh" >> /usr/sbin/wireless
-  #chmod +x /usr/sbin/wireless
 
   # Wpa_supplicant
   if [ -f $SCRIPTS/wireless.sh ]
@@ -104,6 +95,7 @@ else
 
   # Unattended-upgrades
   # Install packages
+  apt update
   DEBIAN_FRONTEND=noninteractive apt install -y unattended-upgrades \
                                                 update-notifier-common
 
