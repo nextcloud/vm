@@ -17,7 +17,7 @@ PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
-UNIXUSER=$LOGNAME
+UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
 

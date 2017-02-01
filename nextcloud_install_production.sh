@@ -39,7 +39,7 @@ IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 # Linux user, and Nextcloud user
-UNIXUSER=$LOGNAME
+UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
 
@@ -60,6 +60,19 @@ then
     echo
     exit 1
 fi
+
+# Show current user
+echo
+echo "Current user with sudo permissions is: $UNIXUSER".
+echo "This script will set everything up with that user."
+echo "If the field after ":" is blank you are probably running as a pure root user."
+echo "It's possible to install with root, but there will be minor errors."
+
+echo "Please create a user with sudo permissions if you want an optimal installation."
+echo "This script continues in 20 seconds, press CTRL+C to abort..."
+sleep 20
+echo
+
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -127,13 +140,6 @@ then
     echo "Nextcloud is installed, it must be a clean server."
     exit 1
 fi
-
-# Show current user
-echo
-echo "Current user with sudo permissions is: $UNIXUSER".
-echo "This script will set everything up with that user, FYI."
-sleep 3
-echo
 
 # Create $SCRIPTS dir
 if [ -d $SCRIPTS ]
