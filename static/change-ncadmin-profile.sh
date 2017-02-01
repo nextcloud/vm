@@ -1,9 +1,9 @@
 #!/bin/bash
 
 UNIXUSER=$LOGNAME
-UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
+UNIXUSER_PROFILE="~/.bash_profile"
 
-rm /home/$UNIXUSER/.profile
+rm ~/.profile
 
 cat <<-UNIXUSER-PROFILE > "$UNIXUSER_PROFILE"
 # ~/.profile: executed by the command interpreter for login shells.

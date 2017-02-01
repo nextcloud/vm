@@ -383,6 +383,7 @@ echo "| - Generate new SSH keys for the server                             |"
 echo "| - Generate new MySQL password                                      |"
 echo "| - Install phpMyadmin and make it secure                            |"
 echo "| - Install selected apps and automatically configure them           |"
+echo "| - Detect and set hostname                                          |"
 echo "| - Upgrade your system and Nextcloud to latest version              |"
 echo "| - Set secure permissions to Nextcloud                              |"
 echo "| - Set new passwords to Ubuntu Server and Nextcloud                 |"
@@ -402,7 +403,7 @@ clear
 echo -e "\e[0m"
 
 # Set keyboard layout
-echo "Current keyboard layout is Swedish"
+echo "Current keyboard layout is $(setxkbmap -print | grep xkb_symbols | awk '{print $4}' | awk -F"+" '{print $2}')"
 echo "You must change keyboard layout to your language"
 echo -e "\e[32m"
 read -p "Press any key to change keyboard layout... " -n1 -s
@@ -431,6 +432,16 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ETCHOSTS
 clear
+
+
+# VPS?
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
 
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
@@ -487,7 +498,6 @@ then
 else
     sleep 1
 fi
-clear
 
 # Pretty URLs
 echo "Setting RewriteBase to "/" in config.php..."
@@ -682,7 +692,6 @@ else
         sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
 fi
 
-
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
@@ -700,14 +709,14 @@ rm $SCRIPTS/test_connection.sh
 rm $SCRIPTS/instruction.sh
 rm $NCDATA/nextcloud.log
 rm $SCRIPTS/nextcloud-startup-script.sh
-sed -i "s|instruction.sh|nextcloud.sh|g" /home/$UNIXUSER/.bash_profile
+sed -i "s|instruction.sh|nextcloud.sh|g" ~/.bash_profile
 cat /dev/null > ~/.bash_history
 cat /dev/null > /var/spool/mail/root
 cat /dev/null > /var/spool/mail/$UNIXUSER
 cat /dev/null > /var/log/apache2/access.log
 cat /dev/null > /var/log/apache2/error.log
 cat /dev/null > /var/log/cronjobs_success.log
-sed -i "s|sudo -i||g" /home/$UNIXUSER/.bash_profile
+sed -i "s|sudo -i||g" ~/.bash_profile
 cat /dev/null > /etc/rc.local
 cat << RCLOCAL > "/etc/rc.local"
 #!/bin/sh -e
@@ -747,15 +756,7 @@ echo -e "|    \e[91m#################### Tech and Me - 2017 ####################
 echo    "+--------------------------------------------------------------------+"
 echo
 echo -e "\e[0m"
-
-# VPS?
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
+clear
 
 cat << LETSENC
 +-----------------------------------------------+

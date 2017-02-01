@@ -172,7 +172,7 @@ then
 fi
 
 # Change ServerName in apache.conf
-sed -i "s|ServerName nextcloud|ServerName $domain|g" /etc/apache2/apache2.conf
+sed -i "s|ServerName $(hostname -s)|ServerName $domain|g" /etc/apache2/apache2.conf
 sudo hostnamectl set-hostname $domain
 service apache2 restart
 
@@ -362,8 +362,8 @@ ENDMSG
     rm $ssl_conf
     rm -R /root/.local/share/letsencrypt
 # Change ServerName in apache.conf and hostname
-    sed -i "s|ServerName $domain|ServerName nextcloud|g" /etc/apache2/apache2.conf
-    sudo hostnamectl set-hostname nextcloud
+    sed -i "s|ServerName $domain|ServerName $(hostname -s)|g" /etc/apache2/apache2.conf
+    sudo hostnamectl set-hostname $(hostname -s)
     service apache2 restart
 fi
 clear
