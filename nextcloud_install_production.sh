@@ -184,7 +184,7 @@ ufw allow 443/tcp
 
 # Set NextBerry version for the updater tool
 echo "$NEXTBERRYVERSION" > $SCRIPTS/.version-nc
-echo "$NEXTBERRYVERSIONCLEAN" > $SCRIPTS/.version-nc
+echo "$NEXTBERRYVERSIONCLEAN" >> $SCRIPTS/.version-nc
 
 # Change DNS
 if ! [ -x "$(command -v resolvconf)" ]

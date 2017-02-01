@@ -713,12 +713,9 @@ else
         sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
 fi
 
-<<<<<<< HEAD
 # Install latest updates
 bash $SCRIPTS/nextberry-upgrade.sh
 
-=======
->>>>>>> 8d27a672103ffd86a20c42e8f75eb4f6bb095cea
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
@@ -783,16 +780,7 @@ echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
 echo
-<<<<<<< HEAD
 echo -e "\e[0m"
-
-#### Needs testing
-# VPS?
-=======
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
->>>>>>> 8d27a672103ffd86a20c42e8f75eb4f6bb095cea
 clear
 
 cat << LETSENC

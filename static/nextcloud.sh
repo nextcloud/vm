@@ -4,38 +4,43 @@ CURRENTVERSION=$(sed '1q;d' /var/scripts/.version-nc)
 CLEANVERSION=$(sed '2q;d' /var/scripts/.version-nc)
 GITHUBVERSION=$(curl -s $REPO/version)
 SCRIPTS="/var/scripts"
+FIGLET="/usr/bin/figlet"
 TEMP=$(vcgencmd measure_temp)
 CPUFREQ=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
 COREVOLT=$(vcgencmd measure_volts core)
 MEMARM=$(vcgencmd get_mem arm)
 MEMGPU=$(vcgencmd get_mem gpu)
+LANDSCAPE=$(/usr/bin/landscape-sysinfo  --exclude-sysinfo-plugins=LandscapeLink)
 WANIP4=$(curl -s ipinfo.io/ip -m 5)
 WANIP6=$(curl -s 6.ifcfg.me -m 5)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 RELEASE=$(lsb_release -s -d)
+BIN_UPTIME=$(/usr/bin/uptime --pretty)
+COLOR_WHITE='\033[1;37m'
+COLOR_DEFAULT='\033[0m'
+OS=$(printf "Operating system: %s (%s %s %s)\n" "$RELEASE" "$(uname -o)" "$(uname -r)" "$(uname -m)")
 clear
-figlet -f small NextBerry $CLEANVERSION
-echo "https://www.techandme.se"
-echo "==============================================================================="
-echo "RPI: $TEMP - CPU freq: $CPUFREQ - $COREVOLT - MEM: $MEMGPU $MEMARM"
-echo "==============================================================================="
-printf "Operating system: %s (%s %s %s)\n" "$RELEASE" "$(uname -o)" "$(uname -r)" "$(uname -m)"
-echo "==============================================================================="
-/usr/bin/landscape-sysinfo  --exclude-sysinfo-plugins=LandscapeLink
-echo "==============================================================================="
-echo "WAN IPv4: $WANIP4 - WAN IPv6: $WANIP6"
-echo "LAN IPv4: $ADDRESS"
-echo "==============================================================================="
-echo "To view your firewall rules, type:            sudo firewall-rules"
-echo "To connect to a wifi network type:            sudo wireless"
-echo "To revert the wifi settings and use a wire:   sudo revert-wifi"
-echo "To monitor your system, type:                 sudo htop"
-echo "                                              sudo fs-size"
-echo "==============================================================================="
+echo -e "$COLOR_WHITE $($FIGLET -ckw 80 -f small NextBerry $CLEANVERSION) $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE https://www.techandme.se                Uptime: $BIN_UPTIME $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE RPI: $TEMP - CPU freq: $CPUFREQ - $COREVOLT - MEM: $MEMGPU $MEMARM $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE $OS $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE $LANDSCAPE $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE WAN IPv4: $WANIP4 - WAN IPv6: $WANIP6 $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE LAN IPv4: $ADDRESS $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE To view your firewall rules, type:            sudo firewall-rules $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE To connect to a wifi network type:            sudo wireless $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE To revert the wifi settings and use a wire:   sudo revert-wifi $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE To monitor your system, type:                 sudo htop $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE                                               sudo fs-size $COLOR_DEFAULT"
+echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
 if [ "$GITHUBVERSION" -gt "$CURRENTVERSION" ]; then
-          echo
-          echo "NextBerry update available, run: sudo bash /home/ncadmin/nextberry-upgrade.sh"
-          echo "==============================================================================="
+          echo -e "$COLOR_LIGHT_GREEN NextBerry update available, run: sudo bash /home/ncadmin/nextberry-upgrade.sh $COLOR_DEFAULT"
+          echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
 
           if              [ -f /home/ncadmin/nextberry-upgrade.sh ];	then
           		rm /home/ncadmin/nextberry-upgrade.sh
@@ -44,8 +49,8 @@ if [ "$GITHUBVERSION" -gt "$CURRENTVERSION" ]; then
               chmod +x /home/ncadmin/nextberry-upgrade.sh
           if [[ $? > 0 ]]
           then
-                  echo "Download of update script failed. Please file a bug report on https://www.github.com/ezraholm50/NextBerry/"
-                  echo "==============================================================================="
+                  echo -e "$COLOR_WHITE Download of update script failed. Please file a bug report on https://www.github.com/ezraholm50/NextBerry/ $COLOR_DEFAULT"
+                  echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
           fi
 fi
 exit 0

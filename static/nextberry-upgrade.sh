@@ -73,6 +73,10 @@ else
   # Remove first MOTD
   rm /etc/update-motd.d/50-landscape-sysinfo
 
+  # Also stop it from running at everylogin, only called by nextcloud.sh
+  whiptail --msgbox "In the next screen please select:  \n\n        Do not display sysinfo on login" 10 60
+  dpkg-reconfigure landscape-common
+
   # Set what version is installed
   echo "11 applied" >> "$VERSIONFILE"
   # Change current version var
@@ -127,8 +131,7 @@ fi
   sed -i 's|V1.1|V1.2|g' "$VERSIONFILE"
 
   # Done - Move this line to the new release on every new version.
-  whiptail --msgbox "Successfully installed V1.2, we will now reboot to finish..." 10 65
-  reboot
+  whiptail --msgbox "Successfully installed V1.2, please manually reboot..." 10 65
 fi
 
 exit
