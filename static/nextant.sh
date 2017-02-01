@@ -54,7 +54,7 @@ tar -zxf $SOLR_RELEASE
 ./solr-$SOLR_VERSION/bin/install_solr_service.sh $SOLR_RELEASE
 if [ $? -eq 0 ]
 then
-    rm -rf $SOLR_HOME
+    rm -rf $SOLR_HOME/$SOLR_RELEASE
     wget -q https://raw.githubusercontent.com/apache/lucene-solr/master/solr/bin/install_solr_service.sh -P $SCRIPTS/
 else
     echo "Solr failed to install, something is wrong with the Solr installation"

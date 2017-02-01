@@ -79,6 +79,7 @@ fi
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
+echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
 
 # Get passman script
@@ -403,7 +404,7 @@ clear
 echo -e "\e[0m"
 
 # Set keyboard layout
-echo "Current keyboard layout is $(setxkbmap -print | grep xkb_symbols | awk '{print $4}' | awk -F"+" '{print $2}')"
+echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 echo "You must change keyboard layout to your language"
 echo -e "\e[32m"
 read -p "Press any key to change keyboard layout... " -n1 -s
@@ -431,8 +432,6 @@ cat << ETCHOSTS > "/etc/hosts"
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ETCHOSTS
-clear
-
 
 # VPS?
 function ask_yes_or_no() {
@@ -446,12 +445,9 @@ function ask_yes_or_no() {
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
     echo
-    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
-    echo
-    sleep 5
     # Change IP
     echo -e "\e[0m"
-    echo "The script will now configure your IP to be static."
+    echo "OK, we assume you run this locally and we will now configure your IP to be static"
     echo -e "\e[36m"
     echo -e "\e[1m"
     echo "Your internal IP is: $ADDRESS"
@@ -496,7 +492,8 @@ then
     bash $SCRIPTS/test_connection.sh
     sleep 1
 else
-    sleep 1
+    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
+    sleep 5
 fi
 
 # Pretty URLs
@@ -717,7 +714,7 @@ cat /dev/null > /var/spool/mail/$UNIXUSER
 cat /dev/null > /var/log/apache2/access.log
 cat /dev/null > /var/log/apache2/error.log
 cat /dev/null > /var/log/cronjobs_success.log
-sed -i "s|sudo -i||g" /root/.bash_profile
+sed -i "s|sudo -i||g" /home/$UNIXUSER/.bash_profile
 cat /dev/null > /etc/rc.local
 cat << RCLOCAL > "/etc/rc.local"
 #!/bin/sh -e
@@ -756,7 +753,9 @@ echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
 echo
-echo -e "\e[0m"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
 clear
 
 cat << LETSENC
@@ -796,7 +795,7 @@ rm $SCRIPTS/update-config.php
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
-echo "System will now reboot..."
+echo "Installation is now done. System will now reboot..."
 reboot
 
 exit 0
