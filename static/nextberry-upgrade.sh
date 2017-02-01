@@ -102,21 +102,41 @@ else
   dpkg --configure --pending
   bash /var/scripts/update.sh
 
-  # Install packages
-  apt install -y  unattended-upgrades \
-                  update-notifier-common \
-
-
-  # Actual version additions
   # Unattended-upgrades
+  # Install packages
+  DEBIAN_FRONTEND=noninteractive apt install -y unattended-upgrades \
+                                                update-notifier-common
+
+  # Set apt config
   echo "APT::Periodic::Update-Package-Lists "1";" > /etc/apt/apt.conf.d/20auto-upgrades
-  echo "APT::Periodic::Unattended-Upgrade "1";"" >> /etc/apt/apt.conf.d/20auto-upgrades
+  echo "APT::Periodic::Unattended-Upgrade "1";" >> /etc/apt/apt.conf.d/20auto-upgrades
+  echo "APT::Periodic::Enable "1";" > /etc/apt/apt.conf.d/10periodic
+  echo "APT::Periodic::AutocleanInterval "1";" >> /etc/apt/apt.conf.d/10periodic
+
+if [ -f /etc/apt/apt.conf.d/50unattended-upgrades ]
+then
+  rm /etc/apt/apt.conf.d/50unattended-upgrades
+  wget -q $STATIC/50unattended-upgrades -P /etc/apt/apt.conf.d/
+else
+  wget -q $STATIC/50unattended-upgrades -P /etc/apt/apt.conf.d/
+fi
+if [ -f /etc/apt/apt.conf.d/50unattended-upgrades ]
+then
+  chmod 644 /etc/apt/apt.conf.d/50unattended-upgrades
+else
+  echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextberry-upgrade.sh' again."
+  exit 1
+fi
 
   # Set what version is installed
   echo "12 applied" >> "$VERSIONFILE"
   # Change current version var
   sed -i 's|011|012|g' "$VERSIONFILE"
   sed -i 's|V1.1|V1.2|g' "$VERSIONFILE"
+
+  # Done - Move this line to the new release on every new version.
+  whiptail --msgbox "Successfully installed V1.2, we will now reboot to finish..." 10 65
+  reboot
 fi
 
 exit
