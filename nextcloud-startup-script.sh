@@ -382,6 +382,7 @@ echo "|                                                                    |"
 echo "| - Generate new SSH keys for the server                             |"
 echo "| - Generate new MySQL password                                      |"
 echo "| - Install phpMyadmin and make it secure                            |"
+echo "| - Configure UTF8mb4 (4-byte support for MySQL)                     |"
 echo "| - Install selected apps and automatically configure them           |"
 echo "| - Detect and set hostname                                          |"
 echo "| - Upgrade your system and Nextcloud to latest version              |"
@@ -403,7 +404,7 @@ clear
 echo -e "\e[0m"
 
 # Set keyboard layout
-echo "Current keyboard layout is $(setxkbmap -print | grep xkb_symbols | awk '{print $4}' | awk -F"+" '{print $2}')"
+echo "Current keyboard layout is: $(setxkbmap -print | awk -F"+" '/xkb_symbols/ {print $2}')"
 echo "You must change keyboard layout to your language"
 echo -e "\e[32m"
 read -p "Press any key to change keyboard layout... " -n1 -s
@@ -431,9 +432,8 @@ cat << ETCHOSTS > "/etc/hosts"
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ETCHOSTS
-clear
-
-
+echo
+echo
 # VPS?
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
@@ -445,10 +445,6 @@ function ask_yes_or_no() {
 
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
-    echo
-    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
-    echo
-    sleep 5
     # Change IP
     echo -e "\e[0m"
     echo "The script will now configure your IP to be static."
@@ -496,6 +492,7 @@ then
     bash $SCRIPTS/test_connection.sh
     sleep 1
 else
+    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
     sleep 1
 fi
 
@@ -709,14 +706,14 @@ rm $SCRIPTS/test_connection.sh
 rm $SCRIPTS/instruction.sh
 rm $NCDATA/nextcloud.log
 rm $SCRIPTS/nextcloud-startup-script.sh
-sed -i "s|instruction.sh|nextcloud.sh|g" $HOME/.bash_profile
+sed -i "s|instruction.sh|nextcloud.sh|g" /home/$UNIXUSER/.bash_profile
 cat /dev/null > $HOME/.bash_history
 cat /dev/null > /var/spool/mail/root
 cat /dev/null > /var/spool/mail/$UNIXUSER
 cat /dev/null > /var/log/apache2/access.log
 cat /dev/null > /var/log/apache2/error.log
 cat /dev/null > /var/log/cronjobs_success.log
-sed -i "s|sudo -i||g" $HOME/.bash_profile
+sed -i "s|sudo -i||g" /root/.bash_profile
 cat /dev/null > /etc/rc.local
 cat << RCLOCAL > "/etc/rc.local"
 #!/bin/sh -e
@@ -755,6 +752,8 @@ echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
 echo
+echo -e "\e[32m"
+read -p "Press any key to continue... " -n1 -s
 echo -e "\e[0m"
 clear
 

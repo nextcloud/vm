@@ -67,7 +67,7 @@ echo "Current user with sudo permissions is: $UNIXUSER".
 echo "This script will set everything up with that user."
 echo "If the field after ":" is blank you are probably running as a pure root user."
 echo "It's possible to install with root, but there will be minor errors."
-
+echo
 echo "Please create a user with sudo permissions if you want an optimal installation."
 echo "This script continues in 20 seconds, press CTRL+C to abort..."
 sleep 20
@@ -201,7 +201,7 @@ sudo mv sources.list /etc/apt/
 clear
 
 # Set keyboard layout
-echo "Current keyboard layout is Swedish"
+echo "Current keyboard layout is: $(setxkbmap -print | awk -F"+" '/xkb_symbols/ {print $2}')"
 echo "You must change keyboard layout to your language"
 echo -e "\e[32m"
 read -p "Press any key to change keyboard layout... " -n1 -s
