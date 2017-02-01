@@ -588,7 +588,7 @@ else
     wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
 fi
 
-# Welcome message after login (change in /home/$UNIXUSER/.profile
+# Welcome message after login (change in ~/.profile
 if [ -f $SCRIPTS/instruction.sh ]
 then
     echo "instruction.sh exists"
@@ -667,9 +667,9 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cu
 echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
-if [ -f /home/$UNIXUSER/*.sh ]
+if [ -f ~/*.sh ]
 then
-    rm /home/$UNIXUSER/*.sh
+    rm ~/*.sh
 fi
 
 if [ -f /root/*.sh ]
