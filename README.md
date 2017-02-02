@@ -3,7 +3,7 @@
 [![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
 
 # Login screen
-![alt tag](https://cloud.waaromzomoeilijk.nl/s/UPOhJr3kWANPnUb)
+![alt tag](https://raw.githubusercontent.com/ezraholm50/NextBerry/master/nextberry-login-screen.jpeg)
 
 ## What is NextBerry?
 [More info](https://www.techandme.se/nextberry-vm/)
