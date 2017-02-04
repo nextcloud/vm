@@ -65,7 +65,7 @@ fi
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
-curl -s https://$NCDOMAIN/status.php | grep -q 'installed":true'
+curl -s https://$(echo $NCDOMAIN | tr -d '\\')/status.php | grep -q 'installed":true'
 if [ $? -eq 0 ]
 then
     sleep 1
