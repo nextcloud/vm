@@ -96,7 +96,7 @@ fi
 # Check if $SUBDOMAIN exists and is reachable
 echo
 echo "Checking if $SUBDOMAIN exists and is reachable..."
-curl -s -m 20 $SUBDOMAIN
+curl -s -m 20 $SUBDOMAIN > /dev/null
 if [[ $? > 0 ]]
 then
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
@@ -128,7 +128,7 @@ fi
 
 # Check of docker runs and kill it
 DOCKERPS=$(docker ps -a -q)
-ISRUNNING=$(docker inspect -f {{.State.Running}} $DOCKERPS)
+ISRUNNING=$(docker inspect -f {{.State.Running}} $DOCKERPS > /dev/null)
 if [ $ISRUNNING = "true" ]
 then
     echo "Removing old Docker instanses..."
