@@ -243,28 +243,26 @@ cd /etc
 git clone https://github.com/certbot/certbot.git
 cd /etc/certbot
 ./letsencrypt-auto certonly --agree-tos --standalone -d $SUBDOMAIN
-# Check if $certfiles exists
-ACTIVESSL=$CERTFILES/$SUBDOMAIN
-if [ -d "$ACTIVE_SSL" ]
+if [[ "$?" == "0" ]]
 then
-    echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
-else
     echo -e "\e[96m"
     echo -e "Certs are generated!"
     echo -e "\e[0m"
     a2ensite $SUBDOMAIN.conf
     service apache2 restart
-    sleep 1
 # Install Collabora App
     wget -q $COLLVER_REPO/$COLLVER/$COLLVER_FILE -P $NCPATH/apps
     tar -zxf $NCPATH/apps/$COLLVER_FILE -C $NCPATH/apps
     cd $NCPATH/apps
     rm $COLLVER_FILE
-    fi
+else
+    echo -e "\e[96m"
+    echo -e "It seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    service apache2 restart
+    echo -e "\e[0m"
+fi
 
 # Enable RichDocuments (Collabora App)
 if [ -d $NCPATH/apps/richdocuments ]
