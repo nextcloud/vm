@@ -72,6 +72,9 @@ then
 else
     echo "It seems like Nextcloud is not installed or that you don't use https on your domain."
     echo "Please install Nextcloud or activate SSL on your installation to be able to run this script"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
     exit 1
 fi
 
