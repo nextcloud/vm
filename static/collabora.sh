@@ -23,6 +23,12 @@ LETSENCRYPTPATH=/etc/letsencrypt
 CERTFILES=$LETSENCRYPTPATH/live
 # WANIP
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
+# App
+COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
+COLLVER_FILE=richdocuments.tar.gz
+COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
+# Folders
+NCPATH=/var/www/nextcloud
 
 # Whiptail auto size
 calc_wt_size() {
@@ -39,7 +45,7 @@ calc_wt_size() {
 }
 
 # Notification
-whiptail --msgbox "Please before you start make sure port 443 is directly forwarded to this machine or open!" "$WT_HEIGHT" "$WT_WIDTH"
+whiptail --msgbox "Please before you start make sure port 443 is directly forwarded to this machine or open it!" "$WT_HEIGHT" "$WT_WIDTH"
 
 # Get the latest packages
 apt update -q2
@@ -58,7 +64,7 @@ then
   echo -e "\e[32mPort 443 is open!\e[0m"
   apt remove --purge nmap -y
 else
-  whiptail --msgbox "Port 443 is not open..." "$WT_HEIGHT" "$WT_WIDTH"
+  whiptail --msgbox "Port 443 is not open. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
   apt remove --purge nmap -y
   exit 1
 fi
@@ -70,17 +76,25 @@ if [ $? -eq 0 ]
 then
     sleep 1
 else
-    echo "It seems like Nextcloud is not installed or that you don't use https on your domain."
-    echo "Please install Nextcloud or activate SSL on your installation to be able to run this script"
+    echo
+    echo "It seems like Nextcloud is not installed or that you don't use https on:"
+    echo "$(echo $NCDOMAIN | tr -d '\\')."
+    echo "Please install Nextcloud and make sure your domain is reachable, or activate SSL"
+    echo "on your domain to be able to run this script."
+    echo
+    echo "If you use the Nextcloud VM then just continue with the setup script and run the"
+    echo "Let's Encrypt script to get SSL and activate your Nextcloud domain."
+    echo "Then run these commands from your terminal:"
+    echo "sudo wget https://raw.githubusercontent.com/nextcloud/vm/master/static/collabora.sh"
+    echo "sudo bash collabora.sh"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
     exit 1
 fi
 
-# Update & upgrade
-apt update
-apt upgrade -y
+# Update
+apt update -q2
 
 # Check if docker is installed
 if [ $(dpkg-query -W -f='${Status}' docker.io 2>/dev/null | grep -c "ok installed") -eq 1 ]
@@ -98,6 +112,23 @@ then
     sleep 1
 else
     apt install git -y
+fi
+
+# Check of docker runs and kill it
+DOCKERPS=$(docker ps -a -q)
+ISRUNNING=$(docker inspect -f {{.State.Running}} $DOCKERPS)
+if [ $ISRUNNING = "true" ]
+then
+    echo "Removing old Docker instanses..."
+    docker stop $DOCKERPS
+    docker rm $DOCKERPS
+fi
+
+# Enable RichDocuments (Collabora App)
+if [ -d $NCPATH/apps/richdocuments ]
+then
+    sudo -u www-data php $NCPATH/occ app:disable richdocuments
+    rm $NCPATH/apps/richdocuments
 fi
 
 # Install Collabora docker
@@ -204,7 +235,7 @@ ACTIVESSL=$CERTFILES/$SUBDOMAIN
 if [ -d "$ACTIVE_SSL" ]
 then
     echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, please report this issue here https://github.com/nextcloud/vm/issues/new"
+    echo -e "It seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
@@ -214,5 +245,22 @@ else
     echo -e "\e[0m"
     a2ensite $SUBDOMAIN.conf
     service apache2 restart
-    sleep 2
+    sleep 1
+# Install Collabora App
+    wget -q $COLLVER_REPO/$COLLVER/$COLLVER_FILE -P $NCPATH/apps
+    tar -zxf $NCPATH/apps/$COLLVER_FILE -C $NCPATH/apps
+    cd $NCPATH/apps
+    rm $COLLVER_FILE
     fi
+
+# Enable RichDocuments (Collabora App)
+if [ -d $NCPATH/apps/richdocuments ]
+then
+    sudo -u www-data php $NCPATH/occ app:enable richdocuments
+    echo
+    echo "Collabora is now succesfylly installed."
+    echo "Please go to Admin Settings --> Collabora and add https://$SUBDOMAIN to the config"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+fi
