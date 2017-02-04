@@ -18,6 +18,17 @@ then
     exit 1
 fi
 
+# Install git
+    git --version 2>&1 >/dev/null
+    GIT_IS_AVAILABLE=$?
+if [ $GIT_IS_AVAILABLE -eq 0 ]
+then
+    sleep 1
+else
+    apt update -q2
+    apt install git -y -q
+fi
+
 clear
 
 cat << STARTMSG
@@ -98,17 +109,6 @@ else
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
     exit
-fi
-
-# Install git
-    git --version 2>&1 >/dev/null
-    GIT_IS_AVAILABLE=$?
-if [ $GIT_IS_AVAILABLE -eq 0 ]
-then
-    sleep 1
-else
-    apt update -q2
-    apt install git -y -q
 fi
 
 # Fetch latest version of test-new-config.sh

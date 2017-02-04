@@ -65,13 +65,16 @@ fi
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
-curl -s https://$DOMAIN/status.php | grep -q 'installed":true'
+curl -s https://$(echo $NCDOMAIN | tr -d '\\')/status.php | grep -q 'installed":true'
 if [ $? -eq 0 ]
 then
     sleep 1
 else
     echo "It seems like Nextcloud is not installed or that you don't use https on your domain."
     echo "Please install Nextcloud or activate SSL on your installation to be able to run this script"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
     exit 1
 fi
 
@@ -142,7 +145,7 @@ else
 
   # Encoded slashes need to be allowed
   AllowEncodedSlashes NoDecode
-  
+
   # Container uses a unique non-signed certificate
   SSLProxyEngine On
   SSLProxyVerify None
@@ -163,13 +166,13 @@ else
 
   # Main websocket
   ProxyPassMatch "/lool/(.*)/ws$" wss://127.0.0.1:9980/lool/$1/ws nocanon
-  
+
   # Admin Console websocket
   ProxyPass   /lool/adminws wss://127.0.0.1:9980/lool/adminws
 
   # Download as, Fullscreen presentation and Image upload operations
   ProxyPass           /lool https://127.0.0.1:9980/lool
-  ProxyPassReverse /lool https://127.0.0.1:9980/lool
+  ProxyPassReverse    /lool https://127.0.0.1:9980/lool
 </VirtualHost>
 HTTPS_CREATE
 
@@ -197,14 +200,19 @@ git clone https://github.com/certbot/certbot.git
 cd /etc/certbot
 ./letsencrypt-auto certonly --agree-tos --standalone -d $SUBDOMAIN
 # Check if $certfiles exists
-if [ -d "$HTTPS_CONF" ]
+ACTIVESSL=$CERTFILES/$SUBDOMAIN
+if [ -d "$ACTIVE_SSL" ]
 then
-    echo -e "\e[96m"
-    echo -e "Certs are generated!"
-else
     echo -e "\e[96m"
     echo -e "It seems like no certs were generated, please report this issue here https://github.com/nextcloud/vm/issues/new"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
-fi
+else
+    echo -e "\e[96m"
+    echo -e "Certs are generated!"
+    echo -e "\e[0m"
+    a2ensite $SUBDOMAIN.conf
+    service apache2 restart
+    sleep 2
+    fi
