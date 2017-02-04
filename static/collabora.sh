@@ -93,6 +93,18 @@ else
     exit 1
 fi
 
+# Check if $SUBDOMAIN exists and is reachable
+echo
+echo "Checking if $SUBDOMAIN exists and is reachable..."
+curl -s -m 20 $SUBDOMAIN
+if [[ $? > 0 ]]
+then
+   echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
+   echo "it to this server before you can run this script."
+   echo
+   exit 1
+fi
+
 # Update
 apt update -q2
 
@@ -124,7 +136,7 @@ then
     docker rm $DOCKERPS
 fi
 
-# Enable RichDocuments (Collabora App)
+# Disable RichDocuments (Collabora App) if activated
 if [ -d $NCPATH/apps/richdocuments ]
 then
     sudo -u www-data php $NCPATH/occ app:disable richdocuments
@@ -138,7 +150,7 @@ docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always -
 # Install Apache2
 if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
-    echo "Apache2 is installed..."
+    sleep 1
 else
     {
     i=1
