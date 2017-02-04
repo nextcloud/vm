@@ -45,7 +45,7 @@ calc_wt_size() {
 }
 
 # Notification
-whiptail --msgbox "Please before you start make sure port 443 is directly forwarded to this machine or open it!" "$WT_HEIGHT" "$WT_WIDTH"
+whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
 
 # Get the latest packages
 apt update -q2
@@ -128,12 +128,13 @@ fi
 
 # Check of docker runs and kill it
 DOCKERPS=$(docker ps -a -q)
-ISRUNNING=$(docker inspect -f {{.State.Running}} $DOCKERPS > /dev/null)
-if [ $ISRUNNING = "true" ]
+if [[ $DOCKERPS > 0 ]]
 then
-    echo "Removing old Docker instanses..."
+    echo "Removing old Docker instance... ($DOCKERPS)"
     docker stop $DOCKERPS
     docker rm $DOCKERPS
+else
+    echo "No Docker instanses running"
 fi
 
 # Disable RichDocuments (Collabora App) if activated
