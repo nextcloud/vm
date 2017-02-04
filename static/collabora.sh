@@ -200,11 +200,13 @@ cd /etc/certbot
 if [ -d "$HTTPS_CONF" ]
 then
     echo -e "\e[96m"
-    echo -e "Certs are generated!"
-else
-    echo -e "\e[96m"
     echo -e "It seems like no certs were generated, please report this issue here https://github.com/nextcloud/vm/issues/new"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
-fi
+else
+    echo -e "\e[96m"
+    echo -e "Certs are generated!"
+    echo -e "\e[0m"
+    sleep 3
+    fi
