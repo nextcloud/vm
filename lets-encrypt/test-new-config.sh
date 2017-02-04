@@ -84,12 +84,13 @@ if [ -f $SCRIPTS/trusted.sh ]
 then
     rm $SCRIPTS/trusted.sh
     wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
 else
     wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
 fi
-
-bash $SCRIPTS/trusted.sh
-rm $SCRIPTS/trusted.sh
-rm $SCRIPTS/update-config.php
 
 exit 0
