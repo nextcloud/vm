@@ -142,7 +142,7 @@ else
 
   # Encoded slashes need to be allowed
   AllowEncodedSlashes NoDecode
-  
+
   # Container uses a unique non-signed certificate
   SSLProxyEngine On
   SSLProxyVerify None
@@ -163,13 +163,13 @@ else
 
   # Main websocket
   ProxyPassMatch "/lool/(.*)/ws$" wss://127.0.0.1:9980/lool/$1/ws nocanon
-  
+
   # Admin Console websocket
   ProxyPass   /lool/adminws wss://127.0.0.1:9980/lool/adminws
 
   # Download as, Fullscreen presentation and Image upload operations
   ProxyPass           /lool https://127.0.0.1:9980/lool
-  ProxyPassReverse /lool https://127.0.0.1:9980/lool
+  ProxyPassReverse    /lool https://127.0.0.1:9980/lool
 </VirtualHost>
 HTTPS_CREATE
 
