@@ -140,7 +140,7 @@ fi
 if [ -d $NCPATH/apps/richdocuments ]
 then
     sudo -u www-data php $NCPATH/occ app:disable richdocuments
-    rm $NCPATH/apps/richdocuments
+    rm -r $NCPATH/apps/richdocuments
 fi
 
 # Install Collabora docker
