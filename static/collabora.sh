@@ -197,7 +197,8 @@ git clone https://github.com/certbot/certbot.git
 cd /etc/certbot
 ./letsencrypt-auto certonly --agree-tos --standalone -d $SUBDOMAIN
 # Check if $certfiles exists
-if [ -d "$HTTPS_CONF" ]
+ACTIVESSL=$CERTFILES/$SUBDOMAIN
+if [ -d "$ACTIVE_SSL" ]
 then
     echo -e "\e[96m"
     echo -e "It seems like no certs were generated, please report this issue here https://github.com/nextcloud/vm/issues/new"
@@ -208,5 +209,7 @@ else
     echo -e "\e[96m"
     echo -e "Certs are generated!"
     echo -e "\e[0m"
-    sleep 3
+    a2ensite $SUBDOMAIN.conf
+    service apache2 restart
+    sleep 2
     fi
