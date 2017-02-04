@@ -59,7 +59,7 @@ else
     a2dissite $1
     a2ensite nextcloud_ssl_domain_self_signed.conf
     a2ensite nextcloud_http_domain_self_signed.conf
-    000-default.conf
+    a2ensite 000-default.conf
     service apache2 restart
     echo -e "\e[96m"
     echo "Couldn't load new config, reverted to old settings. Self-signed SSL is OK!"
