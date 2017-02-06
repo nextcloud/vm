@@ -20,7 +20,6 @@ LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
 UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
-CONTEST$(bash $SCRIPTS/test_connection.sh)
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
