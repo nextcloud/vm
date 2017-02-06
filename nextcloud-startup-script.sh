@@ -505,12 +505,20 @@ ETCHOSTS
     echo "test_connection.sh:" >> /var/scripts/logs
     CONTEST=$(bash $SCRIPTS/test_connection.sh)
     if [ "$CONTEST" == "Connected!" ]; then
-            sleep 1
-    else    echo -e "\e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
-             echo -e "\e[32m"
-             read -p "Press any key to open /etc/network/interfaces..." -n1 -s
-             echo -e "\e[0m"
-             nano /etc/network/interfaces
+      echo "Connected!"
+      echo
+      echo "We will use the DHCP address for now, if you want to change it later then just"
+      echo "edit the interfaces file. If you experience any bugs, please report it here:"
+      echo "https://github.com/ezraholm50/NextBerry/issues/new"
+      echo -e "\e[32m"
+      read -p "Press any key to continue..." -n1 -s
+      echo -e "\e[0m"
+    else
+      echo -e "\e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
+      echo -e "\e[32m"
+      read -p "Press any key to open /etc/network/interfaces..." -n1 -s
+      echo -e "\e[0m"
+      nano /etc/network/interfaces
     fi
     service networking restart
     clear
@@ -858,6 +866,10 @@ rm $SCRIPTS/update-config.php
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+
+# Remove MySQL pass from log files
+PW_FILE=$(cat /var/mysql_password.txt)
+sed -i 's|PW_FILE|XXX-SQL-PASS-XXX|g' $SCRIPTS/logs
 
 # Log file
 echo "pastebinit -i $SCRIPTS/logs -a nextcloud_installation_$DATE -b https://paste.ubuntu.com > $SCRIPTS/.pastebinit" > /usr/sbin/install-log

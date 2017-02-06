@@ -38,7 +38,6 @@ else
   apt full-upgrade -y
   apt install -fy
   dpkg --configure --pending
-  bash /var/scripts/update.sh
 
   # Actual version additions
   apt update
@@ -69,26 +68,26 @@ fi
 if grep -q "12 applied" "$VERSIONFILE"; then
   echo "12 already applied..."
 else
-  # Update and upgrade
-  apt autoclean
-  apt	autoremove -y
-  apt update
-  apt full-upgrade -y
-  apt install -fy
-  dpkg --configure --pending
-  bash /var/scripts/update.sh
+# Update and upgrade
+apt autoclean
+apt	autoremove -y
+apt update
+apt full-upgrade -y
+apt install -fy
+dpkg --configure --pending
+bash /var/scripts/update.sh
 
-  # Unattended-upgrades
-  # Install packages
-  apt update
-  DEBIAN_FRONTEND=noninteractive apt install -y unattended-upgrades \
+# Unattended-upgrades
+# Install packages
+apt update
+DEBIAN_FRONTEND=noninteractive apt install -y unattended-upgrades \
                                                 update-notifier-common
 
-  # Set apt config
-  echo "APT::Periodic::Update-Package-Lists "1";" > /etc/apt/apt.conf.d/20auto-upgrades
-  echo "APT::Periodic::Unattended-Upgrade "1";" >> /etc/apt/apt.conf.d/20auto-upgrades
-  echo "APT::Periodic::Enable "1";" > /etc/apt/apt.conf.d/10periodic
-  echo "APT::Periodic::AutocleanInterval "1";" >> /etc/apt/apt.conf.d/10periodic
+# Set apt config
+echo "APT::Periodic::Update-Package-Lists "1";" > /etc/apt/apt.conf.d/20auto-upgrades
+echo "APT::Periodic::Unattended-Upgrade "1";" >> /etc/apt/apt.conf.d/20auto-upgrades
+echo "APT::Periodic::Enable "1";" > /etc/apt/apt.conf.d/10periodic
+echo "APT::Periodic::AutocleanInterval "1";" >> /etc/apt/apt.conf.d/10periodic
 
 if [ -f /etc/apt/apt.conf.d/50unattended-upgrades ]
 then
@@ -105,20 +104,18 @@ else
   exit 1
 fi
 
-  # New wifi setup
-  apt update
-  sudo usermod -a -G netdev ncadmin
-  DEBIAN_FRONTEND=noninteractive apt install -y wicd-curses
+# New wifi setup
+apt update
+sudo usermod -a -G netdev ncadmin
+DEBIAN_FRONTEND=noninteractive apt install -y wicd-curses
 
-  if [ -f $SCRIPTS/wireless.sh ]
-then
+if [ -f $SCRIPTS/wireless.sh ] then
     rm $SCRIPTS/wireless.sh
     wget -q $STATIC/wireless.sh -P $SCRIPTS
 else
     wget -q $STATIC/wireless.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/wireless.sh ]
-then
+if [ -f $SCRIPTS/wireless.sh ] then
     sleep 0.1
 else
     echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextberry-upgrade.sh' again."
@@ -130,14 +127,14 @@ chmod +x /usr/sbin/wireless
 # Rpi config
 echo "vcgencmd get_config int" > /usr/sbin/rpi-conf
 
-  # Set what version is installed
-  echo "12 applied" >> "$VERSIONFILE"
-  # Change current version var
-  sed -i 's|011|012|g' "$VERSIONFILE"
-  sed -i 's|V1.1|V1.2|g' "$VERSIONFILE"
+# Set what version is installed
+echo "12 applied" >> "$VERSIONFILE"
+# Change current version var
+sed -i 's|011|012|g' "$VERSIONFILE"
+sed -i 's|V1.1|V1.2|g' "$VERSIONFILE"
 
-  # Done - Move this line to the new release on every new version.
-  whiptail --msgbox "Successfully installed V1.2, please manually reboot..." 10 65
+# Done - Move this line to the new release on every new version.
+whiptail --msgbox "Successfully installed V1.2, please manually reboot..." 10 65
 fi
 
 exit

@@ -75,13 +75,13 @@
         <br>
         <div class="logo"></div>
         <div class="logotext">
-            <h2><a href="https://github.com/nextcloud/vm" target="_blank">Nextcloud VM</a> - by <a href="https://nextcloud.com" target="_blank">Nextcloud Community</a></h2>
+            <h2><a href="https://github.com/ezraholm50/NextBerry" target="_blank">NextBerry</a> - by <a href="https://www.techandme.se" target="_blank">Tech And Me</a></h2>
         </div>
         <br>
         <div class="information">
-            <p>Thank you for downloading the pre-configured Nextcloud VM! If you see this page, you have successfully mounted the Nextcloud VM on the computer that will act as host for Nextcloud.</p>
+            <p>Thank you for downloading the NextBerry! If you see this page, you have successfully installed Nextcloud on your RaspberryPI.</p>
             <p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.
-            <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels. You can also check the <a href="https://www.techandme.se/complete-install-instructions-nextcloud/" target="_blank">complete install instructions</a>.</p>
+            <p>Don't hesitate to ask if you have any questions. You can ask for help on github <a href="https://github.com/ezraholm50/NextBerry/issues/new" target="_blank">support</a> channels. You can also check the <a href="https://www.techandme.se/complete-install-instructions-nextcloud/" target="_blank">complete install instructions</a>.</p>
         </div>
 
         <h2><a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login</a> to Nextcloud</h2>
@@ -97,7 +97,7 @@
                 <h3> How to mount the VM and and login:</h3>
             </center>
             <p>Before you can use Nextcloud you have to run the setup script to complete the installation. This is easily done by just typing 'nextcloud' when you log in to the terminal for the first time.</p>
-            <p>The full path to the setup script is: /var/scripts/nextcloud-startup-script.sh. When the script is finnished it will be deleted, as it's only used the first time you boot the machine.</p>
+            <p>The full path to the setup script is: /var/scripts/nextcloud-startup-script.sh. When the script is finished it will be deleted, as it's only used the first time you boot the machine.</p>
             <center>
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/-3fKEu2HhJo" frameborder="0" allowfullscreen></iframe>
             </center>
@@ -116,23 +116,6 @@
             <p>Note: Please accept the warning in the browser if you connect via HTTPS. It is recommended<br>
             to <a href="https://www.techandme.se/publish-your-server-online" target="_blank">buy your own certificate and replace the self-signed certificate to your own.</a><br>
             <p>Note: Before you can login you have to run the setup script, as descirbed in the video above.
-        </div>
-
-        <h2>Access Webmin</h2>
-
-        <div class="information">
-            <p>Use one of the following addresses, HTTPS is preferred:
-            <h3>
-                <ul>
-                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>:10000">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)
-                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:10000">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
-                </ul>
-            </h3>
-            <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
-            <h3>
-                <a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login details</a>
-            </h3>
-            <p>Note: Webmin is installed when you run the setup script. To access Webmin externally you have to open port 10000 in your router.</p>
         </div>
 
         <h2>Access phpMyadmin</h2>
