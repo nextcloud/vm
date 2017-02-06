@@ -476,6 +476,8 @@ then
     echo
     CONTEST=$(bash $SCRIPTS/test_connection.sh)
     if [ "$CONTEST" == "Connected!" ] then
+        echo "Connected!"
+        echo
         echo "We will use the DHCP address for now, if you want to change it later then just"
         echo "edit the interfaces file. If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
