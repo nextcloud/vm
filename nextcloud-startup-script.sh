@@ -479,6 +479,9 @@ then
         echo "We will use the DHCP address for now, if you want to change it later then just"
         echo "edit the interfaces file. If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
+        echo -e "\e[32m"
+        read -p "Press any key to continue..." -n1 -s
+        echo -e "\e[0m"
     else    
         echo -e "\e[31mNot Connected!\e[0m\nYou should change your settings manually in the next step."
         echo -e "\e[32m"
