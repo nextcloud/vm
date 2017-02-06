@@ -69,9 +69,11 @@ echo "If the field after ':' is blank you are probably running as a pure root us
 echo "It's possible to install with root, but there will be minor errors."
 echo
 echo "Please create a user with sudo permissions if you want an optimal installation."
-echo "This script continues in 30 seconds, press CTRL+C to abort..."
-sleep 30
-echo
+echo -e "\e[32m"
+read -p "Press any key to start the script. Press CTRL+C to abort." -n1 -s
+echo -e "\e[0m"
+clear
+
 
 
 # Prefer IPv4
