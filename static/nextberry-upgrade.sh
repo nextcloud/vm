@@ -47,7 +47,6 @@ else
                   landscape-common \
                   ncdu
 
-
   # NCDU
   echo "sudo ncdu /" > /usr/sbin/fs-size
   chmod +x /usr/sbin/fs-size
@@ -129,7 +128,7 @@ mv $SCRIPTS/wireless.sh /usr/sbin/wireless
 chmod +x /usr/sbin/wireless
 
 # Rpi config
-echo "vcgencmd get_config int" > /usr/sbin/rpi-conf 
+echo "vcgencmd get_config int" > /usr/sbin/rpi-conf
 
   # Set what version is installed
   echo "12 applied" >> "$VERSIONFILE"

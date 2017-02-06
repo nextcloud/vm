@@ -18,7 +18,8 @@ fi
 
 if [ -x /var/scripts/nextcloud-startup-script.sh ]
 then
-    /var/scripts/nextcloud-startup-script.sh
+    echo "nextcloud-startup-script.sh:" >> /var/scripts/logs
+    /var/scripts/nextcloud-startup-script.sh 2>&1 | tee -a /var/scripts/logs
 fi
 
 if [ -x /var/scripts/history.sh ]

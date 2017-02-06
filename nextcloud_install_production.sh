@@ -253,6 +253,7 @@ apt install -y ntpdate \
                 ca-certificates \
                 unzip \
                 landscape-common \
+                pastebinit \
 		            libminiupnpc10
 
 # Fix time issues
@@ -352,6 +353,7 @@ rm $HTML/$STABLEVERSION.zip
 
 # Secure permissions
 wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
+echo "setup_secure_permissions_nextcloud.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Install Nextcloud
@@ -611,6 +613,7 @@ else
 fi
 
 # Change root profile
+echo "change-root-profile.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/change-root-profile.sh
 if [[ $? > 0 ]]
 then
@@ -621,7 +624,9 @@ else
     rm $SCRIPTS/change-root-profile.sh
     sleep 2
 fi
+
 # Change $UNIXUSER profile
+echo "change-ncadmin-profile.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/change-ncadmin-profile.sh
 if [[ $? > 0 ]]
 then
@@ -650,6 +655,7 @@ chown $UNIXUSER:$UNIXUSER $SCRIPTS/instruction.sh
 chown $UNIXUSER:$UNIXUSER $SCRIPTS/history.sh
 
 # Install Redis
+echo "redis-server-ubuntu16.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/redis-server-ubuntu16.sh
 rm $SCRIPTS/redis-server-ubuntu16.sh
 
@@ -680,6 +686,7 @@ then
 fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
+echo "setup_secure_permissions_nextcloud.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Reboot

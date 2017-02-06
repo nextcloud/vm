@@ -21,6 +21,7 @@ LETS_ENC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/lets-enc
 UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
+DATE=$(date +%d-%m-%y)
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -491,6 +492,7 @@ ETCHOSTS
     sleep 1
     ifup $IFACE
     sleep 1
+    echo "ip.sh:" >> /var/scripts/logs
     bash $SCRIPTS/ip.sh
     ifdown $IFACE
     sleep 1
@@ -500,6 +502,7 @@ ETCHOSTS
     echo "Testing if network is OK..."
     sleep 1
     echo
+    echo "test_connection.sh:" >> /var/scripts/logs
     bash $SCRIPTS/test_connection.sh
     sleep 1
     echo
@@ -517,6 +520,7 @@ ETCHOSTS
     ifup $IFACE
     sleep 1
     echo
+    echo "test_connection.sh:" >> /var/scripts/logs
     bash $SCRIPTS/test_connection.sh
     sleep 1
 
@@ -525,6 +529,7 @@ echo "Setting RewriteBase to "/" in config.php..."
 chown -R www-data:www-data $NCPATH
 sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
+echo "setup_secure_permissions_nextcloud.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Generate new SSH Keys
@@ -536,7 +541,7 @@ dpkg-reconfigure openssh-server
 
 # Generate new MySQL password
 echo
-bash $SCRIPTS/change_mysql_pass.sh && wait
+ $SCRIPTS/change_mysql_pass.sh && wait
 if [ $? -eq 0 ]
 then
 rm $SCRIPTS/change_mysql_pass.sh
@@ -564,6 +569,7 @@ fi
 
 # Install phpMyadmin
 echo
+echo "phpmyadmin_install_ubuntu16.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 clear
@@ -584,22 +590,26 @@ calc_wt_size() {
 
 # Install Apps
 function collabora {
+    echo "collabora.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/collabora.sh
     rm $SCRIPTS/collabora.sh
 }
 
 function nextant {
+    echo "nextant.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/nextant.sh
     rm $SCRIPTS/nextant.sh
 }
 
 function passman {
+    echo "passman.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/passman.sh
     rm $SCRIPTS/passman.sh
 }
 
 
 function spreedme {
+    echo "spreedme.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/spreedme.sh
     rm $SCRIPTS/spreedme.sh
 
@@ -638,6 +648,7 @@ function ask_yes_or_no() {
 }
 if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
 then
+    echo "security.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/security.sh
     rm $SCRIPTS/security.sh
 else
@@ -695,6 +706,7 @@ clear
 echo "System will now upgrade..."
 sleep 2
 echo
+echo "update.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/update.sh
 
 # Fixes https://github.com/nextcloud/vm/issues/58
@@ -714,9 +726,11 @@ else
 fi
 
 # Install latest updates
+echo "nextberry-upgrade.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/nextberry-upgrade.sh
 
 # Add temporary fix if needed
+echo "temporary-fix.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
 
@@ -761,6 +775,30 @@ exit 0
 
 RCLOCAL
 
+# Delete execution of the startup script in /root/.profile
+rm /root/.profile
+
+cat <<-ROOT-PROFILE > "$ROOT_PROFILE"
+
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ "$BASH" ]
+then
+    if [ -f ~/.bashrc ]
+    then
+        . ~/.bashrc
+    fi
+fi
+
+if [ -x /var/scripts/history.sh ]
+then
+    /var/scripts/history.sh
+fi
+
+mesg n
+
+ROOT-PROFILE
+
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 
 # Success!
@@ -802,6 +840,7 @@ function ask_yes_or_no() {
 }
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
+    echo "activate-ssl.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/activate-ssl.sh
 else
     echo
@@ -812,12 +851,18 @@ else
 fi
 
 # Change Trusted Domain and CLI
+echo "trusted.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/trusted.sh
 rm $SCRIPTS/trusted.sh
 rm $SCRIPTS/update-config.php
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+
+# Log file
+echo "pastebinit -i $SCRIPTS/logs -a nextcloud_installation_$DATE -b https://paste.ubuntu.com > $SCRIPTS/.pastebinit" > /usr/sbin/install-log
+echo "sed -i 's|http|https|g' $SCRIPTS/.pastebinit" > /usr/sbin/install-log
+chmod 770 /usr/sbin/install-log
 
 # Reboot
 echo "Installation is now done. System will now reboot..."

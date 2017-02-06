@@ -127,7 +127,9 @@ else
 	clear
 fi
 
-bash /var/scripts/nextcloud_install_production.sh
+echo "nextcloud_install_production.sh:" > /var/scripts/logs
+bash /var/scripts/nextcloud_install_production.sh 2>&1 | tee -a /var/scripts/logs
+
 EOF
 
 # Overclock
@@ -267,7 +269,9 @@ else
 	clear
 fi
 
-bash /var/scripts/nextcloud_install_production.sh
+echo "nextcloud_install_production.sh:" > /var/scripts/logs
+bash /var/scripts/nextcloud_install_production.sh 2>&1 | tee -a /var/scripts/logs
+
 EOF
 
   chmod +x /etc/init.d/resize2fs_once &&
