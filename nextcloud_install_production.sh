@@ -532,6 +532,7 @@ CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
+function contacts {
 # Download and install Calendar
 if [ -d $NCPATH/apps/calendar ]
 then
@@ -548,7 +549,9 @@ if [ -d $NCPATH/apps/calendar ]
 then
     sudo -u www-data php $NCPATH/occ app:enable calendar
 fi
+}
 
+function contacts {
 # Download and install Contacts
 if [ -d $NCPATH/apps/contacts ]
 then
@@ -565,6 +568,31 @@ if [ -d $NCPATH/apps/contacts ]
 then
     sudo -u www-data php $NCPATH/occ app:enable contacts
 fi
+}
+
+function spreedme {
+    bash $SCRIPTS/spreedme.sh
+    rm $SCRIPTS/spreedme.sh
+}
+
+whiptail --title "Which apps do you want to install?" --checklist --separate-output "" 10 40 3 \
+"Calendar" "              " on \
+"Contacts" "              " on \
+"Spreed.Me" "              " on 2>results
+
+while read choice
+do
+        case $choice in
+                Calendar) calendar
+                ;;
+                Contacts) contacts
+                ;;
+                Spreed.Me) spreedme
+                ;;
+                *)
+                ;;
+        esac
+done < results
 
 # Change roots .bash_profile
 if [ -f $SCRIPTS/change-root-profile.sh ]
@@ -573,19 +601,13 @@ then
 else
     wget -q $STATIC/change-root-profile.sh -P $SCRIPTS
 fi
+
 # Change $UNIXUSER .bash_profile
 if [ -f $SCRIPTS/change-ncadmin-profile.sh ]
 then
     echo "change-ncadmin-profile.sh  exists"
 else
     wget -q $STATIC/change-ncadmin-profile.sh -P $SCRIPTS
-fi
-# Get startup-script for root
-if [ -f $SCRIPTS/nextcloud-startup-script.sh ]
-then
-    echo "nextcloud-startup-script.sh exists"
-else
-    wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
 fi
 
 # Welcome message after login (change in $HOME/.profile
