@@ -20,6 +20,7 @@ LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
 UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
+CONTEST$(bash $SCRIPTS/test_connection.sh)
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -474,15 +475,15 @@ then
     echo "Testing if network is OK..."
     sleep 1
     echo
-    bash $SCRIPTS/test_connection.sh
-    sleep 1
-    echo
-    echo -e "\e[0mIf the output is \e[32mConnected! \o/\e[0m everything is working."
-    echo -e "\e[0mIf the output is \e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
-    echo -e "\e[32m"
-    read -p "Press any key to open /etc/network/interfaces..." -n1 -s
-    echo -e "\e[0m"
-    nano /etc/network/interfaces
+    CONTEST=$(bash $SCRIPTS/test_connection.sh)
+    if [ "$CONTEST" == "Connected!" ]; then
+            sleep 1
+    else    echo -e "\e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
+             echo -e "\e[32m"
+             read -p "Press any key to open /etc/network/interfaces..." -n1 -s
+             echo -e "\e[0m"
+             nano /etc/network/interfaces
+    fi
     service networking restart
     clear
     echo "Testing if network is OK..."
@@ -494,7 +495,7 @@ then
     bash $SCRIPTS/test_connection.sh
     sleep 1
 else
-    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
+    echo "OK, then we will not set a static IP as your VPS provider already has setup the network for you..."
     sleep 5
 fi
 
