@@ -14,12 +14,14 @@ SCRIPTS=/var/scripts
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
+TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master"
+GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
+STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
+LETS_ENC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/lets-encrypt"
 UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
+DATE=$(date +%d-%m-%y)
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -28,6 +30,34 @@ then
     set -x
 else
     sleep 1
+fi
+
+# Whiptail size
+WT_HEIGHT=17
+WT_WIDTH=$(tput cols)
+
+if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
+  WT_WIDTH=80
+fi
+if [ "$WT_WIDTH" -gt 178 ]; then
+  WT_WIDTH=120
+fi
+WT_MENU_HEIGHT=$((WT_HEIGHT-7))
+
+# Whiptail check
+if [ $(dpkg-query -W -f='${Status}' whiptail 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+      echo "Whiptail is already installed..."
+      clear
+else
+
+  {
+  i=1
+  while read -r line; do
+      i=$(( i + 1 ))
+      echo $i
+  done < <(apt update; apt install whiptail -y)
+} | whiptail --title "Progress" --gauge "Please wait while installing Whiptail..." 6 60 0
+
 fi
 
 # Check if root
@@ -68,15 +98,6 @@ else
     exit 1
 fi
 
-# Get the best mirrors for Ubuntu based on location
-echo "Locating the best mirrors..."
-apt-select
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-if [ -f sources.list ]
-then
-sudo mv sources.list /etc/apt/
-fi
-
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo
@@ -112,7 +133,7 @@ then
     sleep 0.1
 else
     echo "nextant failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again." 
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -303,6 +324,23 @@ else
     exit 1
 fi
 
+# Get latest updates of NextBerry
+if [ -f $SCRIPTS/nextberry-upgrade.sh ]
+then
+    rm $SCRIPTS/nextberry-upgrade.sh
+    wget -q $STATIC/nextberry-upgrade.sh -P $SCRIPTS
+else
+    wget -q $STATIC/nextberry-upgrade.sh -P $SCRIPTS
+fi
+if [ -f $SCRIPTS/nextberry-upgrade.sh ]
+then
+    sleep 0.1
+else
+    echo "nextberry-upgrade.sh failed"
+    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    exit 1
+fi
+
 # Sets secure permissions after upgrade
 if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
 then
@@ -353,6 +391,7 @@ else
     echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
     exit 1
 fi
+
 # Get the Welcome Screen when http://$address
 if [ -f $SCRIPTS/index.php ]
 then
@@ -435,18 +474,6 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ETCHOSTS
 
-# VPS?
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-
-if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
-then
-    echo
     # Change IP
     echo -e "\e[0m"
     echo "OK, we assume you run this locally and we will now configure your IP to be static"
@@ -465,6 +492,7 @@ then
     sleep 1
     ifup $IFACE
     sleep 1
+    echo "ip.sh:" >> /var/scripts/logs
     bash $SCRIPTS/ip.sh
     ifdown $IFACE
     sleep 1
@@ -474,15 +502,16 @@ then
     echo "Testing if network is OK..."
     sleep 1
     echo
-    bash $SCRIPTS/test_connection.sh
-    sleep 1
-    echo
-    echo -e "\e[0mIf the output is \e[32mConnected! \o/\e[0m everything is working."
-    echo -e "\e[0mIf the output is \e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
-    echo -e "\e[32m"
-    read -p "Press any key to open /etc/network/interfaces..." -n1 -s
-    echo -e "\e[0m"
-    nano /etc/network/interfaces
+    echo "test_connection.sh:" >> /var/scripts/logs
+    CONTEST=$(bash $SCRIPTS/test_connection.sh)
+    if [ "$CONTEST" == "Connected!" ]; then
+            sleep 1
+    else    echo -e "\e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
+             echo -e "\e[32m"
+             read -p "Press any key to open /etc/network/interfaces..." -n1 -s
+             echo -e "\e[0m"
+             nano /etc/network/interfaces
+    fi
     service networking restart
     clear
     echo "Testing if network is OK..."
@@ -491,18 +520,16 @@ then
     ifup $IFACE
     sleep 1
     echo
+    echo "test_connection.sh:" >> /var/scripts/logs
     bash $SCRIPTS/test_connection.sh
     sleep 1
-else
-    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
-    sleep 5
-fi
 
 # Pretty URLs
 echo "Setting RewriteBase to "/" in config.php..."
 chown -R www-data:www-data $NCPATH
 sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
+echo "setup_secure_permissions_nextcloud.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Generate new SSH Keys
@@ -514,7 +541,7 @@ dpkg-reconfigure openssh-server
 
 # Generate new MySQL password
 echo
-bash $SCRIPTS/change_mysql_pass.sh && wait
+ $SCRIPTS/change_mysql_pass.sh && wait
 if [ $? -eq 0 ]
 then
 rm $SCRIPTS/change_mysql_pass.sh
@@ -542,6 +569,7 @@ fi
 
 # Install phpMyadmin
 echo
+echo "phpmyadmin_install_ubuntu16.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 clear
@@ -562,22 +590,26 @@ calc_wt_size() {
 
 # Install Apps
 function collabora {
+    echo "collabora.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/collabora.sh
     rm $SCRIPTS/collabora.sh
 }
 
 function nextant {
+    echo "nextant.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/nextant.sh
     rm $SCRIPTS/nextant.sh
 }
 
 function passman {
+    echo "passman.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/passman.sh
     rm $SCRIPTS/passman.sh
 }
 
 
 function spreedme {
+    echo "spreedme.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/spreedme.sh
     rm $SCRIPTS/spreedme.sh
 
@@ -616,6 +648,7 @@ function ask_yes_or_no() {
 }
 if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
 then
+    echo "security.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/security.sh
     rm $SCRIPTS/security.sh
 else
@@ -628,7 +661,7 @@ fi
 clear
 
 # Change Timezone
-echo "Current timezone is $(cat /etc/timezone)"
+echo "Current timezone is Europe/Stockholm"
 echo "You must change timezone to your timezone"
 echo -e "\e[32m"
 read -p "Press any key to change timezone... " -n1 -s
@@ -673,6 +706,7 @@ clear
 echo "System will now upgrade..."
 sleep 2
 echo
+echo "update.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/update.sh
 
 # Fixes https://github.com/nextcloud/vm/issues/58
@@ -691,7 +725,12 @@ else
         sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
 fi
 
+# Install latest updates
+echo "nextberry-upgrade.sh:" >> $SCRIPTS/logs
+bash $SCRIPTS/nextberry-upgrade.sh
+
 # Add temporary fix if needed
+echo "temporary-fix.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
 
@@ -736,6 +775,30 @@ exit 0
 
 RCLOCAL
 
+# Delete execution of the startup script in /root/.profile
+rm /root/.profile
+
+cat <<-ROOT-PROFILE > "$ROOT_PROFILE"
+
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ "$BASH" ]
+then
+    if [ -f ~/.bashrc ]
+    then
+        . ~/.bashrc
+    fi
+fi
+
+if [ -x /var/scripts/history.sh ]
+then
+    /var/scripts/history.sh
+fi
+
+mesg n
+
+ROOT-PROFILE
+
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 
 # Success!
@@ -755,9 +818,7 @@ echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
 echo
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+echo -e "\e[0m"
 clear
 
 cat << LETSENC
@@ -779,6 +840,7 @@ function ask_yes_or_no() {
 }
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
+    echo "activate-ssl.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/activate-ssl.sh
 else
     echo
@@ -789,12 +851,18 @@ else
 fi
 
 # Change Trusted Domain and CLI
+echo "trusted.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/trusted.sh
 rm $SCRIPTS/trusted.sh
 rm $SCRIPTS/update-config.php
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+
+# Log file
+echo "pastebinit -i $SCRIPTS/logs -a nextcloud_installation_$DATE -b https://paste.ubuntu.com > $SCRIPTS/.pastebinit" > /usr/sbin/install-log
+echo "sed -i 's|http|https|g' $SCRIPTS/.pastebinit" > /usr/sbin/install-log
+chmod 770 /usr/sbin/install-log
 
 # Reboot
 echo "Installation is now done. System will now reboot..."
