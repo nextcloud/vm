@@ -12,6 +12,7 @@ echo -e "\e[0m"
 a2ensite $1
 a2dissite nextcloud_ssl_domain_self_signed.conf
 a2dissite nextcloud_http_domain_self_signed.conf
+a2dissite 000-default.conf
 service apache2 restart
 if [[ "$?" == "0" ]]
 then
@@ -58,6 +59,7 @@ else
     a2dissite $1
     a2ensite nextcloud_ssl_domain_self_signed.conf
     a2ensite nextcloud_http_domain_self_signed.conf
+    a2ensite 000-default.conf
     service apache2 restart
     echo -e "\e[96m"
     echo "Couldn't load new config, reverted to old settings. Self-signed SSL is OK!"
@@ -82,12 +84,13 @@ if [ -f $SCRIPTS/trusted.sh ]
 then
     rm $SCRIPTS/trusted.sh
     wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
 else
     wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
 fi
-
-bash $SCRIPTS/trusted.sh
-rm $SCRIPTS/trusted.sh
-rm $SCRIPTS/update-config.php
 
 exit 0
