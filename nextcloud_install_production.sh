@@ -545,7 +545,6 @@ then
 fi
 }
 
-
 function spreedme {
     bash $SCRIPTS/spreedme.sh
     rm $SCRIPTS/spreedme.sh
@@ -571,7 +570,6 @@ do
         esac
 done < results
 
-
 # Change roots .bash_profile
 if [ -f $SCRIPTS/change-root-profile.sh ]
 then
@@ -579,19 +577,13 @@ then
 else
     wget -q $STATIC/change-root-profile.sh -P $SCRIPTS
 fi
+
 # Change $UNIXUSER .bash_profile
 if [ -f $SCRIPTS/change-ncadmin-profile.sh ]
 then
     echo "change-ncadmin-profile.sh  exists"
 else
     wget -q $STATIC/change-ncadmin-profile.sh -P $SCRIPTS
-fi
-# Get startup-script for root
-if [ -f $SCRIPTS/nextcloud-startup-script.sh ]
-then
-    echo "nextcloud-startup-script.sh exists"
-else
-    wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
 fi
 
 # Welcome message after login (change in $HOME/.profile
@@ -629,6 +621,7 @@ else
     rm $SCRIPTS/change-root-profile.sh
     sleep 2
 fi
+
 # Change $UNIXUSER profile
 bash $SCRIPTS/change-ncadmin-profile.sh
 if [[ $? > 0 ]]
