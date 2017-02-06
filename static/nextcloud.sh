@@ -16,7 +16,11 @@ WANIP6=$(curl -s 6.ifcfg.me -m 5)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 RELEASE=$(lsb_release -s -d)
 BIN_UPTIME=$(/usr/bin/uptime --pretty)
-INSLOG=$(cat $SCRIPTS/.pastebinit)
+HTML=/var/www
+NCPATH=$HTML/nextcloud
+NCREPO="https://download.nextcloud.com/server/releases"
+CURRENTVERSIONNC=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+NCVERSION=$(curl -s --max-time 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 COLOR_WHITE='\033[1;37m'
 COLOR_DEFAULT='\033[0m'
 OS=$(printf "Operating system: %s (%s %s %s)\n" "$RELEASE" "$(uname -o)" "$(uname -r)" "$(uname -m)")
@@ -39,11 +43,14 @@ echo -e "$COLOR_WHITE To connect to a wifi network, type:           sudo wireles
 echo -e "$COLOR_WHITE To view RPI config settings, type:            sudo rpi-conf $COLOR_DEFAULT"
 echo -e "$COLOR_WHITE To monitor your system, type:                 sudo htop $COLOR_DEFAULT"
 echo -e "$COLOR_WHITE                                               sudo fs-size $COLOR_DEFAULT"
+# Log file check
 if [ -f $SCRIPTS/.pastebinit ];	then
+  INSLOG=$(cat $SCRIPTS/.pastebinit)
   echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
   echo -e "$COLOR_WHITE Your installation log: $INSLOG $COLOR_DEFAULT"
 fi
 echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
+# NextBerry version check
 if [ "$GITHUBVERSION" -gt "$CURRENTVERSION" ]; then
   echo -e "$COLOR_LIGHT_GREEN NextBerry update available, run: sudo bash /home/ncadmin/nextberry-upgrade.sh $COLOR_DEFAULT"
   echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
@@ -51,9 +58,16 @@ if [ "$GITHUBVERSION" -gt "$CURRENTVERSION" ]; then
       rm /home/ncadmin/nextberry-upgrade.sh
   fi
       wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/nextberry-upgrade.sh -P /home/ncadmin/ && chmod +x /home/ncadmin/nextberry-upgrade.sh
-      if [[ $? > 0 ]] then
+      if [[ $? > 0 ]]; then
       echo -e "$COLOR_WHITE Download of update script failed. Please file a bug report on https://github.com/ezraholm50/NextBerry/issues/new $COLOR_DEFAULT"
       echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
       fi
+fi
+# Nextcloud version check
+function version_gt() { local v1 v2 IFS=.; read -ra v1 <<< "$1"; read -ra v2 <<< "$2"; printf -v v1 %03d "${v1[@]}"; printf -v v2 %03d "${v2[@]}"; [[ $v1 > $v2 ]]; }
+if version_gt "$NCVERSION" "$CURRENTVERSIONNC"
+then
+  echo -e "$COLOR_LIGHT_GREEN Nextcloud update available, run: sudo bash $SCRIPTS/update.sh $COLOR_DEFAULT"
+  echo -e "$COLOR_WHITE =============================================================================== $COLOR_DEFAULT"
 fi
 exit 0

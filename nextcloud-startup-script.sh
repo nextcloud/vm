@@ -868,12 +868,16 @@ rm $SCRIPTS/update-config.php
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Remove MySQL pass from log files
-PW_FILE=$(cat /var/mysql_password.txt)
-sed -i 's|PW_FILE|XXX-SQL-PASS-XXX|g' $SCRIPTS/logs
+cat /root/.my.cnf | grep password > /root/.tmp
+sed -i 's|password=||g' /root/.tmp
+sed -i "s|'||g" /root/.tmp
+PW=$(cat /root/.tmp)
+sed -i 's|$PW|XXX-SQL-PASS-XXX|g' $SCRIPTS/logs
+rm /root/.tmp
 
 # Log file
 echo "pastebinit -i $SCRIPTS/logs -a nextcloud_installation_$DATE -b https://paste.ubuntu.com > $SCRIPTS/.pastebinit" > /usr/sbin/install-log
-echo "sed -i 's|http|https|g' $SCRIPTS/.pastebinit" > /usr/sbin/install-log
+echo "sed -i 's|http|https|g' $SCRIPTS/.pastebinit" >> /usr/sbin/install-log
 chmod 770 /usr/sbin/install-log
 
 # Reboot
