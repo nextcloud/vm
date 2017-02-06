@@ -541,7 +541,7 @@ dpkg-reconfigure openssh-server
 
 # Generate new MySQL password
 echo
- $SCRIPTS/change_mysql_pass.sh && wait
+bash $SCRIPTS/change_mysql_pass.sh && wait
 if [ $? -eq 0 ]
 then
 rm $SCRIPTS/change_mysql_pass.sh
