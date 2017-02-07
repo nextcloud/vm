@@ -450,7 +450,6 @@ then
     # Change IP
     echo -e "\e[0m"
     echo "OK, we assume you run this locally and we will now configure your IP to be static"
-    echo -e "\e[36m"
     echo -e "\e[1m"
     echo "Your internal IP is: $ADDRESS"
     echo -e "\e[0m"
@@ -480,8 +479,8 @@ then
         # Connected!
         echo -e "\e[32mConnected!\e[0m"
         echo
-        echo "We will use the DHCP address for now, if you want to change it later then just"
-        echo "edit the interfaces file: sudo nano /etc/network/interfaces"
+        echo "We will use the DHCP IP: $ADDRESS. If you want to change" 
+        echo "it later then just edit the interfaces file: sudo nano /etc/network/interfaces"
         echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
         echo -e "\e[32m"
