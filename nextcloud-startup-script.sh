@@ -478,7 +478,7 @@ then
     if [ "$CONTEST" == "Connected!" ] 
     then
         # Connected!
-        echo -e "\e[32m$CONTEST\e[0m"
+        echo -e "\e[32mConnected!\e[0m"
         echo
         echo "We will use the DHCP address for now, if you want to change it later then just"
         echo "edit the interfaces file: sudo nano /etc/network/interfaces"
@@ -489,7 +489,7 @@ then
         echo -e "\e[0m"
     else
         # Not connected!
-        echo -e "\e[31m$CONTEST\e[0m\nYou should change your settings manually in the next step."
+        echo -e "\e[31mNot Connected\e[0m\nYou should change your settings manually in the next step."
         echo -e "\e[32m"
         read -p "Press any key to open /etc/network/interfaces..." -n1 -s
         echo -e "\e[0m"
@@ -502,8 +502,7 @@ then
     sleep 1
     ifup $IFACE
     sleep 1
-    echo
-    $CONTEST
+    bash $SCRIPTS/test_connection.sh
     sleep 1
 else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
