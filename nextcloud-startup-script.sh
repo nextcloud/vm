@@ -474,15 +474,27 @@ then
     echo "Testing if network is OK..."
     sleep 1
     echo
-    bash $SCRIPTS/test_connection.sh
-    sleep 1
-    echo
-    echo -e "\e[0mIf the output is \e[32mConnected! \o/\e[0m everything is working."
-    echo -e "\e[0mIf the output is \e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
-    echo -e "\e[32m"
-    read -p "Press any key to open /etc/network/interfaces..." -n1 -s
-    echo -e "\e[0m"
-    nano /etc/network/interfaces
+    CONTEST=$(bash $SCRIPTS/test_connection.sh)
+    if [ "$CONTEST" == "Connected!" ] 
+    then
+        # Connected!
+        echo -e "\e[32mConnected!\e[0m"
+        echo
+        echo "We will use the DHCP address for now, if you want to change it later then just"
+        echo "edit the interfaces file: sudo nano /etc/network/interfaces"
+        echo "If you experience any bugs, please report it here:"
+        echo "https://github.com/nextcloud/vm/issues/new"
+        echo -e "\e[32m"
+        read -p "Press any key to continue..." -n1 -s
+        echo -e "\e[0m"
+    else
+        # Not connected!
+        echo -e "\e[31mNot Connected\e[0m\nYou should change your settings manually in the next step."
+        echo -e "\e[32m"
+        read -p "Press any key to open /etc/network/interfaces..." -n1 -s
+        echo -e "\e[0m"
+        nano /etc/network/interfaces
+    fi 
     service networking restart
     clear
     echo "Testing if network is OK..."
@@ -490,7 +502,6 @@ then
     sleep 1
     ifup $IFACE
     sleep 1
-    echo
     bash $SCRIPTS/test_connection.sh
     sleep 1
 else
