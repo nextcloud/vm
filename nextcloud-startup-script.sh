@@ -477,16 +477,19 @@ then
     CONTEST=$(bash $SCRIPTS/test_connection.sh)
     if [ "$CONTEST" == "Connected!" ] 
     then
-        echo "Connected!"
+        # Connected!
+        echo -e "\e[32m$CONTEST\e[0m"
         echo
         echo "We will use the DHCP address for now, if you want to change it later then just"
-        echo "edit the interfaces file. If you experience any bugs, please report it here:"
+        echo "edit the interfaces file: sudo nano /etc/network/interfaces"
+        echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
         echo -e "\e[32m"
         read -p "Press any key to continue..." -n1 -s
         echo -e "\e[0m"
-    else    
-        echo -e "\e[31mNot Connected!\e[0m\nYou should change your settings manually in the next step."
+    else
+        # Not connected!
+        echo -e "\e[31m$CONTEST\e[0m\nYou should change your settings manually in the next step."
         echo -e "\e[32m"
         read -p "Press any key to open /etc/network/interfaces..." -n1 -s
         echo -e "\e[0m"
@@ -500,7 +503,7 @@ then
     ifup $IFACE
     sleep 1
     echo
-    bash $SCRIPTS/test_connection.sh
+    $CONTEST
     sleep 1
 else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
