@@ -494,16 +494,16 @@ then
         read -p "Press any key to open /etc/network/interfaces..." -n1 -s
         echo -e "\e[0m"
         nano /etc/network/interfaces
+        service networking restart
+        clear
+        echo "Testing if network is OK..."
+        ifdown $IFACE
+        sleep 1
+        ifup $IFACE
+        sleep 1
+        bash $SCRIPTS/test_connection.sh
+        sleep 1
     fi 
-    service networking restart
-    clear
-    echo "Testing if network is OK..."
-    ifdown $IFACE
-    sleep 1
-    ifup $IFACE
-    sleep 1
-    bash $SCRIPTS/test_connection.sh
-    sleep 1
 else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
     sleep 5
