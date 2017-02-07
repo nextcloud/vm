@@ -475,7 +475,7 @@ then
     sleep 1
     echo
     CONTEST=$(bash $SCRIPTS/test_connection.sh)
-    if [ "$CONTEST" == "Connected! \o/" ] 
+    if [ "$CONTEST" == "Connected!" ] 
     then
         echo "Connected!"
         echo
