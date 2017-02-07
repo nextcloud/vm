@@ -479,8 +479,9 @@ then
         # Connected!
         echo -e "\e[32mConnected!\e[0m"
         echo
-        echo "We will use the DHCP IP: $ADDRESS. If you want to change" 
-        echo "it later then just edit the interfaces file: sudo nano /etc/network/interfaces"
+        echo -e "We will use the DHCP IP: \e[32m$ADDRESS\e[0m. If you want to change it later then just edit the interfaces file:"
+        echo "sudo nano /etc/network/interfaces"
+        echo
         echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
         echo -e "\e[32m"
