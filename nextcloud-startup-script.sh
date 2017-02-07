@@ -446,10 +446,9 @@ function ask_yes_or_no() {
 
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
-    echo
     # Change IP
     echo -e "\e[0m"
-    echo "OK, we assume you run this locally and we will now configure your IP to be static"
+    echo "OK, we assume you run this locally and we will now configure your IP to be static."
     echo -e "\e[1m"
     echo "Your internal IP is: $ADDRESS"
     echo -e "\e[0m"
@@ -458,7 +457,6 @@ then
     echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     echo -e "\e[32m"
     read -p "Press any key to set static IP..." -n1 -s
-    clear
     echo -e "\e[0m"
     ifdown $IFACE
     sleep 1
@@ -508,6 +506,7 @@ else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
     sleep 5
 fi
+clear
 
 # Pretty URLs
 echo "Setting RewriteBase to "/" in config.php..."
