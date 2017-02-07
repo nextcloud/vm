@@ -7,5 +7,5 @@ if [ ! -s /tmp/google.idx ]
 then
      echo -e "\e[31mNot Connected!\e[0m"
 else
-    echo -e "\e[32mConnected!\e[0m"
+    echo -e "Connected!"
 fi
