@@ -475,7 +475,8 @@ then
     sleep 1
     echo
     CONTEST=$(bash $SCRIPTS/test_connection.sh)
-    if [ "$CONTEST" == "Connected!" ] then
+    if [ "$CONTEST" == "Connected!" ] 
+    then
         echo "Connected!"
         echo
         echo "We will use the DHCP address for now, if you want to change it later then just"
