@@ -405,16 +405,6 @@ read -p "Press any key to start the script..." -n1 -s
 clear
 echo -e "\e[0m"
 
-# Set keyboard layout
-echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
-dpkg-reconfigure keyboard-configuration
-echo
-clear
-
 # Set hostname and ServerName
 echo "Setting hostname..."
 FQN=$(host -TtA $(hostname -s)|grep "has address"|awk '{print $1}') ; \
@@ -472,7 +462,7 @@ then
     sleep 1
     echo
     CONTEST=$(bash $SCRIPTS/test_connection.sh)
-    if [ "$CONTEST" == "Connected!" ] 
+    if [ "$CONTEST" == "Connected!" ]
     then
         # Connected!
         echo -e "\e[32mConnected!\e[0m"
@@ -506,6 +496,16 @@ else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
     sleep 5
 fi
+clear
+
+# Set keyboard layout
+echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+echo "You must change keyboard layout to your language"
+echo -e "\e[32m"
+read -p "Press any key to change keyboard layout... " -n1 -s
+echo -e "\e[0m"
+dpkg-reconfigure keyboard-configuration
+echo
 clear
 
 # Pretty URLs
