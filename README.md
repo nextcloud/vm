@@ -15,8 +15,8 @@
 * You? :)
 
 ## Image
-[Image link](https://cloud.waaromzomoeilijk.nl/s/oM25mziMEN6aAkJ)
-[Mirror 1](https://cloud.techandme.se/s/6fMfM4wCEJTa2Y5)
+* [Image link](https://cloud.waaromzomoeilijk.nl/s/oM25mziMEN6aAkJ)
+* [Mirror 1](https://cloud.techandme.se/s/6fMfM4wCEJTa2Y5)
 
 ## Documentation
 [How to](https://github.com/ezraholm50/NextBerry/wiki)
