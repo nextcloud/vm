@@ -220,6 +220,9 @@ else
 </VirtualHost>
 HTTPS_CREATE
 
+# Ugly fix for now, maybe "$1" or something?
+sed -i 's|/lool//ws|/lool/$1/ws|g' $HTTPS_CONF
+
 if [ -f "$HTTPS_CONF" ];
 then
     echo "$HTTPS_CONF was successfully created"
