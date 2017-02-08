@@ -444,16 +444,6 @@ read -p "Press any key to start the script..." -n1 -s
 clear
 echo -e "\e[0m"
 
-# Set keyboard layout
-echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
-dpkg-reconfigure keyboard-configuration
-echo
-clear
-
 # Set hostname and ServerName
 echo "Setting hostname..."
 FQN=$(host -TtA $(hostname -s)|grep "has address"|awk '{print $1}') ; \
@@ -476,8 +466,7 @@ ETCHOSTS
 
     # Change IP
     echo -e "\e[0m"
-    echo "OK, we assume you run this locally and we will now configure your IP to be static"
-    echo -e "\e[36m"
+    echo "OK, we assume you run this locally and we will now configure your IP to be static."
     echo -e "\e[1m"
     echo "Your internal IP is: $ADDRESS"
     echo -e "\e[0m"
@@ -486,7 +475,6 @@ ETCHOSTS
     echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     echo -e "\e[32m"
     read -p "Press any key to set static IP..." -n1 -s
-    clear
     echo -e "\e[0m"
     ifdown $IFACE
     sleep 1
@@ -494,43 +482,63 @@ ETCHOSTS
     sleep 1
     echo "ip.sh:" >> /var/scripts/logs
     bash $SCRIPTS/ip.sh
-    ifdown $IFACE
-    sleep 1
-    ifup $IFACE
-    sleep 1
-    echo
-    echo "Testing if network is OK..."
-    sleep 1
-    echo
-    echo "test_connection.sh:" >> /var/scripts/logs
-    CONTEST=$(bash $SCRIPTS/test_connection.sh)
-    if [ "$CONTEST" == "Connected!" ]; then
-      echo "Connected!"
-      echo
-      echo "We will use the DHCP address for now, if you want to change it later then just"
-      echo "edit the interfaces file. If you experience any bugs, please report it here:"
-      echo "https://github.com/ezraholm50/NextBerry/issues/new"
-      echo -e "\e[32m"
-      read -p "Press any key to continue..." -n1 -s
-      echo -e "\e[0m"
-    else
-      echo -e "\e[31mNot Connected!\e[0m you should change\nyour settings manually in the next step."
-      echo -e "\e[32m"
-      read -p "Press any key to open /etc/network/interfaces..." -n1 -s
-      echo -e "\e[0m"
-      nano /etc/network/interfaces
+    if [ "$IFACE" = "" ]
+    then
+        echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
+        wget -q $STATIC/ip2.sh -P $SCRIPTS
+        bash $SCRIPTS/ip2.sh
+        rm $SCRIPTS/ip2.sh
     fi
-    service networking restart
-    clear
-    echo "Testing if network is OK..."
     ifdown $IFACE
     sleep 1
     ifup $IFACE
     sleep 1
     echo
-    echo "test_connection.sh:" >> /var/scripts/logs
-    bash $SCRIPTS/test_connection.sh
+    echo "Testing if network is OK..."
     sleep 1
+    echo
+    CONTEST=$(bash $SCRIPTS/test_connection.sh)
+    if [ "$CONTEST" == "Connected!" ]
+    then
+        # Connected!
+        echo -e "\e[32mConnected!\e[0m"
+        echo
+        echo -e "We will use the DHCP IP: \e[32m$ADDRESS\e[0m. If you want to change it later then just edit the interfaces file:"
+        echo "sudo nano /etc/network/interfaces"
+        echo
+        echo "If you experience any bugs, please report it here:"
+        echo "https://github.com/ezraholm50/NextBerry/issues/new"
+        echo -e "\e[32m"
+        read -p "Press any key to continue..." -n1 -s
+        echo -e "\e[0m"
+    else
+        # Not connected!
+        echo -e "\e[31mNot Connected\e[0m\nYou should change your settings manually in the next step."
+        echo -e "\e[32m"
+        read -p "Press any key to open /etc/network/interfaces..." -n1 -s
+        echo -e "\e[0m"
+        nano /etc/network/interfaces
+        service networking restart
+        clear
+        echo "Testing if network is OK..."
+        ifdown $IFACE
+        sleep 1
+        ifup $IFACE
+        sleep 1
+        bash $SCRIPTS/test_connection.sh
+        sleep 1
+    fi
+clear
+
+# Set keyboard layout
+echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+echo "You must change keyboard layout to your language"
+echo -e "\e[32m"
+read -p "Press any key to change keyboard layout... " -n1 -s
+echo -e "\e[0m"
+dpkg-reconfigure keyboard-configuration
+echo
+clear
 
 # Pretty URLs
 echo "Setting RewriteBase to "/" in config.php..."

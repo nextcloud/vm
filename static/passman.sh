@@ -35,7 +35,7 @@ else
 fi
 
 # Test checksum
-mkdir-p $SHA256
+mkdir -p $SHA256
 wget -q $PASSVER_REPO/$PASSVER_FILE -P $SHA256
 wget -q $PASSVER_REPO/$PASSVER_FILE.sha256 -P $SHA256
 echo "Verifying both integrity of $PASSVER_FILE..."
