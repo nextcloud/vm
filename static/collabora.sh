@@ -130,7 +130,10 @@ fi
 DOCKERPS=$(docker ps -a -q)
 if [[ $DOCKERPS > 0 ]]
 then
-    echo "Removing old Docker instance... ($DOCKERPS)"
+    echo "Removing old Docker instance(s)... ($DOCKERPS)"
+    echo -e "\e[32m"
+    read -p "Press any key to continue. Press CTRL+C to abort." -n1 -s
+    echo -e "\e[0m"
     docker stop $DOCKERPS
     docker rm $DOCKERPS
 else
