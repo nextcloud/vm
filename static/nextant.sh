@@ -120,7 +120,9 @@ sudo -u www-data php $NCPATH/occ nextant:index
 if [ $? -eq 0 ]
 then
     echo "Nextant app is now installed and enabled."
+    sleep 3
 else
     echo "Nextant app install failed"
+    sleep 3
     exit 1
 fi
