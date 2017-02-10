@@ -107,7 +107,8 @@ else
     echo "Backup OK!"
     echo -e "\e[0m"
 fi
-wget $NCREPO/nextcloud-$NCVERSION.tar.bz2 -P $HTML
+echo "Downloading $NCREPO/nextcloud-$NCVERSION.tar.bz2..."
+wget -q -T 10 -t 2 $NCREPO/nextcloud-$NCVERSION.tar.bz2 -P $HTML
 
 if [ -f $HTML/nextcloud-$NCVERSION.tar.bz2 ]
 then
