@@ -114,13 +114,15 @@ else
 fi
 rm -r $NT_RELEASE
 sudo -u www-data php $NCPATH/occ app:enable nextant
+sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant
+sudo -u www-data php $NCPATH/occ nextant:index
 
 if [ $? -eq 0 ]
 then
     echo "Nextant app is now installed and enabled."
-    echo "Please go to: Admin Settings --> Additional Settings, and configure the app"
-    sleep 5
+    sleep 3
 else
     echo "Nextant app install failed"
+    sleep 3
     exit 1
 fi
