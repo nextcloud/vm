@@ -101,9 +101,21 @@ else
 fi
 
 # Get nextant app for nextcloud
-wget -q -P $NC_APPS_PATH $NT_DL
-cd $NC_APPS_PATH
-tar zxf $NT_RELEASE
+NT_DL_CK=$(wget -q -P $NC_APPS_PATH $NT_DL)
+if [ $? -ne 0 ]; then
+    echo "There seems to be an issue detecting the latest release version published"
+    echo "Please copy/paste the tar file url for the latest release download, manually"
+    echo "(e.g. https://github.com/nextcloud/nextant/releases/download/v1.0.3/nextant-master-1.0.3.tar.gz )"
+    read NT_DL_AL
+    NT_ALT_REL=$(wget -nv -P $NC_APPS_PATH $NT_DL_AL 2>&1 |cut -d\" -f2)
+    cd $NC_APPS_PATH
+    tar  zxf $NT_ALT_REL
+else
+    echo "Downloading version $NEXTANT_VERSION"
+    cd $NC_APPS_PATH
+    tar zxf $NT_RELEASE
+fi
+
 # Check if permission script exists, if not get it.
 if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
 then
@@ -112,7 +124,15 @@ else
     wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
     bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 fi
-rm -r $NT_RELEASE
+
+#Delete tar file either of them
+if [ -f $NT_ALT_REL ]
+then
+    rm -r $NT_ALT_REL
+else
+    rm -r $NT_RELEASE
+fi
+
 sudo -u www-data php $NCPATH/occ app:enable nextant
 sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant
 sudo -u www-data php $NCPATH/occ nextant:index
