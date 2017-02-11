@@ -42,6 +42,7 @@ echo "Starting to setup Solr & Nextant on Nextcloud..."
 sleep 3
 
 # Installing requirements
+apt update -qq
 apt install default-jre -y
 
 # Getting and installing Apache Solr
@@ -105,11 +106,11 @@ NT_DL_CK=$(wget -q -P $NC_APPS_PATH $NT_DL)
 if [ $? -ne 0 ]; then
     echo "There seems to be an issue detecting the latest release version published"
     echo "Please copy/paste the tar file url for the latest release download, manually"
-    echo "(e.g. https://github.com/nextcloud/nextant/releases/download/v1.0.3/nextant-master-1.0.3.tar.gz )"
-    read NT_DL_AL
-    NT_ALT_REL=$(wget -nv -P $NC_APPS_PATH $NT_DL_AL 2>&1 |cut -d\" -f2)
+    echo "(e.g. https://github.com/nextcloud/nextant/releases/download/v1.0.3/nextant-master-1.0.3.tar.gz )
     cd $NC_APPS_PATH
-    tar  zxf $NT_ALT_REL
+    read NT_DL_AL
+    NT_ALT_REL=$(wget -nv $NT_DL_AL 2>&1 |cut -d\" -f2)
+    tar zxf $NT_ALT_REL
 else
     echo "Downloading version $NEXTANT_VERSION"
     cd $NC_APPS_PATH
