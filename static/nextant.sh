@@ -114,7 +114,7 @@ else
 fi
 rm -r $NT_RELEASE
 sudo -u www-data php $NCPATH/occ app:enable nextant
-sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant
+sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant --save
 sudo -u www-data php $NCPATH/occ nextant:index
 
 if [ $? -eq 0 ]
