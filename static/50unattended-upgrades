@@ -57,7 +57,7 @@ Unattended-Upgrade::Automatic-Reboot-Time "02:00";
 
 // Use apt bandwidth limit feature, this example limits the download
 // speed to 70kb/sec
-Acquire::http::Dl-Limit "70";
+// Acquire::http::Dl-Limit "10000";
 
 // Enable logging to syslog. Default is False
 Unattended-Upgrade::SyslogEnable "true";
