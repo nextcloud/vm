@@ -11,8 +11,8 @@
 DEBUG=0
 
 # Repositories
-GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
-STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
+GITHUB_REPO="https://raw.githubusercontent.com/techandme/NextBerry/master"
+STATIC="https://raw.githubusercontent.com/techandme/NextBerry/master/static"
 NCREPO="https://download.nextcloud.com/server/releases"
 TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master/techandtool.sh"
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'

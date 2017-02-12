@@ -3,7 +3,7 @@
 [![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
 
 # Login screen
-![alt tag](https://raw.githubusercontent.com/ezraholm50/NextBerry/master/nextberry-login-screen1.jpeg)
+![alt tag](https://raw.githubusercontent.com/techandme/NextBerry/master/nextberry-login-screen1.jpeg)
 
 ## What is NextBerry?
 [More info](https://www.techandme.se/nextberry-vm/)
@@ -19,10 +19,10 @@
 * [Mirror 1](https://cloud.techandme.se/s/G6PaI0miBibhDwj)
 
 ## Documentation
-[How to](https://github.com/ezraholm50/NextBerry/wiki)
+[How to](https://github.com/techandme/NextBerry/wiki)
 
 ## Version info
-[Versions](https://github.com/ezraholm50/NextBerry/releases)
+[Versions](https://github.com/techandme/NextBerry/releases)
 
 ## Machine configuration
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
@@ -30,4 +30,4 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 Note: this build does not inlude Webmin.
 
 ## FAQ
-[FAQ](https://github.com/ezraholm50/NextBerry/wiki/FAQ)
+[FAQ](https://github.com/techandme/NextBerry/wiki/FAQ)

@@ -15,7 +15,7 @@ if              [ -f bash /var/scripts/resize-sd.sh ];    then
 
                 rm bash /var/scripts/resize-sd.sh
 else
-                wget https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/resize-sd.sh -P /var/scripts
+                wget https://raw.githubusercontent.com/techandme/NextBerry/master/static/resize-sd.sh -P /var/scripts
                 chmod +x /var/scripts/resize-sd.sh
 fi
 if [[ $? > 0 ]]
@@ -36,7 +36,7 @@ if              [ -f /var/scripts/nextcloud_install_production.sh ];	then
 
 		rm /var/scripts/nextcloud_install_production.sh
 else
-                wget https://raw.githubusercontent.com/ezraholm50/NextBerry/master/nextcloud_install_production.sh -P /var/scripts
+                wget https://raw.githubusercontent.com/techandme/NextBerry/master/nextcloud_install_production.sh -P /var/scripts
                 chmod +x /var/scripts/nextcloud_install_production.sh
 fi
 if [[ $? > 0 ]]

@@ -75,13 +75,13 @@
         <br>
         <div class="logo"></div>
         <div class="logotext">
-            <h2><a href="https://github.com/ezraholm50/NextBerry" target="_blank">NextBerry</a> - by <a href="https://www.techandme.se" target="_blank">Tech And Me</a></h2>
+            <h2><a href="https://github.com/techandme/NextBerry" target="_blank">NextBerry</a> - by <a href="https://www.techandme.se" target="_blank">Tech And Me</a></h2>
         </div>
         <br>
         <div class="information">
             <p>Thank you for downloading the NextBerry! If you see this page, you have successfully installed Nextcloud on your RaspberryPI.</p>
             <p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.
-            <p>Don't hesitate to ask if you have any questions. You can ask for help on github <a href="https://github.com/ezraholm50/NextBerry/issues/new" target="_blank">support</a> channels. You can also check the <a href="https://www.techandme.se/complete-install-instructions-nextcloud/" target="_blank">complete install instructions</a>.</p>
+            <p>Don't hesitate to ask if you have any questions. You can ask for help on github <a href="https://github.com/techandme/NextBerry/issues/new" target="_blank">support</a> channels. You can also check the <a href="https://www.techandme.se/complete-install-instructions-nextcloud/" target="_blank">complete install instructions</a>.</p>
         </div>
 
         <h2><a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login</a> to Nextcloud</h2>

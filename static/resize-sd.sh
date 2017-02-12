@@ -115,7 +115,7 @@ if              [ -f /var/scripts/nextcloud_install_production.sh ];	then
 
 		rm /var/scripts/nextcloud_install_production.sh
 else
-                wget https://raw.githubusercontent.com/ezraholm50/NextBerry/master/nextcloud_install_production.sh -P /var/scripts
+                wget https://raw.githubusercontent.com/techandme/NextBerry/master/nextcloud_install_production.sh -P /var/scripts
                 chmod +x /var/scripts/nextcloud_install_production.sh
 fi
 if [[ $? > 0 ]]
@@ -150,7 +150,7 @@ fi
 echo "smsc95xx.turbo_mode=N dwc_otg.fiq_fix_enable=1 net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=PARTUUID=$GDEVHDUUID rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
 
 rm /boot/config.txt
-wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/
+wget -q https://raw.githubusercontent.com/techandme/NextBerry/master/static/config.txt -P /boot/
 
 	whiptail --msgbox "Success, we will now reboot to finish switching /root...\n\n Please make sure you do not have a Wifi dongle plugged in before you press enter.\n\n This will make the next script fail, first finish using an ethernet cable.\n\n Afterwards you can setup a Wifi connection." 20 60 1
   umount /mnt
@@ -257,7 +257,7 @@ if              [ -f /var/scripts/nextcloud_install_production.sh ];	then
 
 		rm /var/scripts/nextcloud_install_production.sh
 else
-                wget https://raw.githubusercontent.com/ezraholm50/NextBerry/master/nextcloud_install_production.sh -P /var/scripts
+                wget https://raw.githubusercontent.com/techandme/NextBerry/master/nextcloud_install_production.sh -P /var/scripts
                 chmod +x /var/scripts/nextcloud_install_production.sh
 fi
 if [[ $? > 0 ]]
@@ -294,7 +294,7 @@ EOF
 
   echo "smsc95xx.turbo_mode=N net.ifnames=0 biosdevname=0 dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait quiet splash" > /boot/cmdline.txt
   rm /boot/config.txt
-  wget -q https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static/config.txt -P /boot/
+  wget -q https://raw.githubusercontent.com/techandme/NextBerry/master/static/config.txt -P /boot/
 
     whiptail --msgbox "Success, we will now reboot to finish resizing...\n\n Please make sure you do not have a Wifi dongle plugged in before you press enter.\n\n This will make the next script fail, first finish using an ethernet cable.\n\n Afterwards you can setup a Wifi connection." 20 60 1
 		reboot

@@ -15,9 +15,9 @@ IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 TECHANDTOOL="https://raw.githubusercontent.com/ezraholm50/techandtool/master"
-GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
-STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
-LETS_ENC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/lets-encrypt"
+GITHUB_REPO="https://raw.githubusercontent.com/techandme/NextBerry/master"
+STATIC="https://raw.githubusercontent.com/techandme/NextBerry/master/static"
+LETS_ENC="https://raw.githubusercontent.com/techandme/NextBerry/master/lets-encrypt"
 UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
@@ -507,7 +507,7 @@ ETCHOSTS
         echo "sudo nano /etc/network/interfaces"
         echo
         echo "If you experience any bugs, please report it here:"
-        echo "https://github.com/ezraholm50/NextBerry/issues/new"
+        echo "https://github.com/techandme/NextBerry/issues/new"
         echo -e "\e[32m"
         read -p "Press any key to continue..." -n1 -s
         echo -e "\e[0m"

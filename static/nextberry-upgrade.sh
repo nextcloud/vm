@@ -1,8 +1,8 @@
 #!/bin/bash
 VERSIONFILE="/var/scripts/.version-nc"
 SCRIPTS="/var/scripts"
-GITHUB_REPO="https://raw.githubusercontent.com/ezraholm50/NextBerry/master"
-STATIC="https://raw.githubusercontent.com/ezraholm50/NextBerry/master/static"
+GITHUB_REPO="https://raw.githubusercontent.com/techandme/NextBerry/master"
+STATIC="https://raw.githubusercontent.com/techandme/NextBerry/master/static"
 
 # Check if root
 if [ "$(whoami)" != "root" ]
