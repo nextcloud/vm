@@ -117,7 +117,7 @@ else
 fi
 
 # Check if Git is installed
-    git --version 2>&1 >/dev/null
+    git --version 2> /dev/null
     GIT_IS_AVAILABLE=$?
 if [ $GIT_IS_AVAILABLE -eq 0 ]
 then
