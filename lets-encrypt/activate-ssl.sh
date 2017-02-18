@@ -25,6 +25,7 @@ if [ $GIT_IS_AVAILABLE -eq 0 ]
 then
     sleep 1
 else
+    echo "Installing git..."
     apt update -q2
     apt install git -y -q
 fi
@@ -112,8 +113,6 @@ else
 fi
 
 # Fetch latest version of test-new-config.sh
-SCRIPTS=/var/scripts
-
 if [ -f $SCRIPTS/test-new-config.sh ]
 then
     rm $SCRIPTS/test-new-config.sh
@@ -160,6 +159,18 @@ ENTERDOMAIN2
     echo
     read domain
     echo
+fi
+
+# Check if $domain exists and is reachable
+echo
+echo "Checking if $domain exists and is reachable..."
+curl -s -m 20 $domain > /dev/null
+if [[ $? > 0 ]]
+then
+   echo "Nope, it's not there. You have to create $domain and point"
+   echo "it to this server before you can run this script."
+   echo
+   exit 1
 fi
 
 #Fix issue #28
