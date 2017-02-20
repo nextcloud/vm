@@ -8,6 +8,7 @@ SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis.sock
+SHUF=$(shuf -i 17-20 -n 1)
 REDIS_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
 
 # Must be root
