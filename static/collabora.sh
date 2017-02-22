@@ -274,8 +274,8 @@ fi
 if [ -d $NCPATH/apps/richdocuments ]
 then
     sudo -u www-data php $NCPATH/occ app:enable richdocuments
-    echo
     sudo -u www-data $NCPATH/occ config:app:set richdocuments wopi_url --value="$SUBDOMAIN"
+    echo
     echo "Collabora is now succesfylly installed."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
