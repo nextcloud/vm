@@ -201,8 +201,7 @@ clear
 
 # Set keyboard layout
 echo "Current keyboard layout is: $(localectl status | grep "Layout" | awk '{print $3}')"
-echo "You must change keyboard layout to your language"
-read -t 10 -r -p "Do you want to change your keyboard layout? [y/N]" kbl
+read -t 10 -r -p "Do you want to change your keyboard layout? [y/N] (10s)" kbl
 case $kbl in
     [yY][eE][sS]|[yY])
     dpkg-reconfigure keyboard-configuration
