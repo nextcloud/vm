@@ -42,6 +42,7 @@ echo "Starting to setup Solr & Nextant on Nextcloud..."
 sleep 3
 
 # Installing requirements
+apt update -qq
 apt install default-jre -y
 
 # Getting and installing Apache Solr
