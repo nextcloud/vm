@@ -662,9 +662,9 @@ clear
 
     # Change password
     echo -e "\e[0m"
-    echo "For better security, change the Linux password for [$UNIXUSER]"
+    echo "For better security, change the system user password for [$UNIXUSER]"
     echo -e "\e[32m"
-    read -p "Press any key to change password for Linux... " -n1 -s
+    read -p "Press any key to change password for system user... " -n1 -s
     echo -e "\e[0m"
     sudo passwd $UNIXUSER
     if [[ $? > 0 ]]
