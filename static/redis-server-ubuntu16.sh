@@ -122,7 +122,7 @@ fi
 sed -i "s|# unixsocket /var/run/redis/redis.sock|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm 700|unixsocketperm 777|g" $REDIS_CONF
 sed -i "s|port 6379|port 0|g" $REDIS_CONF
-sed -i "s|# requirepass|requirepass $REDIS_PASS|g" $REDIS_CONF
+sed -i "s|# requirepass foobared|requirepass $REDIS_PASS|g" $REDIS_CONF
 redis-cli SHUTDOWN
 
 # Cleanup
