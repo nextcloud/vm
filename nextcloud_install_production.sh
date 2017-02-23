@@ -201,19 +201,11 @@ clear
 
 # Set keyboard layout
 echo "Current keyboard layout is: $(localectl status | grep "Layout" | awk '{print $3}')"
-read -t 10 -r -p "Do you want to change your keyboard layout? [y/N] (10s)" kbl
-case $kbl in
-    [yY][eE][sS]|[yY])
-    dpkg-reconfigure keyboard-configuration
-    ;;
-    [nN][oO]|[nN])
-    echo "Let's continue"
-    ;;
-    *)
-    echo "No keyboard layout changes made."	
-    ;;
-esac
-
+read -t 10 -r -p "$1 Do you want to change your keyboard layout? ([y]es or [N]o) (10s): "
+      case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+      y|yes) echo "yes" ;;
+      *)     echo "no" ;;
+      esac
 # Update system
 apt update -q2
 
