@@ -3,7 +3,7 @@
 
 # Setting variables
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -P -m 3 -o '<span class="tag-name">.+/\K.+?(?=</span>)' | grep -m 1 6)
+SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-9].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
 NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
 NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
