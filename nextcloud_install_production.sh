@@ -203,9 +203,10 @@ clear
 echo "Current keyboard layout is: $(localectl status | grep "Layout" | awk '{print $3}')"
 read -t 10 -r -p "$1 Do you want to change your keyboard layout? ([y]es or [N]o) (10s): "
       case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-      y|yes) echo "yes" ;;
-      *)     echo "no" ;;
+      y|yes) echo "Configuring keyboard layout" ;;
+      *)     echo "No changes to keyboard layout" ;;
       esac
+
 # Update system
 apt update -q2
 
