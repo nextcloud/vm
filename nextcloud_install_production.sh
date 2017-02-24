@@ -200,14 +200,24 @@ sudo mv sources.list /etc/apt/
 clear
 
 # Set keyboard layout
-echo "Current keyboard layout is: $(localectl status | grep "Layout" | awk '{print $3}')"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
-dpkg-reconfigure keyboard-configuration
-echo
+echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+
+if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
+then
+echo "Not changing keyboard layout..."
+sleep 1
 clear
+else
+dpkg-reconfigure keyboard-configuration
+clear
+fi
 
 # Update system
 apt update -q2
