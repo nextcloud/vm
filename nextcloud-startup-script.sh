@@ -447,7 +447,6 @@ then
     echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     echo -e "\e[32m"
     read -p "Press any key to set static IP..." -n1 -s
-    sleep 2
     echo -e "\e[0m"
     ifdown $IFACE
     sleep 1
