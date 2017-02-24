@@ -517,7 +517,7 @@ function ask_yes_or_no() {
 
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-echo "Not chaning keyboard layout..."
+echo "Not changing keyboard layout..."
 sleep 1
 clear
 else
