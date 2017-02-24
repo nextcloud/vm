@@ -446,7 +446,8 @@ then
     echo -e "in your router later. It's included in this guide:"
     echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     echo -e "\e[32m"
-    read -p "Press any key to set static IP..." -n1 -s
+    echo "We'll now setup the VM static IP"
+    sleep 2
     echo -e "\e[0m"
     ifdown $IFACE
     sleep 1
