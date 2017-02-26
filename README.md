@@ -1,12 +1,14 @@
 # Nextcloud VM
 [![irc](https://img.shields.io/badge/irc%20channel-%23nextcloud--vm%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
 
+## Support the development
+<a href="https://www.paypal.me/techandme"><img src="https://raw.githubusercontent.com/slaterjohn/payment-logos/master/medium/paypal-1-m.png">
+
 ## Maintainers
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
 * [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
 * You? :)
-
 
 ## Build Requirements
 These requirements are only applied if you build from the scripts:
