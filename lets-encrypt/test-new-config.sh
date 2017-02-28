@@ -29,6 +29,8 @@ then
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
     crontab -u root -l | { cat; echo "@monthly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+DATE='$(date +%Y-%m-%d_%H:%M)'
+IF='if [[ $? -eq 0 ]]'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 service apache2 stop
@@ -38,11 +40,11 @@ if ! /etc/letsencrypt/letsencrypt-auto renew > /var/log/letsencrypt/renew.log 2>
         exit 1
 fi
 service apache2 start
-if [[ $? -eq 0 ]]
+$IF
 then
-        echo "Let's Encrypt SUCCESS!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+        echo "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
 else
-        echo "Let's Encrypt FAILED!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+        echo "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
         reboot
 fi
 CRONTAB
