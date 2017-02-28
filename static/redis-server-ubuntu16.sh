@@ -108,7 +108,7 @@ cat <<ADD_TO_CONFIG>> $NCPATH/config/config.php
     'password' => '$REDIS_PASS',
   ),
 );
-ADD_TO_CONFIG 
+ADD_TO_CONFIG
 
 # Redis performance tweaks
 if grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
