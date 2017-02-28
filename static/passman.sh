@@ -20,7 +20,7 @@ fi
 
 # Check if file is downloadable
 echo "Checking latest released version on the Passman download server and if it's possible to download..."
-wget -q -T 10 -t 2 $PASSVER_REPO/$PASSVER/$PASSVER_FILE > /dev/null
+wget -q -T 10 -t 2 $PASSVER_REPO/$PASSVER_FILE > /dev/null
 if [ $? -eq 0 ]
 then
    echo "Latest version is: $PASSVER"
