@@ -20,7 +20,7 @@ fi
 
 # Check if file is downloadable
 echo "Checking latest released version on the Passman download server and if it's possible to download..."
-curl -s $PASSVER_REPO/$PASSVER/$PASSVER_FILE > /dev/null
+wget -q -T 10 -t 2 $PASSVER_REPO/$PASSVER/$PASSVER_FILE > /dev/null
 if [ $? -eq 0 ]
 then
    echo "Latest version is: $PASSVER"
@@ -38,7 +38,7 @@ fi
 mkdir -p $SHA256
 wget -q $PASSVER_REPO/$PASSVER_FILE -P $SHA256
 wget -q $PASSVER_REPO/$PASSVER_FILE.sha256 -P $SHA256
-echo "Verifying both integrity of $PASSVER_FILE..."
+echo "Verifying integrity of $PASSVER_FILE..."
 cd $SHA256
 CHECKSUM_STATE=$(echo -n $(sha256sum -c $PASSVER_FILE.sha256) | tail -c 2)
 if [ "$CHECKSUM_STATE" != "OK" ]
