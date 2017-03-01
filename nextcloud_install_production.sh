@@ -675,14 +675,24 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cu
 echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
-if [ -f $HOME/*.sh ]
+if [ -f /home/$UNIXUSER/*.sh.* ]
 then
-    rm $HOME/*.sh
+    rm /home/$UNIXUSER/*.sh.*
 fi
 
-if [ -f /root/*.sh ]
+if [ -f /root/*.sh.* ]
 then
-    rm /root/*.sh
+    rm /root/*.sh.*
+fi
+
+if [ -f /home/$UNIXUSER/*.html.* ]
+then
+    rm /home/$UNIXUSER/*.html.*
+fi
+
+if [ -f /root/*.html.* ]
+then
+    rm /root/*.html.*
 fi
 
 # Install virtual kernels
