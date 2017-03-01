@@ -171,6 +171,8 @@ then
    echo "it to this server before you can run this script."
    echo
    exit 1
+else
+   rm *.html
 fi
 
 #Fix issue #28
