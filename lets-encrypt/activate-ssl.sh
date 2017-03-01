@@ -164,7 +164,7 @@ fi
 # Check if $domain exists and is reachable
 echo
 echo "Checking if $domain exists and is reachable..."
-curl -s -m 20 $domain > /dev/null
+wget -q -T 10 -t 2 $domain > /dev/null
 if [[ $? > 0 ]]
 then
    echo "Nope, it's not there. You have to create $domain and point"

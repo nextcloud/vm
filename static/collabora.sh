@@ -96,7 +96,7 @@ fi
 # Check if $SUBDOMAIN exists and is reachable
 echo
 echo "Checking if $SUBDOMAIN exists and is reachable..."
-curl -s -m 20 $SUBDOMAIN > /dev/null
+wget -q -T 10 -t 2 $SUBDOMAIN > /dev/null
 if [[ $? > 0 ]]
 then
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
