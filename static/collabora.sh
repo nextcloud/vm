@@ -96,15 +96,13 @@ fi
 # Check if $SUBDOMAIN exists and is reachable
 echo
 echo "Checking if $SUBDOMAIN exists and is reachable..."
-wget -q -T 10 -t 2 $SUBDOMAIN > /dev/null
+curl -s $SUBDOMAIN > /dev/null
 if [[ $? > 0 ]]
 then
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
    echo "it to this server before you can run this script."
    echo
    exit 1
-else
-   rm *.html
 fi
 
 # Update
