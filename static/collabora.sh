@@ -24,7 +24,7 @@ CERTFILES=$LETSENCRYPTPATH/live
 # WANIP
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 # App
-COLLVER=$(wget -q -T 10 -t 2 https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
+COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
 COLLVER_FILE=richdocuments.tar.gz
 COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
 # Folders
@@ -71,7 +71,7 @@ fi
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
-wget -q -T 10 -t 2 https://$(echo $NCDOMAIN | tr -d '\\')/status.php | grep -q 'installed":true'
+curl -s https://$(echo $NCDOMAIN | tr -d '\\')/status.php | grep -q 'installed":true'
 if [ $? -eq 0 ]
 then
     sleep 1
