@@ -1,6 +1,6 @@
 #!/bin/bash
-WANIP4=$(curl -s ipinfo.io/ip -m 5)
-WANIP6=$(curl -s 6.ifcfg.me -m 5)
+WANIP4=$(wget -q -T 10 -t 2 ipinfo.io/ip -m 5)
+WANIP6=$(wget -q -T 10 -t 2 6.ifcfg.me -m 5)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 clear
 figlet -f small Nextcloud

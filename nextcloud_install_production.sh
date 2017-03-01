@@ -16,7 +16,7 @@ STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 NCREPO="https://download.nextcloud.com/server/releases/"
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
-NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+NCVERSION=$(wget -q -T 10 -t 2 $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 STABLEVERSION="nextcloud-$NCVERSION"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
@@ -106,7 +106,7 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if key is available
-if curl -s "$NCREPO" > /dev/null
+if wget -q -T 10 -t 2 "$NCREPO" > /dev/null
 then
     echo "Nextcloud repo OK"
 else
@@ -497,10 +497,10 @@ apt update -q2
 apt install webmin -y
 
 # Nextcloud apps
-CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+CONVER=$(wget -q -T 10 -t 2 https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CONVER_FILE=contacts.tar.gz
 CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
-CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+CALVER=$(wget -q -T 10 -t 2 https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 

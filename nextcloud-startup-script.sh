@@ -42,7 +42,7 @@ fi
 # Check network
 echo "Testing if network is OK..."
 service networking restart
-    curl -s http://github.com > /dev/null
+    wget -q -T 10 -t 2 http://github.com > /dev/null
 if [ $? -eq 0 ]
 then
     echo -e "\e[32mOnline!\e[0m"
@@ -57,7 +57,7 @@ fi
 # Check network
 echo "Testing if network is OK..."
 service networking restart
-    curl -s http://github.com > /dev/null
+    wget -q -T 10 -t 2 http://github.com > /dev/null
 if [ $? -eq 0 ]
 then
     echo -e "\e[32mOnline!\e[0m"
