@@ -175,7 +175,6 @@ else
    rm *.html
 fi
 
-
 #Fix issue #28
 ssl_conf="/etc/apache2/sites-available/$domain.conf"
 
