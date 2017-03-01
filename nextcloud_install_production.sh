@@ -16,7 +16,7 @@ STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 NCREPO="https://download.nextcloud.com/server/releases/"
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
-NCVERSION=$(wget -q -T 10 -t 2 $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 STABLEVERSION="nextcloud-$NCVERSION"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
