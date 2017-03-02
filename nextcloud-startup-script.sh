@@ -632,6 +632,7 @@ do
                 ;;
         esac
 done 9< results
+rm -f results
 clear
 
 # Add extra security
@@ -736,25 +737,45 @@ rm $SCRIPTS/test_connection.sh
 rm $SCRIPTS/instruction.sh
 rm $NCDATA/nextcloud.log
 rm $SCRIPTS/nextcloud-startup-script.sh
-if [ -f /home/$UNIXUSER/*.sh.* ]
-then
-    rm /home/$UNIXUSER/*.sh.*
-fi
+for f in /home/$UNIXUSER/* ; do
+rm -f *.sh
+rm -f *.sh.*
+done;
 
-if [ -f /root/*.sh.* ]
-then
-    rm /root/*.sh.*
-fi
+for f in /root/* ; do
+rm -f *.sh
+rm -f *.sh.*
+done;
 
-if [ -f /home/$UNIXUSER/*.html.* ]
-then
-    rm /home/$UNIXUSER/*.html.*
-fi
+for f in /home/$UNIXUSER/* ; do
+rm -f *.html
+rm -f *.html.*
+done;
 
-if [ -f /root/*.html.* ]
-then
-    rm /root/*.html.*
-fi
+for f in /root/* ; do
+rm -f *.html
+rm -f *.html.*
+done;
+
+for f in /home/$UNIXUSER/* ; do
+rm -f *.tar
+rm -f *.tar.*
+done;
+
+for f in /root/* ; do
+rm -f *.tar
+rm -f *.tar.*
+done;
+
+for f in /home/$UNIXUSER/* ; do
+rm -f *.zip
+rm -f *.zip.*
+done;
+
+for f in /root/* ; do
+rm -f *.zip
+rm -f *.zip.*
+done;
 sed -i "s|instruction.sh|nextcloud.sh|g" /home/$UNIXUSER/.bash_profile
 cat /dev/null > /root/.bash_history
 cat /dev/null > /home/$UNIXUSER/.bash_history
