@@ -159,7 +159,7 @@ if [ -d $SNAPDIR ]
 then
     wget $STATIC/spreedme.sh -P $SCRIPTS
     bash $SCRIPTS/spreedme.sh
-    rm $SCRIPTS/spreedme.sh.*
+    rm $SCRIPTS/spreedme.*
     sudo -u www-data php $NCPATH/occ app:enable spreedme
 else
     sleep 1
