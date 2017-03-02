@@ -487,15 +487,6 @@ sudo -u www-data php $NCPATH/occ config:system:set mail_smtppassword --value="vi
 # Install Libreoffice Writer to be able to read MS documents.
 sudo apt install --no-install-recommends libreoffice-writer -y
 
-# Install packages for Webmin
-apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
-
-# Install Webmin
-sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
-wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
-apt update -q2
-apt install webmin -y
-
 # Nextcloud apps
 CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CONVER_FILE=contacts.tar.gz
@@ -503,15 +494,6 @@ CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
 CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
-
-# Get spreedme script
-if [ -f $SCRIPTS/spreedme.sh ]
-then
-    rm $SCRIPTS/spreedme.sh
-    wget -q $STATIC/spreedme.sh -P $SCRIPTS
-else
-    wget -q $STATIC/spreedme.sh -P $SCRIPTS
-fi
 
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
@@ -554,30 +536,36 @@ then
 fi
 }
 
-function spreedme {
-    bash $SCRIPTS/spreedme.sh
-    rm $SCRIPTS/spreedme.sh
+function webmin {
+# Install packages for Webmin
+apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
 
+# Install Webmin
+sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
+wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
+apt update -q2
+apt install webmin -y
 }
 
-whiptail --title "Which apps do you want to install?" --checklist --separate-output "" 10 40 3 \
+whiptail --title "Which apps/programs do you want to install?" --checklist --separate-output "" 10 40 3 \
 "Calendar" "              " on \
 "Contacts" "              " on \
-"Spreed.Me" "              " on 2>results
+"Webmin" "              " on 2>results
 
-while read choice
+while read -r -u 9 choice
 do
         case $choice in
                 Calendar) calendar
                 ;;
                 Contacts) contacts
                 ;;
-                Spreed.Me) spreedme
+                Webmin) webmin
                 ;;
                 *)
                 ;;
         esac
-done < results
+done 9< results
+rm -f results
 
 # Change roots .bash_profile
 if [ -f $SCRIPTS/change-root-profile.sh ]
