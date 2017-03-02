@@ -617,7 +617,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Passman" "(Password storage)   " OFF \
 "Spreed.ME" "(Video calls)   " OFF 2>results
 
-while read choice
+while read -r -u 9 choice
 do
         case $choice in
                 Collabora) collabora
@@ -631,7 +631,7 @@ do
                 *)
                 ;;
         esac
-done < results
+done 9< results
 clear
 
 # Add extra security
