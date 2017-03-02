@@ -758,13 +758,13 @@ rm -f *.html.*
 done;
 
 for f in /home/$UNIXUSER/* ; do
-rm -f *.gz
-rm -f *.gz.*
+rm -f *.tar
+rm -f *.tar.*
 done;
 
 for f in /root/* ; do
-rm -f *.gz
-rm -f *.gz.*
+rm -f *.tar
+rm -f *.tar.*
 done;
 
 for f in /home/$UNIXUSER/* ; do
