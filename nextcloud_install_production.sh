@@ -675,25 +675,45 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cu
 echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
-if [ -f /home/$UNIXUSER/*.sh.* ]
-then
-    rm /home/$UNIXUSER/*.sh.*
-fi
+for f in /home/$UNIXUSER/* ; do
+rm -f *.sh
+rm -f *.sh.*
+done;
 
-if [ -f /root/*.sh.* ]
-then
-    rm /root/*.sh.*
-fi
+for f in /root/* ; do
+rm -f *.sh
+rm -f *.sh.*
+done;
 
-if [ -f /home/$UNIXUSER/*.html.* ]
-then
-    rm /home/$UNIXUSER/*.html.*
-fi
+for f in /home/$UNIXUSER/* ; do
+rm -f *.html
+rm -f *.html.*
+done;
 
-if [ -f /root/*.html.* ]
-then
-    rm /root/*.html.*
-fi
+for f in /root/* ; do
+rm -f *.html
+rm -f *.html.*
+done;
+
+for f in /home/$UNIXUSER/* ; do
+rm -f *.gz
+rm -f *.gz.*
+done;
+
+for f in /root/* ; do
+rm -f *.gz
+rm -f *.gz.*
+done;
+
+for f in /home/$UNIXUSER/* ; do
+rm -f *.zip
+rm -f *.zip.*
+done;
+
+for f in /root/* ; do
+rm -f *.zip
+rm -f *.zip.*
+done;
 
 # Install virtual kernels
 apt install linux-tools-virtual-hwe-16.04-edge linux-cloud-tools-virtual-hwe-16.04-edge  -y
