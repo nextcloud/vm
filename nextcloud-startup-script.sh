@@ -632,6 +632,7 @@ do
                 ;;
         esac
 done 9< results
+rm -f results
 clear
 
 # Add extra security
