@@ -169,7 +169,9 @@ if [[ $? > 0 ]]
 then
    echo "Nope, it's not there. You have to create $domain and point"
    echo "it to this server before you can run this script."
-   echo
+   echo -e "\e[32m"
+   read -p "Press any key to continue... " -n1 -s
+   echo -e "\e[0m"
    exit 1
 else
    rm *.html
