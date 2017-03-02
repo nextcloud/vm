@@ -556,7 +556,7 @@ NCDB=nextcloud_db
 PW_FILE=/var/mysql_password.txt
 echo
 echo "Enabling UTF8mb4 support on $NCDB...."
-echo "Please be paitent, it may take a while.
+echo "Please be paitent, it may take a while."
 sudo /etc/init.d/mysql restart
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
