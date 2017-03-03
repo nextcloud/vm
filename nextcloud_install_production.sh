@@ -704,9 +704,15 @@ rm -f *.zip.*
 done;
 
 # Install virtual kernels
-apt install linux-tools-virtual-hwe-16.04-edge linux-cloud-tools-virtual-hwe-16.04-edge  -y
-apt install linux-image-virtual-hwe-16.04-edge -y
-apt install linux-virtual-hwe-16.04-edge -y
+#apt install linux-tools-virtual-hwe-16.04-edge linux-cloud-tools-virtual-hwe-16.04-edge  -y
+#apt install linux-image-virtual-hwe-16.04-edge -y
+#apt install linux-virtual-hwe-16.04-edge -y
+apt install linux-tools-virtual-lts-xenial linux-image-virtual-lts-xenial linux-headers-virtual-lts-xenial \
+linux-image-extra-virtual-lts-xenial -y
+
+# Load aufs 
+modprobe aufs
+echo aufs >> /etc/modules
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
