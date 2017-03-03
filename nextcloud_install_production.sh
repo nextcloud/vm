@@ -704,7 +704,7 @@ rm -f *.zip.*
 done;
 
 # Install virtual kernels
-apt purge $(dpkg-query -W -f='${binary:Package}\n' 'linux-image-4*' 'linux-headers-4*' | grep -v 4.4.0-64-generic)
+apt purge -y $(dpkg-query -W -f='${binary:Package}\n' 'linux-image-4*' 'linux-headers-4*' | grep -v 4.4.0-64-generic)
 apt install linux-image-virtual-lts-xenial linux-headers-virtual-lts-xenial -y
 apt install linux-image-extra-virtual-lts-xenial linux-tools-virtual-lts-xenial -y
 
