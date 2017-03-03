@@ -188,6 +188,20 @@ apt install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
+echo "Some VPS providers have local mirrors preconfigured, some don't."
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "no" == $(ask_yes_or_no "Do you want to detect a better mirror?") ]]
+then
+echo "Keeping the preconfigured mirror..."
+sleep 1
+clear
+else
 echo "Locating the best mirrors..."
 apt update -q2
 apt install python-pip -y
@@ -198,6 +212,8 @@ apt-select
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 sudo mv sources.list /etc/apt/
 clear
+fi
+
 
 # Set keyboard layout
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
