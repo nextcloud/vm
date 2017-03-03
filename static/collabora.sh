@@ -118,7 +118,9 @@ else
     apt install docker.io -y
 fi
 
-# Load aufs 
+# Load aufs
+apt-get install linux-image-extra-$(uname -r) -y # does this need a reboot?
+update-grub
 apt install aufs-tools -y
 modprobe aufs
 echo aufs >> /etc/modules
