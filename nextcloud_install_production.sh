@@ -196,7 +196,7 @@ function ask_yes_or_no() {
         *)     echo "no" ;;
     esac
 }
-if [[ "no" == $(ask_yes_or_no "Do you want to detect a better mirror?") ]]
+if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
 echo "Keeping the preconfigured mirror..."
 sleep 1
