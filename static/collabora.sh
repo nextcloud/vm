@@ -180,7 +180,7 @@ then
 else
         touch "$HTTPS_CONF"
         cat << HTTPS_CREATE > "$HTTPS_CONF"
-<VirtualHost $SUBDOMAIN:443>
+<VirtualHost *:443>
   ServerName $SUBDOMAIN:443
 
   # SSL configuration, you may want to take the easy route instead and use Lets Encrypt!
