@@ -100,7 +100,7 @@ function ask_yes_or_no() {
         *)     echo "no" ;;
     esac
 }
-if [[ "yes" == $(ask_yes_or_no "Do you have a domian that you will use?") ]]
+if [[ "yes" == $(ask_yes_or_no "Do you have a domain that you will use?") ]]
 then
     sleep 1
 else
