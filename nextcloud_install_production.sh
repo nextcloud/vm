@@ -704,14 +704,9 @@ rm -f *.zip.*
 done;
 
 # Install virtual kernels
-apt purge -y $(dpkg-query -W -f='${binary:Package}\n' 'linux-image-4*' 'linux-headers-4*' | grep -v 4.4.0-64-generic)
-apt install linux-image-virtual-lts-xenial linux-headers-virtual-lts-xenial -y
-apt install linux-image-extra-virtual-lts-xenial linux-tools-virtual-lts-xenial -y
-
-# Load aufs 
-apt install aufs-tools -y
-modprobe aufs
-echo aufs >> /etc/modules
+apt install linux-tools-virtual-hwe-16.04 linux-cloud-tools-virtual-hwe-16.04  -y
+apt install linux-image-virtual-hwe-16.04 -y
+apt install linux-virtual-hwe-16.04 -y
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
