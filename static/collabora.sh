@@ -118,6 +118,10 @@ else
     apt install docker.io -y
 fi
 
+# Set docker storage driver to AUFS
+echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
+service docker restart
+
 # Check if Git is installed
     git --version 2> /dev/null
     GIT_IS_AVAILABLE=$?
