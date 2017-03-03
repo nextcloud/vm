@@ -118,6 +118,11 @@ else
     apt install docker.io -y
 fi
 
+# Load aufs 
+apt install aufs-tools -y
+modprobe aufs
+echo aufs >> /etc/modules
+
 # Set docker storage driver to AUFS
 echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
 service docker restart
