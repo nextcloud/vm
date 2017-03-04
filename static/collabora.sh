@@ -121,7 +121,6 @@ fi
 # Load aufs
 apt-get install linux-image-extra-$(uname -r) -y
 apt install aufs-tools -y
-# modprobe aufs # doesn't work until the new kernel is loaded
 echo "aufs" >> /etc/modules
 
 # Set docker storage driver to AUFS
@@ -255,7 +254,7 @@ fi
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
 sudo service apache2 stop
-############################### Still need to rewrite test-new-config.sh for collabora domain and add more tries for letsencrypt
+
 # Generate certs
 cd /etc
 git clone https://github.com/certbot/certbot.git
