@@ -119,11 +119,10 @@ else
 fi
 
 # Load aufs
-apt-get install linux-image-extra-$(uname -r) -y # does this need a reboot?
-update-grub
+apt-get install linux-image-extra-$(uname -r) -y
 apt install aufs-tools -y
-modprobe aufs
-echo aufs >> /etc/modules
+# modprobe aufs # doesn't work until the new kernel is loaded
+echo "aufs" >> /etc/modules
 
 # Set docker storage driver to AUFS
 echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
