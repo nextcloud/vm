@@ -118,6 +118,15 @@ else
     apt install docker.io -y
 fi
 
+# Load aufs
+apt-get install linux-image-extra-$(uname -r) -y
+apt install aufs-tools -y
+echo "aufs" >> /etc/modules
+
+# Set docker storage driver to AUFS
+echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
+service docker restart
+
 # Check if Git is installed
     git --version 2> /dev/null
     GIT_IS_AVAILABLE=$?
@@ -180,7 +189,7 @@ then
 else
         touch "$HTTPS_CONF"
         cat << HTTPS_CREATE > "$HTTPS_CONF"
-<VirtualHost $SUBDOMAIN:443>
+<VirtualHost *:443>
   ServerName $SUBDOMAIN:443
 
   # SSL configuration, you may want to take the easy route instead and use Lets Encrypt!
@@ -245,7 +254,7 @@ fi
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
 sudo service apache2 stop
-############################### Still need to rewrite test-new-config.sh for collabora domain and add more tries for letsencrypt
+
 # Generate certs
 cd /etc
 git clone https://github.com/certbot/certbot.git
