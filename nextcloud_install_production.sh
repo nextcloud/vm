@@ -188,7 +188,7 @@ apt install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
-REPO=$(grep -P -m 1 main /etc/apt/sources.list | awk -F/ '{print $3}')
+REPO=$(apt-cache policy | grep -m1 http| awk '{ print $2}')
 echo -e "Your server repository is:  \e[36m$REPO\e[0m"
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
