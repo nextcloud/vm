@@ -875,7 +875,7 @@ echo -e "|   \e[0mTo update this VM just type: \e[36m'sudo bash /var/scripts/upd
 echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
-echo
+echo -e "\e[0m"
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
