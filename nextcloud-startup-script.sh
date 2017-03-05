@@ -71,6 +71,8 @@ fi
 # Check where the best mirrors are and update
 echo
 echo "Some VPS providers have local download mirrors preconfigured, some don't."
+REPO=$(grep -P -m 1 main /etc/apt/sources.list | awk -F/ '{print $3}')
+echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
     case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
@@ -80,7 +82,7 @@ function ask_yes_or_no() {
 }
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-echo "Keeping the preconfigured mirror..."
+echo "Keeping $REPO as mirror..."
 sleep 1
 else
   echo "Locating the best mirrors..."
