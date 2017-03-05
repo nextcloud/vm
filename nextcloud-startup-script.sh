@@ -574,6 +574,33 @@ bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 clear
 
+cat << LETSENC
++-----------------------------------------------+
+|  The following script will install a trusted  |
+|  SSL certificate through Let's Encrypt.       |
++-----------------------------------------------+
+LETSENC
+
+# Let's Encrypt
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
+then
+    bash $SCRIPTS/activate-ssl.sh
+else
+    echo
+    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+fi
+clear
+
 # Whiptail auto-size
 calc_wt_size() {
   WT_HEIGHT=17
@@ -667,35 +694,34 @@ echo
 sleep 3
 clear
 
-    # Change password
-    echo -e "\e[0m"
-    echo "For better security, change the system user password for [$UNIXUSER]"
-    echo -e "\e[32m"
-    read -p "Press any key to change password for system user... " -n1 -s
-    echo -e "\e[0m"
+# Change password
+echo -e "\e[0m"
+echo "For better security, change the system user password for [$UNIXUSER]"
+echo -e "\e[32m"
+read -p "Press any key to change password for system user... " -n1 -s
+echo -e "\e[0m"
+sudo passwd $UNIXUSER
+if [[ $? > 0 ]]
+then
     sudo passwd $UNIXUSER
-    if [[ $? > 0 ]]
-    then
-        sudo passwd $UNIXUSER
-    else
-        sleep 2
-    fi
-    echo
-    clear
-
-    echo -e "\e[0m"
-    echo "For better security, change the Nextcloud password for [$NCUSER]"
-    echo "The current password for $NCUSER is [$NCPASS]"
-    echo -e "\e[32m"
-    read -p "Press any key to change password for Nextcloud... " -n1 -s
-    echo -e "\e[0m"
+else
+    sleep 2
+fi
+echo
+clear
+echo -e "\e[0m"
+echo "For better security, change the Nextcloud password for [$NCUSER]"
+echo "The current password for $NCUSER is [$NCPASS]"
+echo -e "\e[32m"
+read -p "Press any key to change password for Nextcloud... " -n1 -s
+echo -e "\e[0m"
+sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
+if [[ $? > 0 ]]
+then
     sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
-    if [[ $? > 0 ]]
-    then
-        sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
-    else
-        sleep 2
-    fi
+else
+    sleep 2
+fi
 clear
 
 # Upgrade system
@@ -828,38 +854,19 @@ echo
     echo -e "\e[0m"
 clear
 
-cat << LETSENC
-+-----------------------------------------------+
-|  Ok, now the last part - a proper SSL cert.   |
-|                                               |
-|  The following script will install a trusted  |
-|  SSL certificate through Let's Encrypt.       |
-+-----------------------------------------------+
-LETSENC
-
-# Let's Encrypt
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
+# Sets trusted domain in config.php
+if [ -f $SCRIPTS/trusted.sh ]
 then
-    bash $SCRIPTS/activate-ssl.sh
+    rm $SCRIPTS/trusted.sh
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
 else
-    echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
 fi
-
-# Change Trusted Domain and CLI
-bash $SCRIPTS/trusted.sh
-rm $SCRIPTS/trusted.sh
-rm $SCRIPTS/update-config.php
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
