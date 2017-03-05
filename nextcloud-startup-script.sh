@@ -90,8 +90,11 @@ else
      --upgrade pip \
      apt-select
  apt-select
-  sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-  sudo mv sources.list /etc/apt/
+ sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+ if [ -f sources.list ]
+ then
+     sudo mv sources.list /etc/apt/
+  fi
 fi
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
