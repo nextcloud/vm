@@ -873,10 +873,6 @@ echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
 echo
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
-clear
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
