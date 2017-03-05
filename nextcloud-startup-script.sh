@@ -71,7 +71,7 @@ fi
 # Check where the best mirrors are and update
 echo
 echo "Some VPS providers have local download mirrors preconfigured, some don't."
-REPO=$(grep -P -m 1 main /etc/apt/sources.list | awk -F/ '{print $3}')
+REPO=$(apt-cache policy | grep -m1 http| awk '{ print $2}')
 echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
