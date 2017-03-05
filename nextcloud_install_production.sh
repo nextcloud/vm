@@ -215,6 +215,7 @@ else
      sudo mv sources.list /etc/apt/
   fi
 fi
+clear
 
 # Set keyboard layout
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
