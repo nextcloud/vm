@@ -68,33 +68,13 @@ else
     exit 1
 fi
 
-# Check where the best mirrors are and update
-echo
-echo "Some VPS providers have local download mirrors preconfigured, some don't."
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
+# Get the best mirrors for Ubuntu based on location
+echo "Locating the best mirrors..."
+apt-select
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+if [ -f sources.list ]
 then
-echo "Keeping the preconfigured mirror..."
-sleep 1
-else
-  echo "Locating the best mirrors..."
-  apt update -q2
-  apt install python-pip -y
- pip install \
-     --upgrade pip \
-     apt-select
- apt-select
- sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
- if [ -f sources.list ]
- then
-     sudo mv sources.list /etc/apt/
-  fi
+sudo mv sources.list /etc/apt/
 fi
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
