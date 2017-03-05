@@ -70,7 +70,10 @@ fi
 
 # Check where the best mirrors are and update
 echo
-echo "Some VPS providers have local download mirrors preconfigured, some don't."
+echo "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible."
+echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
+echo "We recomend you to change the mirrors based on where this is currently is installed."
+echo "Checking current mirror..."
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
 function ask_yes_or_no() {
