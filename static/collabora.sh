@@ -106,15 +106,25 @@ then
    exit 1
 fi
 
-# Update
-apt update -q2
-
-# Check if docker is installed
-if [ $(dpkg-query -W -f='${Status}' docker.io 2>/dev/null | grep -c "ok installed") -eq 1 ]
+# Install Docker
+if [ $(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
     sleep 1
 else
-    apt install docker.io -y
+    apt update -q2
+    apt install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    apt-key fingerprint 0EBFCD88
+    add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable"
+    apt update
+    apt install docker-ce -y
 fi
 
 # Load aufs
