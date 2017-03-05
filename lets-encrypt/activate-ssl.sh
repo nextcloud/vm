@@ -102,6 +102,7 @@ else
 fi
 
 # Check if 443 is open using nmap, if not notify the user
+echo "Running apt update..."
 apt update -q2
 if [ $(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
