@@ -109,7 +109,7 @@ fi
 # Install Docker
 if [ $(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
-    sleep 1
+    docker -v
 else
     apt update -q2
     apt install -y \
@@ -125,6 +125,7 @@ else
     stable"
     apt update
     apt install docker-ce -y
+    docker -v
 fi
 
 # Load aufs
