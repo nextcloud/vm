@@ -188,16 +188,32 @@ apt install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
-echo "Locating the best mirrors..."
-apt update -q2
-apt install python-pip -y
-pip install \
-    --upgrade pip \
+REPO=$(grep -P -m 1 main /etc/apt/sources.list | awk -F/ '{print $3}')
+echo -e "Your server repository is:  \e[36m$REPO\e[0m"
+function ask_yes_or_no() {
+    read -t 10 -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+    }
+if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
+then
+echo -e "\nKeeping default repository..."
+sleep 1
+clear
+else
+    echo "Locating the best mirrors..."
+    apt update -q2 
+    apt install python-pip -y
+    pip install \
+        --upgrade pip \
+        apt-select
     apt-select
-apt-select
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \ 
 sudo mv sources.list /etc/apt/
 clear
+fi
 
 # Set keyboard layout
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
