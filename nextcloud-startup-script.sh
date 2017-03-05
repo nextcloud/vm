@@ -69,6 +69,7 @@ else
 fi
 
 # Check where the best mirrors are and update
+echo
 echo "Some VPS providers have local download mirrors preconfigured, some don't."
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
