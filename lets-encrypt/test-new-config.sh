@@ -24,11 +24,11 @@ then
     echo "There are several ways of doing so, here are some tips and tricks: https://goo.gl/c1JHR0"
     echo "This script will add a renew cronjob to get you started, edit it by typing:"
     echo "'crontab -u root -e'"
-    echo "Feel free to contribute to this project: https://goo.gl/vEsWjb"
+    echo "Feel free to contribute to this project: https://goo.gl/3fQD65"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
-    crontab -u root -l | { cat; echo "@monthly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 DATE='$(date +%Y-%m-%d_%H:%M)'
 IF='if [[ $? -eq 0 ]]'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
@@ -95,4 +95,4 @@ else
     rm $SCRIPTS/update-config.php
 fi
 
-exit 0
+exit
