@@ -854,6 +854,15 @@ echo
     echo -e "\e[0m"
 clear
 
+# Update Config
+if [ -f $SCRIPTS/update-config.php ]
+then
+    rm $SCRIPTS/update-config.php
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+else
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+fi
+
 # Sets trusted domain in config.php
 if [ -f $SCRIPTS/trusted.sh ]
 then
