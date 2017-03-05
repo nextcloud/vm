@@ -82,9 +82,8 @@ else
     echo "Please install Nextcloud and make sure your domain is reachable, or activate SSL"
     echo "on your domain to be able to run this script."
     echo
-    echo "If you use the Nextcloud VM then just continue with the setup script and run the"
-    echo "Let's Encrypt script to get SSL and activate your Nextcloud domain."
-    echo "Then run these commands from your terminal:"
+    echo "If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain."
+    echo "When SSL is activated, run these commands from your terminal:"
     echo "sudo wget https://raw.githubusercontent.com/nextcloud/vm/master/static/collabora.sh"
     echo "sudo bash collabora.sh"
     echo -e "\e[32m"

@@ -425,26 +425,6 @@ read -p "Press any key to start the script..." -n1 -s
 clear
 echo -e "\e[0m"
 
-# Set hostname and ServerName
-echo "Setting hostname..."
-FQN=$(host -TtA $(hostname -s)|grep "has address"|awk '{print $1}') ; \
-if [[ "$FQN" == "" ]]
-then
-    FQN=$(hostname -s)
-fi
-sudo sh -c "echo 'ServerName $FQN' >> /etc/apache2/apache2.conf"
-sudo hostnamectl set-hostname $FQN
-service apache2 restart
-cat << ETCHOSTS > "/etc/hosts"
-127.0.1.1 $FQN.localdomain $FQN
-127.0.0.1 localhost
-
-# The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-ETCHOSTS
-
 # VPS?
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
@@ -594,6 +574,33 @@ bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 clear
 
+cat << LETSENC
++-----------------------------------------------+
+|  The following script will install a trusted  |
+|  SSL certificate through Let's Encrypt.       |
++-----------------------------------------------+
+LETSENC
+
+# Let's Encrypt
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
+then
+    bash $SCRIPTS/activate-ssl.sh
+else
+    echo
+    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+fi
+clear
+
 # Whiptail auto-size
 calc_wt_size() {
   WT_HEIGHT=17
@@ -687,35 +694,34 @@ echo
 sleep 3
 clear
 
-    # Change password
-    echo -e "\e[0m"
-    echo "For better security, change the system user password for [$UNIXUSER]"
-    echo -e "\e[32m"
-    read -p "Press any key to change password for system user... " -n1 -s
-    echo -e "\e[0m"
+# Change password
+echo -e "\e[0m"
+echo "For better security, change the system user password for [$UNIXUSER]"
+echo -e "\e[32m"
+read -p "Press any key to change password for system user... " -n1 -s
+echo -e "\e[0m"
+sudo passwd $UNIXUSER
+if [[ $? > 0 ]]
+then
     sudo passwd $UNIXUSER
-    if [[ $? > 0 ]]
-    then
-        sudo passwd $UNIXUSER
-    else
-        sleep 2
-    fi
-    echo
-    clear
-
-    echo -e "\e[0m"
-    echo "For better security, change the Nextcloud password for [$NCUSER]"
-    echo "The current password for $NCUSER is [$NCPASS]"
-    echo -e "\e[32m"
-    read -p "Press any key to change password for Nextcloud... " -n1 -s
-    echo -e "\e[0m"
+else
+    sleep 2
+fi
+echo
+clear
+echo -e "\e[0m"
+echo "For better security, change the Nextcloud password for [$NCUSER]"
+echo "The current password for $NCUSER is [$NCPASS]"
+echo -e "\e[32m"
+read -p "Press any key to change password for Nextcloud... " -n1 -s
+echo -e "\e[0m"
+sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
+if [[ $? > 0 ]]
+then
     sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
-    if [[ $? > 0 ]]
-    then
-        sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
-    else
-        sleep 2
-    fi
+else
+    sleep 2
+fi
 clear
 
 # Upgrade system
@@ -824,6 +830,28 @@ exit 0
 
 RCLOCAL
 
+# Set hostname and ServerName
+echo "Setting hostname..."
+FQN=$(host -TtA $(hostname -s)|grep "has address"|awk '{print $1}') ; \
+if [[ "$FQN" == "" ]]
+then
+    FQN=$(hostname -s)
+fi
+sudo sh -c "echo 'ServerName $FQN' >> /etc/apache2/apache2.conf"
+sudo hostnamectl set-hostname $FQN
+service apache2 restart
+cat << ETCHOSTS > "/etc/hosts"
+127.0.1.1 $FQN.localdomain $FQN
+127.0.0.1 localhost
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ETCHOSTS
+echo "Hostname set to: $FQN"
+sleep 1
+
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 
 # Success!
@@ -848,38 +876,28 @@ echo
     echo -e "\e[0m"
 clear
 
-cat << LETSENC
-+-----------------------------------------------+
-|  Ok, now the last part - a proper SSL cert.   |
-|                                               |
-|  The following script will install a trusted  |
-|  SSL certificate through Let's Encrypt.       |
-+-----------------------------------------------+
-LETSENC
-
-# Let's Encrypt
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
+# Update Config
+if [ -f $SCRIPTS/update-config.php ]
 then
-    bash $SCRIPTS/activate-ssl.sh
+    rm $SCRIPTS/update-config.php
+    wget -q $STATIC/update-config.php -P $SCRIPTS
 else
-    echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    wget -q $STATIC/update-config.php -P $SCRIPTS
 fi
 
-# Change Trusted Domain and CLI
-bash $SCRIPTS/trusted.sh
-rm $SCRIPTS/trusted.sh
-rm $SCRIPTS/update-config.php
+# Sets trusted domain in config.php
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    rm $SCRIPTS/trusted.sh
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
+else
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
+fi
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf

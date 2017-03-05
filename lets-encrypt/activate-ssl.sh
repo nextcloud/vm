@@ -3,6 +3,7 @@
 # Tech and Me ©2017 - www.techandme.se
 
 NCPATH=/var/www/nextcloud
+WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 dir_before_letsencrypt=/etc
 letsencryptpath=$dir_before_letsencrypt/letsencrypt
@@ -16,18 +17,6 @@ then
     echo -e "\e[31mSorry, you are not root.\n\e[0mYou need to type: \e[36msudo \e[0mbash /var/scripts/activate-ssl.sh"
     echo
     exit 1
-fi
-
-# Install git
-    git --version 2> /dev/null
-    GIT_IS_AVAILABLE=$?
-if [ $GIT_IS_AVAILABLE -eq 0 ]
-then
-    sleep 1
-else
-    echo "Installing git..."
-    apt update -q2
-    apt install git -y -q
 fi
 
 clear
@@ -112,6 +101,30 @@ else
     exit
 fi
 
+# Check if 443 is open using nmap, if not notify the user
+echo "Running apt update..."
+apt update -q2
+if [ $(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed") -eq 1 ]
+then
+      echo "nmap is already installed..."
+      clear
+else
+    apt install nmap -y
+fi
+
+if [ $(nmap -sS -p 443 "$WANIP4" | grep -c "open") -eq 1 ]
+then
+  echo -e "\e[32mPort 443 is open!\e[0m"
+  apt remove --purge nmap -y
+else
+  echo "Port 443 is not open. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/"
+  echo -e "\e[32m"
+  read -p "Press any key to continue... " -n1 -s
+  echo -e "\e[0m"
+  apt remove --purge nmap -y
+  exit 1
+fi
+
 # Fetch latest version of test-new-config.sh
 if [ -f $SCRIPTS/test-new-config.sh ]
 then
@@ -175,6 +188,18 @@ then
    exit 1
 else
    rm *.html
+fi
+
+# Install git
+    git --version 2> /dev/null
+    GIT_IS_AVAILABLE=$?
+if [ $GIT_IS_AVAILABLE -eq 0 ]
+then
+    sleep 1
+else
+    echo "Installing git..."
+    apt update -q2
+    apt install git -y -q
 fi
 
 #Fix issue #28
