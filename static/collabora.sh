@@ -106,25 +106,48 @@ then
    exit 1
 fi
 
-# Update
-apt update -q2
-
-# Check if docker is installed
-if [ $(dpkg-query -W -f='${Status}' docker.io 2>/dev/null | grep -c "ok installed") -eq 1 ]
+# Install Docker
+if [ $(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok installed") -eq 1 ]
 then
-    sleep 1
+    docker -v
 else
-    apt install docker.io -y
+    apt update -q2
+    apt install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    apt-key fingerprint 0EBFCD88
+    add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable"
+    apt update
+    apt install docker-ce -y
+    docker -v
 fi
 
 # Load aufs
 apt-get install linux-image-extra-$(uname -r) -y
-apt install aufs-tools -y
-echo "aufs" >> /etc/modules
+# apt install aufs-tools -y # already included in the docker-ce package
+AUFS=$(grep -r "aufs" /etc/modules)
+if [[ $AUFS = "aufs" ]]
+then
+    sleep 1
+else
+    echo "aufs" >> /etc/modules
+fi
 
 # Set docker storage driver to AUFS
-echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
-service docker restart
+AUFS2=$(grep -r "aufs" /etc/default/docker)
+if [[ $AUFS2 = 'DOCKER_OPTS="--storage-driver=aufs"' ]]
+then
+    sleep 1
+else
+    echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
+    service docker restart
+fi
 
 # Check if Git is installed
     git --version 2> /dev/null
@@ -249,7 +272,6 @@ fi
 fi
 
 # Let's Encrypt
-
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
 sudo service apache2 stop
@@ -287,6 +309,7 @@ then
     sudo -u www-data $NCPATH/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
     echo
     echo "Collabora is now succesfylly installed."
+    echo "You may have to reboot before Docker will load correctly."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
