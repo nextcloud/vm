@@ -35,6 +35,7 @@ FQDOMAIN=$(grep -r -m 1 ServerName /etc/apache2/sites-enabled/* | awk '{print $3
 echo "Setting hostname to $FQDOMAIN..."
 sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
 sudo hostnamectl set-hostname $FQDOMAIN
+sudo -u www-data php $NCPATH/occ config:system:set trusted_domains 3 --value=$FQDOMAIN
 service apache2 restart
 
 DATE='$(date +%Y-%m-%d_%H:%M)'
