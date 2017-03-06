@@ -835,28 +835,6 @@ exit 0
 
 RCLOCAL
 
-# Set hostname and ServerName
-echo "Setting hostname..."
-FQN=$(host -TtA $(hostname -s)|grep "has address"|awk '{print $1}') ; \
-if [[ "$FQN" == "" ]]
-then
-    FQN=$(hostname -s)
-fi
-sudo sh -c "echo 'ServerName $FQN' >> /etc/apache2/apache2.conf"
-sudo hostnamectl set-hostname $FQN
-service apache2 restart
-cat << ETCHOSTS > "/etc/hosts"
-127.0.1.1 $FQN.localdomain $FQN
-127.0.0.1 localhost
-
-# The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-ETCHOSTS
-echo "Hostname set to: $FQN"
-sleep 1
-
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 
 # Success!
@@ -893,6 +871,7 @@ then
     wget -q $STATIC/trusted.sh -P $SCRIPTS
     bash $SCRIPTS/trusted.sh
     rm $SCRIPTS/update-config.php
+    rm $SCRIPTS/trusted.sh
 else
     wget -q $STATIC/trusted.sh -P $SCRIPTS
     bash $SCRIPTS/trusted.sh

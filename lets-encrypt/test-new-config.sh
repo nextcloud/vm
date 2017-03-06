@@ -29,6 +29,14 @@ then
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+
+# Set hostname and ServerName
+echo "Setting hostname to $1..."
+sudo sh -c "echo 'ServerName $1' >> /etc/apache2/apache2.conf"
+sudo hostnamectl set-hostname $1
+sudo -u www-data php $NCPATH/occ config:system:set trusted_domains 3 --value=$1
+service apache2 restart
+
 DATE='$(date +%Y-%m-%d_%H:%M)'
 IF='if [[ $? -eq 0 ]]'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
@@ -70,29 +78,6 @@ else
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
     exit 1
-fi
-
-# Update Config
-if [ -f $SCRIPTS/update-config.php ]
-then
-    rm $SCRIPTS/update-config.php
-    wget -q $STATIC/update-config.php -P $SCRIPTS
-else
-    wget -q $STATIC/update-config.php -P $SCRIPTS
-fi
-
-# Sets trusted domain in config.php
-if [ -f $SCRIPTS/trusted.sh ]
-then
-    rm $SCRIPTS/trusted.sh
-    wget -q $STATIC/trusted.sh -P $SCRIPTS
-    bash $SCRIPTS/trusted.sh
-    rm $SCRIPTS/update-config.php
-else
-    wget -q $STATIC/trusted.sh -P $SCRIPTS
-    bash $SCRIPTS/trusted.sh
-    rm $SCRIPTS/trusted.sh
-    rm $SCRIPTS/update-config.php
 fi
 
 exit
