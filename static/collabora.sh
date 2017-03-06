@@ -130,7 +130,7 @@ fi
 
 # Load aufs
 apt-get install linux-image-extra-$(uname -r) -y
-apt install aufs-tools -y
+# apt install aufs-tools -y # already included in the docker-ce package
 echo "aufs" >> /etc/modules
 
 # Set docker storage driver to AUFS
@@ -298,6 +298,7 @@ then
     sudo -u www-data $NCPATH/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
     echo
     echo "Collabora is now succesfylly installed."
+    echo "If this is a standalone installation, you may have to reboot before Docker will load correctly."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
