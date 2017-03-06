@@ -871,6 +871,7 @@ then
     wget -q $STATIC/trusted.sh -P $SCRIPTS
     bash $SCRIPTS/trusted.sh
     rm $SCRIPTS/update-config.php
+    rm $SCRIPTS/trusted.sh
 else
     wget -q $STATIC/trusted.sh -P $SCRIPTS
     bash $SCRIPTS/trusted.sh
