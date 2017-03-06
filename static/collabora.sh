@@ -131,11 +131,23 @@ fi
 # Load aufs
 apt-get install linux-image-extra-$(uname -r) -y
 # apt install aufs-tools -y # already included in the docker-ce package
-echo "aufs" >> /etc/modules
+AUFS=$(grep -r "aufs" /etc/modules)
+if [[ $AUFS = "aufs" ]]
+then
+    sleep 1
+else
+    echo "aufs" >> /etc/modules
+fi
 
 # Set docker storage driver to AUFS
-echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
-service docker restart
+AUFS2=$(grep -r "aufs" /etc/default/docker)
+if [[ $AUFS2 = 'DOCKER_OPTS="--storage-driver=aufs"' ]]
+then
+    sleep 1
+else
+    echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
+    service docker restart
+fi
 
 # Check if Git is installed
     git --version 2> /dev/null
@@ -260,7 +272,6 @@ fi
 fi
 
 # Let's Encrypt
-
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
 sudo service apache2 stop
@@ -298,7 +309,7 @@ then
     sudo -u www-data $NCPATH/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
     echo
     echo "Collabora is now succesfylly installed."
-    echo "If this is a standalone installation, you may have to reboot before Docker will load correctly."
+    echo "You may have to reboot before Docker will load correctly."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
