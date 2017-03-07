@@ -123,12 +123,15 @@ else
   echo -e "\e[0m"
   if [[ $(nc -z $domain 443) -eq 0 ]]
   then
-  echo "Port 443 is not open on $domain. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/"
-  echo -e "\e[32m"
-  read -p "Press any key to exit... " -n1 -s
-  echo -e "\e[0m"
-  apt remove --purge nmap -y
-  exit 1
+    echo "Port 443 is not open on $domain. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/"
+    echo -e "\e[32m"
+    read -p "Press any key to exit... " -n1 -s
+    echo -e "\e[0m"
+    apt remove --purge nmap -y
+    exit 1
+  else
+    echo -e "\e[32mPort 443 is open on $domain!\e[0m"
+    apt remove --purge nmap -y
   fi
 fi
 
