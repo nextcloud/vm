@@ -101,6 +101,44 @@ else
     exit
 fi
 
+echo
+# Ask for domain name
+cat << ENTERDOMAIN
++---------------------------------------------------------------+
+|    Please enter the domain name you will use for Nextcloud:   |
+|    Like this: example.com, or nextcloud.example.com (1/2)     |
++---------------------------------------------------------------+
+ENTERDOMAIN
+echo
+read domain
+
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+echo
+if [[ "no" == $(ask_yes_or_no "Is this correct? $domain") ]]
+    then
+    echo
+    echo
+    cat << ENTERDOMAIN2
++---------------------------------------------------------------+
+|    OK, try again. (2/2)                                       |
+|    Please enter the domain name you will use for Nextcloud:   |
+|    Like this: example.com, or nextcloud.example.com           |
+|    It's important that it's correct, because the script is    |
+|    based on what you enter.                                   |
++---------------------------------------------------------------+
+ENTERDOMAIN2
+
+    echo
+    read domain
+    echo
+fi
+
 # Check if 443 is open using nmap, if not notify the user
 echo "Running apt update..."
 apt update -q2
@@ -146,43 +184,6 @@ else
     chmod +x $SCRIPTS/test-new-config.sh
 fi
 
-echo
-# Ask for domain name
-cat << ENTERDOMAIN
-+---------------------------------------------------------------+
-|    Please enter the domain name you will use for Nextcloud:   |
-|    Like this: example.com, or nextcloud.example.com (1/2)     |
-+---------------------------------------------------------------+
-ENTERDOMAIN
-echo
-read domain
-
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-echo
-if [[ "no" == $(ask_yes_or_no "Is this correct? $domain") ]]
-    then
-    echo
-    echo
-    cat << ENTERDOMAIN2
-+---------------------------------------------------------------+
-|    OK, try again. (2/2)                                       |
-|    Please enter the domain name you will use for Nextcloud:   |
-|    Like this: example.com, or nextcloud.example.com           |
-|    It's important that it's correct, because the script is    |
-|    based on what you enter.                                   |
-+---------------------------------------------------------------+
-ENTERDOMAIN2
-
-    echo
-    read domain
-    echo
-fi
 
 # Check if $domain exists and is reachable
 echo
