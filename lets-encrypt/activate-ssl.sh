@@ -150,7 +150,7 @@ else
     apt install nmap -y
 fi
 
-if [ $(nmap -sS -p 443 "$WANIP4" | grep -c "open") -eq 1 ]
+if [ $(nmap -sS -p 443 "$WANIP4" -PN | grep -c "open") -eq 1 ]
 then
   echo -e "\e[32mPort 443 is open on $WANIP4!\e[0m"
   apt remove --purge nmap -y
@@ -159,7 +159,7 @@ else
   echo -e "\e[32m"
   read -p "Press any key to test $domain... " -n1 -s
   echo -e "\e[0m"
-  if [[ $(nmap -sS -p 443 -O $domain | grep -m 1 "open" | awk '{print $2}') = open ]]
+  if [[ $(nmap -sS -p 443 $domain -PN | grep -m 1 "open" | awk '{print $2}') = open ]]
   then
     echo -e "\e[32mPort 443 is open on $domain!\e[0m"
     apt remove --purge nmap -y
