@@ -117,7 +117,7 @@ then
   echo -e "\e[32mPort 443 is open on $WANIP4!\e[0m"
   apt remove --purge nmap -y
 else
-  echo "Port 443 is not open on $WANIP4. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/"
+  echo "Port 443 is not open on $WANIP4. We will do a second try on $domain instead"
   echo -e "\e[32m"
   read -p "Press any key to test $domain... " -n1 -s
   echo -e "\e[0m"
