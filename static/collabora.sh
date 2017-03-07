@@ -106,7 +106,7 @@ else
   echo -e "\e[32m"
   read -p "Press any key to test $SUBDOMAIN... " -n1 -s
   echo -e "\e[0m"
-  if [[ $(nmap -sS -p 443 -O $SUBDOMAIN | grep -m 1 "open" | awk '{print $2}') = open ]]
+  if [[ $(nmap -sS -p 443 $SUBDOMAIN -PN | grep -m 1 "open" | awk '{print $2}') = open ]]
   then
     echo -e "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m"
     apt remove --purge nmap -y
