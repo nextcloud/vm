@@ -50,25 +50,6 @@ whiptail --msgbox "Please before you start, make sure that port 443 is directly 
 # Get the latest packages
 apt update -q2
 
-# Check if 443 is open using nmap, if not notify the user
-if [ $(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed") -eq 1 ]
-then
-      echo "nmap is already installed..."
-      clear
-else
-    apt install nmap -y
-fi
-
-if [ $(nmap -sS -p 443 "$WANIP4" | grep -c "open") -eq 1 ]
-then
-  echo -e "\e[32mPort 443 is open!\e[0m"
-  apt remove --purge nmap -y
-else
-  whiptail --msgbox "Port 443 is not open. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
-  apt remove --purge nmap -y
-  exit 1
-fi
-
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
 curl -s https://$(echo $NCDOMAIN | tr -d '\\')/status.php | grep -q 'installed":true'
@@ -104,6 +85,39 @@ then
    read -p "Press any key to continue... " -n1 -s
    echo -e "\e[0m"
    exit 1
+fi
+
+# Check if 443 is open using nmap, if not notify the user
+echo "Running apt update..."
+apt update -q2
+if [ $(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed") -eq 1 ]
+then
+      echo "nmap is already installed..."
+      clear
+else
+    apt install nmap -y
+fi
+if [ $(nmap -sS -p 443 "$WANIP4" | grep -c "open") -eq 1 ]
+then
+  echo -e "\e[32mPort 443 is open on $WANIP4!\e[0m"
+  apt remove --purge nmap -y
+else
+  echo "Port 443 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
+  echo -e "\e[32m"
+  read -p "Press any key to test $SUBDOMAIN... " -n1 -s
+  echo -e "\e[0m"
+  if [[ $(nmap -sS -p 443 -O $SUBDOMAIN | grep -m 1 "open" | awk '{print $2}') = open ]]
+  then
+    echo -e "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m"
+    apt remove --purge nmap -y
+  else
+    whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+    echo -e "\e[32m"
+    read -p "Press any key to exit... " -n1 -s
+    echo -e "\e[0m"
+    apt remove --purge nmap -y
+    exit 1
+  fi
 fi
 
 # Install Docker
