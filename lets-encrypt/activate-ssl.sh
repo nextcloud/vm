@@ -150,7 +150,7 @@ else
     apt install nmap -y
 fi
 
-if [ $(nmap -sS -p 443 "$WANIP4" | grep -c "open") -eq 1 ]
+if [ $(nmap -sS -p 443 "$WANIP4" -O scanme.nmap.org | grep -c "open") -eq 1 ]
 then
   echo -e "\e[32mPort 443 is open on $WANIP4!\e[0m"
   apt remove --purge nmap -y
