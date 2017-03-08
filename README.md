@@ -8,7 +8,7 @@
 * Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
 * [Donate](https://shop.techandme.se/index.php/product-category/donate/) or buy our [pre-configured VMs](https://shop.techandme.se/index.php/product-category/virtual-machine/): 500 GB, 1 TB or Hyper-V.
 
-## Current [Maintainers](https://github.com/nextcloud/vm/graphs/contributors)
+## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
 * [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
@@ -17,12 +17,12 @@
 ## Build your own VM, or install on a VPS
 
 #### Minimum requirements:
-* A clean Ubuntu Server 16.04.X Server
+* A clean Ubuntu Server 16.04.X
 * OpenSSH (preferred)
 * 20 GB HDD
 * At least 1 vCPU and 2 GB RAM
 
-#### Recomended
+#### Recommended
 * Thick provisioned (better performance and easier to maintain)
 * DHCP available
 
