@@ -1,25 +1,42 @@
 # Nextcloud VM
-[![irc](https://img.shields.io/badge/irc%20channel-%23nextcloud--vm%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
+[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
 
 ## Support the development
-<a href="https://www.paypal.me/techandme"><img src="https://raw.githubusercontent.com/slaterjohn/payment-logos/master/medium/paypal-1-m.png">
+* [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
+* Report [your issue](https://github.com/nextcloud/vm/issues/new)
+* Help us with [existing issues](https://github.com/nextcloud/vm/issues)
+* Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
+* [Donate](https://shop.techandme.se/index.php/product-category/donate/) or buy our [pre-configured VMs](https://shop.techandme.se/index.php/product-category/virtual-machine/): 500 GB, 1 TB or Hyper-V, .
 
-## Maintainers
+## Current [Maintainers](https://github.com/nextcloud/vm/graphs/contributors)
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
 * [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
 * You? :)
 
-## Build Requirements
-These requirements are only applied if you build from the scripts:
-* Ubuntu Server 16.04.X Server
+## Build your own VM, or install on a VPS
+
+##### Minimum requirements:
+* A clean Ubuntu Server 16.04.X Server
 * OpenSSH (preferred)
+* 20 GB HDD
+* At least 1 vCPU and 2 GB RAM
 
-If you install this on a clean Ubuntu 16.04.X VM, the only script you need to run is "nextcloud_install_production.sh". All the other scripts are fetched from this repository during the installation.
+##### Recomended
+* Thick provisioned (better performance and easier to maintain)
+* DHCP available
 
-It would be really nice if someone could develop the scripts so that they worked "out of the box", without having to use a "base VM" with Ubuntu 16.04 pre-installed. Vagrant is an option.
+##### Installation
+1. Get the latest install script from master:<br>
+`wget https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh`
+2. Run the script with your sudo user:<br> 
+`sudo -u <user> sudo bash nextcloud_install_production.sh`<br>
+Or, download the adduser script and run it:<br>
+`https://raw.githubusercontent.com/nextcloud/vm/master/static/adduser.sh && sudo bash adduser.sh`
+3. When the VM is installed it will automatically reboot. Remember to login with the user you created.<br>
+`ssh <user>@IP-ADDRESS`
 
-## Machine configuration
+## Machine configuration of the released version
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
 
 ## FAQ
