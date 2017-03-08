@@ -19,11 +19,16 @@ Tell us what happens instead
 
 **Server version:** (see your admin page)
 
-**VM version**
+**VM version** (master / released version)
 
 **Updated from an older installed version or fresh install:**
 
-## Logs
+## Network
+**Do you use DHCP?**
+
+**Is port 80 and/or 443 open?**
+
+## Logs / Screenshots
 <!--
 Please use http://hastebin.com/ for long error messages or logs. Thanks!
 -->
@@ -37,3 +42,8 @@ Insert your nextcloud.log file here
 ```
 Insert the CLI output here
 ```
+
+#### Screenshoots
+<!--
+Please use http://imgur.com/ for screenshots. Thanks!
+-->
