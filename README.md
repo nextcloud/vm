@@ -6,7 +6,7 @@
 * Report [your issue](https://github.com/nextcloud/vm/issues/new)
 * Help us with [existing issues](https://github.com/nextcloud/vm/issues)
 * Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
-* [Donate](https://shop.techandme.se/index.php/product-category/donate/) or buy our [pre-configured VMs](https://shop.techandme.se/index.php/product-category/virtual-machine/): 500 GB, 1 TB or Hyper-V, .
+* [Donate](https://shop.techandme.se/index.php/product-category/donate/) or buy our [pre-configured VMs](https://shop.techandme.se/index.php/product-category/virtual-machine/): 500 GB, 1 TB or Hyper-V.
 
 ## Current [Maintainers](https://github.com/nextcloud/vm/graphs/contributors)
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
@@ -16,24 +16,24 @@
 
 ## Build your own VM, or install on a VPS
 
-##### Minimum requirements:
+#### Minimum requirements:
 * A clean Ubuntu Server 16.04.X Server
 * OpenSSH (preferred)
 * 20 GB HDD
 * At least 1 vCPU and 2 GB RAM
 
-##### Recomended
+#### Recomended
 * Thick provisioned (better performance and easier to maintain)
 * DHCP available
 
-##### Installation
+#### Installation
 1. Get the latest install script from master:<br>
 `wget https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh`
 2. Run the script with your sudo user:<br> 
 `sudo -u <user> sudo bash nextcloud_install_production.sh`<br>
 Or, download the adduser script and run it:<br>
 `https://raw.githubusercontent.com/nextcloud/vm/master/static/adduser.sh && sudo bash adduser.sh`
-3. When the VM is installed it will automatically reboot. Remember to login with the user you created.<br>
+3. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
 `ssh <user>@IP-ADDRESS`
 
 ## Machine configuration of the released version
