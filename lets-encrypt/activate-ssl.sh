@@ -284,7 +284,7 @@ sudo service apache2 stop
 letsencrypt certonly --standalone -d $domain
 
 # Use for testing
-#letsencrypt-auto --apache --server https://acme-staging.api.letsencrypt.org/directory -d EXAMPLE.COM
+#letsencrypt --apache --server https://acme-staging.api.letsencrypt.org/directory -d EXAMPLE.COM
 # Activate Apache again (Disabled during standalone)
 service apache2 start
 a2ensite 000-default.conf
