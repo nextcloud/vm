@@ -209,7 +209,7 @@ then
     letsencrypt --version
 else
     echo "Installing letsencrypt..."
-    sudo add-apt-repository ppa:certbot/certbot -y
+    add-apt-repository ppa:certbot/certbot -y
     apt update -q2
     apt install letsencrypt -y -q
 fi
