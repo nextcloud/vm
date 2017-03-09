@@ -1,4 +1,5 @@
 #!/bin/bash
+<<<<<<< HEAD
 REPO="https://raw.githubusercontent.com/techandme/NextBerry/master/"
 CURRENTVERSION=$(sed '1q;d' /var/scripts/.version-nc)
 CLEANVERSION=$(sed '2q;d' /var/scripts/.version-nc)
@@ -13,6 +14,10 @@ MEMGPU=$(vcgencmd get_mem gpu)
 LANDSCAPE=$(/usr/bin/landscape-sysinfo  --exclude-sysinfo-plugins=LandscapeLink)
 WANIP4=$(curl -s ipinfo.io/ip -m 5)
 WANIP6=$(curl -s 6.ifcfg.me -m 5)
+=======
+WANIP4=$(curl -s -m 5 ipinfo.io/ip)
+WANIP6=$(curl -s -m 5 6.ifcfg.me)
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 RELEASE=$(lsb_release -s -d)
 BIN_UPTIME=$(/usr/bin/uptime --pretty)

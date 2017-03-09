@@ -19,11 +19,20 @@ Tell us what happens instead
 
 **Server version:** (see your admin page)
 
+<<<<<<< HEAD
 **Raspberry 2 or 3?**
+=======
+**VM version** (master / released version)
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
 
 **Updated from an older installed version or fresh install:**
 
-## Logs
+## Network
+**Do you use DHCP?**
+
+**Is port 80 and/or 443 open?**
+
+## Logs / Screenshots
 <!--
 Please use http://hastebin.com/ for long error messages or logs. Thanks!
 -->
@@ -37,3 +46,8 @@ Insert your nextcloud.log file here
 ```
 Insert the CLI output here
 ```
+
+#### Screenshoots
+<!--
+Please use http://imgur.com/ for screenshots. Thanks!
+-->

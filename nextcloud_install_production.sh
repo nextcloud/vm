@@ -112,7 +112,7 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if key is available
-if curl -s "$NCREPO" > /dev/null
+if wget -q -T 10 -t 2 "$NCREPO" > /dev/null
 then
     echo "Nextcloud repo OK"
 else
@@ -225,15 +225,61 @@ cat /dev/null > /var/log/syslog
 
 # Set locales
 apt install language-pack-en-base -y
+<<<<<<< HEAD
+=======
+sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+
+# Check where the best mirrors are and update
+echo
+REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
+echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
+then
+echo "Keeping $REPO as mirror..."
+sleep 1
+else
+  echo "Locating the best mirrors..."
+  apt update -q2
+  apt install python-pip -y
+ pip install \
+     --upgrade pip \
+     apt-select
+ apt-select
+ sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+ if [ -f sources.list ]
+ then
+     sudo mv sources.list /etc/apt/
+  fi
+fi
+clear
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
 
 # Set keyboard layout
-echo "Current keyboard layout is: $(localectl status | grep "Layout" | awk '{print $3}')"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
+echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+
+if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
+then
+echo "Not changing keyboard layout..."
+sleep 1
+clear
+else
 dpkg-reconfigure keyboard-configuration
 clear
+fi
 
 # Update and upgrade
 apt autoclean
@@ -569,29 +615,42 @@ then
 fi
 }
 
+<<<<<<< HEAD
 function spreedme {
     bash $SCRIPTS/spreedme.sh
     rm $SCRIPTS/spreedme.sh
+=======
+function webmin {
+# Install packages for Webmin
+apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
+
+# Install Webmin
+sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
+wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
+apt update -q2
+apt install webmin -y
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
 }
 
-whiptail --title "Which apps do you want to install?" --checklist --separate-output "" 10 40 3 \
+whiptail --title "Which apps/programs do you want to install?" --checklist --separate-output "" 10 40 3 \
 "Calendar" "              " on \
 "Contacts" "              " on \
-"Spreed.Me" "              " on 2>results
+"Webmin" "              " on 2>results
 
-while read choice
+while read -r -u 9 choice
 do
         case $choice in
                 Calendar) calendar
                 ;;
                 Contacts) contacts
                 ;;
-                Spreed.Me) spreedme
+                Webmin) webmin
                 ;;
                 *)
                 ;;
         esac
-done < results
+done 9< results
+rm -f results
 
 # Change roots .bash_profile
 if [ -f $SCRIPTS/change-root-profile.sh ]
@@ -696,16 +755,54 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cu
 echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
-if [ -f $HOME/*.sh ]
-then
-    rm $HOME/*.sh
-fi
+for f in /home/$UNIXUSER/* ; do
+rm -f *.sh
+rm -f *.sh.*
+done;
 
-if [ -f /root/*.sh ]
-then
-    rm /root/*.sh
-fi
+for f in /root/* ; do
+rm -f *.sh
+rm -f *.sh.*
+done;
 
+for f in /home/$UNIXUSER/* ; do
+rm -f *.html
+rm -f *.html.*
+done;
+
+for f in /root/* ; do
+rm -f *.html
+rm -f *.html.*
+done;
+
+for f in /home/$UNIXUSER/* ; do
+rm -f *.tar
+rm -f *.tar.*
+done;
+
+for f in /root/* ; do
+rm -f *.tar
+rm -f *.tar.*
+done;
+
+for f in /home/$UNIXUSER/* ; do
+rm -f *.zip
+rm -f *.zip.*
+done;
+
+for f in /root/* ; do
+rm -f *.zip
+rm -f *.zip.*
+done;
+
+<<<<<<< HEAD
+=======
+# Install virtual kernels
+apt install linux-tools-virtual-hwe-16.04 linux-cloud-tools-virtual-hwe-16.04  -y
+apt install linux-image-virtual-hwe-16.04 -y
+apt install linux-virtual-hwe-16.04 -y
+
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 echo "setup_secure_permissions_nextcloud.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh

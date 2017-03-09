@@ -24,11 +24,45 @@ then
     echo "There are several ways of doing so, here are some tips and tricks: https://goo.gl/c1JHR0"
     echo "This script will add a renew cronjob to get you started, edit it by typing:"
     echo "'crontab -u root -e'"
-    echo "Feel free to contribute to this project: https://goo.gl/vEsWjb"
+    echo "Feel free to contribute to this project: https://goo.gl/3fQD65"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
-    crontab -u root -l | { cat; echo "@monthly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+
+# Set hostname and ServerName
+FQDOMAIN=$(grep -r -m 1 ServerName /etc/apache2/sites-enabled/* | awk '{print $2}')
+echo "Setting hostname to $FQDOMAIN..."
+sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
+sudo hostnamectl set-hostname $FQDOMAIN
+service apache2 restart
+
+# Update Config
+if [ -f $SCRIPTS/update-config.php ]
+then
+    rm $SCRIPTS/update-config.php
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+else
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+fi
+
+# Sets trusted domain in config.php
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    rm $SCRIPTS/trusted.sh
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
+    rm $SCRIPTS/trusted.sh
+else
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
+fi
+
+DATE='$(date +%Y-%m-%d_%H:%M)'
+IF='if [[ $? -eq 0 ]]'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 service apache2 stop
@@ -38,11 +72,11 @@ if ! /etc/letsencrypt/letsencrypt-auto renew > /var/log/letsencrypt/renew.log 2>
         exit 1
 fi
 service apache2 start
-if [[ $? -eq 0 ]]
+$IF
 then
-        echo "Let's Encrypt SUCCESS!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+        echo "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
 else
-        echo "Let's Encrypt FAILED!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+        echo "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
         reboot
 fi
 CRONTAB
@@ -70,27 +104,4 @@ else
     exit 1
 fi
 
-# Update Config
-if [ -f $SCRIPTS/update-config.php ]
-then
-    rm $SCRIPTS/update-config.php
-    wget -q $STATIC/update-config.php -P $SCRIPTS
-else
-    wget -q $STATIC/update-config.php -P $SCRIPTS
-fi
-
-# Sets trusted domain in config.php
-if [ -f $SCRIPTS/trusted.sh ]
-then
-    rm $SCRIPTS/trusted.sh
-    wget -q $STATIC/trusted.sh -P $SCRIPTS
-    bash $SCRIPTS/trusted.sh
-    rm $SCRIPTS/update-config.php
-else
-    wget -q $STATIC/trusted.sh -P $SCRIPTS
-    bash $SCRIPTS/trusted.sh
-    rm $SCRIPTS/trusted.sh
-    rm $SCRIPTS/update-config.php
-fi
-
-exit 0
+exit

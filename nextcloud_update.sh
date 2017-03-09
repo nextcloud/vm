@@ -22,7 +22,7 @@ NCREPO="https://download.nextcloud.com/server/releases"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Versions
 CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-NCVERSION=$(curl -s --max-time 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+NCVERSION=$(curl -s -m 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
@@ -159,7 +159,7 @@ if [ -d $SNAPDIR ]
 then
     wget $STATIC/spreedme.sh -P $SCRIPTS
     bash $SCRIPTS/spreedme.sh
-    rm $SCRIPTS/spreedme.sh
+    rm $SCRIPTS/spreedme.*
     sudo -u www-data php $NCPATH/occ app:enable spreedme
 else
     sleep 1

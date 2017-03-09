@@ -8,6 +8,8 @@ SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis.sock
+SHUF=$(shuf -i 30-35 -n 1)
+REDIS_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
 
 # Must be root
 [[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
@@ -103,6 +105,7 @@ cat <<ADD_TO_CONFIG>> $NCPATH/config/config.php
     'port' => 0,
     'timeout' => 0,
     'dbindex' => 0,
+    'password' => '$REDIS_PASS',
   ),
 );
 ADD_TO_CONFIG
@@ -117,7 +120,12 @@ fi
 sed -i "s|# unixsocket /var/run/redis/redis.sock|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm 700|unixsocketperm 777|g" $REDIS_CONF
 sed -i "s|port 6379|port 0|g" $REDIS_CONF
+sed -i "s|# requirepass foobared|requirepass $REDIS_PASS|g" $REDIS_CONF
 redis-cli SHUTDOWN
+
+# Secure Redis
+chown redis:root /etc/redis/redis.conf
+chmod 600 /etc/redis/redis.conf
 
 # Cleanup
 apt purge -y \

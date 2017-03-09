@@ -72,7 +72,7 @@ fi
 # Check network
 echo "Testing if network is OK..."
 service networking restart
-    curl -s http://github.com > /dev/null
+    wget -q -T 10 -t 2 http://github.com > /dev/null
 if [ $? -eq 0 ]
 then
     echo -e "\e[32mOnline!\e[0m"
@@ -87,7 +87,7 @@ fi
 # Check network
 echo "Testing if network is OK..."
 service networking restart
-    curl -s http://github.com > /dev/null
+    wget -q -T 10 -t 2 http://github.com > /dev/null
 if [ $? -eq 0 ]
 then
     echo -e "\e[32mOnline!\e[0m"
@@ -98,6 +98,43 @@ else
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
+# Check where the best mirrors are and update
+echo
+echo "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible."
+echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
+echo "We recomend you to change the mirrors based on where this is currently is installed."
+echo "Checking current mirror..."
+REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
+echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
+then
+echo "Keeping $REPO as mirror..."
+sleep 1
+else
+  echo "Locating the best mirrors..."
+  apt update -q2
+  apt install python-pip -y
+ pip install \
+     --upgrade pip \
+     apt-select
+ apt-select
+ sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+ if [ -f sources.list ]
+ then
+     sudo mv sources.list /etc/apt/
+  fi
+fi
+
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo
@@ -444,6 +481,7 @@ read -p "Press any key to start the script..." -n1 -s
 clear
 echo -e "\e[0m"
 
+<<<<<<< HEAD
 # Set hostname and ServerName
 echo "Setting hostname..."
 FQN=$(host -TtA $(hostname -s)|grep "has address"|awk '{print $1}') ; \
@@ -464,6 +502,19 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ETCHOSTS
 
+=======
+# VPS?
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+
+if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
+then
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
     # Change IP
     echo -e "\e[0m"
     echo "OK, we assume you run this locally and we will now configure your IP to be static."
@@ -532,13 +583,23 @@ clear
 
 # Set keyboard layout
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
-echo "You must change keyboard layout to your language"
-echo -e "\e[32m"
-read -p "Press any key to change keyboard layout... " -n1 -s
-echo -e "\e[0m"
-dpkg-reconfigure keyboard-configuration
-echo
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+
+if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
+then
+echo "Not changing keyboard layout..."
+sleep 1
 clear
+else
+dpkg-reconfigure keyboard-configuration
+clear
+fi
 
 # Pretty URLs
 echo "Setting RewriteBase to "/" in config.php..."
@@ -572,6 +633,7 @@ NCDB=nextcloud_db
 PW_FILE=/var/mysql_password.txt
 echo
 echo "Enabling UTF8mb4 support on $NCDB...."
+echo "Please be patient, it may take a while."
 sudo /etc/init.d/mysql restart
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
@@ -588,6 +650,33 @@ echo
 echo "phpmyadmin_install_ubuntu16.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm $SCRIPTS/phpmyadmin_install_ubuntu16.sh
+clear
+
+cat << LETSENC
++-----------------------------------------------+
+|  The following script will install a trusted  |
+|  SSL certificate through Let's Encrypt.       |
++-----------------------------------------------+
+LETSENC
+
+# Let's Encrypt
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
+then
+    bash $SCRIPTS/activate-ssl.sh
+else
+    echo
+    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+fi
 clear
 
 # Whiptail auto-size
@@ -631,13 +720,13 @@ function spreedme {
 
 }
 
-whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Collabora" "(Online editing)   " OFF \
 "Nextant" "(Full text search)   " OFF \
 "Passman" "(Password storage)   " OFF \
 "Spreed.ME" "(Video calls)   " OFF 2>results
 
-while read choice
+while read -r -u 9 choice
 do
         case $choice in
                 Collabora) collabora
@@ -651,7 +740,8 @@ do
                 *)
                 ;;
         esac
-done < results
+done 9< results
+rm -f results
 clear
 
 # Add extra security
@@ -687,35 +777,34 @@ echo
 sleep 3
 clear
 
-    # Change password
-    echo -e "\e[0m"
-    echo "For better security, change the Linux password for [$UNIXUSER]"
-    echo -e "\e[32m"
-    read -p "Press any key to change password for Linux... " -n1 -s
-    echo -e "\e[0m"
+# Change password
+echo -e "\e[0m"
+echo "For better security, change the system user password for [$UNIXUSER]"
+echo -e "\e[32m"
+read -p "Press any key to change password for system user... " -n1 -s
+echo -e "\e[0m"
+sudo passwd $UNIXUSER
+if [[ $? > 0 ]]
+then
     sudo passwd $UNIXUSER
-    if [[ $? > 0 ]]
-    then
-        sudo passwd $UNIXUSER
-    else
-        sleep 2
-    fi
-    echo
-    clear
-
-    echo -e "\e[0m"
-    echo "For better security, change the Nextcloud password for [$NCUSER]"
-    echo "The current password for $NCUSER is [$NCPASS]"
-    echo -e "\e[32m"
-    read -p "Press any key to change password for Nextcloud... " -n1 -s
-    echo -e "\e[0m"
+else
+    sleep 2
+fi
+echo
+clear
+echo -e "\e[0m"
+echo "For better security, change the Nextcloud password for [$NCUSER]"
+echo "The current password for $NCUSER is [$NCPASS]"
+echo -e "\e[32m"
+read -p "Press any key to change password for Nextcloud... " -n1 -s
+echo -e "\e[0m"
+sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
+if [[ $? > 0 ]]
+then
     sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
-    if [[ $? > 0 ]]
-    then
-        sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
-    else
-        sleep 2
-    fi
+else
+    sleep 2
+fi
 clear
 
 # Upgrade system
@@ -763,6 +852,45 @@ rm $SCRIPTS/test_connection.sh
 rm $SCRIPTS/instruction.sh
 rm $NCDATA/nextcloud.log
 rm $SCRIPTS/nextcloud-startup-script.sh
+for f in /home/$UNIXUSER/* ; do
+rm -f *.sh
+rm -f *.sh.*
+done;
+
+for f in /root/* ; do
+rm -f *.sh
+rm -f *.sh.*
+done;
+
+for f in /home/$UNIXUSER/* ; do
+rm -f *.html
+rm -f *.html.*
+done;
+
+for f in /root/* ; do
+rm -f *.html
+rm -f *.html.*
+done;
+
+for f in /home/$UNIXUSER/* ; do
+rm -f *.tar
+rm -f *.tar.*
+done;
+
+for f in /root/* ; do
+rm -f *.tar
+rm -f *.tar.*
+done;
+
+for f in /home/$UNIXUSER/* ; do
+rm -f *.zip
+rm -f *.zip.*
+done;
+
+for f in /root/* ; do
+rm -f *.zip
+rm -f *.zip.*
+done;
 sed -i "s|instruction.sh|nextcloud.sh|g" /home/$UNIXUSER/.bash_profile
 cat /dev/null > /root/.bash_history
 cat /dev/null > /home/$UNIXUSER/.bash_history
@@ -833,6 +961,7 @@ echo -e "|   \e[0mTo update this VM just type: \e[36m'sudo bash /var/scripts/upd
 echo    "|                                                                    |"
 echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
 echo    "+--------------------------------------------------------------------+"
+<<<<<<< HEAD
 echo
 echo -e "\e[0m"
 clear
@@ -845,32 +974,46 @@ cat << LETSENC
 |  SSL certificate through Let's Encrypt.       |
 +-----------------------------------------------+
 LETSENC
+=======
+echo -e "\e[0m"
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
 
-# Let's Encrypt
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
+# Update Config
+if [ -f $SCRIPTS/update-config.php ]
 then
+<<<<<<< HEAD
     echo "activate-ssl.sh:" >> $SCRIPTS/logs
     bash $SCRIPTS/activate-ssl.sh
+=======
+    rm $SCRIPTS/update-config.php
+    wget -q $STATIC/update-config.php -P $SCRIPTS
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
 else
-    echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    wget -q $STATIC/update-config.php -P $SCRIPTS
 fi
 
+<<<<<<< HEAD
 # Change Trusted Domain and CLI
 echo "trusted.sh:" >> $SCRIPTS/logs
 bash $SCRIPTS/trusted.sh
 rm $SCRIPTS/trusted.sh
 rm $SCRIPTS/update-config.php
+=======
+# Sets trusted domain in config.php
+if [ -f $SCRIPTS/trusted.sh ]
+then
+    rm $SCRIPTS/trusted.sh
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
+    rm $SCRIPTS/trusted.sh
+else
+    wget -q $STATIC/trusted.sh -P $SCRIPTS
+    bash $SCRIPTS/trusted.sh
+    rm $SCRIPTS/trusted.sh
+    rm $SCRIPTS/update-config.php
+fi
+>>>>>>> 62edc2fb096dd9380838ccb38c1b65f1150d02ff
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf

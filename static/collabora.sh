@@ -50,25 +50,6 @@ whiptail --msgbox "Please before you start, make sure that port 443 is directly 
 # Get the latest packages
 apt update -q2
 
-# Check if 443 is open using nmap, if not notify the user
-if [ $(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed") -eq 1 ]
-then
-      echo "nmap is already installed..."
-      clear
-else
-    apt install nmap -y
-fi
-
-if [ $(nmap -sS -p 443 "$WANIP4" | grep -c "open") -eq 1 ]
-then
-  echo -e "\e[32mPort 443 is open!\e[0m"
-  apt remove --purge nmap -y
-else
-  whiptail --msgbox "Port 443 is not open. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
-  apt remove --purge nmap -y
-  exit 1
-fi
-
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
 curl -s https://$(echo $NCDOMAIN | tr -d '\\')/status.php | grep -q 'installed":true'
@@ -82,9 +63,8 @@ else
     echo "Please install Nextcloud and make sure your domain is reachable, or activate SSL"
     echo "on your domain to be able to run this script."
     echo
-    echo "If you use the Nextcloud VM then just continue with the setup script and run the"
-    echo "Let's Encrypt script to get SSL and activate your Nextcloud domain."
-    echo "Then run these commands from your terminal:"
+    echo "If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain."
+    echo "When SSL is activated, run these commands from your terminal:"
     echo "sudo wget https://raw.githubusercontent.com/nextcloud/vm/master/static/collabora.sh"
     echo "sudo bash collabora.sh"
     echo -e "\e[32m"
@@ -96,28 +76,95 @@ fi
 # Check if $SUBDOMAIN exists and is reachable
 echo
 echo "Checking if $SUBDOMAIN exists and is reachable..."
-curl -s -m 20 $SUBDOMAIN > /dev/null
+curl -s $SUBDOMAIN > /dev/null
 if [[ $? > 0 ]]
 then
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
    echo "it to this server before you can run this script."
-   echo
+   echo -e "\e[32m"
+   read -p "Press any key to continue... " -n1 -s
+   echo -e "\e[0m"
    exit 1
 fi
 
-# Update
+# Check if 443 is open using nmap, if not notify the user
+echo "Running apt update..."
 apt update -q2
+if [ $(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed") -eq 1 ]
+then
+      echo "nmap is already installed..."
+      clear
+else
+    apt install nmap -y
+fi
+if [ $(nmap -sS -p 443 "$WANIP4" | grep -c "open") -eq 1 ]
+then
+  echo -e "\e[32mPort 443 is open on $WANIP4!\e[0m"
+  apt remove --purge nmap -y
+else
+  echo "Port 443 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
+  echo -e "\e[32m"
+  read -p "Press any key to test $SUBDOMAIN... " -n1 -s
+  echo -e "\e[0m"
+  if [[ $(nmap -sS -PN -p 443 $SUBDOMAIN | grep -m 1 "open" | awk '{print $2}') = open ]]
+  then
+    echo -e "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m"
+    apt remove --purge nmap -y
+  else
+    whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+    echo -e "\e[32m"
+    read -p "Press any key to exit... " -n1 -s
+    echo -e "\e[0m"
+    apt remove --purge nmap -y
+    exit 1
+  fi
+fi
 
-# Check if docker is installed
-if [ $(dpkg-query -W -f='${Status}' docker.io 2>/dev/null | grep -c "ok installed") -eq 1 ]
+# Install Docker
+if [ $(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok installed") -eq 1 ]
+then
+    docker -v
+else
+    apt update -q2
+    apt install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    apt-key fingerprint 0EBFCD88
+    add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable"
+    apt update
+    apt install docker-ce -y
+    docker -v
+fi
+
+# Load aufs
+apt-get install linux-image-extra-$(uname -r) -y
+# apt install aufs-tools -y # already included in the docker-ce package
+AUFS=$(grep -r "aufs" /etc/modules)
+if [[ $AUFS = "aufs" ]]
 then
     sleep 1
 else
-    apt install docker.io -y
+    echo "aufs" >> /etc/modules
+fi
+
+# Set docker storage driver to AUFS
+AUFS2=$(grep -r "aufs" /etc/default/docker)
+if [[ $AUFS2 = 'DOCKER_OPTS="--storage-driver=aufs"' ]]
+then
+    sleep 1
+else
+    echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
+    service docker restart
 fi
 
 # Check if Git is installed
-    git --version 2>&1 >/dev/null
+    git --version 2> /dev/null
     GIT_IS_AVAILABLE=$?
 if [ $GIT_IS_AVAILABLE -eq 0 ]
 then
@@ -178,7 +225,7 @@ then
 else
         touch "$HTTPS_CONF"
         cat << HTTPS_CREATE > "$HTTPS_CONF"
-<VirtualHost $SUBDOMAIN:443>
+<VirtualHost *:443>
   ServerName $SUBDOMAIN:443
 
   # SSL configuration, you may want to take the easy route instead and use Lets Encrypt!
@@ -239,11 +286,10 @@ fi
 fi
 
 # Let's Encrypt
-
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
 sudo service apache2 stop
-############################### Still need to rewrite test-new-config.sh for collabora domain and add more tries for letsencrypt
+
 # Generate certs
 cd /etc
 git clone https://github.com/certbot/certbot.git
@@ -274,9 +320,10 @@ fi
 if [ -d $NCPATH/apps/richdocuments ]
 then
     sudo -u www-data php $NCPATH/occ app:enable richdocuments
+    sudo -u www-data $NCPATH/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
     echo
     echo "Collabora is now succesfylly installed."
-    echo "Please go to Admin Settings --> Collabora and add https://$SUBDOMAIN to the config"
+    echo "You may have to reboot before Docker will load correctly."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"

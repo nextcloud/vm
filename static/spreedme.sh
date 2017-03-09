@@ -114,13 +114,11 @@ a2enmod proxy \
         headers
 
 # Add config to vhost
-
-# Just in case we want to get the activated hosts, save it for later:
-#ACTIVE_VHOST=$(apache2ctl -S | grep 80 | cut -f5,5 -d"/" | cut -f1 -d":")
-#ACTIVE_VHOST_SSL=$(apache2ctl -S | grep 443 | cut -f5,5 -d"/" | cut -f1 -d":")
-
 VHOST=/etc/apache2/spreedme.conf
-
+if [ -f $VHOST ]
+then
+    sleep 1
+else
 cat << VHOST > "$VHOST"
 <Location /webrtc>
     ProxyPass http://127.0.0.1:8080/webrtc
@@ -136,9 +134,11 @@ cat << VHOST > "$VHOST"
     RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
     # RequestHeader set X-Forwarded-Proto 'https' # Use this if you are behind a (Nginx) reverse proxy with http backends
 VHOST
+fi
+
 if grep -Fxq "Include $VHOST" /etc/apache2/apache2.conf
 then
-    echo "Include directive are enabled in apache2.conf"
+    echo "Include directive are already enabled in apache2.conf"
     sleep 1
 else
     sed -i "145i Include $VHOST" "/etc/apache2/apache2.conf"
