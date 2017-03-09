@@ -281,7 +281,7 @@ fi
 a2dissite 000-default.conf
 sudo service apache2 stop
 # Generate certs
-letsencrypt certonly --standalone -d $domain
+letsencrypt certonly --standalone --rsa-key-size 4096 -d $domain
 
 # Use for testing
 #letsencrypt --apache --server https://acme-staging.api.letsencrypt.org/directory -d EXAMPLE.COM
@@ -304,7 +304,7 @@ else
 fi
 ##### START SECOND TRY
 # Generate certs
-letsencrypt -d $domain
+letsencrypt --rsa-key-size 4096 -d $domain
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
@@ -319,7 +319,7 @@ else
     echo -e "\e[0m"
 fi
 ##### START THIRD TRY
-letsencrypt certonly --agree-tos --webroot -w $NCPATH -d $domain
+letsencrypt certonly --agree-tos --webroot -w $NCPATH --rsa-key-size 4096 -d $domain
 
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
@@ -336,7 +336,7 @@ else
 fi
 #### START FORTH TRY
 # Generate certs
-letsencrypt --agree-tos --apache -d $domain
+letsencrypt --agree-tos --apache --rsa-key-size 4096 -d $domain
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
