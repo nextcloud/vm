@@ -66,7 +66,7 @@ IF='if [[ $? -eq 0 ]]'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 service apache2 stop
-if ! /etc/letsencrypt/letsencrypt-auto renew > /var/log/letsencrypt/renew.log 2>&1 ; then
+if ! letsencrypt renew > /var/log/letsencrypt/renew.log 2>&1 ; then
         echo Automated renewal failed:
         cat /var/log/letsencrypt/renew.log
         exit 1
