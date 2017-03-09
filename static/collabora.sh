@@ -163,16 +163,6 @@ else
     service docker restart
 fi
 
-# Check if Git is installed
-    git --version 2> /dev/null
-    GIT_IS_AVAILABLE=$?
-if [ $GIT_IS_AVAILABLE -eq 0 ]
-then
-    sleep 1
-else
-    apt install git -y
-fi
-
 # Check of docker runs and kill it
 DOCKERPS=$(docker ps -a -q)
 if [[ $DOCKERPS > 0 ]]
@@ -286,15 +276,23 @@ fi
 fi
 
 # Let's Encrypt
+letsencrypt --version 2> /dev/null
+LE_IS_AVAILABLE=$?
+if [ $LE_IS_AVAILABLE -eq 0 ]
+then
+    letsencrypt --version
+else
+    echo "Installing letsencrypt..."
+    apt update -q2
+    apt install letsencrypt -y -q
+fi
+
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
 sudo service apache2 stop
 
 # Generate certs
-cd /etc
-git clone https://github.com/certbot/certbot.git
-cd /etc/certbot
-./letsencrypt-auto certonly --agree-tos --standalone -d $SUBDOMAIN
+letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d $SUBDOMAIN
 if [[ "$?" == "0" ]]
 then
     echo -e "\e[96m"
