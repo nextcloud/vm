@@ -202,9 +202,16 @@ else
 fi
 
 # Install letsencrypt
-echo "Installing letsencrypt..."
-apt update -q2
-apt install letsencrypt -y -q
+letsencrypt --version 2> /dev/null
+LE_IS_AVAILABLE=$?
+if [ $LE_IS_AVAILABLE -eq 0 ]
+then
+    letsencrypt --version
+else
+    echo "Installing letsencrypt..."
+    apt update -q2
+    apt install letsencrypt -y -q
+fi
 
 #Fix issue #28
 ssl_conf="/etc/apache2/sites-available/$domain.conf"
