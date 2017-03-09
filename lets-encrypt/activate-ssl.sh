@@ -367,7 +367,7 @@ ENDMSG
     echo -e "\e[0m"
 
 # Cleanup
-apt remove letsencrypt -y ;\
+apt remove letsencrypt -y
 apt autoremove -y
 # Change ServerName in apache.conf and hostname
     sed -i "s|ServerName $domain|ServerName $(hostname -s)|g" /etc/apache2/apache2.conf
