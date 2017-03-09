@@ -13,14 +13,11 @@ source /etc/network/interfaces.d/*
 
 # The loopback network interface
 auto lo $IFACE
+allow-hotplug $IFACE
 iface lo inet loopback
 
 # The primary network interface
 iface $IFACE inet static
-pre-up /sbin/ethtool -K $IFACE tso off
-pre-up /sbin/ethtool -K $IFACE gso off
-# Fixes https://github.com/nextcloud/vm/issues/92:
-pre-up ip link set dev $IFACE mtu 1430
 
 # Best practice is to change the static address
 # to something outside your DHCP range.

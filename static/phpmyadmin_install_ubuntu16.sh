@@ -28,7 +28,6 @@ then
     sleep 1
 else
     echo "Ubuntu Server is required to run this script."
-    echo "Please install that distro and try again."
     exit 1
 fi
 
@@ -175,7 +174,7 @@ CONFIG_CREATE
 
 service apache2 restart
 if [[ $? > 0 ]]
-then 
+then
     echo "Apache2 could not restart..."
     echo "The script will exit."
     exit 1
