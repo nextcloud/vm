@@ -93,7 +93,7 @@ else
   apt install python-pip -y
  pip install \
      --upgrade pip \
-     apt-select
+     apt-select -m up-to-date -t 5 -c
  apt-select
  sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
  if [ -f sources.list ]
