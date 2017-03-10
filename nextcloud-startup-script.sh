@@ -714,16 +714,17 @@ else
 fi
 echo
 clear
+NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
 echo -e "\e[0m"
-echo "For better security, change the Nextcloud password for [$NCUSER]"
-echo "The current password for $NCUSER is [$NCPASS]"
+echo "For better security, change the Nextcloud password for [$NCADMIN]"
+echo "The current password for $NCADMIN is [$NCPASS]"
 echo -e "\e[32m"
 read -p "Press any key to change password for Nextcloud... " -n1 -s
 echo -e "\e[0m"
-sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
+sudo -u www-data php $NCPATH/occ user:resetpassword $NCADMIN
 if [[ $? > 0 ]]
 then
-    sudo -u www-data php $NCPATH/occ user:resetpassword $NCUSER
+    sudo -u www-data php $NCPATH/occ user:resetpassword $NCADMIN
 else
     sleep 2
 fi

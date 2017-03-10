@@ -201,16 +201,17 @@ else
    rm *.html
 fi
 
-# Install git
-    git --version 2> /dev/null
-    GIT_IS_AVAILABLE=$?
-if [ $GIT_IS_AVAILABLE -eq 0 ]
+# Install letsencrypt
+letsencrypt --version 2> /dev/null
+LE_IS_AVAILABLE=$?
+if [ $LE_IS_AVAILABLE -eq 0 ]
 then
-    sleep 1
+    letsencrypt --version
 else
-    echo "Installing git..."
+    echo "Installing letsencrypt..."
+    add-apt-repository ppa:certbot/certbot -y
     apt update -q2
-    apt install git -y -q
+    apt install letsencrypt -y -q
 fi
 
 #Fix issue #28
@@ -287,18 +288,11 @@ fi
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
 sudo service apache2 stop
-# Check if $letsencryptpath exist, and if, then delete.
-if [ -d "$letsencryptpath" ]
-then
-    rm -R $letsencryptpath
-fi
 # Generate certs
-cd $dir_before_letsencrypt
-git clone https://github.com/letsencrypt/letsencrypt
-cd $letsencryptpath
-./letsencrypt-auto certonly --standalone -d $domain
+letsencrypt certonly --standalone --rsa-key-size 4096 -d $domain
+
 # Use for testing
-#./letsencrypt-auto --apache --server https://acme-staging.api.letsencrypt.org/directory -d EXAMPLE.COM
+#letsencrypt --apache --server https://acme-staging.api.letsencrypt.org/directory -d EXAMPLE.COM
 # Activate Apache again (Disabled during standalone)
 service apache2 start
 a2ensite 000-default.conf
@@ -317,17 +311,8 @@ else
     echo -e "\e[0m"
 fi
 ##### START SECOND TRY
-
-# Check if $letsencryptpath exist, and if, then delete.
-if [ -d "$letsencryptpath" ]
-then
-    rm -R $letsencryptpath
-fi
 # Generate certs
-cd $dir_before_letsencrypt
-git clone https://github.com/letsencrypt/letsencrypt
-cd $letsencryptpath
-./letsencrypt-auto -d $domain
+letsencrypt --rsa-key-size 4096 -d $domain
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
@@ -342,17 +327,8 @@ else
     echo -e "\e[0m"
 fi
 ##### START THIRD TRY
+letsencrypt certonly --agree-tos --webroot -w $NCPATH --rsa-key-size 4096 -d $domain
 
-# Check if $letsencryptpath exist, and if, then delete.
-if [ -d "$letsencryptpath" ]
-then
-    rm -R $letsencryptpath
-fi
-# Generate certs
-cd $dir_before_letsencrypt
-git clone https://github.com/letsencrypt/letsencrypt
-cd $letsencryptpath
-./letsencrypt-auto certonly --agree-tos --webroot -w $NCPATH -d $domain
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
@@ -367,17 +343,8 @@ else
     echo -e "\e[0m"
 fi
 #### START FORTH TRY
-
-# Check if $letsencryptpath exist, and if, then delete.
-if [ -d "$letsencryptpath" ]
-then
-    rm -R $letsencryptpath
-fi
 # Generate certs
-cd $dir_before_letsencrypt
-git clone https://github.com/letsencrypt/letsencrypt
-cd $letsencryptpath
-./letsencrypt-auto --agree-tos --apache -d $domain
+letsencrypt --agree-tos --apache --rsa-key-size 4096 -d $domain
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
@@ -408,10 +375,8 @@ ENDMSG
     echo -e "\e[0m"
 
 # Cleanup
-    rm -R $letsencryptpath
-    rm $SCRIPTS/test-new-config.sh
-    rm $ssl_conf
-    rm -R /root/.local/share/letsencrypt
+apt remove letsencrypt -y
+apt autoremove -y
 # Change ServerName in apache.conf and hostname
     sed -i "s|ServerName $domain|ServerName $(hostname -s)|g" /etc/apache2/apache2.conf
     sudo hostnamectl set-hostname $(hostname -s)
