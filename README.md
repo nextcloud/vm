@@ -43,6 +43,10 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 
 Keep asking questions so that we can add them here.
 
+**Q:** Where can i dowload VMware Player?
+<br />
+**A:** You can download the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
+
 **Q:** The script says: "WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts"
 <br />
 **A:** http://askubuntu.com/a/463966
