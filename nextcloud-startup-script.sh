@@ -72,7 +72,7 @@ fi
 echo
 echo "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible."
 echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
-echo "We recomend you to change the mirrors based on where this is currently is installed."
+echo "We recomend you to change the mirrors based on where this is currently installed."
 echo "Checking current mirror..."
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
