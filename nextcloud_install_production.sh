@@ -413,8 +413,6 @@ else
     Satisfy Any
     </Directory>
 
-    Alias /nextcloud "$NCPATH/"
-
     <IfModule mod_dav.c>
     Dav off
     </IfModule>
@@ -458,8 +456,6 @@ else
     Require all granted
     Satisfy Any
     </Directory>
-
-    Alias /nextcloud "$NCPATH/"
 
     <IfModule mod_dav.c>
     Dav off
