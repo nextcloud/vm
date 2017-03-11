@@ -5,9 +5,7 @@
 NCPATH=/var/www/nextcloud
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-dir_before_letsencrypt=/etc
-letsencryptpath=$dir_before_letsencrypt/letsencrypt
-certfiles=$letsencryptpath/live
+certfiles=/etc/letsencrypt/live
 SCRIPTS=/var/scripts
 
 # Check if root
@@ -287,10 +285,13 @@ fi
 a2dissite 000-default.conf
 sudo service apache2 stop
 # Generate certs
-letsencrypt certonly --standalone --rsa-key-size 4096 -d $domain
+letsencrypt certonly \
+--standalone \
+--rsa-key-size 4096 \
+--renew-by-default \
+--agree-tos \
+-d $domain
 
-# Use for testing
-#letsencrypt --apache --server https://acme-staging.api.letsencrypt.org/directory -d EXAMPLE.COM
 # Activate Apache again (Disabled during standalone)
 service apache2 start
 a2ensite 000-default.conf
@@ -310,7 +311,11 @@ else
 fi
 ##### START SECOND TRY
 # Generate certs
-letsencrypt --rsa-key-size 4096 -d $domain
+letsencrypt \
+--rsa-key-size 4096 \
+--renew-by-default \
+--agree-tos \
+-d $domain
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
@@ -325,7 +330,12 @@ else
     echo -e "\e[0m"
 fi
 ##### START THIRD TRY
-letsencrypt certonly --agree-tos --webroot -w $NCPATH --rsa-key-size 4096 -d $domain
+letsencrypt certonly \
+--webroot --w $NCPATH \
+--rsa-key-size 4096 \
+--renew-by-default \
+--agree-tos \
+-d $domain
 
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
@@ -342,7 +352,13 @@ else
 fi
 #### START FORTH TRY
 # Generate certs
-letsencrypt --agree-tos --apache --rsa-key-size 4096 -d $domain
+letsencrypt \
+--apache
+--rsa-key-size 4096 \
+--renew-by-default \
+--agree-tos \
+-d $domain
+
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
