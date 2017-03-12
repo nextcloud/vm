@@ -348,7 +348,7 @@ then
     exit 0
 else
     echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, we do one more tries."
+    echo -e "It seems like no certs were generated, we do one more try."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
