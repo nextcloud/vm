@@ -280,6 +280,7 @@ SSL_CREATE
 fi
 
 ##### START FIRST TRY
+
 letsencrypt certonly \
 --webroot -w $NCPATH \
 --rsa-key-size 4096 \
@@ -295,13 +296,14 @@ then
     exit 0
 else
     echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, we do three more try."
+    echo -e "It seems like no certs were generated, we do three more tries."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
 fi
 
 ##### START SECOND TRY
+
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
 sudo service apache2 stop
@@ -312,7 +314,6 @@ letsencrypt certonly \
 --renew-by-default \
 --agree-tos \
 -d $domain
-
 # Activate Apache again (Disabled during standalone)
 service apache2 start
 a2ensite 000-default.conf
@@ -332,6 +333,7 @@ else
 fi
 
 ##### START THIRD TRY
+
 # Generate certs
 letsencrypt \
 --rsa-key-size 4096 \
@@ -353,6 +355,7 @@ else
 fi
 
 #### START FORTH TRY
+
 # Generate certs
 letsencrypt \
 --apache
