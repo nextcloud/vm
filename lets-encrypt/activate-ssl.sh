@@ -280,7 +280,28 @@ SSL_CREATE
 fi
 
 ##### START FIRST TRY
+letsencrypt certonly \
+--webroot -w $NCPATH \
+--rsa-key-size 4096 \
+--renew-by-default \
+--agree-tos \
+-d $domain
 
+# Check if $certfiles exists
+if [ -d "$certfiles" ]
+then
+    # Activate new config
+    bash /var/scripts/test-new-config.sh $domain.conf
+    exit 0
+else
+    echo -e "\e[96m"
+    echo -e "It seems like no certs were generated, we do three more try."
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+fi
+
+##### START SECOND TRY
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
 sudo service apache2 stop
@@ -304,12 +325,13 @@ then
     exit 0
 else
     echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, we do three more tries."
+    echo -e "It seems like no certs were generated, we do two more tries."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
 fi
-##### START SECOND TRY
+
+##### START THIRD TRY
 # Generate certs
 letsencrypt \
 --rsa-key-size 4096 \
@@ -324,32 +346,12 @@ then
     exit 0
 else
     echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, we do two more tries."
+    echo -e "It seems like no certs were generated, we do one more tries."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
 fi
-##### START THIRD TRY
-letsencrypt certonly \
---webroot --w $NCPATH \
---rsa-key-size 4096 \
---renew-by-default \
---agree-tos \
--d $domain
 
-# Check if $certfiles exists
-if [ -d "$certfiles" ]
-then
-    # Activate new config
-    bash /var/scripts/test-new-config.sh $domain.conf
-    exit 0
-else
-    echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, we do one more try."
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
-fi
 #### START FORTH TRY
 # Generate certs
 letsencrypt \
