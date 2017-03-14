@@ -274,6 +274,15 @@ else
     SSLCertificateChainFile $certfiles/$domain/chain.pem
     SSLCertificateFile $certfiles/$domain/cert.pem
     SSLCertificateKeyFile $certfiles/$domain/privkey.pem
+    
+### Let's Encrypt settings ###
+
+    Alias /.well-known/acme-challenge/ "/var/lib/letsencrypt/.well-known/acme-challenge/"
+<Directory "/var/lib/letsencrypt/">
+    AllowOverride None
+    Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+    Require method GET POST OPTIONS
+</Directory>
 
 </VirtualHost>
 SSL_CREATE
