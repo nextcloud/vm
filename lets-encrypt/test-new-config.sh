@@ -62,22 +62,15 @@ else
 fi
 
 DATE='$(date +%Y-%m-%d_%H:%M)'
-IF='if [[ $? -eq 0 ]]'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 service apache2 stop
 if ! letsencrypt renew > /var/log/letsencrypt/renew.log 2>&1 ; then
-        echo Automated renewal failed:
-        cat /var/log/letsencrypt/renew.log
-        exit 1
-fi
-service apache2 start
-$IF
-then
-        echo "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
+        echo "Let's Encrypt FAILED!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+        service apache2 start
 else
-        echo "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
-        reboot
+        echo "Let's Encrypt SUCCESS!"--$(date +%Y-%m-%d_%H:%M) >> /var/log/letsencrypt/cronjob.log
+        service apache2 start
 fi
 CRONTAB
 
