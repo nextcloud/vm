@@ -3,7 +3,7 @@
     <head>
         <title>Nextcloud VM</title>
         <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
-        <style>
+        <style type="text/css">
             body {
                 background-color: #0082c9;
                 font-weight: 300;
@@ -80,7 +80,7 @@
         <br>
         <div class="information">
             <p>Thank you for downloading the pre-configured Nextcloud VM! If you see this page, you have successfully mounted the Nextcloud VM on the computer that will act as host for Nextcloud.</p>
-            <p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.
+            <p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.</p>
             <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels. You can also check the <a href="https://www.techandme.se/complete-install-instructions-nextcloud/" target="_blank">complete install instructions</a>.</p>
         </div>
 
@@ -114,8 +114,8 @@
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS. It is recommended<br>
-            to <a href="https://www.techandme.se/publish-your-server-online" target="_blank">buy your own certificate and replace the self-signed certificate to your own.</a><br>
-            <p>Note: Before you can login you have to run the setup script, as descirbed in the video above.
+            to <a href="https://www.techandme.se/publish-your-server-online" target="_blank">buy your own certificate and replace the self-signed certificate to your own.</a></p>
+            <p>Note: Before you can login you have to run the setup script, as descirbed in the video above.</p>
         </div>
 
         <h2>Access Webmin</h2>
@@ -124,8 +124,8 @@
             <p>Use one of the following addresses, HTTPS is preferred:
             <h3>
                 <ul>
-                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>:10000">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)
-                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:10000">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
+                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>:10000">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)</li>
+                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:10000">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)</li>
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
@@ -141,8 +141,8 @@
             <p>Use one of the following addresses, HTTPS is preffered:
             <h3>
                 <ul>
-                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>/phpmyadmin">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)
-                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/phpmyadmin">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
+                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>/phpmyadmin">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)</li>
+                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/phpmyadmin">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)</li>
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
