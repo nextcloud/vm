@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
     <head>
-        <title>Nextloud VM</title>
+        <title>Nextcloud VM</title>
         <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
         <style>
             body {
