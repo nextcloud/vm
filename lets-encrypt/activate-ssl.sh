@@ -274,6 +274,15 @@ else
     SSLCertificateChainFile $certfiles/$domain/chain.pem
     SSLCertificateFile $certfiles/$domain/cert.pem
     SSLCertificateKeyFile $certfiles/$domain/privkey.pem
+    
+### Let's Encrypt settings ###
+
+    Alias /.well-known/acme-challenge/ "/var/lib/letsencrypt/.well-known/acme-challenge/"
+<Directory "/var/lib/letsencrypt/">
+    AllowOverride None
+    Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+    Require method GET POST OPTIONS
+</Directory>
 
 </VirtualHost>
 SSL_CREATE
@@ -281,21 +290,13 @@ fi
 
 ##### START FIRST TRY
 
-# Stop Apache to aviod port conflicts
-a2dissite 000-default.conf
-sudo service apache2 stop
-# Generate certs
 letsencrypt certonly \
---standalone \
+--webroot -w $NCPATH \
 --rsa-key-size 4096 \
 --renew-by-default \
 --agree-tos \
 -d $domain
 
-# Activate Apache again (Disabled during standalone)
-service apache2 start
-a2ensite 000-default.conf
-service apache2 reload
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
@@ -309,7 +310,39 @@ else
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
 fi
+
 ##### START SECOND TRY
+
+# Stop Apache to aviod port conflicts
+a2dissite 000-default.conf
+sudo service apache2 stop
+# Generate certs
+letsencrypt certonly \
+--standalone \
+--rsa-key-size 4096 \
+--renew-by-default \
+--agree-tos \
+-d $domain
+# Activate Apache again (Disabled during standalone)
+service apache2 start
+a2ensite 000-default.conf
+service apache2 reload
+# Check if $certfiles exists
+if [ -d "$certfiles" ]
+then
+    # Activate new config
+    bash /var/scripts/test-new-config.sh $domain.conf
+    exit 0
+else
+    echo -e "\e[96m"
+    echo -e "It seems like no certs were generated, we do two more tries."
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+fi
+
+##### START THIRD TRY
+
 # Generate certs
 letsencrypt \
 --rsa-key-size 4096 \
@@ -324,33 +357,14 @@ then
     exit 0
 else
     echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, we do two more tries."
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
-fi
-##### START THIRD TRY
-letsencrypt certonly \
---webroot --w $NCPATH \
---rsa-key-size 4096 \
---renew-by-default \
---agree-tos \
--d $domain
-
-# Check if $certfiles exists
-if [ -d "$certfiles" ]
-then
-    # Activate new config
-    bash /var/scripts/test-new-config.sh $domain.conf
-    exit 0
-else
-    echo -e "\e[96m"
     echo -e "It seems like no certs were generated, we do one more try."
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
 fi
+
 #### START FORTH TRY
+
 # Generate certs
 letsencrypt \
 --apache
