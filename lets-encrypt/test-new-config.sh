@@ -65,7 +65,7 @@ DATE='$(date +%Y-%m-%d_%H:%M)'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 service apache2 stop
-if ! letsencrypt renew > /var/log/letsencrypt/renew.log 2>&1 ; then
+if ! ./etc/letsencrypt/certbot-auto renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1 ; then
         echo "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
         service apache2 start
 else
