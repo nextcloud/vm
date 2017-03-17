@@ -69,21 +69,9 @@ echo "If the field after ':' is blank you are probably running as a pure root us
 echo "It's possible to install with root, but there will be minor errors."
 echo
 echo "Please create a user with sudo permissions if you want an optimal installation."
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-if [[ "no" == $(ask_yes_or_no "Do you want create a new user with sudo permissions?") ]]
-then
-   echo "Running the script with $UNIXUSER
-else
-    wget -q $STATIC/adduser.sh
-    bash adduser.sh
-    rm -f adduser.sh
-fi   
+wget -q $STATIC/adduser.sh
+bash adduser.sh
+rm -f adduser.sh
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
