@@ -16,14 +16,14 @@ sleep 1
 else
 echo "Enter name of the new user:"
 read NEWUSER
-echo "Enter password of the new user"
-read NEWPASS
-echo "User: $NEWUSER"
-echo "Pass: $NEWPASS"
-echo "Continues in 5 seconds..."
-sleep 5
-adduser --disabled-password --gecos "" $NEWUSER
-echo -e "$NEWUSER:$NEWPASS" | chpasswd
-gpasswd -a $NEWUSER sudo
+useradd -m $NEWUSER -G sudo
+passwd $NEWUSER
+if [[ $? > 0 ]]
+then
+    echo "Try again please...(2/2)""
+    passwd $NEWUSER
+else
+    sleep 1
+fi
 sudo -u $NEWUSER sudo bash nextcloud_install_production.sh
 fi
