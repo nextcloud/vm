@@ -20,10 +20,10 @@ useradd -m $NEWUSER -G sudo
 passwd $NEWUSER
 if [[ $? > 0 ]]
 then
-    echo "Try again please...(2/2)""
+    echo "Try again please...(2/2)"
     passwd $NEWUSER
 else
-    sleep 1
+    exit 1
 fi
 sudo -u $NEWUSER sudo bash nextcloud_install_production.sh
 fi
