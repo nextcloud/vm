@@ -23,7 +23,7 @@ then
     echo "Try again please...(2/2)"
     passwd $NEWUSER
 else
-    exit 1
+    sleep 1
 fi
 sudo -u $NEWUSER sudo bash nextcloud_install_production.sh
 fi
