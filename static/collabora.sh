@@ -76,9 +76,15 @@ fi
 # Check if $SUBDOMAIN exists and is reachable
 echo
 echo "Checking if $SUBDOMAIN exists and is reachable..."
-curl -s $SUBDOMAIN > /dev/null
-if [[ $? > 0 ]]
-then
+if wget -q -T 10 -t 2 --spider $SUBDOMAIN; then
+   sleep 1
+elif wget -q -T 10 -t 2 --spider --no-check-certificate https://$SUBDOMAIN; then
+   sleep 1
+elif curl -s -k -m 10  $SUBDOMAIN; then
+   sleep 1
+elif curl -s -k -m 10 https://$SUBDOMAIN > /dev/null ; then
+   sleep 1
+else
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
    echo "it to this server before you can run this script."
    echo -e "\e[32m"
