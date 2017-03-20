@@ -71,8 +71,7 @@ iptables -A INPUT -p tcp --dport 8983 -j DROP
 #sudo service iptables-persistent start
 #sudo iptables-save > /etc/iptables.conf
 
-service solr start
-if [ $? -eq 0 ]
+if [[ $(service solr start) -eq 0 ]]
 then
     sudo -u solr /opt/solr/bin/solr create -c nextant 
 else
