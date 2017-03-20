@@ -182,21 +182,24 @@ else
     chmod +x $SCRIPTS/test-new-config.sh
 fi
 
-
 # Check if $domain exists and is reachable
 echo
 echo "Checking if $domain exists and is reachable..."
-wget -q -T 10 -t 2 $domain > /dev/null
-if [[ $? > 0 ]]
-then
+if wget -q -T 10 -t 2 --spider $domain; then
+   sleep 1
+elif wget -q -T 10 -t 2 --spider --no-check-certificate https://$domain; then
+   sleep 1
+elif curl -s -k -m 10  $domain; then
+   sleep 1
+elif curl -s -k -m 10 https://$domain > /dev/null ; then
+   sleep 1
+else
    echo "Nope, it's not there. You have to create $domain and point"
    echo "it to this server before you can run this script."
    echo -e "\e[32m"
    read -p "Press any key to continue... " -n1 -s
    echo -e "\e[0m"
    exit 1
-else
-   rm *.html
 fi
 
 # Install letsencrypt
