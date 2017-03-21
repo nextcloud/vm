@@ -29,12 +29,10 @@
 #### Installation
 1. Get the latest install script from master:<br>
 `wget https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh`
-2. Run the script with your sudo user:<br> 
-`sudo -u <user> sudo bash nextcloud_install_production.sh`<br>
-Or, download the adduser script and run it:<br>
-`https://raw.githubusercontent.com/nextcloud/vm/master/static/adduser.sh && sudo bash adduser.sh`
+2. Run the script with your (new) sudo user. `ncadmin`is the default user used in the released version.<br> 
 3. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
-`ssh <user>@IP-ADDRESS`
+`ssh <user>@IP-ADDRESS`<br>
+4. Please note that the installation is *not* finnished by just running the `nextcloud_install_production.sh`
 
 ## Machine configuration of the released version
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
