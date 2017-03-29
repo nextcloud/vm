@@ -68,8 +68,7 @@ fi
 # Enable $SPAMHAUS
 sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
 
-service apache2 restart
-if [[ $? > 0 ]]
+if service apache2 restart
 then
     echo "Something went wrong..."
     sleep 5
