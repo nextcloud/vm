@@ -2,7 +2,7 @@
 
 # Tech and Me, ©2017 - www.techandme.se
 #
-# This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apche 2.4.
+# This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apache 2.4.
 # Ubuntu 16.04 is required.
 
 # Check for errors + debug code and abort if something isn't right
@@ -22,7 +22,7 @@ STABLEVERSION="nextcloud-$NCVERSION"
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Passwords
 SHUF=$(shuf -i 13-15 -n 1)
-MYSQL_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
+MYSQL_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 PW_FILE=/var/mysql_password.txt
 # Directories
 SCRIPTS=/var/scripts
@@ -37,6 +37,7 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+export ADDRESS
 
 # Linux user, and Nextcloud user
 UNIXUSER=$SUDO_USER
@@ -53,7 +54,7 @@ else
 fi
 
 # Check if root
-if [ "$(whoami)" != "root" ]
+if [[ $EUID -ne 0 ]]
 then
     echo
     echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud_install_production.sh"
@@ -78,7 +79,7 @@ sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/g
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if [ $OS -eq 1 ]
+if [ "$OS" -eq 1 ]
 then
     sleep 1
 else
@@ -116,25 +117,25 @@ fi
 
 # Check if it's a clean server
 echo "Checking if it's a clean server..."
-if [ $(dpkg-query -W -f='${Status}' mysql-common 2>/dev/null | grep -c "ok installed") -eq 1 ]
+if [ "$(dpkg-query -W -f='${Status}' mysql-common 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "MySQL is installed, it must be a clean server."
     exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ]
+if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "Apache2 is installed, it must be a clean server."
     exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' php 2>/dev/null | grep -c "ok installed") -eq 1 ]
+if [ "$(dpkg-query -W -f='${Status}' php 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "PHP is installed, it must be a clean server."
     exit 1
 fi
 
-if [ $(dpkg-query -W -f='${Status}' nextcloud 2>/dev/null | grep -c "ok installed") -eq 1 ]
+if [ "$(dpkg-query -W -f='${Status}' nextcloud 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "Nextcloud is installed, it must be a clean server."
     exit 1
@@ -173,9 +174,8 @@ then
 else
     echo 'ifupdown is installed.' >&2
 fi
-sudo ifdown $IFACE && sudo ifup $IFACE
-nslookup google.com
-if [[ $? > 0 ]]
+sudo ifdown "$IFACE" && sudo ifup "$IFACE"
+if nslookup google.com
 then
     echo "Network NOT OK. You must have a working Network connection to run this script."
     exit 1
@@ -193,7 +193,7 @@ REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+    case ${REPLY,,} in
         y|yes) echo "yes" ;;
         *)     echo "no" ;;
     esac
@@ -220,9 +220,9 @@ clear
 
 # Set keyboard layout
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
-function ask_yes_or_no() {
+ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+    case ${REPLY,,} in
         y|yes) echo "yes" ;;
         *)     echo "no" ;;
     esac
@@ -318,13 +318,12 @@ apt install unzip -y
 apt install open-vm-tools -y
 
 # Download and validate Nextcloud package
-wget -q $NCREPO/$STABLEVERSION.zip -P $HTML
-mkdir -p $GPGDIR
-wget -q $NCREPO/$STABLEVERSION.zip.asc -P $GPGDIR
-chmod -R 600 $GPGDIR
+wget -q "$NCREPO/$STABLEVERSION.zip" -P "$HTML"
+mkdir -p "$GPGDIR"
+wget -q "$NCREPO/$STABLEVERSION.zip.asc" -P "$GPGDIR"
+chmod -R 600 "$GPGDIR"
 gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
-gpg --verify $GPGDIR/$STABLEVERSION.zip.asc $HTML/$STABLEVERSION.zip
-if [[ $? > 0 ]]
+if gpg --verify "$GPGDIR/$STABLEVERSION.zip.asc" "$HTML/$STABLEVERSION.zip"
 then
     echo "Package NOT OK! Installation is aborted..."
     exit 1
@@ -336,8 +335,8 @@ fi
 rm -r $GPGDIR
 
 # Extract package
-unzip -q $HTML/$STABLEVERSION.zip -d $HTML
-rm $HTML/$STABLEVERSION.zip
+unzip -q "$HTML/$STABLEVERSION.zip" -d "$HTML"
+rm "$HTML/$STABLEVERSION.zip"
 
 # Secure permissions
 wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
@@ -512,16 +511,16 @@ CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
-function calendar {
+install_calendar() {
 # Download and install Calendar
 if [ -d $NCPATH/apps/calendar ]
 then
     sleep 1
 else
-    wget -q $CALVER_REPO/v$CALVER/$CALVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CALVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CALVER_FILE
+    wget -q "$CALVER_REPO/v$CALVER/$CALVER_FILE" -P "$NCPATH/apps"
+    tar -zxf "$NCPATH/apps/$CALVER_FILE" -C "$NCPATH/apps"
+    cd "$NCPATH/apps"
+    rm "$CALVER_FILE"
 fi
 
 # Enable Calendar
@@ -532,16 +531,16 @@ fi
 
 }
 
-function contacts {
+install_contacts() {
 # Download and install Contacts
-if [ -d $NCPATH/apps/contacts ]
+if [ -d "$NCPATH/apps/contacts" ]
 then
     sleep 1
 else
-    wget -q $CONVER_REPO/v$CONVER/$CONVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$CONVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $CONVER_FILE
+    wget -q "$CONVER_REPO/v$CONVER/$CONVER_FILE" -P "$NCPATH/apps"
+    tar -zxf "$NCPATH/apps/$CONVER_FILE" -C "$NCPATH/apps"
+    cd "$NCPATH/apps"
+    rm "$CONVER_FILE"
 fi
 
 # Enable Contacts
@@ -551,7 +550,7 @@ then
 fi
 }
 
-function webmin {
+webmin() {
 # Install packages for Webmin
 apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
 
@@ -569,16 +568,19 @@ whiptail --title "Which apps/programs do you want to install?" --checklist --sep
 
 while read -r -u 9 choice
 do
-        case $choice in
-                Calendar) calendar
-                ;;
-                Contacts) contacts
-                ;;
-                Webmin) webmin
-                ;;
-                *)
-                ;;
-        esac
+    case "$choice" in
+        Calendar)
+            install_calendar
+        ;;
+        Contacts)
+            install_contacts
+        ;;
+        Webmin)
+            webmin
+        ;;
+        *)
+        ;;
+    esac
 done 9< results
 rm -f results
 
@@ -623,8 +625,7 @@ else
 fi
 
 # Change root profile
-bash $SCRIPTS/change-root-profile.sh
-if [[ $? > 0 ]]
+if bash $SCRIPTS/change-root-profile.sh
 then
     echo "change-root-profile.sh were not executed correctly."
     sleep 10
@@ -635,8 +636,7 @@ else
 fi
 
 # Change $UNIXUSER profile
-bash $SCRIPTS/change-ncadmin-profile.sh
-if [[ $? > 0 ]]
+if bash $SCRIPTS/change-ncadmin-profile.sh
 then
     echo "change-ncadmin-profile.sh were not executed correctly."
     sleep 10
@@ -659,8 +659,9 @@ chmod +x -R $SCRIPTS
 chown root:root -R $SCRIPTS
 
 # Allow $UNIXUSER to run these scripts
-chown $UNIXUSER:$UNIXUSER $SCRIPTS/instruction.sh
-chown $UNIXUSER:$UNIXUSER $SCRIPTS/history.sh
+chown "$UNIXUSER:$UNIXUSER" \
+    "$SCRIPTS/instruction.sh" \
+    "$SCRIPTS/history.sh"
 
 # Install Redis
 bash $SCRIPTS/redis-server-ubuntu16.sh
@@ -674,49 +675,11 @@ apt full-upgrade -y
 apt purge lxd -y
 
 # Cleanup
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
+CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e ''"$(uname -r | cut -f1,2 -d"-")"'' | grep -e '[0-9]' | xargs sudo apt -y purge)
 echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
-for f in /home/$UNIXUSER/* ; do
-rm -f *.sh
-rm -f *.sh.*
-done;
-
-for f in /root/* ; do
-rm -f *.sh
-rm -f *.sh.*
-done;
-
-for f in /home/$UNIXUSER/* ; do
-rm -f *.html
-rm -f *.html.*
-done;
-
-for f in /root/* ; do
-rm -f *.html
-rm -f *.html.*
-done;
-
-for f in /home/$UNIXUSER/* ; do
-rm -f *.tar
-rm -f *.tar.*
-done;
-
-for f in /root/* ; do
-rm -f *.tar
-rm -f *.tar.*
-done;
-
-for f in /home/$UNIXUSER/* ; do
-rm -f *.zip
-rm -f *.zip.*
-done;
-
-for f in /root/* ; do
-rm -f *.zip
-rm -f *.zip.*
-done;
+find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o name '*.tar*' -o name '*.zip*' \) -delete
 
 # Install virtual kernels
 apt install linux-tools-virtual-hwe-16.04 linux-cloud-tools-virtual-hwe-16.04  -y
