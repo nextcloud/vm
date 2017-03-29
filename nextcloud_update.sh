@@ -25,7 +25,7 @@ CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" 
 NCVERSION=$(curl -s -m 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 
 # Must be root
-[[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+[[ $EUID -ne 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
 # System Upgrade
 apt update
@@ -45,10 +45,10 @@ fi
 
 # Upgrade Nextcloud
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
-wget -q -T 10 -t 2 $NCREPO/nextcloud-$NCVERSION.tar.bz2 > /dev/null
+wget -q -T 10 -t 2 "$NCREPO/nextcloud-$NCVERSION.tar.bz2" -O /dev/null
 if [ $? -eq 0 ]; then
     echo -e "\e[32mSUCCESS!\e[0m"
-    rm -f nextcloud-$NCVERSION.tar.bz2
+    rm -f "nextcloud-$NCVERSION.tar.bz2"
 else
     echo
     echo -e "\e[91mNextcloud $NCVERSION doesn't exist.\e[0m"
@@ -88,18 +88,18 @@ sleep 10
 
 # Backup data
 echo "Backing up data..."
-DATE=`date +%Y-%m-%d-%H%M%S`
+DATE=$(date +%Y-%m-%d-%H%M%S)
 if [ -d $BACKUP ]
 then
-    mkdir -p /var/NCBACKUP_OLD/$DATE
-    mv $BACKUP/* /var/NCBACKUP_OLD/$DATE
+    mkdir -p "/var/NCBACKUP_OLD/$DATE"
+    mv $BACKUP/* "/var/NCBACKUP_OLD/$DATE"
     rm -R $BACKUP
     mkdir -p $BACKUP
 fi
 rsync -Aax $NCPATH/config $BACKUP
 rsync -Aax $NCPATH/themes $BACKUP
 rsync -Aax $NCPATH/apps $BACKUP
-if [[ $? > 0 ]]
+if [[ ! $? -eq 0 ]]
 then
     echo "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
@@ -109,9 +109,9 @@ else
     echo -e "\e[0m"
 fi
 echo "Downloading $NCREPO/nextcloud-$NCVERSION.tar.bz2..."
-wget -q -T 10 -t 2 $NCREPO/nextcloud-$NCVERSION.tar.bz2 -P $HTML
+wget -q -T 10 -t 2 "$NCREPO/nextcloud-$NCVERSION.tar.bz2" -P "$HTML"
 
-if [ -f $HTML/nextcloud-$NCVERSION.tar.bz2 ]
+if [ -f "$HTML/nextcloud-$NCVERSION.tar.bz2" ]
 then
     echo "$HTML/nextcloud-$NCVERSION.tar.bz2 exists"
 else
@@ -143,8 +143,8 @@ then
     sudo -u www-data php $NCPATH/occ maintenance:mode --on
     echo "Removing old Nextcloud instance in 5 seconds..." && sleep 5
     rm -rf $NCPATH
-    tar -xjf $HTML/nextcloud-$NCVERSION.tar.bz2 -C $HTML
-    rm $HTML/nextcloud-$NCVERSION.tar.bz2
+    tar -xjf "$HTML/nextcloud-$NCVERSION.tar.bz2" -C "$HTML"
+    rm "$HTML/nextcloud-$NCVERSION.tar.bz2"
     cp -R $BACKUP/themes $NCPATH/
     cp -R $BACKUP/config $NCPATH/
     bash $SECURE
@@ -198,7 +198,7 @@ else
 fi
 
 # Pretty URLs
-echo "Setting RewriteBase to "/" in config.php..."
+echo "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
 sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
@@ -220,7 +220,7 @@ then
     echo
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after."
     echo "UPGRADE SUCCESS!"
-    echo "NEXTCLOUD UPDATE success-`date +"%Y%m%d"`" >> /var/log/cronjobs_success.log
+    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log
     sudo -u www-data php $NCPATH/occ status
     sudo -u www-data php $NCPATH/occ maintenance:mode --off
     echo
