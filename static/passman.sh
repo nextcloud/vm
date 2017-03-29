@@ -20,8 +20,7 @@ fi
 
 # Check if file is downloadable
 echo "Checking latest released version on the Passman download server and if it's possible to download..."
-wget -q -T 10 -t 2 $PASSVER_REPO/$PASSVER_FILE > /dev/null
-if [ $? -eq 0 ]
+if wget -q -T 10 -t 2 "$PASSVER_REPO/$PASSVER_FILE" -O /dev/null
 then
    echo "Latest version is: $PASSVER"
 else
@@ -36,11 +35,11 @@ fi
 
 # Test checksum
 mkdir -p $SHA256
-wget -q $PASSVER_REPO/$PASSVER_FILE -P $SHA256
-wget -q $PASSVER_REPO/$PASSVER_FILE.sha256 -P $SHA256
+wget -q "$PASSVER_REPO/$PASSVER_FILE" -P "$SHA256"
+wget -q "$PASSVER_REPO/$PASSVER_FILE.sha256" -P "$SHA256"
 echo "Verifying integrity of $PASSVER_FILE..."
-cd $SHA256
-CHECKSUM_STATE=$(echo -n $(sha256sum -c $PASSVER_FILE.sha256) | tail -c 2)
+cd "$SHA256"
+CHECKSUM_STATE=$(echo -n "$(sha256sum -c "$PASSVER_FILE.sha256")" | tail -c 2)
 if [ "$CHECKSUM_STATE" != "OK" ]
 then
     echo "Warning! Checksum does not match!"
@@ -56,10 +55,10 @@ if [ -d $NCPATH/apps/passman ]
 then
     sleep 1
 else
-    wget -q $PASSVER_REPO/$PASSVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$PASSVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $PASSVER_FILE
+    wget -q "$PASSVER_REPO/$PASSVER_FILE" -P "$NCPATH/apps"
+    tar -zxf "$NCPATH/apps/$PASSVER_FILE" -C "$NCPATH/apps"
+    cd "$NCPATH/apps"
+    rm "$PASSVER_FILE"
 fi
 
 # Enable Passman
