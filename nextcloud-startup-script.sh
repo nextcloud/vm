@@ -670,13 +670,10 @@ clear
 echo -e "\e[0m"
 echo "For better security, change the system user password for [$UNIXUSER]"
 read -p $'\n\e[32mPress any key to change password for system user... \e[0m\n' -n1 -s
-sudo passwd "$UNIXUSER"
-if [[ $? -gt 0 ]]
-then
-    sudo passwd "$UNIXUSER"
-else
-    sleep 2
-fi
+while true
+do
+    sudo passwd "$UNIXUSER" && break
+done
 echo
 clear
 NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
@@ -684,13 +681,10 @@ echo -e "\e[0m"
 echo "For better security, change the Nextcloud password for [$NCADMIN]"
 echo "The current password for $NCADMIN is [$NCPASS]"
 read -p $'\n\e[32mPress any key to change password for Nextcloud... \e[0m\n' -n1 -s
-sudo -u www-data php "$NCPATH/occ" user:resetpassword "$NCADMIN"
-if [[ $? -gt 0 ]]
-then
-    sudo -u www-data php "$NCPATH/occ" user:resetpassword "$NCADMIN"
-else
-    sleep 2
-fi
+while true
+do
+    sudo -u www-data php "$NCPATH/occ" user:resetpassword "$NCADMIN" && break
+done
 clear
 
 # Upgrade system
