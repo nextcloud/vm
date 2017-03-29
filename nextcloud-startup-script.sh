@@ -23,13 +23,25 @@ NCPASS=nextcloud
 NCUSER=ncadmin
 export NCUSER
 
-function ask_yes_or_no() {
+ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
         y|yes) echo "yes" ;;
         *)     echo "no" ;;
     esac
 }
+
+network_ok() {
+    echo "Testing if network is OK..."
+    service networking restart
+    if wget -q -T 10 -t 2 http://github.com -O /dev/null
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -41,68 +53,62 @@ else
 fi
 
 # Check if root
-if [ "$(whoami)" != "root" ]
+if [[ $EUID -ne 0 ]]
 then
-    echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud-startup-script.sh"
-    echo
+    echo -e "\n\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud-startup-script.sh\n"
     exit 1
 fi
 
 # Check network
-echo "Testing if network is OK..."
-service networking restart
-    wget -q -T 10 -t 2 http://github.com > /dev/null
-if [ $? -eq 0 ]
+if network_ok
 then
     echo -e "\e[32mOnline!\e[0m"
 else
-echo "Setting correct interface..."
-# Set correct interface
-{ sed '/# The primary network interface/q' /etc/network/interfaces; printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"; } > /etc/network/interfaces.new
-mv /etc/network/interfaces.new /etc/network/interfaces
-service networking restart
+    echo "Setting correct interface..."
+    # Set correct interface
+    {
+        sed '/# The primary network interface/q' /etc/network/interfaces
+        printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"
+    } > /etc/network/interfaces.new
+    mv /etc/network/interfaces.new /etc/network/interfaces
+    service networking restart
 fi
 
 # Check network
-echo "Testing if network is OK..."
-service networking restart
-    wget -q -T 10 -t 2 http://github.com > /dev/null
-if [ $? -eq 0 ]
+if network_ok
 then
     echo -e "\e[32mOnline!\e[0m"
 else
-    echo
-    echo "Network NOT OK. You must have a working Network connection to run this script."
+    echo -e "\nNetwork NOT OK. You must have a working Network connection to run this script."
     echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
     exit 1
 fi
 
 # Check where the best mirrors are and update
-echo
-echo "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible."
+echo -e "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible."
 echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
 echo "We recomend you to change the mirrors based on where this is currently installed."
 echo "Checking current mirror..."
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
+
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-echo "Keeping $REPO as mirror..."
-sleep 1
+    echo "Keeping $REPO as mirror..."
+    sleep 1
 else
-  echo "Locating the best mirrors..."
-  apt update -q2
-  apt install python-pip -y
- pip install \
-     --upgrade pip \
-     apt-select
- apt-select -m up-to-date -t 5 -c
- sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
- if [ -f sources.list ]
- then
-     sudo mv sources.list /etc/apt/
-  fi
+    echo "Locating the best mirrors..."
+    apt update -q2
+    apt install python-pip -y
+    pip install \
+        --upgrade pip \
+        apt-select
+    apt-select -m up-to-date -t 5 -c
+    sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+    if [ -f sources.list ]
+    then
+        sudo mv sources.list /etc/apt/
+    fi
 fi
 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
@@ -428,10 +434,8 @@ echo "|   depending on your internet connection.                           |"
 echo "|                                                                    |"
 echo "| ####################### Tech and Me - 2017 ####################### |"
 echo "+--------------------------------------------------------------------+"
-echo -e "\e[32m"
 read -p $'\n\e[32mPress any key to start the script...\e[0m\n' -n1 -s
 clear
-echo -e "\e[0m"
 
 # VPS?
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
@@ -448,7 +452,7 @@ then
     ifup "$IFACE"
     sleep 1
     bash "$SCRIPTS/ip.sh"
-    if [ "$IFACE" = "" ]
+    if [ -z "$IFACE" ]
     then
         echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
         wget -q "$STATIC/ip2.sh" -P "$SCRIPTS"
@@ -467,22 +471,16 @@ then
     if [ "$CONTEST" == "Connected!" ]
     then
         # Connected!
-        echo -e "\e[32mConnected!\e[0m"
-        echo
+        echo -e "\e[32mConnected!\e[0m\n"
         echo -e "We will use the DHCP IP: \e[32m$ADDRESS\e[0m. If you want to change it later then just edit the interfaces file:"
-        echo "sudo nano /etc/network/interfaces"
-        echo
+        echo -e "sudo nano /etc/network/interfaces\n"
         echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
-        echo -e "\e[32m"
         read -p $'\n\e[32mPress any key to continue...\e[0m\n' -n1 -s
-        echo -e "\e[0m"
     else
         # Not connected!
         echo -e "\e[31mNot Connected\e[0m\nYou should change your settings manually in the next step."
-        echo -e "\e[32m"
         read -p $'\n\e[32mPress any key to open /etc/network/interfaces...\e[0m\n' -n1 -s
-        echo -e "\e[0m"
         nano /etc/network/interfaces
         service networking restart
         clear
@@ -504,11 +502,11 @@ clear
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-echo "Not changing keyboard layout..."
-sleep 1
-clear
+    echo "Not changing keyboard layout..."
+    sleep 1
+    clear
 else
-dpkg-reconfigure keyboard-configuration
+    dpkg-reconfigure keyboard-configuration
 clear
 fi
 
@@ -520,8 +518,7 @@ sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Generate new SSH Keys
-echo
-echo "Generating new SSH keys for the server..."
+echo -e "\nGenerating new SSH keys for the server..."
 sleep 1
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
@@ -542,8 +539,7 @@ fi
 # Enable UTF8mb4 (4-byte support)
 NCDB=nextcloud_db
 PW_FILE=/var/mysql_password.txt
-echo
-echo "Enabling UTF8mb4 support on $NCDB...."
+echo -e "\nEnabling UTF8mb4 support on $NCDB...."
 echo "Please be patient, it may take a while."
 sudo /etc/init.d/mysql restart
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
@@ -552,8 +548,8 @@ if [ "$RESULT" == "$NCDB" ]; then
 fi
 if [ $? -eq 0 ]
 then
-sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
-sudo -u www-data $NCPATH/occ maintenance:repair
+    sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
+    sudo -u www-data $NCPATH/occ maintenance:repair
 fi
 
 # Install phpMyadmin
@@ -576,48 +572,45 @@ then
 else
     echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    echo -e "\e[32m"
     read -p $'\n\e[32mPress any key to continue... \e[0m\n' -n1 -s
-    echo -e "\e[0m"
 fi
 clear
 
 # Whiptail auto-size
 calc_wt_size() {
-  WT_HEIGHT=17
-  WT_WIDTH=$(tput cols)
+    WT_HEIGHT=17
+    WT_WIDTH=$(tput cols)
 
-  if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
-    WT_WIDTH=80
-  fi
-  if [ "$WT_WIDTH" -gt 178 ]; then
-    WT_WIDTH=120
-  fi
-  WT_MENU_HEIGHT=$((WT_HEIGHT-7))
-  export WT_MENU_HEIGHT
+    if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
+        WT_WIDTH=80
+    fi
+    if [ "$WT_WIDTH" -gt 178 ]; then
+        WT_WIDTH=120
+    fi
+    WT_MENU_HEIGHT=$((WT_HEIGHT-7))
+    export WT_MENU_HEIGHT
 }
 
 # Install Apps
-function collabora {
+collabora() {
     bash "$SCRIPTS/collabora.sh"
     rm -f "$SCRIPTS/collabora.sh"
 }
 
-function nextant {
+nextant() {
     bash "$SCRIPTS/nextant.sh"
     rm -f "$SCRIPTS/nextant.sh"
 }
 
-function passman {
+passman() {
     bash "$SCRIPTS/passman.sh"
     rm -f "$SCRIPTS/passman.sh"
 }
 
 
-function spreedme {
+spreedme() {
     bash "$SCRIPTS/spreedme.sh"
     rm -f "$SCRIPTS/spreedme.sh"
-
 }
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
@@ -628,18 +621,26 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 
 while read -r -u 9 choice
 do
-        case $choice in
-                Collabora) collabora
-                ;;
-                Nextant) nextant
-                ;;
-                Passman) passman
-                ;;
-                Spreed.ME) spreedme
-                ;;
-                *)
-                ;;
-        esac
+    case $choice in
+        Collabora)
+            collabora
+        ;;
+
+        Nextant)
+            nextant
+        ;;
+
+        Passman)
+            passman
+        ;;
+
+        Spreed.ME)
+            spreedme
+        ;;
+
+        *)
+        ;;
+    esac
 done 9< results
 rm -f results
 clear
@@ -652,15 +653,13 @@ then
 else
     echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
-    echo -e "\e[32m"
     read -p $'\n\e[32mPress any key to continue... \e[0m\n' -n1 -s
-    echo -e "\e[0m"
 fi
 clear
 
 # Change Timezone
 echo "Current timezone is $(cat /etc/timezone)"
-echo "You must change timezone to your timezone"
+echo "You must change it to your timezone"
 read -p $'\n\e[32mPress any key to change timezone...\e[0m\n ' -n1 -s
 dpkg-reconfigure tzdata
 echo
@@ -670,9 +669,7 @@ clear
 # Change password
 echo -e "\e[0m"
 echo "For better security, change the system user password for [$UNIXUSER]"
-echo -e "\e[32m"
 read -p $'\n\e[32mPress any key to change password for system user... \e[0m\n' -n1 -s
-echo -e "\e[0m"
 sudo passwd "$UNIXUSER"
 if [[ $? -gt 0 ]]
 then
@@ -686,9 +683,7 @@ NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
 echo -e "\e[0m"
 echo "For better security, change the Nextcloud password for [$NCADMIN]"
 echo "The current password for $NCADMIN is [$NCPASS]"
-echo -e "\e[32m"
 read -p $'\n\e[32mPress any key to change password for Nextcloud... \e[0m\n' -n1 -s
-echo -e "\e[0m"
 sudo -u www-data php "$NCPATH/occ" user:resetpassword "$NCADMIN"
 if [[ $? -gt 0 ]]
 then
@@ -742,13 +737,13 @@ find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o name
 sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
 
 truncate -s 0 \
-  /root/.bash_history \
-  "/home/$UNIXUSER/.bash_history" \
-  /var/spool/mail/root \
-  "/var/spool/mail/$UNIXUSER" \
-  /var/log/apache2/access.log \
-  /var/log/apache2/error.log \
-  /var/log/cronjobs_success.log
+    /root/.bash_history \
+    "/home/$UNIXUSER/.bash_history" \
+    /var/spool/mail/root \
+    "/var/spool/mail/$UNIXUSER" \
+    /var/log/apache2/access.log \
+    /var/log/apache2/error.log \
+    /var/log/cronjobs_success.log
 
 sed -i "s|sudo -i||g" "/home/$UNIXUSER/.bash_profile"
 cat << RCLOCAL > "/etc/rc.local"
@@ -817,7 +812,5 @@ fi
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
-echo "Installation is now done. System will now reboot..."
+read -p $'\n\e[32mInstallation finished, press any key to reboot system... \e[0m\n' -n1 -s
 reboot
-
-exit 0
