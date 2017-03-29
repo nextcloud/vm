@@ -3,7 +3,7 @@
 
 SCRIPTS=/var/scripts
 # Check if root
-if [ "$(whoami)" != "root" ]
+if [[ $EUID -ne 0 ]]
 then
     echo
     echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/collabora.sh"
@@ -37,11 +37,11 @@ calc_wt_size() {
 
   if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
     WT_WIDTH=80
-  fi
-  if [ "$WT_WIDTH" -gt 178 ]; then
+  elif [ "$WT_WIDTH" -gt 178 ]; then
     WT_WIDTH=120
   fi
   WT_MENU_HEIGHT=$((WT_HEIGHT-7))
+  export WT_MENU_HEIGHT
 }
 
 # Notification
@@ -52,14 +52,14 @@ apt update -q2
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
-curl -s https://$(echo $NCDOMAIN | tr -d '\\')/status.php | grep -q 'installed":true'
+curl -s https://${$NCDOMAIN//\\/}/status.php | grep -q 'installed":true'
 if [ $? -eq 0 ]
 then
     sleep 1
 else
     echo
     echo "It seems like Nextcloud is not installed or that you don't use https on:"
-    echo "$(echo $NCDOMAIN | tr -d '\\')."
+    echo "${$NCDOMAIN//\\/}."
     echo "Please install Nextcloud and make sure your domain is reachable, or activate SSL"
     echo "on your domain to be able to run this script."
     echo
@@ -76,13 +76,13 @@ fi
 # Check if $SUBDOMAIN exists and is reachable
 echo
 echo "Checking if $SUBDOMAIN exists and is reachable..."
-if wget -q -T 10 -t 2 --spider $SUBDOMAIN; then
+if wget -q -T 10 -t 2 --spider "$SUBDOMAIN"; then
    sleep 1
-elif wget -q -T 10 -t 2 --spider --no-check-certificate https://$SUBDOMAIN; then
+elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$SUBDOMAIN"; then
    sleep 1
-elif curl -s -k -m 10  $SUBDOMAIN; then
+elif curl -s -k -m 10 "$SUBDOMAIN"; then
    sleep 1
-elif curl -s -k -m 10 https://$SUBDOMAIN > /dev/null ; then
+elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null ; then
    sleep 1
 else
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
@@ -96,14 +96,14 @@ fi
 # Check if 443 is open using nmap, if not notify the user
 echo "Running apt update..."
 apt update -q2
-if [ $(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed") -eq 1 ]
+if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
       echo "nmap is already installed..."
       clear
 else
     apt install nmap -y
 fi
-if [ $(nmap -sS -p 443 "$WANIP4" | grep -c "open") -eq 1 ]
+if [ "$(nmap -sS -p 443 "$WANIP4" | grep -c "open")" == "1" ]
 then
   echo -e "\e[32mPort 443 is open on $WANIP4!\e[0m"
   apt remove --purge nmap -y
@@ -112,7 +112,7 @@ else
   echo -e "\e[32m"
   read -p "Press any key to test $SUBDOMAIN... " -n1 -s
   echo -e "\e[0m"
-  if [[ $(nmap -sS -PN -p 443 $SUBDOMAIN | grep -m 1 "open" | awk '{print $2}') = open ]]
+  if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
   then
     echo -e "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m"
     apt remove --purge nmap -y
@@ -127,7 +127,7 @@ else
 fi
 
 # Install Docker
-if [ $(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok installed") -eq 1 ]
+if [ "$(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     docker -v
 else
@@ -149,7 +149,7 @@ else
 fi
 
 # Load aufs
-apt-get install linux-image-extra-$(uname -r) -y
+apt-get install linux-image-extra-"$(uname -r)" -y
 # apt install aufs-tools -y # already included in the docker-ce package
 AUFS=$(grep -r "aufs" /etc/modules)
 if [[ $AUFS = "aufs" ]]
@@ -170,15 +170,12 @@ else
 fi
 
 # Check of docker runs and kill it
-DOCKERPS=$(docker ps -a -q)
-if [[ $DOCKERPS > 0 ]]
+if docker ps -a -q
 then
     echo "Removing old Docker instance(s)... ($DOCKERPS)"
-    echo -e "\e[32m"
-    read -p "Press any key to continue. Press CTRL+C to abort." -n1 -s
-    echo -e "\e[0m"
-    docker stop $DOCKERPS
-    docker rm $DOCKERPS
+    read -p $'\n\e[32mPress any key to continue. Press CTRL+C to abort.\e[0m\n' -n1 -s
+    docker stop "$DOCKERPS"
+    docker rm "$DOCKERPS"
 else
     echo "No Docker instanses running"
 fi
@@ -195,15 +192,16 @@ docker pull collabora/code
 docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always --cap-add MKNOD collabora/code
 
 # Install Apache2
-if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ]
+if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     sleep 1
 else
     {
     i=1
     while read -r line; do
-        i=$(( $i + 1 ))
+        ((i++))
         echo $i
+        export $line
     done < <(apt install apache2 -y)
     } | whiptail --title "Progress" --gauge "Please wait while installing Apache2" 6 60 0
 fi
@@ -219,8 +217,7 @@ if [ -f "$HTTPS_CONF" ];
 then
     echo "Virtual Host exists"
 else
-        touch "$HTTPS_CONF"
-        cat << HTTPS_CREATE > "$HTTPS_CONF"
+    cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
   ServerName $SUBDOMAIN:443
 
@@ -255,7 +252,7 @@ else
   ProxyPassReverse    /hosting/discovery https://127.0.0.1:9980/hosting/discovery
 
   # Main websocket
-  ProxyPassMatch "/lool/(.*)/ws$" wss://127.0.0.1:9980/lool/$1/ws nocanon
+  ProxyPassMatch "/lool/(.*)/ws$" wss://127.0.0.1:9980/lool/\$1/ws nocanon
 
   # Admin Console websocket
   ProxyPass   /lool/adminws wss://127.0.0.1:9980/lool/adminws
@@ -266,19 +263,15 @@ else
 </VirtualHost>
 HTTPS_CREATE
 
-# Ugly fix for now, maybe "$1" or something?
-sed -i 's|/lool//ws|/lool/$1/ws|g' $HTTPS_CONF
-
-if [ -f "$HTTPS_CONF" ];
-then
-    echo "$HTTPS_CONF was successfully created"
-    sleep 2
-else
-    echo "Unable to create vhost, exiting..."
-    echo "Please report this issue here https://github.com/nextcloud/vm/issues/new"
-    exit
-fi
-
+    if [ -f "$HTTPS_CONF" ];
+    then
+        echo "$HTTPS_CONF was successfully created"
+        sleep 2
+    else
+        echo "Unable to create vhost, exiting..."
+        echo "Please report this issue here https://github.com/nextcloud/vm/issues/new"
+        exit 1
+    fi
 fi
 
 # Let's Encrypt
@@ -299,19 +292,19 @@ a2dissite 000-default.conf
 sudo service apache2 stop
 
 # Generate certs
-letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d $SUBDOMAIN
+letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
 if [[ "$?" == "0" ]]
 then
     echo -e "\e[96m"
     echo -e "Certs are generated!"
     echo -e "\e[0m"
-    a2ensite $SUBDOMAIN.conf
+    a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
 # Install Collabora App
-    wget -q $COLLVER_REPO/$COLLVER/$COLLVER_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$COLLVER_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $COLLVER_FILE
+    wget -q "$COLLVER_REPO/$COLLVER/$COLLVER_FILE" -P "$NCPATH/apps"
+    tar -zxf "$NCPATH/apps/$COLLVER_FILE" -C "$NCPATH/apps"
+    cd "$NCPATH/apps"
+    rm "$COLLVER_FILE"
 else
     echo -e "\e[96m"
     echo -e "It seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new"
