@@ -29,7 +29,7 @@ fi
 if [ "$(whoami)" != "root" ]
 then
     echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud_install_production.sh"
+    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud_install_production.sh\n"
     echo
     exit 1
 fi
@@ -159,8 +159,8 @@ else
     echo
     exit 0
 fi
-echo -e "\e[32m"
+printf "\e[32m\n"
 read -p "Press any key to continue..." -n1 -s
 clear
-echo -e "\e[0m"
+printf "\e[0m\n"
 
