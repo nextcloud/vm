@@ -12,7 +12,7 @@ SCRIPTS=/var/scripts
 if [ "$(whoami)" != "root" ]
 then
     echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou need to type: \e[36msudo \e[0mbash /var/scripts/activate-ssl.sh"
+    echo -e "\e[31mSorry, you are not root.\n\e[0mYou need to type: \e[36msudo \e[0mbash $SCRIPTS/activate-ssl.sh"
     echo
     exit 1
 fi
@@ -35,7 +35,7 @@ cat << STARTMSG
 |       IP address: $ADDRESS - do this in your router.      |
 |       Here is a guide: https://goo.gl/Uyuf65                  |
 |                                                               |
-|       This script is located in /var/scripts and you          |
+|       This script is located in $SCRIPTS and you          |
 |       can run this script after you got a domain.             |
 |                                                               |
 |       Please don't run this script if you don't have          |
@@ -56,7 +56,7 @@ esac
 if [[ "no" == $(ask_yes_or_no "Are you sure you want to continue?") ]]
 then
     echo
-    echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
+    echo "OK, but if you want to run this script later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
@@ -73,7 +73,7 @@ function ask_yes_or_no() {
 if [[ "no" == $(ask_yes_or_no "Have you forwarded port 443 in your router?") ]]
 then
     echo
-    echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
+    echo "OK, but if you want to run this script later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
@@ -92,7 +92,7 @@ then
     sleep 1
 else
     echo
-    echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
+    echo "OK, but if you want to run this script later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     echo -e "\e[32m"
     read -p "Press any key to continue... " -n1 -s
     echo -e "\e[0m"
@@ -303,7 +303,7 @@ service apache2 reload
 if [ -d "$certfiles" ]
 then
     # Activate new config
-    bash /var/scripts/test-new-config.sh $domain.conf
+    bash $SCRIPTS/test-new-config.sh $domain.conf
     exit 0
 else
     echo -e "\e[96m"
@@ -323,7 +323,7 @@ letsencrypt \
 if [ -d "$certfiles" ]
 then
     # Activate new config
-    bash /var/scripts/test-new-config.sh $domain.conf
+    bash $SCRIPTS/test-new-config.sh $domain.conf
     exit 0
 else
     echo -e "\e[96m"
@@ -344,7 +344,7 @@ letsencrypt certonly \
 if [ -d "$certfiles" ]
 then
     # Activate new config
-    bash /var/scripts/test-new-config.sh $domain.conf
+    bash $SCRIPTS/test-new-config.sh $domain.conf
     exit 0
 else
     echo -e "\e[96m"
@@ -366,7 +366,7 @@ letsencrypt \
 if [ -d "$certfiles" ]
 then
 # Activate new config
-    bash /var/scripts/test-new-config.sh $domain.conf
+    bash $SCRIPTS/test-new-config.sh $domain.conf
     exit 0
 else
     echo -e "\e[96m"
@@ -374,7 +374,7 @@ else
     echo -e "\e[0m"
     cat << ENDMSG
 +------------------------------------------------------------------------+
-| The script is located in /var/scripts/activate-ssl.sh                  |
+| The script is located in $SCRIPTS/activate-ssl.sh                  |
 | Please try to run it again some other time with other settings.        |
 |                                                                        |
 | There are different configs you can try in Let's Encrypt's user guide: |
