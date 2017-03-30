@@ -16,7 +16,16 @@ if [ "$(whoami)" != "root" ]
 then
     echo
     echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/phpmyadmin_install.sh"
-    echo
+    echo # remove echo here and do \n instead there are more places like this iirc
+    sleep 3
+    exit 1
+fi
+
+# Check that the script can see the external IP (apache fails otherwise)
+if [ -z "$WANIP" ]
+then
+    echo "WANIP is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again"
+    sleep 3
     exit 1
 fi
 
@@ -29,6 +38,7 @@ then
 else
     echo "Ubuntu Server is required to run this script."
     echo "Please install that distro and try again."
+    sleep 3
     exit 1
 fi
 
