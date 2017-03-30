@@ -15,7 +15,7 @@ SAVEPATH=""
 if [ "$(whoami)" != "root" ]
 then
     echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/phpmyadmin_install.sh"
+    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/phpmyadmin_install.sh\n"
     echo # remove echo here and do \n instead there are more places like this iirc
     sleep 3
     exit 1
