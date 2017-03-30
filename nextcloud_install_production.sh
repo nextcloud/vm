@@ -57,7 +57,7 @@ fi
 if [[ $EUID -ne 0 ]]
 then
     echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud_install_production.sh"
+    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud_install_production.sh\n"
     echo
     exit 1
 fi
@@ -190,7 +190,7 @@ sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive
 # Check where the best mirrors are and update
 echo
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
-echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
+printf "Your current server repository is:  \e[36m$REPO\e[0m\n"
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
