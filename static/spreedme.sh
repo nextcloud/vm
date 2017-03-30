@@ -161,4 +161,3 @@ else
 fi
 read -p $'\n\e[32mPress any key to continue...\e[0m\n' -n1 -s
 clear
-
