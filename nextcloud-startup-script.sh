@@ -55,14 +55,14 @@ fi
 # Check if root
 if [[ $EUID -ne 0 ]]
 then
-    echo -e "\n\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud-startup-script.sh\n"
+    printf "\n\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud-startup-script.sh\n"
     exit 1
 fi
 
 # Check network
 if network_ok
 then
-    echo -e "\e[32mOnline!\e[0m"
+    printf "\e[32mOnline!\e[0m\n"
 else
     echo "Setting correct interface..."
     # Set correct interface
@@ -77,20 +77,20 @@ fi
 # Check network
 if network_ok
 then
-    echo -e "\e[32mOnline!\e[0m"
+    printf "\e[32mOnline!\e[0m\n"
 else
-    echo -e "\nNetwork NOT OK. You must have a working Network connection to run this script."
+    printf "\nNetwork NOT OK. You must have a working Network connection to run this script.\n"
     echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
     exit 1
 fi
 
 # Check where the best mirrors are and update
-echo -e "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible."
+printf "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.\n"
 echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
 echo "We recomend you to change the mirrors based on where this is currently installed."
 echo "Checking current mirror..."
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
-echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
+printf "Your current server repository is:  \e[36m$REPO\e[0m\n"
 
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
@@ -441,11 +441,11 @@ clear
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
     # Change IP
-    echo -e "\n\e[0mOK, we assume you run this locally and we will now configure your IP to be static.\e[1m\n"
+    printf "\n\e[0mOK, we assume you run this locally and we will now configure your IP to be static.\e[1m\n"
     echo "Your internal IP is: $ADDRESS"
-    echo -e "\n\e[0mWrite this down, you will need it to set static IP"
-    echo -e "in your router later. It's included in this guide:"
-    echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
+    printf "\n\e[0mWrite this down, you will need it to set static IP\n"
+    echo "in your router later. It's included in this guide:"
+    echo "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     read -p $'\n\e[32mPress any key to set static IP...\e[0m\n' -n1 -s
     ifdown "$IFACE"
     sleep 1
@@ -471,15 +471,15 @@ then
     if [ "$CONTEST" == "Connected!" ]
     then
         # Connected!
-        echo -e "\e[32mConnected!\e[0m\n"
-        echo -e "We will use the DHCP IP: \e[32m$ADDRESS\e[0m. If you want to change it later then just edit the interfaces file:"
-        echo -e "sudo nano /etc/network/interfaces\n"
+        printf "\e[32mConnected!\e[0m\n"
+        printf "We will use the DHCP IP: \e[32m$ADDRESS\e[0m. If you want to change it later then just edit the interfaces file:"
+        printf "sudo nano /etc/network/interfaces\n"
         echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
         read -p $'\n\e[32mPress any key to continue...\e[0m\n' -n1 -s
     else
         # Not connected!
-        echo -e "\e[31mNot Connected\e[0m\nYou should change your settings manually in the next step."
+        printf "\e[31mNot Connected\e[0m\nYou should change your settings manually in the next step.\n"
         read -p $'\n\e[32mPress any key to open /etc/network/interfaces...\e[0m\n' -n1 -s
         nano /etc/network/interfaces
         service networking restart
@@ -518,7 +518,7 @@ sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Generate new SSH Keys
-echo -e "\nGenerating new SSH keys for the server..."
+printf "\nGenerating new SSH keys for the server...\n"
 sleep 1
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
@@ -539,7 +539,7 @@ fi
 # Enable UTF8mb4 (4-byte support)
 NCDB=nextcloud_db
 PW_FILE=/var/mysql_password.txt
-echo -e "\nEnabling UTF8mb4 support on $NCDB...."
+printf "\nEnabling UTF8mb4 support on $NCDB....\n"
 echo "Please be patient, it may take a while."
 sudo /etc/init.d/mysql restart
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
@@ -667,7 +667,7 @@ sleep 3
 clear
 
 # Change password
-echo -e "\e[0m"
+printf "\e[0m\n"
 echo "For better security, change the system user password for [$UNIXUSER]"
 read -p $'\n\e[32mPress any key to change password for system user... \e[0m\n' -n1 -s
 while true
@@ -677,7 +677,7 @@ done
 echo
 clear
 NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
-echo -e "\e[0m"
+printf "\e[0m\n"
 echo "For better security, change the Nextcloud password for [$NCADMIN]"
 echo "The current password for $NCADMIN is [$NCPASS]"
 read -p $'\n\e[32mPress any key to change password for Nextcloud... \e[0m\n' -n1 -s
@@ -762,21 +762,21 @@ ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print
 
 # Success!
 clear
-echo -e "\e[32m"
+printf "\e[32m\n"
 echo    "+--------------------------------------------------------------------+"
 echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
 echo    "|                                                                    |"
-echo -e "|         \e[0mLogin to Nextcloud in your browser:\e[36m\" $ADDRESS2\"\e[32m           |"
+printf "|         \e[0mLogin to Nextcloud in your browser:\e[36m\" $ADDRESS2\"\e[32m           |\n"
 echo    "|                                                                    |"
-echo -e "|         \e[0mPublish your server online! \e[36mhttps://goo.gl/iUGE2U\e[32m          |"
+printf "|         \e[0mPublish your server online! \e[36mhttps://goo.gl/iUGE2U\e[32m          |\n"
 echo    "|                                                                    |"
-echo -e "|         \e[0mTo login to MySQL just type: \e[36m'mysql -u root'\e[32m               |"
+printf "|         \e[0mTo login to MySQL just type: \e[36m'mysql -u root'\e[32m               |\n"
 echo    "|                                                                    |"
-echo -e "|   \e[0mTo update this VM just type: \e[36m'sudo bash /var/scripts/update.sh'\e[32m  |"
+printf "|   \e[0mTo update this VM just type: \e[36m'sudo bash /var/scripts/update.sh'\e[32m  |\n"
 echo    "|                                                                    |"
-echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
+printf "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |\n"
 echo    "+--------------------------------------------------------------------+"
-echo -e "\e[0m"
+printf "\e[0m\n"
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
