@@ -62,6 +62,28 @@ then
 exit
 fi
 
+if [[ "no" == $(ask_yes_or_no "Have you forwarded port 443 in your router?") ]]
+then
+    echo
+    echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+    exit
+fi
+
+if [[ "yes" == $(ask_yes_or_no "Do you have a domain that you will use?") ]]
+then
+    sleep 1
+else
+    echo
+    echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
+    echo -e "\e[32m"
+    read -p "Press any key to continue... " -n1 -s
+    echo -e "\e[0m"
+    exit
+fi
+
 echo
 # Ask for domain name
 cat << ENTERDOMAIN
