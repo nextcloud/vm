@@ -10,7 +10,7 @@ PASSVER_REPO=https://releases.passman.cc
 SHA256=/tmp/sha256
 
 # Check if root
-if [ "$(whoami)" != "root" ]
+if [[ $EUID -ne 0 ]]
 then
     echo
     echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/passman.sh"
