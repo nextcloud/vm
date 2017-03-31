@@ -67,9 +67,9 @@ else
     echo "When SSL is activated, run these commands from your terminal:"
     echo "sudo wget https://raw.githubusercontent.com/nextcloud/vm/master/static/collabora.sh"
     echo "sudo bash collabora.sh"
-    echo -e "\e[32m"
+    printf "\e[32m\n"
     read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    printf "\e[0m\n"
     exit 1
 fi
 
@@ -87,9 +87,9 @@ elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null ; then
 else
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
    echo "it to this server before you can run this script."
-   echo -e "\e[32m"
+   printf "\e[32m\n"
    read -p "Press any key to continue... " -n1 -s
-   echo -e "\e[0m"
+   printf "\e[0m\"
    exit 1
 fi
 
@@ -105,22 +105,22 @@ else
 fi
 if [ "$(nmap -sS -p 443 "$WANIP4" | grep -c "open")" == "1" ]
 then
-  echo -e "\e[32mPort 443 is open on $WANIP4!\e[0m"
+  printf "\e[32mPort 443 is open on $WANIP4!\e[0mn\"
   apt remove --purge nmap -y
 else
   echo "Port 443 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
-  echo -e "\e[32m"
+  printf "\e[32m\n"
   read -p "Press any key to test $SUBDOMAIN... " -n1 -s
-  echo -e "\e[0m"
+  printf "\e[0m\n"
   if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
   then
-    echo -e "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m"
+    printf "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m\n"
     apt remove --purge nmap -y
   else
     whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
-    echo -e "\e[32m"
+    printf "\e[32m\n"
     read -p "Press any key to exit... " -n1 -s
-    echo -e "\e[0m"
+    printf "\e[0m\n"
     apt remove --purge nmap -y
     exit 1
   fi
@@ -295,9 +295,9 @@ sudo service apache2 stop
 letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
 if [[ "$?" == "0" ]]
 then
-    echo -e "\e[96m"
-    echo -e "Certs are generated!"
-    echo -e "\e[0m"
+    printf "\e[96m\n"
+    printf "Certs are generated!\n"
+    printf "\e[0m\n"
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
 # Install Collabora App
@@ -306,12 +306,12 @@ then
     cd "$NCPATH/apps"
     rm "$COLLVER_FILE"
 else
-    echo -e "\e[96m"
-    echo -e "It seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new"
-    echo -e "\e[32m"
+    printf "\e[96m\n"
+    printf "It seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new\n"
+    printf "\e[32m\n"
     read -p "Press any key to continue... " -n1 -s
     service apache2 restart
-    echo -e "\e[0m"
+    printf "\e[0m\n"
 fi
 
 # Enable RichDocuments (Collabora App)
@@ -322,7 +322,7 @@ then
     echo
     echo "Collabora is now succesfylly installed."
     echo "You may have to reboot before Docker will load correctly."
-    echo -e "\e[32m"
+    printf "\e[32m\n"
     read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    printf "\e[0m\n"
 fi

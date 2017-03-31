@@ -64,9 +64,9 @@ then
     sleep 5
     exit 1
 else
-    echo -e "\e[32m"
+    printf "\e[32m\n"
     echo "PHP module installation OK!"
-    echo -e "\e[0m"
+    printf "\e[0m\n"
 fi
 # Set globally doesn't work for some reason
 # touch /etc/php/7.0/mods-available/redis.ini
@@ -85,9 +85,9 @@ then
     sleep 5
     exit 1
 else
-    echo -e "\e[32m"
+    printf "\e[32m\n"
     echo "Redis installation OK!"
-    echo -e "\e[0m"
+    printf "\e[0m\n"
 fi
 
 # Prepare for adding redis configuration
