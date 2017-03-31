@@ -129,7 +129,7 @@ then
     sleep 0.1
 else
     echo "passman failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -146,7 +146,7 @@ then
     sleep 0.1
 else
     echo "nextant failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again." 
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again." 
     exit 1
 fi
 
@@ -163,7 +163,7 @@ then
     sleep 0.1
 else
     echo "collabora failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -180,7 +180,7 @@ then
     sleep 0.1
 else
     echo "spreedme failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -197,7 +197,7 @@ then
     sleep 0.1
 else
     echo "temporary-fix failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -214,7 +214,7 @@ then
     sleep 0.1
 else
     echo "security failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -231,7 +231,7 @@ then
     sleep 0.1
 else
     echo "nextcloud_update failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -248,7 +248,7 @@ then
     sleep 0.1
 else
     echo "phpmyadmin_install_ubuntu16 failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -265,7 +265,7 @@ then
     sleep 0.1
 else
     echo "update-config failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -282,7 +282,7 @@ then
     sleep 0.1
 else
     echo "activate-ssl failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -299,7 +299,7 @@ then
     sleep 0.1
 else
     echo "trusted failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -316,7 +316,7 @@ then
     sleep 0.1
 else
     echo "ip failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -333,7 +333,7 @@ then
     sleep 0.1
 else
     echo "test_connection failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -350,7 +350,7 @@ then
     sleep 0.1
 else
     echo "setup_secure_permissions_nextcloud failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -367,7 +367,7 @@ then
     sleep 0.1
 else
     echo "change_mysql_pass failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -384,7 +384,7 @@ then
     sleep 0.1
 else
     echo "nextcloud failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 # Get the Welcome Screen when http://$address
