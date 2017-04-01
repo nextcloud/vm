@@ -23,12 +23,25 @@ NCPASS=nextcloud
 NCUSER=ncadmin
 export NCUSER
 
+# Functions
 ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
         y|yes) echo "yes" ;;
         *)     echo "no" ;;
     esac
+}
+
+spinner_loading() {
+pid=$!
+spin='-\|/'
+i=0
+while kill -0 $pid 2>/dev/null
+do
+  i=$(( (i+1) %4 ))
+  printf "\r${spin:$i:1} " # Add text here, something like "Please be paitent..." maybe?
+  sleep .15
+done
 }
 
 network_ok() {
@@ -41,7 +54,6 @@ network_ok() {
         return 1
     fi
 }
-
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -98,7 +110,7 @@ then
     sleep 1
 else
     echo "Locating the best mirrors..."
-    apt update -q2
+    apt update -q2 & spinner_loading
     apt install python-pip -y
     pip install \
         --upgrade pip \
@@ -541,7 +553,7 @@ NCDB=nextcloud_db
 PW_FILE=/var/mysql_password.txt
 printf "\nEnabling UTF8mb4 support on $NCDB....\n"
 echo "Please be patient, it may take a while."
-sudo /etc/init.d/mysql restart
+sudo /etc/init.d/mysql restart & spinner_loading
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
     mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
@@ -695,7 +707,7 @@ bash $SCRIPTS/update.sh
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
-service apache restart
+service apache reload
 
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
