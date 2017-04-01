@@ -29,17 +29,10 @@ then
     echo -e "\e[0m"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
-# Set hostname and ServerName
-echo "Setting hostname to $1..."
-sudo sh -c "echo 'ServerName $1' >> /etc/apache2/apache2.conf"
-sudo hostnamectl set-hostname $1
-service apache2 restart
-
-# Leave it for testing (for now)
-# FQDOMAIN=$(cat /etc/apache2/sites-enabled/$1.conf | grep -m 1 "ServerName" | awk '{print $2}')
-# echo "Setting hostname to $FQDOMAIN..."
-# sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
-# sudo hostnamectl set-hostname $FQDOMAIN
+FQDOMAIN=$(cat /etc/apache2/sites-enabled/$1.conf | grep -m 1 "ServerName" | awk '{print $2}')
+echo "Setting hostname to $FQDOMAIN..."
+sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
+sudo hostnamectl set-hostname $FQDOMAIN
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
