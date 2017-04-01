@@ -9,14 +9,18 @@ NCPATH=/var/www/nextcloud
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis.sock
 SHUF=$(shuf -i 30-35 -n 1)
-REDIS_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
+REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 
 # Must be root
-[[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+if [ $? -eq 0 ]
+then
+    echo "Must be root to run script, in Ubuntu type: sudo -i"
+    exit 1
+fi
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if [ $OS -eq 1 ]
+if [ "$OS" -eq 1 ]
 then
     sleep 1
 else
@@ -57,8 +61,7 @@ apt install tcl8.5 -q -y
 apt install php-pear php7.0-dev -q -y
 
 # Install PHPmodule
-pecl install -Z redis
-if [[ $? > 0 ]]
+if ! pecl install -Z redis
 then
     echo "PHP module installation failed"
     sleep 5
@@ -78,8 +81,7 @@ service apache2 restart
 
 
 # Install Redis
-apt install redis-server -y
-if [[ $? > 0 ]]
+if ! apt -y install redis-server
 then
     echo "Installation failed."
     sleep 5
@@ -94,7 +96,7 @@ fi
 sed -i "s|);||g" $NCPATH/config/config.php
 
 # Add the needed config to Nextclouds config.php
-cat <<ADD_TO_CONFIG>> $NCPATH/config/config.php
+cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
   'memcache.local' => '\\OC\\Memcache\\Redis',
   'filelocking.enabled' => true,
   'memcache.distributed' => '\\OC\\Memcache\\Redis',
