@@ -183,8 +183,7 @@ cat << CONFIG_CREATE >> "$CONFIG"
 ?>
 CONFIG_CREATE
 
-service apache2 restart
-if [[ ! $? -eq 0 ]]
+if ! service apache2 restart
 then 
     echo "Apache2 could not restart..."
     echo "The script will exit."
