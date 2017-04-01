@@ -30,10 +30,8 @@ then
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 FQDOMAIN=$(cat /etc/apache2/sites-enabled/$1 | grep -m 1 "ServerName" | awk '{print $2}')
-if [ "$FQDOMAIN.conf" == "$1" ]
+if [ $(hostname" != "$FQDOMAIN" ]
 then
-    sleep 1
-else 
     echo "Setting hostname to $FQDOMAIN..."
     sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
     sudo hostnamectl set-hostname $FQDOMAIN
