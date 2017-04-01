@@ -15,7 +15,7 @@ SAVEPATH=""
 if [[ $EUID -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/phpmyadmin_install.sh\n"
+    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
     echo # remove echo here and do \n instead there are more places like this iirc
     sleep 3
     exit 1
@@ -32,7 +32,7 @@ fi
 # Check Ubuntu version
 echo
 echo "Checking server OS and version..."
-if [ $OS -eq 1 ]
+if [ "$OS" -eq 1 ]
 then
     sleep 1
 else
@@ -184,7 +184,7 @@ cat << CONFIG_CREATE >> "$CONFIG"
 CONFIG_CREATE
 
 service apache2 restart
-if [[ $? > 0 ]]
+if [[ ! $? -eq 0 ]]
 then 
     echo "Apache2 could not restart..."
     echo "The script will exit."
