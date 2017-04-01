@@ -183,6 +183,8 @@ else
     add-apt-repository ppa:certbot/certbot -y
     apt update -q2
     apt install letsencrypt -y -q
+    apt update -q2
+    apt dist-upgrade -y
 fi
 
 #Fix issue #28
