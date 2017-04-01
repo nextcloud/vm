@@ -175,12 +175,10 @@ else
     echo 'ifupdown is installed.' >&2
 fi
 sudo ifdown "$IFACE" && sudo ifup "$IFACE"
-if nslookup google.com
+if ! nslookup google.com
 then
     echo "Network NOT OK. You must have a working Network connection to run this script."
     exit 1
-else
-    echo "Network OK."
 fi
 
 # Set locales
@@ -323,12 +321,10 @@ mkdir -p "$GPGDIR"
 wget -q "$NCREPO/$STABLEVERSION.zip.asc" -P "$GPGDIR"
 chmod -R 600 "$GPGDIR"
 gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
-if gpg --verify "$GPGDIR/$STABLEVERSION.zip.asc" "$HTML/$STABLEVERSION.zip"
+if ! gpg --verify "$GPGDIR/$STABLEVERSION.zip.asc" "$HTML/$STABLEVERSION.zip"
 then
     echo "Package NOT OK! Installation is aborted..."
     exit 1
-else
-    echo "Package OK!"
 fi
 
 # Cleanup
