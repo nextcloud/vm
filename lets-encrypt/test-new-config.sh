@@ -13,8 +13,7 @@ a2ensite $1
 a2dissite nextcloud_ssl_domain_self_signed.conf
 a2dissite nextcloud_http_domain_self_signed.conf
 a2dissite 000-default.conf
-service apache2 restart
-if [[ "$?" == "0" ]]
+if service apache2 restart
 then
     echo -e "\e[42m"
     echo "New settings works! SSL is now activated and OK!"
@@ -31,11 +30,16 @@ then
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 # Set hostname and ServerName
-FQDOMAIN=$(grep -r -m 1 ServerName /etc/apache2/sites-enabled/* | awk '{print $2}')
-echo "Setting hostname to $FQDOMAIN..."
-sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
-sudo hostnamectl set-hostname $FQDOMAIN
+echo "Setting hostname to $1..."
+sudo sh -c "echo 'ServerName $1' >> /etc/apache2/apache2.conf"
+sudo hostnamectl set-hostname $1
 service apache2 restart
+
+# Leave it for testing (for now)
+# FQDOMAIN=$(cat /etc/apache2/sites-enabled/$1.conf | grep -m 1 "ServerName" | awk '{print $2}')
+# echo "Setting hostname to $FQDOMAIN..."
+# sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
+# sudo hostnamectl set-hostname $FQDOMAIN
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
@@ -87,6 +91,10 @@ else
     a2ensite nextcloud_ssl_domain_self_signed.conf
     a2ensite nextcloud_http_domain_self_signed.conf
     a2ensite 000-default.conf
+    service apache2 restart
+    # Change ServerName in apache.conf and hostname
+    sed -i "s|ServerName $1|ServerName $(hostname -s)|g" /etc/apache2/apache2.conf
+    sudo hostnamectl set-hostname $(hostname -s)
     service apache2 restart
     echo -e "\e[96m"
     echo "Couldn't load new config, reverted to old settings. Self-signed SSL is OK!"
