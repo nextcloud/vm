@@ -86,7 +86,7 @@ else
     a2ensite 000-default.conf
     service apache2 restart
     # Change ServerName in apache.conf and hostname
-    sed -i "s|ServerName $1|ServerName $(hostname -s)|g" /etc/apache2/apache2.conf
+    sed -i "s|ServerName $FQDOMAIN|ServerName $(hostname -s)|g" /etc/apache2/apache2.conf
     sudo hostnamectl set-hostname $(hostname -s)
     service apache2 restart
     echo -e "\e[96m"
