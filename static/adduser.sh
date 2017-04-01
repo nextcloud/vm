@@ -17,13 +17,9 @@ else
 echo "Enter name of the new user:"
 read NEWUSER
 useradd -m $NEWUSER -G sudo
-passwd $NEWUSER
-if [[ $? > 0 ]]
-then
-    echo "Try again please...(2/2)"
-    passwd $NEWUSER
-else
-    sleep 1
-fi
+while true
+do
+    sudo passwd "$NEWUSER" && break
+done
 sudo -u $NEWUSER sudo bash nextcloud_install_production.sh
 fi
