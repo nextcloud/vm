@@ -14,10 +14,8 @@ set -e
 apt -y install libapache2-mod-evasive
 mkdir -p /var/log/apache2/evasive
 chown -R www-data:root /var/log/apache2/evasive
-if [ -f $ENVASIVE ]
+if ! [ -f $ENVASIVE ]
 then
-    echo "Envasive mod exists"
-else
     touch $ENVASIVE
     cat << ENVASIVE > "$ENVASIVE"
 DOSHashTableSize 2048
@@ -35,10 +33,8 @@ apt -y install libapache2-mod-qos
 
 # Protect against DNS Injection
 apt -y install libapache2-mod-spamhaus
-if [ -f $SPAMHAUS ]
+if ! [ -f $SPAMHAUS ]
 then
-    echo "Spamhaus mod exists"
-else
     touch $SPAMHAUS
     cat << SPAMHAUS >> "$APACHE2"
 
