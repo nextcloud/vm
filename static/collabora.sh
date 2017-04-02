@@ -52,11 +52,8 @@ apt update -q2
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
-curl -s https://${$NCDOMAIN//\\/}/status.php | grep -q 'installed":true'
-if [ $? -eq 0 ]
+if ! curl -s https://${$NCDOMAIN//\\/}/status.php | grep -q 'installed":true'
 then
-    sleep 1
-else
     echo
     echo "It seems like Nextcloud is not installed or that you don't use https on:"
     echo "${$NCDOMAIN//\\/}."
@@ -99,7 +96,6 @@ apt update -q2
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
       echo "nmap is already installed..."
-      clear
 else
     apt install nmap -y
 fi
@@ -112,18 +108,18 @@ else
   printf "\e[32m\n"
   read -p "Press any key to test $SUBDOMAIN... " -n1 -s
   printf "\e[0m\n"
-  if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
-  then
-    printf "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m\n"
-    apt remove --purge nmap -y
-  else
-    whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
-    printf "\e[32m\n"
-    read -p "Press any key to exit... " -n1 -s
-    printf "\e[0m\n"
-    apt remove --purge nmap -y
-    exit 1
-  fi
+    if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
+    then
+        printf "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m\n"
+        apt remove --purge nmap -y
+    else
+        whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+        printf "\e[32m\n"
+        read -p "Press any key to exit... " -n1 -s
+        printf "\e[0m\n"
+        apt remove --purge nmap -y
+        exit 1
+    fi
 fi
 
 # Install Docker
@@ -152,19 +148,15 @@ fi
 apt-get install linux-image-extra-"$(uname -r)" -y
 # apt install aufs-tools -y # already included in the docker-ce package
 AUFS=$(grep -r "aufs" /etc/modules)
-if [[ $AUFS = "aufs" ]]
+if ! [ $AUFS = "aufs" ]
 then
-    sleep 1
-else
     echo "aufs" >> /etc/modules
 fi
 
 # Set docker storage driver to AUFS
 AUFS2=$(grep -r "aufs" /etc/default/docker)
-if [[ $AUFS2 = 'DOCKER_OPTS="--storage-driver=aufs"' ]]
+if ! [ $AUFS2 = 'DOCKER_OPTS="--storage-driver=aufs"' ]
 then
-    sleep 1
-else
     echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
     service docker restart
 fi
@@ -176,8 +168,6 @@ then
     read -p $'\n\e[32mPress any key to continue. Press CTRL+C to abort.\e[0m\n' -n1 -s
     docker stop "$DOCKERPS"
     docker rm "$DOCKERPS"
-else
-    echo "No Docker instanses running"
 fi
 
 # Disable RichDocuments (Collabora App) if activated
@@ -213,10 +203,8 @@ a2enmod proxy_http
 a2enmod ssl
 
 # Create Vhost for Collabora online in Apache2
-if [ -f "$HTTPS_CONF" ];
+if ! [ -f "$HTTPS_CONF" ];
 then
-    echo "Virtual Host exists"
-else
     cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
   ServerName $SUBDOMAIN:443
