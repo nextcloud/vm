@@ -12,7 +12,7 @@ SHUF=$(shuf -i 30-35 -n 1)
 REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 
 # Must be root
-if [ $? -eq 0 ]
+if [[ $EUID -ne 0 ]]
 then
     echo "Must be root to run script, in Ubuntu type: sudo -i"
     exit 1
@@ -20,7 +20,7 @@ fi
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if [ "$OS" -eq 1 ]
+if [ "$OS" != 1 ]
 then
     sleep 1
 else
@@ -48,10 +48,8 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if dir exists
-if [ -d $SCRIPTS ]
+if ! [ -d $SCRIPTS ]
 then
-    sleep 1
-else
     mkdir -p $SCRIPTS
 fi
 
@@ -113,9 +111,7 @@ cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
 ADD_TO_CONFIG
 
 # Redis performance tweaks
-if grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
-then
-    echo "vm.overcommit_memory correct"
+if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 else
     echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 fi
@@ -139,4 +135,4 @@ apt update -q2
 apt autoremove -y
 apt autoclean
 
-exit 0
+exit
