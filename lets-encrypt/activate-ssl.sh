@@ -218,6 +218,9 @@ fi
 #Fix issue #28
 ssl_conf="/etc/apache2/sites-available/$domain.conf"
 
+# DHPARAM
+DHPARAMS="$certfiles/$domain/dhparam.pem"
+
 # Check if $ssl_conf exists, and if, then delete
 if [ -f $ssl_conf ]
 then
@@ -247,6 +250,8 @@ else
 
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
+    SSLCompression off
+    SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:ECDHE-RSA-AES128-SHA:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4
 
 ### YOUR SERVER ADDRESS ###
 
@@ -277,9 +282,17 @@ else
     SSLCertificateChainFile $certfiles/$domain/chain.pem
     SSLCertificateFile $certfiles/$domain/cert.pem
     SSLCertificateKeyFile $certfiles/$domain/privkey.pem
+    SSLOpenSSLConfCmd DHParameters "$DHPARAMS"
 
 </VirtualHost>
 SSL_CREATE
+fi
+
+# Generate DHparams chifer
+if [ ! -f $DHPARAMS ]
+then
+    echo "Generating forward security with 'dhparam', this could take a while..."
+    openssl dhparam -out $DHPARAMS 4096
 fi
 
 ##### START FIRST TRY
