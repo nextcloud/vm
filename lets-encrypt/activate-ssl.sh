@@ -249,6 +249,7 @@ else
     SSLCertificateChainFile $certfiles/$domain/chain.pem
     SSLCertificateFile $certfiles/$domain/cert.pem
     SSLCertificateKeyFile $certfiles/$domain/privkey.pem
+    SSLOpenSSLConfCmd DHParameters $DHPARAMS
 
 </VirtualHost>
 SSL_CREATE
