@@ -1,7 +1,6 @@
 #!/bin/bash
-wget -q -T 10 -t 2 http://google.com > /dev/null
-if [ $? -eq 0 ]
+if wget -q -T 10 -t 2 http://google.com > /dev/null
 then
-ntpdate -s 1.se.pool.ntp.org
+    ntpdate -s 1.se.pool.ntp.org
 fi
 exit
