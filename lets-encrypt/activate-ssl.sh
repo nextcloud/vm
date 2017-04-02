@@ -291,7 +291,6 @@ fi
 # Generate DHparams chifer
 if [ ! -f $DHPARAMS ]
 then
-    echo "Generating forward security with 'dhparam', this could take a while..."
     openssl dhparam -out $DHPARAMS 4096
 fi
 
