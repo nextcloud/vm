@@ -255,12 +255,6 @@ else
 SSL_CREATE
 fi
 
-# Generate DHparams chifer
-if [ ! -f $DHPARAMS ]
-then
-    openssl dhparam -dsaparam -out $DHPARAMS 8192
-fi
-
 ##### START FIRST TRY
 
 # Stop Apache to aviod port conflicts
@@ -281,6 +275,11 @@ service apache2 reload
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
+    # Generate DHparams chifer
+    if [ ! -f $DHPARAMS ]
+    then
+        openssl dhparam -dsaparam -out $DHPARAMS 8192
+    fi
     # Activate new config
     bash $SCRIPTS/test-new-config.sh "$domain.conf"
     exit 0
@@ -299,6 +298,11 @@ letsencrypt \
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
+    # Generate DHparams chifer
+    if [ ! -f $DHPARAMS ]
+    then
+        openssl dhparam -dsaparam -out $DHPARAMS 8192
+    fi
     # Activate new config
     bash $SCRIPTS/test-new-config.sh "$domain.conf"
     exit 0
@@ -316,6 +320,11 @@ letsencrypt certonly \
 -d "$domain"
 
 # Check if $certfiles exists
+    # Generate DHparams chifer
+    if [ ! -f $DHPARAMS ]
+    then
+        openssl dhparam -dsaparam -out $DHPARAMS 8192
+    fi
 if [ -d "$certfiles" ]
 then
     # Activate new config
@@ -337,6 +346,11 @@ letsencrypt \
 
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
+    # Generate DHparams chifer
+    if [ ! -f $DHPARAMS ]
+    then
+        openssl dhparam -dsaparam -out $DHPARAMS 8192
+    fi
 then
 # Activate new config
     bash $SCRIPTS/test-new-config.sh "$domain.conf"
