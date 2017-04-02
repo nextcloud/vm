@@ -34,10 +34,8 @@ rm /var/lib/apt/lists/* -R
 
 # Set secure permissions
 FILE="$SECURE"
-if [ -f $FILE ]
+if ! [ -f $FILE ]
 then
-    echo "Script exists"
-else
     mkdir -p $SCRIPTS
     wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
     chmod +x $SECURE
@@ -59,9 +57,9 @@ fi
 
 # Major versions unsupported
 echo
-echo "Please note that updates between multiple major versions are unsupported, for example:"
+echo "Please note that updates between multiple major versions are *unsupported*, for example:"
 echo "Original version: 9.0.54"
-echo "Upgraded version: 11.0.0"
+echo "Upgraded version: 11.0.1" # morph027 can we check if the current version starts with 2 numbers below the ncversion and in that case skip the upgrade?
 echo
 echo "It is best to keep your Nextcloud server upgraded regularly, and to install all point releases"
 echo "and major releases without skipping any of them, as skipping releases increases the risk of"
@@ -99,7 +97,7 @@ fi
 rsync -Aax $NCPATH/config $BACKUP
 rsync -Aax $NCPATH/themes $BACKUP
 rsync -Aax $NCPATH/apps $BACKUP
-if [[ ! $? -eq 0 ]]
+if [[ ! $? -eq 0 ]] # Do a while loop here that checks all the paths @morph027
 then
     echo "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
@@ -162,8 +160,6 @@ then
     bash $SCRIPTS/spreedme.sh
     rm $SCRIPTS/spreedme.*
     sudo -u www-data php $NCPATH/occ app:enable spreedme
-else
-    sleep 1
 fi
 
 # Recover apps that exists in the backed up apps folder
@@ -189,10 +185,8 @@ fi
 
 # Set $THEME_NAME
 VALUE2="$THEME_NAME"
-if grep -Fxq "$VALUE2" "$NCPATH/config/config.php"
+if ! grep -Fxq "$VALUE2" "$NCPATH/config/config.php"
 then
-    echo "Theme correct"
-else
     sed -i "s|'theme' => '',|'theme' => '$THEME_NAME',|g" $NCPATH/config/config.php
     echo "Theme set"
 fi
