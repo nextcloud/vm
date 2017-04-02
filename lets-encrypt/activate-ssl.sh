@@ -258,7 +258,7 @@ fi
 # Generate DHparams chifer
 if [ ! -f $DHPARAMS ]
 then
-    openssl dhparam -out $DHPARAMS 4096
+    openssl dhparam -dsaparam -out $DHPARAMS 8192
 fi
 
 ##### START FIRST TRY
