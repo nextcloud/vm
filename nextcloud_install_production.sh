@@ -76,7 +76,7 @@ sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/g
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if [ "$OS" -eq 0 ]
+if [ "$OS" != 1 ]
 then
     echo "Ubuntu Server is required to run this script."
     echo "Please install that distro and try again."
