@@ -83,7 +83,7 @@ elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$SUBDOMAIN"; th
    sleep 1
 elif curl -s -k -m 10 "$SUBDOMAIN"; then
    sleep 1
-elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null ; then
+elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null; then
    sleep 1
 else
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
