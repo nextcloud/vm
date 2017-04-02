@@ -128,17 +128,11 @@ then
     exit 1
 fi
 
-if [ "$(dpkg-query -W -f='${Status}' nextcloud 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "Nextcloud is installed, it must be a clean server."
-    exit 1
-fi
+
 
 # Create $SCRIPTS dir
-if [ -d $SCRIPTS ]
+if [ ! -d $SCRIPTS ]
 then
-    sleep 1
-else
     mkdir -p $SCRIPTS
 fi
 
@@ -370,7 +364,7 @@ fi
 apt install figlet -y
 
 # Generate $HTTP_CONF
-if ! [ -f $HTTP_CONF ]
+if [ ! -f $HTTP_CONF ]
 then
     touch "$HTTP_CONF"
     cat << HTTP_CREATE > "$HTTP_CONF"
@@ -410,7 +404,7 @@ HTTP_CREATE
 fi
 
 # Generate $SSL_CONF
-if ! [ -f $SSL_CONF ]
+if [ ! -f $SSL_CONF ]
 then
     touch "$SSL_CONF"
     cat << SSL_CREATE > "$SSL_CONF"
@@ -558,31 +552,31 @@ done 9< results
 rm -f results
 
 # Change roots .bash_profile
-if ! [ -f $SCRIPTS/change-root-profile.sh ]
+if [ ! -f $SCRIPTS/change-root-profile.sh ]
 then
     wget -q $STATIC/change-root-profile.sh -P $SCRIPTS
 fi
 
 # Change $UNIXUSER .bash_profile
-if ! [ -f $SCRIPTS/change-ncadmin-profile.sh ]
+if [ ! -f $SCRIPTS/change-ncadmin-profile.sh ]
 then
     wget -q $STATIC/change-ncadmin-profile.sh -P $SCRIPTS
 fi
 
 # Welcome message after login (change in $HOME/.profile
-if ! [ -f $SCRIPTS/instruction.sh ]
+if [ ! -f $SCRIPTS/instruction.sh ]
 then
     wget -q $STATIC/instruction.sh -P $SCRIPTS
 fi
 
 # Get nextcloud-startup-script.sh
-if ! [ -f $SCRIPTS/nextcloud-startup-script.sh ]
+if [ ! -f $SCRIPTS/nextcloud-startup-script.sh ]
 then
     wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
 fi
 
 # Clears command history on every login
-if ! [ -f $SCRIPTS/history.sh ]
+if [ ! -f $SCRIPTS/history.sh ]
 then
     wget -q $STATIC/history.sh -P $SCRIPTS
 fi
@@ -610,7 +604,7 @@ else
 fi
 
 # Get script for Redis
-if ! [ -f $SCRIPTS/redis-server-ubuntu16.sh ]
+if [ ! -f $SCRIPTS/redis-server-ubuntu16.sh ]
 then
     wget -q $STATIC/redis-server-ubuntu16.sh -P $SCRIPTS
 fi
