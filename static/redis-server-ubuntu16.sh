@@ -110,7 +110,7 @@ ADD_TO_CONFIG
 
 # Redis performance tweaks
 if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
-else
+then
     echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 fi
 sed -i "s|# unixsocket /var/run/redis/redis.sock|unixsocket $REDIS_SOCK|g" $REDIS_CONF
