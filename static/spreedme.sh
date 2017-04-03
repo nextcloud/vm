@@ -19,10 +19,7 @@ SNAPDIR=/var/snap/spreedme
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
 then
-    set -e
-    set -x
-else
-    sleep 1
+    set -ex
 fi
 
 # Check if root
@@ -35,20 +32,15 @@ then
 fi
 
 # Check if Nextcloud exists
-if [ -d "$NCPATH" ]
+if [ ! -d "$NCPATH" ]
 then
-    sleep 1
-else
     echo "Nextcloud does not seem to be installed. This script will exit..."
     exit
 fi
 
 # Check if apache is installed
-if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" -eq 1 ]
+if ! [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" -eq 1 ]
 then
-    echo "Apache2 is installed."
-    sleep 1
-else
     echo "Apache is not installed, the script will exit."
     exit 1
 fi
@@ -115,10 +107,8 @@ a2enmod proxy \
 
 # Add config to vhost
 VHOST=/etc/apache2/spreedme.conf
-if [ -f $VHOST ]
+if [ ! -f $VHOST ]
 then
-    sleep 1
-else
 cat << VHOST > "$VHOST"
 <Location /webrtc>
     ProxyPass http://127.0.0.1:8080/webrtc
@@ -136,11 +126,8 @@ cat << VHOST > "$VHOST"
 VHOST
 fi
 
-if grep -Fxq "Include $VHOST" /etc/apache2/apache2.conf
+if ! grep -Fxq "Include $VHOST" /etc/apache2/apache2.conf
 then
-    echo "Include directive are already enabled in apache2.conf"
-    sleep 1
-else
     sed -i "145i Include $VHOST" "/etc/apache2/apache2.conf"
 fi
 

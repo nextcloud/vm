@@ -121,7 +121,6 @@ apt update -q2
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "nmap is already installed..."
-    clear
 else
     apt install nmap -y
 fi
@@ -202,11 +201,10 @@ fi
 # Generate nextcloud_ssl_domain.conf
 if [ -f "$ssl_conf" ]
 then
-    echo "Virtual Host exists"
-else
+    rm -f "$ssl_conf"
     touch "$ssl_conf"
     echo "$ssl_conf was successfully created"
-    sleep 3
+    sleep 2
     cat << SSL_CREATE > "$ssl_conf"
 <VirtualHost *:80>
     ServerName $domain

@@ -10,8 +10,7 @@ OLDMYSQL=$(cat $PW_FILE)
 
 echo "Generating new MySQL root password..."
 # Change MySQL password
-mysqladmin -u root -p"$OLDMYSQL" password "$NEWMYSQLPASS" > /dev/null 2>&1
-if [ $? -eq 0 ]
+if mysqladmin -u root -p"$OLDMYSQL" password "$NEWMYSQLPASS" > /dev/null 2>&1
 then
     echo -e "\e[32mYour new MySQL root password is: $NEWMYSQLPASS\e[0m"
     echo "$NEWMYSQLPASS" > $PW_FILE
