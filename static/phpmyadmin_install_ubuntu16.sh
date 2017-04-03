@@ -12,38 +12,37 @@ UPLOADPATH=""
 SAVEPATH=""
 
 # Check if root
-if [ "$(whoami)" != "root" ]
+if [[ $EUID -ne 0 ]]
 then
     echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/phpmyadmin_install.sh"
-    echo
+    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
+    echo # remove echo here and do \n instead there are more places like this iirc
+    sleep 3
+    exit 1
+fi
+
+# Check that the script can see the external IP (apache fails otherwise)
+if [ -z "$WANIP" ]
+then
+    echo "WANIP is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again"
+    sleep 3
     exit 1
 fi
 
 # Check Ubuntu version
 echo
 echo "Checking server OS and version..."
-if [ $OS -eq 1 ]
+if [ "$OS" -eq 1 ]
 then
     sleep 1
 else
     echo "Ubuntu Server is required to run this script."
     echo "Please install that distro and try again."
+    sleep 3
     exit 1
 fi
 
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
-version(){
-    local h t v
-
-    [[ $2 = "$1" || $2 = "$3" ]] && return 0
-
-    v=$(printf '%s\n' "$@" | sort -V)
-    h=$(head -n1 <<<"$v")
-    t=$(tail -n1 <<<"$v")
-
-    [[ $2 != "$h" && $2 != "$t" ]]
-}
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version seems to be $DISTRO"
@@ -173,8 +172,7 @@ cat << CONFIG_CREATE >> "$CONFIG"
 ?>
 CONFIG_CREATE
 
-service apache2 restart
-if [[ $? > 0 ]]
+if ! service apache2 restart
 then 
     echo "Apache2 could not restart..."
     echo "The script will exit."

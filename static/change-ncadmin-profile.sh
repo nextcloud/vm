@@ -3,7 +3,7 @@
 UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 
-rm /home/$UNIXUSER/.profile
+rm "/home/$UNIXUSER/.profile"
 
 cat <<-UNIXUSER-PROFILE > "$UNIXUSER_PROFILE"
 # ~/.profile: executed by the command interpreter for login shells.
@@ -34,6 +34,6 @@ sudo -i
 
 UNIXUSER-PROFILE
 
-chown $UNIXUSER:$UNIXUSER $UNIXUSER_PROFILE
+chown "$UNIXUSER:$UNIXUSER $UNIXUSER_PROFILE"
 
 exit 0
