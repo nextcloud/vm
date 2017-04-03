@@ -585,7 +585,7 @@ fi
 if bash $SCRIPTS/change-root-profile.sh
 then
     echo "change-root-profile.sh executed OK."
-    rm $SCRIPTS/change-ncadmin-profile.sh
+    rm $SCRIPTS/change-root-profile.sh
     sleep 2
 else    
     echo "change-root-profile.sh were not executed correctly."
