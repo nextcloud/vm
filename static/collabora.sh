@@ -110,18 +110,18 @@ else
   printf "\e[32m\n"
   read -p "Press any key to test $SUBDOMAIN... " -n1 -s
   printf "\e[0m\n"
-    if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
-    then
-        printf "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m\n"
-        apt remove --purge nmap -y
-    else
-        whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
-        printf "\e[32m\n"
-        read -p "Press any key to exit... " -n1 -s
-        printf "\e[0m\n"
-        apt remove --purge nmap -y
-        exit 1
-    fi
+      if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
+      then
+          printf "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m\n"
+          apt remove --purge nmap -y
+      else
+          whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+          printf "\e[32m\n"
+          read -p "Press any key to exit... " -n1 -s
+          printf "\e[0m\n"
+          apt remove --purge nmap -y
+          exit 1
+      fi
 fi
 
 # Install Docker
