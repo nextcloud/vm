@@ -164,7 +164,8 @@ then
 fi
 
 # Check of docker runs and kill it
-if docker ps -a -q
+DOCKERPS=$(docker ps -a -q)
+if [ "$DOCKERPS" != "" ]
 then
     echo "Removing old Docker instance(s)... ($DOCKERPS)"
     read -p $'\n\e[32mPress any key to continue. Press CTRL+C to abort.\e[0m\n' -n1 -s
