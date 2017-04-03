@@ -149,14 +149,14 @@ fi
 apt-get install linux-image-extra-"$(uname -r)" -y
 # apt install aufs-tools -y # already included in the docker-ce package
 AUFS=$(grep -r "aufs" /etc/modules)
-if ! [ $AUFS = "aufs" ]
+if [ $AUFS != "aufs" ]
 then
     echo "aufs" >> /etc/modules
 fi
 
 # Set docker storage driver to AUFS
 AUFS2=$(grep -r "aufs" /etc/default/docker)
-if ! [ $AUFS2 = 'DOCKER_OPTS="--storage-driver=aufs"' ]
+if [ $AUFS2 != 'DOCKER_OPTS="--storage-driver=aufs"' ]
 then
     echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
     service docker restart
