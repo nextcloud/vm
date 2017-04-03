@@ -18,6 +18,7 @@ SUBDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subd
 NCDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Vhost
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
+export HTTPS_CONF
 # Letsencrypt
 LETSENCRYPTPATH=/etc/letsencrypt
 CERTFILES=$LETSENCRYPTPATH/live
@@ -53,11 +54,11 @@ apt update -q2
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
-if ! curl -s https://${$NCDOMAIN//\\/}/status.php | grep -q 'installed":true'
+if ! curl -s https://${NCDOMAIN//\\/}/status.php | grep -q 'installed":true'
 then
     echo
     echo "It seems like Nextcloud is not installed or that you don't use https on:"
-    echo "${$NCDOMAIN//\\/}."
+    echo "${NCDOMAIN//\\/}."
     echo "Please install Nextcloud and make sure your domain is reachable, or activate SSL"
     echo "on your domain to be able to run this script."
     echo
@@ -87,7 +88,7 @@ else
    echo "it to this server before you can run this script."
    printf "\e[32m\n"
    read -p "Press any key to continue... " -n1 -s
-   printf "\e[0m\"
+   printf "\e[0m\n"
    exit 1
 fi
 
@@ -102,7 +103,7 @@ else
 fi
 if [ "$(nmap -sS -p 443 "$WANIP4" | grep -c "open")" == "1" ]
 then
-  printf "\e[32mPort 443 is open on $WANIP4!\e[0mn\"
+  printf "\e[32mPort 443 is open on $WANIP4!\e[0m\n"
   apt remove --purge nmap -y
 else
   echo "Port 443 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
@@ -149,18 +150,19 @@ fi
 apt-get install linux-image-extra-"$(uname -r)" -y
 # apt install aufs-tools -y # already included in the docker-ce package
 AUFS=$(grep -r "aufs" /etc/modules)
-if [ $AUFS != "aufs" ]
+if ! [ "$AUFS" = "aufs" ]
 then
     echo "aufs" >> /etc/modules
 fi
 
 # Set docker storage driver to AUFS
 AUFS2=$(grep -r "aufs" /etc/default/docker)
-if [ $AUFS2 != 'DOCKER_OPTS="--storage-driver=aufs"' ]
+if ! [ "$AUFS2" = 'DOCKER_OPTS="--storage-driver=aufs"' ]
 then
     echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
     service docker restart
 fi
+
 
 # Check of docker runs and kill it
 if docker ps -a -q
