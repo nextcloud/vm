@@ -34,3 +34,30 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
+# Install Apps
+# call like: install_app collabora|nextant|passman|spreedme
+install_3rdparty_app() {
+    "${SCRIPTS}/${1}.sh"
+    rm -f "$SCRIPTS/${1}.sh"
+}
+
+version(){
+    local h t v
+
+    [[ $2 = "$1" || $2 = "$3" ]] && return 0
+
+    v=$(printf '%s\n' "$@" | sort -V)
+    h=$(head -n1 <<<"$v")
+    t=$(tail -n1 <<<"$v")
+
+    [[ $2 != "$h" && $2 != "$t" ]]
+}
+
+version_gt() {
+    local v1 v2 IFS=.
+    read -ra v1 <<< "$1"
+    read -ra v2 <<< "$2"
+    printf -v v1 %03d "${v1[@]}"
+    printf -v v2 %03d "${v2[@]}"
+    [[ $v1 > $v2 ]]
+}

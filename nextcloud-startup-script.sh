@@ -556,28 +556,6 @@ else
 fi
 clear
 
-# Install Apps
-collabora() {
-    bash "$SCRIPTS/collabora.sh"
-    rm -f "$SCRIPTS/collabora.sh"
-}
-
-nextant() {
-    bash "$SCRIPTS/nextant.sh"
-    rm -f "$SCRIPTS/nextant.sh"
-}
-
-passman() {
-    bash "$SCRIPTS/passman.sh"
-    rm -f "$SCRIPTS/passman.sh"
-}
-
-
-spreedme() {
-    bash "$SCRIPTS/spreedme.sh"
-    rm -f "$SCRIPTS/spreedme.sh"
-}
-
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Collabora" "(Online editing)   " OFF \
 "Nextant" "(Full text search)   " OFF \
@@ -588,19 +566,19 @@ while read -r -u 9 choice
 do
     case $choice in
         Collabora)
-            collabora
+            install_app collabora
         ;;
 
         Nextant)
-            nextant
+            install_app nextant
         ;;
 
         Passman)
-            passman
+            install_app passman
         ;;
 
         Spreed.ME)
-            spreedme
+            install_app spreedme
         ;;
 
         *)

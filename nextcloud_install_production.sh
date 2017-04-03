@@ -89,17 +89,6 @@ else
 fi
 
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
-version(){
-    local h t v
-
-    [[ $2 = "$1" || $2 = "$3" ]] && return 0
-
-    v=$(printf '%s\n' "$@" | sort -V)
-    h=$(head -n1 <<<"$v")
-    t=$(tail -n1 <<<"$v")
-
-    [[ $2 != "$h" && $2 != "$t" ]]
-}
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
@@ -189,13 +178,6 @@ sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive
 echo
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 printf "Your current server repository is:  \e[36m$REPO\e[0m\n"
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case ${REPLY,,} in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
 echo "Keeping $REPO as mirror..."
@@ -218,14 +200,6 @@ clear
 
 # Set keyboard layout
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
-ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case ${REPLY,,} in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
 echo "Not changing keyboard layout..."

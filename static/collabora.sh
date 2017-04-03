@@ -30,20 +30,6 @@ COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
 # Folders
 NCPATH=/var/www/nextcloud
 
-# Whiptail auto size
-calc_wt_size() {
-  WT_HEIGHT=17
-  WT_WIDTH=$(tput cols)
-
-  if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
-    WT_WIDTH=80
-  elif [ "$WT_WIDTH" -gt 178 ]; then
-    WT_WIDTH=120
-  fi
-  WT_MENU_HEIGHT=$((WT_HEIGHT-7))
-  export WT_MENU_HEIGHT
-}
-
 # Notification
 whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
 

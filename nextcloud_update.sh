@@ -72,7 +72,6 @@ echo "Checking versions in 20 seconds.."
 sleep 20
 
 # Check if new version is larger than current version installed.
-function version_gt() { local v1 v2 IFS=.; read -ra v1 <<< "$1"; read -ra v2 <<< "$2"; printf -v v1 %03d "${v1[@]}"; printf -v v2 %03d "${v2[@]}"; [[ $v1 > $v2 ]]; }
 if version_gt "$NCVERSION" "$CURRENTVERSION"
 then
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
