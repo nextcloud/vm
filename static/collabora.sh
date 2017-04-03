@@ -163,7 +163,6 @@ then
     service docker restart
 fi
 
-
 # Check of docker runs and kill it
 if docker ps -a -q
 then
