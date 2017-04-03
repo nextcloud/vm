@@ -34,7 +34,7 @@ rm /var/lib/apt/lists/* -R
 
 # Set secure permissions
 FILE="$SECURE"
-if ! [ -f $FILE ]
+if [ ! -f $FILE ]
 then
     mkdir -p $SCRIPTS
     wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS

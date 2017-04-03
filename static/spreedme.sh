@@ -32,7 +32,7 @@ then
 fi
 
 # Check if Nextcloud exists
-if ! [ -d "$NCPATH" ]
+if [ ! -d "$NCPATH" ]
 then
     echo "Nextcloud does not seem to be installed. This script will exit..."
     exit
@@ -107,7 +107,7 @@ a2enmod proxy \
 
 # Add config to vhost
 VHOST=/etc/apache2/spreedme.conf
-if ! [ -f $VHOST ]
+if [ ! -f $VHOST ]
 then
 cat << VHOST > "$VHOST"
 <Location /webrtc>

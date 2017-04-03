@@ -484,7 +484,7 @@ sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --va
 
 install_calendar() {
 # Download and install Calendar
-if ! [ -d $NCPATH/apps/calendar ]
+if [ ! -d $NCPATH/apps/calendar ]
 then
     wget -q "$CALVER_REPO/v$CALVER/$CALVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$CALVER_FILE" -C "$NCPATH/apps"
@@ -502,7 +502,7 @@ fi
 
 install_contacts() {
 # Download and install Contacts
-if ! [ -d "$NCPATH/apps/contacts" ]
+if [ ! -d "$NCPATH/apps/contacts" ]
 then
     wget -q "$CONVER_REPO/v$CONVER/$CONVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$CONVER_FILE" -C "$NCPATH/apps"

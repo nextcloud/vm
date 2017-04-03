@@ -203,7 +203,7 @@ a2enmod proxy_http
 a2enmod ssl
 
 # Create Vhost for Collabora online in Apache2
-if ! [ -f "$HTTPS_CONF" ];
+if [ ! -f "$HTTPS_CONF" ];
 then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>

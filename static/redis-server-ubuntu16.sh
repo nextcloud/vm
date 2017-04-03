@@ -48,7 +48,7 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if dir exists
-if ! [ -d $SCRIPTS ]
+if [ ! -d $SCRIPTS ]
 then
     mkdir -p $SCRIPTS
 fi

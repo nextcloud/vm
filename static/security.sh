@@ -14,7 +14,7 @@ set -e
 apt -y install libapache2-mod-evasive
 mkdir -p /var/log/apache2/evasive
 chown -R www-data:root /var/log/apache2/evasive
-if ! [ -f $ENVASIVE ]
+if [ ! -f $ENVASIVE ]
 then
     touch $ENVASIVE
     cat << ENVASIVE > "$ENVASIVE"
@@ -33,7 +33,7 @@ apt -y install libapache2-mod-qos
 
 # Protect against DNS Injection
 apt -y install libapache2-mod-spamhaus
-if ! [ -f $SPAMHAUS ]
+if [ ! -f $SPAMHAUS ]
 then
     touch $SPAMHAUS
     cat << SPAMHAUS >> "$APACHE2"
