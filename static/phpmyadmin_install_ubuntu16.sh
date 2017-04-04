@@ -1,4 +1,8 @@
 #!/bin/bash
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+
 
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
@@ -56,11 +60,11 @@ echo
 sleep 2
 
 # Install phpmyadmin
-echo 'phpmyadmin phpmyadmin/dbconfig-install boolean true' | debconf-set-selections
-echo 'phpmyadmin phpmyadmin/app-password-confirm password $PW_FILE' | debconf-set-selections
-echo 'phpmyadmin phpmyadmin/mysql/admin-pass password $PW_FILE' | debconf-set-selections
-echo 'phpmyadmin phpmyadmin/mysql/app-pass password $PW_FILE' | debconf-set-selections
-echo 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2' | debconf-set-selections
+echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/app-password-confirm password $PW_FILE" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-pass password $PW_FILE" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password $PW_FILE" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
 apt update -q2
 apt install -y -q \
     php-gettext \

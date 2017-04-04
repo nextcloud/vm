@@ -1,0 +1,16 @@
+nguage: bash
+
+sudo: false
+
+addons:
+  apt:
+    sources:
+    - debian-sid
+    packages:
+    - shellcheck
+
+script:
+ - bash -c 'shopt -s globstar; shellcheck -e SC2059,SC2154 **/*.sh'
+
+matrix:
+  fast_finish: true

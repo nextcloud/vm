@@ -1,4 +1,8 @@
 #!/bin/bash
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+
 
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
@@ -33,7 +37,7 @@ mkdir -p $SHA256
 wget -q "$PASSVER_REPO/$PASSVER_FILE" -P "$SHA256"
 wget -q "$PASSVER_REPO/$PASSVER_FILE.sha256" -P "$SHA256"
 echo "Verifying integrity of $PASSVER_FILE..."
-cd "$SHA256"
+cd "$SHA256" || exit 1
 CHECKSUM_STATE=$(echo -n "$(sha256sum -c "$PASSVER_FILE.sha256")" | tail -c 2)
 if [ "$CHECKSUM_STATE" != "OK" ]
 then
@@ -50,7 +54,7 @@ if [ ! -d $NCPATH/apps/passman ]
 then
     wget -q "$PASSVER_REPO/$PASSVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$PASSVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
+    cd "$NCPATH/apps" || exit 1
     rm "$PASSVER_FILE"
 fi
 

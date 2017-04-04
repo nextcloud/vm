@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 # Collabora auto installer
 
@@ -21,9 +23,9 @@ NCDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, 
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 export HTTPS_CONF
 # Letsencrypt
-LETSENCRYPTPATH=/etc/letsencrypt
-CERTFILES=$LETSENCRYPTPATH/live
-DHPARAMS=""$CERTFILES"/"$SUBDOMAIN"/dhparam.pem"
+LETSENCRYPTPATH="/etc/letsencrypt"
+CERTFILES="$LETSENCRYPTPATH/live"
+DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 # WANIP
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 # App
@@ -151,10 +153,10 @@ then
 fi
 
 # Disable RichDocuments (Collabora App) if activated
-if [ -d $NCPATH/apps/richdocuments ]
+if [ -d "$NCPATH"/apps/richdocuments ]
 then
-    sudo -u www-data php $NCPATH/occ app:disable richdocuments
-    rm -r $NCPATH/apps/richdocuments
+    sudo -u www-data php "$NCPATH"/occ app:disable richdocuments
+    rm -r "$NCPATH"/apps/richdocuments
 fi
 
 # Install Collabora docker
@@ -171,7 +173,6 @@ else
     while read -r line; do
         ((i++))
         echo $i
-        export $line
     done < <(apt install apache2 -y)
     } | whiptail --title "Progress" --gauge "Please wait while installing Apache2" 6 60 0
 fi
@@ -267,9 +268,9 @@ sudo service apache2 stop
 if letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
 then
     # Generate DHparams chifer
-    if [ ! -f $DHPARAMS ]
+    if [ ! -f "$DHPARAMS" ]
     then
-        openssl dhparam -dsaparam -out $DHPARAMS 8192
+        openssl dhparam -dsaparam -out "$DHPARAMS" 8192
     fi
     printf "${ICyan}\n"
     printf "Certs are generated!\n"
@@ -279,7 +280,7 @@ then
 # Install Collabora App
     wget -q "$COLLVER_REPO/$COLLVER/$COLLVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$COLLVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
+    cd "$NCPATH/apps" || exit 1
     rm "$COLLVER_FILE"
 else
     printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new\n"
@@ -288,10 +289,10 @@ else
 fi
 
 # Enable RichDocuments (Collabora App)
-if [ -d $NCPATH/apps/richdocuments ]
+if [ -d "$NCPATH"/apps/richdocuments ]
 then
-    sudo -u www-data php $NCPATH/occ app:enable richdocuments
-    sudo -u www-data $NCPATH/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
+    sudo -u www-data php "$NCPATH"/occ app:enable richdocuments
+    sudo -u www-data "$NCPATH"/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
     echo
     echo "Collabora is now succesfylly installed."
     echo "You may have to reboot before Docker will load correctly."
