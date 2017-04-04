@@ -8,7 +8,11 @@ FILE=nextcloud_update.sh
 SCRIPTS=/var/scripts
 
 # Must be root
-[[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+if [[ "$EUID" -ne 0 ]]
+then
+    echo "Must be root to run script, in Ubuntu type: sudo -i"
+    exit 1
+fi
 
 mkdir -p $SCRIPTS
 

@@ -9,12 +9,11 @@ echo "Apache will now reboot"
 echo -e "\e[32m"
 read -p "Press any key to continue... " -n1 -s
 echo -e "\e[0m"
-a2ensite $1
+a2ensite "$1"
 a2dissite nextcloud_ssl_domain_self_signed.conf
 a2dissite nextcloud_http_domain_self_signed.conf
 a2dissite 000-default.conf
-service apache2 restart
-if [[ "$?" == "0" ]]
+if service apache2 restart
 then
     echo -e "\e[42m"
     echo "New settings works! SSL is now activated and OK!"
@@ -30,12 +29,13 @@ then
     echo -e "\e[0m"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
-# Set hostname and ServerName
-FQDOMAIN=$(grep -r -m 1 ServerName /etc/apache2/sites-enabled/* | awk '{print $2}')
-echo "Setting hostname to $FQDOMAIN..."
-sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
-sudo hostnamectl set-hostname $FQDOMAIN
-service apache2 restart
+FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
+if [ "$(hostname)" != "$FQDOMAIN" ]
+then
+    echo "Setting hostname to $FQDOMAIN..."
+    sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
+    sudo hostnamectl set-hostname "$FQDOMAIN"
+fi
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
@@ -83,7 +83,7 @@ rm $SCRIPTS/activate-ssl.sh
 
 else
 # If it fails, revert changes back to normal
-    a2dissite $1
+    a2dissite "$1"
     a2ensite nextcloud_ssl_domain_self_signed.conf
     a2ensite nextcloud_http_domain_self_signed.conf
     a2ensite 000-default.conf
