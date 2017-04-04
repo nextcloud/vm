@@ -145,5 +145,5 @@ else
     echo
     exit 0
 fi
-read -p $'\n${Green}Press any key to continue...${Color_Off}\n' -n1 -s
+any_key "Press any key to continue..."
 clear

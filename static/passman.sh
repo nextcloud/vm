@@ -26,10 +26,7 @@ then
 else
     echo "Failed! Download is not available at the moment, try again later."
     echo "Please report this issue here: https://github.com/nextcloud/passman/issues/new"
-    printf "${Green}\n"
-    read -p "Press any key to continue..." -n1 -s
-    printf "${Color_Off}\n"
-
+    any_key "Press any key to continue..."
     exit 1
 fi
 
@@ -67,8 +64,6 @@ then
 else
     echo "Something went wrong with the installation, Passman couln't be activated..."
     echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
-    printf "${Green}\n"
-    read -p "Press any key to continue..." -n1 -s
-    printf "${Color_Off}\n"
+    any_key "Press any key to continue..."
     exit 1
 fi
