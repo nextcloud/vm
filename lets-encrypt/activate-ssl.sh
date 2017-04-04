@@ -189,10 +189,18 @@ fi
 #Fix issue #28
 ssl_conf="/etc/apache2/sites-available/"$domain.conf""
 
-# Generate nextcloud_ssl_domain.conf
+# DHPARAM
+DHPARAMS=""$certfiles"/"$domain"/dhparam.pem"
+
+# Check if "$ssl.conf" exists, and if, then delete
 if [ -f "$ssl_conf" ]
 then
     rm -f "$ssl_conf"
+fi
+
+# Generate nextcloud_ssl_domain.conf
+if [ ! -f "$ssl_conf" ]
+then
     touch "$ssl_conf"
     echo "$ssl_conf was successfully created"
     sleep 2
@@ -206,6 +214,8 @@ then
 
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
+    SSLCompression off
+    SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:ECDHE-RSA-AES128-SHA:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4
 
 ### YOUR SERVER ADDRESS ###
 
@@ -236,6 +246,7 @@ then
     SSLCertificateChainFile $certfiles/$domain/chain.pem
     SSLCertificateFile $certfiles/$domain/cert.pem
     SSLCertificateKeyFile $certfiles/$domain/privkey.pem
+    SSLOpenSSLConfCmd DHParameters $DHPARAMS
 
 </VirtualHost>
 SSL_CREATE
@@ -261,6 +272,11 @@ service apache2 reload
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
+    # Generate DHparams chifer
+    if [ ! -f $DHPARAMS ]
+    then
+        openssl dhparam -dsaparam -out $DHPARAMS 8192
+    fi
     # Activate new config
     bash $SCRIPTS/test-new-config.sh "$domain.conf"
     exit 0
@@ -279,6 +295,11 @@ letsencrypt \
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
 then
+    # Generate DHparams chifer
+    if [ ! -f $DHPARAMS ]
+    then
+        openssl dhparam -dsaparam -out $DHPARAMS 8192
+    fi
     # Activate new config
     bash $SCRIPTS/test-new-config.sh "$domain.conf"
     exit 0
@@ -296,6 +317,11 @@ letsencrypt certonly \
 -d "$domain"
 
 # Check if $certfiles exists
+    # Generate DHparams chifer
+    if [ ! -f $DHPARAMS ]
+    then
+        openssl dhparam -dsaparam -out $DHPARAMS 8192
+    fi
 if [ -d "$certfiles" ]
 then
     # Activate new config
@@ -317,6 +343,11 @@ letsencrypt \
 
 # Check if $certfiles exists
 if [ -d "$certfiles" ]
+    # Generate DHparams chifer
+    if [ ! -f $DHPARAMS ]
+    then
+        openssl dhparam -dsaparam -out $DHPARAMS 8192
+    fi
 then
 # Activate new config
     bash $SCRIPTS/test-new-config.sh "$domain.conf"
