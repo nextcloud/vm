@@ -181,7 +181,7 @@ fi
 ssl_conf="/etc/apache2/sites-available/"$domain.conf""
 
 # DHPARAM
-DHPARAMS="$certfiles/$domain/dhparam.pem"
+DHPARAMS="$CERTFILES/$domain/dhparam.pem"
 
 # Check if "$ssl.conf" exists, and if, then delete
 if [ -f "$ssl_conf" ]
@@ -234,9 +234,9 @@ then
 
 ### LOCATION OF CERT FILES ###
 
-    SSLCertificateChainFile $certfiles/$domain/chain.pem
-    SSLCertificateFile $certfiles/$domain/cert.pem
-    SSLCertificateKeyFile $certfiles/$domain/privkey.pem
+    SSLCertificateChainFile $CERTFILES/$domain/chain.pem
+    SSLCertificateFile $CERTFILES/$domain/cert.pem
+    SSLCertificateKeyFile $CERTFILES/$domain/privkey.pem
     SSLOpenSSLConfCmd DHParameters $DHPARAMS
 
 </VirtualHost>
@@ -274,8 +274,8 @@ do
         ;;
     esac
 
-    # Check if $certfiles exists
-    if [ -d "$certfiles" ]
+    # Check if $CERTFILES exists
+    if [ -d "$CERTFILES" ]
     then
         # Generate DHparams chifer
         if [ ! -f "$DHPARAMS" ]

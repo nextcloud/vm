@@ -142,7 +142,6 @@ GITHUB_REPO="https://raw.githubusercontent.com/morph027/vm/master"
 NCREPO="https://download.nextcloud.com/server/releases/"
 STATIC="https://raw.githubusercontent.com/morph027/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/morph027/vm/master/lets-encrypt"
-certfiles="/etc/letsencrypt/live"
 # User information
 NCPASS=nextcloud
 NCUSER=ncadmin
