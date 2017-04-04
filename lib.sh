@@ -137,6 +137,9 @@ NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"
 STABLEVERSION="nextcloud-$NCVERSION"
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
+# Apache vhosts
+SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
+HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 
 
 ## bash colors
