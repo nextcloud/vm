@@ -10,7 +10,7 @@ addons:
     - shellcheck
 
 script:
- - bash -c 'shopt -s globstar; shellcheck -e SC2059,SC2154 **/*.{sh,bash}'
+ - bash -c 'shopt -s globstar; shellcheck -e SC2059,SC2154 **/*.sh'
 
 matrix:
   fast_finish: true
