@@ -51,7 +51,7 @@ if [ $? -eq 0 ]; then
     rm -f "nextcloud-$NCVERSION.tar.bz2"
 else
     echo
-    printf "\e[91mNextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
+    printf "${IRed}Nextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
     echo "Please check available versions here: $NCREPO"
     echo
     exit 1

@@ -12,7 +12,7 @@ SCRIPTS=/var/scripts
 if [[ "$EUID" -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou need to type: \e[36msudo \e[0mbash %s/activate-ssl.sh" "$SCRIPTS"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You need to type: ${Cyan}sudo ${Color_Off}bash %s/activate-ssl.sh" "$SCRIPTS"
     echo
     exit 1
 fi
@@ -272,13 +272,13 @@ do
         bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
         exit 0
     else
-        printf "\e[96mIt seems like no certs were generated, we do %s more tries." "$((NR_OF_ATTEMPTS-ATTEMPT))"
+        printf "${ICyan}It seems like no certs were generated, we do %s more tries.${Color_Off}" "$((NR_OF_ATTEMPTS-ATTEMPT))"
         any_key "Press any key to continue..."
         ((ATTEMPT++))
     fi
 done
 
-printf "\e[96mSorry, last try failed as well. :/ "
+printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}"
 cat << ENDMSG
 +------------------------------------------------------------------------+
 | The script is located in $SCRIPTS/activate-ssl.sh                  |

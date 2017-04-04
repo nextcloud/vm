@@ -4,11 +4,8 @@ SCRIPTS=/var/scripts
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 
 # Activate the new config
-printf "\e[0m"
-echo "Apache will now reboot"
-printf "\e[32m"
+printf "${Color_Off}Apache will now reboot"
 any_key "Press any key to continue... "
-printf "\e[0m"
 a2ensite "$1"
 a2dissite nextcloud_ssl_domain_self_signed.conf
 a2dissite nextcloud_http_domain_self_signed.conf

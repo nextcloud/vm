@@ -392,7 +392,7 @@ clear
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
     # Change IP
-    printf "\n${Color_Off}OK, we assume you run this locally and we will now configure your IP to be static.\e[1m\n"
+    printf "\n${Color_Off}OK, we assume you run this locally and we will now configure your IP to be static.${Color_Off}\n"
     echo "Your internal IP is: $ADDRESS"
     printf "\n${Color_Off}Write this down, you will need it to set static IP\n"
     echo "in your router later. It's included in this guide:"
@@ -677,7 +677,7 @@ ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print
 
 # Success!
 clear
-printf "${Green}\n"
+printf "%s\n" "${Green}"
 echo    "+--------------------------------------------------------------------+"
 echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
 echo    "|                                                                    |"
@@ -689,7 +689,7 @@ printf "|         ${Color_Off}To login to MySQL just type: ${Cyan}'mysql -u root
 echo    "|                                                                    |"
 printf "|   ${Color_Off}To update this VM just type: ${Cyan}'sudo bash /var/scripts/update.sh'${Green}  |\n"
 echo    "|                                                                    |"
-printf "|    \e[91m#################### Tech and Me - 2017 ####################${Green}    |\n"
+printf "|    ${IRed}#################### Tech and Me - 2017 ####################${Green}    |\n"
 echo    "+--------------------------------------------------------------------+"
 printf "${Color_Off}\n"
 
