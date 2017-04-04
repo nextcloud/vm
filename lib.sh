@@ -1,5 +1,14 @@
 #!/bin/bash
 
+is_root() {
+    if [[ "$EUID" -ne 0 ]]
+    then
+        return 1
+    else
+        return 0
+    fi
+}
+
 ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
