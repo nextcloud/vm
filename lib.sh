@@ -67,7 +67,7 @@ calc_wt_size() {
 }
 
 # Install Apps
-# call like: install_app collabora|nextant|passman|spreedme
+# call like: install_app collabora|nextant|passman|spreedme|contacts|calendar|webmin
 install_3rdparty_app() {
     "${SCRIPTS}/${1}.sh"
     rm -f "$SCRIPTS/${1}.sh"
