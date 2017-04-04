@@ -99,7 +99,7 @@ if [[ "no" == $(ask_yes_or_no "Is this correct? $domain") ]]
 ENTERDOMAIN2
 
     echo
-    read domain
+    read -r domain
     echo
 fi
 

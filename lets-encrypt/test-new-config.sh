@@ -55,7 +55,7 @@ else
     rm $SCRIPTS/update-config.php
 fi
 
-DATE='$(date +%Y-%m-%d_%H:%M)'
+DATE="$(date +%Y-%m-%d_%H:%M)"
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 service apache2 stop

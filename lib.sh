@@ -1,4 +1,7 @@
 #!/bin/bash
+# shellcheck disable=2034,2059
+true
+# see https://github.com/koalaman/shellcheck/wiki/Directive
 
 ## functions
 
@@ -23,7 +26,7 @@ is_root() {
 }
 
 ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
+    read -p -r "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
     y|yes) echo "yes" ;;
     *)     echo "no" ;;
@@ -98,7 +101,7 @@ spinner_loading() {
 
 any_key() {
     local PROMPT="$1"
-    read -p "$(printf ${Green}"${PROMPT}"${Color_Off})" -n1 -s
+    read -r -p "$(printf "${Green}${PROMPT}${Color_Off}")" -n1 -s
 }
 
 ## variables
