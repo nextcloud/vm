@@ -125,6 +125,7 @@ OS=$(grep -ic "Ubuntu" /etc/issue.net)
 IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 NCREPO="https://download.nextcloud.com/server/releases/"
@@ -148,6 +149,7 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 PW_FILE=/var/mysql_password.txt
 MYCNF=/root/.my.cnf
 OLDMYSQL=$(cat $PW_FILE)
+HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Nextcloud version
 CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s -m 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q') # change NCVERSION in install scrtip and update script, the differ
@@ -156,6 +158,17 @@ NCMAJOR="${NCVERSION%%.*}"
 NCBAD=$((NCMAJOR-2))
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
+# Collabora Docker URL
+SUBDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+# Nextcloud Main Domain
+NCDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+# Letsencrypt
+LETSENCRYPTPATH="/etc/letsencrypt"
+CERTFILES="$LETSENCRYPTPATH/live"
+DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
+# Apps
+COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
+COLLVER_FILE=richdocuments.tar.gz
 
 ## bash colors
 # Reset
