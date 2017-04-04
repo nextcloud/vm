@@ -173,7 +173,7 @@ NCDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, 
 LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
 DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
-# Apps
+# Collabora App
 COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
 COLLVER_FILE=richdocuments.tar.gz
 # Nextant
@@ -187,6 +187,10 @@ NC_APPS_PATH=$NCPATH/apps/
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
+# Passman
+PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
+PASSVER_FILE=passman_$PASSVER.tar.gz
+SHA256=/tmp/sha256
 
 ## bash colors
 # Reset
