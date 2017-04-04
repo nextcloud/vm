@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me - www.techandme.se - ©2017
 # Ubuntu 16.04 with php 7
 

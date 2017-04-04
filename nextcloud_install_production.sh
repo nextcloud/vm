@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me, ©2017 - www.techandme.se
 #
 # This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apache 2.4.

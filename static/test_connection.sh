@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 WGET="/usr/bin/wget"
 
 $WGET -q --tries=20 --timeout=10 http://www.google.com -O /tmp/google.idx &> /dev/null

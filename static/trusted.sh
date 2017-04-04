@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 
 # Change config.php
 php $SCRIPTS/update-config.php $NCPATH/config/config.php 'trusted_domains[]' localhost "${ADDRESS[@]}" "$(hostname)" "$(hostname --fqdn)" >/dev/null 2>&1

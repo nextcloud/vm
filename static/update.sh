@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 ## Tech and Me ## - ©2017, https://www.techandme.se/
 #
 # Tested on Ubuntu Server 14.04 & 16.04.
