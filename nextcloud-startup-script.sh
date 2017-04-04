@@ -385,7 +385,7 @@ echo "|   depending on your internet connection.                           |"
 echo "|                                                                    |"
 echo "| ####################### Tech and Me - 2017 ####################### |"
 echo "+--------------------------------------------------------------------+"
-read -p $'\n${Green}Press any key to start the script...${Color_Off}\n' -n1 -s
+any_key "Press any key to start the script..."
 clear
 
 # VPS?
@@ -397,7 +397,7 @@ then
     printf "\n${Color_Off}Write this down, you will need it to set static IP\n"
     echo "in your router later. It's included in this guide:"
     echo "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-    read -p $'\n${Green}Press any key to set static IP...${Color_Off}\n' -n1 -s
+    any_key "Press any key to set static IP..."
     ifdown "$IFACE"
     sleep 1
     ifup "$IFACE"
@@ -427,11 +427,11 @@ then
         printf "sudo nano /etc/network/interfaces\n"
         echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
-        read -p $'\n${Green}Press any key to continue...${Color_Off}\n' -n1 -s
+        any_key "Press any key to continue..."
     else
         # Not connected!
         printf "${Red}Not Connected${Color_Off}\nYou should change your settings manually in the next step.\n"
-        read -p $'\n${Green}Press any key to open /etc/network/interfaces...${Color_Off}\n' -n1 -s
+        any_key "Press any key to open /etc/network/interfaces..."
         nano /etc/network/interfaces
         service networking restart
         clear
@@ -523,7 +523,7 @@ then
 else
     echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    read -p $'\n${Green}Press any key to continue... ${Color_Off}\n' -n1 -s
+    any_key "Press any key to continue..."
 fi
 clear
 
@@ -567,14 +567,14 @@ then
 else
     echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
-    read -p $'\n${Green}Press any key to continue... ${Color_Off}\n' -n1 -s
+    any_key "Press any key to continue..."
 fi
 clear
 
 # Change Timezone
 echo "Current timezone is $(cat /etc/timezone)"
 echo "You must change it to your timezone"
-read -p $'\n${Green}Press any key to change timezone...${Color_Off}\n ' -n1 -s
+any_key "Press any key to change timezone..."
 dpkg-reconfigure tzdata
 echo
 sleep 3
@@ -583,7 +583,7 @@ clear
 # Change password
 printf "${Color_Off}\n"
 echo "For better security, change the system user password for [$UNIXUSER]"
-read -p $'\n${Green}Press any key to change password for system user... ${Color_Off}\n' -n1 -s
+any_key "Press any key to change password for system user..."
 while true
 do
     sudo passwd "$UNIXUSER" && break
@@ -594,7 +594,7 @@ NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
 printf "${Color_Off}\n"
 echo "For better security, change the Nextcloud password for [$NCADMIN]"
 echo "The current password for $NCADMIN is [$NCPASS]"
-read -p $'\n${Green}Press any key to change password for Nextcloud... ${Color_Off}\n' -n1 -s
+any_key "Press any key to change password for Nextcloud..."
 while true
 do
     sudo -u www-data php "$NCPATH/occ" user:resetpassword "$NCADMIN" && break
@@ -722,5 +722,5 @@ sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/g
 
 # Reboot
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
-read -p $'\n${Green}Installation finished, press any key to reboot system... ${Color_Off}\n' -n1 -s
+any_key "Installation finished, press any key to reboot system..."
 reboot

@@ -52,9 +52,7 @@ then
     echo "When SSL is activated, run these commands from your terminal:"
     echo "sudo wget https://raw.githubusercontent.com/nextcloud/vm/master/static/collabora.sh"
     echo "sudo bash collabora.sh"
-    printf "${Green}\n"
-    read -p "Press any key to continue... " -n1 -s
-    printf "${Color_Off}\n"
+    any_key "Press any key to continue... "
     exit 1
 fi
 
@@ -72,9 +70,7 @@ elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null; then
 else
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
    echo "it to this server before you can run this script."
-   printf "${Green}\n"
-   read -p "Press any key to continue... " -n1 -s
-   printf "${Color_Off}\n"
+   any_key "Press any key to continue... "
    exit 1
 fi
 
@@ -93,21 +89,17 @@ then
   apt remove --purge nmap -y
 else
   echo "Port 443 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
-  printf "${Green}\n"
-  read -p "Press any key to test $SUBDOMAIN... " -n1 -s
-  printf "${Color_Off}\n"
-      if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
-      then
-          printf "${Green}Port 443 is open on $SUBDOMAIN!${Color_Off}\n"
-          apt remove --purge nmap -y
-      else
-          whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
-          printf "${Green}\n"
-          read -p "Press any key to exit... " -n1 -s
-          printf "${Color_Off}\n"
-          apt remove --purge nmap -y
-          exit 1
-      fi
+  any_key "Press any key to test $SUBDOMAIN... "
+  if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
+  then
+      printf "${Green}Port 443 is open on $SUBDOMAIN!${Color_Off}\n"
+      apt remove --purge nmap -y
+  else
+      whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+      any_key "Press any key to exit... "
+      apt remove --purge nmap -y
+      exit 1
+  fi
 fi
 
 # Install Docker
@@ -154,7 +146,7 @@ DOCKERPS=$(docker ps -a -q)
 if [ "$DOCKERPS" != "" ]
 then
     echo "Removing old Docker instance(s)... ($DOCKERPS)"
-    read -p $'\n${Green}Press any key to continue. Press CTRL+C to abort.${Color_Off}\n' -n1 -s
+    any_key "Press any key to continue. Press CTRL+C to abort"
     docker stop "$DOCKERPS"
     docker rm "$DOCKERPS"
 fi
@@ -291,12 +283,9 @@ then
     cd "$NCPATH/apps"
     rm "$COLLVER_FILE"
 else
-    printf "${ICyan}\n"
-    printf "It seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new\n"
-    printf "${Green}\n"
-    read -p "Press any key to continue... " -n1 -s
+    printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new\n"
+    any_key "Press any key to continue... "
     service apache2 restart
-    printf "${Color_Off}\n"
 fi
 
 # Enable RichDocuments (Collabora App)
@@ -307,7 +296,5 @@ then
     echo
     echo "Collabora is now succesfylly installed."
     echo "You may have to reboot before Docker will load correctly."
-    printf "${Green}\n"
-    read -p "Press any key to continue... " -n1 -s
-    printf "${Color_Off}\n"
+    any_key "Press any key to continue... "
 fi

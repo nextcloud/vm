@@ -7,7 +7,7 @@ STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 printf "\e[0m"
 echo "Apache will now reboot"
 printf "\e[32m"
-read -p "Press any key to continue... " -n1 -s
+any_key "Press any key to continue... "
 printf "\e[0m"
 a2ensite "$1"
 a2dissite nextcloud_ssl_domain_self_signed.conf
@@ -21,7 +21,7 @@ then
     echo "This script will add a renew cronjob to get you started, edit it by typing:"
     echo "'crontab -u root -e'"
     echo "Feel free to contribute to this project: https://goo.gl/3fQD65"
-    read -p "$(printf ${Green}"Press any key to continue..."${Color_Off})" -n1 -s
+    any_key "Press any key to continue..."
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
@@ -83,12 +83,8 @@ else
     a2ensite nextcloud_http_domain_self_signed.conf
     a2ensite 000-default.conf
     service apache2 restart
-    printf "\e[96m"
-    echo "Couldn't load new config, reverted to old settings. Self-signed SSL is OK!"
-    printf "\e[0m"
-    printf "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    printf "\e[0m"
+    printf "${ICyan}Couldn't load new config, reverted to old settings. Self-signed SSL is OK!${Color_Off}\n"
+    any_key "Press any key to continue... "
     exit 1
 fi
 
