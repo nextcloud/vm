@@ -9,12 +9,6 @@ true
 # Tech and Me - www.techandme.se - ©2017
 # Ubuntu 16.04 with php 7
 
-OS=$(grep -ic "Ubuntu" /etc/issue.net)
-REDIS_CONF=/etc/redis/redis.conf
-REDIS_SOCK=/var/run/redis/redis.sock
-SHUF=$(shuf -i 30-35 -n 1)
-REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-
 # Must be root
 if [[ $EUID -ne 0 ]]
 then
