@@ -138,10 +138,10 @@ INTERFACES="/etc/network/interfaces"
 NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
 GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+GITHUB_REPO="https://raw.githubusercontent.com/morph027/vm/master"
 NCREPO="https://download.nextcloud.com/server/releases/"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
+STATIC="https://raw.githubusercontent.com/morph027/vm/master/static"
+LETS_ENC="https://raw.githubusercontent.com/morph027/vm/master/lets-encrypt"
 # User information
 NCPASS=nextcloud
 NCUSER=ncadmin
