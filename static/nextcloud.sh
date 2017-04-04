@@ -1,4 +1,8 @@
 #!/bin/bash
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+
 
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 WANIP4=$(curl -s -m 5 ipinfo.io/ip)

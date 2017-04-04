@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 #
 ## Tech and Me ## - ©2017, https://www.techandme.se/
@@ -18,8 +20,8 @@ BACKUP=/var/NCBACKUP
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Versions
-CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-NCVERSION=$(curl -s -m 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+CURRENTVERSION=$(sudo -u www-data php "$NCPATH"/occ status | grep "versionstring" | awk '{print $3}')
+NCVERSION=$(curl -s -m 900 "$NCREPO"/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 NCMAJOR="${NCVERSION%%.*}"
 NCBAD=$((NCMAJOR-2))
 
@@ -33,11 +35,11 @@ rm /var/lib/apt/lists/* -R
 
 # Set secure permissions
 FILE="$SECURE"
-if [ ! -f $FILE ]
+if [ ! -f "$FILE" ]
 then
-    mkdir -p $SCRIPTS
-    wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
-    chmod +x $SECURE
+    mkdir -p "$SCRIPTS"
+    wget -q "$STATIC"/setup_secure_permissions_nextcloud.sh -P "$SCRIPTS"
+    chmod +x "$SECURE"
 fi
 
 # Upgrade Nextcloud
@@ -149,68 +151,68 @@ then
     echo "$BACKUP/themes/ exists"
     echo 
     printf "${Green}All files are backed up.${Color_Off}\n"
-    sudo -u www-data php $NCPATH/occ maintenance:mode --on
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
     echo "Removing old Nextcloud instance in 5 seconds..." && sleep 5
     rm -rf $NCPATH
     tar -xjf "$HTML/nextcloud-$NCVERSION.tar.bz2" -C "$HTML"
     rm "$HTML/nextcloud-$NCVERSION.tar.bz2"
-    cp -R $BACKUP/themes $NCPATH/
-    cp -R $BACKUP/config $NCPATH/
+    cp -R $BACKUP/themes "$NCPATH"/
+    cp -R $BACKUP/config "$NCPATH"/
     bash $SECURE
-    sudo -u www-data php $NCPATH/occ maintenance:mode --off
-    sudo -u www-data php $NCPATH/occ upgrade
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
+    sudo -u www-data php "$NCPATH"/occ upgrade
 else
     echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if the folders exist."
     exit 1
 fi
 
 # Enable Apps
-if [ -d $SNAPDIR ]
+if [ -d "$SNAPDIR" ]
 then
-    wget $STATIC/spreedme.sh -P $SCRIPTS
-    bash $SCRIPTS/spreedme.sh
-    rm $SCRIPTS/spreedme.*
-    sudo -u www-data php $NCPATH/occ app:enable spreedme
+    wget "$STATIC"/spreedme.sh -P "$SCRIPTS"
+    bash "$SCRIPTS"/spreedme.sh
+    rm "$SCRIPTS"/spreedme.*
+    sudo -u www-data php "$NCPATH"/occ app:enable spreedme
 fi
 
 # Recover apps that exists in the backed up apps folder
-wget -q $STATIC/recover_apps.py -P $SCRIPTS
-chmod +x $SCRIPTS/recover_apps.py
-python $SCRIPTS/recover_apps.py
-rm $SCRIPTS/recover_apps.py
+wget -q "$STATIC"/recover_apps.py -P "$SCRIPTS"
+chmod +x "$SCRIPTS"/recover_apps.py
+python "$SCRIPTS"/recover_apps.py
+rm "$SCRIPTS"/recover_apps.py
 
 # Change owner of $BACKUP folder to root
-chown -R root:root $BACKUP
+chown -R root:root "$BACKUP"
 
 # Increase max filesize (expects that changes are made in /etc/php5/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 VALUE="# php_value upload_max_filesize 511M"
-if grep -Fxq "$VALUE" $NCPATH/.htaccess
+if grep -Fxq "$VALUE" "$NCPATH"/.htaccess
 then
     echo "Value correct"
 else
-    sed -i 's/  php_value upload_max_filesize 511M/# php_value upload_max_filesize 511M/g' $NCPATH/.htaccess
-    sed -i 's/  php_value post_max_size 513M/# php_value post_max_size 511M/g' $NCPATH/.htaccess
-    sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
+    sed -i 's/  php_value upload_max_filesize 511M/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
+    sed -i 's/  php_value post_max_size 513M/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
+    sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
 fi
 
 # Set $THEME_NAME
 VALUE2="$THEME_NAME"
 if ! grep -Fxq "$VALUE2" "$NCPATH/config/config.php"
 then
-    sed -i "s|'theme' => '',|'theme' => '$THEME_NAME',|g" $NCPATH/config/config.php
+    sed -i "s|'theme' => '',|'theme' => '$THEME_NAME',|g" "$NCPATH"/config/config.php
     echo "Theme set"
 fi
 
 # Pretty URLs
 echo "Setting RewriteBase to \"/\" in config.php..."
-chown -R www-data:www-data $NCPATH
-sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
-sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
-bash $SECURE
+chown -R www-data:www-data "$NCPATH"
+sudo -u www-data php "$NCPATH"/occ config:system:set htaccess.RewriteBase --value="/"
+sudo -u www-data php "$NCPATH"/occ maintenance:update:htaccess
+bash "$SECURE"
 
 # Repair
-sudo -u www-data php $NCPATH/occ maintenance:repair
+sudo -u www-data php "$NCPATH"/occ maintenance:repair
 
 # Cleanup un-used packages
 apt autoremove -y
@@ -219,15 +221,15 @@ apt autoclean
 # Update GRUB, just in case
 update-grub
 
-CURRENTVERSION_after=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+CURRENTVERSION_after=$(sudo -u www-data php "$NCPATH"/occ status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
 then
     echo
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after."
     echo "UPGRADE SUCCESS!"
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log
-    sudo -u www-data php $NCPATH/occ status
-    sudo -u www-data php $NCPATH/occ maintenance:mode --off
+    sudo -u www-data php "$NCPATH"/occ status
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     echo
     echo "Thank you for using Tech and Me's updater!"
     ## Un-hash this if you want the system to reboot
@@ -236,7 +238,7 @@ then
 else
     echo
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after."
-    sudo -u www-data php $NCPATH/occ status
+    sudo -u www-data php "$NCPATH"/occ status
     echo "UPGRADE FAILED!"
     echo "Your files are still backed up at $BACKUP. No worries!"
     echo "Please report this issue to https://github.com/nextcloud/vm/issues"

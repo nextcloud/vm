@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
@@ -54,7 +56,7 @@ else
     rm $SCRIPTS/update-config.php
 fi
 
-DATE='$(date +%Y-%m-%d_%H:%M)'
+DATE="$(date +%Y-%m-%d_%H:%M)"
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 service apache2 stop

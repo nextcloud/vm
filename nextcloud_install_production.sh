@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
 # Tech and Me, ©2017 - www.techandme.se
@@ -16,7 +18,7 @@ DEBUG=0
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
-NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+NCVERSION=$(curl -s "$NCREPO" | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 STABLEVERSION="nextcloud-$NCVERSION"
 # Ubuntu version
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
@@ -61,7 +63,7 @@ echo "If the field after ':' is blank you are probably running as a pure root us
 echo "It's possible to install with root, but there will be minor errors."
 echo
 echo "Please create a user with sudo permissions if you want an optimal installation."
-wget -q $STATIC/adduser.sh
+wget -q "$STATIC"/adduser.sh
 bash adduser.sh
 rm -f adduser.sh
 
@@ -113,9 +115,9 @@ fi
 
 
 # Create $SCRIPTS dir
-if [ ! -d $SCRIPTS ]
+if [ ! -d "$SCRIPTS" ]
 then
-    mkdir -p $SCRIPTS
+    mkdir -p "$SCRIPTS"
 fi
 
 # Change DNS
@@ -282,11 +284,11 @@ unzip -q "$HTML/$STABLEVERSION.zip" -d "$HTML"
 rm "$HTML/$STABLEVERSION.zip"
 
 # Secure permissions
-wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
-bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+wget -q "$STATIC/setup_secure_permissions_nextcloud.sh" -P "$SCRIPTS"
+bash "$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 
 # Install Nextcloud
-cd $NCPATH
+cd "$NCPATH"
 sudo -u www-data php occ maintenance:install \
     --data-dir "$NCDATA" \
     --database "mysql" \
@@ -297,7 +299,7 @@ sudo -u www-data php occ maintenance:install \
     --admin-pass "$NCPASS"
 echo
 echo "Nextcloud version:"
-sudo -u www-data php $NCPATH/occ status
+sudo -u www-data php "$NCPATH"/occ status
 echo
 sleep 3
 
@@ -319,11 +321,11 @@ sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 1000M|g" /etc/php/7.0/a
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 VALUE="# php_value upload_max_filesize 511M"
-if ! grep -Fxq "$VALUE" $NCPATH/.htaccess
+if ! grep -Fxq "$VALUE" "$NCPATH"/.htaccess
 then
-        sed -i 's/  php_value upload_max_filesize 511M/# php_value upload_max_filesize 511M/g' $NCPATH/.htaccess
-        sed -i 's/  php_value post_max_size 511M/# php_value post_max_size 511M/g' $NCPATH/.htaccess
-        sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
+        sed -i 's/  php_value upload_max_filesize 511M/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
+        sed -i 's/  php_value post_max_size 511M/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
+        sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
 fi
 
 # Install Figlet
@@ -422,18 +424,18 @@ service apache2 restart
 
 ## Set config values
 # Experimental apps
-sudo -u www-data php $NCPATH/occ config:system:set appstore.experimental.enabled --value="true"
+sudo -u www-data php "$NCPATH"/occ config:system:set appstore.experimental.enabled --value="true"
 # Default mail server as an example (make this user configurable?)
-sudo -u www-data php $NCPATH/occ config:system:set mail_smtpmode --value="smtp"
-sudo -u www-data php $NCPATH/occ config:system:set mail_smtpauth --value="1"
-sudo -u www-data php $NCPATH/occ config:system:set mail_smtpport --value="465"
-sudo -u www-data php $NCPATH/occ config:system:set mail_smtphost --value="smtp.gmail.com"
-sudo -u www-data php $NCPATH/occ config:system:set mail_smtpauthtype --value="LOGIN"
-sudo -u www-data php $NCPATH/occ config:system:set mail_from_address --value="www.techandme.se"
-sudo -u www-data php $NCPATH/occ config:system:set mail_domain --value="gmail.com"
-sudo -u www-data php $NCPATH/occ config:system:set mail_smtpsecure --value="ssl"
-sudo -u www-data php $NCPATH/occ config:system:set mail_smtpname --value="www.techandme.se@gmail.com"
-sudo -u www-data php $NCPATH/occ config:system:set mail_smtppassword --value="vinr vhpa jvbh hovy"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpmode --value="smtp"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpauth --value="1"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpport --value="465"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtphost --value="smtp.gmail.com"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpauthtype --value="LOGIN"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_from_address --value="www.techandme.se"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_domain --value="gmail.com"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpsecure --value="ssl"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpname --value="www.techandme.se@gmail.com"
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtppassword --value="vinr vhpa jvbh hovy"
 
 # Install Libreoffice Writer to be able to read MS documents.
 sudo apt install --no-install-recommends libreoffice-writer -y
@@ -444,11 +446,11 @@ CONVER_FILE=contacts.tar.gz
 CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CALVER_FILE=calendar.tar.gz
 
-sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
+sudo -u www-data php "$NCPATH"/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
 install_calendar() {
 # Download and install Calendar
-if [ ! -d $NCPATH/apps/calendar ]
+if [ ! -d "$NCPATH"/apps/calendar ]
 then
     wget -q "$CALVER_REPO/v$CALVER/$CALVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$CALVER_FILE" -C "$NCPATH/apps"
@@ -457,9 +459,9 @@ then
 fi
 
 # Enable Calendar
-if [ -d $NCPATH/apps/calendar ]
+if [ -d "$NCPATH"/apps/calendar ]
 then
-    sudo -u www-data php $NCPATH/occ app:enable calendar
+    sudo -u www-data php "$NCPATH"/occ app:enable calendar
 fi
 
 }
@@ -475,9 +477,9 @@ then
 fi
 
 # Enable Contacts
-if [ -d $NCPATH/apps/contacts ]
+if [ -d "$NCPATH"/apps/contacts ]
 then
-    sudo -u www-data php $NCPATH/occ app:enable contacts
+    sudo -u www-data php "$NCPATH"/occ app:enable contacts
 fi
 }
 
@@ -516,40 +518,40 @@ done 9< results
 rm -f results
 
 # Change roots .bash_profile
-if [ ! -f $SCRIPTS/change-root-profile.sh ]
+if [ ! -f "$SCRIPTS"/change-root-profile.sh ]
 then
-    wget -q $STATIC/change-root-profile.sh -P $SCRIPTS
+    wget -q "$STATIC"/change-root-profile.sh -P "$SCRIPTS"
 fi
 
 # Change $UNIXUSER .bash_profile
-if [ ! -f $SCRIPTS/change-ncadmin-profile.sh ]
+if [ ! -f "$SCRIPTS"/change-ncadmin-profile.sh ]
 then
-    wget -q $STATIC/change-ncadmin-profile.sh -P $SCRIPTS
+    wget -q "$STATIC"/change-ncadmin-profile.sh -P "$SCRIPTS"
 fi
 
 # Welcome message after login (change in $HOME/.profile
-if [ ! -f $SCRIPTS/instruction.sh ]
+if [ ! -f "$SCRIPTS"/instruction.sh ]
 then
-    wget -q $STATIC/instruction.sh -P $SCRIPTS
+    wget -q "$STATIC"/instruction.sh -P "$SCRIPTS"
 fi
 
 # Get nextcloud-startup-script.sh
-if [ ! -f $SCRIPTS/nextcloud-startup-script.sh ]
+if [ ! -f "$SCRIPTS"/nextcloud-startup-script.sh ]
 then
-    wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
+    wget -q "$GITHUB_REPO"/nextcloud-startup-script.sh -P "$SCRIPTS"
 fi
 
 # Clears command history on every login
-if [ ! -f $SCRIPTS/history.sh ]
+if [ ! -f "$SCRIPTS"/history.sh ]
 then
-    wget -q $STATIC/history.sh -P $SCRIPTS
+    wget -q "$STATIC"/history.sh -P "$SCRIPTS"
 fi
 
 # Change root profile
-if bash $SCRIPTS/change-root-profile.sh
+if bash "$SCRIPTS"/change-root-profile.sh
 then
     echo "change-root-profile.sh executed OK."
-    rm $SCRIPTS/change-root-profile.sh
+    rm "$SCRIPTS"/change-root-profile.sh
     sleep 2
 else    
     echo "change-root-profile.sh were not executed correctly."
@@ -557,10 +559,10 @@ else
 fi
 
 # Change $UNIXUSER profile
-if bash $SCRIPTS/change-ncadmin-profile.sh
+if bash "$SCRIPTS"/change-ncadmin-profile.sh
 then
     echo "change-ncadmin-profile.sh executed OK."
-    rm $SCRIPTS/change-ncadmin-profile.sh
+    rm "$SCRIPTS"/change-ncadmin-profile.sh
     sleep 2
 else    
     echo "change-ncadmin-profile.sh were not executed correctly."
@@ -568,14 +570,14 @@ else
 fi
 
 # Get script for Redis
-if [ ! -f $SCRIPTS/redis-server-ubuntu16.sh ]
+if [ ! -f "$SCRIPTS"/redis-server-ubuntu16.sh ]
 then
-    wget -q $STATIC/redis-server-ubuntu16.sh -P $SCRIPTS
+    wget -q "$STATIC"/redis-server-ubuntu16.sh -P "$SCRIPTS"
 fi
 
 # Make $SCRIPTS excutable
-chmod +x -R $SCRIPTS
-chown root:root -R $SCRIPTS
+chmod +x -R "$SCRIPTS"
+chown root:root -R "$SCRIPTS"
 
 # Allow $UNIXUSER to run these scripts
 chown "$UNIXUSER:$UNIXUSER" \
@@ -583,8 +585,8 @@ chown "$UNIXUSER:$UNIXUSER" \
     "$SCRIPTS/history.sh"
 
 # Install Redis
-bash $SCRIPTS/redis-server-ubuntu16.sh
-rm $SCRIPTS/redis-server-ubuntu16.sh
+bash "$SCRIPTS"/redis-server-ubuntu16.sh
+rm "$SCRIPTS"/redis-server-ubuntu16.sh
 
 # Upgrade
 apt update -q2
@@ -606,7 +608,7 @@ apt install linux-image-virtual-hwe-16.04 -y
 apt install linux-virtual-hwe-16.04 -y
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
-bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+bash "$SCRIPTS"/setup_secure_permissions_nextcloud.sh
 
 # Reboot
 echo "Installation done, system will now reboot..."
