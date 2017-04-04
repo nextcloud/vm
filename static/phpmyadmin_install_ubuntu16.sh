@@ -17,9 +17,9 @@ then
 fi
 
 # Check that the script can see the external IP (apache fails otherwise)
-if [ -z "$WANIP" ]
+if [ -z "$WANIP4" ]
 then
-    echo "WANIP is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again"
+    echo "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again"
     sleep 3
     exit 1
 fi
@@ -98,7 +98,7 @@ Alias /phpmyadmin $PHPMYADMINDIR
     <IfModule mod_authz_core.c>
 # Apache 2.4
       <RequireAny>
-        Require ip $WANIP
+        Require ip $WANIP4
     Require ip $ADDRESS
         Require ip 127.0.0.1
         Require ip ::1
@@ -109,7 +109,7 @@ Alias /phpmyadmin $PHPMYADMINDIR
 # Apache 2.2
         Order Deny,Allow
         Deny from All
-        Allow from $WANIP
+        Allow from $WANIP4
         Allow from $ADDRESS
         Allow from ::1
         Allow from localhost
