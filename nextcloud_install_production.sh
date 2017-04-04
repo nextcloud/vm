@@ -634,7 +634,7 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e ''"$(uname -r 
 echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
-find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o name '*.tar*' -o name '*.zip*' \) -delete
+find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
 # Install virtual kernels
 apt install linux-tools-virtual-hwe-16.04 linux-cloud-tools-virtual-hwe-16.04  -y
