@@ -1,5 +1,5 @@
 # Nextcloud VM
-[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme)
+[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme) [![Build Status](https://travis-ci.org/morph027/vm.svg?branch=master)](https://travis-ci.org/morph027/vm)
 
 ## Support the development
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
