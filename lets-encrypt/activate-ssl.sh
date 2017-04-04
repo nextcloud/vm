@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
 # Tech and Me ©2017 - www.techandme.se
 
@@ -239,25 +239,36 @@ then
 SSL_CREATE
 fi
 
-NR_OF_ATTEMPTS=4
-ATTEMPT=1
+LE_METHODS=()
+LE_METHODS+=( "certonly --standalone" )
+LE_METHODS+=( " " )
+LE_METHODS+=( "certonly --webroot --w $NCPATH" )
+LE_METHODS+=( "--apache" )
+LE_DEFAULT_OPTIONS="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
+
+NR_OF_ATTEMPTS=${#LE_METHODS[@]}
+ATTEMPT=0
 while [ ! "$ATTEMPT" -eq "$NR_OF_ATTEMPTS" ]
 do
-    # Stop Apache to aviod port conflicts
-    a2dissite 000-default.conf
-    sudo service apache2 stop
-    # Generate certs
-    letsencrypt certonly \
-    --standalone \
-    --rsa-key-size 4096 \
-    --renew-by-default \
-    --agree-tos \
-    -d "$domain"
+    case "${LE_METHODS[$ATTEMPT]}" in
+        *standalone*)
+            # Stop Apache to avoid port conflicts
+            a2dissite 000-default.conf
+            sudo service apache2 stop
+        ;;
+    esac
 
-    # Activate Apache again (Disabled during standalone)
-    service apache2 start
-    a2ensite 000-default.conf
-    service apache2 reload
+    # Generate certs
+    letsencrypt ${LE_METHODS[$ATTEMPT]} "$LE_DEFAULT_OPTIONS"
+
+    case "${LE_METHODS[$ATTEMPT]}" in
+        *standalone*)
+            # Activate Apache again (Disabled during standalone)
+           service apache2 start
+           a2ensite 000-default.conf
+           service apache2 reload
+        ;;
+    esac
 
     # Check if $certfiles exists
     if [ -d "$certfiles" ]

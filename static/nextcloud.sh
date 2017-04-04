@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 WANIP4=$(curl -s -m 5 ipinfo.io/ip)
 WANIP6=$(curl -s -m 5 6.ifcfg.me)
 clear

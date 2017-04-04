@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
 # Variables
 PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)

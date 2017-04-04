@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 
