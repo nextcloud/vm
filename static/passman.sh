@@ -54,7 +54,7 @@ if [ ! -d $NCPATH/apps/passman ]
 then
     wget -q "$PASSVER_REPO/$PASSVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$PASSVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
+    cd "$NCPATH/apps" || exit 1
     rm "$PASSVER_FILE"
 fi
 
