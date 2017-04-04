@@ -94,7 +94,7 @@ echo "
 &nextant_component;
 </config>" | tee -a "$SOLR_DSCONF"
 
-echo 'SOLR_OPTS="$SOLR_OPTS -Dsolr.allow.unsafe.resourceloading=true"' | sudo tee -a /etc/default/solr.in.sh
+echo "SOLR_OPTS=\"\$SOLR_OPTS -Dsolr.allow.unsafe.resourceloading=true\"" | sudo tee -a /etc/default/solr.in.sh
 
 if ! service solr restart
 then
@@ -104,7 +104,7 @@ fi
 
 # Get nextant app for nextcloud
 wget -q -P "$NC_APPS_PATH" "$NT_DL"
-cd "$NC_APPS_PATH"
+cd "$NC_APPS_PATH" || exit 1
 tar zxf "$NT_RELEASE"
 # Check if permission script exists, if not get it.
 if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]

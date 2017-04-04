@@ -37,7 +37,7 @@ mkdir -p $SHA256
 wget -q "$PASSVER_REPO/$PASSVER_FILE" -P "$SHA256"
 wget -q "$PASSVER_REPO/$PASSVER_FILE.sha256" -P "$SHA256"
 echo "Verifying integrity of $PASSVER_FILE..."
-cd "$SHA256"
+cd "$SHA256" || exit 1
 CHECKSUM_STATE=$(echo -n "$(sha256sum -c "$PASSVER_FILE.sha256")" | tail -c 2)
 if [ "$CHECKSUM_STATE" != "OK" ]
 then
