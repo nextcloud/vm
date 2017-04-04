@@ -10,11 +10,11 @@ true
 
 # Based on: http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
 
-SPAMHAUS=/etc/spamhaus.wl
-ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
-APACHE2=/etc/apache2/apache2.conf
-
-set -e
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode()
 
 # Protect against DDOS
 apt -y install libapache2-mod-evasive
