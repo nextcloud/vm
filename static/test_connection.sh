@@ -3,7 +3,7 @@
 true
 # shellcheck source=lib.sh
 
-. <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 
 $WGET -q --tries=20 --timeout=10 http://www.google.com -O /tmp/google.idx &> /dev/null
 if [ ! -s /tmp/google.idx ]

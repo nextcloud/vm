@@ -2,7 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 # Collabora auto installer
 
 # Check if root

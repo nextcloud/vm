@@ -4,7 +4,7 @@ true
 # shellcheck source=lib.sh
 
 
-. <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 
 # Tech and Me - www.techandme.se - ©2017
 # Ubuntu 16.04 with php 7

@@ -4,7 +4,7 @@ true
 # shellcheck source=lib.sh
 
 
-. <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 clear
 figlet -f small Nextcloud
 echo "     https://www.nextcloud.com"

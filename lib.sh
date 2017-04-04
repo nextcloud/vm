@@ -1,10 +1,6 @@
 #!/bin/bash
 # shellcheck disable=2034,2059
 true
-# shellcheck source=lib.sh
-
-# shellcheck disable=2034,2059
-true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
 ## functions
