@@ -14,7 +14,7 @@ true
 # 1 = ON
 # 0 = OFF
 DEBUG=0
-debug_mode()
+debug_mode
 
 # Protect against DDOS
 apt -y install libapache2-mod-evasive
