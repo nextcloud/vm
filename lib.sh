@@ -201,6 +201,10 @@ REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis.sock
 RSHUF=$(shuf -i 30-35 -n 1)
 REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
+# Extra security
+SPAMHAUS=/etc/spamhaus.wl
+ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
+APACHE2=/etc/apache2/apache2.conf
 
 ## bash colors
 # Reset
