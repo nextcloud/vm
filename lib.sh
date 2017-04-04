@@ -191,6 +191,11 @@ SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_co
 PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
 PASSVER_FILE=passman_$PASSVER.tar.gz
 SHA256=/tmp/sha256
+# phpMyadmin
+PHPMYADMINDIR=/usr/share/phpmyadmin
+PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
+UPLOADPATH=""
+SAVEPATH=""
 
 ## bash colors
 # Reset
