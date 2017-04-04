@@ -2,19 +2,9 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-
-
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
 # Tech and Me, ©2017 - www.techandme.se
-
-OS=$(grep -ic "Ubuntu" /etc/issue.net)
-PHPMYADMINDIR=/usr/share/phpmyadmin
-WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-PW_FILE=$(cat /var/mysql_password.txt)
-UPLOADPATH=""
-SAVEPATH=""
 
 # Check if root
 if [[ $EUID -ne 0 ]]
