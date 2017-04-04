@@ -11,10 +11,6 @@ true
 # 0 = OFF
 DEBUG=0
 
-export PHPMYADMIN_CONF
-export NCUSER
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
-
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
 then
@@ -660,6 +656,7 @@ bash $SCRIPTS/update.sh
 # Cleanup 2
 apt autoremove -y
 apt autoclean
+CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
 echo "$CLEARBOOT"
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o name '*.tar*' -o name '*.zip*' \) -delete
 clear
