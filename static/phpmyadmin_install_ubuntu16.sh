@@ -32,10 +32,8 @@ fi
 # Check Ubuntu version
 echo
 echo "Checking server OS and version..."
-if [ "$OS" -eq 1 ]
+if [ "$OS" != 1 ]
 then
-    sleep 1
-else
     echo "Ubuntu Server is required to run this script."
     echo "Please install that distro and try again."
     sleep 3
@@ -84,11 +82,11 @@ rm /var/mysql_password.txt
 
 # Secure phpMyadmin
 if [ -f $PHPMYADMIN_CONF ]
-    then
+then
     rm $PHPMYADMIN_CONF
 fi
-    touch "$PHPMYADMIN_CONF"
-    cat << CONF_CREATE > "$PHPMYADMIN_CONF"
+touch "$PHPMYADMIN_CONF"
+cat << CONF_CREATE > "$PHPMYADMIN_CONF"
 # phpMyAdmin default Apache configuration
 
 Alias /phpmyadmin $PHPMYADMINDIR
@@ -183,8 +181,7 @@ cat << CONFIG_CREATE >> "$CONFIG"
 ?>
 CONFIG_CREATE
 
-service apache2 restart
-if [[ ! $? -eq 0 ]]
+if ! service apache2 restart
 then 
     echo "Apache2 could not restart..."
     echo "The script will exit."
@@ -193,5 +190,5 @@ else
     echo
     echo "$PHPMYADMIN_CONF was successfully secured."
     echo
-    sleep 3
+    sleep 1
 fi

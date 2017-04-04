@@ -24,10 +24,8 @@ then
 fi
 
 # Make sure there is an Nextcloud installation
-if [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
+if ! [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
 then
-    sleep 1
-else
     echo "It seems there is no Nextcloud server installed, please check your installation."
     sleep 3
 exit 1
@@ -43,7 +41,7 @@ then
 fi
 
 echo "Starting to setup Solr & Nextant on Nextcloud..."
-sleep 3
+sleep 2
 
 # Installing requirements
 apt update -q2
@@ -74,7 +72,7 @@ iptables -A INPUT -p tcp --dport 8983 -j DROP
 #sudo service iptables-persistent start
 #sudo iptables-save > /etc/iptables.conf
 
-if [[ $(service solr start) -eq 0 ]]
+if service solr start
 then
     sudo -u solr /opt/solr/bin/solr create -c nextant 
 else
@@ -94,11 +92,8 @@ echo "
 
 echo 'SOLR_OPTS="$SOLR_OPTS -Dsolr.allow.unsafe.resourceloading=true"' | sudo tee -a /etc/default/solr.in.sh
 
-service solr restart
-if [ $? -eq 0 ]
+if ! service solr restart
 then
-    sleep 1
-else
     echo "Solr failed to restart, something is wrong with the Solr installation"
     exit 1
 fi
@@ -119,8 +114,7 @@ rm -r "$NT_RELEASE"
 sudo -u www-data php $NCPATH/occ app:enable nextant
 sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant --save
 sudo -u www-data php $NCPATH/occ nextant:index
-
-if [ $? -eq 0 ]
+if [ $? -eq 0 ] # Do a while loop here instad @morph027 that checks each command individually
 then
     echo "Nextant app is now installed and enabled."
     sleep 3

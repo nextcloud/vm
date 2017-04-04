@@ -58,10 +58,7 @@ network_ok() {
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
 then
-    set -e
-    set -x
-else
-    sleep 1
+    set -ex
 fi
 
 # Check if root
@@ -136,10 +133,8 @@ then
 else
     wget -q $STATIC/passman.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/passman.sh ]
+if [ ! -f $SCRIPTS/passman.sh ]
 then
-    sleep 0.1
-else
     echo "passman failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -153,10 +148,8 @@ then
 else
     wget -q $STATIC/nextant.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/nextant.sh ]
+if [ ! -f $SCRIPTS/nextant.sh ]
 then
-    sleep 0.1
-else
     echo "nextant failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again." 
     exit 1
@@ -170,10 +163,8 @@ then
 else
     wget -q $STATIC/collabora.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/collabora.sh ]
+if [ ! -f $SCRIPTS/collabora.sh ]
 then
-    sleep 0.1
-else
     echo "collabora failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -187,10 +178,8 @@ then
 else
     wget -q $STATIC/spreedme.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/spreedme.sh ]
+if [ ! -f $SCRIPTS/spreedme.sh ]
 then
-    sleep 0.1
-else
     echo "spreedme failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -204,10 +193,8 @@ then
 else
     wget -q $STATIC/temporary-fix.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/temporary-fix.sh ]
+if [ ! -f $SCRIPTS/temporary-fix.sh ]
 then
-    sleep 0.1
-else
     echo "temporary-fix failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -221,10 +208,8 @@ then
 else
     wget -q $STATIC/security.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/security.sh ]
+if [ ! -f $SCRIPTS/security.sh ]
 then
-    sleep 0.1
-else
     echo "security failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -238,10 +223,8 @@ then
 else
     wget -q $STATIC/update.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/update.sh ]
+if [ ! -f $SCRIPTS/update.sh ]
 then
-    sleep 0.1
-else
     echo "nextcloud_update failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -255,10 +238,8 @@ then
 else
     wget -q $STATIC/phpmyadmin_install_ubuntu16.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/phpmyadmin_install_ubuntu16.sh ]
+if [ ! -f $SCRIPTS/phpmyadmin_install_ubuntu16.sh ]
 then
-    sleep 0.1
-else
     echo "phpmyadmin_install_ubuntu16 failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -272,10 +253,8 @@ then
 else
     wget -q $STATIC/update-config.php -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/update-config.php ]
+if [ ! -f $SCRIPTS/update-config.php ]
 then
-    sleep 0.1
-else
     echo "update-config failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -289,10 +268,8 @@ then
 else
     wget -q $LETS_ENC/activate-ssl.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/activate-ssl.sh ]
+if [ ! -f $SCRIPTS/activate-ssl.sh ]
 then
-    sleep 0.1
-else
     echo "activate-ssl failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -306,10 +283,8 @@ then
 else
     wget -q $STATIC/trusted.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/trusted.sh ]
+if [ ! -f $SCRIPTS/trusted.sh ]
 then
-    sleep 0.1
-else
     echo "trusted failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -323,10 +298,8 @@ then
 else
     wget -q $STATIC/ip.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/ip.sh ]
+if [ ! -f $SCRIPTS/ip.sh ]
 then
-    sleep 0.1
-else
     echo "ip failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -340,10 +313,8 @@ then
 else
     wget -q $STATIC/test_connection.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/test_connection.sh ]
+if [ ! -f $SCRIPTS/test_connection.sh ]
 then
-    sleep 0.1
-else
     echo "test_connection failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -357,10 +328,8 @@ then
 else
     wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
+if [ ! -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
 then
-    sleep 0.1
-else
     echo "setup_secure_permissions_nextcloud failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -374,10 +343,8 @@ then
 else
     wget -q $STATIC/change_mysql_pass.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/change_mysql_pass.sh ]
+if [ ! -f $SCRIPTS/change_mysql_pass.sh ]
 then
-    sleep 0.1
-else
     echo "change_mysql_pass failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -391,10 +358,8 @@ then
 else
     wget -q $STATIC/nextcloud.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/nextcloud.sh ]
+if [ ! -f $SCRIPTS/nextcloud.sh ]
 then
-    sleep 0.1
-else
     echo "nextcloud failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
@@ -406,6 +371,12 @@ then
     wget -q $GITHUB_REPO/index.php -P $SCRIPTS
 else
     wget -q $GITHUB_REPO/index.php -P $SCRIPTS
+fi
+if [ ! -f $SCRIPTS/index.php ]
+then
+    echo "index.php failed"
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
+    exit 1
 fi
 
 mv $SCRIPTS/index.php $WWW_ROOT/index.php && rm -f $WWW_ROOT/html/index.html
@@ -537,8 +508,8 @@ dpkg-reconfigure openssh-server
 
 # Generate new MySQL password
 echo
-bash "$SCRIPTS/change_mysql_pass.sh" && wait
-if [ $? -eq 0 ]; then
+bash "$SCRIPTS/change_mysql_pass.sh" && wait # is the exit status always 0 on if this is sucessfull?
+if [ $? -eq 0 ]; then # skip this?
   rm "$SCRIPTS/change_mysql_pass.sh"
   {
   echo "[mysqld]"
@@ -556,9 +527,9 @@ echo "Please be patient, it may take a while."
 sudo /etc/init.d/mysql restart & spinner_loading
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
-    mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+    mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" # want to test if this is succesfull
 fi
-if [ $? -eq 0 ]
+if [ $? -eq 0 ] # Skip this?
 then
     sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
     sudo -u www-data $NCPATH/occ maintenance:repair
@@ -706,10 +677,8 @@ service apache reload
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 VALUE="# php_value upload_max_filesize 513M"
-if grep -Fxq "$VALUE" $NCPATH/.htaccess
+if ! grep -Fxq "$VALUE" $NCPATH/.htaccess
 then
-        echo "Value correct"
-else
         sed -i 's/  php_value upload_max_filesize 513M/# php_value upload_max_filesize 513M/g' $NCPATH/.htaccess
         sed -i 's/  php_value post_max_size 513M/# php_value post_max_size 513M/g' $NCPATH/.htaccess
         sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
@@ -725,6 +694,10 @@ rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
+
+rm -f "$SCRIPTS/nextcloud-startup-script.sh"
+find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
+
 
 sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
 

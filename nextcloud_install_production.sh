@@ -47,17 +47,14 @@ NCUSER=ncadmin
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
 then
-    set -e
-    set -x
-else
-    sleep 1
+    set -ex
 fi
 
 # Check if root
 if [[ $EUID -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud_install_production.sh\n"
+    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash %s/nextcloud_install_production.sh\n" "$SCRIPTS"
     echo
     exit 1
 fi
@@ -79,10 +76,8 @@ sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/g
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if [ "$OS" -eq 1 ]
+if [ "$OS" != 1 ]
 then
-    sleep 1
-else
     echo "Ubuntu Server is required to run this script."
     echo "Please install that distro and try again."
     exit 1
@@ -107,10 +102,8 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if key is available
-if wget -q -T 10 -t 2 "$NCREPO" > /dev/null
+if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null
 then
-    echo "Nextcloud repo OK"
-else
     echo "Nextcloud repo is not available, exiting..."
     exit 1
 fi
@@ -135,17 +128,11 @@ then
     exit 1
 fi
 
-if [ "$(dpkg-query -W -f='${Status}' nextcloud 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "Nextcloud is installed, it must be a clean server."
-    exit 1
-fi
+
 
 # Create $SCRIPTS dir
-if [ -d $SCRIPTS ]
+if [ ! -d $SCRIPTS ]
 then
-    sleep 1
-else
     mkdir -p $SCRIPTS
 fi
 
@@ -154,8 +141,6 @@ if ! [ -x "$(command -v resolvconf)" ]
 then
     apt install resolvconf -y -q
     dpkg-reconfigure resolvconf
-else
-    echo 'resolvconf is installed.' >&2
 fi
 
 echo "nameserver 8.8.8.8" > /etc/resolvconf/resolv.conf.d/base
@@ -165,14 +150,10 @@ echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base
 if ! [ -x "$(command -v nslookup)" ]
 then
     apt install dnsutils -y -q
-else
-    echo 'dnsutils is installed.' >&2
 fi
 if ! [ -x "$(command -v ifup)" ]
 then
     apt install ifupdown -y -q
-else
-    echo 'ifupdown is installed.' >&2
 fi
 sudo ifdown "$IFACE" && sudo ifup "$IFACE"
 if ! nslookup google.com
@@ -188,7 +169,7 @@ sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive
 # Check where the best mirrors are and update
 echo
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
-printf "Your current server repository is:  \e[36m$REPO\e[0m\n"
+printf "Your current server repository is:  \e[36m%s\e[0m\n" "$REPO"
 function ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
@@ -372,10 +353,8 @@ sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 1000M|g" /etc/php/7.0/a
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 VALUE="# php_value upload_max_filesize 511M"
-if grep -Fxq "$VALUE" $NCPATH/.htaccess
+if ! grep -Fxq "$VALUE" $NCPATH/.htaccess
 then
-        echo "Value correct"
-else
         sed -i 's/  php_value upload_max_filesize 511M/# php_value upload_max_filesize 511M/g' $NCPATH/.htaccess
         sed -i 's/  php_value post_max_size 511M/# php_value post_max_size 511M/g' $NCPATH/.htaccess
         sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
@@ -385,10 +364,8 @@ fi
 apt install figlet -y
 
 # Generate $HTTP_CONF
-if [ -f $HTTP_CONF ]
-    then
-    echo "Virtual Host exists"
-else
+if [ ! -f $HTTP_CONF ]
+then
     touch "$HTTP_CONF"
     cat << HTTP_CREATE > "$HTTP_CONF"
 <VirtualHost *:80>
@@ -427,10 +404,8 @@ HTTP_CREATE
 fi
 
 # Generate $SSL_CONF
-if [ -f $SSL_CONF ]
-    then
-    echo "Virtual Host exists"
-else
+if [ ! -f $SSL_CONF ]
+then
     touch "$SSL_CONF"
     cat << SSL_CREATE > "$SSL_CONF"
 <VirtualHost *:443>
@@ -509,10 +484,8 @@ sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --va
 
 install_calendar() {
 # Download and install Calendar
-if [ -d $NCPATH/apps/calendar ]
+if [ ! -d $NCPATH/apps/calendar ]
 then
-    sleep 1
-else
     wget -q "$CALVER_REPO/v$CALVER/$CALVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$CALVER_FILE" -C "$NCPATH/apps"
     cd "$NCPATH/apps"
@@ -529,10 +502,8 @@ fi
 
 install_contacts() {
 # Download and install Contacts
-if [ -d "$NCPATH/apps/contacts" ]
+if [ ! -d "$NCPATH/apps/contacts" ]
 then
-    sleep 1
-else
     wget -q "$CONVER_REPO/v$CONVER/$CONVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$CONVER_FILE" -C "$NCPATH/apps"
     cd "$NCPATH/apps"
@@ -581,72 +552,60 @@ done 9< results
 rm -f results
 
 # Change roots .bash_profile
-if [ -f $SCRIPTS/change-root-profile.sh ]
+if [ ! -f $SCRIPTS/change-root-profile.sh ]
 then
-    echo "change-root-profile.sh exists"
-else
     wget -q $STATIC/change-root-profile.sh -P $SCRIPTS
 fi
 
 # Change $UNIXUSER .bash_profile
-if [ -f $SCRIPTS/change-ncadmin-profile.sh ]
+if [ ! -f $SCRIPTS/change-ncadmin-profile.sh ]
 then
-    echo "change-ncadmin-profile.sh  exists"
-else
     wget -q $STATIC/change-ncadmin-profile.sh -P $SCRIPTS
 fi
 
 # Welcome message after login (change in $HOME/.profile
-if [ -f $SCRIPTS/instruction.sh ]
+if [ ! -f $SCRIPTS/instruction.sh ]
 then
-    echo "instruction.sh exists"
-else
     wget -q $STATIC/instruction.sh -P $SCRIPTS
 fi
 
 # Get nextcloud-startup-script.sh
-if [ -f $SCRIPTS/nextcloud-startup-script.sh ]
+if [ ! -f $SCRIPTS/nextcloud-startup-script.sh ]
 then
-    echo "nextcloud-startup-script.sh exists"
-else
     wget -q $GITHUB_REPO/nextcloud-startup-script.sh -P $SCRIPTS
 fi
 
 # Clears command history on every login
-if [ -f $SCRIPTS/history.sh ]
+if [ ! -f $SCRIPTS/history.sh ]
 then
-    echo "history.sh exists"
-else
     wget -q $STATIC/history.sh -P $SCRIPTS
 fi
 
 # Change root profile
 if bash $SCRIPTS/change-root-profile.sh
 then
-    echo "change-root-profile.sh were not executed correctly."
-    sleep 10
-else
-    echo "change-root-profile.sh script executed OK."
+    echo "change-root-profile.sh executed OK."
     rm $SCRIPTS/change-root-profile.sh
     sleep 2
+else    
+    echo "change-root-profile.sh were not executed correctly."
+    sleep 10
 fi
 
 # Change $UNIXUSER profile
 if bash $SCRIPTS/change-ncadmin-profile.sh
 then
-    echo "change-ncadmin-profile.sh were not executed correctly."
-    sleep 10
-else
     echo "change-ncadmin-profile.sh executed OK."
     rm $SCRIPTS/change-ncadmin-profile.sh
     sleep 2
+else    
+    echo "change-ncadmin-profile.sh were not executed correctly."
+    sleep 10
 fi
 
 # Get script for Redis
-if [ -f $SCRIPTS/redis-server-ubuntu16.sh ]
+if [ ! -f $SCRIPTS/redis-server-ubuntu16.sh ]
 then
-    echo "redis-server-ubuntu16.sh exists"
-else
     wget -q $STATIC/redis-server-ubuntu16.sh -P $SCRIPTS
 fi
 
@@ -665,7 +624,7 @@ rm $SCRIPTS/redis-server-ubuntu16.sh
 
 # Upgrade
 apt update -q2
-apt full-upgrade -y
+apt dist-upgrade -y
 
 # Remove LXD (always shows up as failed during boot)
 apt purge lxd -y
@@ -675,7 +634,7 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e ''"$(uname -r 
 echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
-find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o name '*.tar*' -o name '*.zip*' \) -delete
+find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
 # Install virtual kernels
 apt install linux-tools-virtual-hwe-16.04 linux-cloud-tools-virtual-hwe-16.04  -y

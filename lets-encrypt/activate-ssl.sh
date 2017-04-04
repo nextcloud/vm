@@ -121,7 +121,6 @@ apt update -q2
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "nmap is already installed..."
-    clear
 else
     apt install nmap -y
 fi
@@ -190,20 +189,21 @@ fi
 #Fix issue #28
 ssl_conf="/etc/apache2/sites-available/"$domain.conf""
 
+# DHPARAM
+DHPARAMS="$certfiles/$domain/dhparam.pem"
+
 # Check if "$ssl.conf" exists, and if, then delete
 if [ -f "$ssl_conf" ]
 then
-    rm "$ssl_conf"
+    rm -f "$ssl_conf"
 fi
 
 # Generate nextcloud_ssl_domain.conf
-if [ -f "$ssl_conf" ]
+if [ ! -f "$ssl_conf" ]
 then
-    echo "Virtual Host exists"
-else
     touch "$ssl_conf"
     echo "$ssl_conf was successfully created"
-    sleep 3
+    sleep 2
     cat << SSL_CREATE > "$ssl_conf"
 <VirtualHost *:80>
     ServerName $domain
@@ -214,6 +214,8 @@ else
 
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
+    SSLCompression off
+    SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:ECDHE-RSA-AES128-SHA:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4
 
 ### YOUR SERVER ADDRESS ###
 
@@ -244,95 +246,52 @@ else
     SSLCertificateChainFile $certfiles/$domain/chain.pem
     SSLCertificateFile $certfiles/$domain/cert.pem
     SSLCertificateKeyFile $certfiles/$domain/privkey.pem
+    SSLOpenSSLConfCmd DHParameters $DHPARAMS
 
 </VirtualHost>
 SSL_CREATE
 fi
 
-##### START FIRST TRY
+NR_OF_ATTEMPTS=4
+ATTEMPT=1
+while [ ! "$ATTEMPT" -eq "$NR_OF_ATTEMPTS" ]
+do
+    # Stop Apache to aviod port conflicts
+    a2dissite 000-default.conf
+    sudo service apache2 stop
+    # Generate certs
+    letsencrypt certonly \
+    --standalone \
+    --rsa-key-size 4096 \
+    --renew-by-default \
+    --agree-tos \
+    -d "$domain"
 
-# Stop Apache to aviod port conflicts
-a2dissite 000-default.conf
-sudo service apache2 stop
-# Generate certs
-letsencrypt certonly \
---standalone \
---rsa-key-size 4096 \
---renew-by-default \
---agree-tos \
--d "$domain"
+    # Activate Apache again (Disabled during standalone)
+    service apache2 start
+    a2ensite 000-default.conf
+    service apache2 reload
 
-# Activate Apache again (Disabled during standalone)
-service apache2 start
-a2ensite 000-default.conf
-service apache2 reload
-# Check if $certfiles exists
-if [ -d "$certfiles" ]
-then
-    # Activate new config
-    bash $SCRIPTS/test-new-config.sh "$domain.conf"
-    exit 0
-else
-    printf "\e[96m"
-    printf "It seems like no certs were generated, we do three more tries."
-    read -p $'\n\e\[32mPress any key to continue...\e[0m\n' -n1 -s
-fi
-##### START SECOND TRY
-# Generate certs
-letsencrypt \
---rsa-key-size 4096 \
---renew-by-default \
---agree-tos \
--d "$domain"
-# Check if $certfiles exists
-if [ -d "$certfiles" ]
-then
-    # Activate new config
-    bash $SCRIPTS/test-new-config.sh "$domain.conf"
-    exit 0
-else
-    printf "\e[96m"
-    printf "It seems like no certs were generated, we do two more tries."
-    read -p $'\n\e\[32mPress any key to continue...\e[0m\n' -n1 -s
-fi
-##### START THIRD TRY
-letsencrypt certonly \
---webroot --w "$NCPATH" \
---rsa-key-size 4096 \
---renew-by-default \
---agree-tos \
--d "$domain"
+    # Check if $certfiles exists
+    if [ -d "$certfiles" ]
+    then
+        # Generate DHparams chifer
+        if [ ! -f "$DHPARAMS" ]
+        then
+            openssl dhparam -dsaparam -out "$DHPARAMS" 8192
+        fi
+        # Activate new config
+        bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
+        exit 0
+    else
+        printf "\e[96mIt seems like no certs were generated, we do %s more tries." "$((NR_OF_ATTEMPTS-ATTEMPT))"
+        read -p $'\n\e[32mPress any key to continue...\e[0m\n' -n1 -s
+        ((ATTEMPT++))
+    fi
+done
 
-# Check if $certfiles exists
-if [ -d "$certfiles" ]
-then
-    # Activate new config
-    bash $SCRIPTS/test-new-config.sh "$domain.conf"
-    exit 0
-else
-    printf "\e[96m"
-    printf "It seems like no certs were generated, we do one more try."
-    read -p $'\n\e\[32mPress any key to continue...\e[0m\n' -n1 -s
-fi
-#### START FORTH TRY
-# Generate certs
-letsencrypt \
---apache
---rsa-key-size 4096 \
---renew-by-default \
---agree-tos \
--d "$domain"
-
-# Check if $certfiles exists
-if [ -d "$certfiles" ]
-then
-# Activate new config
-    bash $SCRIPTS/test-new-config.sh "$domain.conf"
-    exit 0
-else
-    printf "\e[96m"
-    printf "Sorry, last try failed as well. :/ "
-    cat << ENDMSG
+printf "\e[96mSorry, last try failed as well. :/ "
+cat << ENDMSG
 +------------------------------------------------------------------------+
 | The script is located in $SCRIPTS/activate-ssl.sh                  |
 | Please try to run it again some other time with other settings.        |
@@ -347,10 +306,9 @@ else
 | The script will now do some cleanup and revert the settings.           |
 +------------------------------------------------------------------------+
 ENDMSG
-    read -p "Press any key to revert settings and exit... " -n1 -s
+read -p "Press any key to revert settings and exit... " -n1 -s
 
-    # Cleanup
-    apt remove letsencrypt -y
-    apt autoremove -y
-fi
+# Cleanup
+apt remove letsencrypt -y
+apt autoremove -y
 clear

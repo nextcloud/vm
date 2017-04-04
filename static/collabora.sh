@@ -18,9 +18,11 @@ SUBDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subd
 NCDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Vhost
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
+export HTTPS_CONF
 # Letsencrypt
 LETSENCRYPTPATH=/etc/letsencrypt
 CERTFILES=$LETSENCRYPTPATH/live
+DHPARAMS=""$CERTFILES"/"$SUBDOMAIN"/dhparam.pem"
 # WANIP
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 # App
@@ -52,14 +54,11 @@ apt update -q2
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
-curl -s https://${$NCDOMAIN//\\/}/status.php | grep -q 'installed":true'
-if [ $? -eq 0 ]
+if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
-    sleep 1
-else
     echo
     echo "It seems like Nextcloud is not installed or that you don't use https on:"
-    echo "${$NCDOMAIN//\\/}."
+    echo "${NCDOMAIN//\\/}."
     echo "Please install Nextcloud and make sure your domain is reachable, or activate SSL"
     echo "on your domain to be able to run this script."
     echo
@@ -82,14 +81,14 @@ elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$SUBDOMAIN"; th
    sleep 1
 elif curl -s -k -m 10 "$SUBDOMAIN"; then
    sleep 1
-elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null ; then
+elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null; then
    sleep 1
 else
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
    echo "it to this server before you can run this script."
    printf "\e[32m\n"
    read -p "Press any key to continue... " -n1 -s
-   printf "\e[0m\"
+   printf "\e[0m\n"
    exit 1
 fi
 
@@ -99,31 +98,30 @@ apt update -q2
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
       echo "nmap is already installed..."
-      clear
 else
     apt install nmap -y
 fi
 if [ "$(nmap -sS -p 443 "$WANIP4" | grep -c "open")" == "1" ]
 then
-  printf "\e[32mPort 443 is open on $WANIP4!\e[0mn\"
+  printf "\e[32mPort 443 is open on $WANIP4!\e[0m\n"
   apt remove --purge nmap -y
 else
   echo "Port 443 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
   printf "\e[32m\n"
   read -p "Press any key to test $SUBDOMAIN... " -n1 -s
   printf "\e[0m\n"
-  if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
-  then
-    printf "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m\n"
-    apt remove --purge nmap -y
-  else
-    whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
-    printf "\e[32m\n"
-    read -p "Press any key to exit... " -n1 -s
-    printf "\e[0m\n"
-    apt remove --purge nmap -y
-    exit 1
-  fi
+      if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
+      then
+          printf "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m\n"
+          apt remove --purge nmap -y
+      else
+          whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+          printf "\e[32m\n"
+          read -p "Press any key to exit... " -n1 -s
+          printf "\e[0m\n"
+          apt remove --purge nmap -y
+          exit 1
+      fi
 fi
 
 # Install Docker
@@ -152,32 +150,27 @@ fi
 apt-get install linux-image-extra-"$(uname -r)" -y
 # apt install aufs-tools -y # already included in the docker-ce package
 AUFS=$(grep -r "aufs" /etc/modules)
-if [[ $AUFS = "aufs" ]]
+if ! [ "$AUFS" = "aufs" ]
 then
-    sleep 1
-else
     echo "aufs" >> /etc/modules
 fi
 
 # Set docker storage driver to AUFS
 AUFS2=$(grep -r "aufs" /etc/default/docker)
-if [[ $AUFS2 = 'DOCKER_OPTS="--storage-driver=aufs"' ]]
+if ! [ "$AUFS2" = 'DOCKER_OPTS="--storage-driver=aufs"' ]
 then
-    sleep 1
-else
     echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
     service docker restart
 fi
 
 # Check of docker runs and kill it
-if docker ps -a -q
+DOCKERPS=$(docker ps -a -q)
+if [ "$DOCKERPS" != "" ]
 then
     echo "Removing old Docker instance(s)... ($DOCKERPS)"
     read -p $'\n\e[32mPress any key to continue. Press CTRL+C to abort.\e[0m\n' -n1 -s
     docker stop "$DOCKERPS"
     docker rm "$DOCKERPS"
-else
-    echo "No Docker instanses running"
 fi
 
 # Disable RichDocuments (Collabora App) if activated
@@ -213,10 +206,8 @@ a2enmod proxy_http
 a2enmod ssl
 
 # Create Vhost for Collabora online in Apache2
-if [ -f "$HTTPS_CONF" ];
+if [ ! -f "$HTTPS_CONF" ];
 then
-    echo "Virtual Host exists"
-else
     cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
   ServerName $SUBDOMAIN:443
@@ -226,9 +217,11 @@ else
   SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
   SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
   SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
+  SSLOpenSSLConfCmd DHParameters $DHPARAMS
   SSLProtocol             all -SSLv2 -SSLv3
   SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
   SSLHonorCipherOrder     on
+  SSLCompression off
 
   # Encoded slashes need to be allowed
   AllowEncodedSlashes NoDecode
@@ -285,6 +278,8 @@ else
     add-apt-repository ppa:certbot/certbot -y
     apt update -q2
     apt install letsencrypt -y -q
+    apt update -q2
+    apt dist-upgrade -y
 fi
 
 # Stop Apache to aviod port conflicts
@@ -292,9 +287,13 @@ a2dissite 000-default.conf
 sudo service apache2 stop
 
 # Generate certs
-letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
-if [[ "$?" == "0" ]]
+if letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
 then
+    # Generate DHparams chifer
+    if [ ! -f $DHPARAMS ]
+    then
+        openssl dhparam -dsaparam -out $DHPARAMS 8192
+    fi
     printf "\e[96m\n"
     printf "Certs are generated!\n"
     printf "\e[0m\n"

@@ -23,9 +23,11 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Versions
 CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s -m 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
+NCMAJOR="${NCVERSION%%.*}"
+NCBAD=$((NCMAJOR-2))
 
 # Must be root
-[[ $EUID -ne 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+[[ $EUID -ne 0 ]] && { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
 # System Upgrade
 apt update
@@ -34,10 +36,8 @@ rm /var/lib/apt/lists/* -R
 
 # Set secure permissions
 FILE="$SECURE"
-if [ -f $FILE ]
+if [ ! -f $FILE ]
 then
-    echo "Script exists"
-else
     mkdir -p $SCRIPTS
     wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
     chmod +x $SECURE
@@ -51,25 +51,30 @@ if [ $? -eq 0 ]; then
     rm -f "nextcloud-$NCVERSION.tar.bz2"
 else
     echo
-    printf "\e[91mNextcloud $NCVERSION doesn't exist.\e[0m\n"
+    printf "\e[91mNextcloud %s doesn't exist.\e[0m\n" "$NCVERSION"
     echo "Please check available versions here: $NCREPO"
     echo
     exit 1
 fi
 
 # Major versions unsupported
-echo
-echo "Please note that updates between multiple major versions are unsupported, for example:"
-echo "Original version: 9.0.54"
-echo "Upgraded version: 11.0.0"
-echo
-echo "It is best to keep your Nextcloud server upgraded regularly, and to install all point releases"
-echo "and major releases without skipping any of them, as skipping releases increases the risk of"
-echo "errors. Major releases are 9, 10, and 11. Point releases are intermediate releases for each"
-echo "major release. For example, 9.0.52 and 10.0.2 are point releases." 
-echo
-echo "Checking versions in 20 seconds.."
-sleep 20
+if [ "${CURRENTVERSION%%.*}" == "$NCBAD" ]
+then
+    echo
+    echo "Please note that updates between multiple major versions are unsupported! Your situation is:"
+    echo "Current version: $CURRENTVERSION"
+    echo "Upgraded version: $NCVERSION"
+    echo
+    echo "It is best to keep your Nextcloud server upgraded regularly, and to install all point releases"
+    echo "and major releases without skipping any of them, as skipping releases increases the risk of"
+    echo "errors. Major releases are 9, 10, 11 and 12. Point releases are intermediate releases for each"
+    echo "major release. For example, 9.0.52 and 10.0.2 are point releases."
+    echo
+    echo "Please contact Tech and Me to help you with upgrading between major versions."
+    echo "https://shop.techandme.se/index.php/product-category/support/"
+    echo
+    exit 1
+fi
 
 # Check if new version is larger than current version installed.
 function version_gt() { local v1 v2 IFS=.; read -ra v1 <<< "$1"; read -ra v2 <<< "$2"; printf -v v1 %03d "${v1[@]}"; printf -v v2 %03d "${v2[@]}"; [[ $v1 > $v2 ]]; }
@@ -96,18 +101,26 @@ then
     rm -R $BACKUP
     mkdir -p $BACKUP
 fi
-rsync -Aax $NCPATH/config $BACKUP
-rsync -Aax $NCPATH/themes $BACKUP
-rsync -Aax $NCPATH/apps $BACKUP
-if [[ ! $? -eq 0 ]]
+
+for PATH in config themes apps
+do
+    rsync -Aax "$NCPATH/$PATH" "$BACKUP"
+    if [ $? -eq 0 ]
+    then
+        BACKUP_OK=1
+    else
+        unset BACKUP_OK
+    fi
+done
+
+if [ -z $BACKUP_OK ]
 then
     echo "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
 else
-    printf "\e[32m\n"
-    echo "Backup OK!"
-    printf "\e[0m\n"
+    printf "\e[32m\nBackup OK!\e[0m\n"
 fi
+
 echo "Downloading $NCREPO/nextcloud-$NCVERSION.tar.bz2..."
 wget -q -T 10 -t 2 "$NCREPO/nextcloud-$NCVERSION.tar.bz2" -P "$HTML"
 
@@ -162,8 +175,6 @@ then
     bash $SCRIPTS/spreedme.sh
     rm $SCRIPTS/spreedme.*
     sudo -u www-data php $NCPATH/occ app:enable spreedme
-else
-    sleep 1
 fi
 
 # Recover apps that exists in the backed up apps folder
@@ -189,10 +200,8 @@ fi
 
 # Set $THEME_NAME
 VALUE2="$THEME_NAME"
-if grep -Fxq "$VALUE2" "$NCPATH/config/config.php"
+if ! grep -Fxq "$VALUE2" "$NCPATH/config/config.php"
 then
-    echo "Theme correct"
-else
     sed -i "s|'theme' => '',|'theme' => '$THEME_NAME',|g" $NCPATH/config/config.php
     echo "Theme set"
 fi
