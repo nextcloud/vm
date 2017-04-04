@@ -32,7 +32,7 @@ fi
 # Check if root
 if [[ $EUID -ne 0 ]]
 then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash "$SCRIPTS"/nextcloud-startup-script.sh\n"
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/nextcloud-startup-script.sh\n"
     exit 1
 fi
 
@@ -102,7 +102,7 @@ fi
 if [ ! -f "$SCRIPTS"/passman.sh ]
 then
     echo "passman failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -117,7 +117,7 @@ fi
 if [ ! -f "$SCRIPTS"/nextant.sh ]
 then
     echo "nextant failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again." 
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again." 
     exit 1
 fi
 
@@ -132,7 +132,7 @@ fi
 if [ ! -f "$SCRIPTS"/collabora.sh ]
 then
     echo "collabora failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -147,7 +147,7 @@ fi
 if [ ! -f "$SCRIPTS"/spreedme.sh ]
 then
     echo "spreedme failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -162,7 +162,7 @@ fi
 if [ ! -f "$SCRIPTS"/temporary-fix.sh ]
 then
     echo "temporary-fix failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -177,7 +177,7 @@ fi
 if [ ! -f "$SCRIPTS"/security.sh ]
 then
     echo "security failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -192,7 +192,7 @@ fi
 if [ ! -f "$SCRIPTS"/update.sh ]
 then
     echo "nextcloud_update failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -207,7 +207,7 @@ fi
 if [ ! -f "$SCRIPTS"/phpmyadmin_install_ubuntu16.sh ]
 then
     echo "phpmyadmin_install_ubuntu16 failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -222,7 +222,7 @@ fi
 if [ ! -f "$SCRIPTS"/update-config.php ]
 then
     echo "update-config failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -237,7 +237,7 @@ fi
 if [ ! -f "$SCRIPTS"/activate-ssl.sh ]
 then
     echo "activate-ssl failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -252,7 +252,7 @@ fi
 if [ ! -f "$SCRIPTS"/trusted.sh ]
 then
     echo "trusted failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -267,7 +267,7 @@ fi
 if [ ! -f "$SCRIPTS"/ip.sh ]
 then
     echo "ip failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -282,7 +282,7 @@ fi
 if [ ! -f "$SCRIPTS"/test_connection.sh ]
 then
     echo "test_connection failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -297,7 +297,7 @@ fi
 if [ ! -f "$SCRIPTS"/setup_secure_permissions_nextcloud.sh ]
 then
     echo "setup_secure_permissions_nextcloud failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -312,7 +312,7 @@ fi
 if [ ! -f "$SCRIPTS"/change_mysql_pass.sh ]
 then
     echo "change_mysql_pass failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -327,7 +327,7 @@ fi
 if [ ! -f "$SCRIPTS"/nextcloud.sh ]
 then
     echo "nextcloud failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 # Get the Welcome Screen when http://$address
@@ -341,7 +341,7 @@ fi
 if [ ! -f "$SCRIPTS"/index.php ]
 then
     echo "index.php failed"
-    echo "Script failed to download. Please run: 'sudo bash "$SCRIPTS"/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -416,7 +416,7 @@ then
     echo "Testing if network is OK..."
     sleep 1
     echo
-    CONTEST=$(bash "$SCRIPTS"/test_connection.sh)
+    CONTEST=$(bash $SCRIPTS/test_connection.sh)
     if [ "$CONTEST" == "Connected!" ]
     then
         # Connected!
@@ -464,7 +464,7 @@ echo "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
 sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
-bash "$SCRIPTS"/setup_secure_permissions_nextcloud.sh
+bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Generate new SSH Keys
 printf "\nGenerating new SSH keys for the server...\n"
@@ -503,7 +503,7 @@ fi
 
 # Install phpMyadmin
 echo
-bash "$SCRIPTS"/phpmyadmin_install_ubuntu16.sh
+bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
 rm "$SCRIPTS"/phpmyadmin_install_ubuntu16.sh
 clear
 
@@ -517,10 +517,10 @@ LETSENC
 # Let's Encrypt
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
-    bash "$SCRIPTS"/activate-ssl.sh
+    bash $SCRIPTS/activate-ssl.sh
 else
     echo
-    echo "OK, but if you want to run it later, just type: sudo bash "$SCRIPTS"/activate-ssl.sh"
+    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     any_key "Press any key to continue..."
 fi
 clear
@@ -560,11 +560,11 @@ clear
 # Add extra security
 if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
 then
-    bash "$SCRIPTS"/security.sh
+    bash $SCRIPTS/security.sh
     rm "$SCRIPTS"/security.sh
 else
     echo
-    echo "OK, but if you want to run it later, just type: sudo bash "$SCRIPTS"/security.sh"
+    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
     any_key "Press any key to continue..."
 fi
 clear
@@ -614,7 +614,7 @@ then
 fi
 
 # Add temporary fix if needed
-bash "$SCRIPTS"/temporary-fix.sh
+bash $SCRIPTS/temporary-fix.sh
 rm "$SCRIPTS"/temporary-fix.sh
 
 # Cleanup 1
@@ -662,7 +662,7 @@ RCLOCAL
 echo "System will now upgrade..."
 sleep 2
 echo
-bash "$SCRIPTS"/update.sh
+bash $SCRIPTS/update.sh
 
 # Cleanup 2
 apt autoremove -y
@@ -705,12 +705,12 @@ if [ -f "$SCRIPTS"/trusted.sh ]
 then
     rm "$SCRIPTS"/trusted.sh
     wget -q "$STATIC"/trusted.sh -P "$SCRIPTS"
-    bash "$SCRIPTS"/trusted.sh
+    bash $SCRIPTS/trusted.sh
     rm "$SCRIPTS"/update-config.php
     rm "$SCRIPTS"/trusted.sh
 else
     wget -q "$STATIC"/trusted.sh -P "$SCRIPTS"
-    bash "$SCRIPTS"/trusted.sh
+    bash $SCRIPTS/trusted.sh
     rm "$SCRIPTS"/trusted.sh
     rm "$SCRIPTS"/update-config.php
 fi
