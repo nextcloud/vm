@@ -13,8 +13,6 @@ true
 DEBUG=0
 debug_mode
 
-certfiles=/etc/letsencrypt/live
-
 # Check if root
 if ! is_root
 then
