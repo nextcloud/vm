@@ -11,15 +11,15 @@ cat <<-IPCONFIG > "$INTERFACES"
 source /etc/network/interfaces.d/*
 
 # The loopback network interface
-auto lo $IFACE
+auto lo $IFACE2
 iface lo inet loopback
 
 # The primary network interface
 iface $IFACE inet static
-pre-up /sbin/ethtool -K $IFACE tso off
-pre-up /sbin/ethtool -K $IFACE gso off
+pre-up /sbin/ethtool -K $IFACE2 tso off
+pre-up /sbin/ethtool -K $IFACE2 gso off
 # Fixes https://github.com/nextcloud/vm/issues/92:
-pre-up ip link set dev $IFACE mtu 1430
+pre-up ip link set dev $IFACE2 mtu 1430
 
 # Best practice is to change the static address
 # to something outside your DHCP range.
@@ -28,7 +28,7 @@ netmask $NETMASK
 gateway $GATEWAY
 
 # This is an autoconfigured IPv6 interface
-# iface $IFACE inet6 auto
+# iface $IFACE2 inet6 auto
 
 # Exit and save:	[CTRL+X] + [Y] + [ENTER]
 # Exit without saving:	[CTRL+X]
