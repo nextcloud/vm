@@ -127,6 +127,7 @@ LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
 NCPASS=nextcloud
 NCUSER=ncadmin
 UNIXUSER=$SUDO_USER
+UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 # Passwords
 SHUF=$(shuf -i 13-15 -n 1)
 MYSQL_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
