@@ -15,7 +15,7 @@ SAVEPATH=""
 if [[ $EUID -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
     echo # remove echo here and do \n instead there are more places like this iirc
     sleep 3
     exit 1

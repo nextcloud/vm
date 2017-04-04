@@ -54,7 +54,7 @@ fi
 if [[ $EUID -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash %s/nextcloud_install_production.sh\n" "$SCRIPTS"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/nextcloud_install_production.sh\n" "$SCRIPTS"
     echo
     exit 1
 fi
@@ -158,7 +158,7 @@ sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive
 # Check where the best mirrors are and update
 echo
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
-printf "Your current server repository is:  \e[36m%s\e[0m\n" "$REPO"
+printf "Your current server repository is:  ${Cyan}%s${Color_Off}\n" "$REPO"
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
 echo "Keeping $REPO as mirror..."

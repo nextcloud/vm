@@ -47,11 +47,11 @@ fi
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
 wget -q -T 10 -t 2 "$NCREPO/nextcloud-$NCVERSION.tar.bz2" -O /dev/null
 if [ $? -eq 0 ]; then
-    printf "\e[32mSUCCESS!\e[0m\n"
+    printf "${Green}SUCCESS!${Color_Off}\n"
     rm -f "nextcloud-$NCVERSION.tar.bz2"
 else
     echo
-    printf "\e[91mNextcloud %s doesn't exist.\e[0m\n" "$NCVERSION"
+    printf "\e[91mNextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
     echo "Please check available versions here: $NCREPO"
     echo
     exit 1
@@ -80,7 +80,7 @@ fi
 if version_gt "$NCVERSION" "$CURRENTVERSION"
 then
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
-    printf "\e[32mNew version available! Upgrade continues...\e[0m\n"
+    printf "${Green}New version available! Upgrade continues...${Color_Off}\n"
 else
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo "No need to upgrade, this script will exit..."
@@ -117,7 +117,7 @@ then
     echo "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
 else
-    printf "\e[32m\nBackup OK!\e[0m\n"
+    printf "${Green}\nBackup OK!${Color_Off}\n"
 fi
 
 echo "Downloading $NCREPO/nextcloud-$NCVERSION.tar.bz2..."
@@ -151,7 +151,7 @@ if [ -d $BACKUP/themes/ ]
 then
     echo "$BACKUP/themes/ exists"
     echo 
-    printf "\e[32mAll files are backed up.\e[0m\n"
+    printf "${Green}All files are backed up.${Color_Off}\n"
     sudo -u www-data php $NCPATH/occ maintenance:mode --on
     echo "Removing old Nextcloud instance in 5 seconds..." && sleep 5
     rm -rf $NCPATH

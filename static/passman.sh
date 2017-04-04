@@ -13,7 +13,7 @@ SHA256=/tmp/sha256
 if [[ $EUID -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/passman.sh\n"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/passman.sh\n"
     echo
     exit 1
 fi
@@ -26,9 +26,9 @@ then
 else
     echo "Failed! Download is not available at the moment, try again later."
     echo "Please report this issue here: https://github.com/nextcloud/passman/issues/new"
-    printf "\e[32m\n"
+    printf "${Green}\n"
     read -p "Press any key to continue..." -n1 -s
-    printf "\e[0m\n"
+    printf "${Color_Off}\n"
 
     exit 1
 fi
@@ -67,8 +67,8 @@ then
 else
     echo "Something went wrong with the installation, Passman couln't be activated..."
     echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
-    printf "\e[32m\n"
+    printf "${Green}\n"
     read -p "Press any key to continue..." -n1 -s
-    printf "\e[0m\n"
+    printf "${Color_Off}\n"
     exit 1
 fi

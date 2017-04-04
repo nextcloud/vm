@@ -52,9 +52,9 @@ then
     sleep 5
     exit 1
 else
-    printf "\e[32m\n"
+    printf "${Green}\n"
     echo "PHP module installation OK!"
-    printf "\e[0m\n"
+    printf "${Color_Off}\n"
 fi
 # Set globally doesn't work for some reason
 # touch /etc/php/7.0/mods-available/redis.ini
@@ -72,9 +72,9 @@ then
     sleep 5
     exit 1
 else
-    printf "\e[32m\n"
+    printf "${Green}\n"
     echo "Redis installation OK!"
-    printf "\e[0m\n"
+    printf "${Color_Off}\n"
 fi
 
 # Prepare for adding redis configuration

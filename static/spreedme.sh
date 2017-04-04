@@ -26,7 +26,7 @@ fi
 if [[ "$EUID" -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash %s/nextcloud_install_production.sh" "$SCRIPTS"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/nextcloud_install_production.sh" "$SCRIPTS"
     echo
     exit 1
 fi
@@ -145,5 +145,5 @@ else
     echo
     exit 0
 fi
-read -p $'\n\e[32mPress any key to continue...\e[0m\n' -n1 -s
+read -p $'\n${Green}Press any key to continue...${Color_Off}\n' -n1 -s
 clear
