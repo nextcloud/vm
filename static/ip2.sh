@@ -1,12 +1,11 @@
 #!/bin/sh
 
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
+
 # This file is only used if IFACE fail in the startup-script
-
-IFCONFIG="/sbin/ifconfig"
-INTERFACES="/etc/network/interfaces"
-
-NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
-GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 
 cat <<-IPCONFIG > "$INTERFACES"
 source /etc/network/interfaces.d/*
