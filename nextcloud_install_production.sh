@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me, ©2017 - www.techandme.se
 #
 # This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apache 2.4.
@@ -11,9 +13,7 @@
 DEBUG=0
 
 # Repositories
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-NCREPO="https://download.nextcloud.com/server/releases/"
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud version
 NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
@@ -25,9 +25,6 @@ SHUF=$(shuf -i 13-15 -n 1)
 MYSQL_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 PW_FILE=/var/mysql_password.txt
 # Directories
-SCRIPTS=/var/scripts
-HTML=/var/www
-NCPATH=$HTML/nextcloud
 GPGDIR=/tmp/gpg
 NCDATA=/var/ncdata
 
@@ -35,12 +32,9 @@ NCDATA=/var/ncdata
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Network
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 export ADDRESS
 
 # Linux user, and Nextcloud user
-UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
 
@@ -54,7 +48,7 @@ fi
 if [[ $EUID -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash %s/nextcloud_install_production.sh\n" "$SCRIPTS"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/nextcloud_install_production.sh\n" "$SCRIPTS"
     echo
     exit 1
 fi
@@ -83,7 +77,6 @@ then
     exit 1
 fi
 
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
@@ -157,8 +150,7 @@ sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive
 
 # Check where the best mirrors are and update
 echo
-REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
-printf "Your current server repository is:  \e[36m%s\e[0m\n" "$REPO"
+printf "Your current server repository is:  ${Cyan}%s${Color_Off}\n" "$REPO"
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
 echo "Keeping $REPO as mirror..."
@@ -449,10 +441,8 @@ sudo apt install --no-install-recommends libreoffice-writer -y
 # Nextcloud apps
 CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
 CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CALVER_FILE=calendar.tar.gz
-CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 
 sudo -u www-data php $NCPATH/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 

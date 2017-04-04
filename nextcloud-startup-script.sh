@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me - ©2017, https://www.techandme.se/
 
 # Check for errors + debug code and abort if something isn't right
@@ -8,17 +10,12 @@
 DEBUG=0
 
 WWW_ROOT=/var/www
-NCPATH=$WWW_ROOT/nextcloud
 NCDATA=/var/ncdata
-SCRIPTS=/var/scripts
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 export PHPMYADMIN_CONF
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
-UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
 export NCUSER
@@ -32,14 +29,14 @@ fi
 # Check if root
 if [[ $EUID -ne 0 ]]
 then
-    printf "\n\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud-startup-script.sh\n"
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/nextcloud-startup-script.sh\n"
     exit 1
 fi
 
 # Check network
 if network_ok
 then
-    printf "\e[32mOnline!\e[0m\n"
+    printf "${Green}Online!${Color_Off}\n"
 else
     echo "Setting correct interface..."
     # Set correct interface
@@ -54,7 +51,7 @@ fi
 # Check network
 if network_ok
 then
-    printf "\e[32mOnline!\e[0m\n"
+    printf "${Green}Online!${Color_Off}\n"
 else
     printf "\nNetwork NOT OK. You must have a working Network connection to run this script.\n"
     echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
@@ -66,8 +63,7 @@ printf "\nTo make downloads as fast as possible when updating you should have mi
 echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
 echo "We recomend you to change the mirrors based on where this is currently installed."
 echo "Checking current mirror..."
-REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
-printf "Your current server repository is:  \e[36m$REPO\e[0m\n"
+printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
 
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
@@ -88,7 +84,6 @@ else
     fi
 fi
 
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
@@ -385,19 +380,19 @@ echo "|   depending on your internet connection.                           |"
 echo "|                                                                    |"
 echo "| ####################### Tech and Me - 2017 ####################### |"
 echo "+--------------------------------------------------------------------+"
-read -p $'\n\e[32mPress any key to start the script...\e[0m\n' -n1 -s
+any_key "Press any key to start the script..."
 clear
 
 # VPS?
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
     # Change IP
-    printf "\n\e[0mOK, we assume you run this locally and we will now configure your IP to be static.\e[1m\n"
+    printf "\n${Color_Off}OK, we assume you run this locally and we will now configure your IP to be static.${Color_Off}\n"
     echo "Your internal IP is: $ADDRESS"
-    printf "\n\e[0mWrite this down, you will need it to set static IP\n"
+    printf "\n${Color_Off}Write this down, you will need it to set static IP\n"
     echo "in your router later. It's included in this guide:"
     echo "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-    read -p $'\n\e[32mPress any key to set static IP...\e[0m\n' -n1 -s
+    any_key "Press any key to set static IP..."
     ifdown "$IFACE"
     sleep 1
     ifup "$IFACE"
@@ -422,16 +417,16 @@ then
     if [ "$CONTEST" == "Connected!" ]
     then
         # Connected!
-        printf "\e[32mConnected!\e[0m\n"
-        printf "We will use the DHCP IP: \e[32m$ADDRESS\e[0m. If you want to change it later then just edit the interfaces file:"
+        printf "${Green}Connected!${Color_Off}\n"
+        printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:"
         printf "sudo nano /etc/network/interfaces\n"
         echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
-        read -p $'\n\e[32mPress any key to continue...\e[0m\n' -n1 -s
+        any_key "Press any key to continue..."
     else
         # Not connected!
-        printf "\e[31mNot Connected\e[0m\nYou should change your settings manually in the next step.\n"
-        read -p $'\n\e[32mPress any key to open /etc/network/interfaces...\e[0m\n' -n1 -s
+        printf "${Red}Not Connected${Color_Off}\nYou should change your settings manually in the next step.\n"
+        any_key "Press any key to open /etc/network/interfaces..."
         nano /etc/network/interfaces
         service networking restart
         clear
@@ -523,7 +518,7 @@ then
 else
     echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    read -p $'\n\e[32mPress any key to continue... \e[0m\n' -n1 -s
+    any_key "Press any key to continue..."
 fi
 clear
 
@@ -567,23 +562,23 @@ then
 else
     echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
-    read -p $'\n\e[32mPress any key to continue... \e[0m\n' -n1 -s
+    any_key "Press any key to continue..."
 fi
 clear
 
 # Change Timezone
 echo "Current timezone is $(cat /etc/timezone)"
 echo "You must change it to your timezone"
-read -p $'\n\e[32mPress any key to change timezone...\e[0m\n ' -n1 -s
+any_key "Press any key to change timezone..."
 dpkg-reconfigure tzdata
 echo
 sleep 3
 clear
 
 # Change password
-printf "\e[0m\n"
+printf "${Color_Off}\n"
 echo "For better security, change the system user password for [$UNIXUSER]"
-read -p $'\n\e[32mPress any key to change password for system user... \e[0m\n' -n1 -s
+any_key "Press any key to change password for system user..."
 while true
 do
     sudo passwd "$UNIXUSER" && break
@@ -591,10 +586,10 @@ done
 echo
 clear
 NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
-printf "\e[0m\n"
+printf "${Color_Off}\n"
 echo "For better security, change the Nextcloud password for [$NCADMIN]"
 echo "The current password for $NCADMIN is [$NCPASS]"
-read -p $'\n\e[32mPress any key to change password for Nextcloud... \e[0m\n' -n1 -s
+any_key "Press any key to change password for Nextcloud..."
 while true
 do
     sudo -u www-data php "$NCPATH/occ" user:resetpassword "$NCADMIN" && break
@@ -677,21 +672,21 @@ ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print
 
 # Success!
 clear
-printf "\e[32m\n"
+printf "%s\n" "${Green}"
 echo    "+--------------------------------------------------------------------+"
 echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
 echo    "|                                                                    |"
-printf "|         \e[0mLogin to Nextcloud in your browser:\e[36m\" $ADDRESS2\"\e[32m         |\n"
+printf "|         ${Color_Off}Login to Nextcloud in your browser:${Cyan}\" $ADDRESS2\"${Green}         |\n"
 echo    "|                                                                    |"
-printf "|         \e[0mPublish your server online! \e[36mhttps://goo.gl/iUGE2U\e[32m          |\n"
+printf "|         ${Color_Off}Publish your server online! ${Cyan}https://goo.gl/iUGE2U${Green}          |\n"
 echo    "|                                                                    |"
-printf "|         \e[0mTo login to MySQL just type: \e[36m'mysql -u root'\e[32m               |\n"
+printf "|         ${Color_Off}To login to MySQL just type: ${Cyan}'mysql -u root'${Green}               |\n"
 echo    "|                                                                    |"
-printf "|   \e[0mTo update this VM just type: \e[36m'sudo bash /var/scripts/update.sh'\e[32m  |\n"
+printf "|   ${Color_Off}To update this VM just type: ${Cyan}'sudo bash /var/scripts/update.sh'${Green}  |\n"
 echo    "|                                                                    |"
-printf "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |\n"
+printf "|    ${IRed}#################### Tech and Me - 2017 ####################${Green}    |\n"
 echo    "+--------------------------------------------------------------------+"
-printf "\e[0m\n"
+printf "${Color_Off}\n"
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
@@ -722,5 +717,5 @@ sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/g
 
 # Reboot
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
-read -p $'\n\e[32mInstallation finished, press any key to reboot system... \e[0m\n' -n1 -s
+any_key "Installation finished, press any key to reboot system..."
 reboot

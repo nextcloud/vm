@@ -1,4 +1,6 @@
 #!/bin/bash
+
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
 #
 clear
 cat << INST1
@@ -6,8 +8,8 @@ cat << INST1
 | Thanks for downloading this Nextcloud VM by the Nextcloud Community!  |
 |                                                                       |
 INST1
-echo -e "|"  "\e[32mTo run the startup script type the sudoer password. This will either\e[0m  |"
-echo -e "|"  "\e[32mbe the default ('nextcloud') or the one chosen during installation.\e[0m   |"
+echo -e "|"  "${Green}To run the startup script type the sudoer password. This will either${Color_Off}  |"
+echo -e "|"  "${Green}be the default ('nextcloud') or the one chosen during installation.${Color_Off}   |"
 cat << INST2
 |                                                                       |
 | If you have never done this before you can follow the complete        |

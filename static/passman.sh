@@ -1,19 +1,17 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Variables
-HTML=/var/www
-NCPATH=$HTML/nextcloud
-SCRIPTS=/var/scripts
 PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
 PASSVER_FILE=passman_$PASSVER.tar.gz
-PASSVER_REPO=https://releases.passman.cc
 SHA256=/tmp/sha256
 
 # Check if root
 if [[ $EUID -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/passman.sh\n"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/passman.sh\n"
     echo
     exit 1
 fi
@@ -26,10 +24,7 @@ then
 else
     echo "Failed! Download is not available at the moment, try again later."
     echo "Please report this issue here: https://github.com/nextcloud/passman/issues/new"
-    printf "\e[32m\n"
-    read -p "Press any key to continue..." -n1 -s
-    printf "\e[0m\n"
-
+    any_key "Press any key to continue..."
     exit 1
 fi
 
@@ -67,8 +62,6 @@ then
 else
     echo "Something went wrong with the installation, Passman couln't be activated..."
     echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
-    printf "\e[32m\n"
-    read -p "Press any key to continue..." -n1 -s
-    printf "\e[0m\n"
+    any_key "Press any key to continue..."
     exit 1
 fi

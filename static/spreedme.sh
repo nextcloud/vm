@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me, ©2017 - www.techandme.se
 #
 # This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apche 2.4.
@@ -11,10 +13,6 @@
 DEBUG=0
 
 # Directories
-SCRIPTS=/var/scripts
-HTML=/var/www
-NCPATH=$HTML/nextcloud
-SNAPDIR=/var/snap/spreedme
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -26,7 +24,7 @@ fi
 if [[ "$EUID" -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash %s/nextcloud_install_production.sh" "$SCRIPTS"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/nextcloud_install_production.sh" "$SCRIPTS"
     echo
     exit 1
 fi
@@ -58,7 +56,6 @@ fi
 # Install and activate the SpreedMe app
 SPREEDME_VER=$(wget -q https://raw.githubusercontent.com/strukturag/nextcloud-spreedme/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 SPREEDME_FILE="v$SPREEDME_VER.tar.gz"
-SPREEDME_REPO=https://github.com/strukturag/nextcloud-spreedme/archive
 
 if [ -d "$NCPATH/apps/spreedme" ]
 then
@@ -145,5 +142,5 @@ else
     echo
     exit 0
 fi
-read -p $'\n\e[32mPress any key to continue...\e[0m\n' -n1 -s
+any_key "Press any key to continue..."
 clear

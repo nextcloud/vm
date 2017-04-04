@@ -1,6 +1,7 @@
 #!/bin/bash
 
-UNIXUSER=$SUDO_USER
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 
 rm "/home/$UNIXUSER/.profile"

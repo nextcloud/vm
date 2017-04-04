@@ -1,4 +1,6 @@
 #!/bin/bash
+
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
 ncpath='/var/www/nextcloud'
 htuser='www-data'
 htgroup='www-data'

@@ -1,11 +1,11 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me - www.techandme.se - ©2017
 # Ubuntu 16.04 with php 7
 
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
-SCRIPTS=/var/scripts
-NCPATH=/var/www/nextcloud
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis.sock
 SHUF=$(shuf -i 30-35 -n 1)
@@ -27,7 +27,6 @@ then
     exit 1
 fi
 
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
@@ -52,9 +51,7 @@ then
     sleep 5
     exit 1
 else
-    printf "\e[32m\n"
-    echo "PHP module installation OK!"
-    printf "\e[0m\n"
+    printf "${Green}\nPHP module installation OK!${Color_Off}\n"
 fi
 # Set globally doesn't work for some reason
 # touch /etc/php/7.0/mods-available/redis.ini
@@ -72,9 +69,7 @@ then
     sleep 5
     exit 1
 else
-    printf "\e[32m\n"
-    echo "Redis installation OK!"
-    printf "\e[0m\n"
+    printf "${Green}\nRedis installation OK!${Color_Off}\n"
 fi
 
 # Prepare for adding redis configuration

@@ -1,18 +1,17 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me ©2017 - www.techandme.se
 
-NCPATH=/var/www/nextcloud
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 certfiles=/etc/letsencrypt/live
-SCRIPTS=/var/scripts
 
 # Check if root
 if [[ "$EUID" -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou need to type: \e[36msudo \e[0mbash %s/activate-ssl.sh" "$SCRIPTS"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You need to type: ${Cyan}sudo ${Color_Off}bash %s/activate-ssl.sh" "$SCRIPTS"
     echo
     exit 1
 fi
@@ -50,7 +49,7 @@ if [[ "no" == $(ask_yes_or_no "Are you sure you want to continue?") ]]
 then
     echo
     echo "OK, but if you want to run this script later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    read -p $'\n\e\[32mPress any key to continue...\e[0m\n' -n1 -s
+    any_key "Press any key to continue..."
 exit
 fi
 
@@ -58,9 +57,7 @@ if [[ "no" == $(ask_yes_or_no "Have you forwarded port 443 in your router?") ]]
 then
     echo
     echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    any_key "Press any key to continue..."
     exit
 fi
 
@@ -70,9 +67,7 @@ then
 else
     echo
     echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    any_key "Press any key to continue..."
     exit
 fi
 
@@ -122,13 +117,13 @@ then
     apt remove --purge nmap -y
 else
     echo "Port 443 is not open on $WANIP4. We will do a second try on $domain instead."
-    read -p "Press any key to test $domain... " -n1 -s
+    any_key "Press any key to test $domain... "
     if [[ $(nmap -sS -PN -p 443 "$domain" | grep -m 1 "open" | awk '{print $2}') = open ]]
     then
         apt remove --purge nmap -y
     else
         echo "Port 443 is not open on $domain. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/"
-        read -p "Press any key to exit... " -n1 -s
+        any_key "Press any key to exit... "
         apt remove --purge nmap -y
         exit 1
     fi
@@ -159,7 +154,7 @@ elif curl -s -k -m 10 "https://$domain" -o /dev/null ; then
 else
     echo "Nope, it's not there. You have to create $domain and point"
     echo "it to this server before you can run this script."
-    read -p $'\n\e\[32mPress any key to continue...\e[0m\n' -n1 -s
+    any_key "Press any key to continue..."
     exit 1
 fi
 
@@ -276,13 +271,13 @@ do
         bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
         exit 0
     else
-        printf "\e[96mIt seems like no certs were generated, we do %s more tries." "$((NR_OF_ATTEMPTS-ATTEMPT))"
-        read -p $'\n\e[32mPress any key to continue...\e[0m\n' -n1 -s
+        printf "${ICyan}It seems like no certs were generated, we do %s more tries.${Color_Off}" "$((NR_OF_ATTEMPTS-ATTEMPT))"
+        any_key "Press any key to continue..."
         ((ATTEMPT++))
     fi
 done
 
-printf "\e[96mSorry, last try failed as well. :/ "
+printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}"
 cat << ENDMSG
 +------------------------------------------------------------------------+
 | The script is located in $SCRIPTS/activate-ssl.sh                  |
@@ -298,7 +293,7 @@ cat << ENDMSG
 | The script will now do some cleanup and revert the settings.           |
 +------------------------------------------------------------------------+
 ENDMSG
-read -p "Press any key to revert settings and exit... " -n1 -s
+any_key "Press any key to revert settings and exit... "
 
 # Cleanup
 apt remove letsencrypt -y

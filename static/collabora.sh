@@ -1,12 +1,13 @@
 #!/bin/bash
+
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
 # Collabora auto installer
 
-SCRIPTS=/var/scripts
 # Check if root
 if [[ $EUID -ne 0 ]]
 then
     echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/collabora.sh"
+    echo -e "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/collabora.sh"
     echo
     exit 1
 fi
@@ -28,9 +29,7 @@ WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 # App
 COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
 COLLVER_FILE=richdocuments.tar.gz
-COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
 # Folders
-NCPATH=/var/www/nextcloud
 
 # Notification
 whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
@@ -52,9 +51,7 @@ then
     echo "When SSL is activated, run these commands from your terminal:"
     echo "sudo wget https://raw.githubusercontent.com/nextcloud/vm/master/static/collabora.sh"
     echo "sudo bash collabora.sh"
-    printf "\e[32m\n"
-    read -p "Press any key to continue... " -n1 -s
-    printf "\e[0m\n"
+    any_key "Press any key to continue... "
     exit 1
 fi
 
@@ -72,9 +69,7 @@ elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null; then
 else
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
    echo "it to this server before you can run this script."
-   printf "\e[32m\n"
-   read -p "Press any key to continue... " -n1 -s
-   printf "\e[0m\n"
+   any_key "Press any key to continue... "
    exit 1
 fi
 
@@ -89,25 +84,21 @@ else
 fi
 if [ "$(nmap -sS -p 443 "$WANIP4" | grep -c "open")" == "1" ]
 then
-  printf "\e[32mPort 443 is open on $WANIP4!\e[0m\n"
+  printf "${Green}Port 443 is open on $WANIP4!${Color_Off}\n"
   apt remove --purge nmap -y
 else
   echo "Port 443 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
-  printf "\e[32m\n"
-  read -p "Press any key to test $SUBDOMAIN... " -n1 -s
-  printf "\e[0m\n"
-      if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
-      then
-          printf "\e[32mPort 443 is open on $SUBDOMAIN!\e[0m\n"
-          apt remove --purge nmap -y
-      else
-          whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
-          printf "\e[32m\n"
-          read -p "Press any key to exit... " -n1 -s
-          printf "\e[0m\n"
-          apt remove --purge nmap -y
-          exit 1
-      fi
+  any_key "Press any key to test $SUBDOMAIN... "
+  if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
+  then
+      printf "${Green}Port 443 is open on $SUBDOMAIN!${Color_Off}\n"
+      apt remove --purge nmap -y
+  else
+      whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+      any_key "Press any key to exit... "
+      apt remove --purge nmap -y
+      exit 1
+  fi
 fi
 
 # Install Docker
@@ -154,7 +145,7 @@ DOCKERPS=$(docker ps -a -q)
 if [ "$DOCKERPS" != "" ]
 then
     echo "Removing old Docker instance(s)... ($DOCKERPS)"
-    read -p $'\n\e[32mPress any key to continue. Press CTRL+C to abort.\e[0m\n' -n1 -s
+    any_key "Press any key to continue. Press CTRL+C to abort"
     docker stop "$DOCKERPS"
     docker rm "$DOCKERPS"
 fi
@@ -280,9 +271,9 @@ then
     then
         openssl dhparam -dsaparam -out $DHPARAMS 8192
     fi
-    printf "\e[96m\n"
+    printf "${ICyan}\n"
     printf "Certs are generated!\n"
-    printf "\e[0m\n"
+    printf "${Color_Off}\n"
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
 # Install Collabora App
@@ -291,12 +282,9 @@ then
     cd "$NCPATH/apps"
     rm "$COLLVER_FILE"
 else
-    printf "\e[96m\n"
-    printf "It seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new\n"
-    printf "\e[32m\n"
-    read -p "Press any key to continue... " -n1 -s
+    printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new\n"
+    any_key "Press any key to continue... "
     service apache2 restart
-    printf "\e[0m\n"
 fi
 
 # Enable RichDocuments (Collabora App)
@@ -307,7 +295,5 @@ then
     echo
     echo "Collabora is now succesfylly installed."
     echo "You may have to reboot before Docker will load correctly."
-    printf "\e[32m\n"
-    read -p "Press any key to continue... " -n1 -s
-    printf "\e[0m\n"
+    any_key "Press any key to continue... "
 fi

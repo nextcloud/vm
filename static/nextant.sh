@@ -1,4 +1,6 @@
 #!/bin/bash
+
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
 # Solr Server & Nextant App Installation
 
 # Setting variables
@@ -9,12 +11,10 @@ NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
 SOLR_RELEASE=solr-$SOLR_VERSION.tgz
 SOLR_DL=http://www-eu.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
-NCPATH=/var/www/nextcloud
 NC_APPS_PATH=$NCPATH/apps/
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
-SCRIPTS=/var/scripts
 
 # Must be root
 if [[ $EUID -ne 0 ]]

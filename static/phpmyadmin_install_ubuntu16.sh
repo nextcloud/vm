@@ -1,11 +1,12 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me, ©2017 - www.techandme.se
 
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 PHPMYADMINDIR=/usr/share/phpmyadmin
 WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 PW_FILE=$(cat /var/mysql_password.txt)
 UPLOADPATH=""
@@ -15,7 +16,7 @@ SAVEPATH=""
 if [[ $EUID -ne 0 ]]
 then
     echo
-    printf "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
     echo # remove echo here and do \n instead there are more places like this iirc
     sleep 3
     exit 1
@@ -40,7 +41,6 @@ then
     exit 1
 fi
 
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version seems to be $DISTRO"

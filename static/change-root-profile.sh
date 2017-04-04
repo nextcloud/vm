@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 ROOT_PROFILE="/root/.bash_profile"
 
 [ -f /root/.profile ] && rm -f /root/.profile
