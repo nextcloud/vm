@@ -4,8 +4,6 @@
 # Ubuntu 16.04 with php 7
 
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
-SCRIPTS=/var/scripts
-NCPATH=/var/www/nextcloud
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis.sock
 SHUF=$(shuf -i 30-35 -n 1)
@@ -27,7 +25,6 @@ then
     exit 1
 fi
 
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"

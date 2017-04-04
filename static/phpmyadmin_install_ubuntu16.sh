@@ -5,7 +5,6 @@
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 PHPMYADMINDIR=/usr/share/phpmyadmin
 WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 PW_FILE=$(cat /var/mysql_password.txt)
 UPLOADPATH=""
@@ -40,7 +39,6 @@ then
     exit 1
 fi
 
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version seems to be $DISTRO"

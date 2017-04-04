@@ -5,7 +5,6 @@
 # Tested on Ubuntu Server 14.04 & 16.04.
 
 FILE=nextcloud_update.sh
-SCRIPTS=/var/scripts
 
 # Must be root
 if [[ "$EUID" -ne 0 ]]

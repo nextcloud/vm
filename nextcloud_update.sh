@@ -11,14 +11,9 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 THEME_NAME=""
 
 # Directories
-HTML=/var/www
-NCPATH=$HTML/nextcloud
-SCRIPTS=/var/scripts
 BACKUP=/var/NCBACKUP
-SNAPDIR=/var/snap/spreedme
 #Static Values
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-NCREPO="https://download.nextcloud.com/server/releases"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Versions
 CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')

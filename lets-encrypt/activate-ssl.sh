@@ -2,11 +2,8 @@
 
 # Tech and Me ©2017 - www.techandme.se
 
-NCPATH=/var/www/nextcloud
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 certfiles=/etc/letsencrypt/live
-SCRIPTS=/var/scripts
 
 # Check if root
 if [[ "$EUID" -ne 0 ]]

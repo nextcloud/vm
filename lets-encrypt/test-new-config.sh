@@ -1,6 +1,5 @@
 #!/bin/bash
 
-SCRIPTS=/var/scripts
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 
 # Activate the new config

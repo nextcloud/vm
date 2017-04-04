@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## functions
+
 # If script is running as root?
 #
 # Example:
@@ -99,6 +101,19 @@ any_key() {
     read -p "$(printf ${Green}"${PROMPT}"${Color_Off})" -n1 -s
 }
 
+## variables
+
+SCRIPTS=/var/scripts
+NCPATH=/var/www/nextcloud
+HTML=/var/www
+ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+SNAPDIR=/var/snap/spreedme
+REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
+UNIXUSER=$SUDO_USER
+
+## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
 

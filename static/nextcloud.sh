@@ -1,7 +1,6 @@
 #!/bin/bash
 WANIP4=$(curl -s -m 5 ipinfo.io/ip)
 WANIP6=$(curl -s -m 5 6.ifcfg.me)
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 clear
 figlet -f small Nextcloud
 echo "     https://www.nextcloud.com"

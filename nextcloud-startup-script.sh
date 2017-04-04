@@ -8,17 +8,12 @@
 DEBUG=0
 
 WWW_ROOT=/var/www
-NCPATH=$WWW_ROOT/nextcloud
 NCDATA=/var/ncdata
-SCRIPTS=/var/scripts
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 export PHPMYADMIN_CONF
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
-UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
 export NCUSER
@@ -66,7 +61,6 @@ printf "\nTo make downloads as fast as possible when updating you should have mi
 echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
 echo "We recomend you to change the mirrors based on where this is currently installed."
 echo "Checking current mirror..."
-REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
 
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
@@ -88,7 +82,6 @@ else
     fi
 fi
 
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."

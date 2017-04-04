@@ -11,10 +11,6 @@
 DEBUG=0
 
 # Directories
-SCRIPTS=/var/scripts
-HTML=/var/www
-NCPATH=$HTML/nextcloud
-SNAPDIR=/var/snap/spreedme
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -58,7 +54,6 @@ fi
 # Install and activate the SpreedMe app
 SPREEDME_VER=$(wget -q https://raw.githubusercontent.com/strukturag/nextcloud-spreedme/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 SPREEDME_FILE="v$SPREEDME_VER.tar.gz"
-SPREEDME_REPO=https://github.com/strukturag/nextcloud-spreedme/archive
 
 if [ -d "$NCPATH/apps/spreedme" ]
 then
