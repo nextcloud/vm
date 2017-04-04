@@ -30,7 +30,7 @@ is_root() {
 }
 
 debug_mode() {
-if [ $DEBUG -eq 1 ]
+if [ "$DEBUG" -eq 1 ]
 then
     set -ex
 fi
