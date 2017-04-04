@@ -26,7 +26,7 @@ chown -R ${htuser}:${htgroup} ${NCDATA}/
 chown -R ${htuser}:${htgroup} ${NCPATH}/themes/
 chown -R ${htuser}:${htgroup} ${NCPATH}/updater/
 
-chmod +x ${ncpath}/occ
+chmod +x ${NCPATH}/occ
 
 printf "chmod/chown .htaccess\n"
 if [ -f ${NCPATH}/.htaccess ]
