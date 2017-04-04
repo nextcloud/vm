@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# If script is running as root?
+#
+# Example:
+# if is_root
+# then
+#     # do stuff
+# else
+#     echo "You are not root..."
+#     exit 1
+# fi
+#
 is_root() {
     if [[ "$EUID" -ne 0 ]]
     then
