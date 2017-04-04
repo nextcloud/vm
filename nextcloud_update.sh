@@ -27,7 +27,7 @@ NCMAJOR="${NCVERSION%%.*}"
 NCBAD=$((NCMAJOR-2))
 
 # Must be root
-[[ $EUID -ne 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+[[ $EUID -ne 0 ]] && { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 
 # System Upgrade
 apt update
