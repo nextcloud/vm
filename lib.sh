@@ -103,17 +103,35 @@ any_key() {
 
 ## variables
 
+# Dirs
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+NCDATA=/var/ncdata
 SNAPDIR=/var/snap/spreedme
+ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+
+# Ubuntu OS
+DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
+
+# Network
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
-UNIXUSER=$SUDO_USER
+
+# Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 NCREPO="https://download.nextcloud.com/server/releases/"
+STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
+LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
+# User information
+NCPASS=nextcloud
+NCUSER=ncadmin
+UNIXUSER=$SUDO_USER
+# Path to specific files
+PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
+
+# nextcloud-startup-script.sh
+WWW_ROOT=/var/www # change this in phpmyadmin to HTML instead
 
 ## bash colors
 # Reset
