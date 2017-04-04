@@ -126,6 +126,10 @@ IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
+IFCONFIG="/sbin/ifconfig"
+INTERFACES="/etc/network/interfaces"
+NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
+GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 NCREPO="https://download.nextcloud.com/server/releases/"
