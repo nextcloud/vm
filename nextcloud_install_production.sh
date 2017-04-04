@@ -14,32 +14,6 @@ true
 # 0 = OFF
 DEBUG=0
 
-# Repositories
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
-# Nextcloud version
-NCVERSION=$(curl -s "$NCREPO" | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
-STABLEVERSION="nextcloud-$NCVERSION"
-# Ubuntu version
-OS=$(grep -ic "Ubuntu" /etc/issue.net)
-# Passwords
-SHUF=$(shuf -i 13-15 -n 1)
-MYSQL_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-PW_FILE=/var/mysql_password.txt
-# Directories
-GPGDIR=/tmp/gpg
-NCDATA=/var/ncdata
-
-# Apache vhosts
-SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
-HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
-# Network
-export ADDRESS
-
-# Linux user, and Nextcloud user
-NCPASS=nextcloud
-NCUSER=ncadmin
-
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
 then

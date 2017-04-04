@@ -6,11 +6,6 @@ true
 
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
-# Variables
-PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
-PASSVER_FILE=passman_$PASSVER.tar.gz
-SHA256=/tmp/sha256
-
 # Check if root
 if [[ $EUID -ne 0 ]]
 then

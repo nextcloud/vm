@@ -29,6 +29,13 @@ is_root() {
     fi
 }
 
+debug_mode() {
+if [ "$DEBUG" -eq 1 ]
+then
+    set -ex
+fi
+}
+
 ask_yes_or_no() {
     read -p -r "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
@@ -110,17 +117,102 @@ any_key() {
 
 ## variables
 
+# Dirs
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+NCDATA=/var/ncdata
 SNAPDIR=/var/snap/spreedme
+GPGDIR=/tmp/gpg
+BACKUP=/var/NCBACKUP
+# Ubuntu OS
+DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
+OS=$(grep -ic "Ubuntu" /etc/issue.net)
+# Network
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
-UNIXUSER=$SUDO_USER
+ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+WGET="/usr/bin/wget"
+# WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
+WANIP4=$(curl -s -m 5 ipinfo.io/ip)
+WANIP6=$(curl -s -m 5 6.ifcfg.me)
+IFCONFIG="/sbin/ifconfig"
+INTERFACES="/etc/network/interfaces"
+NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
+GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
+# Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 NCREPO="https://download.nextcloud.com/server/releases/"
+STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
+LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
+# User information
+NCPASS=nextcloud
+NCUSER=ncadmin
+UNIXUSER=$SUDO_USER
+UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
+ROOT_PROFILE="/root/.bash_profile"
+# Passwords
+SHUF=$(shuf -i 19-21 -n 1)
+MYSQL_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+NEWMYSQLPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+# Path to specific files
+PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
+SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
+SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
+HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
+PW_FILE=/var/mysql_password.txt
+MYCNF=/root/.my.cnf
+OLDMYSQL=$(cat $PW_FILE)
+HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
+# Nextcloud version
+CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+NCVERSION=$(curl -s -m 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q') # change NCVERSION in install scrtip and update script, the differ
+STABLEVERSION="nextcloud-$NCVERSION"
+NCMAJOR="${NCVERSION%%.*}"
+NCBAD=$((NCMAJOR-2))
+# Keys
+OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
+# Collabora Docker URL
+SUBDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+# Nextcloud Main Domain
+NCDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+# Letsencrypt
+LETSENCRYPTPATH="/etc/letsencrypt"
+CERTFILES="$LETSENCRYPTPATH/live"
+DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
+# Collabora App
+COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
+COLLVER_FILE=richdocuments.tar.gz
+# Nextant
+SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-9].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
+NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
+NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
+NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
+SOLR_RELEASE=solr-$SOLR_VERSION.tgz
+SOLR_DL=http://www-eu.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
+NC_APPS_PATH=$NCPATH/apps/
+SOLR_HOME=/home/$SUDO_USER/solr_install/
+SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
+SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
+# Passman
+PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
+PASSVER_FILE=passman_$PASSVER.tar.gz
+SHA256=/tmp/sha256
+# phpMyadmin
+PHPMYADMINDIR=/usr/share/phpmyadmin
+PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
+UPLOADPATH=""
+SAVEPATH=""
+# Redis
+REDIS_CONF=/etc/redis/redis.conf
+REDIS_SOCK=/var/run/redis/redis.sock
+RSHUF=$(shuf -i 30-35 -n 1)
+REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
+# Extra security
+SPAMHAUS=/etc/spamhaus.wl
+ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
+APACHE2=/etc/apache2/apache2.conf
 
 ## bash colors
 # Reset

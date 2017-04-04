@@ -14,17 +14,6 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 # Put your theme name here:
 THEME_NAME=""
 
-# Directories
-BACKUP=/var/NCBACKUP
-#Static Values
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
-# Versions
-CURRENTVERSION=$(sudo -u www-data php "$NCPATH"/occ status | grep "versionstring" | awk '{print $3}')
-NCVERSION=$(curl -s -m 900 "$NCREPO"/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
-NCMAJOR="${NCVERSION%%.*}"
-NCBAD=$((NCMAJOR-2))
-
 # Must be root
 [[ $EUID -ne 0 ]] && { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
 

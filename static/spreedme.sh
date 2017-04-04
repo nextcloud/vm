@@ -15,14 +15,7 @@ true
 # 1 = ON
 # 0 = OFF
 DEBUG=0
-
-# Directories
-
-# DEBUG mode
-if [ $DEBUG -eq 1 ]
-then
-    set -ex
-fi
+debug_mode
 
 # Check if root
 if [[ "$EUID" -ne 0 ]]

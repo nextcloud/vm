@@ -14,25 +14,6 @@ then
     exit 1
 fi
 
-## Variable's
-# Docker URL
-SUBDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-# Nextcloud Main Domain
-NCDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
-# Vhost
-HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
-export HTTPS_CONF
-# Letsencrypt
-LETSENCRYPTPATH="/etc/letsencrypt"
-CERTFILES="$LETSENCRYPTPATH/live"
-DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
-# WANIP
-WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
-# App
-COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
-COLLVER_FILE=richdocuments.tar.gz
-# Folders
-
 # Notification
 whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
 
