@@ -39,7 +39,7 @@ i=0
 while kill -0 $pid 2>/dev/null
 do
   i=$(( (i+1) %4 ))
-  printf "\r${spin:$i:1} " # Add text here, something like "Please be paitent..." maybe?
+  printf "\r[${spin:$i:1}] " # Add text here, something like "Please be paitent..." maybe?
   sleep .15
 done
 }
