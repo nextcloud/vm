@@ -7,11 +7,9 @@ true
 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 
 # Check if root
-if [[ $EUID -ne 0 ]]
+if ! is_root
 then
-    echo
-    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/passman.sh\n"
-    echo
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/passman.sh\n"
     exit 1
 fi
 

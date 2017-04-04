@@ -7,11 +7,9 @@ true
 # Tech and Me, ©2017 - www.techandme.se
 
 # Check if root
-if [[ $EUID -ne 0 ]]
+if ! is_root
 then
-    echo
-    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
-    echo # remove echo here and do \n instead there are more places like this iirc
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
     sleep 3
     exit 1
 fi

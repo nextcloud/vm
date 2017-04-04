@@ -10,7 +10,7 @@ true
 # Ubuntu 16.04 with php 7
 
 # Must be root
-if [[ $EUID -ne 0 ]]
+if ! is_root
 then
     echo "Must be root to run script, in Ubuntu type: sudo -i"
     exit 1

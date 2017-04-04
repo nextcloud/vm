@@ -18,7 +18,7 @@ then
 fi
 
 # Check if root
-if [[ $EUID -ne 0 ]]
+if ! is_root
 then
     printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/nextcloud-startup-script.sh\n"
     exit 1

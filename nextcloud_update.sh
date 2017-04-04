@@ -15,7 +15,11 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 THEME_NAME=""
 
 # Must be root
-[[ $EUID -ne 0 ]] && { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+if ! is_root
+then
+    echo "Must be root to run script, in Ubuntu type: sudo -i"
+    exit 1
+fi
 
 # System Upgrade
 apt update

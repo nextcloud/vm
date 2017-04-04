@@ -10,11 +10,9 @@ WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 certfiles=/etc/letsencrypt/live
 
 # Check if root
-if [[ "$EUID" -ne 0 ]]
+if ! is_root
 then
-    echo
-    printf "${Red}Sorry, you are not root.\n${Color_Off}You need to type: ${Cyan}sudo ${Color_Off}bash %s/activate-ssl.sh" "$SCRIPTS"
-    echo
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You need to type: ${Cyan}sudo ${Color_Off}bash %s/activate-ssl.sh\n" "$SCRIPTS"
     exit 1
 fi
 

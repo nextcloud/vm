@@ -6,11 +6,9 @@ true
 # Collabora auto installer
 
 # Check if root
-if [[ $EUID -ne 0 ]]
+if ! is_root
 then
-    echo
-    echo -e "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/collabora.sh"
-    echo
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/collabora.sh\n"
     exit 1
 fi
 
