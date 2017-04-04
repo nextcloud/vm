@@ -2,8 +2,6 @@
 
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
-UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
-
 rm "/home/$UNIXUSER/.profile"
 
 cat <<-UNIXUSER-PROFILE > "$UNIXUSER_PROFILE"
