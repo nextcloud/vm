@@ -23,38 +23,6 @@ NCPASS=nextcloud
 NCUSER=ncadmin
 export NCUSER
 
-# Functions
-ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case ${REPLY,,} in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-
-spinner_loading() {
-pid=$!
-spin='-\|/'
-i=0
-while kill -0 $pid 2>/dev/null
-do
-  i=$(( (i+1) %4 ))
-  printf "\r[${spin:$i:1}] " # Add text here, something like "Please be paitent..." maybe?
-  sleep .15
-done
-}
-
-network_ok() {
-    echo "Testing if network is OK..."
-    service networking restart
-    if wget -q -T 10 -t 2 http://github.com -O /dev/null
-    then
-        return 0
-    else
-        return 1
-    fi
-}
-
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
 then
@@ -559,43 +527,6 @@ else
 fi
 clear
 
-# Whiptail auto-size
-calc_wt_size() {
-    WT_HEIGHT=17
-    WT_WIDTH=$(tput cols)
-
-    if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
-        WT_WIDTH=80
-    fi
-    if [ "$WT_WIDTH" -gt 178 ]; then
-        WT_WIDTH=120
-    fi
-    WT_MENU_HEIGHT=$((WT_HEIGHT-7))
-    export WT_MENU_HEIGHT
-}
-
-# Install Apps
-collabora() {
-    bash "$SCRIPTS/collabora.sh"
-    rm -f "$SCRIPTS/collabora.sh"
-}
-
-nextant() {
-    bash "$SCRIPTS/nextant.sh"
-    rm -f "$SCRIPTS/nextant.sh"
-}
-
-passman() {
-    bash "$SCRIPTS/passman.sh"
-    rm -f "$SCRIPTS/passman.sh"
-}
-
-
-spreedme() {
-    bash "$SCRIPTS/spreedme.sh"
-    rm -f "$SCRIPTS/spreedme.sh"
-}
-
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Collabora" "(Online editing)   " OFF \
 "Nextant" "(Full text search)   " OFF \
@@ -606,19 +537,19 @@ while read -r -u 9 choice
 do
     case $choice in
         Collabora)
-            collabora
+            install_app collabora
         ;;
 
         Nextant)
-            nextant
+            install_app nextant
         ;;
 
         Passman)
-            passman
+            install_app passman
         ;;
 
         Spreed.ME)
-            spreedme
+            install_app spreedme
         ;;
 
         *)

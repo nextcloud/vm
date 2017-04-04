@@ -2,13 +2,6 @@
 
 # This runs the startup script with a new user that has sudo permissions 
 
-ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case ${REPLY,,} in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
 if [[ "no" == $(ask_yes_or_no "Do you want to create a new user?") ]]
 then
 echo "Not adding another user..."

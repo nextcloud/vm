@@ -41,17 +41,6 @@ then
 fi
 
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
-version(){
-    local h t v
-
-    [[ $2 = "$1" || $2 = "$3" ]] && return 0
-
-    v=$(printf '%s\n' "$@" | sort -V)
-    h=$(head -n1 <<<"$v")
-    t=$(tail -n1 <<<"$v")
-
-    [[ $2 != "$h" && $2 != "$t" ]]
-}
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version seems to be $DISTRO"
