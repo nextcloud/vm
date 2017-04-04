@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# shellcheck source=lib.sh
 . <(curl -sL https://cdn.rawgit.com/morph027/vm/master/lib.sh)
 
 # Tech and Me ©2017 - www.techandme.se
@@ -80,7 +81,7 @@ cat << ENTERDOMAIN
 +---------------------------------------------------------------+
 ENTERDOMAIN
 echo
-read domain
+read -r domain
 
 echo
 if [[ "no" == $(ask_yes_or_no "Is this correct? $domain") ]]
@@ -130,14 +131,14 @@ else
 fi
 
 # Fetch latest version of test-new-config.sh
-if [ -f $SCRIPTS/test-new-config.sh ]
+if [ -f "$SCRIPTS/test-new-config.sh" ]
 then
-    rm $SCRIPTS/test-new-config.sh
-    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P $SCRIPTS
+    rm -f "$SCRIPTS/test-new-config.sh"
+    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P "$SCRIPTS"
     chmod +x $SCRIPTS/test-new-config.sh
 else
-    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P $SCRIPTS
-    chmod +x $SCRIPTS/test-new-config.sh
+    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P "$SCRIPTS"
+    chmod +x "$SCRIPTS/test-new-config.sh"
 fi
 
 # Check if $domain exists and is reachable
@@ -259,7 +260,7 @@ do
     esac
 
     # Generate certs
-    letsencrypt ${LE_METHODS[$ATTEMPT]} "$LE_DEFAULT_OPTIONS"
+    letsencrypt "${LE_METHODS[$ATTEMPT]}" "$LE_DEFAULT_OPTIONS"
 
     case "${LE_METHODS[$ATTEMPT]}" in
         *standalone*)
