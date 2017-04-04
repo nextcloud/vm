@@ -199,9 +199,8 @@ then
 fi
 
 # Generate nextcloud_ssl_domain.conf
-if [ -f "$ssl_conf" ]
+if [ ! -f "$ssl_conf" ]
 then
-    rm -f "$ssl_conf"
     touch "$ssl_conf"
     echo "$ssl_conf was successfully created"
     sleep 2
