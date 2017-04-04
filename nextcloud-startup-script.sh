@@ -9,16 +9,9 @@
 # 0 = OFF
 DEBUG=0
 
-WWW_ROOT=/var/www
-NCDATA=/var/ncdata
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 export PHPMYADMIN_CONF
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
-NCPASS=nextcloud
-NCUSER=ncadmin
 export NCUSER
+CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
@@ -342,11 +335,11 @@ then
     exit 1
 fi
 
-mv $SCRIPTS/index.php $WWW_ROOT/index.php && rm -f $WWW_ROOT/html/index.html
-chmod 750 $WWW_ROOT/index.php && chown www-data:www-data $WWW_ROOT/index.php
+mv $SCRIPTS/index.php $HTML/index.php && rm -f $HTML/html/index.html
+chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
 
 # Change 000-default to $WEB_ROOT
-sed -i "s|DocumentRoot /var/www/html|DocumentRoot $WWW_ROOT|g" /etc/apache2/sites-available/000-default.conf
+sed -i "s|DocumentRoot /var/www/html|DocumentRoot $HTML|g" /etc/apache2/sites-available/000-default.conf
 
 # Make $SCRIPTS excutable
 chmod +x -R $SCRIPTS
