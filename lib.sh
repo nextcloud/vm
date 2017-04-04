@@ -94,8 +94,13 @@ spinner_loading() {
     done
 }
 
+any_key() {
+    local PROMPT="$1"
+    read -p "$(printf ${Green}"${PROMPT}"${Color_Off})" -n1 -s
+}
+
 # Reset
-Color_Off='${Color_Off}'       # Text Reset
+Color_Off='\e[0m'       # Text Reset
 
 # Regular Colors
 Black='\e[0;30m'        # Black
