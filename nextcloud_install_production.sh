@@ -2,6 +2,9 @@
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
+# Prefer IPv4
+sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -31,9 +34,6 @@ echo "Please create a user with sudo permissions if you want an optimal installa
 wget -q "$STATIC"/adduser.sh
 bash adduser.sh
 rm -f adduser.sh
-
-# Prefer IPv4
-sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
@@ -415,13 +415,13 @@ while read -r -u 9 choice
 do
     case "$choice" in
         Calendar)
-            wget -q "$STATIC"/calendar.sh -P "$SCRIPTS" & install_apps calendar
+            wget -q "$STATIC"/calendar.sh -P "$SCRIPTS" && install_app calendar
         ;;
         Contacts)
-            wget -q "$STATIC"/contacts.sh -P "$SCRIPTS" & install_apps contacts
+            wget -q "$STATIC"/contacts.sh -P "$SCRIPTS" && install_app contacts
         ;;
         Webmin)
-            wget -q "$STATIC"/webmin.sh -P "$SCRIPTS" & install_apps webmin
+            wget -q "$STATIC"/webmin.sh -P "$SCRIPTS" && install_app webmin
         ;;
         *)
         ;;
