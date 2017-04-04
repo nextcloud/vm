@@ -23,12 +23,25 @@ NCPASS=nextcloud
 NCUSER=ncadmin
 export NCUSER
 
+# Functions
 ask_yes_or_no() {
     read -p "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
         y|yes) echo "yes" ;;
         *)     echo "no" ;;
     esac
+}
+
+spinner_loading() {
+pid=$!
+spin='-\|/'
+i=0
+while kill -0 $pid 2>/dev/null
+do
+  i=$(( (i+1) %4 ))
+  printf "\r[${spin:$i:1}] " # Add text here, something like "Please be paitent..." maybe?
+  sleep .15
+done
 }
 
 network_ok() {
@@ -94,7 +107,7 @@ then
     sleep 1
 else
     echo "Locating the best mirrors..."
-    apt update -q2
+    apt update -q2 & spinner_loading
     apt install python-pip -y
     pip install \
         --upgrade pip \
@@ -511,7 +524,7 @@ NCDB=nextcloud_db
 PW_FILE=/var/mysql_password.txt
 printf "\nEnabling UTF8mb4 support on $NCDB....\n"
 echo "Please be patient, it may take a while."
-sudo /etc/init.d/mysql restart
+sudo /etc/init.d/mysql restart & spinner_loading
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
     mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" # want to test if this is succesfull
@@ -657,15 +670,9 @@ do
 done
 clear
 
-# Upgrade system
-echo "System will now upgrade..."
-sleep 2
-echo
-bash $SCRIPTS/update.sh
-
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
-service apache restart
+service apache reload
 
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
@@ -682,19 +689,15 @@ bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
 
 # Cleanup 1
-apt autoremove -y
-apt autoclean
-echo "$CLEARBOOT"
-clear
-
-# Cleanup 2
 sudo -u www-data php "$NCPATH/occ" maintenance:repair
 rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
+
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
+
 
 sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
 
@@ -726,6 +729,19 @@ exit 0
 
 RCLOCAL
 
+# Upgrade system
+echo "System will now upgrade..."
+sleep 2
+echo
+bash $SCRIPTS/update.sh
+
+# Cleanup 2
+apt autoremove -y
+apt autoclean
+echo "$CLEARBOOT"
+find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o name '*.tar*' -o name '*.zip*' \) -delete
+clear
+
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 
 # Success!
@@ -734,7 +750,7 @@ printf "\e[32m\n"
 echo    "+--------------------------------------------------------------------+"
 echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
 echo    "|                                                                    |"
-printf "|         \e[0mLogin to Nextcloud in your browser:\e[36m\" $ADDRESS2\"\e[32m           |\n"
+printf "|         \e[0mLogin to Nextcloud in your browser:\e[36m\" $ADDRESS2\"\e[32m         |\n"
 echo    "|                                                                    |"
 printf "|         \e[0mPublish your server online! \e[36mhttps://goo.gl/iUGE2U\e[32m          |\n"
 echo    "|                                                                    |"
@@ -774,5 +790,6 @@ fi
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
+rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 read -p $'\n\e[32mInstallation finished, press any key to reboot system... \e[0m\n' -n1 -s
 reboot
