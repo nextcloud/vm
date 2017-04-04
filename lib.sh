@@ -110,6 +110,7 @@ HTML=/var/www
 NCDATA=/var/ncdata
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
+BACKUP=/var/NCBACKUP
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
@@ -131,15 +132,18 @@ SHUF=$(shuf -i 13-15 -n 1)
 MYSQL_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 # Path to specific files
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-PW_FILE=/var/mysql_password.txt
-# Nextcloud version
-NCVERSION=$(curl -s $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
-STABLEVERSION="nextcloud-$NCVERSION"
-# Keys
-OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
-# Apache vhosts
+SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
+PW_FILE=/var/mysql_password.txt
+# Nextcloud version
+CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+NCVERSION=$(curl -s -m 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q') # change NCVERSION in install scrtip and update script, the differ
+STABLEVERSION="nextcloud-$NCVERSION"
+NCMAJOR="${NCVERSION%%.*}"
+NCBAD=$((NCMAJOR-2))
+# Keys
+OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 
 
 ## bash colors
