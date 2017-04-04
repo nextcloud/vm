@@ -404,60 +404,7 @@ sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtppassword --value="
 
 # Install Libreoffice Writer to be able to read MS documents.
 sudo apt install --no-install-recommends libreoffice-writer -y
-
-# Nextcloud apps
-CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-CONVER_FILE=contacts.tar.gz
-CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-CALVER_FILE=calendar.tar.gz
-
 sudo -u www-data php "$NCPATH"/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-
-install_calendar() {
-# Download and install Calendar
-if [ ! -d "$NCPATH"/apps/calendar ]
-then
-    wget -q "$CALVER_REPO/v$CALVER/$CALVER_FILE" -P "$NCPATH/apps"
-    tar -zxf "$NCPATH/apps/$CALVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
-    rm "$CALVER_FILE"
-fi
-
-# Enable Calendar
-if [ -d "$NCPATH"/apps/calendar ]
-then
-    sudo -u www-data php "$NCPATH"/occ app:enable calendar
-fi
-
-}
-
-install_contacts() {
-# Download and install Contacts
-if [ ! -d "$NCPATH/apps/contacts" ]
-then
-    wget -q "$CONVER_REPO/v$CONVER/$CONVER_FILE" -P "$NCPATH/apps"
-    tar -zxf "$NCPATH/apps/$CONVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
-    rm "$CONVER_FILE"
-fi
-
-# Enable Contacts
-if [ -d "$NCPATH"/apps/contacts ]
-then
-    sudo -u www-data php "$NCPATH"/occ app:enable contacts
-fi
-}
-
-webmin() {
-# Install packages for Webmin
-apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
-
-# Install Webmin
-sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
-wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
-apt update -q2
-apt install webmin -y
-}
 
 whiptail --title "Which apps/programs do you want to install?" --checklist --separate-output "" 10 40 3 \
 "Calendar" "              " on \
@@ -468,13 +415,13 @@ while read -r -u 9 choice
 do
     case "$choice" in
         Calendar)
-            install_calendar
+            install_apps contacts
         ;;
         Contacts)
-            install_contacts
+            install_apps calendar
         ;;
         Webmin)
-            webmin
+            install_apps webmin
         ;;
         *)
         ;;

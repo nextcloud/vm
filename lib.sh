@@ -195,6 +195,14 @@ SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_co
 PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
 PASSVER_FILE=passman_$PASSVER.tar.gz
 SHA256=/tmp/sha256
+# Calendar
+CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+CALVER_FILE=calendar.tar.gz
+CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
+# Contacts
+CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+CONVER_FILE=contacts.tar.gz
+CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
