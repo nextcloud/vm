@@ -29,6 +29,13 @@ is_root() {
     fi
 }
 
+debug_mode() {
+if [ $DEBUG -eq 1 ]
+then
+    set -ex
+fi
+}
+
 ask_yes_or_no() {
     read -p -r "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
