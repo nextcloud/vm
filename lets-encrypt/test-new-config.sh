@@ -1,41 +1,34 @@
 #!/bin/bash
 
-SCRIPTS=/var/scripts
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 
 # Activate the new config
-echo -e "\e[0m"
-echo "Apache will now reboot"
-echo -e "\e[32m"
-read -p "Press any key to continue... " -n1 -s
-echo -e "\e[0m"
-a2ensite $1
+printf "${Color_Off}Apache will now reboot"
+any_key "Press any key to continue... "
+a2ensite "$1"
 a2dissite nextcloud_ssl_domain_self_signed.conf
 a2dissite nextcloud_http_domain_self_signed.conf
 a2dissite 000-default.conf
-service apache2 restart
-if [[ "$?" == "0" ]]
+if service apache2 restart
 then
-    echo -e "\e[42m"
-    echo "New settings works! SSL is now activated and OK!"
-    echo -e "\e[0m"
-    echo
+    printf "${On_Green}New settings works! SSL is now activated and OK!${Color_Off}\n\n"
     echo "This cert will expire in 90 days, so you have to renew it."
     echo "There are several ways of doing so, here are some tips and tricks: https://goo.gl/c1JHR0"
     echo "This script will add a renew cronjob to get you started, edit it by typing:"
     echo "'crontab -u root -e'"
     echo "Feel free to contribute to this project: https://goo.gl/3fQD65"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    any_key "Press any key to continue..."
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
-# Set hostname and ServerName
-FQDOMAIN=$(grep -r -m 1 ServerName /etc/apache2/sites-enabled/* | awk '{print $2}')
-echo "Setting hostname to $FQDOMAIN..."
-sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
-sudo hostnamectl set-hostname $FQDOMAIN
-service apache2 restart
+FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
+if [ "$(hostname)" != "$FQDOMAIN" ]
+then
+    echo "Setting hostname to $FQDOMAIN..."
+    sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
+    sudo hostnamectl set-hostname "$FQDOMAIN"
+fi
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
@@ -83,17 +76,13 @@ rm $SCRIPTS/activate-ssl.sh
 
 else
 # If it fails, revert changes back to normal
-    a2dissite $1
+    a2dissite "$1"
     a2ensite nextcloud_ssl_domain_self_signed.conf
     a2ensite nextcloud_http_domain_self_signed.conf
     a2ensite 000-default.conf
     service apache2 restart
-    echo -e "\e[96m"
-    echo "Couldn't load new config, reverted to old settings. Self-signed SSL is OK!"
-    echo -e "\e[0m"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    printf "${ICyan}Couldn't load new config, reverted to old settings. Self-signed SSL is OK!${Color_Off}\n"
+    any_key "Press any key to continue... "
     exit 1
 fi
 

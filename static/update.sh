@@ -1,14 +1,19 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 ## Tech and Me ## - ©2017, https://www.techandme.se/
 #
 # Tested on Ubuntu Server 14.04 & 16.04.
 
 FILE=nextcloud_update.sh
-SCRIPTS=/var/scripts
 
 # Must be root
-[[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+if [[ "$EUID" -ne 0 ]]
+then
+    echo "Must be root to run script, in Ubuntu type: sudo -i"
+    exit 1
+fi
 
 mkdir -p $SCRIPTS
 

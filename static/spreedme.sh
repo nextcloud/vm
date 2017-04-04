@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me, ©2017 - www.techandme.se
 #
 # This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apche 2.4.
@@ -11,50 +13,38 @@
 DEBUG=0
 
 # Directories
-SCRIPTS=/var/scripts
-HTML=/var/www
-NCPATH=$HTML/nextcloud
-SNAPDIR=/var/snap/spreedme
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
 then
-    set -e
-    set -x
-else
-    sleep 1
+    set -ex
 fi
 
 # Check if root
-if [ "$(whoami)" != "root" ]
+if [[ "$EUID" -ne 0 ]]
 then
     echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud_install_production.sh"
+    printf "${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/nextcloud_install_production.sh" "$SCRIPTS"
     echo
     exit 1
 fi
 
 # Check if Nextcloud exists
-if [ -d $NCPATH ]
+if [ ! -d "$NCPATH" ]
 then
-    sleep 1
-else
     echo "Nextcloud does not seem to be installed. This script will exit..."
     exit
 fi
 
 # Check if apache is installed
-if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 1 ]
+if ! [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" -eq 1 ]
 then
-    echo "Apache2 is installed."
-    sleep 1
-else
     echo "Apache is not installed, the script will exit."
     exit 1
 fi
 
 # Install Nextcloud Spreedme Snap
-if [ -d $SNAPDIR ]
+if [ -d "$SNAPDIR" ]
 then
     echo "SpreeMe Snap already seems to be installed and wil now be re-installed..."
     snap remove spreedme
@@ -65,27 +55,26 @@ fi
 
 # Install and activate the SpreedMe app
 SPREEDME_VER=$(wget -q https://raw.githubusercontent.com/strukturag/nextcloud-spreedme/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-SPREEDME_FILE=v$SPREEDME_VER.tar.gz
-SPREEDME_REPO=https://github.com/strukturag/nextcloud-spreedme/archive
+SPREEDME_FILE="v$SPREEDME_VER.tar.gz"
 
-if [ -d $NCPATH/apps/spreedme ]
+if [ -d "$NCPATH/apps/spreedme" ]
 then
     # Remove
-    sudo -u www-data php $NCPATH/occ app:disable spreedme
+    sudo -u www-data php "$NCPATH/occ" app:disable spreedme
     echo "SpreedMe app already seems to be installed and will now be re-installed..."
-    rm -R $NCPATH/apps/spreedme
+    rm -R "$NCPATH/apps/spreedme"
     # Reinstall
-    wget -q $SPREEDME_REPO/$SPREEDME_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$SPREEDME_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $SPREEDME_FILE
-    mv nextcloud-spreedme-$SPREEDME_VER spreedme
+    wget -q "$SPREEDME_REPO/$SPREEDME_FILE" -P "$NCPATH/apps"
+    tar -zxf "$NCPATH/apps/$SPREEDME_FILE" -C "$NCPATH/apps"
+    cd "$NCPATH/apps"
+    rm "$SPREEDME_FILE"
+    mv "nextcloud-spreedme-$SPREEDME_VER" spreedme
 else
-    wget -q $SPREEDME_REPO/$SPREEDME_FILE -P $NCPATH/apps
-    tar -zxf $NCPATH/apps/$SPREEDME_FILE -C $NCPATH/apps
-    cd $NCPATH/apps
-    rm $SPREEDME_FILE
-    mv nextcloud-spreedme-$SPREEDME_VER spreedme
+    wget -q "$SPREEDME_REPO/$SPREEDME_FILE" -P "$NCPATH/apps"
+    tar -zxf "$NCPATH/apps/$SPREEDME_FILE" -C "$NCPATH/apps"
+    cd "$NCPATH/apps"
+    rm "$SPREEDME_FILE"
+    mv "nextcloud-spreedme-$SPREEDME_VER" spreedme
 fi
 sudo -u www-data php $NCPATH/occ app:enable spreedme
 
@@ -115,10 +104,8 @@ a2enmod proxy \
 
 # Add config to vhost
 VHOST=/etc/apache2/spreedme.conf
-if [ -f $VHOST ]
+if [ ! -f $VHOST ]
 then
-    sleep 1
-else
 cat << VHOST > "$VHOST"
 <Location /webrtc>
     ProxyPass http://127.0.0.1:8080/webrtc
@@ -136,18 +123,14 @@ cat << VHOST > "$VHOST"
 VHOST
 fi
 
-if grep -Fxq "Include $VHOST" /etc/apache2/apache2.conf
+if ! grep -Fxq "Include $VHOST" /etc/apache2/apache2.conf
 then
-    echo "Include directive are already enabled in apache2.conf"
-    sleep 1
-else
     sed -i "145i Include $VHOST" "/etc/apache2/apache2.conf"
 fi
 
 # Restart services
 service apache2 restart
-systemctl restart snap.spreedme.spreed-webrtc.service
-if [[ $? > 0 ]]
+if ! systemctl restart snap.spreedme.spreed-webrtc.service
 then
     echo "Something is wrong, the installation did not finish correctly"
     exit 1
@@ -159,8 +142,5 @@ else
     echo
     exit 0
 fi
-echo -e "\e[32m"
-read -p "Press any key to continue..." -n1 -s
+any_key "Press any key to continue..."
 clear
-echo -e "\e[0m"
-

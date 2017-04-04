@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me - ©2017, https://www.techandme.se/
 
 # Check for errors + debug code and abort if something isn't right
@@ -8,101 +10,80 @@
 DEBUG=0
 
 WWW_ROOT=/var/www
-NCPATH=$WWW_ROOT/nextcloud
 NCDATA=/var/ncdata
-SCRIPTS=/var/scripts
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt -y purge)
+CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+export PHPMYADMIN_CONF
 STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
 LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
-UNIXUSER=$SUDO_USER
 NCPASS=nextcloud
 NCUSER=ncadmin
+export NCUSER
 
 # DEBUG mode
 if [ $DEBUG -eq 1 ]
 then
-    set -e
-    set -x
-else
-    sleep 1
+    set -ex
 fi
 
 # Check if root
-if [ "$(whoami)" != "root" ]
+if [[ $EUID -ne 0 ]]
 then
-    echo
-    echo -e "\e[31mSorry, you are not root.\n\e[0mYou must type: \e[36msudo \e[0mbash $SCRIPTS/nextcloud-startup-script.sh"
-    echo
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/nextcloud-startup-script.sh\n"
     exit 1
 fi
 
 # Check network
-echo "Testing if network is OK..."
-service networking restart
-    wget -q -T 10 -t 2 http://github.com > /dev/null
-if [ $? -eq 0 ]
+if network_ok
 then
-    echo -e "\e[32mOnline!\e[0m"
+    printf "${Green}Online!${Color_Off}\n"
 else
-echo "Setting correct interface..."
-# Set correct interface
-{ sed '/# The primary network interface/q' /etc/network/interfaces; printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"; } > /etc/network/interfaces.new
-mv /etc/network/interfaces.new /etc/network/interfaces
-service networking restart
+    echo "Setting correct interface..."
+    # Set correct interface
+    {
+        sed '/# The primary network interface/q' /etc/network/interfaces
+        printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"
+    } > /etc/network/interfaces.new
+    mv /etc/network/interfaces.new /etc/network/interfaces
+    service networking restart
 fi
 
 # Check network
-echo "Testing if network is OK..."
-service networking restart
-    wget -q -T 10 -t 2 http://github.com > /dev/null
-if [ $? -eq 0 ]
+if network_ok
 then
-    echo -e "\e[32mOnline!\e[0m"
+    printf "${Green}Online!${Color_Off}\n"
 else
-    echo
-    echo "Network NOT OK. You must have a working Network connection to run this script."
+    printf "\nNetwork NOT OK. You must have a working Network connection to run this script.\n"
     echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
     exit 1
 fi
 
 # Check where the best mirrors are and update
-echo
-echo "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible."
+printf "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.\n"
 echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
 echo "We recomend you to change the mirrors based on where this is currently installed."
 echo "Checking current mirror..."
-REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
-echo -e "Your current server repository is:  \e[36m$REPO\e[0m"
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
+printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
+
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-echo "Keeping $REPO as mirror..."
-sleep 1
+    echo "Keeping $REPO as mirror..."
+    sleep 1
 else
-  echo "Locating the best mirrors..."
-  apt update -q2
-  apt install python-pip -y
- pip install \
-     --upgrade pip \
-     apt-select
- apt-select -m up-to-date -t 5 -c
- sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
- if [ -f sources.list ]
- then
-     sudo mv sources.list /etc/apt/
-  fi
+    echo "Locating the best mirrors..."
+    apt update -q2 & spinner_loading
+    apt install python-pip -y
+    pip install \
+        --upgrade pip \
+        apt-select
+    apt-select -m up-to-date -t 5 -c
+    sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+    if [ -f sources.list ]
+    then
+        sudo mv sources.list /etc/apt/
+    fi
 fi
 
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
@@ -115,12 +96,10 @@ then
 else
     wget -q $STATIC/passman.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/passman.sh ]
+if [ ! -f $SCRIPTS/passman.sh ]
 then
-    sleep 0.1
-else
     echo "passman failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -132,12 +111,10 @@ then
 else
     wget -q $STATIC/nextant.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/nextant.sh ]
+if [ ! -f $SCRIPTS/nextant.sh ]
 then
-    sleep 0.1
-else
     echo "nextant failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again." 
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again." 
     exit 1
 fi
 
@@ -149,12 +126,10 @@ then
 else
     wget -q $STATIC/collabora.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/collabora.sh ]
+if [ ! -f $SCRIPTS/collabora.sh ]
 then
-    sleep 0.1
-else
     echo "collabora failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -166,12 +141,10 @@ then
 else
     wget -q $STATIC/spreedme.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/spreedme.sh ]
+if [ ! -f $SCRIPTS/spreedme.sh ]
 then
-    sleep 0.1
-else
     echo "spreedme failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -183,12 +156,10 @@ then
 else
     wget -q $STATIC/temporary-fix.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/temporary-fix.sh ]
+if [ ! -f $SCRIPTS/temporary-fix.sh ]
 then
-    sleep 0.1
-else
     echo "temporary-fix failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -200,12 +171,10 @@ then
 else
     wget -q $STATIC/security.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/security.sh ]
+if [ ! -f $SCRIPTS/security.sh ]
 then
-    sleep 0.1
-else
     echo "security failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -217,12 +186,10 @@ then
 else
     wget -q $STATIC/update.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/update.sh ]
+if [ ! -f $SCRIPTS/update.sh ]
 then
-    sleep 0.1
-else
     echo "nextcloud_update failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -234,12 +201,10 @@ then
 else
     wget -q $STATIC/phpmyadmin_install_ubuntu16.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/phpmyadmin_install_ubuntu16.sh ]
+if [ ! -f $SCRIPTS/phpmyadmin_install_ubuntu16.sh ]
 then
-    sleep 0.1
-else
     echo "phpmyadmin_install_ubuntu16 failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -251,12 +216,10 @@ then
 else
     wget -q $STATIC/update-config.php -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/update-config.php ]
+if [ ! -f $SCRIPTS/update-config.php ]
 then
-    sleep 0.1
-else
     echo "update-config failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -268,12 +231,10 @@ then
 else
     wget -q $LETS_ENC/activate-ssl.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/activate-ssl.sh ]
+if [ ! -f $SCRIPTS/activate-ssl.sh ]
 then
-    sleep 0.1
-else
     echo "activate-ssl failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -285,12 +246,10 @@ then
 else
     wget -q $STATIC/trusted.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/trusted.sh ]
+if [ ! -f $SCRIPTS/trusted.sh ]
 then
-    sleep 0.1
-else
     echo "trusted failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -302,12 +261,10 @@ then
 else
     wget -q $STATIC/ip.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/ip.sh ]
+if [ ! -f $SCRIPTS/ip.sh ]
 then
-    sleep 0.1
-else
     echo "ip failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -319,12 +276,10 @@ then
 else
     wget -q $STATIC/test_connection.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/test_connection.sh ]
+if [ ! -f $SCRIPTS/test_connection.sh ]
 then
-    sleep 0.1
-else
     echo "test_connection failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -336,12 +291,10 @@ then
 else
     wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
+if [ ! -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
 then
-    sleep 0.1
-else
     echo "setup_secure_permissions_nextcloud failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -353,12 +306,10 @@ then
 else
     wget -q $STATIC/change_mysql_pass.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/change_mysql_pass.sh ]
+if [ ! -f $SCRIPTS/change_mysql_pass.sh ]
 then
-    sleep 0.1
-else
     echo "change_mysql_pass failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
@@ -370,12 +321,10 @@ then
 else
     wget -q $STATIC/nextcloud.sh -P $SCRIPTS
 fi
-if [ -f $SCRIPTS/nextcloud.sh ]
+if [ ! -f $SCRIPTS/nextcloud.sh ]
 then
-    sleep 0.1
-else
     echo "nextcloud failed"
-    echo "Script failed to download. Please run: 'sudo bash /var/scripts/nextcloud-startup-script.sh' again."
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 # Get the Welcome Screen when http://$address
@@ -385,6 +334,12 @@ then
     wget -q $GITHUB_REPO/index.php -P $SCRIPTS
 else
     wget -q $GITHUB_REPO/index.php -P $SCRIPTS
+fi
+if [ ! -f $SCRIPTS/index.php ]
+then
+    echo "index.php failed"
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
+    exit 1
 fi
 
 mv $SCRIPTS/index.php $WWW_ROOT/index.php && rm -f $WWW_ROOT/html/index.html
@@ -398,7 +353,7 @@ chmod +x -R $SCRIPTS
 chown root:root -R $SCRIPTS
 
 # Allow $UNIXUSER to run figlet script
-chown $UNIXUSER:$UNIXUSER $SCRIPTS/nextcloud.sh
+chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
 
 clear
 echo "+--------------------------------------------------------------------+"
@@ -425,49 +380,34 @@ echo "|   depending on your internet connection.                           |"
 echo "|                                                                    |"
 echo "| ####################### Tech and Me - 2017 ####################### |"
 echo "+--------------------------------------------------------------------+"
-echo -e "\e[32m"
-read -p "Press any key to start the script..." -n1 -s
+any_key "Press any key to start the script..."
 clear
-echo -e "\e[0m"
 
 # VPS?
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
     # Change IP
-    echo -e "\e[0m"
-    echo "OK, we assume you run this locally and we will now configure your IP to be static."
-    echo -e "\e[1m"
+    printf "\n${Color_Off}OK, we assume you run this locally and we will now configure your IP to be static.${Color_Off}\n"
     echo "Your internal IP is: $ADDRESS"
-    echo -e "\e[0m"
-    echo -e "Write this down, you will need it to set static IP"
-    echo -e "in your router later. It's included in this guide:"
-    echo -e "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-    echo -e "\e[32m"
-    read -p "Press any key to set static IP..." -n1 -s
-    echo -e "\e[0m"
-    ifdown $IFACE
+    printf "\n${Color_Off}Write this down, you will need it to set static IP\n"
+    echo "in your router later. It's included in this guide:"
+    echo "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
+    any_key "Press any key to set static IP..."
+    ifdown "$IFACE"
     sleep 1
-    ifup $IFACE
+    ifup "$IFACE"
     sleep 1
-    bash $SCRIPTS/ip.sh
-    if [ "$IFACE" = "" ]
+    bash "$SCRIPTS/ip.sh"
+    if [ -z "$IFACE" ]
     then
         echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
-        wget -q $STATIC/ip2.sh -P $SCRIPTS
-        bash $SCRIPTS/ip2.sh
-        rm $SCRIPTS/ip2.sh
+        wget -q "$STATIC/ip2.sh" -P "$SCRIPTS"
+        bash "$SCRIPTS/ip2.sh"
+        rm -f "$SCRIPTS/ip2.sh"
     fi
-    ifdown $IFACE
+    ifdown "$IFACE"
     sleep 1
-    ifup $IFACE
+    ifup "$IFACE"
     sleep 1
     echo
     echo "Testing if network is OK..."
@@ -477,31 +417,25 @@ then
     if [ "$CONTEST" == "Connected!" ]
     then
         # Connected!
-        echo -e "\e[32mConnected!\e[0m"
-        echo
-        echo -e "We will use the DHCP IP: \e[32m$ADDRESS\e[0m. If you want to change it later then just edit the interfaces file:"
-        echo "sudo nano /etc/network/interfaces"
-        echo
+        printf "${Green}Connected!${Color_Off}\n"
+        printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:"
+        printf "sudo nano /etc/network/interfaces\n"
         echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
-        echo -e "\e[32m"
-        read -p "Press any key to continue..." -n1 -s
-        echo -e "\e[0m"
+        any_key "Press any key to continue..."
     else
         # Not connected!
-        echo -e "\e[31mNot Connected\e[0m\nYou should change your settings manually in the next step."
-        echo -e "\e[32m"
-        read -p "Press any key to open /etc/network/interfaces..." -n1 -s
-        echo -e "\e[0m"
+        printf "${Red}Not Connected${Color_Off}\nYou should change your settings manually in the next step.\n"
+        any_key "Press any key to open /etc/network/interfaces..."
         nano /etc/network/interfaces
         service networking restart
         clear
         echo "Testing if network is OK..."
-        ifdown $IFACE
+        ifdown "$IFACE"
         sleep 1
-        ifup $IFACE
+        ifup "$IFACE"
         sleep 1
-        bash $SCRIPTS/test_connection.sh
+        bash "$SCRIPTS/test_connection.sh"
         sleep 1
     fi 
 else
@@ -512,65 +446,56 @@ clear
 
 # Set keyboard layout
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
-
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-echo "Not changing keyboard layout..."
-sleep 1
-clear
+    echo "Not changing keyboard layout..."
+    sleep 1
+    clear
 else
-dpkg-reconfigure keyboard-configuration
+    dpkg-reconfigure keyboard-configuration
 clear
 fi
 
 # Pretty URLs
-echo "Setting RewriteBase to "/" in config.php..."
+echo "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
 sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
 bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Generate new SSH Keys
-echo
-echo "Generating new SSH keys for the server..."
+printf "\nGenerating new SSH keys for the server...\n"
 sleep 1
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
 # Generate new MySQL password
 echo
-bash $SCRIPTS/change_mysql_pass.sh && wait
-if [ $? -eq 0 ]
-then
-rm $SCRIPTS/change_mysql_pass.sh
-echo "[mysqld]" >> /root/.my.cnf
-echo "innodb_large_prefix=on" >> /root/.my.cnf
-echo "innodb_file_format=barracuda" >> /root/.my.cnf
-echo "innodb_file_per_table=1" >> /root/.my.cnf
+bash "$SCRIPTS/change_mysql_pass.sh" && wait # is the exit status always 0 on if this is sucessfull?
+if [ $? -eq 0 ]; then # skip this?
+  rm "$SCRIPTS/change_mysql_pass.sh"
+  {
+  echo "[mysqld]"
+  echo "innodb_large_prefix=on"
+  echo "innodb_file_format=barracuda"
+  echo "innodb_file_per_table=1"
+  } >> /root/.my.cnf
 fi
 
 # Enable UTF8mb4 (4-byte support)
 NCDB=nextcloud_db
 PW_FILE=/var/mysql_password.txt
-echo
-echo "Enabling UTF8mb4 support on $NCDB...."
+printf "\nEnabling UTF8mb4 support on $NCDB....\n"
 echo "Please be patient, it may take a while."
-sudo /etc/init.d/mysql restart
+sudo /etc/init.d/mysql restart & spinner_loading
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
-    mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+    mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" # want to test if this is succesfull
 fi
-if [ $? -eq 0 ]
+if [ $? -eq 0 ] # Skip this?
 then
-sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
-sudo -u www-data $NCPATH/occ maintenance:repair
+    sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
+    sudo -u www-data $NCPATH/occ maintenance:repair
 fi
 
 # Install phpMyadmin
@@ -587,61 +512,15 @@ cat << LETSENC
 LETSENC
 
 # Let's Encrypt
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
     bash $SCRIPTS/activate-ssl.sh
 else
     echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    any_key "Press any key to continue..."
 fi
 clear
-
-# Whiptail auto-size
-calc_wt_size() {
-  WT_HEIGHT=17
-  WT_WIDTH=$(tput cols)
-
-  if [ -z "$WT_WIDTH" ] || [ "$WT_WIDTH" -lt 60 ]; then
-    WT_WIDTH=80
-  fi
-  if [ "$WT_WIDTH" -gt 178 ]; then
-    WT_WIDTH=120
-  fi
-  WT_MENU_HEIGHT=$((WT_HEIGHT-7))
-}
-
-# Install Apps
-function collabora {
-    bash $SCRIPTS/collabora.sh
-    rm $SCRIPTS/collabora.sh
-}
-
-function nextant {
-    bash $SCRIPTS/nextant.sh
-    rm $SCRIPTS/nextant.sh
-}
-
-function passman {
-    bash $SCRIPTS/passman.sh
-    rm $SCRIPTS/passman.sh
-}
-
-
-function spreedme {
-    bash $SCRIPTS/spreedme.sh
-    rm $SCRIPTS/spreedme.sh
-
-}
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Collabora" "(Online editing)   " OFF \
@@ -651,30 +530,31 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 
 while read -r -u 9 choice
 do
-        case $choice in
-                Collabora) collabora
-                ;;
-                Nextant) nextant
-                ;;
-                Passman) passman
-                ;;
-                Spreed.ME) spreedme
-                ;;
-                *)
-                ;;
-        esac
+    case $choice in
+        Collabora)
+            install_app collabora
+        ;;
+
+        Nextant)
+            install_app nextant
+        ;;
+
+        Passman)
+            install_app passman
+        ;;
+
+        Spreed.ME)
+            install_app spreedme
+        ;;
+
+        *)
+        ;;
+    esac
 done 9< results
 rm -f results
 clear
 
 # Add extra security
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
 if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
 then
     bash $SCRIPTS/security.sh
@@ -682,71 +562,49 @@ then
 else
     echo
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
-    echo -e "\e[32m"
-    read -p "Press any key to continue... " -n1 -s
-    echo -e "\e[0m"
+    any_key "Press any key to continue..."
 fi
 clear
 
 # Change Timezone
 echo "Current timezone is $(cat /etc/timezone)"
-echo "You must change timezone to your timezone"
-echo -e "\e[32m"
-read -p "Press any key to change timezone... " -n1 -s
-echo -e "\e[0m"
+echo "You must change it to your timezone"
+any_key "Press any key to change timezone..."
 dpkg-reconfigure tzdata
 echo
 sleep 3
 clear
 
 # Change password
-echo -e "\e[0m"
+printf "${Color_Off}\n"
 echo "For better security, change the system user password for [$UNIXUSER]"
-echo -e "\e[32m"
-read -p "Press any key to change password for system user... " -n1 -s
-echo -e "\e[0m"
-sudo passwd $UNIXUSER
-if [[ $? > 0 ]]
-then
-    sudo passwd $UNIXUSER
-else
-    sleep 2
-fi
+any_key "Press any key to change password for system user..."
+while true
+do
+    sudo passwd "$UNIXUSER" && break
+done
 echo
 clear
 NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
-echo -e "\e[0m"
+printf "${Color_Off}\n"
 echo "For better security, change the Nextcloud password for [$NCADMIN]"
 echo "The current password for $NCADMIN is [$NCPASS]"
-echo -e "\e[32m"
-read -p "Press any key to change password for Nextcloud... " -n1 -s
-echo -e "\e[0m"
-sudo -u www-data php $NCPATH/occ user:resetpassword $NCADMIN
-if [[ $? > 0 ]]
-then
-    sudo -u www-data php $NCPATH/occ user:resetpassword $NCADMIN
-else
-    sleep 2
-fi
+any_key "Press any key to change password for Nextcloud..."
+while true
+do
+    sudo -u www-data php "$NCPATH/occ" user:resetpassword "$NCADMIN" && break
+done
 clear
-
-# Upgrade system
-echo "System will now upgrade..."
-sleep 2
-echo
-bash $SCRIPTS/update.sh
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
-service apache restart
+service apache reload
 
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 VALUE="# php_value upload_max_filesize 513M"
-if grep -Fxq "$VALUE" $NCPATH/.htaccess
+if ! grep -Fxq "$VALUE" $NCPATH/.htaccess
 then
-        echo "Value correct"
-else
         sed -i 's/  php_value upload_max_filesize 513M/# php_value upload_max_filesize 513M/g' $NCPATH/.htaccess
         sed -i 's/  php_value post_max_size 513M/# php_value post_max_size 513M/g' $NCPATH/.htaccess
         sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' $NCPATH/.htaccess
@@ -757,67 +615,28 @@ bash $SCRIPTS/temporary-fix.sh
 rm $SCRIPTS/temporary-fix.sh
 
 # Cleanup 1
-apt autoremove -y
-apt autoclean
-echo "$CLEARBOOT"
-clear
+sudo -u www-data php "$NCPATH/occ" maintenance:repair
+rm -f "$SCRIPTS/ip.sh"
+rm -f "$SCRIPTS/test_connection.sh"
+rm -f "$SCRIPTS/instruction.sh"
+rm -f "$NCDATA/nextcloud.log"
 
-# Cleanup 2
-sudo -u www-data php $NCPATH/occ maintenance:repair
-rm $SCRIPTS/ip.sh
-rm $SCRIPTS/test_connection.sh
-rm $SCRIPTS/instruction.sh
-rm $NCDATA/nextcloud.log
-rm $SCRIPTS/nextcloud-startup-script.sh
-for f in /home/$UNIXUSER/* ; do
-rm -f *.sh
-rm -f *.sh.*
-done;
+rm -f "$SCRIPTS/nextcloud-startup-script.sh"
+find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
-for f in /root/* ; do
-rm -f *.sh
-rm -f *.sh.*
-done;
 
-for f in /home/$UNIXUSER/* ; do
-rm -f *.html
-rm -f *.html.*
-done;
+sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
 
-for f in /root/* ; do
-rm -f *.html
-rm -f *.html.*
-done;
+truncate -s 0 \
+    /root/.bash_history \
+    "/home/$UNIXUSER/.bash_history" \
+    /var/spool/mail/root \
+    "/var/spool/mail/$UNIXUSER" \
+    /var/log/apache2/access.log \
+    /var/log/apache2/error.log \
+    /var/log/cronjobs_success.log
 
-for f in /home/$UNIXUSER/* ; do
-rm -f *.tar
-rm -f *.tar.*
-done;
-
-for f in /root/* ; do
-rm -f *.tar
-rm -f *.tar.*
-done;
-
-for f in /home/$UNIXUSER/* ; do
-rm -f *.zip
-rm -f *.zip.*
-done;
-
-for f in /root/* ; do
-rm -f *.zip
-rm -f *.zip.*
-done;
-sed -i "s|instruction.sh|nextcloud.sh|g" /home/$UNIXUSER/.bash_profile
-cat /dev/null > /root/.bash_history
-cat /dev/null > /home/$UNIXUSER/.bash_history
-cat /dev/null > /var/spool/mail/root
-cat /dev/null > /var/spool/mail/$UNIXUSER
-cat /dev/null > /var/log/apache2/access.log
-cat /dev/null > /var/log/apache2/error.log
-cat /dev/null > /var/log/cronjobs_success.log
-sed -i "s|sudo -i||g" /home/$UNIXUSER/.bash_profile
-cat /dev/null > /etc/rc.local
+sed -i "s|sudo -i||g" "/home/$UNIXUSER/.bash_profile"
 cat << RCLOCAL > "/etc/rc.local"
 #!/bin/sh -e
 #
@@ -836,25 +655,38 @@ exit 0
 
 RCLOCAL
 
+# Upgrade system
+echo "System will now upgrade..."
+sleep 2
+echo
+bash $SCRIPTS/update.sh
+
+# Cleanup 2
+apt autoremove -y
+apt autoclean
+echo "$CLEARBOOT"
+find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o name '*.tar*' -o name '*.zip*' \) -delete
+clear
+
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 
 # Success!
 clear
-echo -e "\e[32m"
+printf "%s\n" "${Green}"
 echo    "+--------------------------------------------------------------------+"
 echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
 echo    "|                                                                    |"
-echo -e "|         \e[0mLogin to Nextcloud in your browser:\e[36m" $ADDRESS2"\e[32m           |"
+printf "|         ${Color_Off}Login to Nextcloud in your browser:${Cyan}\" $ADDRESS2\"${Green}         |\n"
 echo    "|                                                                    |"
-echo -e "|         \e[0mPublish your server online! \e[36mhttps://goo.gl/iUGE2U\e[32m          |"
+printf "|         ${Color_Off}Publish your server online! ${Cyan}https://goo.gl/iUGE2U${Green}          |\n"
 echo    "|                                                                    |"
-echo -e "|         \e[0mTo login to MySQL just type: \e[36m'mysql -u root'\e[32m               |"
+printf "|         ${Color_Off}To login to MySQL just type: ${Cyan}'mysql -u root'${Green}               |\n"
 echo    "|                                                                    |"
-echo -e "|   \e[0mTo update this VM just type: \e[36m'sudo bash /var/scripts/update.sh'\e[32m  |"
+printf "|   ${Color_Off}To update this VM just type: ${Cyan}'sudo bash /var/scripts/update.sh'${Green}  |\n"
 echo    "|                                                                    |"
-echo -e "|    \e[91m#################### Tech and Me - 2017 ####################\e[32m    |"
+printf "|    ${IRed}#################### Tech and Me - 2017 ####################${Green}    |\n"
 echo    "+--------------------------------------------------------------------+"
-echo -e "\e[0m"
+printf "${Color_Off}\n"
 
 # Update Config
 if [ -f $SCRIPTS/update-config.php ]
@@ -884,7 +716,6 @@ fi
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
-echo "Installation is now done. System will now reboot..."
+rm -f "$SCRIPTS/nextcloud-startup-script.sh"
+any_key "Installation finished, press any key to reboot system..."
 reboot
-
-exit 0

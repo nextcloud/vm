@@ -1,7 +1,8 @@
 #!/bin/bash
-wget -q -T 10 -t 2 http://google.com > /dev/null
-if [ $? -eq 0 ]
+
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+if wget -q -T 10 -t 2 http://google.com > /dev/null
 then
-ntpdate -s 1.se.pool.ntp.org
+    ntpdate -s 1.se.pool.ntp.org
 fi
 exit

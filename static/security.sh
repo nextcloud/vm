@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. <(curl -sL https://cdn.rawgit.com/morph027/vm/color-vars/lib.sh)
+
 # Tech and Me, ©2017 - www.techandme.se
 
 # Based on: http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
@@ -14,10 +16,8 @@ set -e
 apt -y install libapache2-mod-evasive
 mkdir -p /var/log/apache2/evasive
 chown -R www-data:root /var/log/apache2/evasive
-if [ -f $ENVASIVE ]
+if [ ! -f $ENVASIVE ]
 then
-    echo "Envasive mod exists"
-else
     touch $ENVASIVE
     cat << ENVASIVE > "$ENVASIVE"
 DOSHashTableSize 2048
@@ -35,10 +35,8 @@ apt -y install libapache2-mod-qos
 
 # Protect against DNS Injection
 apt -y install libapache2-mod-spamhaus
-if [ -f $SPAMHAUS ]
+if [ ! -f $SPAMHAUS ]
 then
-    echo "Spamhaus mod exists"
-else
     touch $SPAMHAUS
     cat << SPAMHAUS >> "$APACHE2"
 
@@ -68,12 +66,11 @@ fi
 # Enable $SPAMHAUS
 sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
 
-service apache2 restart
-if [[ $? > 0 ]]
+if service apache2 restart
 then
+    echo "Security added!"
+else
     echo "Something went wrong..."
     sleep 5
     exit 1
-else
-    echo "Security added!"
 fi
