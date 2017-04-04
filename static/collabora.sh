@@ -22,7 +22,7 @@ export HTTPS_CONF
 # Letsencrypt
 LETSENCRYPTPATH=/etc/letsencrypt
 CERTFILES=$LETSENCRYPTPATH/live
-DHPARAMS=""$CERTFILES"/"$NCDOMAIN"/dhparam.pem"
+DHPARAMS=""$CERTFILES"/"$SUBDOMAIN"/dhparam.pem"
 # WANIP
 WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
 # App
@@ -54,7 +54,7 @@ apt update -q2
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
-if ! curl -s https://${NCDOMAIN//\\/}/status.php | grep -q 'installed":true'
+if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
     echo
     echo "It seems like Nextcloud is not installed or that you don't use https on:"
