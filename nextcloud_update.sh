@@ -51,14 +51,14 @@ if [ $? -eq 0 ]; then
     rm -f "nextcloud-$NCVERSION.tar.bz2"
 else
     echo
-    printf "\e[91mNextcloud $NCVERSION doesn't exist.\e[0m\n"
+    printf "\e[91mNextcloud %s doesn't exist.\e[0m\n" "$NCVERSION"
     echo "Please check available versions here: $NCREPO"
     echo
     exit 1
 fi
 
 # Major versions unsupported
-if [ ${CURRENTVERSION%%.*} == $NCBAD ]
+if [ "${CURRENTVERSION%%.*}" == "$NCBAD" ]
 then
     echo
     echo "Please note that updates between multiple major versions are unsupported! Your situation is:"
@@ -101,18 +101,26 @@ then
     rm -R $BACKUP
     mkdir -p $BACKUP
 fi
-rsync -Aax $NCPATH/config $BACKUP
-rsync -Aax $NCPATH/themes $BACKUP
-rsync -Aax $NCPATH/apps $BACKUP
-if [[ ! $? -eq 0 ]] # Do a while loop here that checks all the paths @morph027
+
+for PATH in config themes apps
+do
+    rsync -Aax "$NCPATH/$PATH" "$BACKUP"
+    if [ $? -eq 0 ]
+    then
+        BACKUP_OK=1
+    else
+        unset BACKUP_OK
+    fi
+done
+
+if [ -z $BACKUP_OK ]
 then
     echo "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
 else
-    printf "\e[32m\n"
-    echo "Backup OK!"
-    printf "\e[0m\n"
+    printf "\e[32m\nBackup OK!\e[0m\n"
 fi
+
 echo "Downloading $NCREPO/nextcloud-$NCVERSION.tar.bz2..."
 wget -q -T 10 -t 2 "$NCREPO/nextcloud-$NCVERSION.tar.bz2" -P "$HTML"
 
