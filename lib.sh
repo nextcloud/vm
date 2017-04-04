@@ -113,6 +113,7 @@ SNAPDIR=/var/snap/spreedme
 REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 UNIXUSER=$SUDO_USER
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+NCREPO="https://download.nextcloud.com/server/releases/"
 
 ## bash colors
 # Reset
