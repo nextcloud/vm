@@ -114,8 +114,7 @@ apt install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
-$CHECK_CURRENT_REPO=1
-unset $CHECK_CURRENT_REPO
+CHECK_CURRENT_REPO=1
 echo
 printf "Your current server repository is:  ${Cyan}%s${Color_Off}\n" "$REPO"
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
@@ -136,6 +135,7 @@ else
      sudo mv sources.list /etc/apt/
   fi
 fi
+unset CHECK_CURRENT_REPO
 clear
 
 # Set keyboard layout
