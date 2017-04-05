@@ -79,7 +79,6 @@ download_script update
 download_script activate-ssl
 download_script trusted
 download_script ip
-download_script ip2 (check this)
 download_script test_connection
 download_script setup_secure_permissions_nextcloud
 download_script change_mysql_pass
@@ -174,7 +173,7 @@ then
     if [ -z "$IFACE" ]
     then
         echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
-        wget -q "$STATIC/ip2.sh" -P "$SCRIPTS"
+        download_script ip2
         bash "$SCRIPTS/ip2.sh"
         rm -f "$SCRIPTS/ip2.sh"
     fi
