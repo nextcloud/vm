@@ -242,6 +242,7 @@ SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_co
 # Passman
 PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
 PASSVER_FILE=passman_$PASSVER.tar.gz
+PASSVER_REPO=https://releases.passman.cc
 SHA256=/tmp/sha256
 # Calendar
 CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
