@@ -159,7 +159,7 @@ SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 PW_FILE=/var/mysql_password.txt
 MYCNF=/root/.my.cnf
-OLDMYSQL=$(cat $PW_FILE)
+[ ! -z $CHANGE_MYSQL ] && OLDMYSQL=$(cat $PW_FILE)
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Nextcloud version
 CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')

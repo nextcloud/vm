@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Tech and Me © - 2017, https://www.techandme.se/
-
+CHANGE_MYSQL=1
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
