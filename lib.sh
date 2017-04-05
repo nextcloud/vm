@@ -71,7 +71,7 @@ calc_wt_size() {
 }
 
 # Initial download of script
-# call like: download_script name_of_script(.sh)
+# call like: download_static_script name_of_script(.sh)
 download_static_script() {
     # Get ${1} script
     if [ -f "${SCRIPTS}/${1}.sh" ]
