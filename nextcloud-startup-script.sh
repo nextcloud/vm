@@ -74,66 +74,6 @@ fi
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
 
-# Get passman script
-if [ -f "$SCRIPTS"/passman.sh ]
-then
-    rm "$SCRIPTS"/passman.sh
-    wget -q "$STATIC"/passman.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/passman.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/passman.sh ]
-then
-    echo "passman failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Get nextant script
-if [ -f "$SCRIPTS"/nextant.sh ]
-then
-    rm "$SCRIPTS"/nextant.sh
-    wget -q "$STATIC"/nextant.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/nextant.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/nextant.sh ]
-then
-    echo "nextant failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again." 
-    exit 1
-fi
-
-# Get collabora script
-if [ -f "$SCRIPTS"/collabora.sh ]
-then
-    rm "$SCRIPTS"/collabora.sh
-    wget -q "$STATIC"/collabora.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/collabora.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/collabora.sh ]
-then
-    echo "collabora failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Get spreedme script
-if [ -f "$SCRIPTS"/spreedme.sh ]
-then
-    rm "$SCRIPTS"/spreedme.sh
-    wget -q "$STATIC"/spreedme.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/spreedme.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/spreedme.sh ]
-then
-    echo "spreedme failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
 # Get script for temporary fixes
 if [ -f "$SCRIPTS"/temporary.sh ]
 then
@@ -175,21 +115,6 @@ fi
 if [ ! -f "$SCRIPTS"/update.sh ]
 then
     echo "nextcloud_update failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# phpMyadmin
-if [ -f "$SCRIPTS"/phpmyadmin_install_ubuntu16.sh ]
-then
-    rm "$SCRIPTS"/phpmyadmin_install_ubuntu16.sh
-    wget -q "$STATIC"/phpmyadmin_install_ubuntu16.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/phpmyadmin_install_ubuntu16.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/phpmyadmin_install_ubuntu16.sh ]
-then
-    echo "phpmyadmin_install_ubuntu16 failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
