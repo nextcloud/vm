@@ -2,7 +2,9 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+unset FIRST_IFACE
+unset CHECK_CURRENT_REPO
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
@@ -70,71 +72,20 @@ else
     fi
 fi
 
-
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
+# All the shell scripts in static (.sh)
+download_static_script temporary-fix
+download_static_script security
+download_static_script update
+download_static_script trusted
+download_static_script ip
+download_static_script test_connection
+download_static_script setup_secure_permissions_nextcloud
+download_static_script change_mysql_pass
+download_static_script nextcloud
 
-# Get script for temporary fixes
-if [ -f "$SCRIPTS"/temporary.sh ]
-then
-    rm "$SCRIPTS"/temporary-fix.sh
-    wget -q "$STATIC"/temporary-fix.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/temporary-fix.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/temporary-fix.sh ]
-then
-    echo "temporary-fix failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Get security script
-if [ -f "$SCRIPTS"/security.sh ]
-then
-    rm "$SCRIPTS"/security.sh
-    wget -q "$STATIC"/security.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/security.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/security.sh ]
-then
-    echo "security failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Get the latest nextcloud_update.sh
-if [ -f "$SCRIPTS"/update.sh ]
-then
-    rm "$SCRIPTS"/update.sh
-    wget -q "$STATIC"/update.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/update.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/update.sh ]
-then
-    echo "nextcloud_update failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Update Config
-if [ -f "$SCRIPTS"/update-config.php ]
-then
-    rm "$SCRIPTS"/update-config.php
-    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/update-config.php ]
-then
-    echo "update-config failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Activate SSL
+# Lets Encrypt
 if [ -f "$SCRIPTS"/activate-ssl.sh ]
 then
     rm "$SCRIPTS"/activate-ssl.sh
@@ -149,95 +100,21 @@ then
     exit 1
 fi
 
-# Sets trusted domain in when nextcloud-startup-script.sh is finished
-if [ -f "$SCRIPTS"/trusted.sh ]
+# Update Config PHP
+if [ -f "$SCRIPTS"/update-config.php ]
 then
-    rm "$SCRIPTS"/trusted.sh
-    wget -q "$STATIC"/trusted.sh -P "$SCRIPTS"
+    rm "$SCRIPTS"/update-config.php
+    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
 else
-    wget -q "$STATIC"/trusted.sh -P "$SCRIPTS"
+    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
 fi
-if [ ! -f "$SCRIPTS"/trusted.sh ]
+if [ ! -f "$SCRIPTS"/update-config.php ]
 then
-    echo "trusted failed"
+    echo "update-config failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
 
-# Sets static IP to UNIX
-if [ -f "$SCRIPTS"/ip.sh ]
-then
-    rm "$SCRIPTS"/ip.sh
-    wget -q "$STATIC"/ip.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/ip.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/ip.sh ]
-then
-    echo "ip failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Tests connection after static IP is set
-if [ -f "$SCRIPTS"/test_connection.sh ]
-then
-    rm "$SCRIPTS"/test_connection.sh
-    wget -q "$STATIC"/test_connection.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/test_connection.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/test_connection.sh ]
-then
-    echo "test_connection failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Sets secure permissions after upgrade
-if [ -f "$SCRIPTS"/setup_secure_permissions_nextcloud.sh ]
-then
-    rm "$SCRIPTS"/setup_secure_permissions_nextcloud.sh
-    wget -q "$STATIC"/setup_secure_permissions_nextcloud.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/setup_secure_permissions_nextcloud.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/setup_secure_permissions_nextcloud.sh ]
-then
-    echo "setup_secure_permissions_nextcloud failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Change MySQL password
-if [ -f "$SCRIPTS"/change_mysql_pass.sh ]
-then
-    rm "$SCRIPTS"/change_mysql_pass.sh
-    wget -q "$STATIC"/change_mysql_pass.sh
-else
-    wget -q "$STATIC"/change_mysql_pass.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/change_mysql_pass.sh ]
-then
-    echo "change_mysql_pass failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Get figlet Tech and Me
-if [ -f "$SCRIPTS"/nextcloud.sh ]
-then
-    rm "$SCRIPTS"/nextcloud.sh
-    wget -q "$STATIC"/nextcloud.sh -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/nextcloud.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/nextcloud.sh ]
-then
-    echo "nextcloud failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
 # Get the Welcome Screen when http://$address
 if [ -f "$SCRIPTS"/index.php ]
 then
@@ -255,7 +132,6 @@ fi
 
 mv $SCRIPTS/index.php $HTML/index.php && rm -f $HTML/html/index.html
 chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
-
 
 # Change 000-default to $WEB_ROOT
 sed -i "s|DocumentRoot /var/www/html|DocumentRoot $HTML|g" /etc/apache2/sites-available/000-default.conf
@@ -313,7 +189,7 @@ then
     if [ -z "$IFACE" ]
     then
         echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
-        wget -q "$STATIC/ip2.sh" -P "$SCRIPTS"
+        download_static_script ip2
         bash "$SCRIPTS/ip2.sh"
         rm -f "$SCRIPTS/ip2.sh"
     fi
@@ -330,7 +206,7 @@ then
     then
         # Connected!
         printf "${Green}Connected!${Color_Off}\n"
-        printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:"
+        printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:\n"
         printf "sudo nano /etc/network/interfaces\n"
         echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
@@ -382,16 +258,16 @@ rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
 # Generate new MySQL password
-echo
-bash "$SCRIPTS/change_mysql_pass.sh" && wait # is the exit status always 0 on if this is sucessfull?
-if [ $? -eq 0 ]; then # skip this?
-  rm "$SCRIPTS/change_mysql_pass.sh"
-  {
-  echo "[mysqld]"
-  echo "innodb_large_prefix=on"
-  echo "innodb_file_format=barracuda"
-  echo "innodb_file_per_table=1"
-  } >> /root/.my.cnf
+echo "Generating new MySQL password..."
+if bash "$SCRIPTS/change_mysql_pass.sh" && wait
+then
+   rm "$SCRIPTS/change_mysql_pass.sh"
+   {
+   echo "[mysqld]"
+   echo "innodb_large_prefix=on"
+   echo "innodb_file_format=barracuda"
+   echo "innodb_file_per_table=1"
+   } >> /root/.my.cnf
 fi
 
 # Enable UTF8mb4 (4-byte support)
@@ -411,9 +287,7 @@ then
 fi
 
 # Install phpMyadmin
-echo
-bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
-rm "$SCRIPTS"/phpmyadmin_install_ubuntu16.sh
+install_3rdparty_app phpmyadmin_install_ubuntu16
 clear
 
 cat << LETSENC
@@ -510,7 +384,7 @@ clear
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
-service apache reload
+service apache2 reload
 
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
@@ -532,11 +406,8 @@ rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
-
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
-
-
 sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
 
 truncate -s 0 \
@@ -580,7 +451,6 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | 
 echo "$CLEARBOOT"
 
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
-
 # Success!
 clear
 printf "%s\n" "${Green}"

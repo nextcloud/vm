@@ -45,5 +45,7 @@ sudo -i
 UNIXUSER-PROFILE
 
 chown "$UNIXUSER:$UNIXUSER" "$UNIXUSER_PROFILE"
+chown "$UNIXUSER:$UNIXUSER" "$SCRIPTS/history.sh"
+chown "$UNIXUSER:$UNIXUSER" "$SCRIPTS/instruction.sh"
 
 exit 0

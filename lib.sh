@@ -70,6 +70,30 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
+# Initial download of script
+# call like: download_static_script name_of_script(.sh)
+download_static_script() {
+    # Get ${1} script
+    if [ -f "${SCRIPTS}/${1}.sh" ]
+    then
+        rm -f "${SCRIPTS}/${1}.sh"
+        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
+    elif [ ! -f "${SCRIPTS}/${1}.sh" ]
+    then
+        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
+    fi
+    # Check ${1} script is downloaded
+    if [ -f "${SCRIPTS}/${1}.sh" ]
+    then
+    sleep 0.1
+    else
+        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh' again."
+        echo "If you get this error when running the nextcloud-startup-script then just re-run it with:"
+        echo "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        exit 1
+    fi
+}
+
 # Install Apps
 # call like: install_3rdparty_app collabora|nextant|passman|spreedme|contacts|calendar|webmin
 install_3rdparty_app() {
@@ -86,11 +110,11 @@ install_3rdparty_app() {
     if [ -f "${SCRIPTS}/${1}.sh" ]
     then
         # Run ${1} script
-        "${SCRIPTS}/${1}.sh"
+        bash "${SCRIPTS}/${1}.sh"
         rm -f "$SCRIPTS/${1}.sh"
     else
         echo "Downloading ${1} failed"
-        echo "Script failed to download. Please run: 'sudo bash ${SCRIPTS}/${1}.sh' again."
+        echo "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh' again."
         sleep 3
     fi
 }
@@ -131,6 +155,7 @@ spinner_loading() {
 any_key() {
     local PROMPT="$1"
     read -r -p "$(printf "${Green}${PROMPT}${Color_Off}")" -n1 -s
+    echo
 }
 
 ## variables
@@ -147,9 +172,9 @@ BACKUP=/var/NCBACKUP
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 OS=$(grep -ic "Ubuntu" /etc/issue.net)
 # Network
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+[ ! -z "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
-REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
+[ ! -z "$CHECK_CURRENT_REPO" ] && REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 WGET="/usr/bin/wget"
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
