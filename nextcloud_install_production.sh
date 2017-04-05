@@ -415,13 +415,13 @@ while read -r -u 9 choice
 do
     case "$choice" in
         Calendar)
-            wget -q "$STATIC"/calendar.sh -P "$SCRIPTS" && install_app calendar
+            wget -q "$STATIC"/calendar.sh -P "$SCRIPTS" && install_3rdparty_app calendar
         ;;
         Contacts)
-            wget -q "$STATIC"/contacts.sh -P "$SCRIPTS" && install_app contacts
+            wget -q "$STATIC"/contacts.sh -P "$SCRIPTS" && install_3rdparty_app contacts
         ;;
         Webmin)
-            wget -q "$STATIC"/webmin.sh -P "$SCRIPTS" && install_app webmin
+            wget -q "$STATIC"/webmin.sh -P "$SCRIPTS" && install_3rdparty_app webmin
         ;;
         *)
         ;;
