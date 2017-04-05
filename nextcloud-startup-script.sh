@@ -271,9 +271,7 @@ then
 fi
 
 # Install phpMyadmin
-echo
-bash $SCRIPTS/phpmyadmin_install_ubuntu16.sh
-rm "$SCRIPTS"/phpmyadmin_install_ubuntu16.sh
+install_3rdparty_app phpmyadmin_install_ubuntu16
 clear
 
 cat << LETSENC
