@@ -10,7 +10,7 @@ addons:
     - shellcheck
 
 script:
- - find -name '*.sh' -exec shellcheck -x {} \;
+  - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
 
 matrix:
   fast_finish: true

@@ -1,11 +1,11 @@
 #!/bin/bash
-
-# Tech and Me © - 2017, https://www.techandme.se/
-NC_UPDATE=1
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+unset NC_UPDATE
+
+# Tech and Me © - 2017, https://www.techandme.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
