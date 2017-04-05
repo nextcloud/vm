@@ -27,10 +27,10 @@ mkdir -p "$SCRIPTS"
 if [ -f "$SCRIPTS/$FILE" ]
 then
     rm -f "$SCRIPTS/$FILE"
-    wget -q "https://raw.githubusercontent.com/nextcloud/vm/master/$FILE" -P "$SCRIPTS"
+    wget -q "$GITHUB_REPO/$FILE" -P "$SCRIPTS"
     bash "$SCRIPTS/$FILE"
 else
-    wget -q "https://raw.githubusercontent.com/nextcloud/vm/master/$FILE" -P "$SCRIPTS"
+    wget -q "$GITHUB_REPO/$FILE" -P "$SCRIPTS"
     bash "$SCRIPTS/$FILE"
 fi
 
