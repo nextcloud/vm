@@ -519,19 +519,19 @@ while read -r -u 9 choice
 do
     case $choice in
         Collabora)
-            install_app collabora
+            install_3rdparty_app collabora
         ;;
 
         Nextant)
-            install_app nextant
+            install_3rdparty_app nextant
         ;;
 
         Passman)
-            install_app passman
+            install_3rdparty_app passman
         ;;
 
         Spreed.ME)
-            install_app spreedme
+            install_3rdparty_app spreedme
         ;;
 
         *)
