@@ -67,7 +67,7 @@ calc_wt_size() {
 }
 
 # Install Apps
-# call like: install_app collabora|nextant|passman|spreedme
+# call like: install_app collabora|nextant|passman|spreedme|contacts|calendar|webmin
 install_3rdparty_app() {
     "${SCRIPTS}/${1}.sh"
     rm -f "$SCRIPTS/${1}.sh"
@@ -138,10 +138,10 @@ INTERFACES="/etc/network/interfaces"
 NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
 GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+GITHUB_REPO="https://raw.githubusercontent.com/morph027/vm/master"
 NCREPO="https://download.nextcloud.com/server/releases/"
-STATIC="https://raw.githubusercontent.com/nextcloud/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt"
+STATIC="https://raw.githubusercontent.com/morph027/vm/master/static"
+LETS_ENC="https://raw.githubusercontent.com/morph027/vm/master/lets-encrypt"
 # User information
 NCPASS=nextcloud
 NCUSER=ncadmin
@@ -195,6 +195,14 @@ SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_co
 PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
 PASSVER_FILE=passman_$PASSVER.tar.gz
 SHA256=/tmp/sha256
+# Calendar
+CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+CALVER_FILE=calendar.tar.gz
+CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
+# Contacts
+CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+CONVER_FILE=contacts.tar.gz
+CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"

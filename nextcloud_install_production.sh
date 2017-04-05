@@ -1,24 +1,20 @@
 #!/bin/bash
+
+# Tech and Me © - 2017, https://www.techandme.se/
+
+# Prefer IPv4
+sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 
-# Tech and Me, ©2017 - www.techandme.se
-#
-# This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apache 2.4.
-# Ubuntu 16.04 is required.
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
 DEBUG=0
-
-# DEBUG mode
-if [ $DEBUG -eq 1 ]
-then
-    set -ex
-fi
+debug_mode
 
 # Check if root
 if ! is_root
@@ -38,9 +34,6 @@ echo "Please create a user with sudo permissions if you want an optimal installa
 wget -q "$STATIC"/adduser.sh
 bash adduser.sh
 rm -f adduser.sh
-
-# Prefer IPv4
-sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
@@ -411,60 +404,7 @@ sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtppassword --value="
 
 # Install Libreoffice Writer to be able to read MS documents.
 sudo apt install --no-install-recommends libreoffice-writer -y
-
-# Nextcloud apps
-CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-CONVER_FILE=contacts.tar.gz
-CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-CALVER_FILE=calendar.tar.gz
-
 sudo -u www-data php "$NCPATH"/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-
-install_calendar() {
-# Download and install Calendar
-if [ ! -d "$NCPATH"/apps/calendar ]
-then
-    wget -q "$CALVER_REPO/v$CALVER/$CALVER_FILE" -P "$NCPATH/apps"
-    tar -zxf "$NCPATH/apps/$CALVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
-    rm "$CALVER_FILE"
-fi
-
-# Enable Calendar
-if [ -d "$NCPATH"/apps/calendar ]
-then
-    sudo -u www-data php "$NCPATH"/occ app:enable calendar
-fi
-
-}
-
-install_contacts() {
-# Download and install Contacts
-if [ ! -d "$NCPATH/apps/contacts" ]
-then
-    wget -q "$CONVER_REPO/v$CONVER/$CONVER_FILE" -P "$NCPATH/apps"
-    tar -zxf "$NCPATH/apps/$CONVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
-    rm "$CONVER_FILE"
-fi
-
-# Enable Contacts
-if [ -d "$NCPATH"/apps/contacts ]
-then
-    sudo -u www-data php "$NCPATH"/occ app:enable contacts
-fi
-}
-
-webmin() {
-# Install packages for Webmin
-apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
-
-# Install Webmin
-sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
-wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
-apt update -q2
-apt install webmin -y
-}
 
 whiptail --title "Which apps/programs do you want to install?" --checklist --separate-output "" 10 40 3 \
 "Calendar" "              " on \
@@ -475,13 +415,13 @@ while read -r -u 9 choice
 do
     case "$choice" in
         Calendar)
-            install_calendar
+            wget -q "$STATIC"/calendar.sh -P "$SCRIPTS" && install_app calendar
         ;;
         Contacts)
-            install_contacts
+            wget -q "$STATIC"/contacts.sh -P "$SCRIPTS" && install_app contacts
         ;;
         Webmin)
-            webmin
+            wget -q "$STATIC"/webmin.sh -P "$SCRIPTS" && install_app webmin
         ;;
         *)
         ;;

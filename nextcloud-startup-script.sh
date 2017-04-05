@@ -1,21 +1,17 @@
 #!/bin/bash
+
+# Tech and Me © - 2017, https://www.techandme.se/
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 
-# Tech and Me - ©2017, https://www.techandme.se/
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
 DEBUG=0
-
-# DEBUG mode
-if [ $DEBUG -eq 1 ]
-then
-    set -ex
-fi
+debug_mode
 
 # Check if root
 if ! is_root
@@ -658,8 +654,6 @@ apt autoremove -y
 apt autoclean
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
 echo "$CLEARBOOT"
-find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o name '*.tar*' -o name '*.zip*' \) -delete
-clear
 
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 

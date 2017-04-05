@@ -1,13 +1,17 @@
 #!/bin/bash
+
+# Tech and Me © - 2017, https://www.techandme.se/
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 
-# Tech and Me ©2017 - www.techandme.se
-
-WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
-certfiles=/etc/letsencrypt/live
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
 
 # Check if root
 if ! is_root
@@ -177,7 +181,7 @@ fi
 ssl_conf="/etc/apache2/sites-available/"$domain.conf""
 
 # DHPARAM
-DHPARAMS="$certfiles/$domain/dhparam.pem"
+DHPARAMS="$CERTFILES/$domain/dhparam.pem"
 
 # Check if "$ssl.conf" exists, and if, then delete
 if [ -f "$ssl_conf" ]
@@ -230,9 +234,9 @@ then
 
 ### LOCATION OF CERT FILES ###
 
-    SSLCertificateChainFile $certfiles/$domain/chain.pem
-    SSLCertificateFile $certfiles/$domain/cert.pem
-    SSLCertificateKeyFile $certfiles/$domain/privkey.pem
+    SSLCertificateChainFile $CERTFILES/$domain/chain.pem
+    SSLCertificateFile $CERTFILES/$domain/cert.pem
+    SSLCertificateKeyFile $CERTFILES/$domain/privkey.pem
     SSLOpenSSLConfCmd DHParameters $DHPARAMS
 
 </VirtualHost>
@@ -270,8 +274,8 @@ do
         ;;
     esac
 
-    # Check if $certfiles exists
-    if [ -d "$certfiles" ]
+    # Check if $CERTFILES exists
+    if [ -d "$CERTFILES" ]
     then
         # Generate DHparams chifer
         if [ ! -f "$DHPARAMS" ]

@@ -1,15 +1,11 @@
 #!/bin/bash
+
+# Tech and Me © - 2017, https://www.techandme.se/
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-
-
 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
-
-# Tech and Me, ©2017 - www.techandme.se
-#
-# This install from Nextcloud official stable build with PHP 7, MySQL 5.7 and Apche 2.4.
-# Ubuntu 16.04 is required.
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
