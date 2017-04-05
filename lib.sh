@@ -73,8 +73,26 @@ calc_wt_size() {
 # Install Apps
 # call like: install_3rdparty_app collabora|nextant|passman|spreedme|contacts|calendar|webmin
 install_3rdparty_app() {
-    "${SCRIPTS}/${1}.sh"
-    rm -f "$SCRIPTS/${1}.sh"
+    # Get ${1} script
+    if [ -f "${SCRIPTS}/${1}.sh" ]
+    then
+        rm -f "${SCRIPTS}/${1}.sh"
+        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
+    elif [ ! -f "${SCRIPTS}/${1}.sh" ]
+    then
+        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
+    fi
+    # Check ${1} script is downloaded
+    if [ -f "${SCRIPTS}/${1}.sh" ]
+    then
+        # Run ${1} script
+        "${SCRIPTS}/${1}.sh"
+        rm -f "$SCRIPTS/${1}.sh"
+    else
+        echo "Downloading "${1}" failed"
+        echo "Script failed to download. Please run: 'sudo bash "${SCRIPTS}/${1}.sh"' again."
+        sleep 3
+    fi
 }
 
 version(){
