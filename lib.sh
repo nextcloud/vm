@@ -70,6 +70,30 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
+# Initial download of script
+# call like: download_script name_of_script(.sh)
+download_script() {
+    # Get ${1} script
+    if [ -f "${SCRIPTS}/${1}.sh" ]
+    then
+        rm -f "${SCRIPTS}/${1}.sh"
+        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
+    elif [ ! -f "${SCRIPTS}/${1}.sh" ]
+    then
+        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
+    fi
+    # Check ${1} script is downloaded
+    if [ -f "${SCRIPTS}/${1}.sh" ]
+    then
+    sleep 0.1
+    else
+        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh' again."
+        echo "If you get this error when running the nextcloud-startup-script then just re-run it with:"
+        echo "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        exit 1
+    fi
+}
+
 # Install Apps
 # call like: install_3rdparty_app collabora|nextant|passman|spreedme|contacts|calendar|webmin
 install_3rdparty_app() {
@@ -90,7 +114,7 @@ install_3rdparty_app() {
         rm -f "$SCRIPTS/${1}.sh"
     else
         echo "Downloading ${1} failed"
-        echo "Script failed to download. Please run: 'sudo bash ${SCRIPTS}/${1}.sh' again."
+        echo "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh' again."
         sleep 3
     fi
 }
