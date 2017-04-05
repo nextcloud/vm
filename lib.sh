@@ -33,11 +33,15 @@ fi
 }
 
 ask_yes_or_no() {
-    read -p -r "$1 ([y]es or [N]o): "
+    read -r -p "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
-    y|yes) echo "yes" ;;
-    *)     echo "no" ;;
-esac
+        y|yes)
+            echo "yes"
+        ;;
+        *)
+            echo "no"
+        ;;
+    esac
 }
 
 network_ok() {
