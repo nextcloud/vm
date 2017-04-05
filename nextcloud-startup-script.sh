@@ -2,7 +2,9 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+unset FIRST_IFACE
+unset CHECK_CURRENT_REPO
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
@@ -72,11 +74,10 @@ fi
 
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
-# All the shell scripts (.sh)
-download_static_script temporary
+# All the shell scripts in static (.sh)
+download_static_script temporary-fix
 download_static_script security
 download_static_script update
-download_static_script activate-ssl
 download_static_script trusted
 download_static_script ip
 download_static_script test_connection
@@ -84,7 +85,22 @@ download_static_script setup_secure_permissions_nextcloud
 download_static_script change_mysql_pass
 download_static_script nextcloud
 
-# Update Config
+# Lets Encrypt
+if [ -f "$SCRIPTS"/activate-ssl.sh ]
+then
+    rm "$SCRIPTS"/activate-ssl.sh
+    wget -q $LETS_ENC/activate-ssl.sh -P "$SCRIPTS"
+else
+    wget -q $LETS_ENC/activate-ssl.sh -P "$SCRIPTS"
+fi
+if [ ! -f "$SCRIPTS"/activate-ssl.sh ]
+then
+    echo "activate-ssl failed"
+    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
+    exit 1
+fi
+
+# Update Config PHP
 if [ -f "$SCRIPTS"/update-config.php ]
 then
     rm "$SCRIPTS"/update-config.php
