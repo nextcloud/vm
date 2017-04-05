@@ -73,16 +73,16 @@ fi
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
 # All the shell scripts (.sh)
-download_script temporary
-download_script security
-download_script update
-download_script activate-ssl
-download_script trusted
-download_script ip
-download_script test_connection
-download_script setup_secure_permissions_nextcloud
-download_script change_mysql_pass
-download_script nextcloud
+download_static_script temporary
+download_static_script security
+download_static_script update
+download_static_script activate-ssl
+download_static_script trusted
+download_static_script ip
+download_static_script test_connection
+download_static_script setup_secure_permissions_nextcloud
+download_static_script change_mysql_pass
+download_static_script nextcloud
 
 # Update Config
 if [ -f "$SCRIPTS"/update-config.php ]
@@ -173,7 +173,7 @@ then
     if [ -z "$IFACE" ]
     then
         echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
-        download_script ip2
+        download_static_script ip2
         bash "$SCRIPTS/ip2.sh"
         rm -f "$SCRIPTS/ip2.sh"
     fi
