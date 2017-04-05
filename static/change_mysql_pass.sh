@@ -14,7 +14,6 @@ DEBUG=0
 debug_mode
 
 # Change MySQL Password
-echo "Generating new MySQL root password..."
 if mysqladmin -u root -p"$OLDMYSQL" password "$NEWMYSQLPASS" > /dev/null 2>&1
 then
     echo -e "${Green}Your new MySQL root password is: $NEWMYSQLPASS${Color_Off}"
