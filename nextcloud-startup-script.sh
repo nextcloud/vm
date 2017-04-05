@@ -206,7 +206,7 @@ then
     then
         # Connected!
         printf "${Green}Connected!${Color_Off}\n"
-        printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:"
+        printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:\n"
         printf "sudo nano /etc/network/interfaces\n"
         echo "If you experience any bugs, please report it here:"
         echo "https://github.com/nextcloud/vm/issues/new"
@@ -258,16 +258,16 @@ rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
 # Generate new MySQL password
-echo
-bash "$SCRIPTS/change_mysql_pass.sh" && wait # is the exit status always 0 on if this is sucessfull?
-if [ $? -eq 0 ]; then # skip this?
-  rm "$SCRIPTS/change_mysql_pass.sh"
-  {
-  echo "[mysqld]"
-  echo "innodb_large_prefix=on"
-  echo "innodb_file_format=barracuda"
-  echo "innodb_file_per_table=1"
-  } >> /root/.my.cnf
+echo "Generating new MySQL password..."
+if bash "$SCRIPTS/change_mysql_pass.sh" && wait
+then
+   rm "$SCRIPTS/change_mysql_pass.sh"
+   {
+   echo "[mysqld]"
+   echo "innodb_large_prefix=on"
+   echo "innodb_file_format=barracuda"
+   echo "innodb_file_per_table=1"
+   } >> /root/.my.cnf
 fi
 
 # Enable UTF8mb4 (4-byte support)
@@ -384,7 +384,7 @@ clear
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
-service apache reload
+service apache2 reload
 
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
@@ -406,11 +406,8 @@ rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
-
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
-
-
 sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
 
 truncate -s 0 \
@@ -454,7 +451,6 @@ CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | 
 echo "$CLEARBOOT"
 
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
-
 # Success!
 clear
 printf "%s\n" "${Green}"
