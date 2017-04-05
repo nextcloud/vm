@@ -44,7 +44,6 @@ else
     exit 1
 fi
 
-CHECK_CURRENT_REPO=1
 # Check where the best mirrors are and update
 printf "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.\n"
 echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
@@ -70,7 +69,6 @@ else
         sudo mv sources.list /etc/apt/
     fi
 fi
-unset CHECK_CURRENT_REPO
 
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
