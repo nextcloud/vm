@@ -89,8 +89,8 @@ install_3rdparty_app() {
         "${SCRIPTS}/${1}.sh"
         rm -f "$SCRIPTS/${1}.sh"
     else
-        echo "Downloading "${1}" failed"
-        echo "Script failed to download. Please run: 'sudo bash "${SCRIPTS}/${1}.sh"' again."
+        echo "Downloading ${1} failed"
+        echo "Script failed to download. Please run: 'sudo bash ${SCRIPTS}/${1}.sh' again."
         sleep 3
     fi
 }
