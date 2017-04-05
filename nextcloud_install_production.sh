@@ -8,7 +8,9 @@ sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/g
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+unset FIRST_IFACE
+unset CHECK_CURRENT_REPO
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -114,7 +116,6 @@ apt install language-pack-en-base -y
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
-CHECK_CURRENT_REPO=1
 echo
 printf "Your current server repository is:  ${Cyan}%s${Color_Off}\n" "$REPO"
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
@@ -135,7 +136,6 @@ else
      sudo mv sources.list /etc/apt/
   fi
 fi
-unset CHECK_CURRENT_REPO
 clear
 
 # Set keyboard layout
