@@ -110,7 +110,7 @@ install_3rdparty_app() {
     if [ -f "${SCRIPTS}/${1}.sh" ]
     then
         # Run ${1} script
-        "${SCRIPTS}/${1}.sh"
+        bash "${SCRIPTS}/${1}.sh"
         rm -f "$SCRIPTS/${1}.sh"
     else
         echo "Downloading ${1} failed"
@@ -155,6 +155,7 @@ spinner_loading() {
 any_key() {
     local PROMPT="$1"
     read -r -p "$(printf "${Green}${PROMPT}${Color_Off}")" -n1 -s
+    echo
 }
 
 ## variables
