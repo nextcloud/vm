@@ -37,9 +37,9 @@ fi
 chmod +x "$SCRIPTS/$FILE"
 
 # Remove potenial copy of the same file
-if [ -f "$SCRIPTS/$FILE.1" ]
+if [ -f "$SCRIPTS/$FILE*" ]
 then
-    rm -f "$SCRIPTS/$FILE.1"
+    rm -f "$SCRIPTS/$FILE*"
 fi
 
 exit
