@@ -31,8 +31,7 @@ export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="
 rm /var/lib/apt/lists/* -R
 
 # Set secure permissions
-FILE="$SECURE"
-if [ ! -f "$FILE" ]
+if [ ! -f "$SECURE" ]
 then
     mkdir -p "$SCRIPTS"
     wget -q "$STATIC"/setup_secure_permissions_nextcloud.sh -P "$SCRIPTS"
@@ -59,7 +58,7 @@ then
     echo
     echo "Please note that updates between multiple major versions are unsupported! Your situation is:"
     echo "Current version: $CURRENTVERSION"
-    echo "Upgraded version: $NCVERSION"
+    echo "Latest release: $NCVERSION"
     echo
     echo "It is best to keep your Nextcloud server upgraded regularly, and to install all point releases"
     echo "and major releases without skipping any of them, as skipping releases increases the risk of"
@@ -75,7 +74,7 @@ fi
 # Check if new version is larger than current version installed.
 if version_gt "$NCVERSION" "$CURRENTVERSION"
 then
-    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
+    echo "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
     printf "${Green}New version available! Upgrade continues...${Color_Off}\n"
 else
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
@@ -166,13 +165,12 @@ fi
 # Enable Apps
 if [ -d "$SNAPDIR" ]
 then
-    wget "$STATIC"/spreedme.sh -P "$SCRIPTS"
-    bash "$SCRIPTS"/spreedme.sh
-    rm "$SCRIPTS"/spreedme.*
+    install_3rdparty_app spreedme
     sudo -u www-data php "$NCPATH"/occ app:enable spreedme
 fi
 
 # Recover apps that exists in the backed up apps folder
+if [ ! -f "$SCRIPTS"/recover_apps.py" ]
 wget -q "$STATIC"/recover_apps.py -P "$SCRIPTS"
 chmod +x "$SCRIPTS"/recover_apps.py
 python "$SCRIPTS"/recover_apps.py
