@@ -120,21 +120,21 @@ echo
 printf "Your current server repository is:  ${Cyan}%s${Color_Off}\n" "$REPO"
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-echo "Keeping $REPO as mirror..."
-sleep 1
+    echo "Keeping $REPO as mirror..."
+    sleep 1
 else
-  echo "Locating the best mirrors..."
-  apt update -q2
-  apt install python-pip -y
- pip install \
-     --upgrade pip \
-     apt-select
- apt-select -m up-to-date -t 5 -c
- sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
- if [ -f sources.list ]
- then
-     sudo mv sources.list /etc/apt/
-  fi
+   echo "Locating the best mirrors..."
+   apt update -q2
+   apt install python-pip -y
+   pip install \
+       --upgrade pip \
+       apt-select
+    apt-select -m up-to-date -t 5 -c
+    sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+    if [ -f sources.list ]
+    then
+        sudo mv sources.list /etc/apt/
+    fi
 fi
 clear
 
@@ -142,12 +142,12 @@ clear
 echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-echo "Not changing keyboard layout..."
-sleep 1
-clear
+    echo "Not changing keyboard layout..."
+    sleep 1
+    clear
 else
-dpkg-reconfigure keyboard-configuration
-clear
+    dpkg-reconfigure keyboard-configuration
+    clear
 fi
 
 # Update system
@@ -162,7 +162,7 @@ chown root:root $PW_FILE
 apt install software-properties-common -y
 echo "mysql-server-5.7 mysql-server/root_password password $MYSQL_PASS" | debconf-set-selections
 echo "mysql-server-5.7 mysql-server/root_password_again password $MYSQL_PASS" | debconf-set-selections
-apt install mysql-server-5.7 -y
+check_command apt install mysql-server-5.7 -y
 
 # mysql_secure_installation
 apt -y install expect
@@ -189,7 +189,7 @@ echo "$SECURE_MYSQL"
 apt -y purge expect
 
 # Install Apache
-apt install apache2 -y
+check_command apt install apache2 -y
 a2enmod rewrite \
         headers \
         env \
@@ -200,7 +200,7 @@ a2enmod rewrite \
 
 # Install PHP 7.0
 apt update -q2
-apt install -y \
+check_command apt install -y \
     libapache2-mod-php7.0 \
     php7.0-common \
     php7.0-mysql \
@@ -235,11 +235,7 @@ mkdir -p "$GPGDIR"
 wget -q "$NCREPO/$STABLEVERSION.zip.asc" -P "$GPGDIR"
 chmod -R 600 "$GPGDIR"
 gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
-if ! gpg --verify "$GPGDIR/$STABLEVERSION.zip.asc" "$HTML/$STABLEVERSION.zip"
-then
-    echo "Package NOT OK! Installation is aborted..."
-    exit 1
-fi
+check_command gpg --verify "$GPGDIR/$STABLEVERSION.zip.asc" "$HTML/$STABLEVERSION.zip"
 
 # Cleanup
 rm -r $GPGDIR
@@ -250,11 +246,11 @@ rm "$HTML/$STABLEVERSION.zip"
 
 # Secure permissions
 wget -q "$STATIC/setup_secure_permissions_nextcloud.sh" -P "$SCRIPTS"
-bash "$SCRIPTS/setup_secure_permissions_nextcloud.sh"
+bash $SECURE
 
 # Install Nextcloud
 cd "$NCPATH"
-sudo -u www-data php occ maintenance:install \
+check_command sudo -u www-data php occ maintenance:install \
     --data-dir "$NCDATA" \
     --database "mysql" \
     --database-name "nextcloud_db" \
@@ -269,7 +265,7 @@ echo
 sleep 3
 
 # Prepare cron.php to be run every 15 minutes
-crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+check_command crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
@@ -429,76 +425,21 @@ do
 done 9< results
 rm -f results
 
-# Change roots .bash_profile
-if [ ! -f "$SCRIPTS"/change-root-profile.sh ]
-then
-    wget -q "$STATIC"/change-root-profile.sh -P "$SCRIPTS"
-fi
-
-# Change $UNIXUSER .bash_profile
-if [ ! -f "$SCRIPTS"/change-ncadmin-profile.sh ]
-then
-    wget -q "$STATIC"/change-ncadmin-profile.sh -P "$SCRIPTS"
-fi
-
-# Welcome message after login (change in $HOME/.profile
-if [ ! -f "$SCRIPTS"/instruction.sh ]
-then
-    wget -q "$STATIC"/instruction.sh -P "$SCRIPTS"
-fi
-
-# Get nextcloud-startup-script.sh
-if [ ! -f "$SCRIPTS"/nextcloud-startup-script.sh ]
-then
-    wget -q "$GITHUB_REPO"/nextcloud-startup-script.sh -P "$SCRIPTS"
-fi
-
-# Clears command history on every login
-if [ ! -f "$SCRIPTS"/history.sh ]
-then
-    wget -q "$STATIC"/history.sh -P "$SCRIPTS"
-fi
-
-# Change root profile
-if bash "$SCRIPTS"/change-root-profile.sh
-then
-    echo "change-root-profile.sh executed OK."
-    rm "$SCRIPTS"/change-root-profile.sh
-    sleep 2
-else    
-    echo "change-root-profile.sh were not executed correctly."
-    sleep 10
-fi
-
-# Change $UNIXUSER profile
-if bash "$SCRIPTS"/change-ncadmin-profile.sh
-then
-    echo "change-ncadmin-profile.sh executed OK."
-    rm "$SCRIPTS"/change-ncadmin-profile.sh
-    sleep 2
-else    
-    echo "change-ncadmin-profile.sh were not executed correctly."
-    sleep 10
-fi
-
-# Get script for Redis
-if [ ! -f "$SCRIPTS"/redis-server-ubuntu16.sh ]
-then
-    wget -q "$STATIC"/redis-server-ubuntu16.sh -P "$SCRIPTS"
-fi
+# Get needed scripts for first bootup
+download_static_script nextcloud-startup-script
+download_static_script instruction
+download_static_script history
 
 # Make $SCRIPTS excutable
 chmod +x -R "$SCRIPTS"
 chown root:root -R "$SCRIPTS"
 
-# Allow $UNIXUSER to run these scripts
-chown "$UNIXUSER:$UNIXUSER" \
-    "$SCRIPTS/instruction.sh" \
-    "$SCRIPTS/history.sh"
+# Prepare first bootup
+check_command install_3rdparty_app change-ncadmin-profile
+check_command install_3rdparty_app change-root-profile
 
 # Install Redis
-bash "$SCRIPTS"/redis-server-ubuntu16.sh
-rm "$SCRIPTS"/redis-server-ubuntu16.sh
+install_3rdparty_app redis-server-ubuntu16
 
 # Upgrade
 apt update -q2
