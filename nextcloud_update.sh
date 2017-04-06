@@ -170,7 +170,7 @@ then
 fi
 
 # Recover apps that exists in the backed up apps folder
-if [ ! -f "$SCRIPTS"/recover_apps.py" ]
+if [ ! -f "$SCRIPTS"/recover_apps.py ]
 wget -q "$STATIC"/recover_apps.py -P "$SCRIPTS"
 chmod +x "$SCRIPTS"/recover_apps.py
 python "$SCRIPTS"/recover_apps.py
