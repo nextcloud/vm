@@ -53,10 +53,9 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 PW_FILE=/var/mysql_password.txt
 MYCNF=/root/.my.cnf
 [ ! -z "$CHANGE_MYSQL" ] && OLDMYSQL=$(cat $PW_FILE)
-HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Nextcloud version
 [ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-NCVERSION=$(curl -s -m 900 $NCREPO/ | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q') # change NCVERSION in install scrtip and update script, the differ
+NCVERSION=$(curl -s -m 900 $NCREPO | tac | grep unknown.gif | sed 's/.*"nextcloud-\([^"]*\).zip.sha512".*/\1/;q')
 STABLEVERSION="nextcloud-$NCVERSION"
 NCMAJOR="${NCVERSION%%.*}"
 NCBAD=$((NCMAJOR-2))
