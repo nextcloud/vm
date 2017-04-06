@@ -261,8 +261,8 @@ check_command sudo -u www-data php occ maintenance:install \
 echo
 echo "Nextcloud version:"
 sudo -u www-data php "$NCPATH"/occ status
-echo
 sleep 3
+echo
 
 # Prepare cron.php to be run every 15 minutes
 check_command crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
@@ -329,7 +329,6 @@ then
 </VirtualHost>
 HTTP_CREATE
     echo "$HTTP_CONF was successfully created"
-    sleep 3
 fi
 
 # Generate $SSL_CONF
@@ -374,7 +373,6 @@ then
 </VirtualHost>
 SSL_CREATE
     echo "$SSL_CONF was successfully created"
-    sleep 3
 fi
 
 # Enable new config
