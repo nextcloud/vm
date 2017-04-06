@@ -171,10 +171,12 @@ fi
 
 # Recover apps that exists in the backed up apps folder
 if [ ! -f "$SCRIPTS"/recover_apps.py ]
-wget -q "$STATIC"/recover_apps.py -P "$SCRIPTS"
-chmod +x "$SCRIPTS"/recover_apps.py
-python "$SCRIPTS"/recover_apps.py
-rm "$SCRIPTS"/recover_apps.py
+then
+    wget -q "$STATIC"/recover_apps.py -P "$SCRIPTS"
+    chmod +x "$SCRIPTS"/recover_apps.py
+    python "$SCRIPTS"/recover_apps.py
+    rm "$SCRIPTS"/recover_apps.py
+fi
 
 # Change owner of $BACKUP folder to root
 chown -R root:root "$BACKUP"
