@@ -89,7 +89,7 @@ echo "
 &nextant_component;
 </config>" | tee -a "$SOLR_DSCONF"
 
-check_command echo "SOLR_OPTS=\"\$SOLR_OPTS -Dsolr.allow.unsafe.resourceloading=true\"" | sudo tee -a /etc/default/solr.in.sh
+check_command "echo \"SOLR_OPTS=\\\"\\\$SOLR_OPTS -Dsolr.allow.unsafe.resourceloading=true\\\"\" | sudo tee -a /etc/default/solr.in.sh"
 
 check_command service solr restart
 
