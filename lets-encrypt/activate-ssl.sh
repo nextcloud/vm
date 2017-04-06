@@ -262,7 +262,7 @@ do
     esac
 
     # Generate certs
-    letsencrypt "${LE_METHODS[$ATTEMPT]}" "$LE_DEFAULT_OPTIONS"
+    eval letsencrypt "${LE_METHODS[$ATTEMPT]}" "$LE_DEFAULT_OPTIONS"
 
     case "${LE_METHODS[$ATTEMPT]}" in
         *standalone*)
