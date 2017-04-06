@@ -50,7 +50,7 @@ apt install default-jre -y
 echo "Installing Apache Solr"
 echo "It might take some time depending on your bandwith, please be patient..."
 mkdir -p "$SOLR_HOME"
-cd "$SOLR_HOME" || exit 1
+check_command cd "$SOLR_HOME" 
 wget -q "$SOLR_DL" --show-progress
 tar -zxf "$SOLR_RELEASE"
 if "./solr-$SOLR_VERSION/bin/install_solr_service.sh" "$SOLR_RELEASE"
@@ -89,18 +89,14 @@ echo "
 &nextant_component;
 </config>" | tee -a "$SOLR_DSCONF"
 
-echo "SOLR_OPTS=\"\$SOLR_OPTS -Dsolr.allow.unsafe.resourceloading=true\"" | sudo tee -a /etc/default/solr.in.sh
+check_command echo "SOLR_OPTS=\"\$SOLR_OPTS -Dsolr.allow.unsafe.resourceloading=true\"" | sudo tee -a /etc/default/solr.in.sh
 
-if ! service solr restart
-then
-    echo "Solr failed to restart, something is wrong with the Solr installation"
-    exit 1
-fi
+check_command service solr restart
 
 # Get nextant app for nextcloud
-wget -q -P "$NC_APPS_PATH" "$NT_DL"
-cd "$NC_APPS_PATH" || exit 1
-tar zxf "$NT_RELEASE"
+check_command wget -q -P "$NC_APPS_PATH" "$NT_DL"
+check_command cd "$NC_APPS_PATH"
+check_command tar zxf "$NT_RELEASE"
 # Check if permission script exists, if not get it.
 if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
 then
@@ -110,15 +106,6 @@ else
     bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 fi
 rm -r "$NT_RELEASE"
-sudo -u www-data php $NCPATH/occ app:enable nextant
-sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant --save
-sudo -u www-data php $NCPATH/occ nextant:index
-if [ $? -eq 0 ] # Do a while loop here instad @morph027 that checks each command individually
-then
-    echo "Nextant app is now installed and enabled."
-    sleep 3
-else
-    echo "Nextant app install failed"
-    sleep 3
-    exit 1
-fi
+check_command sudo -u www-data php $NCPATH/occ app:enable nextant
+check_command sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant --save
+check_command sudo -u www-data php $NCPATH/occ nextant:index
