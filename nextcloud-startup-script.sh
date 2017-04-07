@@ -420,7 +420,7 @@ echo "$CLEARBOOT"
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 # Success!
 clear
-printf "%s\n" "${Green}"
+printf "%s\n""${Green}"
 echo    "+--------------------------------------------------------------------+"
 echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
 echo    "|                                                                    |"

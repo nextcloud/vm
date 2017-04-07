@@ -37,7 +37,7 @@ cat << STARTMSG
 |       IP address: "$ADDRESS" - do this in your router.      |
 |       Here is a guide: https://goo.gl/Uyuf65                  |
 |                                                               |
-|       This script is located in "$SCRIPTS" and you          |
+|       This script is located in "$SCRIPTS" and you        |
 |       can run this script after you got a domain.             |
 |                                                               |
 |       Please don't run this script if you don't have          |
@@ -106,7 +106,6 @@ ENTERDOMAIN2
 fi
 
 # Check if 443 is open using nmap, if not notify the user
-echo "Running apt update..."
 apt update -q4 & spinner_loading
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then

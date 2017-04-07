@@ -2,7 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+PASSMAN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+unset PASSMAN_INSTALL
 
 # Tech and Me © - 2017, https://www.techandme.se/
 

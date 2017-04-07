@@ -265,7 +265,7 @@ sleep 3
 echo
 
 # Prepare cron.php to be run every 15 minutes
-check_command crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time

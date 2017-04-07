@@ -71,13 +71,13 @@ LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
 DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 # Collabora App
-COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
+[ ! -z "$COLLABORA_INSTALL" ] && COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
 COLLVER_FILE=richdocuments.tar.gz
 COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Nextant
 SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-9].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
-NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
+[ ! -z "$NEXTANT_INSTALL" ] && NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
 NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
 SOLR_RELEASE=solr-$SOLR_VERSION.tgz
@@ -87,16 +87,16 @@ SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
 # Passman
-PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
+[ ! -z "$PASSMAN_INSTALL" ] && PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
 PASSVER_FILE=passman_$PASSVER.tar.gz
 PASSVER_REPO=https://releases.passman.cc
 SHA256=/tmp/sha256
 # Calendar
-CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+[ ! -z "$CALENDAR_INSTALL" ] && CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 # Contacts
-CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+[ ! -z "$CONTACTS_INSTALL" ] && CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CONVER_FILE=contacts.tar.gz
 CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
 # phpMyadmin
@@ -167,7 +167,7 @@ check_command() {
 network_ok() {
     echo "Testing if network is OK..."
     service networking restart
-    if wget -q -T 10 -t 2 http://github.com -O /dev/null
+    if wget -q -T 20 -t 2 http://github.com -O /dev/null & spinner_loading
     then
         return 0
     else
@@ -294,7 +294,7 @@ spinner_loading() {
     do
         i=$(( (i+1) %4 ))
         printf "\r[${spin:$i:1}] " # Add text here, something like "Please be paitent..." maybe?
-        sleep .15
+        sleep .1
     done
 }
 

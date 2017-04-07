@@ -13,7 +13,7 @@ DEBUG=0
 debug_mode
 
 # Activate the new config
-printf "${Color_Off}Apache will now reboot"
+printf "${Color_Off}We will now test that everything is OK\n"
 any_key "Press any key to continue... "
 a2ensite "$1"
 a2dissite nextcloud_ssl_domain_self_signed.conf

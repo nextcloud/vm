@@ -63,7 +63,6 @@ else
 fi
 
 # Check if 443 is open using nmap, if not notify the user
-echo "Running apt update..."
 apt update -q4 & spinner_loading
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
@@ -265,8 +264,8 @@ then
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
 # Install Collabora App
-    wget -q "$COLLVER_REPO/$COLLVER/$COLLVER_FILE" -P "$NCPATH/apps"
-    tar -zxf "$NCPATH/apps/$COLLVER_FILE" -C "$NCPATH/apps"
+    check_command wget -q "$COLLVER_REPO/$COLLVER/$COLLVER_FILE" -P "$NCPATH/apps"
+    check_command tar -zxf "$NCPATH/apps/$COLLVER_FILE" -C "$NCPATH/apps"
     cd "$NCPATH/apps" || exit 1
     rm "$COLLVER_FILE"
 else
@@ -278,8 +277,8 @@ fi
 # Enable RichDocuments (Collabora App)
 if [ -d "$NCPATH"/apps/richdocuments ]
 then
-    sudo -u www-data php "$NCPATH"/occ app:enable richdocuments
-    sudo -u www-data "$NCPATH"/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
+    check_command sudo -u www-data php "$NCPATH"/occ app:enable richdocuments
+    check_command sudo -u www-data "$NCPATH"/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
     echo
     echo "Collabora is now succesfylly installed."
     echo "You may have to reboot before Docker will load correctly."
