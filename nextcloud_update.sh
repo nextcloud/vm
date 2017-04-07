@@ -81,7 +81,7 @@ else
     echo "No need to upgrade, this script will exit..."
     exit 0
 fi
-echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..." 
+echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
 echo "Press CTRL+C to abort."
 sleep 10
 

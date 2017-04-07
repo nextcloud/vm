@@ -26,8 +26,7 @@ fi
 if ! [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
 then
     echo "It seems there is no Nextcloud server installed, please check your installation."
-    sleep 3
-exit 1
+    exit 1
 fi
 
 # Check if it's a clean install
@@ -40,7 +39,6 @@ then
 fi
 
 echo "Starting to setup Solr & Nextant on Nextcloud..."
-sleep 2
 
 # Installing requirements
 apt update -q2

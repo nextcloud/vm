@@ -52,7 +52,6 @@ echo
 echo "Installing and securing phpMyadmin..."
 echo "This may take a while, please don't abort."
 echo
-sleep 2
 
 # Install phpmyadmin
 echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
@@ -178,5 +177,4 @@ else
     echo
     echo "$PHPMYADMIN_CONF was successfully secured."
     echo
-    sleep 1
 fi

@@ -60,7 +60,7 @@ fi
 # Enable Passman
 if [ -d $NCPATH/apps/passman ]
 then
-    sudo -u www-data php $NCPATH/occ app:enable passman
+    check_command sudo -u www-data php $NCPATH/occ app:enable passman
     sleep 2
 else
     echo "Something went wrong with the installation, Passman couln't be activated..."

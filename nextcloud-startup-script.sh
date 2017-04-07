@@ -182,9 +182,9 @@ then
     echo "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     any_key "Press any key to set static IP..."
     ifdown "$IFACE"
-    sleep 1
+    wait
     ifup "$IFACE"
-    sleep 1
+    wait
     bash "$SCRIPTS/ip.sh"
     if [ -z "$IFACE" ]
     then
@@ -194,12 +194,11 @@ then
         rm -f "$SCRIPTS/ip2.sh"
     fi
     ifdown "$IFACE"
-    sleep 1
+    wait
     ifup "$IFACE"
-    sleep 1
+    wait
     echo
     echo "Testing if network is OK..."
-    sleep 1
     echo
     CONTEST=$(bash $SCRIPTS/test_connection.sh)
     if [ "$CONTEST" == "Connected!" ]
@@ -220,15 +219,15 @@ then
         clear
         echo "Testing if network is OK..."
         ifdown "$IFACE"
-        sleep 1
+        wait
         ifup "$IFACE"
-        sleep 1
+        wait
         bash "$SCRIPTS/test_connection.sh"
-        sleep 1
-    fi 
+        wait
+    fi
 else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
-    sleep 5
+    sleep 5 & spinner_loading
 fi
 clear
 
@@ -253,7 +252,6 @@ bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
 
 # Generate new SSH Keys
 printf "\nGenerating new SSH keys for the server...\n"
-sleep 1
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
@@ -437,11 +435,10 @@ cat << RCLOCAL > "/etc/rc.local"
 exit 0
 
 RCLOCAL
+clear
 
 # Upgrade system
 echo "System will now upgrade..."
-sleep 2
-echo
 bash $SCRIPTS/update.sh
 
 # Cleanup 2
@@ -469,29 +466,10 @@ printf "|    ${IRed}#################### Tech and Me - 2017 ####################
 echo    "+--------------------------------------------------------------------+"
 printf "${Color_Off}\n"
 
-# Update Config
-if [ -f "$SCRIPTS"/update-config.php ]
-then
-    rm "$SCRIPTS"/update-config.php
-    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
-fi
-
-# Sets trusted domain in config.php
-if [ -f "$SCRIPTS"/trusted.sh ]
-then
-    rm "$SCRIPTS"/trusted.sh
-    wget -q "$STATIC"/trusted.sh -P "$SCRIPTS"
-    bash $SCRIPTS/trusted.sh
-    rm "$SCRIPTS"/update-config.php
-    rm "$SCRIPTS"/trusted.sh
-else
-    wget -q "$STATIC"/trusted.sh -P "$SCRIPTS"
-    bash $SCRIPTS/trusted.sh
-    rm "$SCRIPTS"/trusted.sh
-    rm "$SCRIPTS"/update-config.php
-fi
+# Set trusted domain in config.php
+bash "$SCRIPTS"/trusted.sh
+rm -f "$SCRIPTS"/update-config.php
+rm -f "$SCRIPTS"/trusted.sh
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf

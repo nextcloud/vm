@@ -49,7 +49,7 @@ apt install php-pear php7.0-dev -q -y
 if ! pecl install -Z redis
 then
     echo "PHP module installation failed"
-    sleep 5
+    sleep 3
     exit 1
 else
     printf "${Green}\nPHP module installation OK!${Color_Off}\n"
@@ -67,7 +67,7 @@ service apache2 restart
 if ! apt -y install redis-server
 then
     echo "Installation failed."
-    sleep 5
+    sleep 3
     exit 1
 else
     printf "${Green}\nRedis installation OK!${Color_Off}\n"
