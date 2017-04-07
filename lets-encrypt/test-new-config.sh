@@ -41,7 +41,7 @@ fi
 # Update Config
 run_static_script trusted
 
-DATE="$(date +%Y-%m-%d_%H:%M)"
+DATE='$(date +%Y-%m-%d_%H:%M)'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 service apache2 stop

@@ -43,7 +43,7 @@ UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 # Passwords
-SHUF=$(shuf -i 19-21 -n 1)
+SHUF=$(shuf -i 25-29 -n 1)
 MYSQL_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWMYSQLPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 # Path to specific files
@@ -99,6 +99,10 @@ CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 [ ! -z "$CONTACTS_INSTALL" ] && CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CONVER_FILE=contacts.tar.gz
 CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
+# Spreed.ME
+SPREEDME_VER=$(wget -q https://raw.githubusercontent.com/strukturag/nextcloud-spreedme/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
+SPREEDME_FILE="v$SPREEDME_VER.tar.gz"
+SPREEDME_REPO=https://github.com/strukturag/nextcloud-spreedme/archive
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"

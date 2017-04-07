@@ -39,15 +39,13 @@ if [ -d "$SNAPDIR" ]
 then
     echo "SpreeMe Snap already seems to be installed and wil now be re-installed..."
     snap remove spreedme
+    rm -rf "$SNAPDIR"
     snap install spreedme
 else
     snap install spreedme
 fi
 
 # Install and activate the SpreedMe app
-SPREEDME_VER=$(wget -q https://raw.githubusercontent.com/strukturag/nextcloud-spreedme/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-SPREEDME_FILE="v$SPREEDME_VER.tar.gz"
-
 if [ -d "$NCPATH/apps/spreedme" ]
 then
     # Remove
@@ -128,7 +126,7 @@ then
 else
     echo
     echo "Success! SpreedMe is now installed and configured."
-    echo "You may have to change SPREED_WEBRTC_ORIGIN in:" 
+    echo "You may have to change SPREED_WEBRTC_ORIGIN in:"
     echo "(sudo nano) $NCPATH/apps/spreedme/config/config.php"
     echo
     exit 0
