@@ -62,9 +62,4 @@ if [ -d $NCPATH/apps/passman ]
 then
     check_command sudo -u www-data php $NCPATH/occ app:enable passman
     sleep 2
-else
-    echo "Something went wrong with the installation, Passman couln't be activated..."
-    echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
-    any_key "Press any key to continue..."
-    exit 1
 fi
