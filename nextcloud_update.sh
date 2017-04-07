@@ -154,7 +154,7 @@ then
     rm "$HTML/nextcloud-$NCVERSION.tar.bz2"
     cp -R $BACKUP/themes "$NCPATH"/
     cp -R $BACKUP/config "$NCPATH"/
-    bash $SECURE
+    bash $SECURE & spinner_loading
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     sudo -u www-data php "$NCPATH"/occ upgrade
 else

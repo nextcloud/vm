@@ -59,7 +59,7 @@ then
     sleep 1
 else
     echo "Locating the best mirrors..."
-    apt update -q2 & spinner_loading
+    apt update -q4 & spinner_loading
     apt install python-pip -y
     pip install \
         --upgrade pip \
@@ -248,7 +248,7 @@ echo "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
 sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
-bash $SECURE
+bash $SECURE & spinner_loading
 
 # Generate new SSH Keys
 printf "\nGenerating new SSH keys for the server...\n"

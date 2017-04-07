@@ -24,7 +24,7 @@ fi
 whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
 
 # Get the latest packages
-apt update -q2 & spinner_loading
+apt update -q4 & spinner_loading
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
@@ -64,7 +64,7 @@ fi
 
 # Check if 443 is open using nmap, if not notify the user
 echo "Running apt update..."
-apt update -q2 & spinner_loading
+apt update -q4 & spinner_loading
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
       echo "nmap is already installed..."
@@ -95,7 +95,7 @@ if [ "$(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok install
 then
     docker -v
 else
-    apt update -q2 & spinner_loading
+    apt update -q4 & spinner_loading
     apt install -y \
     apt-transport-https \
     ca-certificates \
@@ -241,9 +241,9 @@ then
 else
     echo "Installing letsencrypt..."
     add-apt-repository ppa:certbot/certbot -y
-    apt update -q2 & spinner_loading
+    apt update -q4 & spinner_loading
     apt install letsencrypt -y -q
-    apt update -q2 & spinner_loading
+    apt update -q4 & spinner_loading
     apt dist-upgrade -y
 fi
 
