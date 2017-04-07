@@ -190,50 +190,39 @@ calc_wt_size() {
 }
 
 # Initial download of script
-# call like: download_static_script name_of_script(.sh)
+# call like: download_static_script name_of_script
 download_static_script() {
     # Get ${1} script
-    if [ -f "${SCRIPTS}/${1}.sh" ]
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if ! { wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.php" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"; }
     then
-        rm -f "${SCRIPTS}/${1}.sh"
-        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
-    elif [ ! -f "${SCRIPTS}/${1}.sh" ]
-    then
-        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
-    fi
-    # Check ${1} script is downloaded
-    if [ -f "${SCRIPTS}/${1}.sh" ]
-    then
-    sleep 0.1
-    else
-        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh' again."
+        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
         echo "If you get this error when running the nextcloud-startup-script then just re-run it with:"
         echo "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
 
-# Install Apps
+# Run any script in static
 # call like: run_static_script collabora|nextant|passman|spreedme|contacts|calendar|webmin
 run_static_script() {
     # Get ${1} script
-    if [ -f "${SCRIPTS}/${1}.sh" ]
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
     then
+        bash "${SCRIPTS}/${1}.sh" > /dev/null
         rm -f "${SCRIPTS}/${1}.sh"
-        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
-    elif [ ! -f "${SCRIPTS}/${1}.sh" ]
+    elif wget -q "${STATIC}/${1}.php" -P "$SCRIPTS"
     then
-        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
-    fi
-    # Check ${1} script is downloaded
-    if [ -f "${SCRIPTS}/${1}.sh" ]
+        php "${SCRIPTS}/${1}.php" > /dev/null
+        rm -f "${SCRIPTS}/${1}.php"
+    elif wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"
     then
-        # Run ${1} script
-        bash "${SCRIPTS}/${1}.sh"
-        rm -f "$SCRIPTS/${1}.sh"
+        python "${SCRIPTS}/${1}.py" > /dev/null
+        rm -f "${SCRIPTS}/${1}.py"
     else
         echo "Downloading ${1} failed"
-        echo "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh' again."
+        echo "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
         sleep 3
     fi
 }
