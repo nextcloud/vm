@@ -20,6 +20,6 @@ apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-run
 sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
 if wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
 then
-    apt update -q2
+    apt update -q4 & spinner_loading
     apt install webmin -y
 fi

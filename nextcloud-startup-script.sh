@@ -59,7 +59,7 @@ then
     sleep 1
 else
     echo "Locating the best mirrors..."
-    apt update -q2 & spinner_loading
+    apt update -q4 & spinner_loading
     apt install python-pip -y
     pip install \
         --upgrade pip \
@@ -182,9 +182,9 @@ then
     echo "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     any_key "Press any key to set static IP..."
     ifdown "$IFACE"
-    sleep 1
+    wait
     ifup "$IFACE"
-    sleep 1
+    wait
     bash "$SCRIPTS/ip.sh"
     if [ -z "$IFACE" ]
     then
@@ -194,12 +194,11 @@ then
         rm -f "$SCRIPTS/ip2.sh"
     fi
     ifdown "$IFACE"
-    sleep 1
+    wait
     ifup "$IFACE"
-    sleep 1
+    wait
     echo
     echo "Testing if network is OK..."
-    sleep 1
     echo
     CONTEST=$(bash $SCRIPTS/test_connection.sh)
     if [ "$CONTEST" == "Connected!" ]
@@ -220,15 +219,15 @@ then
         clear
         echo "Testing if network is OK..."
         ifdown "$IFACE"
-        sleep 1
+        wait
         ifup "$IFACE"
-        sleep 1
+        wait
         bash "$SCRIPTS/test_connection.sh"
-        sleep 1
-    fi 
+        wait
+    fi
 else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
-    sleep 5
+    sleep 5 & spinner_loading
 fi
 clear
 
@@ -249,11 +248,10 @@ echo "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
 sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
-bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
+bash $SECURE & spinner_loading
 
 # Generate new SSH Keys
 printf "\nGenerating new SSH keys for the server...\n"
-sleep 1
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
@@ -278,16 +276,14 @@ echo "Please be patient, it may take a while."
 sudo /etc/init.d/mysql restart & spinner_loading
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
-    mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" # want to test if this is succesfull
+    check_command mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+    wait
 fi
-if [ $? -eq 0 ] # Skip this?
-then
-    sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
-    sudo -u www-data $NCPATH/occ maintenance:repair
-fi
+check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
+check_command sudo -u www-data $NCPATH/occ maintenance:repair
 
 # Install phpMyadmin
-install_3rdparty_app phpmyadmin_install_ubuntu16
+run_static_script phpmyadmin_install_ubuntu16
 clear
 
 cat << LETSENC
@@ -318,19 +314,19 @@ while read -r -u 9 choice
 do
     case $choice in
         Collabora)
-            install_3rdparty_app collabora
+            run_static_script collabora
         ;;
 
         Nextant)
-            install_3rdparty_app nextant
+            run_static_script nextant
         ;;
 
         Passman)
-            install_3rdparty_app passman
+            run_static_script passman
         ;;
 
         Spreed.ME)
-            install_3rdparty_app spreedme
+            run_static_script spreedme
         ;;
 
         *)
@@ -437,11 +433,10 @@ cat << RCLOCAL > "/etc/rc.local"
 exit 0
 
 RCLOCAL
+clear
 
 # Upgrade system
 echo "System will now upgrade..."
-sleep 2
-echo
 bash $SCRIPTS/update.sh
 
 # Cleanup 2
@@ -469,29 +464,10 @@ printf "|    ${IRed}#################### Tech and Me - 2017 ####################
 echo    "+--------------------------------------------------------------------+"
 printf "${Color_Off}\n"
 
-# Update Config
-if [ -f "$SCRIPTS"/update-config.php ]
-then
-    rm "$SCRIPTS"/update-config.php
-    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
-fi
-
-# Sets trusted domain in config.php
-if [ -f "$SCRIPTS"/trusted.sh ]
-then
-    rm "$SCRIPTS"/trusted.sh
-    wget -q "$STATIC"/trusted.sh -P "$SCRIPTS"
-    bash $SCRIPTS/trusted.sh
-    rm "$SCRIPTS"/update-config.php
-    rm "$SCRIPTS"/trusted.sh
-else
-    wget -q "$STATIC"/trusted.sh -P "$SCRIPTS"
-    bash $SCRIPTS/trusted.sh
-    rm "$SCRIPTS"/trusted.sh
-    rm "$SCRIPTS"/update-config.php
-fi
+# Set trusted domain in config.php
+bash "$SCRIPTS"/trusted.sh
+rm -f "$SCRIPTS"/update-config.php
+rm -f "$SCRIPTS"/trusted.sh
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf

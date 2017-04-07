@@ -24,7 +24,7 @@ fi
 whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
 
 # Get the latest packages
-apt update -q2
+apt update -q4 & spinner_loading
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
@@ -48,13 +48,13 @@ fi
 echo
 echo "Checking if $SUBDOMAIN exists and is reachable..."
 if wget -q -T 10 -t 2 --spider "$SUBDOMAIN"; then
-   sleep 1
+   sleep 0.1
 elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$SUBDOMAIN"; then
-   sleep 1
+   sleep 0.1
 elif curl -s -k -m 10 "$SUBDOMAIN"; then
-   sleep 1
+   sleep 0.1
 elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null; then
-   sleep 1
+   sleep 0.1
 else
    echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
    echo "it to this server before you can run this script."
@@ -64,7 +64,7 @@ fi
 
 # Check if 443 is open using nmap, if not notify the user
 echo "Running apt update..."
-apt update -q2
+apt update -q4 & spinner_loading
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
       echo "nmap is already installed..."
@@ -95,7 +95,7 @@ if [ "$(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok install
 then
     docker -v
 else
-    apt update -q2
+    apt update -q4 & spinner_loading
     apt install -y \
     apt-transport-https \
     ca-certificates \
@@ -153,7 +153,7 @@ docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always -
 # Install Apache2
 if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    sleep 1
+    sleep 0.1
 else
     {
     i=1
@@ -224,7 +224,7 @@ HTTPS_CREATE
     if [ -f "$HTTPS_CONF" ];
     then
         echo "$HTTPS_CONF was successfully created"
-        sleep 2
+        sleep 1
     else
         echo "Unable to create vhost, exiting..."
         echo "Please report this issue here https://github.com/nextcloud/vm/issues/new"
@@ -241,9 +241,9 @@ then
 else
     echo "Installing letsencrypt..."
     add-apt-repository ppa:certbot/certbot -y
-    apt update -q2
+    apt update -q4 & spinner_loading
     apt install letsencrypt -y -q
-    apt update -q2
+    apt update -q4 & spinner_loading
     apt dist-upgrade -y
 fi
 

@@ -31,11 +31,10 @@ export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="
 rm /var/lib/apt/lists/* -R
 
 # Set secure permissions
-FILE="$SECURE"
-if [ ! -f "$FILE" ]
+if [ ! -f "$SECURE" ]
 then
     mkdir -p "$SCRIPTS"
-    wget -q "$STATIC"/setup_secure_permissions_nextcloud.sh -P "$SCRIPTS"
+    download_static_script setup_secure_permissions_nextcloud
     chmod +x "$SECURE"
 fi
 
@@ -59,7 +58,7 @@ then
     echo
     echo "Please note that updates between multiple major versions are unsupported! Your situation is:"
     echo "Current version: $CURRENTVERSION"
-    echo "Upgraded version: $NCVERSION"
+    echo "Latest release: $NCVERSION"
     echo
     echo "It is best to keep your Nextcloud server upgraded regularly, and to install all point releases"
     echo "and major releases without skipping any of them, as skipping releases increases the risk of"
@@ -75,14 +74,14 @@ fi
 # Check if new version is larger than current version installed.
 if version_gt "$NCVERSION" "$CURRENTVERSION"
 then
-    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
+    echo "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
     printf "${Green}New version available! Upgrade continues...${Color_Off}\n"
 else
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo "No need to upgrade, this script will exit..."
     exit 0
 fi
-echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..." 
+echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
 echo "Press CTRL+C to abort."
 sleep 10
 
@@ -155,7 +154,7 @@ then
     rm "$HTML/nextcloud-$NCVERSION.tar.bz2"
     cp -R $BACKUP/themes "$NCPATH"/
     cp -R $BACKUP/config "$NCPATH"/
-    bash $SECURE
+    bash $SECURE & spinner_loading
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     sudo -u www-data php "$NCPATH"/occ upgrade
 else
@@ -166,17 +165,18 @@ fi
 # Enable Apps
 if [ -d "$SNAPDIR" ]
 then
-    wget "$STATIC"/spreedme.sh -P "$SCRIPTS"
-    bash "$SCRIPTS"/spreedme.sh
-    rm "$SCRIPTS"/spreedme.*
+    run_static_script spreedme
     sudo -u www-data php "$NCPATH"/occ app:enable spreedme
 fi
 
 # Recover apps that exists in the backed up apps folder
-wget -q "$STATIC"/recover_apps.py -P "$SCRIPTS"
-chmod +x "$SCRIPTS"/recover_apps.py
-python "$SCRIPTS"/recover_apps.py
-rm "$SCRIPTS"/recover_apps.py
+if [ ! -f "$SCRIPTS"/recover_apps.py ]
+then
+    wget -q "$STATIC"/recover_apps.py -P "$SCRIPTS"
+    chmod +x "$SCRIPTS"/recover_apps.py
+    python "$SCRIPTS"/recover_apps.py
+    rm "$SCRIPTS"/recover_apps.py
+fi
 
 # Change owner of $BACKUP folder to root
 chown -R root:root "$BACKUP"

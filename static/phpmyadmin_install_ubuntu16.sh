@@ -52,7 +52,6 @@ echo
 echo "Installing and securing phpMyadmin..."
 echo "This may take a while, please don't abort."
 echo
-sleep 2
 
 # Install phpmyadmin
 echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
@@ -60,7 +59,7 @@ echo "phpmyadmin phpmyadmin/app-password-confirm password $PW_FILE" | debconf-se
 echo "phpmyadmin phpmyadmin/mysql/admin-pass password $PW_FILE" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/mysql/app-pass password $PW_FILE" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
-apt update -q2
+apt update -q4 & spinner_loading
 apt install -y -q \
     php-gettext \
     phpmyadmin
@@ -178,5 +177,4 @@ else
     echo
     echo "$PHPMYADMIN_CONF was successfully secured."
     echo
-    sleep 1
 fi

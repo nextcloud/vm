@@ -41,15 +41,18 @@ then
 fi
 
 # Get packages to be able to install Redis
-apt update -q2 && sudo apt install build-essential -q -y
-apt install tcl8.5 -q -y
-apt install php-pear php7.0-dev -q -y
+apt update -q4 & spinner_loading
+sudo apt install -q -y \
+    build-essential \
+    tcl8.5 \
+    php-pear \
+    php7.0-dev
 
 # Install PHPmodule
 if ! pecl install -Z redis
 then
     echo "PHP module installation failed"
-    sleep 5
+    sleep 3
     exit 1
 else
     printf "${Green}\nPHP module installation OK!${Color_Off}\n"
@@ -67,7 +70,7 @@ service apache2 restart
 if ! apt -y install redis-server
 then
     echo "Installation failed."
-    sleep 5
+    sleep 3
     exit 1
 else
     printf "${Green}\nRedis installation OK!${Color_Off}\n"
@@ -114,7 +117,7 @@ apt purge -y \
     php7.0-dev* \
     build-essential*
 
-apt update -q2
+apt update -q4 & spinner_loading
 apt autoremove -y
 apt autoclean
 

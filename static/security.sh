@@ -69,11 +69,7 @@ fi
 # Enable $SPAMHAUS
 sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
 
-if service apache2 restart
-then
-    echo "Security added!"
-else
-    echo "Something went wrong..."
-    sleep 5
-    exit 1
-fi
+check_command service apache2 restart
+echo "Security added!"
+sleep 3
+
