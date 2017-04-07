@@ -107,7 +107,7 @@ fi
 
 # Check if 443 is open using nmap, if not notify the user
 echo "Running apt update..."
-apt update -q2
+apt update -q2 & spinner_loading
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "nmap is already installed..."
@@ -170,9 +170,9 @@ then
 else
     echo "Installing letsencrypt..."
     add-apt-repository ppa:certbot/certbot -y
-    apt update -q2
+    apt update -q2 & spinner_loading
     apt install letsencrypt -y -q
-    apt update -q2
+    apt update -q2 & spinner_loading
     apt dist-upgrade -y
 fi
 
