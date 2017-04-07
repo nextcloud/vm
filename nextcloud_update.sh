@@ -34,7 +34,7 @@ rm /var/lib/apt/lists/* -R
 if [ ! -f "$SECURE" ]
 then
     mkdir -p "$SCRIPTS"
-    wget -q "$STATIC"/setup_secure_permissions_nextcloud.sh -P "$SCRIPTS"
+    download_static_script setup_secure_permissions_nextcloud
     chmod +x "$SECURE"
 fi
 

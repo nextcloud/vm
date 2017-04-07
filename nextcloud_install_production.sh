@@ -245,7 +245,7 @@ unzip -q "$HTML/$STABLEVERSION.zip" -d "$HTML"
 rm "$HTML/$STABLEVERSION.zip"
 
 # Secure permissions
-wget -q "$STATIC/setup_secure_permissions_nextcloud.sh" -P "$SCRIPTS"
+download_static_script setup_secure_permissions_nextcloud
 bash $SECURE
 
 # Install Nextcloud
@@ -462,7 +462,7 @@ apt install linux-image-virtual-hwe-16.04 -y
 apt install linux-virtual-hwe-16.04 -y
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
-bash "$SCRIPTS"/setup_secure_permissions_nextcloud.sh
+bash $SECURE
 
 # Reboot
 echo "Installation done, system will now reboot..."

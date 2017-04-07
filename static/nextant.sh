@@ -95,14 +95,11 @@ check_command service solr restart
 check_command wget -q -P "$NC_APPS_PATH" "$NT_DL"
 check_command cd "$NC_APPS_PATH"
 check_command tar zxf "$NT_RELEASE"
-# Check if permission script exists, if not get it.
-if [ -f $SCRIPTS/setup_secure_permissions_nextcloud.sh ]
-then
-    bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
-else
-    wget -q $STATIC/setup_secure_permissions_nextcloud.sh -P $SCRIPTS
-    bash $SCRIPTS/setup_secure_permissions_nextcloud.sh
-fi
+
+# Set secure permissions
+install_3rdparty_app setup_secure_permissions_nextcloud
+
+# Enable Nextant
 rm -r "$NT_RELEASE"
 check_command sudo -u www-data php $NCPATH/occ app:enable nextant
 check_command sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant --save
