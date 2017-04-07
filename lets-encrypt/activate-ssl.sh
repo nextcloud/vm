@@ -133,15 +133,7 @@ else
 fi
 
 # Fetch latest version of test-new-config.sh
-if [ -f "$SCRIPTS/test-new-config.sh" ]
-then
-    rm -f "$SCRIPTS/test-new-config.sh"
-    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P "$SCRIPTS"
-    chmod +x $SCRIPTS/test-new-config.sh
-else
-    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P "$SCRIPTS"
-    chmod +x "$SCRIPTS/test-new-config.sh"
-fi
+check_command download_le_script test-new-config
 
 # Check if $domain exists and is reachable
 echo
@@ -282,12 +274,12 @@ do
             openssl dhparam -dsaparam -out "$DHPARAMS" 8192
         fi
         # Activate new config
-        bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
-        exit 0
+        check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
     else
         printf "${ICyan}It seems like no certs were generated, we do %s more tries.${Color_Off}" "$((NR_OF_ATTEMPTS-ATTEMPT))"
         any_key "Press any key to continue..."
         ((ATTEMPT++))
+
     fi
 done
 

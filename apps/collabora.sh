@@ -38,7 +38,7 @@ then
     echo
     echo "If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain."
     echo "When SSL is activated, run these commands from your terminal:"
-    echo "sudo wget https://raw.githubusercontent.com/nextcloud/vm/master/static/collabora.sh"
+    echo "sudo wget $APP/collabora.sh"
     echo "sudo bash collabora.sh"
     any_key "Press any key to continue... "
     exit 1

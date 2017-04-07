@@ -409,13 +409,13 @@ while read -r -u 9 choice
 do
     case "$choice" in
         Calendar)
-            run_static_script calendar
+            run_app_script calendar
         ;;
         Contacts)
-            run_static_script contacts
+            run_app_script contacts
         ;;
         Webmin)
-            run_static_script webmin
+            run_app_script webmin
         ;;
         *)
         ;;

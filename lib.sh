@@ -31,9 +31,10 @@ NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d
 GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/morph027/vm/master"
+STATIC="$GITHUB_REPO/static"
+LETS_ENC="$GITHUB_REPO/lets-encrypt"
+APP="$GITHUB_REPO/apps"
 NCREPO="https://download.nextcloud.com/server/releases"
-STATIC="https://raw.githubusercontent.com/morph027/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/morph027/vm/master/lets-encrypt"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
 NCPASS=nextcloud
@@ -189,7 +190,7 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
-# Initial download of script
+# Initial download of script in ../static
 # call like: download_static_script name_of_script
 download_static_script() {
     # Get ${1} script
@@ -203,8 +204,22 @@ download_static_script() {
     fi
 }
 
-# Run any script in static
-# call like: run_static_script collabora|nextant|passman|spreedme|contacts|calendar|webmin
+# Initial download of script in ../lets-encrypt
+# call like: download_le_script name_of_script
+download_le_script() {
+    # Get ${1} script
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if ! { wget -q "${LETS_ENC}/${1}.sh" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.php" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.py" -P "$SCRIPTS"; }
+    then
+        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
+        echo "If you get this error when running the nextcloud-startup-script then just re-run it with:"
+        echo "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        exit 1
+    fi
+}
+
+# Run any script in ../static
+# call like: run_static_script name_of_script
 run_static_script() {
     # Get ${1} script
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
@@ -223,6 +238,29 @@ run_static_script() {
     else
         echo "Downloading ${1} failed"
         echo "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
+        sleep 3
+    fi
+}
+
+# Run any script in ../apps
+# call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin
+run_app_script() {
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if wget -q "${APP}/${1}.sh" -P "$SCRIPTS"
+    then
+        bash "${SCRIPTS}/${1}.sh" > /dev/null
+        rm -f "${SCRIPTS}/${1}.sh"
+    elif wget -q "${APP}/${1}.php" -P "$SCRIPTS"
+    then
+        php "${SCRIPTS}/${1}.php" > /dev/null
+        rm -f "${SCRIPTS}/${1}.php"
+    elif wget -q "${APP}/${1}.py" -P "$SCRIPTS"
+    then
+        python "${SCRIPTS}/${1}.py" > /dev/null
+        rm -f "${SCRIPTS}/${1}.py"
+    else
+        echo "Downloading ${1} failed"
+        echo "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
         sleep 3
     fi
 }

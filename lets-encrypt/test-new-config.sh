@@ -39,28 +39,7 @@ then
 fi
 
 # Update Config
-if [ -f $SCRIPTS/update-config.php ]
-then
-    rm $SCRIPTS/update-config.php
-    wget -q $STATIC/update-config.php -P $SCRIPTS
-else
-    wget -q $STATIC/update-config.php -P $SCRIPTS
-fi
-
-# Sets trusted domain in config.php
-if [ -f $SCRIPTS/trusted.sh ]
-then
-    rm $SCRIPTS/trusted.sh
-    wget -q $STATIC/trusted.sh -P $SCRIPTS
-    bash $SCRIPTS/trusted.sh
-    rm $SCRIPTS/update-config.php
-    rm $SCRIPTS/trusted.sh
-else
-    wget -q $STATIC/trusted.sh -P $SCRIPTS
-    bash $SCRIPTS/trusted.sh
-    rm $SCRIPTS/trusted.sh
-    rm $SCRIPTS/update-config.php
-fi
+run_static_script trusted
 
 DATE="$(date +%Y-%m-%d_%H:%M)"
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
@@ -79,8 +58,8 @@ CRONTAB
 chmod +x $SCRIPTS/letsencryptrenew.sh
 
 # Cleanup
-rm $SCRIPTS/test-new-config.sh
-rm $SCRIPTS/activate-ssl.sh
+rm $SCRIPTS/test-new-config.sh ## Remove ??
+rm $SCRIPTS/activate-ssl.sh ## Remove ??
 
 else
 # If it fails, revert changes back to normal
@@ -93,5 +72,3 @@ else
     any_key "Press any key to continue... "
     exit 1
 fi
-
-exit
