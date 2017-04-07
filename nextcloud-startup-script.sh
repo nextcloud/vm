@@ -276,13 +276,11 @@ echo "Please be patient, it may take a while."
 sudo /etc/init.d/mysql restart & spinner_loading
 RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
-    mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" # want to test if this is succesfull
+    check_command mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+    wait
 fi
-if [ $? -eq 0 ] # Skip this?
-then
-    sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
-    sudo -u www-data $NCPATH/occ maintenance:repair
-fi
+check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
+check_command sudo -u www-data $NCPATH/occ maintenance:repair
 
 # Install phpMyadmin
 install_3rdparty_app phpmyadmin_install_ubuntu16
