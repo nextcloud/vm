@@ -409,13 +409,13 @@ while read -r -u 9 choice
 do
     case "$choice" in
         Calendar)
-            install_3rdparty_app calendar
+            run_static_script calendar
         ;;
         Contacts)
-            install_3rdparty_app contacts
+            run_static_script contacts
         ;;
         Webmin)
-            install_3rdparty_app webmin
+            run_static_script webmin
         ;;
         *)
         ;;
@@ -436,11 +436,11 @@ chmod +x -R "$SCRIPTS"
 chown root:root -R "$SCRIPTS"
 
 # Prepare first bootup
-check_command install_3rdparty_app change-ncadmin-profile
-check_command install_3rdparty_app change-root-profile
+check_command run_static_script change-ncadmin-profile
+check_command run_static_script change-root-profile
 
 # Install Redis
-install_3rdparty_app redis-server-ubuntu16
+run_static_script redis-server-ubuntu16
 
 # Upgrade
 apt update -q2

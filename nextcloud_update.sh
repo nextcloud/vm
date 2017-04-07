@@ -165,7 +165,7 @@ fi
 # Enable Apps
 if [ -d "$SNAPDIR" ]
 then
-    install_3rdparty_app spreedme
+    run_static_script spreedme
     sudo -u www-data php "$NCPATH"/occ app:enable spreedme
 fi
 

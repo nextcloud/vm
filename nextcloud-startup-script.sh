@@ -283,7 +283,7 @@ check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --typ
 check_command sudo -u www-data $NCPATH/occ maintenance:repair
 
 # Install phpMyadmin
-install_3rdparty_app phpmyadmin_install_ubuntu16
+run_static_script phpmyadmin_install_ubuntu16
 clear
 
 cat << LETSENC
@@ -314,19 +314,19 @@ while read -r -u 9 choice
 do
     case $choice in
         Collabora)
-            install_3rdparty_app collabora
+            run_static_script collabora
         ;;
 
         Nextant)
-            install_3rdparty_app nextant
+            run_static_script nextant
         ;;
 
         Passman)
-            install_3rdparty_app passman
+            run_static_script passman
         ;;
 
         Spreed.ME)
-            install_3rdparty_app spreedme
+            run_static_script spreedme
         ;;
 
         *)

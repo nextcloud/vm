@@ -214,8 +214,8 @@ download_static_script() {
 }
 
 # Install Apps
-# call like: install_3rdparty_app collabora|nextant|passman|spreedme|contacts|calendar|webmin
-install_3rdparty_app() {
+# call like: run_static_script collabora|nextant|passman|spreedme|contacts|calendar|webmin
+run_static_script() {
     # Get ${1} script
     if [ -f "${SCRIPTS}/${1}.sh" ]
     then

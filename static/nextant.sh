@@ -97,7 +97,7 @@ check_command cd "$NC_APPS_PATH"
 check_command tar zxf "$NT_RELEASE"
 
 # Set secure permissions
-install_3rdparty_app setup_secure_permissions_nextcloud
+run_static_script setup_secure_permissions_nextcloud
 
 # Enable Nextant
 rm -r "$NT_RELEASE"
