@@ -223,26 +223,30 @@ check_command apt install -y \
 # echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
 # echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 
-# Install Unzip
-apt install unzip -y
-
 # Install VM-tools
 apt install open-vm-tools -y
 
 # Download and validate Nextcloud package
-wget -q "$NCREPO/$STABLEVERSION.zip" -P "$HTML"
+wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -P "$HTML"
 mkdir -p "$GPGDIR"
-wget -q "$NCREPO/$STABLEVERSION.zip.asc" -P "$GPGDIR"
+wget -q "$NCREPO/$STABLEVERSION.tar.bz2.asc" -P "$GPGDIR"
 chmod -R 600 "$GPGDIR"
 gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
-check_command gpg --verify "$GPGDIR/$STABLEVERSION.zip.asc" "$HTML/$STABLEVERSION.zip"
-
+check_command gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
 # Cleanup
 rm -r $GPGDIR
 
+if [ -f "$HTML/$STABLEVERSION.tar.bz2" ]
+then
+    echo "$HTML/$STABLEVERSION.tar.bz2 exists"
+else
+    echo "Aborting,something went wrong with the download"
+    exit 1
+fi
+
 # Extract package
-unzip -q "$HTML/$STABLEVERSION.zip" -d "$HTML"
-rm "$HTML/$STABLEVERSION.zip"
+tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
+rm "$HTML/$STABLEVERSION.tar.bz2"
 
 # Secure permissions
 download_static_script setup_secure_permissions_nextcloud

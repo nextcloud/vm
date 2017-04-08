@@ -65,7 +65,7 @@ else
     rm "$SPREEDME_FILE"
     mv "nextcloud-spreedme-$SPREEDME_VER" spreedme
 fi
-sudo -u www-data php $NCPATH/occ app:enable spreedme
+check_command sudo -u www-data php "$NCPATH/occ" app:enable spreedme
 
 # Generate secret keys
 SHAREDSECRET=$(openssl rand -hex 32)
