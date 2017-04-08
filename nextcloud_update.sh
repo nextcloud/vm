@@ -96,9 +96,9 @@ then
     mkdir -p $BACKUP
 fi
 
-for PATH in config themes apps
+for folders in config themes apps
 do
-    rsync -Aax "$NCPATH/$PATH" "$BACKUP"
+    rsync -Aax "$NCPATH/$folders" "$BACKUP"
     if [ $? -eq 0 ]
     then
         BACKUP_OK=1
