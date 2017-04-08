@@ -263,14 +263,14 @@ do
         # Activate new config
         check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
     else
-        printf "${ICyan}It seems like no certs were generated, we do %s more tries.${Color_Off}" "$((NR_OF_ATTEMPTS-ATTEMPT))"
+        printf "${ICyan}It seems like no certs were generated, we do %s more tries.${Color_Off}\n" "$((NR_OF_ATTEMPTS-ATTEMPT))"
         any_key "Press any key to continue..."
         ((ATTEMPT++))
 
     fi
 done
 
-printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}"
+printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}n\n\"
 cat << ENDMSG
 +------------------------------------------------------------------------+
 | The script is located in $SCRIPTS/activate-ssl.sh                  |
