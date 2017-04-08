@@ -41,6 +41,8 @@ fi
 # Update Config
 run_static_script trusted
 
+add_crontab_le() {
+# shellcheck disable=SC2016
 DATE='$(date +%Y-%m-%d_%H:%M)'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
@@ -53,6 +55,8 @@ else
         service apache2 start
 fi
 CRONTAB
+}
+add_crontab_le
 
 # Makeletsencryptrenew.sh executable
 chmod +x $SCRIPTS/letsencryptrenew.sh
