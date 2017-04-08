@@ -1,33 +1,45 @@
 #!/bin/bash
 
-## Tech and Me ## - ©2017, https://www.techandme.se/
-#
-# Tested on Ubuntu Server 14.04 & 16.04.
+# Tech and Me © - 2017, https://www.techandme.se/
+
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
 
 FILE=nextcloud_update.sh
-SCRIPTS=/var/scripts
 
 # Must be root
-[[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
-
-mkdir -p $SCRIPTS
-
-if [ -f $SCRIPTS/$FILE ]
+if ! is_root
 then
-    rm $SCRIPTS/$FILE
-    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/$FILE -P $SCRIPTS
-    bash $SCRIPTS/$FILE
-else
-    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/$FILE -P $SCRIPTS
-    bash $SCRIPTS/$FILE
+    echo "Must be root to run script, in Ubuntu type: sudo -i"
+    exit 1
 fi
 
-chmod +x $SCRIPTS/$FILE
+mkdir -p "$SCRIPTS"
+
+if [ -f "$SCRIPTS/$FILE" ]
+then
+    rm -f "$SCRIPTS/$FILE"
+    wget -q "$GITHUB_REPO/$FILE" -P "$SCRIPTS"
+    bash "$SCRIPTS/$FILE"
+else
+    wget -q "$GITHUB_REPO/$FILE" -P "$SCRIPTS"
+    bash "$SCRIPTS/$FILE"
+fi
+
+chmod +x "$SCRIPTS/$FILE"
 
 # Remove potenial copy of the same file
-if [ -f $SCRIPTS/$FILE.1 ]
+if [ -f "$SCRIPTS/$FILE*" ]
 then
-    rm $SCRIPTS/$FILE.1
+    rm -f "$SCRIPTS/$FILE*"
 fi
 
 exit

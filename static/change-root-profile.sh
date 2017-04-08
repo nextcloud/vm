@@ -1,10 +1,21 @@
 #!/bin/bash
 
-ROOT_PROFILE="/root/.bash_profile"
+# Tech and Me © - 2017, https://www.techandme.se/
 
-rm /root/.profile
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 
-cat <<-ROOT-PROFILE > "$ROOT_PROFILE"
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
+[ -f /root/.profile ] && rm -f /root/.profile
+
+cat <<ROOT-PROFILE > "$ROOT_PROFILE"
 
 # ~/.profile: executed by Bourne-compatible login shells.
 

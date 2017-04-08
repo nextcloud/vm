@@ -1,7 +1,18 @@
 #!/bin/bash
-WANIP4=$(curl -s -m 5 ipinfo.io/ip)
-WANIP6=$(curl -s -m 5 6.ifcfg.me)
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+
+# Tech and Me © - 2017, https://www.techandme.se/
+
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
 clear
 figlet -f small Nextcloud
 echo "     https://www.nextcloud.com"

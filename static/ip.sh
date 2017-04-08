@@ -1,12 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
-IFCONFIG="/sbin/ifconfig"
-INTERFACES="/etc/network/interfaces"
+# Tech and Me © - 2017, https://www.techandme.se/
 
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
-ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
-GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+unset FIRST_IFACE
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
 
 cat <<-IPCONFIG > "$INTERFACES"
 source /etc/network/interfaces.d/*

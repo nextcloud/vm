@@ -1,29 +1,27 @@
 #!/bin/bash
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
 
-# This runs the startup script with a new user that has sudo permissions 
+# Tech and Me © - 2017, https://www.techandme.se/
 
-function ask_yes_or_no() {
-    read -p "$1 ([y]es or [N]o): "
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
-}
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
 if [[ "no" == $(ask_yes_or_no "Do you want to create a new user?") ]]
 then
-echo "Not adding another user..."
-sleep 1
-else
-echo "Enter name of the new user:"
-read NEWUSER
-useradd -m $NEWUSER -G sudo
-passwd $NEWUSER
-if [[ $? > 0 ]]
-then
-    echo "Try again please...(2/2)"
-    passwd $NEWUSER
-else
+    echo "Not adding another user..."
     sleep 1
-fi
-sudo -u $NEWUSER sudo bash nextcloud_install_production.sh
+else
+    read -r -p "Enter name of the new user: " NEWUSER
+    useradd -m "$NEWUSER" -G sudo
+    while true
+    do
+        sudo passwd "$NEWUSER" && break
+    done
+    sudo -u "$NEWUSER" sudo bash nextcloud_install_production.sh
 fi

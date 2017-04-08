@@ -1,23 +1,26 @@
 #!/bin/bash
 
-# Tech and Me, ©2017 - www.techandme.se
+# Tech and Me © - 2017, https://www.techandme.se/
+
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/morph027/vm/master/lib.sh)
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
 
 # Based on: http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
-
-SPAMHAUS=/etc/spamhaus.wl
-ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
-APACHE2=/etc/apache2/apache2.conf
-
-set -e
 
 # Protect against DDOS
 apt -y install libapache2-mod-evasive
 mkdir -p /var/log/apache2/evasive
 chown -R www-data:root /var/log/apache2/evasive
-if [ -f $ENVASIVE ]
+if [ ! -f $ENVASIVE ]
 then
-    echo "Envasive mod exists"
-else
     touch $ENVASIVE
     cat << ENVASIVE > "$ENVASIVE"
 DOSHashTableSize 2048
@@ -35,10 +38,8 @@ apt -y install libapache2-mod-qos
 
 # Protect against DNS Injection
 apt -y install libapache2-mod-spamhaus
-if [ -f $SPAMHAUS ]
+if [ ! -f $SPAMHAUS ]
 then
-    echo "Spamhaus mod exists"
-else
     touch $SPAMHAUS
     cat << SPAMHAUS >> "$APACHE2"
 
@@ -68,12 +69,7 @@ fi
 # Enable $SPAMHAUS
 sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
 
-service apache2 restart
-if [[ $? > 0 ]]
-then
-    echo "Something went wrong..."
-    sleep 5
-    exit 1
-else
-    echo "Security added!"
-fi
+check_command service apache2 restart
+echo "Security added!"
+sleep 3
+
