@@ -75,35 +75,23 @@ else
 fi
 
 echo
+while true
+do
 # Ask for domain name
 cat << ENTERDOMAIN
 +---------------------------------------------------------------+
 |    Please enter the domain name you will use for Nextcloud:   |
-|    Like this: example.com, or nextcloud.example.com (1/2)     |
+|    Like this: example.com, or nextcloud.example.com           |
 +---------------------------------------------------------------+
 ENTERDOMAIN
 echo
 read -r domain
-
 echo
-if [[ "no" == $(ask_yes_or_no "Is this correct? $domain") ]]
-    then
-    echo
-    echo
-    cat << ENTERDOMAIN2
-+---------------------------------------------------------------+
-|    OK, try again. (2/2)                                       |
-|    Please enter the domain name you will use for Nextcloud:   |
-|    Like this: example.com, or nextcloud.example.com           |
-|    It's important that it's correct, because the script is    |
-|    based on what you enter.                                   |
-+---------------------------------------------------------------+
-ENTERDOMAIN2
-
-    echo
-    read -r domain
-    echo
+if [[ "yes" == $(ask_yes_or_no "Is this correct? $domain") ]]
+then
+    break
 fi
+done
 
 # Check if 443 is open using nmap, if not notify the user
 apt update -q4 & spinner_loading
