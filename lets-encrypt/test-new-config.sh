@@ -13,7 +13,7 @@ DEBUG=0
 debug_mode
 
 # Activate the new config
-printf "${Color_Off}Apache will now reboot"
+printf "${Color_Off}We will now test that everything is OK\n"
 any_key "Press any key to continue... "
 a2ensite "$1"
 a2dissite nextcloud_ssl_domain_self_signed.conf
@@ -39,30 +39,11 @@ then
 fi
 
 # Update Config
-if [ -f $SCRIPTS/update-config.php ]
-then
-    rm $SCRIPTS/update-config.php
-    wget -q $STATIC/update-config.php -P $SCRIPTS
-else
-    wget -q $STATIC/update-config.php -P $SCRIPTS
-fi
+run_static_script trusted
 
-# Sets trusted domain in config.php
-if [ -f $SCRIPTS/trusted.sh ]
-then
-    rm $SCRIPTS/trusted.sh
-    wget -q $STATIC/trusted.sh -P $SCRIPTS
-    bash $SCRIPTS/trusted.sh
-    rm $SCRIPTS/update-config.php
-    rm $SCRIPTS/trusted.sh
-else
-    wget -q $STATIC/trusted.sh -P $SCRIPTS
-    bash $SCRIPTS/trusted.sh
-    rm $SCRIPTS/trusted.sh
-    rm $SCRIPTS/update-config.php
-fi
-
-DATE="$(date +%Y-%m-%d_%H:%M)"
+add_crontab_le() {
+# shellcheck disable=SC2016
+DATE='$(date +%Y-%m-%d_%H:%M)'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 service apache2 stop
@@ -74,13 +55,15 @@ else
         service apache2 start
 fi
 CRONTAB
+}
+add_crontab_le
 
 # Makeletsencryptrenew.sh executable
 chmod +x $SCRIPTS/letsencryptrenew.sh
 
 # Cleanup
-rm $SCRIPTS/test-new-config.sh
-rm $SCRIPTS/activate-ssl.sh
+rm $SCRIPTS/test-new-config.sh ## Remove ??
+rm $SCRIPTS/activate-ssl.sh ## Remove ??
 
 else
 # If it fails, revert changes back to normal
@@ -93,5 +76,3 @@ else
     any_key "Press any key to continue... "
     exit 1
 fi
-
-exit

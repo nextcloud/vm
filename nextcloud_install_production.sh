@@ -223,26 +223,23 @@ check_command apt install -y \
 # echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
 # echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 
-# Install Unzip
-apt install unzip -y
-
 # Install VM-tools
 apt install open-vm-tools -y
 
 # Download and validate Nextcloud package
-wget -q "$NCREPO/$STABLEVERSION.zip" -P "$HTML"
-mkdir -p "$GPGDIR"
-wget -q "$NCREPO/$STABLEVERSION.zip.asc" -P "$GPGDIR"
-chmod -R 600 "$GPGDIR"
-gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
-check_command gpg --verify "$GPGDIR/$STABLEVERSION.zip.asc" "$HTML/$STABLEVERSION.zip"
+check_command download_verify_nextcloud_stable
 
-# Cleanup
-rm -r $GPGDIR
+if [ -f "$HTML/$STABLEVERSION.tar.bz2" ]
+then
+    echo "$HTML/$STABLEVERSION.tar.bz2 exists"
+else
+    echo "Aborting,something went wrong with the download"
+    exit 1
+fi
 
 # Extract package
-unzip -q "$HTML/$STABLEVERSION.zip" -d "$HTML"
-rm "$HTML/$STABLEVERSION.zip"
+tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
+rm "$HTML/$STABLEVERSION.tar.bz2"
 
 # Secure permissions
 download_static_script setup_secure_permissions_nextcloud
@@ -265,7 +262,7 @@ sleep 3
 echo
 
 # Prepare cron.php to be run every 15 minutes
-check_command crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
@@ -409,13 +406,13 @@ while read -r -u 9 choice
 do
     case "$choice" in
         Calendar)
-            run_static_script calendar
+            run_app_script calendar
         ;;
         Contacts)
-            run_static_script contacts
+            run_app_script contacts
         ;;
         Webmin)
-            run_static_script webmin
+            run_app_script webmin
         ;;
         *)
         ;;

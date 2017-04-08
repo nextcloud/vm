@@ -24,16 +24,17 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 WGET="/usr/bin/wget"
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
 WANIP4=$(curl -s -m 5 ipinfo.io/ip)
-WANIP6=$(curl -s -m 5 6.ifcfg.me)
+WANIP6=$(curl -s -k -m 5 https://6.ifcfg.me)
 IFCONFIG="/sbin/ifconfig"
 INTERFACES="/etc/network/interfaces"
 NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
 GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/morph027/vm/master"
+STATIC="$GITHUB_REPO/static"
+LETS_ENC="$GITHUB_REPO/lets-encrypt"
+APP="$GITHUB_REPO/apps"
 NCREPO="https://download.nextcloud.com/server/releases"
-STATIC="https://raw.githubusercontent.com/morph027/vm/master/static"
-LETS_ENC="https://raw.githubusercontent.com/morph027/vm/master/lets-encrypt"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
 NCPASS=nextcloud
@@ -42,7 +43,7 @@ UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 # Passwords
-SHUF=$(shuf -i 19-21 -n 1)
+SHUF=$(shuf -i 25-29 -n 1)
 MYSQL_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWMYSQLPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 # Path to specific files
@@ -70,13 +71,13 @@ LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
 DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 # Collabora App
-COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
+[ ! -z "$COLLABORA_INSTALL" ] && COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
 COLLVER_FILE=richdocuments.tar.gz
 COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Nextant
 SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-9].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
-NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
+[ ! -z "$NEXTANT_INSTALL" ] && NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
 NT_RELEASE=nextant-master-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
 SOLR_RELEASE=solr-$SOLR_VERSION.tgz
@@ -86,18 +87,22 @@ SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
 # Passman
-PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
+[ ! -z "$PASSMAN_INSTALL" ] && PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
 PASSVER_FILE=passman_$PASSVER.tar.gz
 PASSVER_REPO=https://releases.passman.cc
 SHA256=/tmp/sha256
 # Calendar
-CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+[ ! -z "$CALENDAR_INSTALL" ] && CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CALVER_FILE=calendar.tar.gz
 CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
 # Contacts
-CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
+[ ! -z "$CONTACTS_INSTALL" ] && CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 CONVER_FILE=contacts.tar.gz
 CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
+# Spreed.ME
+SPREEDME_VER=$(wget -q https://raw.githubusercontent.com/strukturag/nextcloud-spreedme/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
+SPREEDME_FILE="v$SPREEDME_VER.tar.gz"
+SPREEDME_REPO=https://github.com/strukturag/nextcloud-spreedme/archive
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
@@ -166,7 +171,7 @@ check_command() {
 network_ok() {
     echo "Testing if network is OK..."
     service networking restart
-    if wget -q -T 10 -t 2 http://github.com -O /dev/null
+    if wget -q -T 20 -t 2 http://github.com -O /dev/null & spinner_loading
     then
         return 0
     else
@@ -189,51 +194,87 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
-# Initial download of script
-# call like: download_static_script name_of_script(.sh)
+download_verify_nextcloud_stable() {
+wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -P "$HTML"
+mkdir -p "$GPGDIR"
+wget -q "$NCREPO/$STABLEVERSION.tar.bz2.asc" -P "$GPGDIR"
+chmod -R 600 "$GPGDIR"
+gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
+gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
+rm -r "$GPGDIR"
+}
+
+# Initial download of script in ../static
+# call like: download_static_script name_of_script
 download_static_script() {
     # Get ${1} script
-    if [ -f "${SCRIPTS}/${1}.sh" ]
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if ! { wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.php" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"; }
     then
-        rm -f "${SCRIPTS}/${1}.sh"
-        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
-    elif [ ! -f "${SCRIPTS}/${1}.sh" ]
-    then
-        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
-    fi
-    # Check ${1} script is downloaded
-    if [ -f "${SCRIPTS}/${1}.sh" ]
-    then
-    sleep 0.1
-    else
-        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh' again."
+        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
         echo "If you get this error when running the nextcloud-startup-script then just re-run it with:"
         echo "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
 
-# Install Apps
-# call like: run_static_script collabora|nextant|passman|spreedme|contacts|calendar|webmin
+# Initial download of script in ../lets-encrypt
+# call like: download_le_script name_of_script
+download_le_script() {
+    # Get ${1} script
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if ! { wget -q "${LETS_ENC}/${1}.sh" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.php" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.py" -P "$SCRIPTS"; }
+    then
+        echo "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
+        echo "If you get this error when running the nextcloud-startup-script then just re-run it with:"
+        echo "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        exit 1
+    fi
+}
+
+# Run any script in ../static
+# call like: run_static_script name_of_script
 run_static_script() {
     # Get ${1} script
-    if [ -f "${SCRIPTS}/${1}.sh" ]
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
     then
+        bash "${SCRIPTS}/${1}.sh" > /dev/null
         rm -f "${SCRIPTS}/${1}.sh"
-        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
-    elif [ ! -f "${SCRIPTS}/${1}.sh" ]
+    elif wget -q "${STATIC}/${1}.php" -P "$SCRIPTS"
     then
-        wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
-    fi
-    # Check ${1} script is downloaded
-    if [ -f "${SCRIPTS}/${1}.sh" ]
+        php "${SCRIPTS}/${1}.php" > /dev/null
+        rm -f "${SCRIPTS}/${1}.php"
+    elif wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"
     then
-        # Run ${1} script
-        bash "${SCRIPTS}/${1}.sh"
-        rm -f "$SCRIPTS/${1}.sh"
+        python "${SCRIPTS}/${1}.py" > /dev/null
+        rm -f "${SCRIPTS}/${1}.py"
     else
         echo "Downloading ${1} failed"
-        echo "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh' again."
+        echo "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
+        sleep 3
+    fi
+}
+
+# Run any script in ../apps
+# call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin
+run_app_script() {
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if wget -q "${APP}/${1}.sh" -P "$SCRIPTS"
+    then
+        bash "${SCRIPTS}/${1}.sh" > /dev/null
+        rm -f "${SCRIPTS}/${1}.sh"
+    elif wget -q "${APP}/${1}.php" -P "$SCRIPTS"
+    then
+        php "${SCRIPTS}/${1}.php" > /dev/null
+        rm -f "${SCRIPTS}/${1}.php"
+    elif wget -q "${APP}/${1}.py" -P "$SCRIPTS"
+    then
+        python "${SCRIPTS}/${1}.py" > /dev/null
+        rm -f "${SCRIPTS}/${1}.py"
+    else
+        echo "Downloading ${1} failed"
+        echo "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
         sleep 3
     fi
 }
@@ -267,7 +308,7 @@ spinner_loading() {
     do
         i=$(( (i+1) %4 ))
         printf "\r[${spin:$i:1}] " # Add text here, something like "Please be paitent..." maybe?
-        sleep .15
+        sleep .1
     done
 }
 

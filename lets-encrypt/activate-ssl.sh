@@ -34,10 +34,10 @@ cat << STARTMSG
 |       you run this script!                                    |
 |                                                               |
 |       You also have to open port 443 against this VMs         |
-|       IP address: "$ADDRESS" - do this in your router.      |
+|       IP address: "$ADDRESS" - do this in your router.    |
 |       Here is a guide: https://goo.gl/Uyuf65                  |
 |                                                               |
-|       This script is located in "$SCRIPTS" and you          |
+|       This script is located in "$SCRIPTS" and you        |
 |       can run this script after you got a domain.             |
 |                                                               |
 |       Please don't run this script if you don't have          |
@@ -75,38 +75,25 @@ else
 fi
 
 echo
+while true
+do
 # Ask for domain name
 cat << ENTERDOMAIN
 +---------------------------------------------------------------+
 |    Please enter the domain name you will use for Nextcloud:   |
-|    Like this: example.com, or nextcloud.example.com (1/2)     |
+|    Like this: example.com, or nextcloud.example.com           |
 +---------------------------------------------------------------+
 ENTERDOMAIN
 echo
 read -r domain
-
 echo
-if [[ "no" == $(ask_yes_or_no "Is this correct? $domain") ]]
-    then
-    echo
-    echo
-    cat << ENTERDOMAIN2
-+---------------------------------------------------------------+
-|    OK, try again. (2/2)                                       |
-|    Please enter the domain name you will use for Nextcloud:   |
-|    Like this: example.com, or nextcloud.example.com           |
-|    It's important that it's correct, because the script is    |
-|    based on what you enter.                                   |
-+---------------------------------------------------------------+
-ENTERDOMAIN2
-
-    echo
-    read -r domain
-    echo
+if [[ "yes" == $(ask_yes_or_no "Is this correct? $domain") ]]
+then
+    break
 fi
+done
 
 # Check if 443 is open using nmap, if not notify the user
-echo "Running apt update..."
 apt update -q4 & spinner_loading
 if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
@@ -126,22 +113,14 @@ else
         apt remove --purge nmap -y
     else
         echo "Port 443 is not open on $domain. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/"
-        any_key "Press any key to exit... "
+        any_key "Press any key to exit..."
         apt remove --purge nmap -y
         exit 1
     fi
 fi
 
 # Fetch latest version of test-new-config.sh
-if [ -f "$SCRIPTS/test-new-config.sh" ]
-then
-    rm -f "$SCRIPTS/test-new-config.sh"
-    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P "$SCRIPTS"
-    chmod +x $SCRIPTS/test-new-config.sh
-else
-    wget -q https://raw.githubusercontent.com/nextcloud/vm/master/lets-encrypt/test-new-config.sh -P "$SCRIPTS"
-    chmod +x "$SCRIPTS/test-new-config.sh"
-fi
+check_command download_le_script test-new-config
 
 # Check if $domain exists and is reachable
 echo
@@ -245,7 +224,7 @@ fi
 LE_METHODS=()
 LE_METHODS+=( "certonly --standalone" )
 LE_METHODS+=( " " )
-LE_METHODS+=( "certonly --webroot --w $NCPATH" )
+LE_METHODS+=( "certonly --webroot --webroot-path $NCPATH" )
 LE_METHODS+=( "--apache" )
 LE_DEFAULT_OPTIONS="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
 
@@ -282,16 +261,16 @@ do
             openssl dhparam -dsaparam -out "$DHPARAMS" 8192
         fi
         # Activate new config
-        bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
-        exit 0
+        check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
     else
-        printf "${ICyan}It seems like no certs were generated, we do %s more tries.${Color_Off}" "$((NR_OF_ATTEMPTS-ATTEMPT))"
+        printf "${ICyan}It seems like no certs were generated, we do %s more tries.${Color_Off}\n" "$((NR_OF_ATTEMPTS-ATTEMPT))"
         any_key "Press any key to continue..."
         ((ATTEMPT++))
+
     fi
 done
 
-printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}"
+printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}\n\n"
 cat << ENDMSG
 +------------------------------------------------------------------------+
 | The script is located in $SCRIPTS/activate-ssl.sh                  |

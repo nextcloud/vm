@@ -103,7 +103,7 @@ Alias /phpmyadmin $PHPMYADMINDIR
 # Apache 2.4
       <RequireAny>
         Require ip $WANIP4
-    Require ip $ADDRESS
+        Require ip $ADDRESS
         Require ip 127.0.0.1
         Require ip ::1
       </RequireAny>
@@ -169,7 +169,7 @@ cat << CONFIG_CREATE >> "$CONFIG"
 CONFIG_CREATE
 
 if ! service apache2 restart
-then 
+then
     echo "Apache2 could not restart..."
     echo "The script will exit."
     exit 1

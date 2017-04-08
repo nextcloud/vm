@@ -84,6 +84,8 @@ download_static_script test_connection
 download_static_script setup_secure_permissions_nextcloud
 download_static_script change_mysql_pass
 download_static_script nextcloud
+download_static_script update-config
+download_static_script index
 
 # Lets Encrypt
 if [ -f "$SCRIPTS"/activate-ssl.sh ]
@@ -96,36 +98,6 @@ fi
 if [ ! -f "$SCRIPTS"/activate-ssl.sh ]
 then
     echo "activate-ssl failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Update Config PHP
-if [ -f "$SCRIPTS"/update-config.php ]
-then
-    rm "$SCRIPTS"/update-config.php
-    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
-else
-    wget -q "$STATIC"/update-config.php -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/update-config.php ]
-then
-    echo "update-config failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
-
-# Get the Welcome Screen when http://$address
-if [ -f "$SCRIPTS"/index.php ]
-then
-    rm "$SCRIPTS"/index.php
-    wget -q $GITHUB_REPO/index.php -P "$SCRIPTS"
-else
-    wget -q $GITHUB_REPO/index.php -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/index.php ]
-then
-    echo "index.php failed"
     echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
     exit 1
 fi
@@ -283,7 +255,7 @@ check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --typ
 check_command sudo -u www-data $NCPATH/occ maintenance:repair
 
 # Install phpMyadmin
-run_static_script phpmyadmin_install_ubuntu16
+run_app_script phpmyadmin_install_ubuntu16
 clear
 
 cat << LETSENC
@@ -314,19 +286,19 @@ while read -r -u 9 choice
 do
     case $choice in
         Collabora)
-            run_static_script collabora
+            run_app_script collabora
         ;;
 
         Nextant)
-            run_static_script nextant
+            run_app_script nextant
         ;;
 
         Passman)
-            run_static_script passman
+            run_app_script passman
         ;;
 
         Spreed.ME)
-            run_static_script spreedme
+            run_app_script spreedme
         ;;
 
         *)
@@ -448,7 +420,7 @@ echo "$CLEARBOOT"
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 # Success!
 clear
-printf "%s\n" "${Green}"
+printf "%s\n""${Green}"
 echo    "+--------------------------------------------------------------------+"
 echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
 echo    "|                                                                    |"

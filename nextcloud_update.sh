@@ -40,10 +40,10 @@ fi
 
 # Upgrade Nextcloud
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
-wget -q -T 10 -t 2 "$NCREPO/nextcloud-$NCVERSION.tar.bz2" -O /dev/null
+wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -O /dev/null & spinner_loading
 if [ $? -eq 0 ]; then
     printf "${Green}SUCCESS!${Color_Off}\n"
-    rm -f "nextcloud-$NCVERSION.tar.bz2"
+    rm -f "$STABLEVERSION.tar.bz2"
 else
     echo
     printf "${IRed}Nextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
@@ -96,9 +96,9 @@ then
     mkdir -p $BACKUP
 fi
 
-for PATH in config themes apps
+for folders in config themes apps
 do
-    rsync -Aax "$NCPATH/$PATH" "$BACKUP"
+    rsync -Aax "$NCPATH/$folders" "$BACKUP"
     if [ $? -eq 0 ]
     then
         BACKUP_OK=1
@@ -115,12 +115,12 @@ else
     printf "${Green}\nBackup OK!${Color_Off}\n"
 fi
 
-echo "Downloading $NCREPO/nextcloud-$NCVERSION.tar.bz2..."
-wget -q -T 10 -t 2 "$NCREPO/nextcloud-$NCVERSION.tar.bz2" -P "$HTML"
+# Download and validate Nextcloud package
+check_command download_verify_nextcloud_stable
 
-if [ -f "$HTML/nextcloud-$NCVERSION.tar.bz2" ]
+if [ -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
-    echo "$HTML/nextcloud-$NCVERSION.tar.bz2 exists"
+    echo "$HTML/$STABLEVERSION.tar.bz2 exists"
 else
     echo "Aborting,something went wrong with the download"
     exit 1
@@ -150,8 +150,8 @@ then
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
     echo "Removing old Nextcloud instance in 5 seconds..." && sleep 5
     rm -rf $NCPATH
-    tar -xjf "$HTML/nextcloud-$NCVERSION.tar.bz2" -C "$HTML"
-    rm "$HTML/nextcloud-$NCVERSION.tar.bz2"
+    tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
+    rm "$HTML/$STABLEVERSION.tar.bz2"
     cp -R $BACKUP/themes "$NCPATH"/
     cp -R $BACKUP/config "$NCPATH"/
     bash $SECURE & spinner_loading
@@ -165,18 +165,11 @@ fi
 # Enable Apps
 if [ -d "$SNAPDIR" ]
 then
-    run_static_script spreedme
-    sudo -u www-data php "$NCPATH"/occ app:enable spreedme
+    run_app_script spreedme
 fi
 
 # Recover apps that exists in the backed up apps folder
-if [ ! -f "$SCRIPTS"/recover_apps.py ]
-then
-    wget -q "$STATIC"/recover_apps.py -P "$SCRIPTS"
-    chmod +x "$SCRIPTS"/recover_apps.py
-    python "$SCRIPTS"/recover_apps.py
-    rm "$SCRIPTS"/recover_apps.py
-fi
+run_static_script recover_apps
 
 # Change owner of $BACKUP folder to root
 chown -R root:root "$BACKUP"
