@@ -113,7 +113,7 @@ else
         apt remove --purge nmap -y
     else
         echo "Port 443 is not open on $domain. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/"
-        any_key "Press any key to exit... "
+        any_key "Press any key to exit..."
         apt remove --purge nmap -y
         exit 1
     fi
@@ -270,7 +270,7 @@ do
     fi
 done
 
-printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}n\n\"
+printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}\n\n"
 cat << ENDMSG
 +------------------------------------------------------------------------+
 | The script is located in $SCRIPTS/activate-ssl.sh                  |
