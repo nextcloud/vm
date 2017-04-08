@@ -124,7 +124,7 @@ then
     sleep 1
 else
    echo "Locating the best mirrors..."
-   apt update -q4 & spinner_loading
+   apt update -q2 & spinner_loading
    apt install python-pip -y
    pip install \
        --upgrade pip \
@@ -151,7 +151,7 @@ else
 fi
 
 # Update system
-apt update -q4 & spinner_loading
+apt update -q2 & spinner_loading
 
 # Write MySQL pass to file and keep it safe
 echo "$MYSQL_PASS" > $PW_FILE
@@ -199,7 +199,7 @@ a2enmod rewrite \
         setenvif
 
 # Install PHP 7.0
-apt update -q4 & spinner_loading
+apt update -q2 & spinner_loading
 check_command apt install -y \
     libapache2-mod-php7.0 \
     php7.0-common \
@@ -440,7 +440,7 @@ check_command run_static_script change-root-profile
 run_static_script redis-server-ubuntu16
 
 # Upgrade
-apt update -q4 & spinner_loading
+apt update -q2 & spinner_loading
 apt dist-upgrade -y
 
 # Remove LXD (always shows up as failed during boot)
@@ -464,5 +464,3 @@ bash $SECURE & spinner_loading
 # Reboot
 echo "Installation done, system will now reboot..."
 reboot
-
-exit 0

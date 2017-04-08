@@ -41,7 +41,7 @@ then
 fi
 
 # Get packages to be able to install Redis
-apt update -q4 & spinner_loading
+apt update -q2 & spinner_loading
 sudo apt install -q -y \
     build-essential \
     tcl8.5 \
@@ -117,7 +117,7 @@ apt purge -y \
     php7.0-dev* \
     build-essential*
 
-apt update -q4 & spinner_loading
+apt update -q2 & spinner_loading
 apt autoremove -y
 apt autoclean
 
