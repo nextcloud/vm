@@ -227,7 +227,7 @@ check_command apt install -y \
 apt install open-vm-tools -y
 
 # Download and validate Nextcloud package
-check_command download_verify_nexcloud_stable
+check_command download_verify_nextcloud_stable
 
 if [ -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
