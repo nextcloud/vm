@@ -34,7 +34,7 @@ cat << STARTMSG
 |       you run this script!                                    |
 |                                                               |
 |       You also have to open port 443 against this VMs         |
-|       IP address: "$ADDRESS" - do this in your router.      |
+|       IP address: "$ADDRESS" - do this in your router.    |
 |       Here is a guide: https://goo.gl/Uyuf65                  |
 |                                                               |
 |       This script is located in "$SCRIPTS" and you        |
@@ -224,7 +224,7 @@ fi
 LE_METHODS=()
 LE_METHODS+=( "certonly --standalone" )
 LE_METHODS+=( " " )
-LE_METHODS+=( "certonly --webroot --w $NCPATH" )
+LE_METHODS+=( "certonly --webroot --webroot-path $NCPATH" )
 LE_METHODS+=( "--apache" )
 LE_DEFAULT_OPTIONS="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
 
