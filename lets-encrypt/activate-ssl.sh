@@ -236,7 +236,7 @@ fi
 LE_METHODS=()
 LE_METHODS+=( "certonly --standalone" )
 LE_METHODS+=( " " )
-LE_METHODS+=( "certonly --webroot --w $NCPATH" )
+LE_METHODS+=( "certonly --webroot $NCPATH" )
 LE_METHODS+=( "--apache" )
 LE_DEFAULT_OPTIONS="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
 
