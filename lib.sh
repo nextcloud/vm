@@ -194,6 +194,16 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
+download_verify_nextcloud_stable() {
+wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -P "$HTML"
+mkdir -p "$GPGDIR"
+wget -q "$NCREPO/$STABLEVERSION.tar.bz2.asc" -P "$GPGDIR"
+chmod -R 600 "$GPGDIR"
+gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
+gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
+rm -r "$GPGDIR"
+}
+
 # Initial download of script in ../static
 # call like: download_static_script name_of_script
 download_static_script() {

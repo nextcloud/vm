@@ -227,14 +227,7 @@ check_command apt install -y \
 apt install open-vm-tools -y
 
 # Download and validate Nextcloud package
-wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -P "$HTML"
-mkdir -p "$GPGDIR"
-wget -q "$NCREPO/$STABLEVERSION.tar.bz2.asc" -P "$GPGDIR"
-chmod -R 600 "$GPGDIR"
-gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
-check_command gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
-# Cleanup
-rm -r $GPGDIR
+check_command download_verify_nexcloud_stable
 
 if [ -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
