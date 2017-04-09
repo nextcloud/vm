@@ -1,34 +1,46 @@
 #!/bin/bash
-ncpath='/var/www/nextcloud'
+
+# Tech and Me © - 2017, https://www.techandme.se/
+
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
 htuser='www-data'
 htgroup='www-data'
 rootuser='root'
-NCDATA='/var/ncdata'
 
 printf "Creating possible missing Directories\n"
-mkdir -p $ncpath/data
-mkdir -p $ncpath/updater
+mkdir -p $NCPATH/data
+mkdir -p $NCPATH/updater
 mkdir -p $NCDATA
 
 printf "chmod Files and Directories\n"
-find ${ncpath}/ -type f -print0 | xargs -0 chmod 0640
-find ${ncpath}/ -type d -print0 | xargs -0 chmod 0750
+find ${NCPATH}/ -type f -print0 | xargs -0 chmod 0640
+find ${NCPATH}/ -type d -print0 | xargs -0 chmod 0750
 
 printf "chown Directories\n"
-chown -R ${rootuser}:${htgroup} ${ncpath}/
-chown -R ${htuser}:${htgroup} ${ncpath}/apps/
-chown -R ${htuser}:${htgroup} ${ncpath}/config/
+chown -R ${rootuser}:${htgroup} ${NCPATH}/
+chown -R ${htuser}:${htgroup} ${NCPATH}/apps/
+chown -R ${htuser}:${htgroup} ${NCPATH}/config/
 chown -R ${htuser}:${htgroup} ${NCDATA}/
-chown -R ${htuser}:${htgroup} ${ncpath}/themes/
-chown -R ${htuser}:${htgroup} ${ncpath}/updater/
+chown -R ${htuser}:${htgroup} ${NCPATH}/themes/
+chown -R ${htuser}:${htgroup} ${NCPATH}/updater/
 
-chmod +x ${ncpath}/occ
+chmod +x ${NCPATH}/occ
 
 printf "chmod/chown .htaccess\n"
-if [ -f ${ncpath}/.htaccess ]
+if [ -f ${NCPATH}/.htaccess ]
 then
-    chmod 0644 ${ncpath}/.htaccess
-    chown ${rootuser}:${htgroup} ${ncpath}/.htaccess
+    chmod 0644 ${NCPATH}/.htaccess
+    chown ${rootuser}:${htgroup} ${NCPATH}/.htaccess
 fi
 if [ -f ${NCDATA}/.htaccess ]
 then

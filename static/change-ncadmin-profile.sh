@@ -1,11 +1,33 @@
 #!/bin/bash
 
-UNIXUSER=$SUDO_USER
-UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
+# Tech and Me © - 2017, https://www.techandme.se/
 
-rm /home/$UNIXUSER/.profile
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
+rm "/home/$UNIXUSER/.profile"
 
 cat <<-UNIXUSER-PROFILE > "$UNIXUSER_PROFILE"
+# Add this here to be able to show spinner_loading while the scripts are loading
+spinner_loading_initial() {
+    pid=$!
+    spin='-\|/'
+    i=0
+    while kill -0 $pid 2>/dev/null
+    do
+        i=$(( (i+1) %4 ))
+        printf "\r[${spin:$i:1}] Loading initial script..."
+        sleep .1
+    done
+}
 # ~/.profile: executed by the command interpreter for login shells.
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
@@ -28,12 +50,14 @@ if [ -d "$HOME/bin" ]
 then
     PATH="$HOME/bin:$PATH"
 fi
-bash /var/scripts/instruction.sh
+bash /var/scripts/instruction.sh & spinner_loading_initial
 bash /var/scripts/history.sh
 sudo -i
 
 UNIXUSER-PROFILE
 
-chown $UNIXUSER:$UNIXUSER $UNIXUSER_PROFILE
+chown "$UNIXUSER:$UNIXUSER" "$UNIXUSER_PROFILE"
+chown "$UNIXUSER:$UNIXUSER" "$SCRIPTS/history.sh"
+chown "$UNIXUSER:$UNIXUSER" "$SCRIPTS/instruction.sh"
 
 exit 0

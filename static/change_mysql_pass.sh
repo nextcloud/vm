@@ -1,19 +1,22 @@
 #!/bin/bash
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+CHANGE_MYSQL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset CHANGE_MYSQL
 
-# Tech and Me, ©2017 - www.techandme.se
+# Tech and Me © - 2017, https://www.techandme.se/
 
-SHUF=$(shuf -i 17-20 -n 1)
-NEWMYSQLPASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
-PW_FILE=/var/mysql_password.txt
-MYCNF=/root/.my.cnf
-OLDMYSQL=$(cat $PW_FILE)
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
 
-echo "Generating new MySQL root password..."
-# Change MySQL password
-mysqladmin -u root -p$OLDMYSQL password $NEWMYSQLPASS > /dev/null 2>&1
-if [ $? -eq 0 ]
+# Change MySQL Password
+if mysqladmin -u root -p"$OLDMYSQL" password "$NEWMYSQLPASS" > /dev/null 2>&1
 then
-    echo -e "\e[32mYour new MySQL root password is: $NEWMYSQLPASS\e[0m"
+    echo -e "${Green}Your new MySQL root password is: $NEWMYSQLPASS${Color_Off}"
     echo "$NEWMYSQLPASS" > $PW_FILE
     cat << LOGIN > "$MYCNF"
 [client]

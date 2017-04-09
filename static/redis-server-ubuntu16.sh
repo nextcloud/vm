@@ -1,42 +1,33 @@
 #!/bin/bash
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-# Tech and Me - www.techandme.se - ©2017
-# Ubuntu 16.04 with php 7
+# Tech and Me © - 2017, https://www.techandme.se/
 
-OS=$(grep -ic "Ubuntu" /etc/issue.net)
-SCRIPTS=/var/scripts
-NCPATH=/var/www/nextcloud
-REDIS_CONF=/etc/redis/redis.conf
-REDIS_SOCK=/var/run/redis/redis.sock
-SHUF=$(shuf -i 30-35 -n 1)
-REDIS_PASS=$(cat /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w $SHUF | head -n 1)
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
 
 # Must be root
-[[ `id -u` -eq 0 ]] || { echo "Must be root to run script, in Ubuntu type: sudo -i"; exit 1; }
+if ! is_root
+then
+    echo "Must be root to run script, in Ubuntu type: sudo -i"
+    exit 1
+fi
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if [ $OS -eq 1 ]
+if [ "$OS" != 1 ]
 then
-    sleep 1
-else
     echo "Ubuntu Server is required to run this script."
     echo "Please install that distro and try again."
     exit 1
 fi
 
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
-version(){
-    local h t v
-
-    [[ $2 = "$1" || $2 = "$3" ]] && return 0
-
-    v=$(printf '%s\n' "$@" | sort -V)
-    h=$(head -n1 <<<"$v")
-    t=$(tail -n1 <<<"$v")
-
-    [[ $2 != "$h" && $2 != "$t" ]]
-}
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
@@ -44,29 +35,27 @@ if ! version 16.04 "$DISTRO" 16.04.4; then
 fi
 
 # Check if dir exists
-if [ -d $SCRIPTS ]
+if [ ! -d $SCRIPTS ]
 then
-    sleep 1
-else
     mkdir -p $SCRIPTS
 fi
 
 # Get packages to be able to install Redis
-apt update -q2 && sudo apt install build-essential -q -y
-apt install tcl8.5 -q -y
-apt install php-pear php7.0-dev -q -y
+apt update -q4 & spinner_loading
+sudo apt install -q -y \
+    build-essential \
+    tcl8.5 \
+    php-pear \
+    php7.0-dev
 
 # Install PHPmodule
-pecl install -Z redis
-if [[ $? > 0 ]]
+if ! pecl install -Z redis
 then
     echo "PHP module installation failed"
-    sleep 5
+    sleep 3
     exit 1
 else
-    echo -e "\e[32m"
-    echo "PHP module installation OK!"
-    echo -e "\e[0m"
+    printf "${Green}\nPHP module installation OK!${Color_Off}\n"
 fi
 # Set globally doesn't work for some reason
 # touch /etc/php/7.0/mods-available/redis.ini
@@ -78,23 +67,20 @@ service apache2 restart
 
 
 # Install Redis
-apt install redis-server -y
-if [[ $? > 0 ]]
+if ! apt -y install redis-server
 then
     echo "Installation failed."
-    sleep 5
+    sleep 3
     exit 1
 else
-    echo -e "\e[32m"
-    echo "Redis installation OK!"
-    echo -e "\e[0m"
+    printf "${Green}\nRedis installation OK!${Color_Off}\n"
 fi
 
 # Prepare for adding redis configuration
 sed -i "s|);||g" $NCPATH/config/config.php
 
 # Add the needed config to Nextclouds config.php
-cat <<ADD_TO_CONFIG>> $NCPATH/config/config.php
+cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
   'memcache.local' => '\\OC\\Memcache\\Redis',
   'filelocking.enabled' => true,
   'memcache.distributed' => '\\OC\\Memcache\\Redis',
@@ -111,10 +97,8 @@ cat <<ADD_TO_CONFIG>> $NCPATH/config/config.php
 ADD_TO_CONFIG
 
 # Redis performance tweaks
-if grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
+if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 then
-    echo "vm.overcommit_memory correct"
-else
     echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 fi
 sed -i "s|# unixsocket /var/run/redis/redis.sock|unixsocket $REDIS_SOCK|g" $REDIS_CONF
@@ -133,8 +117,8 @@ apt purge -y \
     php7.0-dev* \
     build-essential*
 
-apt update -q2
+apt update -q4 & spinner_loading
 apt autoremove -y
 apt autoclean
 
-exit 0
+exit
