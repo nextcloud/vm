@@ -38,9 +38,8 @@ then
     sudo hostnamectl set-hostname "$FQDOMAIN"
 fi
 
-# Update Config
+# Set trusted domains
 run_static_script trusted
-rm -f $SCRIPTS/update-config.php
 
 add_crontab_le() {
 # shellcheck disable=SC2016

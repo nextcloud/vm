@@ -437,7 +437,6 @@ printf "${Color_Off}\n"
 
 # Set trusted domain in config.php
 bash "$SCRIPTS"/trusted.sh
-rm -f "$SCRIPTS"/update-config.php
 rm -f "$SCRIPTS"/trusted.sh
 
 # Prefer IPv6

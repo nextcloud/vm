@@ -22,4 +22,7 @@ then
 
     # Change .htaccess accordingly
     sed -i "s|RewriteBase /nextcloud|RewriteBase /|g" $NCPATH/.htaccess
+
+    # Cleanup
+    rm -f $SCRIPTS/update-config.php
 fi
