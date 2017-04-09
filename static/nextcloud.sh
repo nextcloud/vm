@@ -5,8 +5,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-WANIPv6=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset WANIPv6
+LOAD_IP6=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset LOAD_IP6
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
