@@ -221,54 +221,74 @@ then
 SSL_CREATE
 fi
 
-LE_METHODS=()
-LE_METHODS+=( "certonly --standalone" )
-LE_METHODS+=( " " )
-LE_METHODS+=( "certonly --webroot --webroot-path $NCPATH" )
-LE_METHODS+=( "--apache" )
-LE_DEFAULT_OPTIONS="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
+# Methods
+default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
 
-NR_OF_ATTEMPTS=${#LE_METHODS[@]}
-ATTEMPT=0
-while [ ! "$ATTEMPT" -eq "$NR_OF_ATTEMPTS" ]
-do
-    case "${LE_METHODS[$ATTEMPT]}" in
-        *standalone*)
-            # Stop Apache to avoid port conflicts
-            a2dissite 000-default.conf
-            sudo service apache2 stop
-        ;;
-    esac
+standalone() {
+# Stop Apache to avoid port conflicts
+a2dissite 000-default.conf
+sudo service apache2 stop
+# Generate certs
+eval "letsencrypt certonly --standalone $default_le"
+# Activate Apache again (Disabled during standalone)
+service apache2 start
+a2ensite 000-default.conf
+service apache2 reload
+}
+webroot() {
+eval "letsencrypt certonly --webroot --webroot-path $NCPATH $default_le"
+}
+certonly() {
+eval "letsencrypt certonly $default_le"
+}
 
-    # Generate certs
-    eval letsencrypt "${LE_METHODS[$ATTEMPT]}" "$LE_DEFAULT_OPTIONS"
+methods=(standalone webroot certonly)
 
-    case "${LE_METHODS[$ATTEMPT]}" in
-        *standalone*)
-            # Activate Apache again (Disabled during standalone)
-           service apache2 start
-           a2ensite 000-default.conf
-           service apache2 reload
-        ;;
-    esac
-
-    # Check if $CERTFILES exists
-    if [ -d "$CERTFILES" ]
+create_config() {
+# $1 = method
+local method="$1"
+# Check if $CERTFILES exists
+if [ -d "$CERTFILES" ]
+ then
+    # Generate DHparams chifer
+    if [ ! -f "$DHPARAMS" ]
     then
-        # Generate DHparams chifer
-        if [ ! -f "$DHPARAMS" ]
-        then
-            openssl dhparam -dsaparam -out "$DHPARAMS" 8192
-        fi
-        # Activate new config
-        check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
-    else
-        printf "${ICyan}It seems like no certs were generated, we do %s more tries.${Color_Off}\n" "$((NR_OF_ATTEMPTS-ATTEMPT))"
-        any_key "Press any key to continue..."
-        ((ATTEMPT++))
-
+        openssl dhparam -dsaparam -out "$DHPARAMS" 8192
     fi
+    # Activate new config
+    check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
+    return 0
+fi
+}
+
+attempts_left() {
+local method="$1"
+if [ "$method" == "standalone" ]
+then
+    printf "${ICyan}It seems like no certs were generated, we will do 2 more tries.${Color_Off}\n"
+    any_key "Press any key to continue..."
+elif [ "$method" == "webroot" ]
+then
+    printf "${ICyan}It seems like no certs were generated, we will do 1 more try.${Color_Off}\n"
+    any_key "Press any key to continue..."
+elif [ "$method" == "certonly" ]
+then
+    printf "${ICyan}It seems like no certs were generated, we will do 0 more tries.${Color_Off}\n"
+    any_key "Press any key to continue..."
+fi
+}
+
+try_different_methods() {
+for f in "${methods[@]}"; do "$f"
+if [ "$f" == 0 ]; then
+    create_config "$f"
+else
+    attempts_left "$f"
+fi
 done
+}
+
+try_different_methods
 
 printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}\n\n"
 cat << ENDMSG
