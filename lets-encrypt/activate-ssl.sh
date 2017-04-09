@@ -230,6 +230,9 @@ a2dissite 000-default.conf
 sudo service apache2 stop
 # Generate certs
 eval "letsencrypt certonly --standalone $default_le"
+if [ "$?" -eq 0 ]; then
+    echo "success" > le_test
+fi
 # Activate Apache again (Disabled during standalone)
 service apache2 start
 a2ensite 000-default.conf
@@ -237,9 +240,15 @@ service apache2 reload
 }
 webroot() {
 eval "letsencrypt certonly --webroot --webroot-path $NCPATH $default_le"
+if [ "$?" -eq 0 ]; then
+    echo "success" > /tmp/le_test
+fi
 }
 certonly() {
 eval "letsencrypt certonly $default_le"
+if [ "$?" -eq 0 ]; then
+    echo "success" > /tmp/le_test
+fi
 }
 
 methods=(standalone webroot certonly)
@@ -280,7 +289,8 @@ fi
 
 # Generate the cert
 for f in "${methods[@]}"; do "$f"
-if [ "$?" -eq 0 ]; then
+if [ "$(grep 'success' /tmp/le_test)" == 'success' ]; then
+    rm -f /tmp/le_test
     create_config "$f"
 else
     attempts_left "$f"
