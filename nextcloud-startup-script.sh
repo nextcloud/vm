@@ -59,7 +59,7 @@ then
     sleep 1
 else
     echo "Locating the best mirrors..."
-    apt update -q2 & spinner_loading
+    apt update -q4 & spinner_loading
     apt install python-pip -y
     pip install \
         --upgrade pip \

@@ -239,15 +239,15 @@ run_static_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
     then
-        bash "${SCRIPTS}/${1}.sh" > /dev/null
+        bash "${SCRIPTS}/${1}.sh"
         rm -f "${SCRIPTS}/${1}.sh"
     elif wget -q "${STATIC}/${1}.php" -P "$SCRIPTS"
     then
-        php "${SCRIPTS}/${1}.php" > /dev/null
+        php "${SCRIPTS}/${1}.php"
         rm -f "${SCRIPTS}/${1}.php"
     elif wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"
     then
-        python "${SCRIPTS}/${1}.py" > /dev/null
+        python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
         echo "Downloading ${1} failed"
@@ -262,15 +262,15 @@ run_app_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if wget -q "${APP}/${1}.sh" -P "$SCRIPTS"
     then
-        bash "${SCRIPTS}/${1}.sh" > /dev/null
+        bash "${SCRIPTS}/${1}.sh"
         rm -f "${SCRIPTS}/${1}.sh"
     elif wget -q "${APP}/${1}.php" -P "$SCRIPTS"
     then
-        php "${SCRIPTS}/${1}.php" > /dev/null
+        php "${SCRIPTS}/${1}.php"
         rm -f "${SCRIPTS}/${1}.php"
     elif wget -q "${APP}/${1}.py" -P "$SCRIPTS"
     then
-        python "${SCRIPTS}/${1}.py" > /dev/null
+        python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
         echo "Downloading ${1} failed"
