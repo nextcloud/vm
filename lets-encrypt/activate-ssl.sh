@@ -257,7 +257,7 @@ if [ -d "$CERTFILES" ]
     fi
     # Activate new config
     check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
-    return 0
+    exit
 fi
 }
 
@@ -278,17 +278,14 @@ then
 fi
 }
 
-try_different_methods() {
+# Generate the cert
 for f in "${methods[@]}"; do "$f"
-if [ "$f" == 0 ]; then
+if [ "$?" -eq 0 ]; then
     create_config "$f"
 else
     attempts_left "$f"
 fi
 done
-}
-
-try_different_methods
 
 printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}\n\n"
 cat << ENDMSG
