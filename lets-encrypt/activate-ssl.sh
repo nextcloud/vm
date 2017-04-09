@@ -232,6 +232,8 @@ sudo service apache2 stop
 eval "letsencrypt certonly --standalone $default_le"
 if [ "$?" -eq 0 ]; then
     echo "success" > /tmp/le_test
+else
+    echo "fail" > /tmp/le_test
 fi
 # Activate Apache again (Disabled during standalone)
 service apache2 start
@@ -242,12 +244,16 @@ webroot() {
 eval "letsencrypt certonly --webroot --webroot-path $NCPATH $default_le"
 if [ "$?" -eq 0 ]; then
     echo "success" > /tmp/le_test
+else
+    echo "fail" > /tmp/le_test
 fi
 }
 certonly() {
 eval "letsencrypt certonly $default_le"
 if [ "$?" -eq 0 ]; then
     echo "success" > /tmp/le_test
+else
+    echo "fail" > /tmp/le_test
 fi
 }
 
@@ -289,7 +295,7 @@ fi
 
 # Generate the cert
 for f in "${methods[@]}"; do "$f"
-if [ "$(grep 'success' /tmp/le_test)" == 'success' ]; then
+if [ "$(grep -q 'success' /tmp/le_test)" == 'success' ]; then
     rm -f /tmp/le_test
     create_config "$f"
 else
