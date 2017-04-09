@@ -325,7 +325,6 @@ echo "Current timezone is $(cat /etc/timezone)"
 echo "You must change it to your timezone"
 any_key "Press any key to change timezone..."
 dpkg-reconfigure tzdata
-echo
 sleep 3
 clear
 

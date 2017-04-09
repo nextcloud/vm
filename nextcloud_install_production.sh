@@ -229,11 +229,9 @@ apt install open-vm-tools -y
 # Download and validate Nextcloud package
 check_command download_verify_nextcloud_stable
 
-if [ -f "$HTML/$STABLEVERSION.tar.bz2" ]
+if [ ! -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
-    echo "$HTML/$STABLEVERSION.tar.bz2 exists"
-else
-    echo "Aborting,something went wrong with the download"
+    echo "Aborting,something went wrong with the download of $STABLEVERSION.tar.bz2"
     exit 1
 fi
 
