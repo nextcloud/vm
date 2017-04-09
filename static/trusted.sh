@@ -14,7 +14,7 @@ DEBUG=0
 debug_mode
 
 download_static_script update-config
-if [-f $SCRIPTS/update-config.php ]
+if [ -f $SCRIPTS/update-config.php ]
 then
     # Change config.php
     php $SCRIPTS/update-config.php $NCPATH/config/config.php 'trusted_domains[]' localhost "${ADDRESS[@]}" "$(hostname)" "$(hostname --fqdn)" >/dev/null 2>&1
