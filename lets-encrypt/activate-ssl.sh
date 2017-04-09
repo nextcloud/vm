@@ -299,6 +299,7 @@ if [ "$(grep -q 'success' /tmp/le_test)" == 'success' ]; then
     rm -f /tmp/le_test
     create_config "$f"
 else
+    rm -f /tmp/le_test
     attempts_left "$f"
 fi
 done
