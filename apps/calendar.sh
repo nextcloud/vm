@@ -17,6 +17,7 @@ debug_mode
 # Download and install Calendar
 if [ ! -d "$NCPATH"/apps/calendar ]
 then
+    echo "Installing calendar..."
     wget -q "$CALVER_REPO/v$CALVER/$CALVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$CALVER_FILE" -C "$NCPATH/apps"
     cd "$NCPATH/apps"

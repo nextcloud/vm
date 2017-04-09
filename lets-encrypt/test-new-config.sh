@@ -40,6 +40,7 @@ fi
 
 # Update Config
 run_static_script trusted
+rm -f $SCRIPTS/update-config.php
 
 add_crontab_le() {
 # shellcheck disable=SC2016

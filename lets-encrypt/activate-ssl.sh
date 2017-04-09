@@ -231,7 +231,7 @@ sudo service apache2 stop
 # Generate certs
 eval "letsencrypt certonly --standalone $default_le"
 if [ "$?" -eq 0 ]; then
-    echo "success" > le_test
+    echo "success" > /tmp/le_test
 fi
 # Activate Apache again (Disabled during standalone)
 service apache2 start

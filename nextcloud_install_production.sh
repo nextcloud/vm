@@ -236,7 +236,7 @@ then
 fi
 
 # Extract package
-tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
+tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML" & spinner_loading
 rm "$HTML/$STABLEVERSION.tar.bz2"
 
 # Secure permissions
