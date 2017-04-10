@@ -16,18 +16,6 @@ debug_mode
 rm "/home/$UNIXUSER/.profile"
 
 cat <<-UNIXUSER-PROFILE > "$UNIXUSER_PROFILE"
-# Add this here to be able to show spinner_loading while the scripts are loading
-spinner_loading_initial() {
-    pid=$!
-    spin='-\|/'
-    i=0
-    while kill -0 $pid 2>/dev/null
-    do
-        i=$(( (i+1) %4 ))
-        printf "\r[${spin:$i:1}] Loading initial script..."
-        sleep .1
-    done
-}
 # ~/.profile: executed by the command interpreter for login shells.
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
@@ -50,7 +38,7 @@ if [ -d "$HOME/bin" ]
 then
     PATH="$HOME/bin:$PATH"
 fi
-bash /var/scripts/instruction.sh & spinner_loading_initial
+bash /var/scripts/instruction.sh
 bash /var/scripts/history.sh
 sudo -i
 
