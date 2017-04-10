@@ -1,5 +1,5 @@
 # Nextcloud VM
-[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme) [![Build Status](https://travis-ci.org/morph027/vm.svg?branch=master)](https://travis-ci.org/morph027/vm)
+[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme) [![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
 
 ## Support the development
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
@@ -58,8 +58,10 @@ Keep asking questions so that we can add them here.
 - Remove the VM NIC adapter in settings on VMware/Virtualbox and then re-adding a NIC adapter.
 ![alt_tag](https://goo.gl/gWg9JN)
 <br />
+
 - Check your firewall so that it doesn't block this specific IP
 <br />
+
 - Check your router/firewall that you have DHCP enabled.
 
 **Q:** Which Hyper-V generation should we chose when creating a machine to load this image?
