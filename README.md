@@ -57,12 +57,12 @@ Keep asking questions so that we can add them here.
 <br />
 - Remove the VM NIC adapter in settings on VMware/Virtualbox and then re-adding a NIC adapter.
 ![alt_tag](https://goo.gl/gWg9JN)
-<br />
-
 - Check your firewall so that it doesn't block this specific IP
-<br />
-
 - Check your router/firewall that you have DHCP enabled.
+
+**Q:** I get a message that I'm not root, but I am.
+<br />
+**A:** Please see here: https://github.com/nextcloud/vm/issues/200
 
 **Q:** Which Hyper-V generation should we chose when creating a machine to load this image?
 <br />
