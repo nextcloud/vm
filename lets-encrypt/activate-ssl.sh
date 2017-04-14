@@ -295,7 +295,7 @@ fi
 
 # Generate the cert
 for f in "${methods[@]}"; do "$f"
-if [ "$(grep -q 'success' /tmp/le_test)" == 'success' ]; then
+if [ "$(grep 'success' /tmp/le_test)" == 'success' ]; then
     rm -f /tmp/le_test
     create_config "$f"
 else
