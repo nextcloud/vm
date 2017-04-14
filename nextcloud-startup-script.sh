@@ -14,6 +14,26 @@ unset CHECK_CURRENT_REPO
 DEBUG=0
 debug_mode
 
+is_root() {
+    if [[ "$EUID" -ne 0 ]]
+    then
+        return 1
+    else
+        return 0
+    fi
+}
+
+network_ok() {
+    echo "Testing if network is OK..."
+    service networking restart
+    if wget -q -T 20 -t 2 http://github.com -O /dev/null
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Check if root
 if ! is_root
 then
