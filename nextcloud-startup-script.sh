@@ -47,6 +47,7 @@ then
     printf "${Green}Online!${Color_Off}\n"
 else
     echo "Setting correct interface..."
+    [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
     {
         sed '/# The primary network interface/q' /etc/network/interfaces
