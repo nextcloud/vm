@@ -27,6 +27,8 @@ fi
 
 # System Upgrade
 apt update -q4 & spinner_loading
+export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+
 # Update Redis PHP extention
 if type pecl > /dev/null 2>&1
 then
@@ -38,9 +40,6 @@ then
     echo "Trying to upgrade the Redis Pecl extenstion..."
     pecl upgrade redis
 fi
-
-# Always answer yes
-export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
 # Remove update lists
 rm /var/lib/apt/lists/* -r
