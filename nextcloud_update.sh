@@ -204,9 +204,9 @@ bash "$SECURE"
 # Update Redis PHP extention
 if type pecl > /dev/null 2>&1
 then
-    echo "Preparing to upgrade Redis Pecl extenstion..."
     if [ "$(dpkg-query -W -f='${Status}' php7.0-dev 2>/dev/null | grep -c "ok installed")" == "0" ]
     then
+        echo "Preparing to upgrade Redis Pecl extenstion..."
         apt update -q4 & spinner_loading
         apt install php7.0-dev -y
     fi
