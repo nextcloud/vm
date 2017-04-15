@@ -26,7 +26,7 @@ then
 fi
 
 # System Upgrade
-apt update
+apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 rm /var/lib/apt/lists/* -R
 
@@ -200,6 +200,19 @@ chown -R www-data:www-data "$NCPATH"
 sudo -u www-data php "$NCPATH"/occ config:system:set htaccess.RewriteBase --value="/"
 sudo -u www-data php "$NCPATH"/occ maintenance:update:htaccess
 bash "$SECURE"
+
+# Update Redis PHP extention
+if type pecl > /dev/null 2>&1
+then
+    if [ "$(dpkg-query -W -f='${Status}' php7.0-dev 2>/dev/null | grep -c "ok installed")" == "0" ]
+    then
+        echo "Preparing to upgrade Redis Pecl extenstion..."
+        apt update -q4 & spinner_loading
+        apt install php7.0-dev -y
+    fi
+    echo "Trying to upgrade the Redis Pecl extenstion..."
+    pecl upgrade redis
+fi
 
 # Repair
 sudo -u www-data php "$NCPATH"/occ maintenance:repair
