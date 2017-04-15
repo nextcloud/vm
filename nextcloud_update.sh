@@ -41,6 +41,13 @@ then
     pecl upgrade redis
 fi
 
+# Cleanup un-used packages
+apt autoremove -y
+apt autoclean
+
+# Update GRUB, just in case
+update-grub
+
 # Remove update lists
 rm /var/lib/apt/lists/* -r
 
@@ -217,13 +224,6 @@ bash "$SECURE"
 
 # Repair
 sudo -u www-data php "$NCPATH"/occ maintenance:repair
-
-# Cleanup un-used packages
-apt autoremove -y
-apt autoclean
-
-# Update GRUB, just in case
-update-grub
 
 CURRENTVERSION_after=$(sudo -u www-data php "$NCPATH"/occ status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
