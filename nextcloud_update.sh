@@ -39,6 +39,7 @@ then
     fi
     echo "Trying to upgrade the Redis Pecl extenstion..."
     pecl upgrade redis
+    service apache2 restart
 fi
 
 # Cleanup un-used packages
