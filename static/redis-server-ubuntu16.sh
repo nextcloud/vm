@@ -45,8 +45,7 @@ apt update -q4 & spinner_loading
 sudo apt install -q -y \
     build-essential \
     tcl8.5 \
-    php-pear \
-    php7.0-dev
+    php-pear
 
 # Install PHPmodule
 if ! pecl install -Z redis
