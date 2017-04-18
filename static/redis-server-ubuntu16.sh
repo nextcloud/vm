@@ -45,6 +45,7 @@ apt update -q4 & spinner_loading
 sudo apt install -q -y \
     build-essential \
     tcl8.5 \
+    php7.0-dev \
     php-pear
 
 # Install PHPmodule
@@ -113,7 +114,6 @@ chmod 600 /etc/redis/redis.conf
 # Cleanup
 apt purge -y \
     git \
-    php7.0-dev* \
     build-essential*
 
 apt update -q4 & spinner_loading
