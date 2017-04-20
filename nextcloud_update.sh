@@ -26,9 +26,31 @@ then
 fi
 
 # System Upgrade
-apt update
+apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-rm /var/lib/apt/lists/* -R
+
+# Update Redis PHP extention
+if type pecl > /dev/null 2>&1
+then
+    if [ "$(dpkg-query -W -f='${Status}' php7.0-dev 2>/dev/null | grep -c "ok installed")" == "0" ]
+    then
+        echo "Preparing to upgrade Redis Pecl extenstion..."
+        apt install php7.0-dev -y
+    fi
+    echo "Trying to upgrade the Redis Pecl extenstion..."
+    pecl upgrade redis
+    service apache2 restart
+fi
+
+# Cleanup un-used packages
+apt autoremove -y
+apt autoclean
+
+# Update GRUB, just in case
+update-grub
+
+# Remove update lists
+rm /var/lib/apt/lists/* -r
 
 # Set secure permissions
 if [ ! -f "$SECURE" ]
@@ -203,13 +225,6 @@ bash "$SECURE"
 
 # Repair
 sudo -u www-data php "$NCPATH"/occ maintenance:repair
-
-# Cleanup un-used packages
-apt autoremove -y
-apt autoclean
-
-# Update GRUB, just in case
-update-grub
 
 CURRENTVERSION_after=$(sudo -u www-data php "$NCPATH"/occ status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
