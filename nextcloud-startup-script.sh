@@ -63,7 +63,7 @@ then
     printf "${Green}Online!${Color_Off}\n"
 else
     printf "\nNetwork NOT OK. You must have a working Network connection to run this script.\n"
-    echo "Please report this issue here: https://github.com/nextcloud/vm/issues/new"
+    echo "Please report this issue here: $ISSUES"
     exit 1
 fi
 
@@ -201,7 +201,7 @@ then
         printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:\n"
         printf "sudo nano /etc/network/interfaces\n"
         echo "If you experience any bugs, please report it here:"
-        echo "https://github.com/nextcloud/vm/issues/new"
+        echo "$ISSUES"
         any_key "Press any key to continue..."
     else
         # Not connected!

@@ -27,7 +27,7 @@ then
    echo "Latest version is: $PASSVER"
 else
     echo "Failed! Download is not available at the moment, try again later."
-    echo "Please report this issue here: https://github.com/nextcloud/passman/issues/new"
+    echo "Please report this issue here: $ISSUES"
     any_key "Press any key to continue..."
     exit 1
 fi

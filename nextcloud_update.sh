@@ -246,6 +246,6 @@ else
     sudo -u www-data php "$NCPATH"/occ status
     echo "UPGRADE FAILED!"
     echo "Your files are still backed up at $BACKUP. No worries!"
-    echo "Please report this issue to https://github.com/nextcloud/vm/issues"
+    echo "Please report this issue to $ISSUES"
     exit 1
 fi

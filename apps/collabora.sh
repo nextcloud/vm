@@ -226,7 +226,7 @@ HTTPS_CREATE
         sleep 1
     else
         echo "Unable to create vhost, exiting..."
-        echo "Please report this issue here https://github.com/nextcloud/vm/issues/new"
+        echo "Please report this issue here $ISSUES"
         exit 1
     fi
 fi
@@ -269,7 +269,7 @@ then
     cd "$NCPATH/apps" || exit 1
     rm "$COLLVER_FILE"
 else
-    printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: https://github.com/nextcloud/vm/issues/new\n"
+    printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: $ISSUES\n"
     any_key "Press any key to continue... "
     service apache2 restart
 fi
