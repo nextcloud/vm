@@ -2,17 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset FIRST_IFACE
-unset CHECK_CURRENT_REPO
 
 # Tech and Me © - 2017, https://www.techandme.se/
-
-# Check for errors + debug code and abort if something isn't right
-# 1 = ON
-# 0 = OFF
-DEBUG=0
-debug_mode
 
 is_root() {
     if [[ "$EUID" -ne 0 ]]
@@ -54,8 +45,16 @@ else
         printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"
     } > /etc/network/interfaces.new
     mv /etc/network/interfaces.new /etc/network/interfaces
-    service networking restart
+    FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+    unset FIRST_IFACE
+    unset CHECK_CURRENT_REPO
 fi
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
 
 # Check network
 if network_ok
