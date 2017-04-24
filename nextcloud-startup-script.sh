@@ -54,6 +54,8 @@ else
         printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"
     } > /etc/network/interfaces.new
     mv /etc/network/interfaces.new /etc/network/interfaces
+    service networking restart
+    . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 fi
 
 # Check network
