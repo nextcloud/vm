@@ -8,6 +8,12 @@ unset CHECK_CURRENT_REPO
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
 is_root() {
     if [[ "$EUID" -ne 0 ]]
     then
@@ -49,12 +55,6 @@ else
     } > /etc/network/interfaces.new
     mv /etc/network/interfaces.new /etc/network/interfaces
 fi
-
-# Check for errors + debug code and abort if something isn't right
-# 1 = ON
-# 0 = OFF
-DEBUG=0
-debug_mode
 
 # Check network
 if network_ok
