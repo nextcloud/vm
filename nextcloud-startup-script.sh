@@ -55,6 +55,9 @@ else
     } > /etc/network/interfaces.new
     mv /etc/network/interfaces.new /etc/network/interfaces
     service networking restart
+    # shellcheck source=lib.sh
+    CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+    unset CHECK_CURRENT_REPO
 fi
 
 # Check network
