@@ -8,11 +8,7 @@ unset CHECK_CURRENT_REPO
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
-# Check for errors + debug code and abort if something isn't right
-# 1 = ON
-# 0 = OFF
-DEBUG=0
-debug_mode
+## If you want debug mode, please activate it further down in the code at line ~60
 
 is_root() {
     if [[ "$EUID" -ne 0 ]]
@@ -59,6 +55,12 @@ else
     CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
     unset CHECK_CURRENT_REPO
 fi
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
 
 # Check network
 if network_ok
