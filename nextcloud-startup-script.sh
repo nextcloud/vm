@@ -48,9 +48,6 @@ else
         printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"
     } > /etc/network/interfaces.new
     mv /etc/network/interfaces.new /etc/network/interfaces
-    FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-    unset FIRST_IFACE
-    unset CHECK_CURRENT_REPO
 fi
 
 # Check for errors + debug code and abort if something isn't right
@@ -70,6 +67,7 @@ else
 fi
 
 # Check where the best mirrors are and update
+[ ! -z "$REPO" ] && REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 printf "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.\n"
 echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
 echo "We recomend you to change the mirrors based on where this is currently installed."
