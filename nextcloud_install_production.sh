@@ -33,9 +33,7 @@ echo "If the field after ':' is blank you are probably running as a pure root us
 echo "It's possible to install with root, but there will be minor errors."
 echo
 echo "Please create a user with sudo permissions if you want an optimal installation."
-wget -q "$STATIC"/adduser.sh
-bash adduser.sh
-rm -f adduser.sh
+run_static_script adduser
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
@@ -91,7 +89,6 @@ then
     apt install resolvconf -y -q
     dpkg-reconfigure resolvconf
 fi
-
 echo "nameserver 8.8.8.8" > /etc/resolvconf/resolv.conf.d/base
 echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base
 
