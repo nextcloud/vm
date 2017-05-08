@@ -1,5 +1,5 @@
 # Nextcloud VM
-[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme) [![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
+[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme) [![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm) [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
 
 ## Support the development
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
@@ -85,7 +85,7 @@ Keep asking questions so that we can add them here.
 **A:** You can not use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built in script instead:
 `sudo bash /var/scripts/update.sh`
 
-**Q:** How to install options if not selected during first install? - Collabora/Nextant/...
+**Q:** How to install apps if not selected during first install?
 <br />
 **A:** Go to the apps folder in this repo and download the script in raw format and run them. For the calendar:
 `wget https://raw.githubusercontent.com/nextcloud/vm/master/apps/calendar.sh && sudo bash calendar.sh`
