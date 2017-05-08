@@ -80,6 +80,36 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** Just submit your report here: https://github.com/nextcloud/vm/issues/new
 
+**Q:** How to update Nextcloud VM?
+<br />
+**A:** You can not use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built in script instead:
+`sudo bash /var/scripts/update.sh`
+
+**Q:** How to install options if not selected during first install? - Collabora/Nextant/...
+<br />
+**A:** Go to the apps folder in this repo and download the script in raw format and run them. For the calendar:
+`wget https://raw.githubusercontent.com/nextcloud/vm/master/apps/calendar.sh && sudo bash calendar.sh`
+
+**Q:** How to continue from partially installed system? - You got the FQDN wrong/You put in a bad password/...
+<br />
+**A:** Extract the VM again and start over. The script can not be run twice in a row.
+
+**Q:** Does automatic update update Ubuntu and Nextcloud?
+<br />
+**A:** if you want automatic updates of both Ubuntu and Nextcloud then check out this blog post: https://www.techandme.se/nextcloud-update-is-now-fully-automated/
+
+**Q:** Can I enable-disable automatic update later of OS/Nextcloud?
+<br />
+**A:** Yes, it's controlled by a cronjob. Just disable the cronjob to disable automatic updates.
+
+**Q:** How to backup?
+<br />
+**A:** There afre several ways. We recomend rsync to a NAS or similar. You can find a script here: https://www.techandme.se/rsync-backup-script/
+
+**Q:**  Can I install in a VM with a NAT and port redirection of port 443 & 10000 & 22?
+<br />
+**A:** Yes, check this out: https://www.techandme.se/publish-your-server-online/
+
 ## First look
 
 ![alt tag](https://raw.githubusercontent.com/nextcloud/screenshots/master/vm/first-look.jpg)
