@@ -284,3 +284,18 @@ then
     echo "You may have to reboot before Docker will load correctly."
     any_key "Press any key to continue... "
 fi
+
+# Add prune command?
+printf "Docker automatically saves all containers as untagged even if they are not in use and it\n"
+printf "uses a lot of space which may lead to that your disk reaches its limit after a while.\n\n"
+if [[ "yes" == $(ask_yes_or_no "Do you want to add a cronjob to remove untagged containers once a week?") ]]
+then
+    {
+    echo "#!/bin/bash"
+    echo "docker system prune -a --force"
+    echo "exit"
+    } > "$SCRIPTS/dockerprune.sh"
+    chmod a+x "$SCRIPTS/dockerprune.sh"
+    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
+fi
+
