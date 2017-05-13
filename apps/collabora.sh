@@ -297,5 +297,6 @@ then
     } > "$SCRIPTS/dockerprune.sh"
     chmod a+x "$SCRIPTS/dockerprune.sh"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
+    any_key "Cronjob added! Press any key to continue... "
 fi
 
