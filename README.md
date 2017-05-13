@@ -22,6 +22,7 @@
 * OpenSSH (preferred)
 * 20 GB HDD
 * At least 1 vCPU and 2 GB RAM
+* A working internet connection (the script needs it to download files and variables)
 
 #### Recommended
 * Thick provisioned (better performance and easier to maintain)
@@ -43,15 +44,15 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 
 Keep asking questions so that we can add them here.
 
-**Q:** Where can i dowload VMware Player?
+**Q: Where can i dowload VMware Player?**
 <br />
 **A:** You can download the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
 
-**Q:** The script says: "WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts"
+**Q: The script says: "WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts"**
 <br />
 **A:** http://askubuntu.com/a/463966
 
-**Q:** I get NETWORK NOT OK when booting the VM. How do I solve that?
+**Q: I get NETWORK NOT OK when booting the VM. How do I solve that?**
 <br />
 **A:** There are a few causes to this error, most of them are your own network or firewall settings.
 <br />
@@ -60,32 +61,32 @@ Keep asking questions so that we can add them here.
 - Check your firewall so that it doesn't block this specific IP
 - Check your router/firewall that you have DHCP enabled.
 
-**Q:** I get a message that I'm not root, but I am.
+**Q: I get a message that I'm not root, but I am.**
 <br />
 **A:** Please see here: https://github.com/nextcloud/vm/issues/200
 
-**Q:** Which Hyper-V generation should we chose when creating a machine to load this image?
+**Q: Which Hyper-V generation should we chose when creating a machine to load this image?**
 <br />
 **A:** You currently need to use a 1st generation machine.
 
-**Q:** Do you have a pre-configured Hyper-V VM?
+**Q: Do you have a pre-configured Hyper-V VM?**
 <br />
 **A:** Yes we have, you can download it here: https://shop.techandme.se/index.php/product/nextcloud-vm-microsoft-hyper-v-vhd/
 
-**Q:** I want a bigger version of this VM, where can I find that?
+**Q: I want a bigger version of this VM, where can I find that?**
 <br />
 **A:** You can download it here: https://shop.techandme.se/index.php/product/nextcloud-vm-500gb/
 
-**Q:** I have found a bug that I want to report, where do I do that?
+**Q: I have found a bug that I want to report, where do I do that?**
 <br />
 **A:** Just submit your report here: https://github.com/nextcloud/vm/issues/new
 
-**Q:** How to update Nextcloud VM?
+**Q: How to update Nextcloud VM?**
 <br />
 **A:** You can not use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built in script instead:
 `sudo bash /var/scripts/update.sh`
 
-**Q:** How to install apps if not selected during first install?
+**Q: How to install apps if not selected during first install?**
 <br />
 **A:** Go to the apps folder in this repo and download the script in raw format and run them. For the calendar:
 `wget https://raw.githubusercontent.com/nextcloud/vm/master/apps/calendar.sh && sudo bash calendar.sh`
@@ -94,19 +95,19 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** Extract the VM again and start over. The script can not be run twice in a row.
 
-**Q:** Does automatic update update Ubuntu and Nextcloud?
+**Q: Does automatic update update Ubuntu and Nextcloud?**
 <br />
 **A:** if you want automatic updates of both Ubuntu and Nextcloud then check out this blog post: https://www.techandme.se/nextcloud-update-is-now-fully-automated/
 
-**Q:** Can I enable-disable automatic update later of OS/Nextcloud?
+**Q: Can I enable-disable automatic update later of OS/Nextcloud?**
 <br />
 **A:** Yes, it's controlled by a cronjob. Just disable the cronjob to disable automatic updates.
 
-**Q:** How to backup?
+**Q: How to backup?**
 <br />
-**A:** There afre several ways. We recomend rsync to a NAS or similar. You can find a script here: https://www.techandme.se/rsync-backup-script/
+**A:** There are several ways. We recomend Rsync to a NAS or similar. You can find a script here: https://www.techandme.se/rsync-backup-script/
 
-**Q:**  Can I install in a VM with a NAT and port redirection of port 443 & 10000 & 22?
+**Q:  Can I install in a VM with a NAT and port redirection of port 443 & 10000 & 22?**
 <br />
 **A:** Yes, check this out: https://www.techandme.se/publish-your-server-online/
 
