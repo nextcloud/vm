@@ -91,9 +91,9 @@ Keep asking questions so that we can add them here.
 **A:** Go to the apps folder in this repo and download the script in raw format and run them. For the calendar:
 `wget https://raw.githubusercontent.com/nextcloud/vm/master/apps/calendar.sh && sudo bash calendar.sh`
 
-**Q:** How to continue from partially installed system? - You got the FQDN wrong/You put in a bad password/...
+**Q: How to continue from partially installed system? - You got the FQDN wrong/You put in a bad password/ etc...**
 <br />
-**A:** Extract the VM again and start over. The script can not be run twice in a row.
+**A:** Extract the VM again and start over. The script can *not* be run twice in a row.
 
 **Q: Does automatic update update Ubuntu and Nextcloud?**
 <br />
