@@ -278,7 +278,6 @@ if [ "$RESULT" == "$NCDB" ]; then
 fi
 check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
 check_command sudo -u www-data $NCPATH/occ maintenance:repair
-rm -f $PW_FILE
 clear
 
 cat << LETSENC
