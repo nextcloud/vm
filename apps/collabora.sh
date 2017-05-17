@@ -175,6 +175,10 @@ then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
   ServerName $SUBDOMAIN:443
+  
+  <Directory /var/www>
+  Options -Indexes
+  </Directory>
 
   # SSL configuration, you may want to take the easy route instead and use Lets Encrypt!
   SSLEngine on
