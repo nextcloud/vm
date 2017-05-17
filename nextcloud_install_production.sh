@@ -156,7 +156,7 @@ cat << LOGIN > "$MYCNF"
 password='$MYSQL_PASS'
 LOGIN
 chmod 0600 $MYCNF
-chown root:root
+chown root:root $MYCNF
 
 # Install MYSQL 5.7
 apt install software-properties-common -y
