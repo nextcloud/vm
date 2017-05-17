@@ -268,21 +268,17 @@ fi
 
 # Enable UTF8mb4 (4-byte support)
 NCDB=nextcloud_db
-PW_FILE=/var/mysql_password.txt
 printf "\nEnabling UTF8mb4 support on $NCDB....\n"
 echo "Please be patient, it may take a while."
 sudo /etc/init.d/mysql restart & spinner_loading
-RESULT="mysqlshow --user=root --password=$(cat $PW_FILE) $NCDB| grep -v Wildcard | grep -o $NCDB"
+RESULT="mysqlshow --user=root --password=$MYSQLMYCNFPASS $NCDB| grep -v Wildcard | grep -o $NCDB"
 if [ "$RESULT" == "$NCDB" ]; then
     check_command mysql -u root -e "ALTER DATABASE $NCDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
     wait
 fi
 check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
 check_command sudo -u www-data $NCPATH/occ maintenance:repair
-
-# Install phpMyadmin
-run_app_script phpmyadmin_install_ubuntu16
-clear
+rm -f $PW_FILE
 
 cat << LETSENC
 +-----------------------------------------------+
@@ -303,6 +299,7 @@ fi
 clear
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"phpMyadmin" "(MySQL GUI)       " OFF \
 "Collabora" "(Online editing)   " OFF \
 "Nextant" "(Full text search)   " OFF \
 "Passman" "(Password storage)   " OFF \
@@ -311,6 +308,9 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 while read -r -u 9 choice
 do
     case $choice in
+        phpMyadmin)
+            run_app_script phpmyadmin_install_ubuntu16
+        ;;
         Collabora)
             run_app_script collabora
         ;;
