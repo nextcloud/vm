@@ -2,8 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-CHANGE_MYSQL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset CHANGE_MYSQL
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
