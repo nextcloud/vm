@@ -30,8 +30,6 @@ then
 fi
 
 # Check Ubuntu version
-echo
-echo "Checking server OS and version..."
 if [ "$OS" != 1 ]
 then
     echo "Ubuntu Server is required to run this script."
