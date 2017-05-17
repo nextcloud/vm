@@ -55,17 +55,14 @@ echo
 
 # Install phpmyadmin
 echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/app-password-confirm password $PW_FILE" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-pass password $PW_FILE" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/app-pass password $PW_FILE" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/app-password-confirm password $MYCNF" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-pass password $MYCNF" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password $MYCNF" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
 apt update -q4 & spinner_loading
 apt install -y -q \
     php-gettext \
     phpmyadmin
-
-# Remove Password file
-rm /var/mysql_password.txt
 
 # Secure phpMyadmin
 if [ -f $PHPMYADMIN_CONF ]
