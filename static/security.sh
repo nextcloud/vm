@@ -34,7 +34,8 @@ ENVASIVE
 fi
 
 # Protect against Slowloris
-apt -y install libapache2-mod-qos
+#apt -y install libapache2-mod-qos
+a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 
 # Protect against DNS Injection
 apt -y install libapache2-mod-spamhaus
