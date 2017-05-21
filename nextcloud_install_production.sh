@@ -452,7 +452,7 @@ find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -nam
 apt install linux-tools-virtual-lts-xenial linux-cloud-tools-virtual-lts-xenial -y
 apt install linux-image-virtual-lts-xenial -y
 apt install linux-virtual-lts-xenial -y
-apt install linux-image-extra-$(uname -r) -y
+apt install linux-image-extra-"$(uname -r)" -y
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
