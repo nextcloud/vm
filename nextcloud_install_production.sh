@@ -448,11 +448,12 @@ apt autoremove -y
 apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
-# Install virtual kernels
-apt install linux-tools-virtual-lts-xenial linux-cloud-tools-virtual-lts-xenial -y
-apt install linux-image-virtual-lts-xenial -y
-apt install linux-virtual-lts-xenial -y
-apt install linux-image-extra-"$(uname -r)" -y
+# Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora
+apt-get install --install-recommends -y \
+linux-virtual-lts-xenial \
+linux-tools-virtual-lts-xenial \
+linux-cloud-tools-virtual-lts-xenial \
+linux-image-extra-"$(uname -r)"
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
