@@ -75,6 +75,8 @@ then
         chmod 0600 $MYCNF
         chown root:root $MYCNF
         rm /var/mysql_password.txt
+        echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+        exit 1
     fi
 fi
 
