@@ -62,6 +62,19 @@ then
     chmod +x "$SECURE"
 fi
 
+# Make sure old instaces can upgrade as well
+if [ -f /var/mysql_password.txt ]
+then
+regressionpw=$(cat /var/mysql_password.txt)
+cat << LOGIN > "$MYCNF"
+[client]
+password='$regressionpw'
+LOGIN
+chmod 0600 $MYCNF
+chown root:root $MYCNF
+rm /var/mysql_password.txt
+fi
+
 # Upgrade Nextcloud
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
 wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -O /dev/null & spinner_loading
