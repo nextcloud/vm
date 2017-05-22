@@ -2,9 +2,10 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-MYCNFPW=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && MYCNFPW=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset MYCNFPW
+unset NCDB
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
@@ -119,16 +120,6 @@ then
     mkdir -p $BACKUP
 fi
 
-# Backup MySQL
-if mysql -u root -p"$MYSQLMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
-then
-    echo "Doing mysqldump of $NCCONFIGDB..."
-    mysqldump -u root -p"$MYSQLMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
-else
-    echo "Doing mysqldump of all databases..."
-    mysqldump -u root -p"$MYSQLMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
-fi
-
 # Backup data
 for folders in config themes apps
 do
@@ -147,6 +138,16 @@ then
     exit 1
 else
     printf "${Green}\nBackup OK!${Color_Off}\n"
+fi
+
+# Backup MySQL
+if mysql -u root -p"$MYSQLMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
+then
+    echo "Doing mysqldump of $NCCONFIGDB..."
+    check_command mysqldump -u root -p"$MYSQLMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
+else
+    echo "Doing mysqldump of all databases..."
+    check_command mysqldump -u root -p"$MYSQLMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
 fi
 
 # Download and validate Nextcloud package
