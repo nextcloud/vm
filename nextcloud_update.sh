@@ -62,26 +62,6 @@ then
     chmod +x "$SECURE"
 fi
 
-# Make sure old instaces can upgrade as well
-if [ ! -f /root/.my.cnf ]
-then
-    if [ -f /var/mysql_password.txt ]
-    then
-        regressionpw=$(cat /var/mysql_password.txt)
-        cat << LOGIN > "$MYCNF"
-        [client]
-        password='$regressionpw'
-        LOGIN
-        chmod 0600 $MYCNF
-        chown root:root $MYCNF
-        rm /var/mysql_password.txt
-        echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-        echo "Your password is:"
-        cat "$MYCNF"
-        exit 1
-    fi
-fi
-
 # Upgrade Nextcloud
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
 wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -O /dev/null & spinner_loading
@@ -125,6 +105,27 @@ else
     echo "No need to upgrade, this script will exit..."
     exit 0
 fi
+
+# Make sure old instaces can upgrade as well
+if [ ! -f /root/.my.cnf ]
+then
+    if [ -f /var/mysql_password.txt ]
+    then
+        regressionpw=$(cat /var/mysql_password.txt)
+        cat << LOGIN > "$MYCNF"
+        [client]
+        password='$regressionpw'
+        LOGIN
+        chmod 0600 $MYCNF
+        chown root:root $MYCNF
+        rm /var/mysql_password.txt
+        echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+        echo "Your password is:"
+        cat "$MYCNF"
+        exit 1
+    fi
+fi
+
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
 echo "Press CTRL+C to abort."
 sleep 10
