@@ -46,6 +46,8 @@ ROOT_PROFILE="/root/.bash_profile"
 SHUF=$(shuf -i 25-29 -n 1)
 MYSQL_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWMYSQLPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+# Nextcloud DB in config.php
+NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
