@@ -281,6 +281,19 @@ then
         sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
 fi
 
+# Enable OPCache for PHP 
+# https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+{
+echo "# OPcache settings for Nextcloud"
+echo "opcache.enable=On"
+echo "opcache.enable_cli=1"
+echo "opcache.interned_strings_buffer=8"
+echo "opcache.max_accelerated_files=10000"
+echo "opcache.memory_consumption=128"
+echo "opcache.save_comments=1"
+echo "opcache.revalidate_freq=1"
+} >> /etc/php/7.0/apache2/php.ini
+
 # Install Figlet
 apt install figlet -y
 
