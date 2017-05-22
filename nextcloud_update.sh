@@ -122,10 +122,10 @@ fi
 if mysql -u root -p"$MYSQLMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
 then
     echo "Doing mysqldump of $NCCONFIGDB..."
-    mysqldump -u root -p"$MYSQLMYCNFPASS" -d $NCCONFIGDB > $BACKUP/nextclouddb.sql
+    mysqldump -u root -p"$MYSQLMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
 else
     echo "Doing mysqldump of all databases..."
-    mysqldump -u root -p"$MYSQLMYCNFPASS" -d --all-databases > $BACKUP/alldatabases.sql
+    mysqldump -u root -p"$MYSQLMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
 fi
 
 # Backup data
