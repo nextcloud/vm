@@ -107,7 +107,7 @@ echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
 echo "Press CTRL+C to abort."
 sleep 10
 
-# Backup data
+# Check if backup exists and move to old
 echo "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
 if [ -d $BACKUP ]
@@ -118,6 +118,17 @@ then
     mkdir -p $BACKUP
 fi
 
+# Backup MySQL
+if mysql -u root -p"$MYSQLMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
+then
+    echo "Doing mysqldump of $NCCONFIGDB..."
+    mysqldump -u root -p"$MYSQLMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
+else
+    echo "Doing mysqldump of all databases..."
+    mysqldump -u root -p"$MYSQLMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
+fi
+
+# Backup data
 for folders in config themes apps
 do
     rsync -Aax "$NCPATH/$folders" "$BACKUP"
