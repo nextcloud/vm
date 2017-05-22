@@ -2,9 +2,10 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-MYCNFPW=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && MYCNFPW=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset MYCNFPW
+unset NCDB
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
