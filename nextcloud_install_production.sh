@@ -151,9 +151,12 @@ fi
 apt update -q4 & spinner_loading
 
 # Write MySQL pass to file and keep it safe
-echo "$MYSQL_PASS" > $PW_FILE
-chmod 600 $PW_FILE
-chown root:root $PW_FILE
+cat << LOGIN > "$MYCNF"
+[client]
+password='$MYSQL_PASS'
+LOGIN
+chmod 0600 $MYCNF
+chown root:root $MYCNF
 
 # Install MYSQL 5.7
 apt install software-properties-common -y

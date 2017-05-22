@@ -195,14 +195,14 @@ else
     exit 1
 fi
 
+# Recover apps that exists in the backed up apps folder
+run_static_script recover_apps
+
 # Enable Apps
 if [ -d "$SNAPDIR" ]
 then
     run_app_script spreedme
 fi
-
-# Recover apps that exists in the backed up apps folder
-run_static_script recover_apps
 
 # Change owner of $BACKUP folder to root
 chown -R root:root "$BACKUP"

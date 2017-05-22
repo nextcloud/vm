@@ -2,8 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-CHANGE_MYSQL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset CHANGE_MYSQL
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
@@ -14,10 +13,9 @@ DEBUG=0
 debug_mode
 
 # Change MySQL Password
-if mysqladmin -u root -p"$OLDMYSQL" password "$NEWMYSQLPASS" > /dev/null 2>&1
+if mysqladmin -u root -p"$MYSQLMYCNFPASS" password "$NEWMYSQLPASS" > /dev/null 2>&1
 then
     echo -e "${Green}Your new MySQL root password is: $NEWMYSQLPASS${Color_Off}"
-    echo "$NEWMYSQLPASS" > $PW_FILE
     cat << LOGIN > "$MYCNF"
 [client]
 password='$NEWMYSQLPASS'
@@ -26,11 +24,6 @@ LOGIN
     exit 0
 else
     echo "Changing MySQL root password failed."
-    echo "Your old password is: $OLDMYSQL"
-    cat << LOGIN > "$MYCNF"
-[client]
-password='$OLDMYSQLPASS'
-LOGIN
-    chmod 0600 $MYCNF
+    echo "Your old password is: $MYSQLMYCNFPASS"
     exit 1
 fi
