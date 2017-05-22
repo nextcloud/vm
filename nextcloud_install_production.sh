@@ -244,7 +244,7 @@ download_static_script setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
 # Create database nextcloud_db
-mysql -u root -p$MYSQL_PASS-e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
+mysql -u root -p$MYSQL_PASS -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
 
 # Install Nextcloud
 cd "$NCPATH"
