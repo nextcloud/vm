@@ -289,6 +289,7 @@ fi
 
 # Enable OPCache for PHP 
 # https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+phpenmod opcache
 {
 echo "# OPcache settings for Nextcloud"
 echo "opcache.enable=On"
