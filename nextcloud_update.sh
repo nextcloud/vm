@@ -124,7 +124,7 @@ LOGIN
         cat "$MYCNF"
         exit 1
     fi
-elif [ z $MYSQLMYCNFPASS ] && [ -f /var/mysql_password.txt ]
+elif [ -z $MYSQLMYCNFPASS ] && [ -f /var/mysql_password.txt ]
 then
     regressionpw=$(cat /var/mysql_password.txt)
     {
