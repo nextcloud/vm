@@ -107,7 +107,7 @@ else
 fi
 
 # Make sure old instaces can upgrade as well
-if [ ! -f /root/.my.cnf ] && [ -f /var/mysql_password.txt ]
+if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
 then
     regressionpw=$(cat /var/mysql_password.txt)
 cat << LOGIN > "$MYCNF"
