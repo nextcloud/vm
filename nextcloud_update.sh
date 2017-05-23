@@ -124,6 +124,14 @@ LOGIN
         cat "$MYCNF"
         exit 1
     fi
+elif [ z $MYSQLMYCNFPASS ] && [ -f /var/mysql_password.txt ]
+then
+    regressionpw=$(cat /var/mysql_password.txt)
+    {
+    echo "[client]"
+    echo "password='$regressionpw'"
+    } >> "$MYCNF"
+    rm /var/mysql_password.txt
 fi
 
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
