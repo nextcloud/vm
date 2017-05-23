@@ -124,7 +124,7 @@ LOGIN
         cat "$MYCNF"
         exit 1
     fi
-elif [ -z $MYSQLMYCNFPASS ] && [ -f /var/mysql_password.txt ]
+elif [ -z "$MYSQLMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
 then
     regressionpw=$(cat /var/mysql_password.txt)
     {
@@ -132,6 +132,10 @@ then
     echo "password='$regressionpw'"
     } >> "$MYCNF"
     rm /var/mysql_password.txt
+    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+    echo "Your password is:"
+    cat "$MYCNF"
+    exit 1
 fi
 
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
