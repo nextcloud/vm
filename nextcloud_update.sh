@@ -107,23 +107,20 @@ else
 fi
 
 # Make sure old instaces can upgrade as well
-if [ ! -f /root/.my.cnf ]
+if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
 then
-    if [ -f /var/mysql_password.txt ]
-    then
-        regressionpw=$(cat /var/mysql_password.txt)
+    regressionpw=$(cat /var/mysql_password.txt)
 cat << LOGIN > "$MYCNF"
 [client]
 password='$regressionpw'
 LOGIN
-        chmod 0600 $MYCNF
-        chown root:root $MYCNF
-        rm /var/mysql_password.txt
-        echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-        echo "Your password is:"
-        cat "$MYCNF"
-        exit 1
-    fi
+    chmod 0600 $MYCNF
+    chown root:root $MYCNF
+    rm /var/mysql_password.txt
+    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+    echo "Your password is:"
+    cat "$MYCNF"
+    exit 1
 elif [ -z "$MYSQLMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
 then
     regressionpw=$(cat /var/mysql_password.txt)
