@@ -141,9 +141,6 @@ then
     exit 1
 fi
 
-
-
-
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
 echo "Press CTRL+C to abort."
 sleep 10
