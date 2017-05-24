@@ -221,14 +221,14 @@ then
     cp -R $BACKUP/config "$NCPATH"/
     bash $SECURE & spinner_loading
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
-    sudo -u www-data php "$NCPATH"/occ upgrade
+    sudo -u www-data php "$NCPATH"/occ upgrade --no-app-disable
 else
     echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if the folders exist."
     exit 1
 fi
 
 # Recover apps that exists in the backed up apps folder
-run_static_script recover_apps
+# run_static_script recover_apps
 
 # Enable Apps
 if [ -d "$SNAPDIR" ]
