@@ -135,7 +135,7 @@ then
     echo "Please report this issue to $ISSUES, thanks!"
     exit 1
 else
-    rm /var/mysql_password.txt
+    rm -f /var/mysql_password.txt
 fi
 
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
