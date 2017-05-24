@@ -116,10 +116,13 @@ password='$regressionpw'
 LOGIN
     chmod 0600 $MYCNF
     chown root:root $MYCNF
-    rm /var/mysql_password.txt
     echo "Please restart the upgrade process, we fixed the password file $MYCNF."
     echo "Your password is:"
     cat "$MYCNF"
+    if [ ! -z "$MYSQLMYCNFPASS" ]
+    then
+        rm /var/mysql_password.txt
+    fi
     exit 1
 elif [ -z "$MYSQLMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
 then
@@ -128,7 +131,10 @@ then
     echo "[client]"
     echo "password='$regressionpw'"
     } >> "$MYCNF"
-    rm /var/mysql_password.txt
+    if [ ! -z "$MYSQLMYCNFPASS" ]
+    then
+        rm /var/mysql_password.txt
+    fi
     echo "Please restart the upgrade process, we fixed the password file $MYCNF."
     echo "Your password is:"
     cat "$MYCNF"
