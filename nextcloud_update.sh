@@ -279,6 +279,9 @@ then
     sudo -u www-data php "$NCPATH"/occ status
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     echo
+    echo "If you notice that some apps are disabled it's due to that they are not compatible with the new Nextcloud version."
+    echo "To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually."
+    echo
     echo "Thank you for using Tech and Me's updater!"
     ## Un-hash this if you want the system to reboot
     # reboot
