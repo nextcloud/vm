@@ -117,13 +117,7 @@ LOGIN
     chmod 0600 $MYCNF
     chown root:root $MYCNF
     echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-    echo "Your password is:"
-    cat "$MYCNF"
-    if [ ! -z "$MYSQLMYCNFPASS" ]
-    then
-        rm /var/mysql_password.txt
-    fi
-    exit 1
+    exit 1    
 elif [ -z "$MYSQLMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
 then
     regressionpw=$(cat /var/mysql_password.txt)
@@ -131,14 +125,17 @@ then
     echo "[client]"
     echo "password='$regressionpw'"
     } >> "$MYCNF"
-    if [ ! -z "$MYSQLMYCNFPASS" ]
-    then
-        rm /var/mysql_password.txt
-    fi
     echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-    echo "Your password is:"
-    cat "$MYCNF"
+    exit 1    
+fi
+
+if [ -z "$MYSQLMYCNFPASS" ]
+then
+    echo "Something went wrong with copying your mysql password to $MYCNF."
+    echo "Please report this issue to $ISSUES, thanks!"
     exit 1
+else
+    rm /var/mysql_password.txt
 fi
 
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
