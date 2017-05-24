@@ -16,6 +16,7 @@
 * You? :)
 
 ## Build your own VM, or install on a VPS
+DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
 
 #### Minimum requirements:
 * A clean Ubuntu Server 16.04.X
