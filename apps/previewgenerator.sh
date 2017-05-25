@@ -17,7 +17,7 @@ debug_mode
 # Download and install Preview Generator
 if [ ! -d "$NCPATH"/apps/previewgenerator ]
 then
-    echo "Installing calendar..."
+    echo "Installing Preview Generator..."
     wget -q "$PREVER_REPO/v$PREVER/$PREVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$PREVER_FILE" -C "$NCPATH/apps"
     cd "$NCPATH/apps"
