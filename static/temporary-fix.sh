@@ -15,5 +15,6 @@ debug_mode
 
 # Install preview generator
 run_app_script previewgenerator
+bash $SECURE & spinner_loading
 
 exit
