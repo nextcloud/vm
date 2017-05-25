@@ -21,7 +21,7 @@ then
     wget -q "$PREVER_REPO/v$PREVER/$PREVER_FILE" -P "$NCPATH/apps"
     tar -zxf "$NCPATH/apps/$PREVER_FILE" -C "$NCPATH/apps"
     cd "$NCPATH/apps"
-    rm "$CALVER_FILE"
+    rm "$PREVER_FILE"
 fi
 
 # Enable Preview Generator
