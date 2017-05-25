@@ -301,6 +301,9 @@ echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 } >> /etc/php/7.0/apache2/php.ini
 
+# Install preview generator
+run_app_script previewgenerator
+
 # Install Figlet
 apt install figlet -y
 
