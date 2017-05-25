@@ -261,7 +261,7 @@ run_static_script() {
 }
 
 # Run any script in ../apps
-# call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin
+# call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
 run_app_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if wget -q "${APP}/${1}.sh" -P "$SCRIPTS"
