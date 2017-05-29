@@ -463,8 +463,11 @@ echo    "+--------------------------------------------------------------------+"
 printf "${Color_Off}\n"
 
 # Set trusted domain in config.php
-bash "$SCRIPTS"/trusted.sh
-rm -f "$SCRIPTS"/trusted.sh
+if [ -f "$SCRIPTS"/trusted.sh ] 
+then
+    bash "$SCRIPTS"/trusted.sh
+    rm -f "$SCRIPTS"/trusted.sh
+fi
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
