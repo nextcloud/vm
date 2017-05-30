@@ -34,8 +34,8 @@ then
     echo
     echo "If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain."
     echo "When SSL is activated, run these commands from your terminal:"
-    echo "sudo wget $APP/collabora.sh"
-    echo "sudo bash collabora.sh"
+    echo "sudo wget $APP/onlyoffice.sh"
+    echo "sudo bash onlyoffice.sh"
     any_key "Press any key to continue... "
     exit 1
 fi
@@ -98,7 +98,8 @@ fi
 
 # Install Onlyoffice docker
 docker pull onlyoffice/communityserver
-docker run -i -t -d -p 80:80 -p 443:443 -v /opt/onlyoffice/Data:/var/www/onlyoffice/Data onlyoffice/communityserver
+sudo docker run -i -t -d -p 80:80  -p 443:443 \
+    -v /app/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data  onlyoffice/communityserver
 
 # Activate SSL
 cd /tmp
@@ -131,7 +132,9 @@ fi
 # Enable Apache2 module's
 a2enmod ssl
 
-# Enable RichDocuments (Collabora App)
+# Enable Onlyoffice
+cd $NCPATH/apps
+git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
 if [ -d "$NCPATH"/apps/onlyoffice ]
 then
     check_command sudo -u www-data php "$NCPATH"/occ app:enable onlyoffice
