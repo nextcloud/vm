@@ -15,7 +15,7 @@ debug_mode
 # Check if root
 if ! is_root
 then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/collabora.sh\n"
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/onlyoffice.sh\n"
     exit 1
 fi
 
@@ -37,8 +37,8 @@ then
     echo
     echo "If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain."
     echo "When SSL is activated, run these commands from your terminal:"
-    echo "sudo wget $APP/collabora.sh"
-    echo "sudo bash collabora.sh"
+    echo "sudo wget $APP/onlyoffice.sh"
+    echo "sudo bash onlyoffice.sh"
     any_key "Press any key to continue... "
     exit 1
 fi
@@ -182,7 +182,7 @@ a2enmod proxy_wstunnel
 a2enmod proxy_http
 a2enmod ssl
 
-# Create Vhost for Collabora online in Apache2
+# Create Vhost for OnlyOffice online in Apache2
 if [ ! -f "$HTTPS_CONF" ];
 then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
@@ -280,19 +280,16 @@ then
     printf "${Color_Off}\n"
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
-# Install Collabora App
-    check_command wget -q "$COLLVER_REPO/$COLLVER/$COLLVER_FILE" -P "$NCPATH/apps"
-    check_command tar -zxf "$NCPATH/apps/$COLLVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps" || exit 1
-    rm "$COLLVER_FILE"
+# Install Onlyoffice App
+    cd $NCPATH/apps
+    check_command git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
 else
     printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: $ISSUES\n"
     any_key "Press any key to continue... "
     service apache2 restart
 fi
+
 # Enable Onlyoffice
-cd $NCPATH/apps
-git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
 if [ -d "$NCPATH"/apps/onlyoffice ]
 then
     check_command sudo -u www-data php "$NCPATH"/occ app:enable onlyoffice
