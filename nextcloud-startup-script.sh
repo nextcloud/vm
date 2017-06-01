@@ -302,6 +302,7 @@ clear
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "phpMyadmin" "(MySQL GUI)       " OFF \
 "Collabora" "(Online editing)   " OFF \
+"OnlyOffice" "(Online editing)   " OFF \
 "Nextant" "(Full text search)   " OFF \
 "Passman" "(Password storage)   " OFF \
 "Spreed.ME" "(Video calls)   " OFF 2>results
@@ -311,6 +312,9 @@ do
     case $choice in
         phpMyadmin)
             run_app_script phpmyadmin_install_ubuntu16
+        ;;
+        OnlyOffice)
+            run_app_script onlyoffice
         ;;
         Collabora)
             run_app_script collabora
