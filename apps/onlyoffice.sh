@@ -204,8 +204,8 @@ then
   # keep the host
   ProxyPreserveHost On
 
-  ProxyPass / http://127.0.0.1:9981 #(https?)
-  ProxyPassReverse / http://127.0.0.1:9981 #(https?)
+  ProxyPass / https://127.0.0.1:9981
+  ProxyPassReverse / https://127.0.0.1:9981
 </VirtualHost>
 HTTPS_CREATE
 
