@@ -278,7 +278,8 @@ if [ -d "$NCPATH"/apps/onlyoffice ]
 then
 # Enable OnlyOffice
     check_command sudo -u www-data php "$NCPATH"/occ app:enable onlyoffice
-    check_command sudo -u www-data "$NCPATH"/occ config:app:set onlyoffice url --value="https://$SUBDOMAIN"
+    # check_command sudo -u www-data "$NCPATH"/occ config:app:set onlyoffice serverurl --value="https://$SUBDOMAIN/"
+    echo "Please add https://$SUBDOMAIN/ to your OnlyOffice admin settings manually."
     chown -R www-data:www-data $NCPATH/apps
 # Add prune command
     {
