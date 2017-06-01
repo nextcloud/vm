@@ -281,20 +281,11 @@ fi
 # Enable RichDocuments (Collabora App)
 if [ -d "$NCPATH"/apps/richdocuments ]
 then
+# Enable Collabora
     check_command sudo -u www-data php "$NCPATH"/occ app:enable richdocuments
     check_command sudo -u www-data "$NCPATH"/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
     chown -R www-data:www-data $NCPATH/apps
-    echo
-    echo "Collabora is now succesfylly installed."
-    echo "You may have to reboot before Docker will load correctly."
-    any_key "Press any key to continue... "
-fi
-
-# Add prune command?
-printf "Docker automatically saves all containers as untagged even if they are not in use and it\n"
-printf "uses a lot of space which may lead to that your disk reaches its limit after a while.\n\n"
-if [[ "yes" == $(ask_yes_or_no "Do you want to add a cronjob to remove untagged containers once a week?") ]]
-then
+# Add prune command
     {
     echo "#!/bin/bash"
     echo "docker system prune -a --force"
@@ -302,6 +293,9 @@ then
     } > "$SCRIPTS/dockerprune.sh"
     chmod a+x "$SCRIPTS/dockerprune.sh"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
-    any_key "Cronjob added! Press any key to continue... "
+    echo "Docker automatic prune job added."
+    echo
+    echo "Collabora is now succesfylly installed."
+    echo "You may have to reboot before Docker will load correctly."
+    any_key "Press any key to continue... "
 fi
-
