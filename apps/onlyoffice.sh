@@ -253,10 +253,10 @@ then
     service apache2 restart
 # Activate SSL for OnlyOffice Docker (is this needed?)
     mkdir -p /app/onlyoffice/CommunityServer/data/certs
-    cp -f $CERTFILES/$SUBDOMAIN/privkey.pem /app/onlyoffice/CommunityServer/data/certs/
-    cp -f $CERTFILES/$SUBDOMAIN/cert.pem /app/onlyoffice/CommunityServer/data/certs/
-    cp -f $CERTFILES/$SUBDOMAIN/chain.pem /app/onlyoffice/CommunityServer/data/certs/
-    cp -f $DHPARAMS /app/onlyoffice/CommunityServer/data/certs/
+    cp -f "$CERTFILES/$SUBDOMAIN/privkey.pem" /app/onlyoffice/CommunityServer/data/certs/
+    cp -f "$CERTFILES/$SUBDOMAIN/cert.pem" /app/onlyoffice/CommunityServer/data/certs/
+    cp -f "$CERTFILES/$SUBDOMAIN/chain.pem" /app/onlyoffice/CommunityServer/data/certs/
+    cp -f "$DHPARAMS" /app/onlyoffice/CommunityServer/data/certs/
 # Install Onlyoffice App
     cd $NCPATH/apps
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
