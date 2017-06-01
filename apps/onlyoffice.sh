@@ -268,6 +268,7 @@ fi
 
 # Enable Onlyoffice
 if [ -d "$NCPATH"/apps/onlyoffice ]
+then
 # Enable Collabora
     check_command sudo -u www-data php "$NCPATH"/occ app:enable onlyoffice
     check_command sudo -u www-data "$NCPATH"/occ config:app:set onlyoffice url --value="https://$SUBDOMAIN"
