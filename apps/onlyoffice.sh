@@ -146,9 +146,9 @@ then
 fi
 
 # Install Onlyoffice docker
-docker pull onlyoffice/communityserver
+docker pull onlyoffice/documentserver
 sudo docker run -i -t -d -p 127.0.0.1:9981:443 -e "domain=$SUBDOMAIN" --restart always \
-    -v /app/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data  onlyoffice/communityserver
+    -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data  onlyoffice/documentserver
 
 # Install Apache2
 if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
@@ -253,11 +253,11 @@ then
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
 # Activate SSL for OnlyOffice Docker (is this needed?)
-    mkdir -p /app/onlyoffice/CommunityServer/data/certs
-    cp -L "$CERTFILES/$SUBDOMAIN/privkey.pem" /app/onlyoffice/CommunityServer/data/certs/onlyoffice.key
-    cp -L "$CERTFILES/$SUBDOMAIN/cert.pem" /app/onlyoffice/CommunityServer/data/certs/onlyoffice.crt
-#    cp -f "$CERTFILES/$SUBDOMAIN/chain.pem" /app/onlyoffice/CommunityServer/data/certs/
-    cp -f "$DHPARAMS" /app/onlyoffice/CommunityServer/data/certs/
+    mkdir -p /app/onlyoffice/DocumentServer/data/certs
+    cp -L "$CERTFILES/$SUBDOMAIN/privkey.pem" /app/onlyoffice/DocumentServer/data/certs/onlyoffice.key
+    cp -L "$CERTFILES/$SUBDOMAIN/cert.pem" /app/onlyoffice/DocumentServer/data/certs/onlyoffice.crt
+#    cp -f "$CERTFILES/$SUBDOMAIN/chain.pem" /app/onlyoffice/DocumentServer/data/certs/
+    cp -f "$DHPARAMS" /app/onlyoffice/DocumentServer/data/certs/
 # Install Onlyoffice App
     cd $NCPATH/apps
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
