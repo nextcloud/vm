@@ -23,7 +23,8 @@ fi
 # Check if Collabora is running
 if [ -d "$NCPATH"/apps/richdocuments ]
 then
-    echo "It seems like Collabora is running, you can't run Collabora at the same time as you run OnlyOffice.
+    echo "It seems like Collabora is running."
+    echo "You can't run Collabora at the same time as you run OnlyOffice."
     exit 1
 fi
 
@@ -211,8 +212,8 @@ RequestHeader set X-Forwarded-Proto "https"
 ProxyRequests off
 
         ProxyPass / http://127.0.0.3:9090/
-        ProxyPassMatch "/(.*)/websocket"  wss://127.0.0.3:9091/$1/websocket
-
+        ProxyPassMatch "/(.*)/websocket"  wss://127.0.0.3:9091/\$1/websocket
+        
         <Location />
                 ProxyPassReverse /
         </Location>
