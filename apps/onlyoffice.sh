@@ -146,21 +146,8 @@ fi
 
 # Install Onlyoffice docker
 docker pull onlyoffice/communityserver
-sudo docker run -i -t -d -p 127.0.0.1:9980:443 -e "domain=$SUBDOMAIN" --restart always \
+sudo docker run -i -t -d -p 127.0.0.1:9981:443 -e "domain=$SUBDOMAIN" --restart always \
     -v /app/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data  onlyoffice/communityserver
-
-# Activate SSL
-cd /tmp
-openssl genrsa -out onlyoffice.key 4096
-openssl req -new -key onlyoffice.key -out onlyoffice.csr
-openssl x509 -req -days 3650 -in onlyoffice.csr -signkey onlyoffice.key -out onlyoffice.crt
-openssl dhparam -out dhparam.pem 2048
-
-mkdir -p /app/onlyoffice/CommunityServer/data/certs
-cp onlyoffice.key /app/onlyoffice/CommunityServer/data/certs/
-cp onlyoffice.crt /app/onlyoffice/CommunityServer/data/certs/
-cp dhparam.pem /app/onlyoffice/CommunityServer/data/certs/
-chmod 400 /app/onlyoffice/CommunityServer/data/certs/onlyoffice.key
 
 # Install Apache2
 if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
@@ -216,8 +203,8 @@ then
   # keep the host
   ProxyPreserveHost On
 
-  ProxyPass / http://127.0.0.1:9980
-  ProxyPassReverse / http://127.0.0.1:9980
+  ProxyPass / http://127.0.0.1:9981 #(https?)
+  ProxyPassReverse / http://127.0.0.1:9981 #(https?)
 </VirtualHost>
 HTTPS_CREATE
 
@@ -264,6 +251,12 @@ then
     printf "${Color_Off}\n"
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
+# Activate SSL for OnlyOffice Docker (is this needed?)
+    mkdir -p /app/onlyoffice/CommunityServer/data/certs
+    cp -f $CERTFILES/$SUBDOMAIN/privkey.pem /app/onlyoffice/CommunityServer/data/certs/
+    cp -f $CERTFILES/$SUBDOMAIN/cert.pem /app/onlyoffice/CommunityServer/data/certs/
+    cp -f $CERTFILES/$SUBDOMAIN/chain.pem /app/onlyoffice/CommunityServer/data/certs/
+    cp -f $DHPARAMS /app/onlyoffice/CommunityServer/data/certs/
 # Install Onlyoffice App
     cd $NCPATH/apps
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
@@ -275,20 +268,11 @@ fi
 
 # Enable Onlyoffice
 if [ -d "$NCPATH"/apps/onlyoffice ]
-then
+# Enable Collabora
     check_command sudo -u www-data php "$NCPATH"/occ app:enable onlyoffice
+    check_command sudo -u www-data "$NCPATH"/occ config:app:set onlyoffice url --value="https://$SUBDOMAIN"
     chown -R www-data:www-data $NCPATH/apps
-    echo
-    echo "Onlyoffice is now succesfylly installed."
-    echo "You may have to reboot before Docker will load correctly."
-    any_key "Press any key to continue... "
-fi
-
-# Add prune command?
-printf "Docker automatically saves all containers as untagged even if they are not in use and it\n"
-printf "uses a lot of space which may lead to that your disk reaches its limit after a while.\n\n"
-if [[ "yes" == $(ask_yes_or_no "Do you want to add a cronjob to remove untagged containers once a week?") ]]
-then
+# Add prune command
     {
     echo "#!/bin/bash"
     echo "docker system prune -a --force"
@@ -296,5 +280,9 @@ then
     } > "$SCRIPTS/dockerprune.sh"
     chmod a+x "$SCRIPTS/dockerprune.sh"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
-    any_key "Cronjob added! Press any key to continue... "
+    echo "Docker automatic prune job added."
+    echo
+    echo "Collabora is now succesfylly installed."
+    echo "You may have to reboot before Docker will load correctly."
+    any_key "Press any key to continue... "
 fi
