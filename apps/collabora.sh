@@ -20,6 +20,14 @@ then
     exit 1
 fi
 
+# Check if Onlyoffice is running
+if [ -d "$NCPATH"/apps/onlyoffice ]
+then
+    echo "It seems like OnlyOffice is running."
+    echo "You can't run OnlyOffice at the same time as you run Collabora."
+    exit 1
+fi
+
 # Notification
 whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
 
