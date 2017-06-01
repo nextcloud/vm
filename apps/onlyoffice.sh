@@ -20,6 +20,13 @@ then
     exit 1
 fi
 
+# Check if Collabora is running
+if [ -d "$NCPATH"/apps/richdocuments ]
+then
+    echo "It seems like Collabora is running, you can't run Collabora at the same time as you run OnlyOffice.
+    exit 1
+fi
+
 # Notification
 whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
 
@@ -147,8 +154,7 @@ fi
 
 # Install Onlyoffice docker
 docker pull onlyoffice/documentserver
-sudo docker run -i -t -d -p 127.0.0.1:9981:443 -e "domain=$SUBDOMAIN" --restart always \
-    -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data  onlyoffice/documentserver
+docker run -i -t -d -p 127.0.0.3:9090:80 -p 127.0.0.3:9091:443 onlyoffice/documentserver
 
 # Install Apache2
 if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
@@ -175,37 +181,41 @@ if [ ! -f "$HTTPS_CONF" ];
 then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
-  ServerName $SUBDOMAIN:443
-  
-  <Directory /var/www>
-  Options -Indexes
-  </Directory>
+     ServerName $SUBDOMAIN:443
 
-  # SSL configuration, you may want to take the easy route instead and use Lets Encrypt!
-  SSLEngine on
+     SSLEngine on
+     ServerSignature On
+     SSLHonorCipherOrder on
+
   SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
   SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
   SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
   SSLOpenSSLConfCmd DHParameters $DHPARAMS
   SSLProtocol             all -SSLv2 -SSLv3
   SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
-  SSLHonorCipherOrder     on
-  SSLCompression off
 
-  # Encoded slashes need to be allowed
-  AllowEncodedSlashes NoDecode
+     LogLevel warn
+     CustomLog ${APACHE_LOG_DIR}/access.log combined
+     ErrorLog ${APACHE_LOG_DIR}/error.log
 
-  # Container uses a unique non-signed certificate
-  SSLProxyEngine On
-  SSLProxyVerify None
-  SSLProxyCheckPeerCN Off
-  SSLProxyCheckPeerName Off
+# Just in case - see below
+SSLProxyEngine On
+SSLProxyVerify None
+SSLProxyCheckPeerCN Off
+SSLProxyCheckPeerName Off
 
-  # keep the host
-  ProxyPreserveHost On
+# contra mixed content warnings
+RequestHeader set X-Forwarded-Proto "https"
 
-  ProxyPass / https://127.0.0.1:9981
-  ProxyPassReverse / https://127.0.0.1:9981
+# basic proxy settings
+ProxyRequests off
+
+        ProxyPass / http://127.0.0.3:9090/
+        ProxyPassMatch "/(.*)/websocket"  wss://127.0.0.3:9091/$1/websocket
+
+        <Location />
+                ProxyPassReverse /
+        </Location>
 </VirtualHost>
 HTTPS_CREATE
 
@@ -252,12 +262,6 @@ then
     printf "${Color_Off}\n"
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
-# Activate SSL for OnlyOffice Docker (is this needed?)
-    mkdir -p /app/onlyoffice/DocumentServer/data/certs
-    cp -L "$CERTFILES/$SUBDOMAIN/privkey.pem" /app/onlyoffice/DocumentServer/data/certs/onlyoffice.key
-    cp -L "$CERTFILES/$SUBDOMAIN/cert.pem" /app/onlyoffice/DocumentServer/data/certs/onlyoffice.crt
-#    cp -f "$CERTFILES/$SUBDOMAIN/chain.pem" /app/onlyoffice/DocumentServer/data/certs/
-    cp -f "$DHPARAMS" /app/onlyoffice/DocumentServer/data/certs/
 # Install Onlyoffice App
     cd $NCPATH/apps
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
@@ -270,7 +274,7 @@ fi
 # Enable Onlyoffice
 if [ -d "$NCPATH"/apps/onlyoffice ]
 then
-# Enable Collabora
+# Enable OnlyOffice
     check_command sudo -u www-data php "$NCPATH"/occ app:enable onlyoffice
     check_command sudo -u www-data "$NCPATH"/occ config:app:set onlyoffice url --value="https://$SUBDOMAIN"
     chown -R www-data:www-data $NCPATH/apps
@@ -284,7 +288,7 @@ then
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
     echo "Docker automatic prune job added."
     echo
-    echo "Collabora is now succesfylly installed."
+    echo "OnlyOffice is now succesfylly installed."
     echo "You may have to reboot before Docker will load correctly."
     any_key "Press any key to continue... "
 fi
