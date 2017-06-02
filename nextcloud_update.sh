@@ -45,6 +45,7 @@ then
 fi
 
 # Update docker images
+# This updates ALL Docker images: docker images | grep -v REPOSITORY | awk '{print $1}' | xargs -L1 docker pull
 if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
     echo "Updating Docker container for OnlyOffice..."
