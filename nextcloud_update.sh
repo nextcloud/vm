@@ -273,13 +273,13 @@ bash "$SECURE"
 sudo -u www-data php "$NCPATH"/occ maintenance:repair
 
 # Update docker images
-if [ $(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no) == "yes" ]
+if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
     echo "Updating Docker container for OnlyOffice..."
     echo "docker pull onlyoffice/documentserver"
 fi
 
-if [ $(docker image inspect collabora/code >/dev/null 2>&1 && echo yes || echo no) == "yes" ]
+if [ "$(docker image inspect collabora/code >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
     echo "Updating Docker container for Collabora..."
     echo "docker pull collabora/code"
