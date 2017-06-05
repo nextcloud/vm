@@ -71,7 +71,6 @@ else
 fi
 
 # Check to see if user already has nmap installed on their system
-
 if [ "$(dpkg-query -s nmap 2> /dev/null | grep -c "ok installed")" == "1" ]
 then
     NMAPSTATUS=preinstalled
@@ -86,7 +85,6 @@ else
 fi
 
 # Check if 443 is open using nmap, if not notify the user
-
 if [ "$(nmap -sS -p 443 "$WANIP4" | grep -c "open")" == "1" ]
 then
   printf "${Green}Port 443 is open on $WANIP4!${Color_Off}\n"
