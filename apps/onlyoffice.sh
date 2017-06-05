@@ -70,29 +70,55 @@ else
    exit 1
 fi
 
-# Check if 443 is open using nmap, if not notify the user
+# Check to see if user already has nmap installed on their system
+
+if [ "$(dpkg-query -s nmap 2> /dev/null | grep -c "ok installed")" == "1" ]
+then
+    NMAPSTATUS=preinstalled
+else
+    NMAPSTATUS=notinstalled
+fi
+
 apt update -q4 & spinner_loading
-if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
+if [ "$NMAPSTATUS" = "preinstalled" ]
 then
       echo "nmap is already installed..."
 else
     apt install nmap -y
 fi
+
+# Check if 443 is open using nmap, if not notify the user
+
 if [ "$(nmap -sS -p 443 "$WANIP4" | grep -c "open")" == "1" ]
 then
   printf "${Green}Port 443 is open on $WANIP4!${Color_Off}\n"
-  apt remove --purge nmap -y
+  if [ "$NMAPSTATUS" = "preinstalled" ]
+  then
+    echo "nmap was previously installed, not removing"
+  else
+    apt remove --purge nmap -y
+  fi
 else
   echo "Port 443 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
   any_key "Press any key to test $SUBDOMAIN... "
   if [[ "$(nmap -sS -PN -p 443 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
   then
       printf "${Green}Port 443 is open on $SUBDOMAIN!${Color_Off}\n"
-      apt remove --purge nmap -y
+      if [ "$NMAPSTATUS" = "preinstalled" ]
+      then
+        echo "nmap was previously installed, not removing"
+      else
+        apt remove --purge nmap -y
+      fi
   else
       whiptail --msgbox "Port 443 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
       any_key "Press any key to exit... "
-      apt remove --purge nmap -y
+      if [ "$NMAPSTATUS" = "preinstalled" ]
+      then
+        echo "nmap was previously installed, not removing"
+      else
+        apt remove --purge nmap -y
+      fi
       exit 1
   fi
 fi
