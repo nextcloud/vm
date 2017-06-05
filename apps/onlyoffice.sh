@@ -20,6 +20,14 @@ then
     exit 1
 fi
 
+# Check configured RAM (needs at least 4 GB)
+if [ "$(awk '/MemTotal/{print $2}' /proc/meminfo)" -lt "4194304" ]
+then
+    echo "You need at least 4 GB RAM for OnlyOffice"
+    sleep 3
+    exit 1
+fi
+
 # Check if Collabora is running
 if [ -d "$NCPATH"/apps/richdocuments ]
 then
