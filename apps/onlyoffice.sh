@@ -75,8 +75,6 @@ fi
 if [ "$(dpkg-query -s nmap 2> /dev/null | grep -c "ok installed")" == "1" ]
 then
     NMAPSTATUS=preinstalled
-else
-    NMAPSTATUS=notinstalled
 fi
 
 apt update -q4 & spinner_loading
