@@ -456,12 +456,25 @@ apt autoremove -y
 apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
-# Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora
-apt-get install --install-recommends -y \
-linux-virtual-lts-xenial \
-linux-tools-virtual-lts-xenial \
-linux-cloud-tools-virtual-lts-xenial \
-linux-image-extra-"$(uname -r)"
+# Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
+if [[ "no" == $(ask_yes_or_no "Is this installed on Hyper-V? (4.4 or 4.8 kernel)") ]]
+then
+    # Kernel 4.8
+    apt install --install-recommends -y \
+    linux-virtual-hwe-16.04 \
+    linux-tools-virtual-hwe-16.04 \̣
+    linux-cloud-tools-virtual-hwe-16.04 \
+    linux-image-virtual-hwe-16.04 \
+    linux-image-extra-"$(uname -r)"
+else
+    # Kernel 4.4
+    apt-get install --install-recommends -y \
+    linux-virtual-lts-xenial \
+    linux-tools-virtual-lts-xenial \
+    linux-cloud-tools-virtual-lts-xenial \
+    linux-image-virtual-lts-xenial \
+    linux-image-extra-"$(uname -r)"
+fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
