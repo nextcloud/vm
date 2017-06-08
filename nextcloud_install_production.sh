@@ -462,7 +462,7 @@ then
     # Kernel 4.8
     apt install --install-recommends -y \
     linux-virtual-hwe-16.04 \
-    linux-tools-virtual-hwe-16.04 \̣
+    linux-tools-virtual-hwe-16.04 \
     linux-cloud-tools-virtual-hwe-16.04 \
     linux-image-virtual-hwe-16.04 \
     linux-image-extra-"$(uname -r)"
