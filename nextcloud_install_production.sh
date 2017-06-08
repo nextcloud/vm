@@ -468,7 +468,7 @@ then
     linux-image-extra-"$(uname -r)"
 else
     # Kernel 4.4
-    apt-get install --install-recommends -y \
+    apt install --install-recommends -y \
     linux-virtual-lts-xenial \
     linux-tools-virtual-lts-xenial \
     linux-cloud-tools-virtual-lts-xenial \
