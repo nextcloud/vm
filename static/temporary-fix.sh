@@ -13,8 +13,14 @@ true
 DEBUG=0
 debug_mode
 
-# Install preview generator
-run_app_script previewgenerator
-bash $SECURE & spinner_loading
+exists="$(crontab -l -u www-data | grep -q 'preview'  && echo 'yes' || echo 'no')"
+if [ "$exists" = "yes" ]
+then
+    sleep 1
+else
+    # Install preview generator
+    run_app_script previewgenerator
+    bash $SECURE & spinner_loading
+fi
 
 exit
