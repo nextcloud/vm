@@ -167,6 +167,38 @@ ask_yes_or_no() {
     esac
 }
 
+# Test RAM size 
+# Call it like this: ram_check [amount of min RAM in GB] [for which program]
+# Example: ram_check 2 Nextcloud
+ram_check() {
+mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
+if [ "${mem_available}" -lt "$((${1}*1002400))" ]
+then
+    printf "${Red}Error: ${1} GB RAM required to install ${2}!${Color_Off}\n" >&2
+    printf "${Red}Current RAM is: ("$((mem_available/1002400))" GB)${Color_Off}\n" >&2
+    sleep 3
+    exit 1
+else
+    printf "${Green}RAM for ${2} OK! ("$((mem_available/1002400))" GB)${Color_Off}\n"
+fi
+}
+
+# Test number of CPU
+# Call it like this: cpu_check [amount of min CPU] [for which program]
+# Example: cpu_check 2 Nextcloud
+cpu_check() {
+nr_cpu="$(nproc)"
+if [ "${nr_cpu}" -lt "${1}" ]
+then
+    printf "${Red}Error: ${1} CPU required to install ${2}!${Color_Off}\n" >&2
+    printf "${Red}Current CPU: ("$((nr_cpu))")${Color_Off}\n" >&2
+    sleep 3
+    exit 1
+else
+    printf "${Green}CPU for ${2} OK! ("$((nr_cpu))")${Color_Off}\n"
+fi
+}
+
 check_command() {
   eval "$*"
   if [ ! $? -eq 0 ]; then
