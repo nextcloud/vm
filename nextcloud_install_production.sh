@@ -281,6 +281,9 @@ sed -i "s|post_max_size = 8M|post_max_size = 1100M|g" /etc/php/7.0/apache2/php.i
 # upload_max
 sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 1000M|g" /etc/php/7.0/apache2/php.ini
 
+# Set SMTP mail
+sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpmode --value="smtp"
+
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 VALUE="# php_value upload_max_filesize 511M"
@@ -399,10 +402,6 @@ a2ensite nextcloud_ssl_domain_self_signed.conf
 a2ensite nextcloud_http_domain_self_signed.conf
 a2dissite default-ssl
 service apache2 restart
-
-# Install Libreoffice Writer to be able to read MS documents.
-sudo apt install --no-install-recommends libreoffice-writer -y
-sudo -u www-data php "$NCPATH"/occ config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
 
 whiptail --title "Which apps/programs do you want to install?" --checklist --separate-output "" 10 40 3 \
 "Calendar" "              " on \
