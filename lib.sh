@@ -240,6 +240,29 @@ download_le_script() {
     fi
 }
 
+# Run any script in ../master
+# call like: run_main_script name_of_script
+run_main_script() {
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if wget -q "${GITHUB_REPO}/${1}.sh" -P "$SCRIPTS"
+    then
+        bash "${SCRIPTS}/${1}.sh"
+        rm -f "${SCRIPTS}/${1}.sh"
+    elif wget -q "${GITHUB_REPO}/${1}.php" -P "$SCRIPTS"
+    then
+        php "${SCRIPTS}/${1}.php"
+        rm -f "${SCRIPTS}/${1}.php"
+    elif wget -q "${GITHUB_REPO}/${1}.py" -P "$SCRIPTS"
+    then
+        python "${SCRIPTS}/${1}.py"
+        rm -f "${SCRIPTS}/${1}.py"
+    else
+        echo "Downloading ${1} failed"
+        echo "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
+        sleep 3
+    fi
+}
+
 # Run any script in ../static
 # call like: run_static_script name_of_script
 run_static_script() {

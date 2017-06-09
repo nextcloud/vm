@@ -114,21 +114,7 @@ download_static_script change_mysql_pass
 download_static_script nextcloud
 download_static_script update-config
 download_static_script index
-
-# Lets Encrypt
-if [ -f "$SCRIPTS"/activate-ssl.sh ]
-then
-    rm "$SCRIPTS"/activate-ssl.sh
-    wget -q $LETS_ENC/activate-ssl.sh -P "$SCRIPTS"
-else
-    wget -q $LETS_ENC/activate-ssl.sh -P "$SCRIPTS"
-fi
-if [ ! -f "$SCRIPTS"/activate-ssl.sh ]
-then
-    echo "activate-ssl failed"
-    echo "Script failed to download. Please run: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' again."
-    exit 1
-fi
+download_le_script activate-ssl
 
 mv $SCRIPTS/index.php $HTML/index.php && rm -f $HTML/html/index.html
 chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
@@ -477,6 +463,6 @@ fi
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
-rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 any_key "Installation finished, press any key to reboot system..."
+rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 reboot
