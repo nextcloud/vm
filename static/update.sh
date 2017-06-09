@@ -13,8 +13,6 @@ true
 DEBUG=0
 debug_mode
 
-FILE=nextcloud_update.sh
-
 # Must be root
 if ! is_root
 then
@@ -24,22 +22,7 @@ fi
 
 mkdir -p "$SCRIPTS"
 
-if [ -f "$SCRIPTS/$FILE" ]
-then
-    rm -f "$SCRIPTS/$FILE"
-    wget -q "$GITHUB_REPO/$FILE" -P "$SCRIPTS"
-    bash "$SCRIPTS/$FILE"
-else
-    wget -q "$GITHUB_REPO/$FILE" -P "$SCRIPTS"
-    bash "$SCRIPTS/$FILE"
-fi
-
-chmod +x "$SCRIPTS/$FILE"
-
-# Remove potenial copy of the same file
-if [ -f "$SCRIPTS/$FILE*" ]
-then
-    rm -f "$SCRIPTS/$FILE*"
-fi
+# Delete, download, run
+run_main_script nextcloud_update
 
 exit
