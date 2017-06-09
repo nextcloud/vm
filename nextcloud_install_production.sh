@@ -25,6 +25,18 @@ then
     exit 1
 fi
 
+# Test RAM size (2GB min)
+mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
+if [ "${mem_available}" -lt 2000000 ]
+then
+    echo "Error: 2GB RAM required to install Nextcloud!" >&2
+    echo "Current RAM is: ("$((mem_available/1024))" MiB)" >&2
+    sleep 3
+    exit 1
+else
+  echo "Memory: OK ("$((mem_available/1024))" MiB)"
+fi
+
 # Show current user
 echo
 echo "Current user with sudo permissions is: $UNIXUSER".

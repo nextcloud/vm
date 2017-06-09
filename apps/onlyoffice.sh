@@ -20,12 +20,16 @@ then
     exit 1
 fi
 
-# Check configured RAM (needs at least 4 GB)
-if [ "$(awk '/MemTotal/{print $2}' /proc/meminfo)" -lt "4194304" ]
+# Test RAM size (4GB min)
+mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
+if [ "${mem_available}" -lt 4000000 ]
 then
-    echo "You need at least 4 GB RAM for OnlyOffice"
+    echo "Error: 4GB RAM required for OnlyOffice!" >&2
+    echo "Current RAM is: ("$((mem_available/1024))" MiB)" >&2
     sleep 3
     exit 1
+else
+  echo "Memory: OK ("$((mem_available/1024))" MiB)"
 fi
 
 # Check if Collabora is running
