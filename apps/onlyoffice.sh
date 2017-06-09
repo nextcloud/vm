@@ -24,9 +24,8 @@ fi
 mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
 if [ "${mem_available}" -lt 4000000 ]
 then
-    echo "Error: The system do not meet the minimum requirements." >&2
     echo "Error: 4GB RAM required for OnlyOffice!" >&2
-    echo "Current Memory is: ("$((mem_available/1024))" MiB)" 
+    echo "Current Memory is: ("$((mem_available/1024))" MiB)" >&2
     sleep 3
     exit 1
 else
