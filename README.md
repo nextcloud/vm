@@ -43,7 +43,7 @@ Please check the configuration here: https://www.techandme.se/machine-setup-next
 
 ## Do you want to run this on your Raspberry Pi?
 Great news! We have forked this repository and created a Raspberry Pi image that you can download from here: 
-https://github.com/techandme/NextBerry
+https://github.com/techandme/NextBerry or here https://www.techandme.se/nextberry-rpi/.
 
 We call it NextBerry and it's confirmed to be working on Raspberry Pi 3.
 
