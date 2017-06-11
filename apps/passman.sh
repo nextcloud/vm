@@ -62,5 +62,6 @@ fi
 if [ -d $NCPATH/apps/passman ]
 then
     check_command sudo -u www-data php $NCPATH/occ app:enable passman
+    chown -R www-data:www-data $NCPATH/apps
     sleep 2
 fi

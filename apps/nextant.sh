@@ -97,11 +97,10 @@ check_command wget -q -P "$NC_APPS_PATH" "$NT_DL"
 check_command cd "$NC_APPS_PATH"
 check_command tar zxf "$NT_RELEASE"
 
-# Set secure permissions
-run_static_script setup_secure_permissions_nextcloud
-
 # Enable Nextant
 rm -r "$NT_RELEASE"
 check_command sudo -u www-data php $NCPATH/occ app:enable nextant
+chown -R www-data:www-data $NCPATH/apps
 check_command sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant --save
 check_command sudo -u www-data php $NCPATH/occ nextant:index
+
