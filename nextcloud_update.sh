@@ -256,8 +256,7 @@ fi
 # Change owner of $BACKUP folder to root
 chown -R root:root "$BACKUP"
 
-# Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
-# Here is a guide: https://www.techandme.se/increase-max-file-size/
+# Set max upload in Nextcloud .htaccess
 configure_max_upload
 
 # Set $THEME_NAME
