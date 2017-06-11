@@ -281,18 +281,11 @@ sed -i "s|post_max_size =.*|post_max_size = 1100M|g" /etc/php/7.0/apache2/php.in
 # upload_max
 sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.0/apache2/php.ini
 
+# Set max upload in Nextcloud .htaccess
+configure_max_upload
+
 # Set SMTP mail
 sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpmode --value="smtp"
-
-# Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
-# Here is a guide: https://www.techandme.se/increase-max-file-size/
-VALUE="# php_value upload_max_filesize 511M"
-if ! grep -Fxq "$VALUE" "$NCPATH"/.htaccess
-then
-        sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
-        sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
-        sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
-fi
 
 # Enable OPCache for PHP 
 # https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
