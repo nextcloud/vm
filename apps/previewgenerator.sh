@@ -28,6 +28,7 @@ fi
 if [ -d "$NCPATH"/apps/previewgenerator ]
 then
     sudo -u www-data php "$NCPATH"/occ app:enable previewgenerator
+    chown -R www-data:www-data $NCPATH/apps
     crontab -u www-data -l | { cat; echo "@daily php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
     sudo -u www-data php "$NCPATH"/occ preview:generate-all
 fi
