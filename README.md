@@ -41,6 +41,12 @@ DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
 ## Machine configuration of the released version
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
 
+## Do you want to run this on your Raspberry Pi?
+Great news! We have forked this repository and created a Raspberry Pi image that you can download from here: 
+https://github.com/techandme/NextBerry or here https://www.techandme.se/nextberry-rpi/.
+
+We call it NextBerry and it's confirmed to be working on Raspberry Pi 3.
+
 ## FAQ
 
 Keep asking questions so that we can add them here.
