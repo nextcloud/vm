@@ -28,4 +28,5 @@ fi
 if [ -d "$NCPATH"/apps/calendar ]
 then
     sudo -u www-data php "$NCPATH"/occ app:enable calendar
+    chown -R www-data:www-data $NCPATH/apps
 fi
