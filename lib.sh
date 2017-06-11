@@ -167,6 +167,14 @@ ask_yes_or_no() {
     esac
 }
 
+configure_max_upload() {
+# Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
+# Here is a guide: https://www.techandme.se/increase-max-file-size/
+sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
+sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
+sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
+}
+
 # Test RAM size 
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
 # Example: ram_check 2 Nextcloud

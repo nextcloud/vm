@@ -271,28 +271,21 @@ crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php >
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
-sed -i "s|max_execution_time = 30|max_execution_time = 3500|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" /etc/php/7.0/apache2/php.ini
 # max_input_time
-sed -i "s|max_input_time = 60|max_input_time = 3600|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|max_input_time =.*|max_input_time = 3600|g" /etc/php/7.0/apache2/php.ini
 # memory_limit
-sed -i "s|memory_limit = 128M|memory_limit = 512M|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|memory_limit =.*|memory_limit = 512M|g" /etc/php/7.0/apache2/php.ini
 # post_max
-sed -i "s|post_max_size = 8M|post_max_size = 1100M|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|post_max_size =.*|post_max_size = 1100M|g" /etc/php/7.0/apache2/php.ini
 # upload_max
-sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 1000M|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.0/apache2/php.ini
+
+# Set max upload in Nextcloud .htaccess
+configure_max_upload
 
 # Set SMTP mail
 sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpmode --value="smtp"
-
-# Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
-# Here is a guide: https://www.techandme.se/increase-max-file-size/
-VALUE="# php_value upload_max_filesize 511M"
-if ! grep -Fxq "$VALUE" "$NCPATH"/.htaccess
-then
-        sed -i 's/  php_value upload_max_filesize 511M/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
-        sed -i 's/  php_value post_max_size 511M/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
-        sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
-fi
 
 # Enable OPCache for PHP 
 # https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
