@@ -28,4 +28,5 @@ fi
 if [ -d "$NCPATH"/apps/contacts ]
 then
     sudo -u www-data php "$NCPATH"/occ app:enable contacts
+    chown -R www-data:www-data $NCPATH/apps
 fi
