@@ -319,6 +319,7 @@ then
     check_command sudo -u www-data php "$NCPATH"/occ app:enable richdocuments
     check_command sudo -u www-data "$NCPATH"/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
     chown -R www-data:www-data $NCPATH/apps
+    sudo "$NCPATH"/occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
 # Add prune command
     {
     echo "#!/bin/bash"
