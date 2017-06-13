@@ -19,6 +19,9 @@ then
     # Change config.php
     php $SCRIPTS/update-config.php $NCPATH/config/config.php 'trusted_domains[]' localhost "${ADDRESS[@]}" "$(hostname)" "$(hostname --fqdn)" >/dev/null 2>&1
     php $SCRIPTS/update-config.php $NCPATH/config/config.php overwrite.cli.url https://"$(hostname --fqdn)"/ >/dev/null 2>&1
+    
+    # Change /etc/hosts as well
+    sed -i "s|127.0.1.1.*|127.0.1.1       $(hostname --fqdn) $(hostname -s)|g" /etc/hosts
 
     # Change .htaccess accordingly
     sed -i "s|RewriteBase /nextcloud|RewriteBase /|g" $NCPATH/.htaccess
