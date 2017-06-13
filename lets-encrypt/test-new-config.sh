@@ -36,6 +36,8 @@ then
     echo "Setting hostname to $FQDOMAIN..."
     sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
     sudo hostnamectl set-hostname "$FQDOMAIN"
+    # Change /etc/hosts as well
+    sed -i "s|127.0.1.1.*|127.0.1.1       $FQDOMAIN $(hostname -s)|g" /etc/hosts
 fi
 
 # Set trusted domains
