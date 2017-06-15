@@ -25,11 +25,11 @@ fi
 # location of Nextcloud logs
 NCLOG="/var/ncdata/nextcloud.log"
 # time to ban an IP that exceeded attempts
-BANTIME_=600
+BANTIME_=600000
 # cooldown time for incorrect passwords
-FINDTIME_=600
+FINDTIME_=1800
 #bad attempts before banning an IP
-MAXRETRY_=4
+MAXRETRY_=10
 
 apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
