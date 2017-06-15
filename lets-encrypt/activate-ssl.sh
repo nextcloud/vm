@@ -108,6 +108,8 @@ then
 else
     echo "Port 443 is not open on $WANIP4. We will do a second try on $domain instead."
     any_key "Press any key to test $domain... "
+    sed -i "s|127.0.1.1.*|127.0.1.1       $domain nextcloud|g" /etc/hosts
+    service networking restart
     if [[ $(nmap -sS -PN -p 443 "$domain" | grep -m 1 "open" | awk '{print $2}') = open ]]
     then
         apt remove --purge nmap -y
