@@ -307,13 +307,16 @@ do
     case $choice in
         Fail2ban)
             run_app_script fail2ban
+            
         ;;
         phpMyadmin)
             run_app_script phpmyadmin_install_ubuntu16
         ;;
+        
         OnlyOffice)
             run_app_script onlyoffice
         ;;
+        
         Collabora)
             run_app_script collabora
         ;;
