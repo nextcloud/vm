@@ -19,6 +19,7 @@ then
     printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
     sleep 3
     exit 1
+fi
 
 ### Local variables ###
 # location of Nextcloud logs
@@ -32,8 +33,8 @@ MAXRETRY_=4
 DESCRIPTION="Brute force protection for SSH and Nextcloud"
 
 apt update -q4 & spinner_loading
-apt install fail2ban -y
-update-rc.d fail2ban disable
+check_command apt install fail2ban -y
+check_command update-rc.d fail2ban disable
 
 if [ ! -f $NCLOG ]
 then
