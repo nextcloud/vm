@@ -285,7 +285,16 @@ else
 fi
 clear
 
+# Change Timezone
+echo "Current timezone is $(cat /etc/timezone)"
+echo "You must change it to your timezone"
+any_key "Press any key to change timezone..."
+dpkg-reconfigure tzdata
+sleep 3
+clear
+
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Fail2ban" "(Extra Bruteforce protection)   " OFF \
 "phpMyadmin" "(MySQL GUI)       " OFF \
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
@@ -296,6 +305,9 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 while read -r -u 9 choice
 do
     case $choice in
+        Fail2ban)
+            run_app_script fail2ban
+        ;;
         phpMyadmin)
             run_app_script phpmyadmin_install_ubuntu16
         ;;
@@ -324,6 +336,7 @@ do
 done 9< results
 rm -f results
 clear
+clear
 
 # Add extra security
 if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
@@ -335,14 +348,6 @@ else
     echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
     any_key "Press any key to continue..."
 fi
-clear
-
-# Change Timezone
-echo "Current timezone is $(cat /etc/timezone)"
-echo "You must change it to your timezone"
-any_key "Press any key to change timezone..."
-dpkg-reconfigure tzdata
-sleep 3
 clear
 
 # Change password
