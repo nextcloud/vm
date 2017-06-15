@@ -118,6 +118,6 @@ check_command service fail2ban restart
 # The End
 echo "Fail2ban is now sucessfully installed."
 echo "Please use 'fail2ban-client set nextcloud unbanip <Banned IP>' to unban certain IPs"
-echo "You can alos use 'iptables -L -n' to check which IPs that are banned"
+echo "You can also use 'iptables -L -n' to check which IPs that are banned"
 any_key "Press any key to continue..."
 clear
