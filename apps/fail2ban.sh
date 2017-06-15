@@ -92,22 +92,24 @@ action = %(action_)s
 #
 
 [ssh]
+
 enabled  = true
 port     = ssh
 filter   = sshd
 logpath  = /var/log/auth.log
-maxretry = "$MAXRETRY_"
+maxretry = $MAXRETRY_
 
 #
 # HTTP servers
 #
 
 [nextcloud]
+
 enabled  = true
 port     = http,https
 filter   = nextcloud
-logpath  = "$NCLOG"
-maxretry = "$MAXRETRY_"
+logpath  = $NCLOG
+maxretry = $MAXRETRY_
 FCONF
 
 # Update settings
