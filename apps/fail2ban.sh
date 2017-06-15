@@ -23,14 +23,13 @@ fi
 
 ### Local variables ###
 # location of Nextcloud logs
-NCLOG="/var/ncdata/nextcloud.log"     
+NCLOG="/var/ncdata/nextcloud.log"
 # time to ban an IP that exceeded attempts
 BANTIME_=600
 # cooldown time for incorrect passwords
-FINDTIME_=600                                    
-# bad attempts before banning an IP
-MAXRETRY_=4                                      
-DESCRIPTION="Brute force protection for SSH and Nextcloud"
+FINDTIME_=600
+#bad attempts before banning an IP
+MAXRETRY_=4
 
 apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
@@ -116,5 +115,9 @@ check_command update-rc.d fail2ban defaults
 check_command update-rc.d fail2ban enable
 check_command service fail2ban restart
 
-
-
+# The End
+echo "Fail2ban is now sucessfully installed."
+echo "Please use 'fail2ban-client set nextcloud unbanip <Banned IP>' to unban certain IPs"
+echo "You can alos use 'iptables -L -n' to check which IPs that are banned"
+any_key "Press any key to continue..."
+clear
