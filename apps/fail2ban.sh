@@ -51,14 +51,14 @@ sudo -u www-data php "$NCPATH/occ" config:system:set logfile  --value="$NCLOG"
 sudo -u www-data php "$NCPATH/occ" config:system:set logtimezone  --value="$(cat /etc/timezone)"
 
 # Create nextcloud.conf file
-{
+cat << NCONF > /etc/fail2ban/filter.d/nextcloud.conf
 [Definition]
 failregex = ^.*Login failed: '.*' \(Remote IP: '<HOST>'.*$
 ignoreregex =
-} > /etc/fail2ban/filter.d/nextcloud.conf
+NCONF
 
 # Create jail.local file
-{
+cat << FCONF > /etc/fail2ban/jail.local
 # The DEFAULT allows a global definition of the options. They can be overridden
 # in each jail afterwards.
 [DEFAULT]
@@ -92,7 +92,6 @@ action = %(action_)s
 #
 
 [ssh]
-
 enabled  = true
 port     = ssh
 filter   = sshd
@@ -104,13 +103,12 @@ maxretry = "$MAXRETRY_"
 #
 
 [nextcloud]
-
 enabled  = true
 port     = http,https
 filter   = nextcloud
 logpath  = "$NCLOG"
 maxretry = "$MAXRETRY_"
-} > /etc/fail2ban/jail.local
+FCONF
 
 # Update settings
 check_command update-rc.d fail2ban defaults
