@@ -40,7 +40,6 @@ then
     echo "$NCLOG not found"
     exit 1
 else
-    touch $NCLOG
     chown www-data:www-data $NCLOG
 fi
 
@@ -66,7 +65,7 @@ cat << FCONF > /etc/fail2ban/jail.local
 # "ignoreip" can be an IP address, a CIDR mask or a DNS host. Fail2ban will not
 # ban a host which matches an address in this list. Several addresses can be
 # defined using space separator.
-ignoreip = 127.0.0.1/8
+ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 
 # "bantime" is the number of seconds that a host is banned.
 bantime  = $BANTIME_
