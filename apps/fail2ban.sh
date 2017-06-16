@@ -31,6 +31,8 @@ FINDTIME_=1800
 #bad attempts before banning an IP
 MAXRETRY_=10
 
+echo "Installing Fail2ban..."
+
 apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
 check_command update-rc.d fail2ban disable
@@ -117,6 +119,7 @@ check_command update-rc.d fail2ban enable
 check_command service fail2ban restart
 
 # The End
+echo
 echo "Fail2ban is now sucessfully installed."
 echo "Please use 'fail2ban-client set nextcloud unbanip <Banned IP>' to unban certain IPs"
 echo "You can also use 'iptables -L -n' to check which IPs that are banned"
