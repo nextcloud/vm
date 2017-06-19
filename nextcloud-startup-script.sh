@@ -135,8 +135,8 @@ echo "| This script will configure your Nextcloud and activate SSL.        |"
 echo "| It will also do the following:                                     |"
 echo "|                                                                    |"
 echo "| - Generate new SSH keys for the server                             |"
-echo "| - Generate new MariaDB password                                    |"
-echo "| - Configure UTF8mb4 (4-byte support for MariaDB)                   |"
+echo "| - Generate new MARIADB password                                    |"
+echo "| - Configure UTF8mb4 (4-byte support for MARIADB)                   |"
 echo "| - Install phpMyadmin and make it secure                            |"
 echo "| - Install selected apps and automatically configure them           |"
 echo "| - Detect and set hostname                                          |"
@@ -241,8 +241,8 @@ printf "\nGenerating new SSH keys for the server...\n"
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
-# Generate new MariaDB password
-echo "Generating new MariaDB password..."
+# Generate new MARIADB password
+echo "Generating new MARIADB password..."
 if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
    rm "$SCRIPTS/change_mysql_pass.sh"
@@ -268,7 +268,7 @@ fi
 printf "\nEnabling UTF8mb4 support on $NCCONFIGDB....\n"
 echo "Please be patient, it may take a while."
 sudo /etc/init.d/mysql restart & spinner_loading
-RESULT="mysqlshow --user=root --password=$MYSQLMYCNFPASS $NCCONFIGDB| grep -v Wildcard | grep -o $NCCONFIGDB"
+RESULT="mysqlshow --user=root --password=$MARIADBMYCNFPASS $NCCONFIGDB| grep -v Wildcard | grep -o $NCCONFIGDB"
 if [ "$RESULT" == "$NCCONFIGDB" ]; then
     check_command mysql -u root -e "ALTER DATABASE $NCCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
     wait
@@ -462,7 +462,7 @@ printf "|         ${Color_Off}Login to Nextcloud in your browser: ${Cyan}\"$ADDR
 echo    "|                                                                    |"
 printf "|         ${Color_Off}Publish your server online! ${Cyan}https://goo.gl/iUGE2U${Green}          |\n"
 echo    "|                                                                    |"
-printf "|         ${Color_Off}To login to MariaDB just type: ${Cyan}'mysql -u root'${Green}             |\n"
+printf "|         ${Color_Off}To login to MARIADB just type: ${Cyan}'mysql -u root'${Green}             |\n"
 echo    "|                                                                    |"
 printf "|   ${Color_Off}To update this VM just type: ${Cyan}'sudo bash /var/scripts/update.sh'${Green}  |\n"
 echo    "|                                                                    |"

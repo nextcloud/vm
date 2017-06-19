@@ -132,7 +132,7 @@ LOGIN
     chown root:root $MYCNF
     echo "Please restart the upgrade process, we fixed the password file $MYCNF."
     exit 1    
-elif [ -z "$MYSQLMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
+elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
 then
     regressionpw=$(cat /var/mysql_password.txt)
     {
@@ -143,7 +143,7 @@ then
     exit 1    
 fi
 
-if [ -z "$MYSQLMYCNFPASS" ]
+if [ -z "$MARIADBMYCNFPASS" ]
 then
     echo "Something went wrong with copying your mysql password to $MYCNF."
     echo "Please report this issue to $ISSUES, thanks!"
@@ -187,14 +187,14 @@ else
     printf "${Green}\nBackup OK!${Color_Off}\n"
 fi
 
-# Backup MySQL
-if mysql -u root -p"$MYSQLMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
+# Backup MARIADB
+if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
 then
     echo "Doing mysqldump of $NCCONFIGDB..."
-    check_command mysqldump -u root -p"$MYSQLMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
+    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
 else
     echo "Doing mysqldump of all databases..."
-    check_command mysqldump -u root -p"$MYSQLMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
+    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
 fi
 
 # Download and validate Nextcloud package

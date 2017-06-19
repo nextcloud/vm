@@ -54,9 +54,9 @@ echo
 
 # Install phpmyadmin
 echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/app-password-confirm password $MYSQLMYCNFPASS" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/admin-pass password $MYSQLMYCNFPASS" | debconf-set-selections
-echo "phpmyadmin phpmyadmin/mysql/app-pass password $MYSQLMYCNFPASS" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/app-password-confirm password $MARIADBMYCNFPASS" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-pass password $MARIADBMYCNFPASS" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password $MARIADBMYCNFPASS" | debconf-set-selections
 echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
 apt update -q4 & spinner_loading
 apt install -y -q \
