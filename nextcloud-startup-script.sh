@@ -251,6 +251,12 @@ then
    echo "innodb_large_prefix=on"
    echo "innodb_file_format=barracuda"
    echo "innodb_file_per_table=1"
+   echo "[mariadb]"
+   echo "innodb_use_fallocate = 1"
+   echo "innodb_use_atomic_writes = 1"
+   echo "innodb_use_trim = 1"
+   echo "ignore-builtin-innodb"
+   echo "plugin-load=ha_innodb.so plugin-dir=/usr/local/mysql/"
    } >> /root/.my.cnf
 fi
 
