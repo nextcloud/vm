@@ -166,15 +166,22 @@ apt update -q4 & spinner_loading
 cat << LOGIN > "$MYCNF"
 [client]
 password='$MYSQL_PASS'
+
+[mariadb]
+innodb_use_fallocate = 1
+innodb_use_atomic_writes = 1
+innodb_use_trim = 1
+ignore-builtin-innodb 
+plugin-load=ha_innodb.so plugin-dir=/usr/local/mysql/
 LOGIN
 chmod 0600 $MYCNF
 chown root:root $MYCNF
 
 # Install MariaDB
 apt install software-properties-common -y
-echo "mariadb-server mariadb-server/root_password password $MYSQL_PASS" | debconf-set-selections
-echo "mariadb-server mariadb-server/root_password_again password $MYSQL_PASS" | debconf-set-selections
-check_command apt install mariadb-server -y
+echo "mariadb-server-10.1 mariadb-server/root_password password $MYSQL_PASS" | debconf-set-selections
+echo "mariadb-server-10.1 mariadb-server/root_password_again password $MYSQL_PASS" | debconf-set-selections
+check_command apt install mariadb-server-10.1 -y
 
 # Prepare for Nextcloud installation
 # https://blog.v-gar.de/2017/02/en-solved-error-1698-28000-in-mysqlmariadb/
