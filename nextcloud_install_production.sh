@@ -65,15 +65,13 @@ fi
 echo "Checking if it's a clean server..."
 if [ "$(dpkg-query -W -f='${Status}' mysql-common 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    echo "MARIADB is installed, it must be a clean server."
+    echo "MySQL is installed, it must be a clean server."
     exit 1
 fi
 
-# Check if it's a clean server
-echo "Checking if it's a clean server..."
 if [ "$(dpkg-query -W -f='${Status}' mariadb-server 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    echo "MARIADB is installed, it must be a clean server."
+    echo "MariaDB is installed, it must be a clean server."
     exit 1
 fi
 
