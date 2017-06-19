@@ -69,6 +69,14 @@ then
     exit 1
 fi
 
+# Check if it's a clean server
+echo "Checking if it's a clean server..."
+if [ "$(dpkg-query -W -f='${Status}' mariadb-server 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "MariaDB is installed, it must be a clean server."
+    exit 1
+fi
+
 if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "Apache2 is installed, it must be a clean server."
@@ -154,7 +162,7 @@ fi
 # Update system
 apt update -q4 & spinner_loading
 
-# Write MySQL pass to file and keep it safe
+# Write MariaDB pass to file and keep it safe
 cat << LOGIN > "$MYCNF"
 [client]
 password='$MYSQL_PASS'
@@ -162,11 +170,11 @@ LOGIN
 chmod 0600 $MYCNF
 chown root:root $MYCNF
 
-# Install MYSQL 5.7
+# Install MariaDB
 apt install software-properties-common -y
-echo "mysql-server-5.7 mysql-server/root_password password $MYSQL_PASS" | debconf-set-selections
-echo "mysql-server-5.7 mysql-server/root_password_again password $MYSQL_PASS" | debconf-set-selections
-check_command apt install mysql-server-5.7 -y
+echo "mariadb-server mariadb-server/root_password password $MYSQL_PASS" | debconf-set-selections
+echo "mariadb-server mariadb-server/root_password_again password $MYSQL_PASS" | debconf-set-selections
+check_command apt install mariadb-server -y
 
 # mysql_secure_installation
 apt -y install expect
