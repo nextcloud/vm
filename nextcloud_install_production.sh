@@ -166,6 +166,7 @@ apt update -q4 & spinner_loading
 cat << LOGIN > "$MYCNF"
 [client]
 password='$MYSQL_PASS'
+default-character-set = utf8mb4
 
 [mariadb]
 innodb_use_fallocate = 1
@@ -173,6 +174,15 @@ innodb_use_atomic_writes = 1
 innodb_use_trim = 1
 ignore-builtin-innodb 
 plugin-load=ha_innodb.so plugin-dir=/usr/local/mysql/
+
+[mysql]
+default-character-set = utf8mb4
+
+[mysqld]
+init-connect='SET NAMES utf8mb4'
+collation_server=utf8mb4_unicode_ci
+character_set_server=utf8mb4
+skip-character-set-client-handshake
 LOGIN
 chmod 0600 $MYCNF
 chown root:root $MYCNF
