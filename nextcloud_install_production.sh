@@ -176,16 +176,20 @@ echo "mariadb-server mariadb-server/root_password password $MYSQL_PASS" | debcon
 echo "mariadb-server mariadb-server/root_password_again password $MYSQL_PASS" | debconf-set-selections
 check_command apt install mariadb-server -y
 
+# Prepare for Nextcloud installation
+# https://blog.v-gar.de/2017/02/en-solved-error-1698-28000-in-mysqlmariadb/
+mysql -u root mysql -p$MYSQL_PASS -e "UPDATE user SET plugin='' WHERE user='root';"
+mysql -u root mysql -p$MYSQL_PASS -e "UPDATE user SET password=PASSWORD('$MYSQL_PASS') WHERE user='root';"
+mysql -u root -p$MYSQL_PASS -e "flush privileges;"
+
 # mysql_secure_installation
 apt -y install expect
 SECURE_MYSQL=$(expect -c "
 set timeout 10
 spawn mysql_secure_installation
-expect \"Enter current password for root:\"
+expect \"Enter current password for root (enter for none):\"
 send \"$MYSQL_PASS\r\"
-expect \"Would you like to setup VALIDATE PASSWORD plugin?\"
-send \"n\r\"
-expect \"Change the password for root ?\"
+expect \"Change the root password?\"
 send \"n\r\"
 expect \"Remove anonymous users?\"
 send \"y\r\"
