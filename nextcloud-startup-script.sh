@@ -248,7 +248,7 @@ then
    rm "$SCRIPTS/change_mysql_pass.sh"
    {
    echo "[mysqld]"
-   echo "innodb_large_prefix=on"
+   echo "innodb_large_prefix=1"
    echo "innodb_file_format=barracuda"
    echo "innodb_file_per_table=1"
    echo "[mariadb]"
