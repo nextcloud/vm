@@ -462,7 +462,7 @@ printf "|         ${Color_Off}Login to Nextcloud in your browser: ${Cyan}\"$ADDR
 echo    "|                                                                    |"
 printf "|         ${Color_Off}Publish your server online! ${Cyan}https://goo.gl/iUGE2U${Green}          |\n"
 echo    "|                                                                    |"
-printf "|         ${Color_Off}To login to MariaDB just type: ${Cyan}'mysql -u root'${Green}               |\n"
+printf "|         ${Color_Off}To login to MariaDB just type: ${Cyan}'mysql -u root'${Green}             |\n"
 echo    "|                                                                    |"
 printf "|   ${Color_Off}To update this VM just type: ${Cyan}'sudo bash /var/scripts/update.sh'${Green}  |\n"
 echo    "|                                                                    |"
