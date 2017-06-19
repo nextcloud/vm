@@ -195,9 +195,9 @@ check_command apt install mariadb-server-10.1 -y
 
 # Prepare for Nextcloud installation
 # https://blog.v-gar.de/2017/02/en-solved-error-1698-28000-in-mysqlmariadb/
-mysql -u root mysql -p$MYSQL_PASS -e "UPDATE user SET plugin='' WHERE user='root';"
-mysql -u root mysql -p$MYSQL_PASS -e "UPDATE user SET password=PASSWORD('$MYSQL_PASS') WHERE user='root';"
-mysql -u root -p$MYSQL_PASS -e "flush privileges;"
+mysql -u root mysql -p"$MYSQL_PASS" -e "UPDATE user SET plugin='' WHERE user='root';"
+mysql -u root mysql -p"$MYSQL_PASS" -e "UPDATE user SET password=PASSWORD('$MYSQL_PASS') WHERE user='root';"
+mysql -u root -p"$MYSQL_PASS" -e "flush privileges;"
 
 # mysql_secure_installation
 apt -y install expect
