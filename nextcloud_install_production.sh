@@ -170,13 +170,19 @@ default-character-set = utf8mb4
 innodb_use_fallocate = 1
 innodb_use_atomic_writes = 1
 innodb_use_trim = 1
-ignore-builtin-innodb 
-plugin-load=ha_innodb.so plugin-dir=/usr/local/mysql/
 
 [mysql]
 default-character-set = utf8mb4
 
 [mysqld]
+innodb_large_prefix=on
+innodb_file_format=barracuda
+innodb_flush_neighbors=0
+innodb_adaptive_flushing=1
+innodb_flush_method = O_DIRECT
+innodb_doublewrite = 0
+innodb_file_per_table = 1
+innodb_flush_log_at_trx_commit=1
 init-connect='SET NAMES utf8mb4'
 collation_server=utf8mb4_unicode_ci
 character_set_server=utf8mb4
