@@ -264,8 +264,6 @@ then
    echo "innodb_use_fallocate = 1"
    echo "innodb_use_atomic_writes = 1"
    echo "innodb_use_trim = 1"
-   echo "ignore-builtin-innodb"
-   echo "plugin-load=ha_innodb.so plugin-dir=/usr/local/mysql/"
    } >> /root/.my.cnf
 fi
 
