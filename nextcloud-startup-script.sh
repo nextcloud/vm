@@ -260,6 +260,7 @@ then
    echo "collation_server=utf8mb4_unicode_ci"
    echo "character_set_server=utf8mb4"
    echo "skip-character-set-client-handshake"
+   
    echo "[mariadb]"
    echo "innodb_use_fallocate = 1"
    echo "innodb_use_atomic_writes = 1"
