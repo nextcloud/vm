@@ -69,6 +69,12 @@ then
     exit 1
 fi
 
+if [ "$(dpkg-query -W -f='${Status}' mariadb-server 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "MariaDB is installed, it must be a clean server."
+    exit 1
+fi
+
 if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "Apache2 is installed, it must be a clean server."
@@ -154,30 +160,60 @@ fi
 # Update system
 apt update -q4 & spinner_loading
 
-# Write MySQL pass to file and keep it safe
+# Write MARIADB pass to file and keep it safe
 cat << LOGIN > "$MYCNF"
 [client]
-password='$MYSQL_PASS'
+password='$MARIADB_PASS'
+default-character-set = utf8mb4
+
+[mariadb]
+innodb_use_fallocate = 1
+innodb_use_atomic_writes = 1
+innodb_use_trim = 1
+
+[mysql]
+default-character-set = utf8mb4
+
+[mysqld]
+innodb_large_prefix=on
+innodb_file_format=barracuda
+innodb_flush_neighbors=0
+innodb_adaptive_flushing=1
+innodb_flush_method = O_DIRECT
+innodb_doublewrite = 0
+innodb_file_per_table = 1
+innodb_flush_log_at_trx_commit=1
+init-connect='SET NAMES utf8mb4'
+collation_server=utf8mb4_unicode_ci
+character_set_server=utf8mb4
+skip-character-set-client-handshake
 LOGIN
 chmod 0600 $MYCNF
 chown root:root $MYCNF
 
-# Install MYSQL 5.7
+# Install MARIADB
 apt install software-properties-common -y
-echo "mysql-server-5.7 mysql-server/root_password password $MYSQL_PASS" | debconf-set-selections
-echo "mysql-server-5.7 mysql-server/root_password_again password $MYSQL_PASS" | debconf-set-selections
-check_command apt install mysql-server-5.7 -y
+sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ddg.lth.se/mariadb/repo/10.2/ubuntu xenial main'
+sudo debconf-set-selections <<< "mariadb-server-10.2 mysql-server/root_password password $MARIADB_PASS"
+sudo debconf-set-selections <<< "mariadb-server-10.2 mysql-server/root_password_again password $MARIADB_PASS"
+apt update -q4 & spinner_loading
+check_command apt install mariadb-server-10.2 -y
+
+# Prepare for Nextcloud installation
+# https://blog.v-gar.de/2017/02/en-solved-error-1698-28000-in-mysqlmariadb/
+mysql -u root mysql -p"$MARIADB_PASS" -e "UPDATE user SET plugin='' WHERE user='root';"
+mysql -u root mysql -p"$MARIADB_PASS" -e "UPDATE user SET password=PASSWORD('$MARIADB_PASS') WHERE user='root';"
+mysql -u root -p"$MARIADB_PASS" -e "flush privileges;"
 
 # mysql_secure_installation
 apt -y install expect
 SECURE_MYSQL=$(expect -c "
 set timeout 10
 spawn mysql_secure_installation
-expect \"Enter current password for root:\"
-send \"$MYSQL_PASS\r\"
-expect \"Would you like to setup VALIDATE PASSWORD plugin?\"
-send \"n\r\"
-expect \"Change the password for root ?\"
+expect \"Enter current password for root (enter for none):\"
+send \"$MARIADB_PASS\r\"
+expect \"Change the root password?\"
 send \"n\r\"
 expect \"Remove anonymous users?\"
 send \"y\r\"
@@ -248,7 +284,7 @@ download_static_script setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
 # Create database nextcloud_db
-mysql -u root -p"$MYSQL_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
+mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
 
 # Install Nextcloud
 cd "$NCPATH"
@@ -257,7 +293,7 @@ check_command sudo -u www-data php occ maintenance:install \
     --database "mysql" \
     --database-name "nextcloud_db" \
     --database-user "root" \
-    --database-pass "$MYSQL_PASS" \
+    --database-pass "$MARIADB_PASS" \
     --admin-user "$NCUSER" \
     --admin-pass "$NCPASS"
 echo

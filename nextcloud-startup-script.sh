@@ -135,8 +135,8 @@ echo "| This script will configure your Nextcloud and activate SSL.        |"
 echo "| It will also do the following:                                     |"
 echo "|                                                                    |"
 echo "| - Generate new SSH keys for the server                             |"
-echo "| - Generate new MySQL password                                      |"
-echo "| - Configure UTF8mb4 (4-byte support for MySQL)                     |"
+echo "| - Generate new MARIADB password                                    |"
+echo "| - Configure UTF8mb4 (4-byte support for MARIADB)                   |"
 echo "| - Install phpMyadmin and make it secure                            |"
 echo "| - Install selected apps and automatically configure them           |"
 echo "| - Detect and set hostname                                          |"
@@ -241,16 +241,31 @@ printf "\nGenerating new SSH keys for the server...\n"
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
-# Generate new MySQL password
-echo "Generating new MySQL password..."
+# Generate new MARIADB password
+echo "Generating new MARIADB password..."
 if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
    rm "$SCRIPTS/change_mysql_pass.sh"
    {
+   echo
    echo "[mysqld]"
    echo "innodb_large_prefix=on"
    echo "innodb_file_format=barracuda"
-   echo "innodb_file_per_table=1"
+   echo "innodb_flush_neighbors=0"
+   echo "innodb_adaptive_flushing=1"
+   echo "innodb_flush_method = O_DIRECT"
+   echo "innodb_doublewrite = 0"
+   echo "innodb_file_per_table = 1"
+   echo "innodb_flush_log_at_trx_commit=1"
+   echo "init-connect='SET NAMES utf8mb4'"
+   echo "collation_server=utf8mb4_unicode_ci"
+   echo "character_set_server=utf8mb4"
+   echo "skip-character-set-client-handshake"
+   
+   echo "[mariadb]"
+   echo "innodb_use_fallocate = 1"
+   echo "innodb_use_atomic_writes = 1"
+   echo "innodb_use_trim = 1"
    } >> /root/.my.cnf
 fi
 
@@ -258,7 +273,7 @@ fi
 printf "\nEnabling UTF8mb4 support on $NCCONFIGDB....\n"
 echo "Please be patient, it may take a while."
 sudo /etc/init.d/mysql restart & spinner_loading
-RESULT="mysqlshow --user=root --password=$MYSQLMYCNFPASS $NCCONFIGDB| grep -v Wildcard | grep -o $NCCONFIGDB"
+RESULT="mysqlshow --user=root --password=$MARIADBMYCNFPASS $NCCONFIGDB| grep -v Wildcard | grep -o $NCCONFIGDB"
 if [ "$RESULT" == "$NCCONFIGDB" ]; then
     check_command mysql -u root -e "ALTER DATABASE $NCCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
     wait
@@ -295,7 +310,7 @@ clear
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
-"phpMyadmin" "(MySQL GUI)       " OFF \
+"phpMyadmin" "(*SQL GUI)       " OFF \
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Nextant" "(Full text search)   " OFF \
@@ -452,7 +467,7 @@ printf "|         ${Color_Off}Login to Nextcloud in your browser: ${Cyan}\"$ADDR
 echo    "|                                                                    |"
 printf "|         ${Color_Off}Publish your server online! ${Cyan}https://goo.gl/iUGE2U${Green}          |\n"
 echo    "|                                                                    |"
-printf "|         ${Color_Off}To login to MySQL just type: ${Cyan}'mysql -u root'${Green}               |\n"
+printf "|         ${Color_Off}To login to MARIADB just type: ${Cyan}'mysql -u root'${Green}             |\n"
 echo    "|                                                                    |"
 printf "|   ${Color_Off}To update this VM just type: ${Cyan}'sudo bash /var/scripts/update.sh'${Green}  |\n"
 echo    "|                                                                    |"
