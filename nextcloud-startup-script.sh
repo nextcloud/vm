@@ -247,6 +247,7 @@ if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
    rm "$SCRIPTS/change_mysql_pass.sh"
    {
+   echo
    echo "[mysqld]"
    echo "innodb_large_prefix=on"
    echo "innodb_file_format=barracuda"
