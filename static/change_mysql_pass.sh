@@ -13,18 +13,13 @@ unset MYCNFPW
 DEBUG=0
 debug_mode
 
-# Change MARIADB Password
-if mysqladmin -u root -p"$MARIADBMYCNFPASS" password "$NEWMARIADBPASS" > /dev/null 2>&1
+# Change PostgreSQL Password
+if sudo -u posgres psql -c "ALTER USER "$NCUSER" WITH PASSWORD '$NEWMARIADBPASS'"; > /dev/null 2>&1
 then
-    echo -e "${Green}Your new MARIADB root password is: $NEWMARIADBPASS${Color_Off}"
-    cat << LOGIN > "$MYCNF"
-[client]
-password='$NEWMARIADBPASS'
-LOGIN
-    chmod 0600 $MYCNF
-    exit 0
+    echo -e "${Green}Your new PosgreSQL Nextcloud password is: $NEWMARIADBPASS${Color_Off}"
+    sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGDBPASS"
 else
-    echo "Changing MARIADB root password failed."
+    echo "Changing PostgreSQL Nextcloud password failed."
     echo "Your old password is: $MARIADBMYCNFPASS"
     exit 1
 fi

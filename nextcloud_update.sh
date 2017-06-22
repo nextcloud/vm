@@ -121,35 +121,38 @@ else
 fi
 
 # Make sure old instaces can upgrade as well
-if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
+if which mysql > /dev/null
 then
-    regressionpw=$(cat /var/mysql_password.txt)
-cat << LOGIN > "$MYCNF"
-[client]
-password='$regressionpw'
-LOGIN
-    chmod 0600 $MYCNF
-    chown root:root $MYCNF
-    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1    
-elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
-then
-    regressionpw=$(cat /var/mysql_password.txt)
-    {
-    echo "[client]"
-    echo "password='$regressionpw'"
-    } >> "$MYCNF"
-    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1    
-fi
+    if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
+    then
+        regressionpw=$(cat /var/mysql_password.txt)
+        {
+        echo "[client]"
+        echo "password='$regressionpw'"
+        } > "$MYCNF"
+        chmod 0600 $MYCNF
+        chown root:root $MYCNF
+        echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+        exit 1
+    elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
+    then
+        regressionpw=$(cat /var/mysql_password.txt)
+        {
+        echo "[client]"
+        echo "password='$regressionpw'"
+        } >> "$MYCNF"
+        echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+        exit 1
+    fi
 
-if [ -z "$MARIADBMYCNFPASS" ]
-then
-    echo "Something went wrong with copying your mysql password to $MYCNF."
-    echo "Please report this issue to $ISSUES, thanks!"
-    exit 1
-else
-    rm -f /var/mysql_password.txt
+    if [ -z "$MARIADBMYCNFPASS" ]
+    then
+        echo "Something went wrong with copying your mysql password to $MYCNF."
+        echo "Please report this issue to $ISSUES, thanks!"
+        exit 1
+    else
+        rm -f /var/mysql_password.txt
+    fi
 fi
 
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
@@ -187,14 +190,29 @@ else
     printf "${Green}\nBackup OK!${Color_Off}\n"
 fi
 
-# Backup MARIADB
-if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
+# Backup PostgreSQL
+if which psql > /dev/null
 then
-    echo "Doing mysqldump of $NCCONFIGDB..."
-    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
-else
-    echo "Doing mysqldump of all databases..."
-    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
+    cd /tmp
+    if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
+    then
+        echo "Doing pgdump of $NCCONFIGDB..."
+        check_command sudo -u postgres pg_dump "$NCCONFIGDB"  > "$BACKUP"/nextclouddb.sql
+    else
+        echo "Doing pgdump of all databases..."
+        check_command sudo -u postgres psql pgdump_all > "$BACKUP"/alldatabases.sql
+    fi
+elif which mysql > /dev/null
+then
+    # Backup MARIADB
+    if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
+    then
+        echo "Doing mysqldump of $NCCONFIGDB..."
+        check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
+    else
+        echo "Doing mysqldump of all databases..."
+        check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
+    fi
 fi
 
 # Download and validate Nextcloud package
