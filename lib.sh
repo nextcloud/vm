@@ -177,7 +177,7 @@ sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/
 
 # Check if program is installed (is_this_installed apache2)
 is_this_installed() {
-if [ "$(dpkg-query -W -f='${Status}' ${1} 2>/dev/null | grep -c "ok installed")" == "1" ]
+if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "${1} is installed, it must be a clean server."
     exit 1
