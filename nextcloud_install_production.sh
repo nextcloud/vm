@@ -66,6 +66,7 @@ is_this_installed postgresql
 is_this_installed apache2
 is_this_installed php
 is_this_installed mysql-common
+is_this_installed mariadb-server
 
 # Create $SCRIPTS dir
 if [ ! -d "$SCRIPTS" ]
@@ -140,7 +141,7 @@ fi
 # Install PostgreSQL
 sh -c "echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main'" > $
 wget -nv https://www.postgresql.org/media/keys/ACCC4CF8.asc -O postgres.key
-sudo apt-key add - < postgres.key && rm -f postgres.key
+apt-key add - < postgres.key && rm -f postgres.key
 apt update -q4 & spinner_loading
 
 apt install postgresql postgresql-contrib -y
