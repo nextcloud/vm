@@ -2,8 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
-unset MYCNFPW
+MYCNFPW=1 NCDBPASS=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+unset MYCNFPW NCDBPASS
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
@@ -14,12 +14,12 @@ DEBUG=0
 debug_mode
 
 # Change PostgreSQL Password
-if sudo -u posgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGDBPASS';" > /dev/null 2>&1
+if sudo -u posgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'"; > /dev/null 2>&1
 then
-    echo -e "${Green}Your new PosgreSQL Nextcloud password is: $NEWPGDBPASS${Color_Off}"
-    sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGDBPASS"
+    echo -e "${Green}Your new PosgreSQL Nextcloud password is: $NEWPGPASS${Color_Off}"
+    sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
 else
     echo "Changing PostgreSQL Nextcloud password failed."
-    echo "Nothing is changed."
+    echo "Nothing is changed. Your old password is: $NCCONFIGDBPASS"
     exit 1
 fi
