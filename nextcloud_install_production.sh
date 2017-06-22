@@ -62,24 +62,10 @@ then
 fi
 
 # Check if it's a clean server
-echo "Checking if it's a clean server..."
-if [ "$(dpkg-query -W -f='${Status}' postgresql 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "PostgreSQL is installed, it must be a clean server."
-    exit 1
-fi
-
-if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "Apache2 is installed, it must be a clean server."
-    exit 1
-fi
-
-if [ "$(dpkg-query -W -f='${Status}' php 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "PHP is installed, it must be a clean server."
-    exit 1
-fi
+is_this_installed postgresql
+is_this_installed apache2
+is_this_installed php
+is_this_installed mysql-common
 
 # Create $SCRIPTS dir
 if [ ! -d "$SCRIPTS" ]
