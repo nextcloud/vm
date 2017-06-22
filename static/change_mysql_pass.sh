@@ -2,8 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-MYCNFPW=1 NCDBPASS=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
-unset MYCNFPW NCDBPASS
+NCDBPASS=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+unset NCDBPASS
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
