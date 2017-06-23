@@ -205,9 +205,6 @@ rm "$HTML/$STABLEVERSION.tar.bz2"
 download_static_script setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
-# Create database nextcloud_db
-mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
-
 # Install Nextcloud
 cd "$NCPATH"
 check_command sudo -u www-data php occ maintenance:install \
