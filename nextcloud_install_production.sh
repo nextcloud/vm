@@ -146,10 +146,10 @@ apt update -q4 & spinner_loading
 
 apt install postgresql postgresql-contrib -y
 cd /tmp
-echo "CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';" | sudo -u postgres psql
-echo "CREATE DATABASE nextcloud_db TEMPLATE template0 ENCODING 'UNICODE';" | sudo -u postgres psql
-echo "ALTER DATABASE nextcloud_db OWNER TO $NCUSER;" | sudo -u postgres psql
-echo "GRANT ALL PRIVILEGES ON DATABASE nextcloud_db TO $NCUSER;" | sudo -u postgres psql
+sudo -u postgres psql <<END
+CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
+CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
+END
 service postgresql restart
 
 # Install Apache
