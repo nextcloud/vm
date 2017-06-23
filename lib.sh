@@ -175,6 +175,15 @@ sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH
 sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
 }
 
+# Check if program is installed (is_this_installed apache2)
+is_this_installed() {
+if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "${1} is installed, it must be a clean server."
+    exit 1
+fi
+}
+
 # Test RAM size 
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
 # Example: ram_check 2 Nextcloud
