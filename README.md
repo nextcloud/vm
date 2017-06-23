@@ -1,5 +1,5 @@
 # Nextcloud VM PostgreSQL
-[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme) [![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm) [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
+[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme) [![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=postgresql)](https://travis-ci.org/nextcloud/vm) [![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
 
 ## Support the development
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
@@ -31,7 +31,7 @@ DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
 
 #### Installation
 1. Get the latest install script from master:<br>
-`wget https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh`
+`wget https://raw.githubusercontent.com/nextcloud/vm/postgresql/nextcloud_install_production.sh`
 2. Run the script with:<br>
 `sudo bash nextcloud_install_production.sh`
 3. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
@@ -98,7 +98,7 @@ Keep asking questions so that we can add them here.
 **Q: How to install apps if not selected during first install?**
 <br />
 **A:** Go to the apps folder in this repo and download the script in raw format and run them. For the calendar:
-`wget https://raw.githubusercontent.com/nextcloud/vm/master/apps/calendar.sh && sudo bash calendar.sh`
+`wget https://raw.githubusercontent.com/nextcloud/vm/postgresql/apps/calendar.sh && sudo bash calendar.sh`
 
 **Q: How to continue from partially installed system? - You got the FQDN wrong/You put in a bad password/ etc...**
 <br />
