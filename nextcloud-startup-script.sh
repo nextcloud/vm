@@ -63,6 +63,14 @@ fi
 DEBUG=0
 debug_mode
 
+# Check that this run on the PostgreSQL VM
+if ! which psql > /dev/null
+then
+    echo "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
+    echo "Aborting..."
+    exit 1
+fi
+
 # Check network
 if network_ok
 then
@@ -239,7 +247,7 @@ printf "\nGenerating new SSH keys for the server...\n"
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
-# Generate new MARIADB password
+# Generate new PostgreSQL password
 echo "Generating new PostgreSQL password..."
 check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
