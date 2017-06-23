@@ -14,7 +14,7 @@ DEBUG=0
 debug_mode
 
 # Change PostgreSQL Password
-if sudo -u posgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'"; > /dev/null 2>&1
+if sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'"; > /dev/null 2>&1
 then
     echo -e "${Green}Your new PosgreSQL Nextcloud password is: $NEWPGPASS${Color_Off}"
     sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
