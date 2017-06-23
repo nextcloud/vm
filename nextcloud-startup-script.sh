@@ -242,7 +242,7 @@ dpkg-reconfigure openssh-server
 # Generate new MARIADB password
 echo "Generating new PostgreSQL password..."
 check_command bash "$SCRIPTS/change_mysql_pass.sh"
-sleep 1
+sleep 3
 clear
 
 cat << LETSENC
