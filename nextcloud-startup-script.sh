@@ -109,7 +109,7 @@ download_static_script trusted
 download_static_script ip
 download_static_script test_connection
 download_static_script setup_secure_permissions_nextcloud
-download_static_script change_mysql_pass
+download_static_script change_db_pass
 download_static_script nextcloud
 download_static_script update-config
 download_static_script index
@@ -241,7 +241,7 @@ dpkg-reconfigure openssh-server
 
 # Generate new MARIADB password
 echo "Generating new PostgreSQL password..."
-check_command bash "$SCRIPTS/change_mysql_pass.sh"
+check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 clear
 
