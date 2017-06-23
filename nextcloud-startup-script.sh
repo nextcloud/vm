@@ -438,7 +438,7 @@ printf "|         ${Color_Off}Login to Nextcloud in your browser: ${Cyan}\"$ADDR
 echo    "|                                                                    |"
 printf "|         ${Color_Off}Publish your server online! ${Cyan}https://goo.gl/iUGE2U${Green}          |\n"
 echo    "|                                                                    |"
-printf "|         ${Color_Off}To login to PostgreSQL just type: ${Cyan}'sudo -u postgres psql'${Green}             |\n"
+printf "|         ${Color_Off}To login to PostgreSQL just type: ${Cyan}'sudo -u postgres psql'${Green}  |\n"
 echo    "|                                                                    |"
 printf "|   ${Color_Off}To update this VM just type: ${Cyan}'sudo bash /var/scripts/update.sh'${Green}  |\n"
 echo    "|                                                                    |"
