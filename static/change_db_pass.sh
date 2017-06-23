@@ -14,6 +14,7 @@ DEBUG=0
 debug_mode
 
 # Change PostgreSQL Password
+cd /tmp
 sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
 
 if [ "$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)" == "ALTER ROLE" ]
