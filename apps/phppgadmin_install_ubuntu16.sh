@@ -5,8 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
-unset MYCNFPW
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -53,11 +52,6 @@ echo "This may take a while, please don't abort."
 echo
 
 # Install phpPGadmin
-#echo "phppgadmin phppgadmin/dbconfig-install boolean true" | debconf-set-selections
-#echo "phppgadmin phppgadmin/app-password-confirm password $NCCONFIGDBPASS" | debconf-set-selections
-#echo "phppgadmin phppgadmin/mysql/admin-pass password $NCCONFIGDBPASS" | debconf-set-selections
-#echo "phppgadmin phppgadmin/mysql/app-pass password $NCCONFIGDBPASS" | debconf-set-selections
-#echo "phppgadmin phppgadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
 apt update -q4 & spinner_loading
 apt install -y -q \
     php-gettext \
