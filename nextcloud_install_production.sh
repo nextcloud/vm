@@ -8,7 +8,7 @@ sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/g
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 
@@ -62,30 +62,11 @@ then
 fi
 
 # Check if it's a clean server
-echo "Checking if it's a clean server..."
-if [ "$(dpkg-query -W -f='${Status}' mysql-common 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "MySQL is installed, it must be a clean server."
-    exit 1
-fi
-
-if [ "$(dpkg-query -W -f='${Status}' mariadb-server 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "MariaDB is installed, it must be a clean server."
-    exit 1
-fi
-
-if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "Apache2 is installed, it must be a clean server."
-    exit 1
-fi
-
-if [ "$(dpkg-query -W -f='${Status}' php 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "PHP is installed, it must be a clean server."
-    exit 1
-fi
+is_this_installed postgresql
+is_this_installed apache2
+is_this_installed php
+is_this_installed mysql-common
+is_this_installed mariadb-server
 
 # Create $SCRIPTS dir
 if [ ! -d "$SCRIPTS" ]
@@ -157,76 +138,19 @@ else
     clear
 fi
 
-# Update system
+# Install PostgreSQL
+sh -c "echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main'" > $
+wget -nv https://www.postgresql.org/media/keys/ACCC4CF8.asc -O postgres.key
+apt-key add - < postgres.key && rm -f postgres.key
 apt update -q4 & spinner_loading
 
-# Write MARIADB pass to file and keep it safe
-cat << LOGIN > "$MYCNF"
-[client]
-password='$MARIADB_PASS'
-default-character-set = utf8mb4
-
-[mariadb]
-innodb_use_fallocate = 1
-innodb_use_atomic_writes = 1
-innodb_use_trim = 1
-
-[mysql]
-default-character-set = utf8mb4
-
-[mysqld]
-innodb_large_prefix=on
-innodb_file_format=barracuda
-innodb_flush_neighbors=0
-innodb_adaptive_flushing=1
-innodb_flush_method = O_DIRECT
-innodb_doublewrite = 0
-innodb_file_per_table = 1
-innodb_flush_log_at_trx_commit=1
-init-connect='SET NAMES utf8mb4'
-collation_server=utf8mb4_unicode_ci
-character_set_server=utf8mb4
-skip-character-set-client-handshake
-LOGIN
-chmod 0600 $MYCNF
-chown root:root $MYCNF
-
-# Install MARIADB
-apt install software-properties-common -y
-sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ddg.lth.se/mariadb/repo/10.2/ubuntu xenial main'
-sudo debconf-set-selections <<< "mariadb-server-10.2 mysql-server/root_password password $MARIADB_PASS"
-sudo debconf-set-selections <<< "mariadb-server-10.2 mysql-server/root_password_again password $MARIADB_PASS"
-apt update -q4 & spinner_loading
-check_command apt install mariadb-server-10.2 -y
-
-# Prepare for Nextcloud installation
-# https://blog.v-gar.de/2017/02/en-solved-error-1698-28000-in-mysqlmariadb/
-mysql -u root mysql -p"$MARIADB_PASS" -e "UPDATE user SET plugin='' WHERE user='root';"
-mysql -u root mysql -p"$MARIADB_PASS" -e "UPDATE user SET password=PASSWORD('$MARIADB_PASS') WHERE user='root';"
-mysql -u root -p"$MARIADB_PASS" -e "flush privileges;"
-
-# mysql_secure_installation
-apt -y install expect
-SECURE_MYSQL=$(expect -c "
-set timeout 10
-spawn mysql_secure_installation
-expect \"Enter current password for root (enter for none):\"
-send \"$MARIADB_PASS\r\"
-expect \"Change the root password?\"
-send \"n\r\"
-expect \"Remove anonymous users?\"
-send \"y\r\"
-expect \"Disallow root login remotely?\"
-send \"y\r\"
-expect \"Remove test database and access to it?\"
-send \"y\r\"
-expect \"Reload privilege tables now?\"
-send \"y\r\"
-expect eof
-")
-echo "$SECURE_MYSQL"
-apt -y purge expect
+apt install postgresql postgresql-contrib -y
+cd /tmp
+sudo -u postgres psql <<END
+CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
+CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
+END
+service postgresql restart
 
 # Install Apache
 check_command apt install apache2 -y
@@ -243,7 +167,6 @@ apt update -q4 & spinner_loading
 check_command apt install -y \
     libapache2-mod-php7.0 \
     php7.0-common \
-    php7.0-mysql \
     php7.0-intl \
     php7.0-mcrypt \
     php7.0-ldap \
@@ -252,7 +175,6 @@ check_command apt install -y \
     php7.0-gd \
     php7.0-pgsql \
     php7.0-json \
-    php7.0-sqlite3 \
     php7.0-curl \
     php7.0-xml \
     php7.0-zip \
@@ -283,17 +205,14 @@ rm "$HTML/$STABLEVERSION.tar.bz2"
 download_static_script setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
-# Create database nextcloud_db
-mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
-
 # Install Nextcloud
 cd "$NCPATH"
 check_command sudo -u www-data php occ maintenance:install \
     --data-dir "$NCDATA" \
-    --database "mysql" \
+    --database "pgsql" \
     --database-name "nextcloud_db" \
-    --database-user "root" \
-    --database-pass "$MARIADB_PASS" \
+    --database-user "$NCUSER" \
+    --database-pass "$PGDB_PASS" \
     --admin-user "$NCUSER" \
     --admin-pass "$NCPASS"
 echo
