@@ -247,13 +247,14 @@ sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpmode --value="smtp
 phpenmod opcache
 {
 echo "# OPcache settings for Nextcloud"
-echo "opcache.enable=On"
+echo "opcache.enable=1"
 echo "opcache.enable_cli=1"
 echo "opcache.interned_strings_buffer=8"
 echo "opcache.max_accelerated_files=10000"
 echo "opcache.memory_consumption=128"
 echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
+echo "opcache.validate_timestamps=1"
 } >> /etc/php/7.0/apache2/php.ini
 
 # Install preview generator
