@@ -2,9 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && MYCNFPW=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset NC_UPDATE
-unset MYCNFPW
 unset NCDB
 
 # Tech and Me © - 2017, https://www.techandme.se/
@@ -120,41 +119,6 @@ else
     exit 0
 fi
 
-# Make sure old instaces can upgrade as well
-if which mysql > /dev/null
-then
-    if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
-    then
-        regressionpw=$(cat /var/mysql_password.txt)
-        {
-        echo "[client]"
-        echo "password='$regressionpw'"
-        } > "$MYCNF"
-        chmod 0600 $MYCNF
-        chown root:root $MYCNF
-        echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-        exit 1
-    elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
-    then
-        regressionpw=$(cat /var/mysql_password.txt)
-        {
-        echo "[client]"
-        echo "password='$regressionpw'"
-        } >> "$MYCNF"
-        echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-        exit 1
-    fi
-
-    if [ -z "$MARIADBMYCNFPASS" ]
-    then
-        echo "Something went wrong with copying your mysql password to $MYCNF."
-        echo "Please report this issue to $ISSUES, thanks!"
-        exit 1
-    else
-        rm -f /var/mysql_password.txt
-    fi
-fi
-
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
 echo "Press CTRL+C to abort."
 sleep 10
@@ -201,17 +165,6 @@ then
     else
         echo "Doing pgdump of all databases..."
         check_command sudo -u postgres psql pgdump_all > "$BACKUP"/alldatabases.sql
-    fi
-elif which mysql > /dev/null
-then
-    # Backup MARIADB
-    if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
-    then
-        echo "Doing mysqldump of $NCCONFIGDB..."
-        check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
-    else
-        echo "Doing mysqldump of all databases..."
-        check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
     fi
 fi
 
