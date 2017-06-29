@@ -28,7 +28,7 @@ then
     echo "'crontab -u root -e'"
     echo "Feel free to contribute to this project: https://goo.gl/3fQD65"
     any_key "Press any key to continue..."
-    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "@daily $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
 if [ "$(hostname)" != "$FQDOMAIN" ]
@@ -48,13 +48,10 @@ add_crontab_le() {
 DATE='$(date +%Y-%m-%d_%H:%M)'
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
-service apache2 stop
-if ! certbot renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1 ; then
+if ! certbot renew --pre-hook "service apache2 stop" --post-hook "service apache2 start" --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1 ; then
         echo "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
-        service apache2 start
 else
         echo "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
-        service apache2 start
 fi
 CRONTAB
 }
