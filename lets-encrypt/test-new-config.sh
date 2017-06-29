@@ -53,6 +53,12 @@ if ! certbot renew --pre-hook "service apache2 stop" --post-hook "service apache
 else
         echo "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
 fi
+
+# Check if service is running
+if ! pgrep apache2 > /dev/null
+then
+    service apache2 start
+fi
 CRONTAB
 }
 add_crontab_le
