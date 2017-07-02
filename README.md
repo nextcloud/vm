@@ -22,7 +22,7 @@ DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
 * A clean Ubuntu Server 16.04.X
 * OpenSSH (preferred)
 * 20 GB HDD
-* At least 1 vCPU and 2 GB RAM (4 GB minimum of you are running OnlyOffice)
+* At least 1 vCPU and 2 GB RAM (4 GB minimum if you are running OnlyOffice)
 * A working internet connection (the script needs it to download files and variables)
 
 #### Recommended
