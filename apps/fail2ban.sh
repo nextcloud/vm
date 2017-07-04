@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -16,7 +16,7 @@ debug_mode
 # Check if root
 if ! is_root
 then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/fail2ban.sh\n" "$SCRIPTS"
     sleep 3
     exit 1
 fi
