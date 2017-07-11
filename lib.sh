@@ -226,8 +226,8 @@ fi
 }
 
 check_command() {
-  eval "$*"
-  if [ ! $? -eq 0 ]; then
+  if eval "$*"
+  then
      printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
      echo "$* failed"
     exit 1
