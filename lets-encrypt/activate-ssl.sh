@@ -228,8 +228,7 @@ standalone() {
 a2dissite 000-default.conf
 sudo service apache2 stop
 # Generate certs
-eval "letsencrypt certonly --standalone $default_le"
-if [ "$?" -eq 0 ]; then
+if eval "letsencrypt certonly --standalone $default_le"
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
@@ -240,16 +239,16 @@ a2ensite 000-default.conf
 service apache2 reload
 }
 webroot() {
-eval "letsencrypt certonly --webroot --webroot-path $NCPATH $default_le"
-if [ "$?" -eq 0 ]; then
+if eval "letsencrypt certonly --webroot --webroot-path $NCPATH $default_le"
+then
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
 fi
 }
 certonly() {
-eval "letsencrypt certonly $default_le"
-if [ "$?" -eq 0 ]; then
+if eval "letsencrypt certonly $default_le"
+then
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
