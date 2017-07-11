@@ -191,7 +191,7 @@ fi
 # Install apache2 
 install_if_not () {
 # Install Apache2
-if [[ "$(is_this_installed "${1}")" != ""${1}" is installed, it must be a clean server." ]]
+if [[ "$(is_this_installed ${1})" != "${1} is installed, it must be a clean server." ]]
 then
     apt install "${1}" -y
 fi

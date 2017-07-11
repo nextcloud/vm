@@ -133,8 +133,7 @@ fi
 # Backup data
 for folders in config themes apps
 do
-    rsync -Aax "$NCPATH/$folders" "$BACKUP"
-    if [ $? -eq 0 ]
+    if [[ "$(rsync -Aax $NCPATH/$folders $BACKUP)" -eq 0 ]]
     then
         BACKUP_OK=1
     else
