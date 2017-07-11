@@ -261,6 +261,7 @@ calc_wt_size() {
 }
 
 download_verify_nextcloud_stable() {
+rm -f "$HTML/$STABLEVERSION.tar.bz2"
 wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -P "$HTML"
 mkdir -p "$GPGDIR"
 wget -q "$NCREPO/$STABLEVERSION.tar.bz2.asc" -P "$GPGDIR"

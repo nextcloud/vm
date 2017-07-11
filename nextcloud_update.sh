@@ -71,20 +71,6 @@ then
     chmod +x "$SECURE"
 fi
 
-# Upgrade Nextcloud
-echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
-wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -O /dev/null & spinner_loading
-if [ $? -eq 0 ]; then
-    printf "${Green}SUCCESS!${Color_Off}\n"
-    rm -f "$STABLEVERSION.tar.bz2"
-else
-    echo
-    printf "${IRed}Nextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
-    echo "Please check available versions here: $NCREPO"
-    echo
-    exit 1
-fi
-
 # Major versions unsupported
 if [ "${CURRENTVERSION%%.*}" == "$NCBAD" ]
 then
@@ -113,6 +99,19 @@ else
     echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
     echo "No need to upgrade, this script will exit..."
     exit 0
+fi
+
+# Upgrade Nextcloud
+echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
+if ! wget -q --show-progress -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2"
+then
+    echo
+    printf "${IRed}Nextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
+    echo "Please check available versions here: $NCREPO"
+    echo
+    exit 1
+else
+    rm -f "$STABLEVERSION.tar.bz2"
 fi
 
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
