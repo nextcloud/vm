@@ -28,7 +28,7 @@ then
 fi
 
 # Check if apache is installed
-if_not_installed apache2
+install_if_not apache2
 
 # Install Nextcloud Spreedme Snap
 if [ -d "$SNAPDIR" ]
