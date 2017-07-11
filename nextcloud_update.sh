@@ -132,6 +132,7 @@ then
     exit 1
 else
     rm -f /var/mysql_password.txt
+fi
 
 # Upgrade Nextcloud
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
