@@ -95,12 +95,7 @@ done
 
 # Check if 443 is open using nmap, if not notify the user
 apt update -q4 & spinner_loading
-if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "nmap is already installed..."
-else
-    apt install nmap -y
-fi
+if_not_installed nmap
 
 if [ "$(nmap -sS -p 443 "$WANIP4" -PN | grep -c "open")" == "1" ]
 then

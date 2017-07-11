@@ -33,11 +33,7 @@ export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="
 # Update Redis PHP extention
 if type pecl > /dev/null 2>&1
 then
-    if [ "$(dpkg-query -W -f='${Status}' php7.0-dev 2>/dev/null | grep -c "ok installed")" == "0" ]
-    then
-        echo "Preparing to upgrade Redis Pecl extenstion..."
-        apt install php7.0-dev -y
-    fi
+    if_not_installed php7.0-dev
     echo "Trying to upgrade the Redis Pecl extenstion..."
     pecl upgrade redis
     service apache2 restart

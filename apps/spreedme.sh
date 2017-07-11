@@ -28,11 +28,7 @@ then
 fi
 
 # Check if apache is installed
-if ! [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" -eq 1 ]
-then
-    echo "Apache is not installed, the script will exit."
-    exit 1
-fi
+if_not_installed apache2
 
 # Install Nextcloud Spreedme Snap
 if [ -d "$SNAPDIR" ]
