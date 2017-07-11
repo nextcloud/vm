@@ -188,6 +188,15 @@ then
 fi
 }
 
+# Install apache2 
+install_if_not () {
+# Install Apache2
+if [[ "$(is_this_installed "${1}")" != ""${1}" is installed, it must be a clean server." ]]
+then
+    apt install "${1}" -y
+fi
+}
+
 # Test RAM size 
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
 # Example: ram_check 2 Nextcloud
