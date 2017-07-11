@@ -102,7 +102,6 @@ else
     exit 0
 fi
 
-<<<<<<< HEAD
 # Make sure old instaces can upgrade as well
 if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
 then
@@ -133,7 +132,7 @@ then
     exit 1
 else
     rm -f /var/mysql_password.txt
-=======
+
 # Upgrade Nextcloud
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
 if ! wget -q --show-progress -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2"
@@ -145,7 +144,6 @@ then
     exit 1
 else
     rm -f "$STABLEVERSION.tar.bz2"
->>>>>>> 59adc5c... install_if_not (#296)
 fi
 
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
