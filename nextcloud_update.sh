@@ -33,11 +33,7 @@ export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="
 # Update Redis PHP extention
 if type pecl > /dev/null 2>&1
 then
-    if [ "$(dpkg-query -W -f='${Status}' php7.0-dev 2>/dev/null | grep -c "ok installed")" == "0" ]
-    then
-        echo "Preparing to upgrade Redis Pecl extenstion..."
-        apt install php7.0-dev -y
-    fi
+    install_if_not php7.0-dev
     echo "Trying to upgrade the Redis Pecl extenstion..."
     pecl upgrade redis
     service apache2 restart
@@ -75,20 +71,6 @@ then
     chmod +x "$SECURE"
 fi
 
-# Upgrade Nextcloud
-echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
-wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -O /dev/null & spinner_loading
-if [ $? -eq 0 ]; then
-    printf "${Green}SUCCESS!${Color_Off}\n"
-    rm -f "$STABLEVERSION.tar.bz2"
-else
-    echo
-    printf "${IRed}Nextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
-    echo "Please check available versions here: $NCREPO"
-    echo
-    exit 1
-fi
-
 # Major versions unsupported
 if [ "${CURRENTVERSION%%.*}" == "$NCBAD" ]
 then
@@ -119,6 +101,19 @@ else
     exit 0
 fi
 
+# Upgrade Nextcloud
+echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
+if ! wget -q --show-progress -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2"
+then
+    echo
+    printf "${IRed}Nextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
+    echo "Please check available versions here: $NCREPO"
+    echo
+    exit 1
+else
+    rm -f "$STABLEVERSION.tar.bz2"
+fi
+
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
 echo "Press CTRL+C to abort."
 sleep 10
@@ -137,8 +132,7 @@ fi
 # Backup data
 for folders in config themes apps
 do
-    rsync -Aax "$NCPATH/$folders" "$BACKUP"
-    if [ $? -eq 0 ]
+    if [[ "$(rsync -Aax $NCPATH/$folders $BACKUP)" -eq 0 ]]
     then
         BACKUP_OK=1
     else
