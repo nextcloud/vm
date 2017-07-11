@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -28,11 +28,7 @@ then
 fi
 
 # Check if apache is installed
-if ! [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" -eq 1 ]
-then
-    echo "Apache is not installed, the script will exit."
-    exit 1
-fi
+install_if_not apache2
 
 # Install Nextcloud Spreedme Snap
 if [ -d "$SNAPDIR" ]

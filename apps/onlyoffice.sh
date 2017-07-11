@@ -2,7 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset OO_INSTALL
 
 # Tech and Me © - 2017, https://www.techandme.se/
@@ -183,19 +183,8 @@ fi
 docker pull onlyoffice/documentserver
 docker run -i -t -d -p 127.0.0.3:9090:80 -p 127.0.0.3:9091:443 --restart always onlyoffice/documentserver
 
-# Install Apache2
-if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    sleep 0.1
-else
-    {
-    i=1
-    while read -r line; do
-        ((i++))
-        echo $i
-    done < <(apt install apache2 -y)
-    } | whiptail --title "Progress" --gauge "Please wait while installing Apache2" 6 60 0
-fi
+# Install apache2 
+install_if_not apache2
 
 # Enable Apache2 module's
 a2enmod proxy

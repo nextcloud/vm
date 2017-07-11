@@ -2,7 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset COLLABORA_INSTALL
 
 # Tech and Me © - 2017, https://www.techandme.se/
@@ -184,18 +184,7 @@ docker pull collabora/code
 docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always --cap-add MKNOD collabora/code
 
 # Install Apache2
-if [ "$(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    sleep 0.1
-else
-    {
-    i=1
-    while read -r line; do
-        ((i++))
-        echo $i
-    done < <(apt install apache2 -y)
-    } | whiptail --title "Progress" --gauge "Please wait while installing Apache2" 6 60 0
-fi
+install_if_not apache2
 
 # Enable Apache2 module's
 a2enmod proxy
