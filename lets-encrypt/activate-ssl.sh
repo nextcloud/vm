@@ -229,6 +229,7 @@ a2dissite 000-default.conf
 sudo service apache2 stop
 # Generate certs
 if eval "letsencrypt certonly --standalone $default_le"
+then
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
