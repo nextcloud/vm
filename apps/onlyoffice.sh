@@ -185,13 +185,6 @@ docker run -i -t -d -p 127.0.0.3:9090:80 -p 127.0.0.3:9091:443 --restart always 
 
 # Install apache2 
 install_if_not apache2
-install_if_not () {
-# Install Apache2
-if [[ "$(is_this_installed apache2)" != "apache2 is installed, it must be a clean server." ]]
-then
-    apt install apache2 -y
-fi
-}
 
 # Enable Apache2 module's
 a2enmod proxy
