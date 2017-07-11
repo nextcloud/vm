@@ -95,12 +95,7 @@ done
 
 # Check if 443 is open using nmap, if not notify the user
 apt update -q4 & spinner_loading
-if [ "$(dpkg-query -W -f='${Status}' nmap 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "nmap is already installed..."
-else
-    apt install nmap -y
-fi
+install_if_not nmap
 
 if [ "$(nmap -sS -p 443 "$WANIP4" -PN | grep -c "open")" == "1" ]
 then
@@ -233,8 +228,8 @@ standalone() {
 a2dissite 000-default.conf
 sudo service apache2 stop
 # Generate certs
-eval "letsencrypt certonly --standalone $default_le"
-if [ "$?" -eq 0 ]; then
+if eval "letsencrypt certonly --standalone $default_le"
+then
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
@@ -245,16 +240,16 @@ a2ensite 000-default.conf
 service apache2 reload
 }
 webroot() {
-eval "letsencrypt certonly --webroot --webroot-path $NCPATH $default_le"
-if [ "$?" -eq 0 ]; then
+if eval "letsencrypt certonly --webroot --webroot-path $NCPATH $default_le"
+then
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
 fi
 }
 certonly() {
-eval "letsencrypt certonly $default_le"
-if [ "$?" -eq 0 ]; then
+if eval "letsencrypt certonly $default_le"
+then
     echo "success" > /tmp/le_test
 else
     echo "fail" > /tmp/le_test
