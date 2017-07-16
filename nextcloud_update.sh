@@ -128,7 +128,8 @@ fi
 if [ -z "$MARIADBMYCNFPASS" ]
 then
     echo "Something went wrong with copying your mysql password to $MYCNF."
-    echo "Please report this issue to $ISSUES, thanks!"
+    echo "We wrote a guide on how to fix this. You can find the guide here:"
+    echo "https://www.techandme.se/reset-mysql-5-7-root-password/"
     exit 1
 else
     rm -f /var/mysql_password.txt
