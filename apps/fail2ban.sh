@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Tech and Me © - 2017, https://www.techandme.se/
+# Inspired by https://github.com/nextcloud/nextcloudpi/blob/master/etc/nextcloudpi-config.d/fail2ban.sh
 
 # shellcheck disable=2034,2059
 true
