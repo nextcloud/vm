@@ -2,9 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && MYCNFPW=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset NC_UPDATE
-unset MYCNFPW
 unset NCDB
 
 # Tech and Me © - 2017, https://www.techandme.se/
@@ -102,37 +101,17 @@ else
     exit 0
 fi
 
-# Make sure old instaces can upgrade as well
-if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
+# Upgrade Nextcloud
+echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
+if ! wget -q --show-progress -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2"
 then
-    regressionpw=$(cat /var/mysql_password.txt)
-cat << LOGIN > "$MYCNF"
-[client]
-password='$regressionpw'
-LOGIN
-    chmod 0600 $MYCNF
-    chown root:root $MYCNF
-    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1    
-elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
-then
-    regressionpw=$(cat /var/mysql_password.txt)
-    {
-    echo "[client]"
-    echo "password='$regressionpw'"
-    } >> "$MYCNF"
-    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1    
-fi
-
-if [ -z "$MARIADBMYCNFPASS" ]
-then
-    echo "Something went wrong with copying your mysql password to $MYCNF."
-    echo "We wrote a guide on how to fix this. You can find the guide here:"
-    echo "https://www.techandme.se/reset-mysql-5-7-root-password/"
+    echo
+    printf "${IRed}Nextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
+    echo "Please check available versions here: $NCREPO"
+    echo
     exit 1
 else
-    rm -f /var/mysql_password.txt
+    rm -f "$STABLEVERSION.tar.bz2"
 fi
 
 # Upgrade Nextcloud
@@ -182,14 +161,18 @@ else
     printf "${Green}\nBackup OK!${Color_Off}\n"
 fi
 
-# Backup MARIADB
-if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
+# Backup PostgreSQL
+if which psql > /dev/null
 then
-    echo "Doing mysqldump of $NCCONFIGDB..."
-    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
-else
-    echo "Doing mysqldump of all databases..."
-    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
+    cd /tmp
+    if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
+    then
+        echo "Doing pgdump of $NCCONFIGDB..."
+        check_command sudo -u postgres pg_dump "$NCCONFIGDB"  > "$BACKUP"/nextclouddb.sql
+    else
+        echo "Doing pgdump of all databases..."
+        check_command sudo -u postgres psql pgdump_all > "$BACKUP"/alldatabases.sql
+    fi
 fi
 
 # Download and validate Nextcloud package
