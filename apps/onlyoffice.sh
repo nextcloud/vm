@@ -247,20 +247,8 @@ HTTPS_CREATE
     fi
 fi
 
-# Let's Encrypt
-letsencrypt --version 2> /dev/null
-LE_IS_AVAILABLE=$?
-if [ $LE_IS_AVAILABLE -eq 0 ]
-then
-    letsencrypt --version
-else
-    echo "Installing letsencrypt..."
-    add-apt-repository ppa:certbot/certbot -y
-    apt update -q4 & spinner_loading
-    apt install letsencrypt -y -q
-    apt update -q4 & spinner_loading
-    apt dist-upgrade -y
-fi
+# Install certbot (Let's Encrypt)
+install_certbot
 
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
