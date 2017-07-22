@@ -178,6 +178,8 @@ then
     certbot --version
 else
     echo "Installing certbot (Let's Encrypt)..."
+    apt update -q4 & spinner_loading
+    apt install software-properties-common
     add-apt-repository ppa:certbot/certbot -y
     apt update -q4 & spinner_loading
     apt install certbot -y -q
