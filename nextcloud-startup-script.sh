@@ -272,7 +272,8 @@ fi
 # Enable UTF8mb4 (4-byte support)
 printf "\nEnabling UTF8mb4 support on $NCCONFIGDB....\n"
 echo "Please be patient, it may take a while."
-sudo /etc/init.d/mysql restart & spinner_loading
+service mysql restart & spinner_loading
+wait
 RESULT="mysqlshow --user=root --password=$MARIADBMYCNFPASS $NCCONFIGDB| grep -v Wildcard | grep -o $NCCONFIGDB"
 if [ "$RESULT" == "$NCCONFIGDB" ]; then
     check_command mysql -u root -e "ALTER DATABASE $NCCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
