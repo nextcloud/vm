@@ -272,8 +272,9 @@ fi
 # Enable UTF8mb4 (4-byte support)
 printf "\nEnabling UTF8mb4 support on $NCCONFIGDB....\n"
 echo "Please be patient, it may take a while."
-mysqladmin shutdown & spinner_loading
-systemctl restart mariadb & spinner_loading
+sudo /etc/init.d/mysql reload
+#mysqladmin shutdown & spinner_loading
+#systemctl restart mariadb & spinner_loading
 RESULT="mysqlshow --user=root --password=$MARIADBMYCNFPASS $NCCONFIGDB| grep -v Wildcard | grep -o $NCCONFIGDB"
 if [ "$RESULT" == "$NCCONFIGDB" ]; then
     check_command mysql -u root -e "ALTER DATABASE $NCCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
