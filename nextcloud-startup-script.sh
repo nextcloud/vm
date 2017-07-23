@@ -272,9 +272,11 @@ fi
 # Enable UTF8mb4 (4-byte support)
 printf "\nEnabling UTF8mb4 support on $NCCONFIGDB....\n"
 echo "Please be patient, it may take a while."
-sudo /etc/init.d/mysql reload & spinner_loading
-#mysqladmin shutdown & spinner_loading
-#systemctl restart mariadb & spinner_loading
+mysqladmin shutdown --force & spinner_loading
+wait
+systemctl restart mariadb & spinner_loading
+MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset MYCNFPW
 RESULT="$(mysqlshow --user=root --password=$MARIADBMYCNFPASS $NCCONFIGDB | grep -v Wildcard | grep -o $NCCONFIGDB)"
 if [ "$RESULT" == "$NCCONFIGDB" ]
 then
