@@ -277,10 +277,10 @@ wait
 systemctl restart mariadb & spinner_loading
 MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset MYCNFPW
-RESULT="$(mysqlshow --user=root --password=$MARIADBMYCNFPASS $NCCONFIGDB | grep -v Wildcard | grep -o $NCCONFIGDB)"
+RESULT="$(mysqlshow --user=root --password="$MARIADBMYCNFPASS" "$NCCONFIGDB" | grep -v Wildcard | grep -o $NCCONFIGDB)"
 if [ "$RESULT" == "$NCCONFIGDB" ]
 then
-    check_command 'mysql -u root -e "ALTER DATABASE $NCCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"'
+    check_command "mysql -u root -e 'ALTER DATABASE $NCCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;'"
     wait
 fi
 check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
