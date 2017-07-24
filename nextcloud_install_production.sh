@@ -170,7 +170,7 @@ echo "init-connect='SET NAMES utf8mb4'"
 echo "collation_server=utf8mb4_unicode_ci"
 echo "character_set_server=utf8mb4"
 echo "skip-character-set-client-handshake"
-} > $MYCNF
+} > "$MYCNF"
 chmod 0600 $MYCNF
 chown root:root $MYCNF
 
