@@ -267,7 +267,7 @@ download_static_script setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
 # Create database nextcloud_db
-mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db COLLATE CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';"
+mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
 
 # Install Nextcloud
 cd "$NCPATH"
