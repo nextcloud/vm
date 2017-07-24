@@ -247,10 +247,6 @@ if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
     rm "$SCRIPTS/change_mysql_pass.sh"
     {
-    echo "[client]"
-    echo "password='$MARIADB_PASS'"
-    echo "default-character-set = utf8mb4"
-    echo
     echo "[mariadb]"
     echo "innodb_use_fallocate = 1"
     echo "innodb_use_atomic_writes = 1"
@@ -274,7 +270,7 @@ then
     echo "collation_server=utf8mb4_unicode_ci"
     echo "character_set_server=utf8mb4"
     echo "skip-character-set-client-handshake"
-    } > $MYCNF
+    } >> $MYCNF
 fi
 
 # Enable UTF8mb4 (4-byte support)
