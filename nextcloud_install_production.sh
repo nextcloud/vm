@@ -142,33 +142,35 @@ fi
 apt update -q4 & spinner_loading
 
 # Write MARIADB pass to file and keep it safe
-cat << LOGIN > "$MYCNF"
-[client]
-password='$MARIADB_PASS'
-default-character-set = utf8mb4
-
-[mariadb]
-innodb_use_fallocate = 1
-innodb_use_atomic_writes = 1
-innodb_use_trim = 1
-
-[mysql]
-default-character-set = utf8mb4
-
-[mysqld]
-innodb_large_prefix=on
-innodb_file_format=barracuda
-innodb_flush_neighbors=0
-innodb_adaptive_flushing=1
-innodb_flush_method = O_DIRECT
-innodb_doublewrite = 0
-innodb_file_per_table = 1
-innodb_flush_log_at_trx_commit=1
-init-connect='SET NAMES utf8mb4'
-collation_server=utf8mb4_unicode_ci
-character_set_server=utf8mb4
-skip-character-set-client-handshake
-LOGIN
+{
+echo "[client]"
+echo "password='$MARIADB_PASS'"
+echo "default-character-set = utf8mb4"
+echo
+echo "[mariadb]"
+echo "innodb_use_fallocate = 1"
+echo "innodb_use_atomic_writes = 1"
+echo "innodb_use_trim = 1"
+echo
+echo "[mysql]"
+echo "default-character-set = utf8mb4"
+echo
+echo "[mysqld]"
+echo "innodb_max_dirty_pages_pct = 0"
+echo "innodb_fast_shutdown = 0"
+echo "innodb_large_prefix=on"
+echo "innodb_file_format=barracuda"
+echo "innodb_flush_neighbors=0"
+echo "innodb_adaptive_flushing=1"
+echo "innodb_flush_method = O_DIRECT"
+echo "innodb_doublewrite = 0"
+echo "innodb_file_per_table = 1"
+echo "innodb_flush_log_at_trx_commit=1"
+echo "init-connect='SET NAMES utf8mb4'"
+echo "collation_server=utf8mb4_unicode_ci"
+echo "character_set_server=utf8mb4"
+echo "skip-character-set-client-handshake"
+} > "$MYCNF"
 chmod 0600 $MYCNF
 chown root:root $MYCNF
 

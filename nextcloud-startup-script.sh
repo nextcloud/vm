@@ -245,28 +245,33 @@ dpkg-reconfigure openssh-server
 echo "Generating new MARIADB password..."
 if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
-   rm "$SCRIPTS/change_mysql_pass.sh"
-   {
-   echo
-   echo "[mysqld]"
-   echo "innodb_large_prefix=on"
-   echo "innodb_file_format=barracuda"
-   echo "innodb_flush_neighbors=0"
-   echo "innodb_adaptive_flushing=1"
-   echo "innodb_flush_method = O_DIRECT"
-   echo "innodb_doublewrite = 0"
-   echo "innodb_file_per_table = 1"
-   echo "innodb_flush_log_at_trx_commit=1"
-   echo "init-connect='SET NAMES utf8mb4'"
-   echo "collation_server=utf8mb4_unicode_ci"
-   echo "character_set_server=utf8mb4"
-   echo "skip-character-set-client-handshake"
-   
-   echo "[mariadb]"
-   echo "innodb_use_fallocate = 1"
-   echo "innodb_use_atomic_writes = 1"
-   echo "innodb_use_trim = 1"
-   } >> /root/.my.cnf
+    rm "$SCRIPTS/change_mysql_pass.sh"
+    {
+    echo
+    echo "[mariadb]"
+    echo "innodb_use_fallocate = 1"
+    echo "innodb_use_atomic_writes = 1"
+    echo "innodb_use_trim = 1"
+    echo
+    echo "[mysql]"
+    echo "default-character-set = utf8mb4"
+    echo
+    echo "[mysqld]"
+    echo "innodb_max_dirty_pages_pct = 0"
+    echo "innodb_fast_shutdown = 0"
+    echo "innodb_large_prefix=on"
+    echo "innodb_file_format=barracuda"
+    echo "innodb_flush_neighbors=0"
+    echo "innodb_adaptive_flushing=1"
+    echo "innodb_flush_method = O_DIRECT"
+    echo "innodb_doublewrite = 0"
+    echo "innodb_file_per_table = 1"
+    echo "innodb_flush_log_at_trx_commit=1"
+    echo "init-connect='SET NAMES utf8mb4'"
+    echo "collation_server=utf8mb4_unicode_ci"
+    echo "character_set_server=utf8mb4"
+    echo "skip-character-set-client-handshake"
+    } >> "$MYCNF"
 fi
 
 # Enable UTF8mb4 (4-byte support)
