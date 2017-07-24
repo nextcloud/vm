@@ -271,7 +271,7 @@ then
     echo "collation_server=utf8mb4_unicode_ci"
     echo "character_set_server=utf8mb4"
     echo "skip-character-set-client-handshake"
-    } >> $MYCNF
+    } >> "$MYCNF"
 fi
 
 # Enable UTF8mb4 (4-byte support)
