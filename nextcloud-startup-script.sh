@@ -249,6 +249,8 @@ then
    {
    echo
    echo "[mysqld]"
+   echo "innodb_max_dirty_pages_pct = 0"
+   echo "innodb_fast_shutdown = 0"
    echo "innodb_large_prefix=on"
    echo "innodb_file_format=barracuda"
    echo "innodb_flush_neighbors=0"
@@ -261,7 +263,7 @@ then
    echo "collation_server=utf8mb4_unicode_ci"
    echo "character_set_server=utf8mb4"
    echo "skip-character-set-client-handshake"
-   
+   echo
    echo "[mariadb]"
    echo "innodb_use_fallocate = 1"
    echo "innodb_use_atomic_writes = 1"
