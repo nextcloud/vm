@@ -247,6 +247,7 @@ if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
     rm "$SCRIPTS/change_mysql_pass.sh"
     {
+    echo
     echo "[mariadb]"
     echo "innodb_use_fallocate = 1"
     echo "innodb_use_atomic_writes = 1"
