@@ -156,6 +156,8 @@ innodb_use_trim = 1
 default-character-set = utf8mb4
 
 [mysqld]
+innodb_max_dirty_pages_pct = 0
+innodb_fast_shutdown = 0
 innodb_large_prefix=on
 innodb_file_format=barracuda
 innodb_flush_neighbors=0
@@ -265,7 +267,7 @@ download_static_script setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
 # Create database nextcloud_db
-mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
+mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db COLLATE CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';"
 
 # Install Nextcloud
 cd "$NCPATH"
