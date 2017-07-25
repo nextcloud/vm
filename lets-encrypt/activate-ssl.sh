@@ -2,7 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
