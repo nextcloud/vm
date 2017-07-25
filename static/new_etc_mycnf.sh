@@ -158,6 +158,7 @@ init-connect='SET NAMES utf8mb4'
 collation_server=utf8mb4_unicode_ci
 character_set_server = utf8mb4
 skip-character-set-client-handshake
+innodb_use_native_aio = 1
 
 #
 # * Security Features
