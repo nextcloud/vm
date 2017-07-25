@@ -185,7 +185,7 @@ expect eof
 echo "$SECURE_MYSQL"
 apt -y purge expect
 
-Write a new MariaDB config
+# Write a new MariaDB config
 run_static_script new_etc_mycnf
 
 # Install Apache
