@@ -8,10 +8,9 @@ sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/g
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
-unset NCDB
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -262,6 +261,12 @@ echo "Nextcloud version:"
 sudo -u www-data php "$NCPATH"/occ status
 sleep 3
 echo
+
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+NCDB=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NCDB
 
 # Enable UTF8mb4 (4-byte support)
 echo "Enabling UTF8mb4 support on $NCCONFIGDB...."
