@@ -263,7 +263,7 @@ sleep 3
 echo
 
 # Enable UTF8mb4 (4-byte support)
-printf "\nEnabling UTF8mb4 support on $NCCONFIGDB....\n"
+echo "Enabling UTF8mb4 support on $NCCONFIGDB...."
 RESULT="$(mysqlshow --user=root --password="$MARIADB_PASS" "$NCCONFIGDB" | grep -v Wildcard | grep -o "$NCCONFIGDB")"
 if [ "$RESULT" == "$NCCONFIGDB" ]
 then
