@@ -265,8 +265,9 @@ echo
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NCDB
+unset MYCNFPW
 
 # Enable UTF8mb4 (4-byte support)
 echo "Enabling UTF8mb4 support on $NCCONFIGDB...."
