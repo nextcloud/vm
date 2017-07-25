@@ -136,7 +136,6 @@ echo "| It will also do the following:                                     |"
 echo "|                                                                    |"
 echo "| - Generate new SSH keys for the server                             |"
 echo "| - Generate new MARIADB password                                    |"
-echo "| - Configure UTF8mb4 (4-byte support for MARIADB)                   |"
 echo "| - Install phpMyadmin and make it secure                            |"
 echo "| - Install selected apps and automatically configure them           |"
 echo "| - Detect and set hostname                                          |"
@@ -246,54 +245,7 @@ echo "Generating new MARIADB password..."
 if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
     rm "$SCRIPTS/change_mysql_pass.sh"
-    {
-    echo
-    echo "[mariadb]"
-    echo "innodb_use_fallocate = 1"
-    echo "innodb_use_atomic_writes = 1"
-    echo "innodb_use_trim = 1"
-    echo
-    echo "[mysql]"
-    echo "default-character-set = utf8mb4"
-    echo
-    echo "[mysqld]"
-    echo "innodb_max_dirty_pages_pct = 0"
-    echo "innodb_fast_shutdown = 0"
-    echo "innodb_large_prefix=on"
-    echo "innodb_file_format=barracuda"
-    echo "innodb_flush_neighbors=0"
-    echo "innodb_adaptive_flushing=1"
-    echo "innodb_flush_method = O_DIRECT"
-    echo "innodb_doublewrite = 0"
-    echo "innodb_file_per_table = 1"
-    echo "innodb_flush_log_at_trx_commit=1"
-    echo "init-connect='SET NAMES utf8mb4'"
-    echo "collation_server=utf8mb4_unicode_ci"
-    echo "character_set_server=utf8mb4"
-    echo "skip-character-set-client-handshake"
-    } >> "$MYCNF"
 fi
-
-# Enable UTF8mb4 (4-byte support)
-printf "\nEnabling UTF8mb4 support on $NCCONFIGDB....\n"
-echo "Please be patient, it may take a while."
-mysqladmin shutdown --force & spinner_loading
-wait
-systemctl restart mariadb & spinner_loading
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset MYCNFPW
-RESULT="$(mysqlshow --user=root --password="$MARIADBMYCNFPASS" "$NCCONFIGDB" | grep -v Wildcard | grep -o "$NCCONFIGDB")"
-if [ "$RESULT" == "$NCCONFIGDB" ]
-then
-    check_command "mysql -u root -e 'ALTER DATABASE $NCCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;'"
-    wait
-fi
-check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
-check_command sudo -u www-data $NCPATH/occ maintenance:repair
-clear
 
 cat << LETSENC
 +-----------------------------------------------+
