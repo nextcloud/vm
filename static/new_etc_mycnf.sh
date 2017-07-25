@@ -217,7 +217,7 @@ key_buffer		= 16M
 WRITENEW
 
 # Restart MariaDB
-mysqladmin shutdown --force & spinner_loading
+mysqladmin -u root -p"$MARIADBMYCNFPASS" shutdown --force & spinner_loading
 wait
 check_command systemctl restart mariadb & spinner_loading
 
