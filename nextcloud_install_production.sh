@@ -48,7 +48,6 @@ then
     exit 1
 fi
 
-
 if ! version 16.04 "$DISTRO" 16.04.4; then
     echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
     exit
@@ -145,31 +144,6 @@ apt update -q4 & spinner_loading
 {
 echo "[client]"
 echo "password='$MARIADB_PASS'"
-echo "default-character-set = utf8mb4"
-echo
-echo "[mariadb]"
-echo "innodb_use_fallocate = 1"
-echo "innodb_use_atomic_writes = 1"
-echo "innodb_use_trim = 1"
-echo
-echo "[mysql]"
-echo "default-character-set = utf8mb4"
-echo
-echo "[mysqld]"
-echo "innodb_max_dirty_pages_pct = 0"
-echo "innodb_fast_shutdown = 0"
-echo "innodb_large_prefix=on"
-echo "innodb_file_format=barracuda"
-echo "innodb_flush_neighbors=0"
-echo "innodb_adaptive_flushing=1"
-echo "innodb_flush_method = O_DIRECT"
-echo "innodb_doublewrite = 0"
-echo "innodb_file_per_table = 1"
-echo "innodb_flush_log_at_trx_commit=1"
-echo "init-connect='SET NAMES utf8mb4'"
-echo "collation_server=utf8mb4_unicode_ci"
-echo "character_set_server=utf8mb4"
-echo "skip-character-set-client-handshake"
 } > "$MYCNF"
 chmod 0600 $MYCNF
 chown root:root $MYCNF
@@ -210,6 +184,9 @@ expect eof
 ")
 echo "$SECURE_MYSQL"
 apt -y purge expect
+
+Write a new MariaDB config
+run_static_script new_etc_mycnf
 
 # Install Apache
 check_command apt install apache2 -y
@@ -284,6 +261,17 @@ echo "Nextcloud version:"
 sudo -u www-data php "$NCPATH"/occ status
 sleep 3
 echo
+
+# Enable UTF8mb4 (4-byte support)
+echo "Enabling UTF8mb4 support on $NCCONFIGDB...."
+RESULT="$(mysqlshow --user=root --password="$MARIADB_PASS" "$NCCONFIGDB" | grep -v Wildcard | grep -o "$NCCONFIGDB")"
+if [ "$RESULT" == "$NCCONFIGDB" ]
+then
+    check_command "mysql -u root -e 'ALTER DATABASE $NCCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;'"
+    wait
+fi
+check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
+check_command sudo -u www-data $NCPATH/occ maintenance:repair
 
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
