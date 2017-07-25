@@ -2,8 +2,20 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset MYCNFPW
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
+# Check if root
+if ! is_root
+then
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/nextcloud_install_production.sh\n" "$SCRIPTS"
+    exit 1
+fi
 
 /bin/cat <<WRITENEW >"$ETCMYCNF"
 # MariaDB database server configuration file.
@@ -217,7 +229,7 @@ key_buffer		= 16M
 WRITENEW
 
 # Restart MariaDB
-mysqladmin -u root -p"$MARIADBMYCNFPASS" shutdown --force & spinner_loading
+mysqladmin shutdown --force & spinner_loading
 wait
 check_command systemctl restart mariadb & spinner_loading
 
