@@ -144,14 +144,6 @@ wget -nv https://www.postgresql.org/media/keys/ACCC4CF8.asc -O postgres.key
 apt-key add - < postgres.key && rm -f postgres.key
 apt update -q4 & spinner_loading
 
-apt install postgresql postgresql-contrib -y
-cd /tmp
-sudo -u postgres psql <<END
-CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
-CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
-END
-service postgresql restart
-
 # Install Apache
 check_command apt install apache2 -y
 a2enmod rewrite \

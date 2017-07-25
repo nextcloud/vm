@@ -246,11 +246,6 @@ bash $SECURE & spinner_loading
 printf "\nGenerating new SSH keys for the server...\n"
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
-
-# Generate new PostgreSQL password
-echo "Generating new PostgreSQL password..."
-check_command bash "$SCRIPTS/change_db_pass.sh"
-sleep 3
 clear
 
 cat << LETSENC
