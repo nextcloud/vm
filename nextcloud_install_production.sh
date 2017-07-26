@@ -262,21 +262,15 @@ sudo -u www-data php "$NCPATH"/occ status
 sleep 3
 echo
 
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-NCDB=1 && MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NCDB
-unset MYCNFPW
-
 # Enable UTF8mb4 (4-byte support)
-echo "Enabling UTF8mb4 support on $NCCONFIGDB...."
-RESULT="$(mysqlshow --user=root --password="$MARIADB_PASS" "$NCCONFIGDB" | grep -v Wildcard | grep -o "$NCCONFIGDB")"
-if [ "$RESULT" == "$NCCONFIGDB" ]
-then
-    check_command "mysql -u root -e 'ALTER DATABASE $NCCONFIGDB CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;'"
-    wait
-fi
+databases=`mysql -u root -p$MARIADB_PASS -e "SHOW DATABASES;" | tr -d "| " | grep -v Database`
+for db in $databases; do
+    if [[ "$db" != "performance_schema" ]] && [[ "$db" != _* ]] && [[ "$db" != "information_schema" ]];
+    then
+        echo "Changing to UTF8mb4 on: $db"
+        check_command eval "mysql -u root -p$MARIADB_PASS -e 'ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;'"
+    fi
+done
 check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
 check_command sudo -u www-data $NCPATH/occ maintenance:repair
 
