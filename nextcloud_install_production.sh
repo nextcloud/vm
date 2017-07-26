@@ -264,13 +264,17 @@ echo
 
 # Enable UTF8mb4 (4-byte support)
 databases=`mysql -u root -p$MARIADB_PASS -e "SHOW DATABASES;" | tr -d "| " | grep -v Database`
+databases=`mysql -u root -p$MARIADB_PASS -e "SHOW DATABASES;" | tr -d "| " | grep -v Database`
 for db in $databases; do
     if [[ "$db" != "performance_schema" ]] && [[ "$db" != _* ]] && [[ "$db" != "information_schema" ]];
     then
         echo "Changing to UTF8mb4 on: $db"
-        check_command eval "mysql -u root -p$MARIADB_PASS -e 'ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;'"
+        check_command mysql -u root -p$MARIADB_PASS -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
     fi
 done
+
+# Repair and set Nextcloud Confog values
+mysqlcheck -u root -p"$MARIADB_PASS" --auto-repair --optimize --all-databases
 check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
 check_command sudo -u www-data $NCPATH/occ maintenance:repair
 
