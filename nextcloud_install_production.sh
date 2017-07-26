@@ -271,8 +271,13 @@ for db in $databases; do
         mysql -u root -p"$MARIADB_PASS" -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
     fi
 done
+if [ $? -ne 0 ]
+then
+    echo "UTF8mb4 was not set. Something is wrong."
+    echo "Please report this bug to $ISSUES. Thank you!"
+    exit 1
 
-# Repair and set Nextcloud Confog values
+# Repair and set Nextcloud config values
 mysqlcheck -u root -p"$MARIADB_PASS" --auto-repair --optimize --all-databases
 check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
 check_command sudo -u www-data $NCPATH/occ maintenance:repair
