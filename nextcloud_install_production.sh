@@ -276,6 +276,7 @@ then
     echo "UTF8mb4 was not set. Something is wrong."
     echo "Please report this bug to $ISSUES. Thank you!"
     exit 1
+fi
 
 # Repair and set Nextcloud config values
 mysqlcheck -u root -p"$MARIADB_PASS" --auto-repair --optimize --all-databases
