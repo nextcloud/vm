@@ -158,7 +158,7 @@ then
         check_command sudo -u postgres pg_dump "$NCCONFIGDB"  > "$BACKUP"/nextclouddb.sql
     else
         echo "Doing pgdump of all databases..."
-        check_command sudo -u postgres psql pgdump_all > "$BACKUP"/alldatabases.sql
+        check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.sql
     fi
 fi
 
