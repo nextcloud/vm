@@ -143,8 +143,9 @@ sh -c "echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main'" > $
 wget -nv https://www.postgresql.org/media/keys/ACCC4CF8.asc -O postgres.key
 apt-key add - < postgres.key && rm -f postgres.key
 apt update -q4 & spinner_loading
+apt install postgresql-9.6
 
-apt install postgresql postgresql-contrib -y
+# Create DB
 cd /tmp
 sudo -u postgres psql <<END
 CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
