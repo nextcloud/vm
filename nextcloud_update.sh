@@ -40,18 +40,24 @@ then
 fi
 
 # Update docker images
-# This updates ALL Docker images: docker images | grep -v REPOSITORY | awk '{print $1}' | xargs -L1 docker pull
-if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+# This updates ALL Docker images:
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
-    echo "Updating Docker container for OnlyOffice..."
-    docker pull onlyoffice/documentserver
+docker images | grep -v REPOSITORY | awk '{print $1}' | xargs -L1 docker pull
 fi
 
-if [ "$(docker image inspect collabora/code >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
-then
-    echo "Updating Docker container for Collabora..."
-    docker pull collabora/code
-fi
+## OLD WAY ##
+#if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+#then
+#    echo "Updating Docker container for OnlyOffice..."
+#    docker pull onlyoffice/documentserver
+#fi
+#
+#if [ "$(docker image inspect collabora/code >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+#then
+#    echo "Updating Docker container for Collabora..."
+#    docker pull collabora/code
+#fi
 
 # Cleanup un-used packages
 apt autoremove -y
