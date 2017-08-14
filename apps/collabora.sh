@@ -180,7 +180,7 @@ then
 fi
 
 # Install Collabora docker
-docker pull collabora/code
+docker pull collabora/code:latest
 docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always --cap-add MKNOD collabora/code
 
 # Install Apache2

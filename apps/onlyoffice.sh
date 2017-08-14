@@ -180,7 +180,7 @@ then
 fi
 
 # Install Onlyoffice docker
-docker pull onlyoffice/documentserver
+docker pull onlyoffice/documentserver:latest
 docker run -i -t -d -p 127.0.0.3:9090:80 -p 127.0.0.3:9091:443 --restart always onlyoffice/documentserver
 
 # Install apache2 
