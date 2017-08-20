@@ -26,10 +26,6 @@ then
     exit 1
 fi
 
-# Check if process is runnnig: is_process_running dpkg
-is_process_running() {
-PROCESS="$1"
-
 # Check if dpkg or apt is running
 is_process_running dpkg
 is_process_running apt
