@@ -26,6 +26,14 @@ then
     exit 1
 fi
 
+# Check if process is runnnig: is_process_running dpkg
+is_process_running() {
+PROCESS="$1"
+
+# Check if dpkg or apt is running
+is_process_running dpkg
+is_process_running apt
+
 # System Upgrade
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
