@@ -72,6 +72,10 @@ else
     exit 1
 fi
 
+# Check if dpkg or apt is running
+is_process_running dpkg
+is_process_running apt
+
 # Check where the best mirrors are and update
 printf "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.\n"
 echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
