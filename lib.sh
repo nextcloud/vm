@@ -177,7 +177,7 @@ PROCANDARGS=$*
 
 while :
 do
-    RESULT=`pgrep ${PROCESS}`
+    RESULT=$("pgrep ${PROCESS}")
 
     if [ "${RESULT:-null}" = null ]; then
             echo "${PROCESS} is not running,"
