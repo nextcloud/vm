@@ -195,7 +195,6 @@ do
     RESULT=$(pgrep "${PROCESS}")
 
     if [ "${RESULT:-null}" = null ]; then
-            echo "${PROCESS} not running."
             break
     else
             echo "${PROCESS} is running. Waiting for it to stop..."
