@@ -173,14 +173,13 @@ ask_yes_or_no() {
 # Check if process is runnnig: is_process_running dpkg
 is_process_running() {
 PROCESS="$1"
-PROCANDARGS=$*
 
 while :
 do
-    RESULT=$("pgrep ${PROCESS}")
+    RESULT=$(pgrep "${PROCESS}")
 
     if [ "${RESULT:-null}" = null ]; then
-            echo "${PROCESS} is not running,"
+            echo "${PROCESS} not running."
             break
     else
             echo "${PROCESS} is running. Waiting for it to stop..."
