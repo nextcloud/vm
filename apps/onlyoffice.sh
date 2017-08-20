@@ -284,7 +284,7 @@ then
     check_command sudo -u www-data php "$NCPATH"/occ app:enable onlyoffice
     check_command sudo -u www-data php "$NCPATH"/occ config:app:set onlyoffice DocumentServerUrl --value="https://$SUBDOMAIN/"
     chown -R www-data:www-data $NCPATH/apps
-    sudo "$NCPATH"/occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    check_command sudo -u www-data php "$NCPATH"/occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
 # Add prune command
     {
     echo "#!/bin/bash"
