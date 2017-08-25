@@ -411,22 +411,26 @@ SSL_CREATE
     echo "$SSL_CONF was successfully created"
 fi
 
-## Add ask_yes_no here
+# Enable HTTP/2 server wide, if user decides to
+echo "Your official package repository does not provide an apache2 package with HTTP/2 module included."
+echo "If you like to enable HTTP/2 nevertheless, we can upgrade your apache2 from Ondrejs personal package archive (PPA): https://launchpad.net/~ondrej/+archive/ubuntu/apache2"
+echo "Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues."
+echo "E.g. the Nextcloud Spreed video calls app does not yet work with HTTP/2 enabled."
+if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 server wide?") ]]
+then
+    add-apt-repository ppa:ondrej/apache2
+    apt update -q4 & spinner_loading
+    apt upgrade apache2
 
-# if ....
-
-# Enable HTTP/2 server wide
-cat << HTTP2_ENABLE > "$HTTP2_CONF"
+    cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
         Protocols h2 h2c http/1.1
         H2Direct on
 </IfModule>
 HTTP2_ENABLE
-echo "$HTTP2_CONF was successfully created"
-
-a2enmod http2
-
-# fi ...
+    echo "$HTTP2_CONF was successfully created"
+    a2enmod http2
+fi
 
 # Enable new config
 a2ensite nextcloud_ssl_domain_self_signed.conf
