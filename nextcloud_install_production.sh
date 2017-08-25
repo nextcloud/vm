@@ -412,7 +412,6 @@ SSL_CREATE
 fi
 
 # Enable HTTP/2 server wide
-touch "$HTTP2_CONF"
 cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
         Protocols h2 h2c http/1.1
