@@ -418,10 +418,12 @@ echo "Enabling HTTP/2 can bring a performance advantage, but may also have some 
 echo "E.g. the Nextcloud Spreed video calls app does not yet work with HTTP/2 enabled."
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 server wide?") ]]
 then
+    # Adding PPA
     add-apt-repository ppa:ondrej/apache2
     apt update -q4 & spinner_loading
-    apt upgrade apache2
+    apt upgrade -y apache2
 
+    # Enable HTTP/2 module & protocol
     cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
         Protocols h2 h2c http/1.1
