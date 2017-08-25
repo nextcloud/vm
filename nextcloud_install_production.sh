@@ -412,14 +412,14 @@ SSL_CREATE
 fi
 
 # Enable HTTP/2 server wide
-touch /etc/apache2/mods-available/http2.conf
-cat << HTTP2_ENABLE > /etc/apache2/mods-available/http2.conf
+touch "$HTTP2_CONF"
+cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
         Protocols h2 h2c http/1.1
         H2Direct on
 </IfModule>
 HTTP2_ENABLE
-echo '"/etc/apache2/mods-available/http2.conf" was successfully created'
+echo "$HTTP2_CONF was successfully created"
 
 # Enable new config
 a2ensite nextcloud_ssl_domain_self_signed.conf
