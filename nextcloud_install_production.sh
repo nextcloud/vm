@@ -411,10 +411,21 @@ SSL_CREATE
     echo "$SSL_CONF was successfully created"
 fi
 
+# Enable HTTP/2 server wide
+touch /etc/apache2/mods-available/http2.conf
+cat << HTTP2_ENABLE > /etc/apache2/mods-available/http2.conf
+<IfModule http2_module>
+        Protocols h2 h2c http/1.1
+        H2Direct on
+</IfModule>
+HTTP2_ENABLE
+echo '"/etc/apache2/mods-available/http2.conf" was successfully created'
+
 # Enable new config
 a2ensite nextcloud_ssl_domain_self_signed.conf
 a2ensite nextcloud_http_domain_self_signed.conf
 a2dissite default-ssl
+a2enmod http2
 service apache2 restart
 
 whiptail --title "Which apps/programs do you want to install?" --checklist --separate-output "" 10 40 3 \
