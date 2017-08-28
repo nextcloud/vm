@@ -24,7 +24,7 @@ fi
 
 ### Local variables ###
 # location of Nextcloud logs
-NCLOG="/var/ncdata/nextcloud.log"
+NCLOG=$(grep "logfile" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # time to ban an IP that exceeded attempts
 BANTIME_=600000
 # cooldown time for incorrect passwords
