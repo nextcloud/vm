@@ -41,7 +41,7 @@ check_command update-rc.d fail2ban disable
 if [ -z "$NCLOG" ]
 then
     echo "nextcloud.log not found"
-    echo "Please add your log to $NCPATH/config/config.php and restart this script."
+    echo "Please add your logpath to $NCPATH/config/config.php and restart this script."
     exit 1
 else
     chown www-data:www-data "$NCLOG"
