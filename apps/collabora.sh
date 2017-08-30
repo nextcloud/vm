@@ -273,6 +273,7 @@ then
     printf "Certs are generated!\n"
     printf "${Color_Off}\n"
     a2ensite "$SUBDOMAIN.conf"
+    service apache2 restart
 # Install Collabora App
     check_command wget -q "$COLLVER_REPO/$COLLVER/$COLLVER_FILE" -P "$NCPATH/apps"
     check_command tar -zxf "$NCPATH/apps/$COLLVER_FILE" -C "$NCPATH/apps"
