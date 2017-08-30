@@ -40,9 +40,8 @@ check_command update-rc.d fail2ban disable
 
 if [ -z "$NCLOG" ]
 then
-    echo "Logfile not found."
-    echo "Please add it to $NCPATH/config/config.php and run this script again."
-    exit 1
+    NCLOG="$(find / -name 'nextcloud.log')"
+    sudo -u www-data php "$NCPATH"/occ config:system:set logfile --value="$NCLOG"
 else
     chown www-data:www-data "$NCLOG"
 fi
