@@ -261,9 +261,6 @@ fi
 # Install certbot (Let's Encrypt)
 install_certbot
 
-# Stop Apache to aviod port conflicts
-a2dissite 000-default.conf
-
 # Generate certs
 if le_subdomain
 then
