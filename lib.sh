@@ -189,6 +189,7 @@ fi
 
 # Let's Encrypt for subdomains
 le_subdomain() {
+a2dissite 000-default.conf
 certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
 }
 
