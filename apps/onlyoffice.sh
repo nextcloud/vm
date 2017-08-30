@@ -251,10 +251,6 @@ fi
 # Install certbot (Let's Encrypt)
 install_certbot
 
-# Stop Apache to aviod port conflicts
-a2dissite 000-default.conf
-sudo service apache2 stop
-
 # Generate certs
 if le_subdomain
 then
@@ -267,7 +263,6 @@ then
     printf "Certs are generated!\n"
     printf "${Color_Off}\n"
     a2ensite "$SUBDOMAIN.conf"
-    service apache2 restart
 # Install Onlyoffice App
     cd $NCPATH/apps
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
