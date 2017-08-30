@@ -256,7 +256,7 @@ a2dissite 000-default.conf
 sudo service apache2 stop
 
 # Generate certs
-if letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
+if le_subdomain
 then
     # Generate DHparams chifer
     if [ ! -f "$DHPARAMS" ]
