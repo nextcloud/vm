@@ -213,7 +213,7 @@ default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
 
 standalone() {
 # Generate certs
-if eval "letsencrypt certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" $default_le"
+if eval "certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" $default_le"
 then
     echo "success" > /tmp/le_test
 else
@@ -221,7 +221,7 @@ else
 fi
 }
 webroot() {
-if eval "letsencrypt certonly --webroot --webroot-path $NCPATH $default_le"
+if eval "certbot certonly --webroot --webroot-path $NCPATH $default_le"
 then
     echo "success" > /tmp/le_test
 else
@@ -229,7 +229,7 @@ else
 fi
 }
 certonly() {
-if eval "letsencrypt certonly $default_le"
+if eval "certbot certonly $default_le"
 then
     echo "success" > /tmp/le_test
 else
