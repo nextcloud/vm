@@ -263,10 +263,9 @@ install_certbot
 
 # Stop Apache to aviod port conflicts
 a2dissite 000-default.conf
-sudo service apache2 stop
 
 # Generate certs
-if letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
+if le_subdomain
 then
     # Generate DHparams chifer
     if [ ! -f "$DHPARAMS" ]
@@ -277,7 +276,6 @@ then
     printf "Certs are generated!\n"
     printf "${Color_Off}\n"
     a2ensite "$SUBDOMAIN.conf"
-    service apache2 restart
 # Install Collabora App
     check_command wget -q "$COLLVER_REPO/$COLLVER/$COLLVER_FILE" -P "$NCPATH/apps"
     check_command tar -zxf "$NCPATH/apps/$COLLVER_FILE" -C "$NCPATH/apps"
