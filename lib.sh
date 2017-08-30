@@ -187,6 +187,13 @@ else
 fi
 }
 
+# Let's Encrypt for subdomains
+le_subdomain() {
+a2dissite 000-default.conf
+service apache2 reload
+certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
+}
+
 # Check if process is runnnig: is_process_running dpkg
 is_process_running() {
 PROCESS="$1"

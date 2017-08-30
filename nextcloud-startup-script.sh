@@ -385,6 +385,7 @@ rm "$SCRIPTS"/temporary-fix.sh
 # Cleanup 1
 sudo -u www-data php "$NCPATH/occ" maintenance:repair
 rm -f "$SCRIPTS/ip.sh"
+rm -f "$SCRIPTS/change_db_pass.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"

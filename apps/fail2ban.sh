@@ -24,7 +24,7 @@ fi
 
 ### Local variables ###
 # location of Nextcloud logs
-NCLOG="$(grep "logfile" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")"
+NCLOG="$(find / -name nextcloud.log)"
 # time to ban an IP that exceeded attempts
 BANTIME_=600000
 # cooldown time for incorrect passwords
@@ -40,8 +40,8 @@ check_command update-rc.d fail2ban disable
 
 if [ -z "$NCLOG" ]
 then
-    echo "Logfile not found."
-    echo "Please add it to $NCPATH/config/config.php and run this script again."
+    echo "nextcloud.log not found"
+    echo "Please add your logpath to $NCPATH/config/config.php and restart this script."
     exit 1
 else
     chown www-data:www-data "$NCLOG"
