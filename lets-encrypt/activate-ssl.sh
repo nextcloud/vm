@@ -213,7 +213,7 @@ default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
 
 standalone() {
 # Generate certs
-if eval "certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" $default_le"
+if eval "certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
 then
     echo "success" > /tmp/le_test
 else
