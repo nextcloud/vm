@@ -187,6 +187,11 @@ else
 fi
 }
 
+Let's Encrypt for subdomains
+le_subdomain() {
+certbot certonly --standalone --pre-hook "service apache2 stop" --pre-hook "service apache2 start" --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
+}
+
 # Check if process is runnnig: is_process_running dpkg
 is_process_running() {
 PROCESS="$1"
