@@ -221,7 +221,7 @@ else
 fi
 }
 webroot() {
-if eval "certot certonly --webroot --webroot-path $NCPATH $default_le"
+if eval "certbot certonly --webroot --webroot-path $NCPATH $default_le"
 then
     echo "success" > /tmp/le_test
 else
