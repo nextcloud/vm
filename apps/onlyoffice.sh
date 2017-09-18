@@ -181,7 +181,7 @@ fi
 
 # Install Onlyoffice docker
 docker pull onlyoffice/documentserver:latest
-docker run -i -t -d -p 127.0.0.3:9090:80 -p 127.0.0.3:9091:443 --restart always onlyoffice/documentserver
+docker run -i -t -d -p 127.0.0.3:9090:80 --restart always onlyoffice/documentserver
 
 # Install apache2 
 install_if_not apache2
@@ -227,7 +227,7 @@ then
     # basic proxy settings
     ProxyRequests off
 
-    ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.3:9091/$1$2"
+    ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.3:9090/$1$2"
     ProxyPass / "http://127.0.0.3:9090/"
     ProxyPassReverse / "http://127.0.0.3:9090/"
         
