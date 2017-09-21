@@ -267,7 +267,7 @@ then
     # Generate DHparams chifer
     if [ ! -f "$DHPARAMS" ]
     then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 8192
+        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
     fi
     printf "${ICyan}\n"
     printf "Certs are generated!\n"
