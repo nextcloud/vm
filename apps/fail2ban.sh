@@ -24,12 +24,12 @@ fi
 
 ### Local variables ###
 # location of Nextcloud logs
-NCLOG="/var/ncdata/nextcloud.log"
+NCLOG="$(find / -name nextcloud.log)"
 # time to ban an IP that exceeded attempts
 BANTIME_=600000
 # cooldown time for incorrect passwords
 FINDTIME_=1800
-#bad attempts before banning an IP
+# failed attempts before banning an IP
 MAXRETRY_=10
 
 echo "Installing Fail2ban..."
@@ -38,12 +38,13 @@ apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
 check_command update-rc.d fail2ban disable
 
-if [ ! -f $NCLOG ]
+if [ -z "$NCLOG" ]
 then
-    echo "$NCLOG not found"
+    echo "nextcloud.log not found"
+    echo "Please add your logpath to $NCPATH/config/config.php and restart this script."
     exit 1
 else
-    chown www-data:www-data $NCLOG
+    chown www-data:www-data "$NCLOG"
 fi
 
 # Set values in config.php

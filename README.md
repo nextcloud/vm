@@ -10,11 +10,13 @@
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
+* [Felipe Urrego](https://github.com/johnfelipe)
+* You? :)
+
+## No longer active maintainers
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
 * [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
 * [Stefan Heitmüller](https://github.com/morph027) @ [morph027's Blog](https://morph027.gitlab.io/)
-* [Felipe Urrego](https://github.com/johnfelipe)
-* You? :)
 
 ## Build your own VM, or install on a VPS
 DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
@@ -49,6 +51,24 @@ Great news! We have forked this repository and created a Raspberry Pi image that
 https://github.com/techandme/NextBerry or here https://www.techandme.se/nextberry-rpi/.
 
 We call it NextBerry and it's confirmed to be working on Raspberry Pi 2 & 3.
+
+## I want to test RC!
+No problem! We made it simple. Run `update.sh` but abort it before it starts so that you have the latest `nextcloud_update.sh`. Then put this in your `nextcloud_update.sh` below the curl command (lib.sh) but before everything else and run it:
+
+To test a specific RC version:
+
+```
+NCREPO="https://download.nextcloud.com/server/prereleases"
+NCVERSION=12.0.1RC5
+STABLEVERSION="nextcloud-$NCVERSION"
+```
+
+Or the latest RC:
+```
+NCREPO="https://download.nextcloud.com/server/prereleases"
+NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+STABLEVERSION="nextcloud-$NCVERSION"
+```
 
 ## FAQ
 

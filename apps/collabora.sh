@@ -180,7 +180,7 @@ then
 fi
 
 # Install Collabora docker
-docker pull collabora/code
+docker pull collabora/code:latest
 docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always --cap-add MKNOD collabora/code
 
 # Install Apache2
@@ -261,17 +261,13 @@ fi
 # Install certbot (Let's Encrypt)
 install_certbot
 
-# Stop Apache to aviod port conflicts
-a2dissite 000-default.conf
-sudo service apache2 stop
-
 # Generate certs
-if letsencrypt certonly --standalone --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
+if le_subdomain
 then
     # Generate DHparams chifer
     if [ ! -f "$DHPARAMS" ]
     then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 8192
+        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
     fi
     printf "${ICyan}\n"
     printf "Certs are generated!\n"
@@ -296,7 +292,7 @@ then
     check_command sudo -u www-data php "$NCPATH"/occ app:enable richdocuments
     check_command sudo -u www-data "$NCPATH"/occ config:app:set richdocuments wopi_url --value="https://$SUBDOMAIN"
     chown -R www-data:www-data $NCPATH/apps
-    sudo "$NCPATH"/occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    check_command sudo -u www-data php "$NCPATH"/occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
 # Add prune command
     {
     echo "#!/bin/bash"

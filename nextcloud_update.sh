@@ -27,6 +27,10 @@ then
     exit 1
 fi
 
+# Check if dpkg or apt is running
+is_process_running dpkg
+is_process_running apt
+
 # System Upgrade
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
@@ -41,18 +45,24 @@ then
 fi
 
 # Update docker images
-# This updates ALL Docker images: docker images | grep -v REPOSITORY | awk '{print $1}' | xargs -L1 docker pull
-if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+# This updates ALL Docker images:
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
-    echo "Updating Docker container for OnlyOffice..."
-    docker pull onlyoffice/documentserver
+docker images | grep -v REPOSITORY | awk '{print $1}' | xargs -L1 docker pull
 fi
 
-if [ "$(docker image inspect collabora/code >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
-then
-    echo "Updating Docker container for Collabora..."
-    docker pull collabora/code
-fi
+## OLD WAY ##
+#if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+#then
+#    echo "Updating Docker container for OnlyOffice..."
+#    docker pull onlyoffice/documentserver
+#fi
+#
+#if [ "$(docker image inspect collabora/code >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+#then
+#    echo "Updating Docker container for Collabora..."
+#    docker pull collabora/code
+#fi
 
 # Cleanup un-used packages
 apt autoremove -y
