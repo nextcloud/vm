@@ -43,6 +43,9 @@ If it automatically runs as root when you reboot the machine, you have to abort 
 `sudo -u <user> sudo bash /var/scripts/nextcloud-startup-script.sh` <br>
 4. Please note that the installation/setup is *not* finnished by just running the `nextcloud_install_production.sh` When you login with the (new) sudo user you ran the script with in step 2 you will automatically be presented with the setup script.
 
+## Disable AdBlock extension # Chrome or Firefox
+This is need if u want run spreed.me correctly
+
 ## Machine configuration of the released version
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
 
