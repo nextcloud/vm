@@ -248,7 +248,7 @@ if [ -d "$CERTFILES" ]
     # Generate DHparams chifer
     if [ ! -f "$DHPARAMS" ]
     then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 8192
+        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
     fi
     # Activate new config
     check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
