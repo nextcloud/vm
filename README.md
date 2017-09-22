@@ -78,6 +78,10 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** You can download the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
 
+**Q: The downloaded file is just a few kilobyte, or corrupted**
+<br />
+**A:** This is due to heavy load on the server. Please try again in a few minutes.
+
 **Q: The script says: "WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts"**
 <br />
 **A:** http://askubuntu.com/a/463966
