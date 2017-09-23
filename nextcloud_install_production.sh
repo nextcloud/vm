@@ -513,6 +513,9 @@ linux-image-extra-"$(uname -r)"
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
 
+# Force MOTD to show correct number of updates
+sudo /usr/lib/update-notifier/update-motd-updates-available --force
+
 # Reboot
 echo "Installation done, system will now reboot..."
 reboot
