@@ -13,4 +13,10 @@ true
 DEBUG=0
 debug_mode
 
+# Check that MariaDB is running, or start it if not
+if ! pgrep mysqld > dev/null
+then
+    check_command sudo service mariadb start --tc-heuristic-recover=0
+fi
+
 exit
