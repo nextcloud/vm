@@ -2,6 +2,13 @@
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
+## Nextant is broken so no need to install it.
+echo "Sorry but this Nextant script is broken since Solr 7.0.0"
+echo "We will fix this as soon as possible, but until then you can't install it with this script."
+echo "Please try again later. Thank you for your paitance."
+sleep 5
+exit 1
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
