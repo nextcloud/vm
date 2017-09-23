@@ -315,6 +315,7 @@ chmod -R 600 "$GPGDIR"
 gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
 gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
 rm -r "$GPGDIR"
+rm -f releases
 }
 
 # Initial download of script in ../static
