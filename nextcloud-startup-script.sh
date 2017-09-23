@@ -449,6 +449,13 @@ then
     rm -f "$SCRIPTS"/trusted.sh
 fi
 
+# Check that MariaDB is running, or start it if not (else Nextcloud won't work)
+# https://stackoverflow.com/questions/20570779/cant-start-mysqld-mysql
+if ! pgrep mysqld > dev/null
+then
+    check_command service mariadb start --tc-heuristic-recover=0
+fi
+
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
