@@ -43,9 +43,6 @@ If it automatically runs as root when you reboot the machine, you have to abort 
 `sudo -u <user> sudo bash /var/scripts/nextcloud-startup-script.sh` <br>
 4. Please note that the installation/setup is *not* finnished by just running the `nextcloud_install_production.sh` When you login with the (new) sudo user you ran the script with in step 2 you will automatically be presented with the setup script.
 
-## Disable AdBlock extension # Chrome or Firefox
-This is need if u want run spreed.me correctly
-
 ## Machine configuration of the released version
 Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
 
@@ -73,6 +70,9 @@ NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+
 STABLEVERSION="nextcloud-$NCVERSION"
 ```
 
+## Do you run Spreed.ME but it's not working correctly?
+Then you need to disable any AdBlocker that you might have enabled.
+
 ## FAQ
 
 Keep asking questions so that we can add them here.
@@ -81,7 +81,7 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** You can download the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
 
-**Q: The downloaded file is just a few kilobyte, or corrupted**
+**Q: Why is the downloaded file is just a few kilobyte, or corrupted?**
 <br />
 **A:** This is due to heavy load on the server. Please try again in a few minutes.
 
