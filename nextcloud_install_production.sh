@@ -417,11 +417,13 @@ a2ensite nextcloud_http_domain_self_signed.conf
 a2dissite default-ssl
 
 # Enable HTTP/2 server wide, if user decides to
+echo
 echo "Your official package repository does not provide an Apache2 package with HTTP/2 module included."
 echo "If you like to enable HTTP/2 nevertheless, we can upgrade your Apache2 from Ondrejs PPA:"
 echo "https://launchpad.net/~ondrej/+archive/ubuntu/apache2"
 echo "Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues."
 echo "E.g. the Nextcloud Spreed video calls app does not yet work with HTTP/2 enabled."
+echo
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 system wide?") ]]
 then
     # Adding PPA
