@@ -449,15 +449,14 @@ then
     rm -f "$SCRIPTS"/trusted.sh
 fi
 
-# Check that MariaDB is running, or start it if not (else Nextcloud won't work)
-# https://stackoverflow.com/questions/20570779/cant-start-mysqld-mysql
-if ! pgrep mysqld > dev/null
-then
-    check_command service mariadb start --tc-heuristic-recover=0
-fi
-
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+
+# Shutdown MariaDB gracefully
+echo "Shutting down MariaDB..."
+check_command sudo systemctl stop mariadb.service
+rm -f /var/lib/mysql/ib_logfile[01]
+echo
 
 # Reboot
 any_key "Installation finished, press any key to reboot system..."
