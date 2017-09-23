@@ -13,10 +13,12 @@ true
 DEBUG=0
 debug_mode
 
-# Check that MariaDB is running, or start it if not
-if ! pgrep mysqld > dev/null
+# Shutdown MariaDB gracefully
+if pgrep mysqld > dev/null
 then
-    check_command sudo service mariadb start --tc-heuristic-recover=0
+    echo "Shutting down MariaDB..."
+    check_command sudo systemctl stop mariadb.service
+    rm -f /var/lib/mysql/ib_logfile[01]
 fi
 
 exit
