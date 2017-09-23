@@ -13,12 +13,4 @@ true
 DEBUG=0
 debug_mode
 
-# Shutdown MariaDB gracefully
-if pgrep mysqld > dev/null
-then
-    echo "Shutting down MariaDB..."
-    check_command sudo systemctl stop mariadb.service
-    rm -f /var/lib/mysql/ib_logfile[01]
-fi
-
 exit
