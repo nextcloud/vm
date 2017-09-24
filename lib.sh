@@ -241,11 +241,11 @@ then
     apt remove --purge nmap -y
   fi
 else
-  echo "Port $1 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
-  any_key "Press any key to test $SUBDOMAIN... "
-  if [[ "$(nmap -sS -PN -p "$1" "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
+  echo "Port $1 is not open on $WANIP4. We will do a second try on $2 instead."
+  any_key "Press any key to test $2... "
+  if [[ "$(nmap -sS -PN -p "$1" "$2" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
   then
-      printf "${Green}Port $1 is open on $SUBDOMAIN!${Color_Off}\n"
+      printf "${Green}Port $1 is open on $2!${Color_Off}\n"
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
         echo "nmap was previously installed, not removing"
@@ -253,7 +253,7 @@ else
         apt remove --purge nmap -y
       fi
   else
-      whiptail --msgbox "Port $1 is not open on $SUBDOMAIN. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+      whiptail --msgbox "Port $1 is not open on $2. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
       any_key "Press any key to exit... "
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
