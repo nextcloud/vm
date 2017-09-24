@@ -231,9 +231,9 @@ else
 fi
 
 # Check if $1 is open using nmap, if not notify the user
-if [ "$(nmap -sS -p $1 "$WANIP4" | grep -c "open")" == "1" ]
+if [ "$(nmap -sS -p "$1" "$WANIP4" | grep -c "open")" == "1" ]
 then
-  printf "${Green}Port "$1" is open on $WANIP4!${Color_Off}\n"
+  printf "${Green}Port $1 is open on $WANIP4!${Color_Off}\n"
   if [ "$NMAPSTATUS" = "preinstalled" ]
   then
     echo "nmap was previously installed, not removing"
