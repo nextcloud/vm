@@ -233,7 +233,7 @@ fi
 # Check if $1 is open using nmap, if not notify the user
 if [ "$(nmap -sS -p $1 "$WANIP4" | grep -c "open")" == "1" ]
 then
-  printf "${Green}Port $1 is open on $WANIP4!${Color_Off}\n"
+  printf "${Green}Port "$1" is open on $WANIP4!${Color_Off}\n"
   if [ "$NMAPSTATUS" = "preinstalled" ]
   then
     echo "nmap was previously installed, not removing"
@@ -243,7 +243,7 @@ then
 else
   echo "Port $1 is not open on $WANIP4. We will do a second try on $SUBDOMAIN instead."
   any_key "Press any key to test $SUBDOMAIN... "
-  if [[ "$(nmap -sS -PN -p $1 "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
+  if [[ "$(nmap -sS -PN -p "$1" "$SUBDOMAIN" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
   then
       printf "${Green}Port $1 is open on $SUBDOMAIN!${Color_Off}\n"
       if [ "$NMAPSTATUS" = "preinstalled" ]
