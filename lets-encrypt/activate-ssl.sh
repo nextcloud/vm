@@ -93,28 +93,8 @@ then
 fi
 done
 
-# Check if 443 is open using nmap, if not notify the user
-apt update -q4 & spinner_loading
-install_if_not nmap
-
-if [ "$(nmap -sS -p 443 "$WANIP4" -PN | grep -c "open")" == "1" ]
-then
-    apt remove --purge nmap -y
-else
-    echo "Port 443 is not open on $WANIP4. We will do a second try on $domain instead."
-    any_key "Press any key to test $domain... "
-    sed -i "s|127.0.1.1.*|127.0.1.1       $domain nextcloud|g" /etc/hosts
-    service networking restart
-    if [[ $(nmap -sS -PN -p 443 "$domain" | grep -m 1 "open" | awk '{print $2}') = open ]]
-    then
-        apt remove --purge nmap -y
-    else
-        echo "Port 443 is not open on $domain. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/"
-        any_key "Press any key to exit..."
-        apt remove --purge nmap -y
-        exit 1
-    fi
-fi
+# Check if port is open with NMAP
+check_open_port 443 $domain
 
 # Fetch latest version of test-new-config.sh
 check_command download_le_script test-new-config
