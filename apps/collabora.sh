@@ -75,7 +75,7 @@ else
 fi
 
 # Check open ports with NMAP
-check_open_port 443 $SUBDOMAIN
+check_open_port 443 "$SUBDOMAIN"
 
 # Install Docker
 if [ "$(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok installed")" == "1" ]
