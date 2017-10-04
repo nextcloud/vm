@@ -37,7 +37,12 @@ echo "If the field after ':' is blank you are probably running as a pure root us
 echo "It's possible to install with root, but there will be minor errors."
 echo
 echo "Please create a user with sudo permissions if you want an optimal installation."
+if [[ $UNIXUSER == "ncadmin" ]]
+then
+sleep 0.1
+else
 run_static_script adduser
+fi
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
