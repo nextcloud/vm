@@ -421,7 +421,7 @@ exit 0
 
 RCLOCAL
 
-cat << ROOTNEWPROFILE > "/root/bash_profile"
+cat << ROOTNEWPROFILE > "/root/.bash_profile"
 # ~/.profile: executed by Bourne-compatible login shells.
 
 if [ "/bin/bash" ]
