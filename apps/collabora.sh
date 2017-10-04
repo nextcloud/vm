@@ -74,20 +74,6 @@ else
    exit 1
 fi
 
-# Check to see if user already has nmap installed on their system
-if [ "$(dpkg-query -s nmap 2> /dev/null | grep -c "ok installed")" == "1" ]
-then
-    NMAPSTATUS=preinstalled
-fi
-
-apt update -q4 & spinner_loading
-if [ "$NMAPSTATUS" = "preinstalled" ]
-then
-      echo "nmap is already installed..."
-else
-    apt install nmap -y
-fi
-
 # Check open ports with NMAP
 check_open_port 443 "$SUBDOMAIN"
 
