@@ -29,7 +29,9 @@ fi
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
-# Show current user
+# Create new current user
+if [[ $UNIXUSER != "ncadmin" ]]
+then
 echo
 echo "Current user with sudo permissions is: $UNIXUSER".
 echo "This script will set up everything with that user."
@@ -37,10 +39,6 @@ echo "If the field after ':' is blank you are probably running as a pure root us
 echo "It's possible to install with root, but there will be minor errors."
 echo
 echo "Please create a user with sudo permissions if you want an optimal installation."
-if [[ $UNIXUSER == "ncadmin" ]]
-then
-sleep 0.1
-else
 run_static_script adduser
 fi
 
