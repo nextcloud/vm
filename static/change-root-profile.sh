@@ -30,7 +30,7 @@ fi
 if [[ "$(whoami)" == "root" ]]
 then
     echo
-    echo "You seem to be running this as the root user account."
+    echo "You seem to be running this as the pure root user."
     echo "You must run this as a regular user with sudo permissions."
     echo "Please copy the line below and run it with the user that have sudo permissions:"
     echo "sudo -u [user] sudo bash /var/scripts/nextcloud-startup-script.sh"
