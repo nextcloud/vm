@@ -411,6 +411,32 @@ cat << RCLOCAL > "/etc/rc.local"
 exit 0
 
 RCLOCAL
+
+cat << ROOTNEWPROFILE > "/root/bash_profile"
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ "/bin/bash" ]
+then
+    if [ -f ~/.bashrc ]
+    then
+        . ~/.bashrc
+    fi
+fi
+
+if [ -x /var/scripts/nextcloud-startup-script.sh ]
+then
+    /var/scripts/nextcloud-startup-script.sh
+fi
+
+if [ -x /var/scripts/history.sh ]
+then
+    /var/scripts/history.sh
+fi
+
+mesg n
+
+ROOTNEWPROFILE
+
 clear
 
 # Upgrade system
