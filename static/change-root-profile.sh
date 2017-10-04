@@ -30,12 +30,13 @@ fi
 if [[ "$(whoami)" == "root" ]]
 then
     echo
-    echo "You seem to be running this as root"
-    echo "You must run this as a regular user with sudo permissions"
-    echo "Please log out and login again as a regular user with sudo and run this command:"
+    echo "You seem to be running this as the root user account."
+    echo "You must run this as a regular user with sudo permissions."
+    echo "Please copy the line below and run it with the user that have sudo permissions:"
     echo "sudo -u [user] sudo bash /var/scripts/nextcloud-startup-script.sh"
-    echo "Please press CTRL+C within 60 seconds"
-    sleep 10
+    echo
+    echo "Please press CTRL+C within 60 seconds."
+    sleep 60
 fi
 
 if [ -x /var/scripts/nextcloud-startup-script.sh ]
