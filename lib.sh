@@ -238,19 +238,18 @@ then
   printf "${Green}Port $1 is open on $WANIP4!${Color_Off}\n"
   if [ "$NMAPSTATUS" = "preinstalled" ]
   then
-    echo "nmap was previously installed, not removing"
+    echo "nmap was previously installed, not removing."
   else
     apt remove --purge nmap -y
   fi
 else
-  echo "Port $1 is not open on $WANIP4. We will do a second try on $2 instead."
-  any_key "Press any key to test $2... "
+  whiptail --msgbox "Port $1 is not open on $WANIP4. We will do a second try on $2 instead." "$WT_HEIGHT" "$WT_WIDTH"
   if [[ "$(nmap -sS -PN -p "$1" "$2" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
   then
       printf "${Green}Port $1 is open on $2!${Color_Off}\n"
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
-        echo "nmap was previously installed, not removing"
+        echo "nmap was previously installed, not removing."
       else
         apt remove --purge nmap -y
       fi
@@ -259,7 +258,7 @@ else
       any_key "Press any key to exit... "
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
-        echo "nmap was previously installed, not removing"
+        echo "nmap was previously installed, not removing."
       else
         apt remove --purge nmap -y
       fi
