@@ -170,6 +170,23 @@ ask_yes_or_no() {
     esac
 }
 
+# Check if process is runnnig: is_process_running dpkg
+is_process_running() {
+PROCESS="$1"
+
+while :
+do
+    RESULT=$(pgrep "${PROCESS}")
+
+    if [ "${RESULT:-null}" = null ]; then
+            break
+    else
+            echo "${PROCESS} is running. Waiting for it to stop..."
+            sleep 10
+    fi
+done
+}
+
 # Install certbot (Let's Encrypt)
 install_certbot() {
 certbot --version 2> /dev/null
@@ -245,23 +262,6 @@ else
       exit 1
   fi
 fi
-}
-
-# Check if process is runnnig: is_process_running dpkg
-is_process_running() {
-PROCESS="$1"
-
-while :
-do
-    RESULT=$(pgrep "${PROCESS}")
-
-    if [ "${RESULT:-null}" = null ]; then
-            break
-    else
-            echo "${PROCESS} is running. Waiting for it to stop..."
-            sleep 10
-    fi
-done
 }
 
 configure_max_upload() {
