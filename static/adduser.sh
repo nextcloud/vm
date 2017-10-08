@@ -28,4 +28,6 @@ then
         done
         sudo -u "$NEWUSER" sudo bash nextcloud_install_production.sh
     fi
+else
+    sudo -u ncadmin sudo bash nextcloud_install_production.sh
 fi
