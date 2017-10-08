@@ -12,16 +12,29 @@ true
 DEBUG=0
 debug_mode
 
-if [[ "no" == $(ask_yes_or_no "Do you want to create a new user?") ]]
+if [[ $UNIXUSER != "ncadmin" ]]
 then
-    echo "Not adding another user..."
-    sleep 1
-else
-    read -r -p "Enter name of the new user: " NEWUSER
-    useradd -m "$NEWUSER" -G sudo
-    while true
-    do
-        sudo passwd "$NEWUSER" && break
-    done
-    sudo -u "$NEWUSER" sudo bash nextcloud_install_production.sh
+    echo
+    echo "Current user with sudo permissions is: $UNIXUSER".
+    echo "This script will set up everything with that user."
+    echo "If the field after ':' is blank you are probably running as a pure root user."
+    echo "It's possible to install with root, but there will be minor errors."
+    echo
+    echo "Please create a user with sudo permissions if you want an optimal installation."
+    echo "The preferred user is 'ncadmin'."
+    if [[ "no" == $(ask_yes_or_no "Do you want to create a new user?") ]]
+    then
+        echo "Not adding another user..."
+        sleep 1
+    else
+        read -r -p "Enter name of the new user: " NEWUSER
+        adduser --disabled-password --gecos "" "$NEWUSER"
+        sudo usermod -aG sudo "$NEWUSER"
+        usermod -s /bin/bash "$NEWUSER"
+        while true
+        do
+            sudo passwd "$NEWUSER" && break
+        done
+        sudo -u "$NEWUSER" sudo bash nextcloud_install_production.sh
+    fi
 fi
