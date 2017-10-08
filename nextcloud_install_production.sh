@@ -30,17 +30,7 @@ ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
 # Create new current user
-if [[ $UNIXUSER != "ncadmin" ]]
-then
-echo
-echo "Current user with sudo permissions is: $UNIXUSER".
-echo "This script will set up everything with that user."
-echo "If the field after ':' is blank you are probably running as a pure root user."
-echo "It's possible to install with root, but there will be minor errors."
-echo
-echo "Please create a user with sudo permissions if you want an optimal installation."
 run_static_script adduser
-fi
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
