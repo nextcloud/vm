@@ -28,15 +28,15 @@ cat <<-UNIXUSER-PROFILE > "$UNIXUSER_PROFILE"
 if [ -n "$BASH_VERSION" ]
 then
     # include .bashrc if it exists
-    if [ -f "/home/$UNIXUSER/.bashrc" ]
+    if [ -f "$HOME/.bashrc" ]
     then
-        . "/home/$UNIXUSER/.bashrc"
+        . "$HOME/.bashrc"
     fi
 fi
 # set PATH so it includes user's private bin if it exists
-if [ -d "/home/$UNIXUSER/bin" ]
+if [ -d "$HOME/bin" ]
 then
-    PATH="/home/$UNIXUSER/bin:$PATH"
+    PATH="$HOME/bin:$PATH"
 fi
 bash /var/scripts/instruction.sh
 bash /var/scripts/history.sh
