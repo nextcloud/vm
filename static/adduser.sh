@@ -21,7 +21,8 @@ then
         sleep 1
     else
         read -r -p "Enter name of the new user: " NEWUSER
-        useradd -m "$NEWUSER" -G sudo
+        adduser --disabled-password --gecos "" $NEWUSER
+        sudo usermod -aG sudo $NEWUSER        
         while true
         do
             sudo passwd "$NEWUSER" && break
