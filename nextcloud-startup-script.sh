@@ -411,6 +411,32 @@ cat << RCLOCAL > "/etc/rc.local"
 exit 0
 
 RCLOCAL
+
+cat << ROOTNEWPROFILE > "/root/.bash_profile"
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ "/bin/bash" ]
+then
+    if [ -f ~/.bashrc ]
+    then
+        . ~/.bashrc
+    fi
+fi
+
+if [ -x /var/scripts/nextcloud-startup-script.sh ]
+then
+    /var/scripts/nextcloud-startup-script.sh
+fi
+
+if [ -x /var/scripts/history.sh ]
+then
+    /var/scripts/history.sh
+fi
+
+mesg n
+
+ROOTNEWPROFILE
+
 clear
 
 # Upgrade system
@@ -451,6 +477,12 @@ fi
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+
+# Shutdown MariaDB gracefully
+echo "Shutting down MariaDB..."
+check_command sudo systemctl stop mariadb.service
+rm -f /var/lib/mysql/ib_logfile[01]
+echo
 
 # Reboot
 any_key "Installation finished, press any key to reboot system..."

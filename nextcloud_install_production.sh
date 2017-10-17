@@ -29,14 +29,7 @@ fi
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
-# Show current user
-echo
-echo "Current user with sudo permissions is: $UNIXUSER".
-echo "This script will set up everything with that user."
-echo "If the field after ':' is blank you are probably running as a pure root user."
-echo "It's possible to install with root, but there will be minor errors."
-echo
-echo "Please create a user with sudo permissions if you want an optimal installation."
+# Create new current user
 run_static_script adduser
 
 # Check Ubuntu version
@@ -417,11 +410,13 @@ a2ensite nextcloud_http_domain_self_signed.conf
 a2dissite default-ssl
 
 # Enable HTTP/2 server wide, if user decides to
+echo
 echo "Your official package repository does not provide an Apache2 package with HTTP/2 module included."
 echo "If you like to enable HTTP/2 nevertheless, we can upgrade your Apache2 from Ondrejs PPA:"
 echo "https://launchpad.net/~ondrej/+archive/ubuntu/apache2"
 echo "Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues."
 echo "E.g. the Nextcloud Spreed video calls app does not yet work with HTTP/2 enabled."
+echo
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 system wide?") ]]
 then
     # Adding PPA
@@ -510,6 +505,9 @@ linux-image-extra-"$(uname -r)"
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
+
+# Force MOTD to show correct number of updates
+sudo /usr/lib/update-notifier/update-motd-updates-available --force
 
 # Reboot
 echo "Installation done, system will now reboot..."
