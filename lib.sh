@@ -84,7 +84,9 @@ COLLVER_FILE=richdocuments.tar.gz
 COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Nextant
-SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-9].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
+SOLR_VERSION=6.6.1
+# this var get's the latest automatically:
+#SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-9].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
 [ ! -z "$NEXTANT_INSTALL" ] && NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
 NT_RELEASE=nextant-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
@@ -214,6 +216,57 @@ service apache2 reload
 certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
 }
 
+# Check if port is open # check_open_port 443
+check_open_port() {
+# Check to see if user already has nmap installed on their system
+if [ "$(dpkg-query -s nmap 2> /dev/null | grep -c "ok installed")" == "1" ]
+then
+    NMAPSTATUS=preinstalled
+fi
+
+apt update -q4 & spinner_loading
+if [ "$NMAPSTATUS" = "preinstalled" ]
+then
+      echo "nmap is already installed..."
+else
+    apt install nmap -y
+fi
+
+# Check if $1 is open using nmap, if not notify the user
+if [ "$(nmap -sS -p "$1" "$WANIP4" | grep -c "open")" == "1" ]
+then
+  printf "${Green}Port $1 is open on $WANIP4!${Color_Off}\n"
+  if [ "$NMAPSTATUS" = "preinstalled" ]
+  then
+    echo "nmap was previously installed, not removing."
+  else
+    apt remove --purge nmap -y
+  fi
+else
+  whiptail --msgbox "Port $1 is not open on $WANIP4. We will do a second try on $2 instead." "$WT_HEIGHT" "$WT_WIDTH"
+  if [[ "$(nmap -sS -PN -p "$1" "$2" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
+  then
+      printf "${Green}Port $1 is open on $2!${Color_Off}\n"
+      if [ "$NMAPSTATUS" = "preinstalled" ]
+      then
+        echo "nmap was previously installed, not removing."
+      else
+        apt remove --purge nmap -y
+      fi
+  else
+      whiptail --msgbox "Port $1 is not open on $2. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
+      any_key "Press any key to exit... "
+      if [ "$NMAPSTATUS" = "preinstalled" ]
+      then
+        echo "nmap was previously installed, not removing."
+      else
+        apt remove --purge nmap -y
+      fi
+      exit 1
+  fi
+fi
+}
+
 configure_max_upload() {
 # Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
@@ -315,6 +368,7 @@ chmod -R 600 "$GPGDIR"
 gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
 gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
 rm -r "$GPGDIR"
+rm -f releases
 }
 
 # Initial download of script in ../static
