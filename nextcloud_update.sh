@@ -127,14 +127,16 @@ sleep 10
 
 # Backup PostgreSQL
 if which psql > /dev/null
+then
     cd /tmp
     if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
     then
         echo "Doing pgdump of $NCCONFIGDB..."
         check_command sudo -u postgres pg_dump "$NCCONFIGDB"  > "$BACKUP"/nextclouddb.sql
     else
-    echo "Doing pgdump of all databases..."
-    check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.sql
+        echo "Doing pgdump of all databases..."
+        check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.sql
+    fi
 fi
 
 # Check if backup exists and move to old
