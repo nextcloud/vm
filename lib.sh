@@ -173,6 +173,11 @@ ask_yes_or_no() {
     esac
 }
 
+msg_box() {
+local PROMPT="$1"
+    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+}
+
 # Check if process is runnnig: is_process_running dpkg
 is_process_running() {
 PROCESS="$1"
