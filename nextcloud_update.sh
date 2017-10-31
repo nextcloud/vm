@@ -136,6 +136,7 @@ fi
 if [ -z "$MARIADBMYCNFPASS" ]
 then
 msg_box "Something went wrong with copying your mysql password to $MYCNF.
+
 We wrote a guide on how to fix this. You can find the guide here:
 https://www.techandme.se/reset-mysql-5-7-root-password/"
     exit 1
