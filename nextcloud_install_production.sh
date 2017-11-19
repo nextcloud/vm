@@ -5,6 +5,9 @@
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
+# Install curl if not existing
+install_if_not curl
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
