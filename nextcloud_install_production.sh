@@ -6,7 +6,12 @@
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Install curl if not existing
-install_if_not curl
+if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "curl OK"
+else
+    apt update && apt install curl -y
+fi
 
 # shellcheck disable=2034,2059
 true
