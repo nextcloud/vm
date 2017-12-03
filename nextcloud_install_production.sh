@@ -82,7 +82,7 @@ then
     dpkg-reconfigure resolvconf
 fi
 echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
-echo "nameserver 8.8.8.8" >> /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
 if ! [ -x "$(command -v nslookup)" ]
