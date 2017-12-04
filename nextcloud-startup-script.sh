@@ -226,7 +226,7 @@ then
     clear
 else
     dpkg-reconfigure keyboard-configuration
-clear
+    clear
 fi
 
 # Pretty URLs
@@ -241,7 +241,7 @@ printf "\nGenerating new SSH keys for the server...\n"
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
-# Generate new MARIADB password
+# Generate new MariaDB password
 echo "Generating new MARIADB password..."
 if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
@@ -251,8 +251,11 @@ fi
 msg_box "The following script will install a trusted
 SSL certificate through Let's Encrypt.
 
-It's recomended to use SSL together with Nextcloud,
-but please open port 80 and 443 before you continue."
+It's recommended to use SSL together with Nextcloud.
+Please open port 80 and 443 to this servers IP before you continue.
+
+More information can be found here:
+https://www.techandme.se/open-port-80-443/"
 
 # Let's Encrypt
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
@@ -380,6 +383,7 @@ rm "$SCRIPTS"/temporary-fix.sh
 sudo -u www-data php "$NCPATH/occ" maintenance:repair
 rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
+rm -f "$SCRIPTS/change_mysql_pass.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
