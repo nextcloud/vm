@@ -6,7 +6,12 @@
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Install curl if not existing
-install_if_not curl
+if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "curl OK"
+else
+    apt update && apt install curl -y
+fi
 
 # shellcheck disable=2034,2059
 true
@@ -75,8 +80,8 @@ then
     apt install resolvconf -y -q
     dpkg-reconfigure resolvconf
 fi
-echo "nameserver 8.8.8.8" > /etc/resolvconf/resolv.conf.d/base
-echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
 if ! [ -x "$(command -v nslookup)" ]
