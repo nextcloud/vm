@@ -31,12 +31,7 @@ network_ok() {
 }
 
 # Check if root
-if ! is_root
-then
-msg_box "Sorry, you are not root.
-You must type: sudo bash $SCRIPTS/nextcloud-startup-script.sh\n"
-    exit 1
-fi
+root_check
 
 # Check network
 if network_ok
