@@ -27,10 +27,10 @@ If you don't have a domain yet, get one before
 you run this script!
 
 You also have to open port 443 against this VMs
-IP address: "$ADDRESS" - do this in your router/FW.
+IP address: $ADDRESS - do this in your router/FW.
 Here is a guide: https://goo.gl/Uyuf65
 
-This script is located in "$SCRIPTS" and you
+This script is located in $SCRIPTS and you
 can run this script after you got a domain.
 
 Please don't run this script if you don't have
