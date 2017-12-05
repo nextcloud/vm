@@ -150,6 +150,16 @@ is_root() {
     fi
 }
 
+# Check if root
+root_check() {
+if ! is_root
+then
+msg_box "Sorry, you are not root.
+You must type: sudo bash $SCRIPTS/nextcloud-startup-script.sh\n"
+    exit 1
+fi
+}
+
 debug_mode() {
 if [ "$DEBUG" -eq 1 ]
 then
