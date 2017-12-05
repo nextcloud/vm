@@ -154,10 +154,19 @@ is_root() {
 root_check() {
 if ! is_root
 then
-msg_box "Sorry, you are not root.
-You have two options:
-1. With sudo, type: sudo bash $SCRIPTS/script.sh
-2. Become root, type: sudo -i, to become root. Then type /path/to/script.sh"
+msg_box "Sorry, you are not root. You now have two options:
+
+1. With SUDO directly:
+   a) :~$ sudo bash $SCRIPTS/name-of-script.sh
+
+2. Become ROOT and then type your command:
+   a) :~$ sudo -i
+   b) :~# $SCRIPTS/name-of-script.sh
+
+In both cases above you can leave out $SCRIPTS if the script
+is directly in your PATH.
+
+More infromation can be found here: https://unix.stackexchange.com/a/3064"
     exit 1
 fi
 }
