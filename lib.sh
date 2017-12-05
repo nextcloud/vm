@@ -163,10 +163,10 @@ msg_box "Sorry, you are not root. You now have two options:
    a) :~$ sudo -i
    b) :~# $SCRIPTS/name-of-script.sh
 
-In both cases above you can leave out $SCRIPTS if the script
+In both cases above you can leave out $SCRIPTS/ if the script
 is directly in your PATH.
 
-More infromation can be found here: https://unix.stackexchange.com/a/3064"
+More information can be found here: https://unix.stackexchange.com/a/3064"
     exit 1
 fi
 }
