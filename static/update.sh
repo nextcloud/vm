@@ -14,7 +14,7 @@ DEBUG=0
 debug_mode
 
 # Must be root
-check_root
+root_check
 
 mkdir -p "$SCRIPTS"
 
