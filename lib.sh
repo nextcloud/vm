@@ -158,7 +158,10 @@ root_check() {
 if ! is_root
 then
 msg_box "Sorry, you are not root.
-You must type: sudo bash $SCRIPTS/nextcloud-startup-script.sh\n"
+
+You have two options:
+1. With sudo, type: sudo bash $SCRIPTS/script.sh
+2. Become root, type: sudo -i, to become root. Then type /path/to/script.sh
     exit 1
 fi
 }
