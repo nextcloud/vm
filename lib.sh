@@ -161,7 +161,7 @@ msg_box "Sorry, you are not root.
 
 You have two options:
 1. With sudo, type: sudo bash $SCRIPTS/script.sh
-2. Become root, type: sudo -i, to become root. Then type /path/to/script.sh
+2. Become root, type: sudo -i, to become root. Then type /path/to/script.sh"
     exit 1
 fi
 }
