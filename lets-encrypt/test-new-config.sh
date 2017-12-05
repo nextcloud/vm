@@ -21,13 +21,17 @@ a2dissite nextcloud_http_domain_self_signed.conf
 a2dissite 000-default.conf
 if service apache2 restart
 then
-    printf "${On_Green}New settings works! SSL is now activated and OK!${Color_Off}\n\n"
-    echo "This cert will expire in 90 days, so you have to renew it."
-    echo "There are several ways of doing so, here are some tips and tricks: https://goo.gl/c1JHR0"
-    echo "This script will add a renew cronjob to get you started, edit it by typing:"
-    echo "'crontab -u root -e'"
-    echo "Feel free to contribute to this project: https://goo.gl/3fQD65"
-    any_key "Press any key to continue..."
+msg_box "New settings works! SSL is now activated and OK!
+
+This cert will expire in 90 days if you don't renew it.
+There are several ways of renewing this cert and here are some tips and tricks:
+https://goo.gl/c1JHR0
+
+To do your job a little bit easier we have added a autorenew script as a cronjob.
+If you need to edit the crontab please type: crontab -u root -e
+If you need to edit the script itself, please check: $SCRIPTS/letsencryptrenew.sh
+
+Feel free to contribute to this project: https://goo.gl/3fQD65"
     crontab -u root -l | { cat; echo "@daily $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
