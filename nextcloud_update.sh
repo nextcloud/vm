@@ -21,11 +21,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 THEME_NAME=""
 
 # Must be root
-if ! is_root
-then
-    msg_box "Must be root to run script, in Ubuntu type: sudo -i"
-    exit 1
-fi
+root_check
 
 # Check if dpkg or apt is running
 is_process_running dpkg
