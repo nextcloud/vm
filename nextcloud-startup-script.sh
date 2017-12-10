@@ -98,7 +98,7 @@ then
     then
         sleep 1
     else
-        if [ -z $UNIXUSER ]
+        if [ -z "$UNIXUSER" ]
         then
 msg_box "Please create a user with sudo permissions and the run this command:
 sudo -u [user-with-sudo-permissions] sudo bash /var/scripts/nextcloud-startup-script.sh
