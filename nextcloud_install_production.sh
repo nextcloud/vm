@@ -35,7 +35,7 @@ ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
 # Create new current user
-run_static_script adduser
+run_static_script adduser nextcloud_install_production.sh
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
