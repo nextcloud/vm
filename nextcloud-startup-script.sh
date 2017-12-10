@@ -19,6 +19,27 @@ is_root() {
     fi
 }
 
+msg_box() {
+local PROMPT="$1"
+    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+}
+
+root_check() {
+if ! is_root
+then
+msg_box "Sorry, you are not root. You now have two options:
+1. With SUDO directly:
+   a) :~$ sudo bash $SCRIPTS/name-of-script.sh
+2. Become ROOT and then type your command:
+   a) :~$ sudo -i
+   b) :~# $SCRIPTS/name-of-script.sh
+In both cases above you can leave out $SCRIPTS/ if the script
+is directly in your PATH.
+More information can be found here: https://unix.stackexchange.com/a/3064"
+    exit 1
+fi
+}
+
 network_ok() {
     echo "Testing if network is OK..."
     service networking restart
@@ -68,6 +89,36 @@ msg_box "Network NOT OK!
 You must have a working Network connection to run this script.
 Please report this issue here: $ISSUES"
     exit 1
+fi
+
+# Is this run as a pure root user?
+if is_root
+then
+    if [[ "$UNIXUSER" == "ncadmin" ]]
+    then
+        sleep 1
+    else
+        if [ -z "$UNIXUSER" ]
+        then
+msg_box "You seem to be running this as the pure root user.
+You must run this as a regular user with sudo permissions.
+
+Please create a user with sudo permissions and the run this command:
+sudo -u [user-with-sudo-permissions] sudo bash /var/scripts/nextcloud-startup-script.sh
+
+We will do this for you when you hit OK."
+       run_static_script adduser $SCRIPTS/nextcloud-startup-script.sh
+       else
+msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
+which could be the case if you are running directly from the scripts and not the VM.
+
+As long as the user you created have sudo permissions it's safe to continue.
+This would be the case if you in the previous step created a new user with the script.
+
+If the user you are running this script with doesn't have sudo permissions,
+please abort this script and report this issue to $ISSUES."
+        fi
+    fi
 fi
 
 # Check if dpkg or apt is running
