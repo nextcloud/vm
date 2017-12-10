@@ -107,20 +107,16 @@ Please create a user with sudo permissions and the run this command:
 sudo -u [user-with-sudo-permissions] sudo bash /var/scripts/nextcloud-startup-script.sh
 
 We will do this for you when you hit OK."
-       run_static_script adduser nextcloud-startup-script.sh
+       run_static_script adduser $SCRIPTS/nextcloud-startup-script.sh
        else
 msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
 which could be the case if you are running directly from the scripts and not the VM.
 
-You are now left with two options:
-   a) ABORT:
-      Please abort by pressing CTRL+C directly after you hit OK, then do the following:
-      Copy the line below and run it with the user that have sudo permissions:
-      sudo -u $UNIXUSER sudo bash /var/scripts/nextcloud-startup-script.sh
-   a) CONTINUE:
-      If you see this message after you run the command above, please hit OK and the script will continue."
-      echo "We will continue in 5 seconds if you don't abort by pressing CTRL+C...."
-      sleep 5
+As long as the user you created have sudo permissions it's safe to continue.
+This would be the case if you in the previous step created a new user with the script.
+
+If the user you are running this script with doesn't have sudo permissions,
+please abort this script and report this issue to $ISSUES."
         fi
     fi
 fi
