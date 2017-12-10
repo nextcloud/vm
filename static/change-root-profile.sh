@@ -27,23 +27,6 @@ then
     fi
 fi
 
-if [[ "$(whoami)" == "root" ]]
-then
-    if id -u ncadmin > /dev/null
-    then
-        sleep 1
-    else
-        echo
-        echo "You seem to be running this as the pure root user."
-        echo "You must run this as a regular user with sudo permissions."
-        echo "Please copy the line below and run it with the user that have sudo permissions:"
-        echo "sudo -u [user] sudo bash /var/scripts/nextcloud-startup-script.sh"
-        echo
-        echo "Please press CTRL+C within 60 seconds."
-        sleep 60
-    fi
-fi
-
 if [ -x /var/scripts/nextcloud-startup-script.sh ]
 then
     /var/scripts/nextcloud-startup-script.sh
