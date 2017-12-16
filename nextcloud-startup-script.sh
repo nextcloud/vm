@@ -19,6 +19,27 @@ is_root() {
     fi
 }
 
+msg_box() {
+local PROMPT="$1"
+    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+}
+
+root_check() {
+if ! is_root
+then
+msg_box "Sorry, you are not root. You now have two options:
+1. With SUDO directly:
+   a) :~$ sudo bash $SCRIPTS/name-of-script.sh
+2. Become ROOT and then type your command:
+   a) :~$ sudo -i
+   b) :~# $SCRIPTS/name-of-script.sh
+In both cases above you can leave out $SCRIPTS/ if the script
+is directly in your PATH.
+More information can be found here: https://unix.stackexchange.com/a/3064"
+    exit 1
+fi
+}
+
 network_ok() {
     echo "Testing if network is OK..."
     service networking restart
@@ -31,11 +52,7 @@ network_ok() {
 }
 
 # Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/nextcloud-startup-script.sh\n"
-    exit 1
-fi
+root_check
 
 # Check network
 if network_ok
@@ -67,9 +84,41 @@ if network_ok
 then
     printf "${Green}Online!${Color_Off}\n"
 else
-    printf "\nNetwork NOT OK. You must have a working Network connection to run this script.\n"
-    echo "Please report this issue here: $ISSUES"
+msg_box "Network NOT OK!
+
+You must have a working Network connection to run this script.
+Please report this issue here: $ISSUES"
     exit 1
+fi
+
+# Is this run as a pure root user?
+if is_root
+then
+    if [[ "$UNIXUSER" == "ncadmin" ]]
+    then
+        sleep 1
+    else
+        if [ -z "$UNIXUSER" ]
+        then
+msg_box "You seem to be running this as the pure root user.
+You must run this as a regular user with sudo permissions.
+
+Please create a user with sudo permissions and the run this command:
+sudo -u [user-with-sudo-permissions] sudo bash /var/scripts/nextcloud-startup-script.sh
+
+We will do this for you when you hit OK."
+       run_static_script adduser $SCRIPTS/nextcloud-startup-script.sh
+       else
+msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
+which could be the case if you are running directly from the scripts and not the VM.
+
+As long as the user you created have sudo permissions it's safe to continue.
+This would be the case if you in the previous step created a new user with the script.
+
+If the user you are running this script with doesn't have sudo permissions,
+please abort this script and report this issue to $ISSUES."
+        fi
+    fi
 fi
 
 # Check if dpkg or apt is running
@@ -77,9 +126,9 @@ is_process_running dpkg
 is_process_running apt
 
 # Check where the best mirrors are and update
-printf "\nTo make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.\n"
-echo "This VM comes with mirrors based on servers in that where used when the VM was released and packaged."
-echo "We recomend you to change the mirrors based on where this is currently installed."
+msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
+This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
+We recomend you to change the mirrors based on where this is currently installed."
 echo "Checking current mirror..."
 printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
 
@@ -131,31 +180,27 @@ chown root:root -R $SCRIPTS
 # Allow $UNIXUSER to run figlet script
 chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
 
-clear
-echo "+--------------------------------------------------------------------+"
-echo "| This script will configure your Nextcloud and activate SSL.        |"
-echo "| It will also do the following:                                     |"
-echo "|                                                                    |"
-echo "| - Generate new SSH keys for the server                             |"
-echo "| - Generate new MARIADB password                                    |"
-echo "| - Install phpMyadmin and make it secure                            |"
-echo "| - Install selected apps and automatically configure them           |"
-echo "| - Detect and set hostname                                          |"
-echo "| - Upgrade your system and Nextcloud to latest version              |"
-echo "| - Set secure permissions to Nextcloud                              |"
-echo "| - Set new passwords to Linux and Nextcloud                         |"
-echo "| - Set new keyboard layout                                          |"
-echo "| - Change timezone                                                  |"
-echo "| - Set static IP to the system (you have to set the same IP in      |"
-echo "|   your router) https://www.techandme.se/open-port-80-443/          |"
-echo "|   We don't set static IP if you run this on a *remote* VPS.        |"
-echo "|                                                                    |"
-echo "|   The script will take about 10 minutes to finish,                 |"
-echo "|   depending on your internet connection.                           |"
-echo "|                                                                    |"
-echo "| ####################### Tech and Me - 2017 ####################### |"
-echo "+--------------------------------------------------------------------+"
-any_key "Press any key to start the script..."
+msg_box "This script will configure your Nextcloud and activate SSL.
+It will also do the following:
+
+- Generate new SSH keys for the server
+- Generate new MariaDB password
+- Install phpMyadmin and make it secure
+- Install selected apps and automatically configure them
+- Detect and set hostname
+- Upgrade your system and Nextcloud to latest version
+- Set secure permissions to Nextcloud
+- Set new passwords to Linux and Nextcloud
+- Set new keyboard layout
+- Change timezone
+- Set static IP to the system (you have to set the same IP in
+  your router) https://www.techandme.se/open-port-80-443/
+  We don't set static IP if you run this on a *remote* VPS.
+
+  The script will take about 10 minutes to finish,
+  depending on your internet connection.
+
+####################### Tech and Me - 2017 #######################"
 clear
 
 # VPS?
@@ -227,7 +272,7 @@ then
     clear
 else
     dpkg-reconfigure keyboard-configuration
-clear
+    clear
 fi
 
 # Pretty URLs
@@ -242,19 +287,21 @@ printf "\nGenerating new SSH keys for the server...\n"
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
-# Generate new MARIADB password
+# Generate new MariaDB password
 echo "Generating new MARIADB password..."
 if bash "$SCRIPTS/change_mysql_pass.sh" && wait
 then
     rm "$SCRIPTS/change_mysql_pass.sh"
 fi
 
-cat << LETSENC
-+-----------------------------------------------+
-|  The following script will install a trusted  |
-|  SSL certificate through Let's Encrypt.       |
-+-----------------------------------------------+
-LETSENC
+msg_box "The following script will install a trusted
+SSL certificate through Let's Encrypt.
+
+It's recommended to use SSL together with Nextcloud.
+Please open port 80 and 443 to this servers IP before you continue.
+
+More information can be found here:
+https://www.techandme.se/open-port-80-443/"
 
 # Let's Encrypt
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
@@ -269,11 +316,16 @@ clear
 
 # Change Timezone
 echo "Current timezone is $(cat /etc/timezone)"
-echo "You must change it to your timezone"
-any_key "Press any key to change timezone..."
-dpkg-reconfigure tzdata
-sleep 3
+if [[ "no" == $(ask_yes_or_no "Do you want to change the timezone?") ]]
+then
+    echo "Not changing timezone..."
+    sleep 1
+    clear
+else
+    dpkg-reconfigure tzdata
 clear
+fi
+
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
@@ -320,7 +372,6 @@ do
     esac
 done 9< results
 rm -f results
-clear
 clear
 
 # Add extra security
@@ -378,6 +429,7 @@ rm "$SCRIPTS"/temporary-fix.sh
 sudo -u www-data php "$NCPATH/occ" maintenance:repair
 rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
+rm -f "$SCRIPTS/change_mysql_pass.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
@@ -451,22 +503,15 @@ echo "$CLEARBOOT"
 
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 # Success!
-clear
-printf "%s\n""${Green}"
-echo    "+--------------------------------------------------------------------+"
-echo    "|      Congratulations! You have successfully installed Nextcloud!   |"
-echo    "|                                                                    |"
-printf "|         ${Color_Off}Login to Nextcloud in your browser: ${Cyan}\"$ADDRESS2\"${Green}         |\n"
-echo    "|                                                                    |"
-printf "|         ${Color_Off}Publish your server online! ${Cyan}https://goo.gl/iUGE2U${Green}          |\n"
-echo    "|                                                                    |"
-printf "|         ${Color_Off}To login to MARIADB just type: ${Cyan}'mysql -u root'${Green}             |\n"
-echo    "|                                                                    |"
-printf "|   ${Color_Off}To update this VM just type: ${Cyan}'sudo bash /var/scripts/update.sh'${Green}  |\n"
-echo    "|                                                                    |"
-printf "|    ${IRed}#################### Tech and Me - 2017 ####################${Green}    |\n"
-echo    "+--------------------------------------------------------------------+"
-printf "${Color_Off}\n"
+msg_box "Congratulations! You have successfully installed Nextcloud!
+Login to Nextcloud in your browser: $ADDRESS2
+
+Some tips and tricks:
+- Publish your server online: https://goo.gl/iUGE2U
+- To login to MariaDB just type: mysql -u root
+- To update this VM just type: sudo bash /var/scripts/update.sh
+
+###################### Tech and Me - 2017 ######################"
 
 # Set trusted domain in config.php
 if [ -f "$SCRIPTS"/trusted.sh ] 

@@ -84,9 +84,8 @@ COLLVER_FILE=richdocuments.tar.gz
 COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Nextant
-SOLR_VERSION=6.6.1
 # this var get's the latest automatically:
-#SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-9].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
+SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-6].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
 [ ! -z "$NEXTANT_INSTALL" ] && NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
 NT_RELEASE=nextant-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
@@ -154,6 +153,27 @@ is_root() {
     fi
 }
 
+# Check if root
+root_check() {
+if ! is_root
+then
+msg_box "Sorry, you are not root. You now have two options:
+
+1. With SUDO directly:
+   a) :~$ sudo bash $SCRIPTS/name-of-script.sh
+
+2. Become ROOT and then type your command:
+   a) :~$ sudo -i
+   b) :~# $SCRIPTS/name-of-script.sh
+
+In both cases above you can leave out $SCRIPTS/ if the script
+is directly in your PATH.
+
+More information can be found here: https://unix.stackexchange.com/a/3064"
+    exit 1
+fi
+}
+
 debug_mode() {
 if [ "$DEBUG" -eq 1 ]
 then
@@ -171,6 +191,11 @@ ask_yes_or_no() {
             echo "no"
         ;;
     esac
+}
+
+msg_box() {
+local PROMPT="$1"
+    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
 # Check if process is runnnig: is_process_running dpkg

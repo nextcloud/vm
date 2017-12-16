@@ -21,19 +21,17 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 THEME_NAME=""
 
 # Must be root
-if ! is_root
-then
-    echo "Must be root to run script, in Ubuntu type: sudo -i"
-    exit 1
-fi
+root_check
 
 # Check if dpkg or apt is running
 is_process_running dpkg
 is_process_running apt
 
 # System Upgrade
+sudo apt-mark hold mariadb*
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+sudo apt-mark unhold mariadb*
 
 # Update Redis PHP extention
 if type pecl > /dev/null 2>&1
@@ -85,19 +83,17 @@ fi
 # Major versions unsupported
 if [ "${CURRENTVERSION%%.*}" == "$NCBAD" ]
 then
-    echo
-    echo "Please note that updates between multiple major versions are unsupported! Your situation is:"
-    echo "Current version: $CURRENTVERSION"
-    echo "Latest release: $NCVERSION"
-    echo
-    echo "It is best to keep your Nextcloud server upgraded regularly, and to install all point releases"
-    echo "and major releases without skipping any of them, as skipping releases increases the risk of"
-    echo "errors. Major releases are 9, 10, 11 and 12. Point releases are intermediate releases for each"
-    echo "major release. For example, 9.0.52 and 10.0.2 are point releases."
-    echo
-    echo "Please contact Tech and Me to help you with upgrading between major versions."
-    echo "https://shop.techandme.se/index.php/product-category/support/"
-    echo
+msg_box "Please note that updates between multiple major versions are unsupported! Your situation is:
+Current version: $CURRENTVERSION
+Latest release: $NCVERSION
+
+It is best to keep your Nextcloud server upgraded regularly, and to install all point releases
+and major releases without skipping any of them, as skipping releases increases the risk of
+errors. Major releases are 9, 10, 11 and 12. Point releases are intermediate releases for each
+major release. For example, 9.0.52 and 10.0.2 are point releases.
+
+Please contact Tech and Me to help you with upgrading between major versions.
+https://shop.techandme.se/index.php/product-category/support/"
     exit 1
 fi
 
@@ -122,7 +118,7 @@ password='$regressionpw'
 LOGIN
     chmod 0600 $MYCNF
     chown root:root $MYCNF
-    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+    msg_box "Please restart the upgrade process, we fixed the password file $MYCNF."
     exit 1    
 elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
 then
@@ -131,15 +127,16 @@ then
     echo "[client]"
     echo "password='$regressionpw'"
     } >> "$MYCNF"
-    echo "Please restart the upgrade process, we fixed the password file $MYCNF."
+    msg_box "Please restart the upgrade process, we fixed the password file $MYCNF."
     exit 1    
 fi
 
 if [ -z "$MARIADBMYCNFPASS" ]
 then
-    echo "Something went wrong with copying your mysql password to $MYCNF."
-    echo "We wrote a guide on how to fix this. You can find the guide here:"
-    echo "https://www.techandme.se/reset-mysql-5-7-root-password/"
+msg_box "Something went wrong with copying your mysql password to $MYCNF.
+
+We wrote a guide on how to fix this. You can find the guide here:
+https://www.techandme.se/reset-mysql-5-7-root-password/"
     exit 1
 else
     rm -f /var/mysql_password.txt
@@ -149,10 +146,8 @@ fi
 echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
 if ! wget -q --show-progress -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2"
 then
-    echo
-    printf "${IRed}Nextcloud %s doesn't exist.${Color_Off}\n" "$NCVERSION"
-    echo "Please check available versions here: $NCREPO"
-    echo
+msg_box "Nextcloud does not exist. You were looking for: $NCVERSION
+Please check available versions here: $NCREPO"
     exit 1
 else
     rm -f "$STABLEVERSION.tar.bz2"
@@ -186,7 +181,7 @@ done
 
 if [ -z $BACKUP_OK ]
 then
-    echo "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
+    msg_box "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
 else
     printf "${Green}\nBackup OK!${Color_Off}\n"
@@ -209,7 +204,7 @@ if [ -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
     echo "$HTML/$STABLEVERSION.tar.bz2 exists"
 else
-    echo "Aborting,something went wrong with the download"
+    msg_box "Aborting, something went wrong with the download"
     exit 1
 fi
 
@@ -217,7 +212,8 @@ if [ -d $BACKUP/config/ ]
 then
     echo "$BACKUP/config/ exists"
 else
-    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if config/ folder exist."
+msg_box "Something went wrong with backing up your old nextcloud instance
+Please check in $BACKUP if config/ folder exist."
     exit 1
 fi
 
@@ -225,7 +221,8 @@ if [ -d $BACKUP/apps/ ]
 then
     echo "$BACKUP/apps/ exists"
 else
-    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if apps/ folder exist."
+msg_box "Something went wrong with backing up your old nextcloud instance
+Please check in $BACKUP if apps/ folder exist."
     exit 1
 fi
 
@@ -245,7 +242,8 @@ then
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     sudo -u www-data php "$NCPATH"/occ upgrade --no-app-disable
 else
-    echo "Something went wrong with backing up your old nextcloud instance, please check in $BACKUP if the folders exist."
+msg_box "Something went wrong with backing up your old nextcloud instance
+Please check in $BACKUP if the folders exist."
     exit 1
 fi
 
@@ -285,26 +283,29 @@ sudo -u www-data php "$NCPATH"/occ maintenance:repair
 CURRENTVERSION_after=$(sudo -u www-data php "$NCPATH"/occ status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
 then
-    echo
-    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after."
-    echo "UPGRADE SUCCESS!"
-    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log
+msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
+
+||| UPGRADE SUCCESS! |||
+
+If you notice that some apps are disabled it's due to that they are not compatible with the new Nextcloud version.
+To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
+
+Thank you for using Tech and Me's updater!"
     sudo -u www-data php "$NCPATH"/occ status
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
-    echo
-    echo "If you notice that some apps are disabled it's due to that they are not compatible with the new Nextcloud version."
-    echo "To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually."
-    echo
-    echo "Thank you for using Tech and Me's updater!"
+    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log
     ## Un-hash this if you want the system to reboot
     # reboot
     exit 0
 else
-    echo
-    echo "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after."
-    sudo -u www-data php "$NCPATH"/occ status
-    echo "UPGRADE FAILED!"
-    echo "Your files are still backed up at $BACKUP. No worries!"
-    echo "Please report this issue to $ISSUES"
+msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
+
+||| UPGRADE FAILED! |||
+
+Your files are still backed up at $BACKUP. No worries!
+Please report this issue to $ISSUES
+
+Maintenance mode is kept on."
+sudo -u www-data php "$NCPATH"/occ status
     exit 1
 fi

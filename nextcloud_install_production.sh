@@ -6,7 +6,13 @@
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Install curl if not existing
-install_if_not curl
+if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "curl OK"
+else
+    apt update -q4 & spinner_loading
+    apt install curl -y
+fi
 
 # shellcheck disable=2034,2059
 true
@@ -22,37 +28,35 @@ DEBUG=0
 debug_mode
 
 # Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/nextcloud_install_production.sh\n" "$SCRIPTS"
-    exit 1
-fi
+root_check
 
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
 # Create new current user
-run_static_script adduser
+run_static_script adduser nextcloud_install_production.sh
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
 if [ "$OS" != 1 ]
 then
-    echo "Ubuntu Server is required to run this script."
-    echo "Please install that distro and try again."
+msg_box "Ubuntu Server is required to run this script.
+Please install that distro and try again.
+
+You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
 if ! version 16.04 "$DISTRO" 16.04.4; then
-    echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
-    exit
+msg_box "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
+    exit 1
 fi
 
 # Check if key is available
 if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null
 then
-    echo "Nextcloud repo is not available, exiting..."
+msg_box "Nextcloud repo is not available, exiting..."
     exit 1
 fi
 
@@ -75,8 +79,8 @@ then
     apt install resolvconf -y -q
     dpkg-reconfigure resolvconf
 fi
-echo "nameserver 8.8.8.8" > /etc/resolvconf/resolv.conf.d/base
-echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
+echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
 if ! [ -x "$(command -v nslookup)" ]
@@ -90,7 +94,7 @@ fi
 sudo ifdown "$IFACE" && sudo ifup "$IFACE"
 if ! nslookup google.com
 then
-    echo "Network NOT OK. You must have a working Network connection to run this script."
+msg_box "Network NOT OK. You must have a working network connection to run this script."
     exit 1
 fi
 
@@ -136,7 +140,7 @@ fi
 # Update system
 apt update -q4 & spinner_loading
 
-# Write MARIADB pass to file and keep it safe
+# Write MariaDB pass to file and keep it safe
 {
 echo "[client]"
 echo "password='$MARIADB_PASS'"
@@ -227,7 +231,7 @@ check_command download_verify_nextcloud_stable
 
 if [ ! -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
-    echo "Aborting,something went wrong with the download of $STABLEVERSION.tar.bz2"
+msg_box "Aborting,something went wrong with the download of $STABLEVERSION.tar.bz2"
     exit 1
 fi
 
@@ -312,7 +316,7 @@ echo "opcache.enable=1"
 echo "opcache.enable_cli=1"
 echo "opcache.interned_strings_buffer=8"
 echo "opcache.max_accelerated_files=10000"
-echo "opcache.memory_consumption=128"
+echo "opcache.memory_consumption=256"
 echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
@@ -413,13 +417,13 @@ a2ensite nextcloud_http_domain_self_signed.conf
 a2dissite default-ssl
 
 # Enable HTTP/2 server wide, if user decides to
-echo
-echo "Your official package repository does not provide an Apache2 package with HTTP/2 module included."
-echo "If you like to enable HTTP/2 nevertheless, we can upgrade your Apache2 from Ondrejs PPA:"
-echo "https://launchpad.net/~ondrej/+archive/ubuntu/apache2"
-echo "Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues."
-echo "E.g. the Nextcloud Spreed video calls app does not yet work with HTTP/2 enabled."
-echo
+msg_box "Your official package repository does not provide an Apache2 package with HTTP/2 module included.
+If you like to enable HTTP/2 nevertheless, we can upgrade your Apache2 from Ondrejs PPA:
+https://launchpad.net/~ondrej/+archive/ubuntu/apache2
+
+Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues.
+E.g. the Nextcloud Spreed video calls app does not yet work with HTTP/2 enabled."
+
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 system wide?") ]]
 then
     # Adding PPA

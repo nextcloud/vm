@@ -13,54 +13,41 @@ DEBUG=0
 debug_mode
 
 # Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You need to type: ${Cyan}sudo ${Color_Off}bash %s/activate-ssl.sh\n" "$SCRIPTS"
-    exit 1
-fi
+root_check
 
-clear
+# Information
+msg_box "Important! Please read this:
 
-cat << STARTMSG
-+---------------------------------------------------------------+
-|       Important! Please read this!                            |
-|                                                               |
-|       This script will install SSL from Let's Encrypt.        |
-|       It's free of charge, and very easy to use.              |
-|                                                               |
-|       Before we begin the installation you need to have       |
-|       a domain that the SSL certs will be valid for.          |
-|       If you don't have a domain yet, get one before          |
-|       you run this script!                                    |
-|                                                               |
-|       You also have to open port 443 against this VMs         |
-|       IP address: "$ADDRESS" - do this in your router.    |
-|       Here is a guide: https://goo.gl/Uyuf65                  |
-|                                                               |
-|       This script is located in "$SCRIPTS" and you        |
-|       can run this script after you got a domain.             |
-|                                                               |
-|       Please don't run this script if you don't have          |
-|       a domain yet. You can get one for a fair price here:    |
-|       https://www.citysites.eu/                               |
-|                                                               |
-+---------------------------------------------------------------+
+This script will install SSL from Let's Encrypt.
+It's free of charge, and very easy to maintain.
 
-STARTMSG
+Before we begin the installation you need to have
+a domain that the SSL certs will be valid for.
+If you don't have a domain yet, get one before
+you run this script!
+
+You also have to open port 443 against this VMs
+IP address: $ADDRESS - do this in your router/FW.
+Here is a guide: https://goo.gl/Uyuf65
+
+This script is located in $SCRIPTS and you
+can run this script after you got a domain.
+
+Please don't run this script if you don't have
+a domain yet. You can get one for a fair price here:
+https://store.binero.se/?lang=en-US"
 
 if [[ "no" == $(ask_yes_or_no "Are you sure you want to continue?") ]]
 then
-    echo
-    echo "OK, but if you want to run this script later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    any_key "Press any key to continue..."
-exit
+msg_box "OK, but if you want to run this script later,
+just type: sudo bash $SCRIPTS/activate-ssl.sh"
+    exit
 fi
 
 if [[ "no" == $(ask_yes_or_no "Have you forwarded port 443 in your router?") ]]
 then
-    echo
-    echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
-    any_key "Press any key to continue..."
+msg_box "OK, but if you want to run this script later,
+just type: sudo bash /var/scripts/activate-ssl.sh"
     exit
 fi
 
@@ -68,9 +55,8 @@ if [[ "yes" == $(ask_yes_or_no "Do you have a domain that you will use?") ]]
 then
     sleep 1
 else
-    echo
-    echo "OK, but if you want to run this script later, just type: sudo bash /var/scripts/activate-ssl.sh"
-    any_key "Press any key to continue..."
+msg_box "OK, but if you want to run this script later, 
+just type: sudo bash /var/scripts/activate-ssl.sh"
     exit
 fi
 
@@ -113,9 +99,8 @@ elif curl -s -k -m 10 "$domain"; then
 elif curl -s -k -m 10 "https://$domain" -o /dev/null ; then
     sleep 1
 else
-    echo "Nope, it's not there. You have to create $domain and point"
-    echo "it to this server before you can run this script."
-    any_key "Press any key to continue..."
+msg_box "Nope, it's not there. You have to create $domain and point
+it to this server before you can run this script."
     exit 1
 fi
 
@@ -266,23 +251,20 @@ else
 fi
 done
 
-printf "${ICyan}Sorry, last try failed as well. :/${Color_Off}\n\n"
-cat << ENDMSG
-+------------------------------------------------------------------------+
-| The script is located in $SCRIPTS/activate-ssl.sh                  |
-| Please try to run it again some other time with other settings.        |
-|                                                                        |
-| There are different configs you can try in Let's Encrypt's user guide: |
-| https://letsencrypt.readthedocs.org/en/latest/index.html               |
-| Please check the guide for further information on how to enable SSL.   |
-|                                                                        |
-| This script is developed on GitHub, feel free to contribute:           |
-| https://github.com/nextcloud/vm                                        |
-|                                                                        |
-| The script will now do some cleanup and revert the settings.           |
-+------------------------------------------------------------------------+
-ENDMSG
-any_key "Press any key to revert settings and exit... "
+# Failed
+msg_box "Sorry, last try failed as well. :/
+
+The script is located in $SCRIPTS/activate-ssl.sh
+Please try to run it again some other time with other settings.
+
+There are different configs you can try in Let's Encrypt's user guide:
+https://letsencrypt.readthedocs.org/en/latest/index.html
+Please check the guide for further information on how to enable SSL.
+
+This script is developed on GitHub, feel free to contribute:
+https://github.com/nextcloud/vm
+
+The script will now do some cleanup and revert the settings."
 
 # Cleanup
 apt remove letsencrypt -y
