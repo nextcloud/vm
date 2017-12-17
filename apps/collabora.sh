@@ -237,7 +237,7 @@ else
 fi
 
 # Enable RichDocuments (Collabora App)
-if [ -d "$NCPATH"/apps/richdocuments ]
+if [ -d "$NC_APPS_PATH"/richdocuments ]
 then
 # Enable Collabora
     check_command sudo -u www-data php "$NCPATH"/occ app:enable richdocuments
