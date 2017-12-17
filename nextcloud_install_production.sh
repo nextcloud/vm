@@ -454,10 +454,10 @@ while read -r -u 9 choice
 do
     case "$choice" in
         Calendar)
-            run_app_script calendar
+            install_and_enable_app calendar
         ;;
         Contacts)
-            run_app_script contacts
+            install_and_enable_app contacts
         ;;
         Webmin)
             run_app_script webmin
