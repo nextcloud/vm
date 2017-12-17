@@ -334,7 +334,6 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "phpMyadmin" "(*SQL GUI)       " OFF \
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
-"Nextant" "(Full text search)   " OFF \
 "Passman" "(Password storage)   " OFF \
 "Spreed.ME" "(Video calls)   " OFF 2>results
 
@@ -355,10 +354,6 @@ do
         
         Collabora)
             run_app_script collabora
-        ;;
-
-        Nextant)
-            run_app_script nextant
         ;;
 
         Passman)
