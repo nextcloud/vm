@@ -121,9 +121,8 @@ check_command update-rc.d fail2ban enable
 check_command service fail2ban restart
 
 # The End
-echo
-echo "Fail2ban is now sucessfully installed."
-echo "Please use 'fail2ban-client set nextcloud unbanip <Banned IP>' to unban certain IPs"
-echo "You can also use 'iptables -L -n' to check which IPs that are banned"
-any_key "Press any key to continue..."
+msg_box "Fail2ban is now sucessfully installed.
+
+Please use 'fail2ban-client set nextcloud unbanip <Banned IP>' to unban certain IPs
+You can also use 'iptables -L -n' to check which IPs that are banned"
 clear
