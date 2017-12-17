@@ -14,14 +14,13 @@ debug_mode
 
 if [[ $UNIXUSER != "ncadmin" ]]
 then
-    echo
-    echo "Current user with sudo permissions is: $UNIXUSER".
-    echo "This script will set up everything with that user."
-    echo "If the field after ':' is blank you are probably running as a pure root user."
-    echo "It's possible to install with root, but there will be minor errors."
-    echo
-    echo "Please create a user with sudo permissions if you want an optimal installation."
-    echo "The preferred user is 'ncadmin'."
+msg_box "Current user with sudo permissions is: $UNIXUSER.
+This script will set up everything with that user.
+If the field after ':' is blank you are probably running as a pure root user.
+It's possible to install with root, but there will be minor errors.
+
+Please create a user with sudo permissions if you want an optimal installation.
+The preferred user is 'ncadmin'."
     if [[ "no" == $(ask_yes_or_no "Do you want to create a new user?") ]]
     then
         echo "Not adding another user..."
