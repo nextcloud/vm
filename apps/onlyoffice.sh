@@ -218,7 +218,7 @@ then
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
 # Install Onlyoffice App
-    cd $NCPATH/apps
+    cd "$NC_APPS_PATH"
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
 else
     printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: $ISSUES\n"
