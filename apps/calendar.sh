@@ -5,8 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-CALENDAR_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset CALENDAR_INSTALL
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -17,11 +16,7 @@ debug_mode
 # Download and install Calendar
 if [ ! -d "$NCPATH"/apps/calendar ]
 then
-    echo "Installing calendar..."
-    wget -q "$CALVER_REPO/v$CALVER/$CALVER_FILE" -P "$NCPATH/apps"
-    tar -zxf "$NCPATH/apps/$CALVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
-    rm "$CALVER_FILE"
+sudo -u www-data php "$NCPATH"/occ app:install calendar
 fi
 
 # Enable Calendar
