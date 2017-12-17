@@ -28,11 +28,13 @@ root_check() {
 if ! is_root
 then
 msg_box "Sorry, you are not root. You now have two options:
+
 1. With SUDO directly:
    a) :~$ sudo bash $SCRIPTS/name-of-script.sh
 2. Become ROOT and then type your command:
    a) :~$ sudo -i
    b) :~# $SCRIPTS/name-of-script.sh
+
 In both cases above you can leave out $SCRIPTS/ if the script
 is directly in your PATH.
 More information can be found here: https://unix.stackexchange.com/a/3064"
@@ -360,7 +362,7 @@ do
         ;;
 
         Passman)
-            run_app_script passman
+           install_and_enable_app passman
         ;;
 
         Spreed.ME)
