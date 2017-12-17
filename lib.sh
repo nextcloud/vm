@@ -373,6 +373,22 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
+install_and_enable_app() {
+# Download and install $1
+if [ ! -d "$NC_APPS_PATH/$1" ]
+then
+    echo "Installing $1..."
+    check_command sudo -u www-data php "$NCPATH"/occ app:install $1
+fi
+
+# Enable $1
+if [ -d "$NC_APPS_PATH/$1" ]
+then
+    check_command sudo -u www-data php "$NCPATH"/occ app:enable $1
+    chown -R www-data:www-data "$NC_APPS_PATH"
+fi
+}
+
 download_verify_nextcloud_stable() {
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
 wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -P "$HTML"
