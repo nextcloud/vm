@@ -92,15 +92,7 @@ NC_APPS_PATH=$NCPATH/apps/
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
-# Passman
-[ ! -z "$PASSMAN_INSTALL" ] && PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
-PASSVER_FILE=passman_$PASSVER.tar.gz
-PASSVER_REPO=https://releases.passman.cc
 SHA256=/tmp/sha256
-# Preview Generator
-[ ! -z "$PREVIEW_INSTALL" ] && PREVER=$(curl -s https://api.github.com/repos/rullzer/previewgenerator/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-PREVER_FILE=previewgenerator.tar.gz
-PREVER_REPO=https://github.com/rullzer/previewgenerator/releases/download
 # Spreed.ME
 SPREEDME_VER=$(wget -q https://raw.githubusercontent.com/strukturag/nextcloud-spreedme/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 SPREEDME_FILE="v$SPREEDME_VER.tar.gz"
