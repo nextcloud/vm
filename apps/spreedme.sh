@@ -42,27 +42,19 @@ else
 fi
 
 # Install and activate the SpreedMe app
-if [ -d "$NCPATH/apps/spreedme" ]
+if [ -d "$NC_APPS_PATH/spreedme" ]
 then
     # Remove
     sudo -u www-data php "$NCPATH/occ" app:disable spreedme
     echo "SpreedMe app already seems to be installed and will now be re-installed..."
-    rm -R "$NCPATH/apps/spreedme"
+    rm -R "NC_APPS_PATH/spreedme"
     # Reinstall
-    wget -q "$SPREEDME_REPO/$SPREEDME_FILE" -P "$NCPATH/apps"
-    tar -zxf "$NCPATH/apps/$SPREEDME_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
-    rm "$SPREEDME_FILE"
-    mv "nextcloud-spreedme-$SPREEDME_VER" spreedme
+    check_command sudo -u www-data php "$NCPATH"/occ app:install spreedme
 else
-    wget -q "$SPREEDME_REPO/$SPREEDME_FILE" -P "$NCPATH/apps"
-    tar -zxf "$NCPATH/apps/$SPREEDME_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps"
-    rm "$SPREEDME_FILE"
-    mv "nextcloud-spreedme-$SPREEDME_VER" spreedme
+    check_command sudo -u www-data php "$NCPATH"/occ app:install spreedme
 fi
 check_command sudo -u www-data php "$NCPATH/occ" app:enable spreedme
-chown -R www-data:www-data $NCPATH/apps
+chown -R www-data:www-data $NC_APPS_PATH
 
 # Generate secret keys
 SHAREDSECRET=$(openssl rand -hex 32)
