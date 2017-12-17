@@ -227,7 +227,7 @@ else
 fi
 
 # Enable Onlyoffice
-if [ -d "$NCPATH"/apps/onlyoffice ]
+if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
 # Enable OnlyOffice
     check_command sudo -u www-data php "$NCPATH"/occ app:enable onlyoffice
