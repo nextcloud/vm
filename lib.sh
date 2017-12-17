@@ -79,9 +79,6 @@ LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
 DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 # Collabora App
-[ ! -z "$COLLABORA_INSTALL" ] && COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
-COLLVER_FILE=richdocuments.tar.gz
-COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Nextant
 # this var get's the latest automatically:
@@ -104,14 +101,6 @@ SHA256=/tmp/sha256
 [ ! -z "$PREVIEW_INSTALL" ] && PREVER=$(curl -s https://api.github.com/repos/rullzer/previewgenerator/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
 PREVER_FILE=previewgenerator.tar.gz
 PREVER_REPO=https://github.com/rullzer/previewgenerator/releases/download
-# Calendar
-[ ! -z "$CALENDAR_INSTALL" ] && CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-CALVER_FILE=calendar.tar.gz
-CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
-# Contacts
-[ ! -z "$CONTACTS_INSTALL" ] && CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
 # Spreed.ME
 SPREEDME_VER=$(wget -q https://raw.githubusercontent.com/strukturag/nextcloud-spreedme/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
 SPREEDME_FILE="v$SPREEDME_VER.tar.gz"
