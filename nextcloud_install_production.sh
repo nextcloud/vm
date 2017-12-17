@@ -325,6 +325,9 @@ echo "opcache.validate_timestamps=1"
 # Install preview generator
 run_app_script previewgenerator
 
+# Always install issuetemplate
+install_and_enable_app issuetemplate
+
 # Install Figlet
 apt install figlet -y
 
