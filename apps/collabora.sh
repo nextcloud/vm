@@ -229,10 +229,7 @@ then
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
 # Install Collabora App
-    check_command wget -q "$COLLVER_REPO/$COLLVER/$COLLVER_FILE" -P "$NCPATH/apps"
-    check_command tar -zxf "$NCPATH/apps/$COLLVER_FILE" -C "$NCPATH/apps"
-    cd "$NCPATH/apps" || exit 1
-    rm "$COLLVER_FILE"
+    check_command sudo -u www-data php "$NCPATH"/occ app:install richdocuments
 else
     printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: $ISSUES\n"
     any_key "Press any key to continue... "
