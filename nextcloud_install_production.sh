@@ -323,7 +323,16 @@ echo "opcache.validate_timestamps=1"
 } >> /etc/php/7.0/apache2/php.ini
 
 # Install preview generator
-run_app_script previewgenerator
+install_and_enable_app previewgenerator
+
+# Run the first preview generation and add crontab
+if [ -d "$NC_APPS_PATH/previewgenerator" ]
+then
+    crontab -u www-data -l | { cat; echo "@daily php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
+    sudo -u www-data php "$NCPATH"/occ preview:generate-all
+    touch /var/log/previewgenerator.log
+    chown www-data:www-data /var/log/previewgenerator.log
+fi
 
 # Always install issuetemplate
 install_and_enable_app issuetemplate
