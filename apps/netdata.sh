@@ -42,8 +42,8 @@ if [ -d /etc/netdata ]
 then
 msg_box "Netdata is now installed and can be accessed from these addresses:
 
-http(s)://$ADDRESS:19999
-http(s)://$(hostname):19999
+http://$ADDRESS:19999
+http://$(hostname):19999
 
 You can find more configuration options in their wiki:
 https://github.com/firehol/netdata/wiki/Configuration"
