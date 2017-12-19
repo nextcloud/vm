@@ -16,21 +16,21 @@ debug_mode
 # Download and install Calendar
 if [ -d /etc/netdata ]
 then
-    echo "Netdata seems to be installed."
-    if [[ "yes" == $(ask_yes_or_no "Do you wich to uninstall Netdata prior to installing it again?") ]]
-    then
-        # Uninstall
-        echo yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force | -y
-        userdel netdata
-        groupdel netdata
-        gpasswd -d netdata adm
-        gpasswd -d netdata proxy
-        # Install
-        is_process_running apt
-        apt update -q4 & spinner_loading
-        sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait)"
-    fi
+msg_box "Netdata seems to be installed.
+
+We will now remove Netdrive and reinstall it with the latest master.
+    # Uninstall
+    echo yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+    userdel netdata
+    groupdel netdata
+    gpasswd -d netdata adm
+    gpasswd -d netdata proxy
+    # Install
+    is_process_running apt
+    apt update -q4 & spinner_loading
+    sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait)"
 else
+    # Install
     is_process_running dpkg
     is_process_running apt
     apt update -q & spinner_loading
@@ -45,7 +45,7 @@ msg_box "Netdata is now installed and can be accessed from these addresses:
 http(s)://$ADDRESS:19999
 http(s)://$(hostname):19999
 
-You can find more configuraotion options in their wiki:
+You can find more configuration options in their wiki:
 https://github.com/firehol/netdata/wiki/Configuration"
 
 # Cleanup
