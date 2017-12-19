@@ -42,6 +42,15 @@ then
     service apache2 restart
 fi
 
+# Update Netdata
+if [ -d /etc/netdata ]
+then
+    if [ -f /usr/src/netdata.git/netdata-updater.sh ]
+    then
+        bash /usr/src/netdata.git/netdata-updater.sh
+    fi
+fi
+
 # Update docker images
 # This updates ALL Docker images:
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
