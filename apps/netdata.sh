@@ -26,25 +26,27 @@ then
          gpasswd -d netdata adm
          gpasswd -d netdata proxy
     else
-    
+        is_process_running dpkg
+        is_process_running apt
+        apt update -q & spinner_loading
+        sudo -u $UNIXUSER bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait
+fi
 
-ACTION
-check is_this_runing dpkg, apt,
-    apt update -q & spinner_loading
-    sudo -u $UNIXUSER bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait
-
+# Installation done?
+if [ -d /etc/netdata ]
+then
 msg_box "Netdata is now installed and can be accessed from these addresses:
 
-    $ADDRESS:19999
-    $(hostname):19999
+$ADDRESS:19999
+$(hostname):19999
 
 You can find more configuraotion options in their wiki:
 https://github.com/firehol/netdata/wiki/Configuration"
 
 # Cleanup
 rm -f /tmp/netdata*
-
-    fi    
 fi
+
+exit
 
 
