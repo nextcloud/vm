@@ -33,7 +33,7 @@ else
     # Install
     is_process_running dpkg
     is_process_running apt
-    apt update -q & spinner_loading
+    apt update -q4 & spinner_loading
     sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait)"
 fi
 
