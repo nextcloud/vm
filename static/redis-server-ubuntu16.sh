@@ -51,8 +51,7 @@ sudo apt install -q -y \
 # Install PHPmodule
 if ! pecl install -Z redis
 then
-    echo "PHP module installation failed"
-    sleep 3
+    msg_box "PHP module installation failed"
     exit 1
 else
     printf "${Green}\nPHP module installation OK!${Color_Off}\n"
@@ -69,8 +68,7 @@ service apache2 restart
 # Install Redis
 if ! apt -y install redis-server
 then
-    echo "Installation failed."
-    sleep 3
+    msg_box "Installation failed."
     exit 1
 else
     printf "${Green}\nRedis installation OK!${Color_Off}\n"
@@ -101,10 +99,11 @@ if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 then
     echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 fi
-sed -i "s|# unixsocket /var/run/redis/redis.sock|unixsocket $REDIS_SOCK|g" $REDIS_CONF
-sed -i "s|# unixsocketperm 700|unixsocketperm 777|g" $REDIS_CONF
-sed -i "s|port 6379|port 0|g" $REDIS_CONF
-sed -i "s|# requirepass foobared|requirepass $REDIS_PASS|g" $REDIS_CONF
+sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
+sed -i "s|# unixsocketperm .*|unixsocketperm 770|g" $REDIS_CONF
+sed -i "s|^port.*|port 0|" $REDIS_CONF
+sed -i "s|# requirepass .*|requirepass $REDIS_PASS|g" $REDIS_CONF
+ sed -i 's|# rename-command CONFIG ""|rename-command CONFIG ""|' $REDIS_CONF
 redis-cli SHUTDOWN
 
 # Secure Redis
