@@ -37,6 +37,9 @@ else
     sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait)"
 fi
 
+# Check Netdata instructions after script is done
+any_key "Press any key to continue..."
+
 # Installation done?
 if [ -d /etc/netdata ]
 then
