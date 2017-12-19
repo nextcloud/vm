@@ -30,6 +30,7 @@ then
         is_process_running apt
         apt update -q & spinner_loading
         sudo -u $UNIXUSER bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait
+    fi
 fi
 
 # Installation done?
