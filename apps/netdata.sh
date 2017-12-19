@@ -46,7 +46,7 @@ then
 msg_box "Netdata is now installed and can be accessed from these addresses:
 
 http://$ADDRESS:19999
-http://$(hostname):19999
+http://$(hostname -f):19999
 
 You can find more configuration options in their wiki:
 https://github.com/firehol/netdata/wiki/Configuration"
