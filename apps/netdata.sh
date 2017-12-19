@@ -54,6 +54,7 @@ https://github.com/firehol/netdata/wiki/Configuration"
 # Cleanup
 rm -f /tmp/netdata*
 fi
+clear
 
 exit
 
