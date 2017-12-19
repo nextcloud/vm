@@ -46,9 +46,15 @@ then
 msg_box "Netdata is now installed and can be accessed from these addresses:
 
 http://$ADDRESS:19999
-http://$(hostname -f):19999
 
-You can find more configuration options in their wiki:
+If you want to reach it from the internet you need to open port 19999 in your firewall.
+If you don't know how to open ports, please follow this guide:
+https://www.techandme.se/open-port-80-443/
+
+After you have opened the correct port, then you can visit Netdata from your domain:
+http://$(hostname -f):19999 and or http://yourdomanin.com:19999
+
+You can find more configuration options in their WIKI:
 https://github.com/firehol/netdata/wiki/Configuration"
 
 # Cleanup
