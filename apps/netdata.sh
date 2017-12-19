@@ -25,6 +25,7 @@ We will now remove Netdata and reinstall it with the latest master."
     gpasswd -d netdata adm
     gpasswd -d netdata proxy
     # Install
+    is_process_running dpkg
     is_process_running apt
     apt update -q4 & spinner_loading
     sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait)"
