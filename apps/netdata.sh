@@ -38,7 +38,7 @@ else
 fi
 
 # Check Netdata instructions after script is done
-any_key "Press any key to continue..."
+any_key "Please check information above and press any key to continue..."
 
 # Installation done?
 if [ -d /etc/netdata ]
