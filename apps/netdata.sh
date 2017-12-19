@@ -43,7 +43,7 @@ any_key "Please check information above and press any key to continue..."
 # Installation done?
 if [ -d /etc/netdata ]
 then
-msg_box "Netdata is now installed and can be accessed from these addresses:
+msg_box "Netdata is now installed and can be accessed from this address:
 
 http://$ADDRESS:19999
 
@@ -52,6 +52,7 @@ If you don't know how to open ports, please follow this guide:
 https://www.techandme.se/open-port-80-443/
 
 After you have opened the correct port, then you can visit Netdata from your domain:
+
 http://$(hostname -f):19999 and or http://yourdomanin.com:19999
 
 You can find more configuration options in their WIKI:
