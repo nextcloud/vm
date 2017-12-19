@@ -19,17 +19,22 @@ then
     echo "Netdata seems to be installed."
     if [[ "yes" == $(ask_yes_or_no "Do you wich to uninstall Netdata prior to installing it again?") ]]
     then
-        bash /usr/src/netdata.git/netdata-uninstaller.sh --force -y
+        # Uninstall
+        echo yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force | -y
         userdel netdata
         groupdel netdata
         gpasswd -d netdata adm
         gpasswd -d netdata proxy
-    else
-        is_process_running dpkg
+        # Install
         is_process_running apt
-        apt update -q & spinner_loading
-        sudo -u "$UNIXUSER" bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait
+        apt update -q4 & spinner_loading
+        sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait)"
     fi
+else
+    is_process_running dpkg
+    is_process_running apt
+    apt update -q & spinner_loading
+    sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait)"
 fi
 
 # Installation done?
