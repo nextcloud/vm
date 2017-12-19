@@ -18,7 +18,7 @@ if [ -d /etc/netdata ]
 then
 msg_box "Netdata seems to be installed.
 
-We will now remove Netdrive and reinstall it with the latest master."
+We will now remove Netdata and reinstall it with the latest master."
     # Uninstall
     echo yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
     userdel netdata
