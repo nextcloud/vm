@@ -39,7 +39,7 @@ then
     install_if_not php7.0-dev
     echo "Trying to upgrade the Redis Pecl extenstion..."
     pecl upgrade redis
-    service apache2 restart
+    service redis-server restart
 fi
 
 # Update Netdata
