@@ -13,7 +13,7 @@ true
 DEBUG=0
 debug_mode
 
-# Download and install Calendar
+# Download and install Netdata
 if [ -d /etc/netdata ]
 then
 msg_box "Netdata seems to be installed.
