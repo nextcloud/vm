@@ -34,6 +34,10 @@ root_check
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
+# Check if dpkg or apt is running
+is_process_running dpkg
+is_process_running apt
+
 # Create new current user
 run_static_script adduser nextcloud_install_production.sh
 
