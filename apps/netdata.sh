@@ -59,7 +59,7 @@ You can find more configuration options in their WIKI:
 https://github.com/firehol/netdata/wiki/Configuration"
 
 # Cleanup
-rm -f /tmp/netdata*
+rm -rf /tmp/netdata*
 fi
 clear
 
