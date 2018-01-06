@@ -5,7 +5,7 @@ true
 NCDBPASS=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset NCDBPASS
 
-# Tech and Me © - 2017, https://www.techandme.se/
+# Tech and Me © - 2018, https://www.techandme.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
