@@ -221,7 +221,9 @@ check_command apt install -y \
     php7.0-xml \
     php7.0-zip \
     php7.0-mbstring \
-    php-smbclient
+    php-smbclient \
+    php-imagick \
+    libmagickcore-6.q16-2-extra
 
 # Enable SMB client
 # echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
