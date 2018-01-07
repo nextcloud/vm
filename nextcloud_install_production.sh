@@ -340,8 +340,11 @@ then
     chown www-data:www-data /var/log/previewgenerator.log
 fi
 
-# Always install issuetemplate
+# Install issuetemplate
 install_and_enable_app issuetemplate
+
+# Install CanIUpdate?
+install_and_enable_app caniupdate
 
 # Install Figlet
 apt install figlet -y
