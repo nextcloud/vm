@@ -46,15 +46,15 @@ fi
 if [ -d "$NC_APPS_PATH/spreedme" ]
 then
     # Remove
-    sudo -u www-data php "$NCPATH/occ" app:disable spreedme
+    occ_command 'app:disable spreedme'
     echo "SpreedMe app already seems to be installed and will now be re-installed..."
     rm -R "NC_APPS_PATH/spreedme"
     # Reinstall
-    check_command sudo -u www-data php "$NCPATH"/occ app:install spreedme
+    occ_command 'app:install spreedme'
 else
-    check_command sudo -u www-data php "$NCPATH"/occ app:install spreedme
+    occ_command 'app:install spreedme'
 fi
-check_command sudo -u www-data php "$NCPATH/occ" app:enable spreedme
+occ_command 'app:enable spreedme'
 chown -R www-data:www-data $NC_APPS_PATH
 
 # Generate secret keys
