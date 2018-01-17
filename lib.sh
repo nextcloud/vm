@@ -170,6 +170,11 @@ ask_yes_or_no() {
     esac
 }
 
+# Example: occ_command "maintenance:mode --on"
+occ_command() {
+check_command sudo -u www-data php "$NCPATH"/occ "$1"
+}
+
 msg_box() {
 local PROMPT="$1"
     whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
