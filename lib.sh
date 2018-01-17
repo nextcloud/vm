@@ -170,7 +170,7 @@ ask_yes_or_no() {
     esac
 }
 
-# Example: occ_command "maintenance:mode --on"
+# Example: occ_command 'maintenance:mode --on'
 occ_command() {
 check_command sudo -u www-data php "$NCPATH"/occ "$1"
 }
@@ -376,13 +376,13 @@ install_and_enable_app() {
 if [ ! -d "$NC_APPS_PATH/$1" ]
 then
     echo "Installing $1..."
-    check_command sudo -u www-data php "$NCPATH"/occ app:install "$1"
+    occ_command '"$NCPATH"/occ app:install "$1"'
 fi
 
 # Enable $1
 if [ -d "$NC_APPS_PATH/$1" ]
 then
-    check_command sudo -u www-data php "$NCPATH"/occ app:enable "$1"
+    occ_command '"$NCPATH"/occ app:enable "$1"'
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 }
