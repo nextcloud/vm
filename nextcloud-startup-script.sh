@@ -6,7 +6,7 @@ FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 
-# Tech and Me © - 2017, https://www.techandme.se/
+# Tech and Me © - 2018, https://www.techandme.se/
 
 ## If you want debug mode, please activate it further down in the code at line ~60
 
@@ -202,7 +202,7 @@ It will also do the following:
   The script will take about 10 minutes to finish,
   depending on your internet connection.
 
-####################### Tech and Me - 2017 #######################"
+####################### Tech and Me - 2018 #######################"
 clear
 
 # VPS?
@@ -513,7 +513,7 @@ Some tips and tricks:
 - To login to MariaDB just type: mysql -u root
 - To update this VM just type: sudo bash /var/scripts/update.sh
 
-###################### Tech and Me - 2017 ######################"
+###################### Tech and Me - 2018 ######################"
 
 # Set trusted domain in config.php
 if [ -f "$SCRIPTS"/trusted.sh ] 

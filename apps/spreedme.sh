@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2017, https://www.techandme.se/
+# Tech and Me © - 2018, https://www.techandme.se/
 
 # shellcheck disable=2034,2059
 true
@@ -37,9 +37,9 @@ then
     echo "SpreeMe Snap already seems to be installed and wil now be re-installed..."
     snap remove spreedme
     rm -rf "$SNAPDIR"
-    snap install spreedme
+    snap install --edge spreedme
 else
-    snap install spreedme
+    snap install --edge spreedme
 fi
 
 # Install and activate the SpreedMe app
