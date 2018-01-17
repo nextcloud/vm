@@ -304,6 +304,11 @@ then
     printf "${Red}Error: ${1} GB RAM required to install ${2}!${Color_Off}\n" >&2
     printf "${Red}Current RAM is: ("$((mem_available/1002400))" GB)${Color_Off}\n" >&2
     sleep 3
+    msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
+    
+    In nextcloud_install_production.sh you can find the check somewhere around line #34. 
+    
+    Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
 else
     printf "${Green}RAM for ${2} OK! ("$((mem_available/1002400))" GB)${Color_Off}\n"
