@@ -1,18 +1,10 @@
 #!/bin/bash
 
-# Tech and Me © - 2017, https://www.techandme.se/
+# Tech and Me © - 2018, https://www.techandme.se/
 
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-LOAD_IP6=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset LOAD_IP6
-
-# Check for errors + debug code and abort if something isn't right
-# 1 = ON
-# 0 = OFF
-DEBUG=0
-debug_mode
+WANIP6=$(curl -s -k -m 7 https://6.ifcfg.me)
+WANIP4=$(curl -s -m 5 ipinfo.io/ip)
+ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 clear
 figlet -f small Nextcloud
