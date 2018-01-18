@@ -336,7 +336,8 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Passman" "(Password storage)   " OFF \
-"Spreed.ME" "(Video calls)   " OFF 2>results
+"Talk" "(Nextcloud Video calls and chat)   " OFF \
+"Spreed.ME" "(3rd-party Video calls and chat)   " OFF 2>results
 
 while read -r -u 9 choice
 do
@@ -365,6 +366,10 @@ do
            install_and_enable_app passman
         ;;
 
+        Talk)
+            install_and_enable_app spreed
+        ;;
+        
         Spreed.ME)
             run_app_script spreedme
         ;;
