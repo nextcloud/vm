@@ -129,7 +129,7 @@ fi
 # Disable Onlyoffice if activated
 if [ -d "$NCPATH"/apps/onlyoffice ]
 then
-    occ_command 'app:disable onlyoffice'
+    occ_command "app:disable onlyoffice"
     rm -r "$NCPATH"/apps/onlyoffice
 fi
 
@@ -230,10 +230,10 @@ fi
 if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
 # Enable OnlyOffice
-    occ_command 'app:enable onlyoffice'
-    occ_command 'config:app:set onlyoffice DocumentServerUrl --value="https://$SUBDOMAIN/"'
+    occ_command "app:enable onlyoffice"
+    occ_command "config:app:set onlyoffice DocumentServerUrl --value=https://$SUBDOMAIN/"
     chown -R www-data:www-data $NCPATH/apps
-    occ_command 'config:system:set trusted_domains 3 --value="$SUBDOMAIN"'
+    occ_command "config:system:set trusted_domains 3 --value=$SUBDOMAIN"
 # Add prune command
     {
     echo "#!/bin/bash"
