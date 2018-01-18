@@ -59,7 +59,7 @@ SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # Nextcloud version
-[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(occ_command "status" | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
 STABLEVERSION="nextcloud-$NCVERSION"
 NCMAJOR="${NCVERSION%%.*}"
@@ -376,13 +376,13 @@ install_and_enable_app() {
 if [ ! -d "$NC_APPS_PATH/$1" ]
 then
     echo "Installing $1..."
-    occ_command '"$NCPATH"/occ app:install "$1"'
+    occ_command "app:install $1"
 fi
 
 # Enable $1
 if [ -d "$NC_APPS_PATH/$1" ]
 then
-    occ_command '"$NCPATH"/occ app:enable "$1"'
+    occ_command "app:enable $1"
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 }
