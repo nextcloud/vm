@@ -511,13 +511,21 @@ echo "$CLEARBOOT"
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
-Login to Nextcloud in your browser: $ADDRESS2
+Login to Nextcloud in your browser:
+- IP: $ADDRESS2 
+- Hostname: $SHOW_HOSTNAME
 
 Some tips and tricks:
-- Publish your server online: https://goo.gl/iUGE2U
-- To login to MariaDB just type: mysql -u root
-- To update this VM just type: sudo bash /var/scripts/update.sh
-
+1. Publish your server online: https://goo.gl/iUGE2U
+2. To login to MariaDB just type: mysql -u root
+3. To update this VM just type: sudo bash /var/scripts/update.sh
+4. Change IP to something outside DHCP: sudo nano /etc/network/interfaces
+5. Please report any bugs here: https://github.com/nextcloud/vm/issues
+6. Please ask for help in the forums, visit our shop, or buy support from Nextcloud:
+- SUPPORT: https://shop.techandme.se
+- FORUM: https://help.nextcloud.com/ 
+- NEXTCLOUD: https://nextcloud.com/pricing/
+  
 ###################### Tech and Me - 2018 ######################"
 
 # Set trusted domain in config.php
