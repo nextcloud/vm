@@ -17,5 +17,5 @@ if [ ! -s /tmp/google.idx ]
 then
     printf "${Red}Not Connected!${Color_Off}\n"
 else
-    printf "Connected!\n"
+    printf "${Green}Not Connected!${Color_Off}\n"
 fi
