@@ -513,7 +513,7 @@ ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print
 msg_box "Congratulations! You have successfully installed Nextcloud!
 Login to Nextcloud in your browser:
 - IP: $ADDRESS2 
-- Hostname: $SHOW_HOSTNAME
+- Hostname: $(hostname -f)
 
 Some tips and tricks:
 1. Publish your server online: https://goo.gl/iUGE2U
