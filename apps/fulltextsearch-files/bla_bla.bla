@@ -1,0 +1,6 @@
+    Download the zip file
+    cd to the Elasticsearch home
+    bin/elasticsearch-plugin install file:///download-folder/readonlyrest-1.16.15_es6.1.1.zip
+    Edit elasticsearch.yml and add your configuration snippets
+    
+    
