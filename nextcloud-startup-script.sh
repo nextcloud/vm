@@ -124,8 +124,8 @@ please abort this script and report this issue to $ISSUES."
 fi
 
 # Check if dpkg or apt is running
-is_process_running dpkg
 is_process_running apt
+is_process_running dpkg
 
 # Check where the best mirrors are and update
 msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
