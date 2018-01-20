@@ -24,8 +24,8 @@ THEME_NAME=""
 root_check
 
 # Check if dpkg or apt is running
-is_process_running dpkg
 is_process_running apt
+is_process_running dpkg
 
 # System Upgrade
 sudo apt-mark hold mariadb*
