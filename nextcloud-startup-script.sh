@@ -522,7 +522,7 @@ Some tips and tricks:
 4. Change IP to something outside DHCP: sudo nano /etc/network/interfaces
 5. Please report any bugs here: https://github.com/nextcloud/vm/issues
 6. Please ask for help in the forums, visit our shop, or buy support from Nextcloud:
-- SUPPORT: https://shop.techandme.se
+- SUPPORT: https://shop.techandme.se/index.php/product/premium-support-per-30-minutes/
 - FORUM: https://help.nextcloud.com/ 
 - NEXTCLOUD: https://nextcloud.com/pricing/
   
