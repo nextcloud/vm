@@ -23,6 +23,14 @@ then
     exit 1
 fi
 
+msg_box "Nextant is not maintained anymore and the developer has decided to remove the repositury from Github
+
+Sorry, not much we can do about it. 
+
+If you want to help us move forward, then please help us develop a script for Full text Search instead.
+You can find the repository here: https://github.com/nextcloud/fulltextsearch, 
+but please send your PR to the Nextcloud VM repository"
+
 # Make sure there is an Nextcloud installation
 if ! [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
 then
