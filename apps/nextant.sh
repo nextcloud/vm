@@ -23,7 +23,9 @@ then
     exit 1
 fi
 
-msg_box "Nextant is not maintained anymore. Sorry, not much we can do about it. 
+msg_box "Nextant is not maintained anymore, and soon to be replaced with Full Text Search. Sorry, not much we can do about it. 
+
+Nextant is still fully functional though, but it will not be developed any further.
 
 If you want to help us move forward, then please help us develop a script for Full text Search instead.
 You can find the repository here: https://github.com/nextcloud/fulltextsearch, 
