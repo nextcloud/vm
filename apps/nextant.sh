@@ -23,9 +23,7 @@ then
     exit 1
 fi
 
-msg_box "Nextant is not maintained anymore and the developer has decided to remove the repositury from Github
-
-Sorry, not much we can do about it. 
+msg_box "Nextant is not maintained anymore. Sorry, not much we can do about it. 
 
 If you want to help us move forward, then please help us develop a script for Full text Search instead.
 You can find the repository here: https://github.com/nextcloud/fulltextsearch, 
@@ -101,9 +99,9 @@ check_command "echo \"SOLR_OPTS=\\\"\\\$SOLR_OPTS -Dsolr.allow.unsafe.resourcelo
 check_command service solr restart
 
 # Get nextant app for nextcloud
-check_command wget -q -P "$NC_APPS_PATH" "$NT_DL"
+check_command wget -q -P "$NC_APPS_PATH" https://github.com/nextcloud/fulltextsearch/releases/download/v1.0.8/nextant-1.0.8.tar.gz
 check_command cd "$NC_APPS_PATH"
-check_command tar zxf "$NT_RELEASE"
+check_command tar zxf nextant-1.0.8.tar.gz
 
 # Enable Nextant
 rm -r "$NT_RELEASE"
