@@ -57,7 +57,7 @@ apt install elasticsearch -y
 check_command /etc/init.d/elasticsearch start
 check_command /etc/init.d/elasticsearch stop
 check_command /etc/init.d/elasticsearch restart
-if ! [ $(curl http://127.0.0.1:9200) ]
+if ! [ "$(curl http://127.0.0.1:9200)" ]
 then
 msg_box "Installation failed!
 
