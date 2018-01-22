@@ -12,6 +12,7 @@ FTS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/nc13-a
 unset FTS_INSTALL
 
 FTS_VERSION=6.1.1
+FTS_DEB_VERSION="$(echo $FTS_VERSION | head -c 3)"
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -56,8 +57,7 @@ then
     # Remove Solr
     service solr stop
     rm -rf /var/solr
-    rm -rf /opt/solr-5.3.1
-    rm -rf /opt/solr
+    rm -rf /opt/solr*
     rm /etc/init.d/solr
     deluser --remove-home solr
     deluser --group solr
@@ -69,7 +69,7 @@ check_command apt install apt-transport-https -y
 
 # Install Elastic
 check_command wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-check_command echo "deb https://artifacts.elastic.co/packages/$FTS_VERSION/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-$FTS_VERSION.list
+check_command echo "deb https://artifacts.elastic.co/packages/$FTS_DEB_VERSION/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-$FTS_DEB_VERSION.list
 apt update -q4 & spinner_loading
 apt install elasticsearch -y
 check_command /etc/init.d/elasticsearch start
@@ -87,11 +87,16 @@ fi
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch install ingest-attachment
+    check_command ./elasticsearch-plugin install ingest-attachment
 fi
 
 # Install ReadOnlyREST
-bin/elasticsearch-plugin install file://"$GITHUB_REPO"/"$APPS"/fulltextsearch-files/readonlyrest-1.16.15_es"$FTS_VERSION".zip
+if [ -d /usr/share/elasticsearch ]
+then
+    cd /usr/share/elasticsearch/bin
+    check_command ./elasticsearch-plugin install file://"$GITHUB_REPO"/"$APPS"/fulltextsearch-files/readonlyrest-1.16.15_es"$FTS_VERSION".zip
+fi
+
 # Check with SHA TODO
 
 # Create YML with password TODO
