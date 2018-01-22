@@ -102,9 +102,7 @@ fi
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command wget "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip -P /tmp
-    check_command unzip /tmp/readonlyrest-1.16.15_es"$ES_VERSION".zip -d /tmp/readonlyrest
-    check_command ./elasticsearch-plugin install file://tmp//readonlyrest/readonlyrest-1.16.15_es"$ES_VERSION".zip
+    check_command ./elasticsearch-plugin install "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$FTS_VERSION".zip
 fi
 
 # Check that ReadOnlyREST is properly installed
