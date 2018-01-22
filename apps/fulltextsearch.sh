@@ -68,6 +68,8 @@ then
 fi
 
 # Installing requirements
+echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
 check_command apt install openjdk-8-jre -y
 check_command apt install apt-transport-https -y
 
@@ -77,6 +79,9 @@ check_command echo "deb https://artifacts.elastic.co/packages/$FTS_DEB_VERSION/a
 apt update -q4 & spinner_loading
 apt install elasticsearch -y
 check_command /etc/init.d/elasticsearch start
+
+# Enable on bootup
+sudo update-rc.d elasticsearch defaults 95 10
 
 # Install ingest-attachment plugin
 if [ -d /usr/share/elasticsearch ]
