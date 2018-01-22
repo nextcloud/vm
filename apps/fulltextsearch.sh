@@ -43,9 +43,27 @@ then
 fi
 
 echo "Starting to setup Elastic Search & Full Text Search on Nextcloud..."
+apt update -q4 & spinner_loading
+
+# Disable and remove Nextant + Solr
+if [ -d "$NC_APPS_PATH"/nextant ]
+then
+    # Remove Nextant
+    msg_box "We will now remove Nextant + Solr and replace it with Full Text Search"
+    occ_command app:disbale nextant
+    rm -rf $NC_APPS_PATH/nextant
+    
+    # Remove Solr
+    service solr stop
+    rm -rf /var/solr
+    rm -rf /opt/solr-5.3.1
+    rm -rf /opt/solr
+    rm /etc/init.d/solr
+    deluser --remove-home solr
+    deluser --group solr
+fi
 
 # Installing requirements
-apt update -q4 & spinner_loading
 check_command apt install openjdk-9-jre -y
 check_command apt install apt-transport-https -y
 
@@ -73,7 +91,7 @@ then
 fi
 
 # Install ReadOnlyREST
-bin/elasticsearch-plugin install file://"$GITHUB_REPO"/"$APPS"/fulltextsearch-files/readonlyrest-"$FTS_VERSION".zip
+bin/elasticsearch-plugin install file://"$GITHUB_REPO"/"$APPS"/fulltextsearch-files/readonlyrest-1.16.15_es"$FTS_VERSION".zip
 # Check with SHA TODO
 
 # Create YML with password TODO
