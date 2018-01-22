@@ -12,7 +12,7 @@ FTS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/nc13-a
 unset FTS_INSTALL
 
 FTS_VERSION=6.1.1
-FTS_DEB_VERSION="$(echo $FTS_VERSION | head -c 3)"
+FTS_DEB_VERSION="$(echo $FTS_VERSION | head -c 1)"
 
 ######### FOR TESTING ########
 GITHUB_REPO=https://raw.githubusercontent.com/nextcloud/vm/full-text-search
@@ -75,7 +75,7 @@ check_command apt install apt-transport-https -y
 
 # Install Elastic
 check_command wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-check_command echo "deb https://artifacts.elastic.co/packages/$FTS_DEB_VERSION/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-"$FTS_DEB_VERSION".list
+check_command echo "deb https://artifacts.elastic.co/packages/$FTS_DEB_VERSION.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-"$FTS_DEB_VERSION".x.list
 apt update -q4 & spinner_loading
 apt install elasticsearch -y
 check_command /etc/init.d/elasticsearch start
