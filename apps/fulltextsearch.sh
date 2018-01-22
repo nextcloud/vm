@@ -8,11 +8,11 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FTS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/nc13-appinstall/lib.sh)
-unset FTS_INSTALL
+ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/nc13-appinstall/lib.sh)
+unset ES_INSTALL
 
-FTS_VERSION=6.1.1
-FTS_DEB_VERSION="$(echo $FTS_VERSION | head -c 1)"
+ES_VERSION=6.1.1
+ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
 
 ######### FOR TESTING ########
 GITHUB_REPO=https://raw.githubusercontent.com/nextcloud/vm/full-text-search
@@ -75,9 +75,9 @@ check_command apt install apt-transport-https -y
 
 # Install Elastic
 check_command wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-check_command echo "deb https://artifacts.elastic.co/packages/$FTS_DEB_VERSION.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-"$FTS_DEB_VERSION".x.list
+check_command echo "deb https://artifacts.elastic.co/packages/$ES_DEB_VERSION.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-"$ES_DEB_VERSION".x.list
 apt update -q4 & spinner_loading
-apt install elasticsearch -y
+apt install elasticsearch=$ES_VERSION -y
 check_command /etc/init.d/elasticsearch start
 
 # Enable on bootup
@@ -102,9 +102,9 @@ fi
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command wget "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$FTS_VERSION".zip -P /tmp
-    check_command unzip /tmp/readonlyrest-1.16.15_es"$FTS_VERSION".zip -d /tmp/readonlyrest
-    check_command ./elasticsearch-plugin install file://tmp//readonlyrest/readonlyrest-1.16.15_es"$FTS_VERSION".zip
+    check_command wget "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip -P /tmp
+    check_command unzip /tmp/readonlyrest-1.16.15_es"$ES_VERSION".zip -d /tmp/readonlyrest
+    check_command ./elasticsearch-plugin install file://tmp//readonlyrest/readonlyrest-1.16.15_es"$ES_VERSION".zip
 fi
 
 # Check that ReadOnlyREST is properly installed
