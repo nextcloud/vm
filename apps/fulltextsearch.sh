@@ -64,7 +64,7 @@ then
 fi
 
 # Installing requirements
-check_command apt install openjdk-9-jre -y
+check_command apt install openjdk-8-jre -y
 check_command apt install apt-transport-https -y
 
 # Install Elastic
@@ -86,8 +86,8 @@ fi
 # Install ingest-attachment plugin
 if [ -d /usr/share/elasticsearch ]
 then
-    cd /usr/share/elasticsearch
-    check_command bin/elasticsearch-plugin install ingest-attachment
+    cd /usr/share/elasticsearch/bin
+    check_command ./elasticsearch install ingest-attachment
 fi
 
 # Install ReadOnlyREST
