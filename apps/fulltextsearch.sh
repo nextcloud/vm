@@ -14,6 +14,11 @@ unset FTS_INSTALL
 FTS_VERSION=6.1.1
 FTS_DEB_VERSION="$(echo $FTS_VERSION | head -c 3)"
 
+######### FOR TESTING ########
+GITHUB_REPO=https://raw.githubusercontent.com/nextcloud/vm/full-text-search
+APP=$GITHUB_REPO/apps
+##############################
+
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
