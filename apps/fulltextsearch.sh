@@ -75,13 +75,13 @@ check_command apt install apt-transport-https -y
 
 # Install Elastic
 check_command wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-check_command echo "deb https://artifacts.elastic.co/packages/$FTS_DEB_VERSION/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-$FTS_DEB_VERSION.list
+check_command echo "deb https://artifacts.elastic.co/packages/$FTS_DEB_VERSION/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-"$FTS_DEB_VERSION".list
 apt update -q4 & spinner_loading
 apt install elasticsearch -y
 check_command /etc/init.d/elasticsearch start
 
 # Enable on bootup
-sudo update-rc.d elasticsearch defaults 95 10
+sudo systemctl enable elasticsearch.service
 
 # Install ingest-attachment plugin
 if [ -d /usr/share/elasticsearch ]
@@ -117,7 +117,7 @@ fi
 
 # Check with SHA TODO
 
-# Create YML with password TODO
+# Create YML with password TODO /etc/elasticsearch/elasticsearch.yml
 
 # Add password and user values to FTS GUI TODO
 occ_command "config:app:set --value '1' fullnextsearch app_navigation"
