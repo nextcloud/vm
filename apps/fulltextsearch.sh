@@ -91,7 +91,7 @@ then
 fi
 
 # Check that ingest-attachment is properly installed
-if ! [ "$(curl http://127.0.0.1:9300)" ]
+if ! [ "$(curl -s http://127.0.0.1:9300)" ]
 then
 msg_box "Installation failed!
 Please report this to $ISSUES"
@@ -107,7 +107,7 @@ then
 fi
 
 # Check that ReadOnlyREST is properly installed
-if ! [ "$(curl http://127.0.0.1:9300)" ]
+if ! [ "$(curl -s http://127.0.0.1:9300)" ]
 then
 msg_box "Installation failed!
 Please report this to $ISSUES"
