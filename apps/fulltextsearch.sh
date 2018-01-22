@@ -72,27 +72,37 @@ check_command echo "deb https://artifacts.elastic.co/packages/$FTS_DEB_VERSION/a
 apt update -q4 & spinner_loading
 apt install elasticsearch -y
 check_command /etc/init.d/elasticsearch start
-sleep 3
-if ! [ "$(curl http://127.0.0.1:9200)" ]
-then
-msg_box "Installation failed!
-
-Please report this to $ISSUES"
-    exit 1
-fi
 
 # Install ingest-attachment plugin
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install ingest-attachment
+    check_command ./elasticsearch install ingest-attachment
+fi
+
+# Check that ingest-attachment is properly installed
+if ! [ "$(curl http://127.0.0.1:9300)" ]
+then
+msg_box "Installation failed!
+Please report this to $ISSUES"
+    exit 1
 fi
 
 # Install ReadOnlyREST
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install file://"$GITHUB_REPO"/"$APPS"/fulltextsearch-files/readonlyrest-1.16.15_es"$FTS_VERSION".zip
+    check_command wget "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$FTS_VERSION".zip -P /tmp
+    check_command unzip /tmp/readonlyrest-1.16.15_es"$FTS_VERSION".zip -d /tmp/readonlyrest
+    check_command ./elasticsearch install file://tmp//readonlyrest/readonlyrest-1.16.15_es"$FTS_VERSION".zip
+fi
+
+# Check that ReadOnlyREST is properly installed
+if ! [ "$(curl http://127.0.0.1:9300)" ]
+then
+msg_box "Installation failed!
+Please report this to $ISSUES"
+    exit 1
 fi
 
 # Check with SHA TODO
