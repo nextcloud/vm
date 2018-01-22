@@ -99,6 +99,7 @@ Please report this to $ISSUES"
 fi
 
 # Install ReadOnlyREST
+# TODO Check with SHA
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
@@ -113,9 +114,18 @@ Please report this to $ISSUES"
     exit 1
 fi
 
-# Check with SHA TODO
+# Create configuration YML 
+# TODO: add password, user etc
+cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
+readonlyrest:
+    access_control_rules:
 
-# Create YML with password TODO /etc/elasticsearch/elasticsearch.yml
+    - name: "Block 1 - Allowing anything from localhost"
+      hosts: [127.0.0.1]
+YML_CREATE
+
+# Restart Elastic Search
+check_command /etc/init.d/elasticsearch restart
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
