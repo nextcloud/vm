@@ -117,11 +117,14 @@ fi
 
 # Create YML with password TODO /etc/elasticsearch/elasticsearch.yml
 
-# Add password and user values to FTS GUI TODO
-occ_command "config:app:set --value '1' fullnextsearch app_navigation"
-
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
+install_and_enable_app fulltextsearch_elasticsearch
+install_and_enable_app files_fulltextsearch
 chown -R www-data:www-data $NC_APPS_PATH
+
+# Final setup
+# Add password and user values to FTS GUI TODO
+occ_command "config:app:set --value '1' fullnextsearch app_navigation"
 check_command occ_command "fulltextsearch:index"
 
