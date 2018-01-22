@@ -23,23 +23,22 @@ debug_mode
 # Must be root
 if ! is_root
 then
-    echo "Must be root to run script, in Ubuntu type: sudo -i"
+    msg_box "Must be root to run script, in Ubuntu type: sudo -i"
     exit 1
 fi
 
 # Make sure there is an Nextcloud installation
 if ! [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
 then
-    echo "It seems there is no Nextcloud server installed, please check your installation."
+    msg_box "It seems there is no Nextcloud server installed, please check your installation."
     exit 1
 fi
 
 # Check if it's a clean install
 if [ -d /usr/share/elasticsearch ]
 then
-    echo
-    echo "It seems like /usr/share/elasticsearch already exists. Have you already run this script?"
-    echo "If yes, revert all the settings and try again, it must be a clean install."
+msg_box "It seems like /usr/share/elasticsearch already exists. Have you already run this script?
+If yes, revert all the settings and try again, it must be a clean install."
     exit 1
 fi
 
@@ -73,8 +72,7 @@ check_command echo "deb https://artifacts.elastic.co/packages/$FTS_DEB_VERSION/a
 apt update -q4 & spinner_loading
 apt install elasticsearch -y
 check_command /etc/init.d/elasticsearch start
-check_command /etc/init.d/elasticsearch stop
-check_command /etc/init.d/elasticsearch restart
+sleep 3
 if ! [ "$(curl http://127.0.0.1:9200)" ]
 then
 msg_box "Installation failed!
