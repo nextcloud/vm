@@ -62,6 +62,7 @@ tmpdir  = /tmp
 lc_messages_dir = /usr/share/mysql
 lc_messages = en_US
 skip-external-locking
+transaction-isolation = READ-COMMITTED
 #
 # Instead of skip-networking the default is now to listen only on
 # localhost which is more compatible and is not less secure.
