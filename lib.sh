@@ -92,7 +92,6 @@ NC_APPS_PATH=$NCPATH/apps/
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
-SHA256=/tmp/sha256
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
