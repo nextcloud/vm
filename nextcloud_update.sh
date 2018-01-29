@@ -28,10 +28,10 @@ is_process_running apt
 is_process_running dpkg
 
 # System Upgrade
-sudo apt-mark hold mariadb*
+apt-mark hold mariadb*
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-sudo apt-mark unhold mariadb*
+apt-mark unhold mariadb*
 
 # Update Redis PHP extention
 if type pecl > /dev/null 2>&1
