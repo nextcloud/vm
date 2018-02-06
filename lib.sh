@@ -3,6 +3,11 @@
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
+# Example: occ_command 'maintenance:mode --on'
+occ_command() {
+check_command sudo -u www-data php "$NCPATH"/occ "$1"
+}
+
 ## variables
 
 # Dirs
@@ -167,11 +172,6 @@ ask_yes_or_no() {
             echo "no"
         ;;
     esac
-}
-
-# Example: occ_command 'maintenance:mode --on'
-occ_command() {
-check_command sudo -u www-data php "$NCPATH"/occ "$1"
 }
 
 msg_box() {
