@@ -338,12 +338,8 @@ fi
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
-<<<<<<< HEAD
 "phpPGadmin" "(PostgreSQL GUI)       " OFF \
-=======
-"phpMyadmin" "(*SQL GUI)       " OFF \
 "Netdata" "(*Real-time server monitoring)       " OFF \
->>>>>>> 1eb49e6... updates for NC13 (#439)
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Passman" "(Password storage)   " OFF \
@@ -356,18 +352,12 @@ do
         Fail2ban)
             run_app_script fail2ban
         ;;
-<<<<<<< HEAD
+        
         phpPGadmin)
             run_app_script phppgadmin_install_ubuntu16
-=======
         
         Netdata)
             run_app_script netdata
-        ;;
-        
-        phpMyadmin)
-            run_app_script phpmyadmin_install_ubuntu16
->>>>>>> 1eb49e6... updates for NC13 (#439)
         ;;
         
         OnlyOffice)
