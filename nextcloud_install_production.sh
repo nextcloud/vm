@@ -5,6 +5,27 @@
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
+# Check if process is runnnig: is_process_running dpkg
+is_process_running() {
+PROCESS="$1"
+
+while :
+do
+    RESULT=$(pgrep "${PROCESS}")
+
+    if [ "${RESULT:-null}" = null ]; then
+            break
+    else
+            echo "${PROCESS} is running. Waiting for it to stop..."
+            sleep 10
+    fi
+done
+}
+
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
+
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
@@ -33,11 +54,6 @@ root_check
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
-
-# Check if dpkg or apt is running
-is_process_running apt
-is_process_running dpkg
-
 
 # Create new current user
 run_static_script adduser nextcloud_install_production.sh
