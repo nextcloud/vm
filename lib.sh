@@ -3,11 +3,6 @@
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
-# Example: occ_command 'maintenance:mode --on'
-occ_command() {
-check_command sudo -u www-data php "$NCPATH"/occ "$1"
-}
-
 ## variables
 
 # Dirs
@@ -64,7 +59,7 @@ SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # Nextcloud version
-[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(occ_command "status" | grep "versionstring" | awk '{print $3}')
+[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ "status" | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
 STABLEVERSION="nextcloud-$NCVERSION"
 NCMAJOR="${NCVERSION%%.*}"
@@ -177,6 +172,11 @@ ask_yes_or_no() {
 msg_box() {
 local PROMPT="$1"
     whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+}
+
+# Example: occ_command 'maintenance:mode --on'
+occ_command() {
+check_command sudo -u www-data php "$NCPATH"/occ "$1"
 }
 
 # Check if process is runnnig: is_process_running dpkg
