@@ -5,6 +5,15 @@
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
+
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
@@ -33,11 +42,6 @@ root_check
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
-
-# Check if dpkg or apt is running
-is_process_running apt
-is_process_running dpkg
-
 
 # Create new current user
 run_static_script adduser nextcloud_install_production.sh
@@ -215,13 +219,13 @@ bash $SECURE & spinner_loading
 # Install Nextcloud
 cd "$NCPATH"
 check_command sudo -u www-data php occ maintenance:install \
-    --data-dir "$NCDATA" \
-    --database "pgsql" \
-    --database-name "nextcloud_db" \
-    --database-user "$NCUSER" \
-    --database-pass "$PGDB_PASS" \
-    --admin-user "$NCUSER" \
-    --admin-pass "$NCPASS"
+    --data-dir="$NCDATA" \
+    --database="pgsql" \
+    --database-name="nextcloud_db" \
+    --database-user="$NCUSER" \
+    --database-pass="$PGDB_PASS" \
+    --admin-user="$NCUSER" \
+    --admin-pass="$NCPASS"
 echo
 echo "Nextcloud version:"
 sudo -u www-data php "$NCPATH"/occ status
