@@ -518,9 +518,11 @@ echo "$CLEARBOOT"
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
+
 Login to Nextcloud in your browser:
 - IP: $ADDRESS2 
 - Hostname: $(hostname -f)
+
 Some tips and tricks:
 1. Publish your server online: https://goo.gl/iUGE2U
 2. To login to MariaDB just type: mysql -u root
