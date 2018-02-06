@@ -257,13 +257,13 @@ mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
 # Install Nextcloud
 cd "$NCPATH"
 check_command sudo -u www-data php occ maintenance:install \
-    --data-dir "$NCDATA" \
-    --database "mysql" \
-    --database-name "nextcloud_db" \
-    --database-user "root" \
-    --database-pass "$MARIADB_PASS" \
-    --admin-user "$NCUSER" \
-    --admin-pass "$NCPASS"
+    --data-dir="$NCDATA" \
+    --database="mysql" \
+    --database-name="nextcloud_db" \
+    --database-user="root" \
+    --database-pass="$MARIADB_PASS" \
+    --admin-user="$NCUSER" \
+    --admin-pass="$NCPASS"
 echo
 echo "Nextcloud version:"
 sudo -u www-data php "$NCPATH"/occ status
