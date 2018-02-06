@@ -203,9 +203,7 @@ else
     apt update -q4 & spinner_loading
     apt install certbot -y -q
     apt update -q4 & spinner_loading
-    apt-mark hold mariadb*
     apt dist-upgrade -y
-    apt-mark unhold mariadb*
 fi
 }
 
