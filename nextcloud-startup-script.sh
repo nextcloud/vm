@@ -355,6 +355,7 @@ do
         
         phpPGadmin)
             run_app_script phppgadmin_install_ubuntu16
+        ;;
         
         Netdata)
             run_app_script netdata
