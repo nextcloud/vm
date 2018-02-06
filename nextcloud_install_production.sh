@@ -5,22 +5,7 @@
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
-# Check if process is runnnig: is_process_running dpkg
-is_process_running() {
-PROCESS="$1"
-
-while :
-do
-    RESULT=$(pgrep "${PROCESS}")
-
-    if [ "${RESULT:-null}" = null ]; then
-            break
-    else
-            echo "${PROCESS} is running. Waiting for it to stop..."
-            sleep 10
-    fi
-done
-}
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check if dpkg or apt is running
 is_process_running apt
