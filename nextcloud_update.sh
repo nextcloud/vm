@@ -24,14 +24,14 @@ THEME_NAME=""
 root_check
 
 # Check if dpkg or apt is running
-is_process_running dpkg
 is_process_running apt
+is_process_running dpkg
 
 # System Upgrade
-sudo apt-mark hold mariadb*
+apt-mark hold mariadb*
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-sudo apt-mark unhold mariadb*
+apt-mark unhold mariadb*
 
 # Update Redis PHP extention
 if type pecl > /dev/null 2>&1
@@ -39,7 +39,16 @@ then
     install_if_not php7.0-dev
     echo "Trying to upgrade the Redis Pecl extenstion..."
     pecl upgrade redis
-    service apache2 restart
+    service redis-server restart
+fi
+
+# Update Netdata
+if [ -d /etc/netdata ]
+then
+    if [ -f /usr/src/netdata.git/netdata-updater.sh ]
+    then
+        bash /usr/src/netdata.git/netdata-updater.sh
+    fi
 fi
 
 # Update docker images

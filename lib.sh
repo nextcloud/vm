@@ -59,7 +59,7 @@ SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # Nextcloud version
-[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(occ_command "status" | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
 STABLEVERSION="nextcloud-$NCVERSION"
 NCMAJOR="${NCVERSION%%.*}"
@@ -79,9 +79,6 @@ LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
 DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 # Collabora App
-[ ! -z "$COLLABORA_INSTALL" ] && COLLVER=$(curl -s https://api.github.com/repos/nextcloud/richdocuments/releases/latest | grep "tag_name" | cut -d\" -f4)
-COLLVER_FILE=richdocuments.tar.gz
-COLLVER_REPO=https://github.com/nextcloud/richdocuments/releases/download
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 # Nextant
 # this var get's the latest automatically:
@@ -95,27 +92,6 @@ NC_APPS_PATH=$NCPATH/apps/
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
-# Passman
-[ ! -z "$PASSMAN_INSTALL" ] && PASSVER=$(curl -s https://api.github.com/repos/nextcloud/passman/releases/latest | grep "tag_name" | cut -d\" -f4)
-PASSVER_FILE=passman_$PASSVER.tar.gz
-PASSVER_REPO=https://releases.passman.cc
-SHA256=/tmp/sha256
-# Preview Generator
-[ ! -z "$PREVIEW_INSTALL" ] && PREVER=$(curl -s https://api.github.com/repos/rullzer/previewgenerator/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-PREVER_FILE=previewgenerator.tar.gz
-PREVER_REPO=https://github.com/rullzer/previewgenerator/releases/download
-# Calendar
-[ ! -z "$CALENDAR_INSTALL" ] && CALVER=$(curl -s https://api.github.com/repos/nextcloud/calendar/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-CALVER_FILE=calendar.tar.gz
-CALVER_REPO=https://github.com/nextcloud/calendar/releases/download
-# Contacts
-[ ! -z "$CONTACTS_INSTALL" ] && CONVER=$(curl -s https://api.github.com/repos/nextcloud/contacts/releases/latest | grep "tag_name" | cut -d\" -f4 | sed -e "s|v||g")
-CONVER_FILE=contacts.tar.gz
-CONVER_REPO=https://github.com/nextcloud/contacts/releases/download
-# Spreed.ME
-SPREEDME_VER=$(wget -q https://raw.githubusercontent.com/strukturag/nextcloud-spreedme/master/appinfo/info.xml && grep -Po "(?<=<version>)[^<]*(?=</version>)" info.xml && rm info.xml)
-SPREEDME_FILE="v$SPREEDME_VER.tar.gz"
-SPREEDME_REPO=https://github.com/strukturag/nextcloud-spreedme/archive
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
@@ -193,6 +169,11 @@ ask_yes_or_no() {
     esac
 }
 
+# Example: occ_command 'maintenance:mode --on'
+occ_command() {
+check_command sudo -u www-data php "$NCPATH"/occ "$1"
+}
+
 msg_box() {
 local PROMPT="$1"
     whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
@@ -230,7 +211,9 @@ else
     apt update -q4 & spinner_loading
     apt install certbot -y -q
     apt update -q4 & spinner_loading
+    apt-mark hold mariadb*
     apt dist-upgrade -y
+    apt-mark unhold mariadb*
 fi
 }
 
@@ -327,6 +310,11 @@ then
     printf "${Red}Error: ${1} GB RAM required to install ${2}!${Color_Off}\n" >&2
     printf "${Red}Current RAM is: ("$((mem_available/1002400))" GB)${Color_Off}\n" >&2
     sleep 3
+    msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
+    
+    In nextcloud_install_production.sh you can find the check somewhere around line #34. 
+    
+    Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
 else
     printf "${Green}RAM for ${2} OK! ("$((mem_available/1002400))" GB)${Color_Off}\n"
@@ -382,6 +370,22 @@ calc_wt_size() {
     fi
     WT_MENU_HEIGHT=$((WT_HEIGHT-7))
     export WT_MENU_HEIGHT
+}
+
+install_and_enable_app() {
+# Download and install $1
+if [ ! -d "$NC_APPS_PATH/$1" ]
+then
+    echo "Installing $1..."
+    occ_command "app:install $1"
+fi
+
+# Enable $1
+if [ -d "$NC_APPS_PATH/$1" ]
+then
+    occ_command "app:enable $1"
+    chown -R www-data:www-data "$NC_APPS_PATH"
+fi
 }
 
 download_verify_nextcloud_stable() {
