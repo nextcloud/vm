@@ -521,7 +521,6 @@ msg_box "Congratulations! You have successfully installed Nextcloud!
 Login to Nextcloud in your browser:
 - IP: $ADDRESS2 
 - Hostname: $(hostname -f)
-
 Some tips and tricks:
 1. Publish your server online: https://goo.gl/iUGE2U
 2. To login to MariaDB just type: mysql -u root
@@ -533,7 +532,7 @@ Some tips and tricks:
 - FORUM: https://help.nextcloud.com/ 
 - NEXTCLOUD: https://nextcloud.com/pricing/
   
-###################### Tech and Me - 2018 ######################"
+################################## Tech and Me - 2018 ##################################"
 
 # Set trusted domain in config.php
 if [ -f "$SCRIPTS"/trusted.sh ] 
