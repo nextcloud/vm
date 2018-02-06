@@ -174,11 +174,6 @@ local PROMPT="$1"
     whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
-# Example: occ_command 'maintenance:mode --on'
-occ_command() {
-check_command sudo -u www-data php "$NCPATH"/occ "$1"
-}
-
 # Check if process is runnnig: is_process_running dpkg
 is_process_running() {
 PROCESS="$1"
@@ -535,6 +530,11 @@ any_key() {
     local PROMPT="$1"
     read -r -p "$(printf "${Green}${PROMPT}${Color_Off}")" -n1 -s
     echo
+}
+
+# Example: occ_command 'maintenance:mode --on'
+occ_command() {
+check_command sudo -u www-data php "$NCPATH"/occ "$1"
 }
 
 ## bash colors
