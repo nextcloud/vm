@@ -114,12 +114,9 @@ then
     echo "Something is wrong, the installation did not finish correctly"
     exit 1
 else
-    echo
-    echo "Success! SpreedMe is now installed and configured."
-    echo "You may have to change SPREED_WEBRTC_ORIGIN in:"
-    echo "(sudo nano) $NCPATH/apps/spreedme/config/config.php"
-    echo
-    exit 0
+msg_box "Success! SpreedMe is now installed and configured.
+You may have to change SPREED_WEBRTC_ORIGIN in:
+(sudo nano) $NCPATH/apps/spreedme/config/config.php"
+exit 0
 fi
-any_key "Press any key to continue..."
 clear
