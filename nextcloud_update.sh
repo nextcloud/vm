@@ -28,15 +28,8 @@ is_process_running apt
 is_process_running dpkg
 
 # System Upgrade
-<<<<<<< HEAD
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-=======
-apt-mark hold mariadb*
-apt update -q4 & spinner_loading
-export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-apt-mark unhold mariadb*
->>>>>>> 1eb49e6... updates for NC13 (#439)
 
 # Update Redis PHP extention
 if type pecl > /dev/null 2>&1
