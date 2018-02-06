@@ -34,6 +34,11 @@ root_check
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
+
+
 # Create new current user
 run_static_script adduser nextcloud_install_production.sh
 
@@ -179,7 +184,9 @@ check_command apt install -y \
     php7.0-xml \
     php7.0-zip \
     php7.0-mbstring \
-    php-smbclient
+    php-smbclient \
+    php-imagick \
+    libmagickcore-6.q16-2-extra
 
 # Enable SMB client
 # echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
@@ -261,7 +268,22 @@ echo "opcache.validate_timestamps=1"
 } >> /etc/php/7.0/apache2/php.ini
 
 # Install preview generator
-run_app_script previewgenerator
+install_and_enable_app previewgenerator
+
+# Run the first preview generation and add crontab
+if [ -d "$NC_APPS_PATH/previewgenerator" ]
+then
+    crontab -u www-data -l | { cat; echo "@daily php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
+    sudo -u www-data php "$NCPATH"/occ preview:generate-all
+    touch /var/log/previewgenerator.log
+    chown www-data:www-data /var/log/previewgenerator.log
+fi
+
+# Install issuetemplate
+install_and_enable_app issuetemplate
+
+# Install CanIUpdate?
+install_and_enable_app caniupdate
 
 # Install Figlet
 apt install figlet -y
@@ -392,10 +414,10 @@ while read -r -u 9 choice
 do
     case "$choice" in
         Calendar)
-            run_app_script calendar
+            install_and_enable_app calendar
         ;;
         Contacts)
-            run_app_script contacts
+            install_and_enable_app contacts
         ;;
         Webmin)
             run_app_script webmin
