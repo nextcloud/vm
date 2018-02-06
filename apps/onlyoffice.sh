@@ -129,7 +129,7 @@ fi
 # Disable Onlyoffice if activated
 if [ -d "$NCPATH"/apps/onlyoffice ]
 then
-    sudo -u www-data php "$NCPATH"/occ app:disable onlyoffice
+    occ_command "app:disable onlyoffice"
     rm -r "$NCPATH"/apps/onlyoffice
 fi
 
@@ -219,7 +219,7 @@ then
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
 # Install Onlyoffice App
-    cd $NCPATH/apps
+    cd "$NC_APPS_PATH"
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
 else
     printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: $ISSUES\n"
@@ -228,13 +228,13 @@ else
 fi
 
 # Enable Onlyoffice
-if [ -d "$NCPATH"/apps/onlyoffice ]
+if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
 # Enable OnlyOffice
-    check_command sudo -u www-data php "$NCPATH"/occ app:enable onlyoffice
-    check_command sudo -u www-data php "$NCPATH"/occ config:app:set onlyoffice DocumentServerUrl --value="https://$SUBDOMAIN/"
+    occ_command "app:enable onlyoffice"
+    occ_command "config:app:set onlyoffice DocumentServerUrl --value=https://$SUBDOMAIN/"
     chown -R www-data:www-data $NCPATH/apps
-    check_command sudo -u www-data php "$NCPATH"/occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    occ_command "config:system:set trusted_domains 3 --value=$SUBDOMAIN"
 # Add prune command
     {
     echo "#!/bin/bash"

@@ -29,11 +29,13 @@ root_check() {
 if ! is_root
 then
 msg_box "Sorry, you are not root. You now have two options:
+
 1. With SUDO directly:
    a) :~$ sudo bash $SCRIPTS/name-of-script.sh
 2. Become ROOT and then type your command:
    a) :~$ sudo -i
    b) :~# $SCRIPTS/name-of-script.sh
+
 In both cases above you can leave out $SCRIPTS/ if the script
 is directly in your PATH.
 More information can be found here: https://unix.stackexchange.com/a/3064"
@@ -131,8 +133,8 @@ please abort this script and report this issue to $ISSUES."
 fi
 
 # Check if dpkg or apt is running
-is_process_running dpkg
 is_process_running apt
+is_process_running dpkg
 
 # Check where the best mirrors are and update
 msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
@@ -337,21 +339,26 @@ fi
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
 "phpPGadmin" "(PostgreSQL GUI)       " OFF \
+"Netdata" "(*Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
-"Nextant" "(Full text search)   " OFF \
 "Passman" "(Password storage)   " OFF \
-"Spreed.ME" "(Video calls)   " OFF 2>results
+"Talk" "(Nextcloud Video calls and chat)   " OFF \
+"Spreed.ME" "(3rd-party Video calls and chat)   " OFF 2>results
 
 while read -r -u 9 choice
 do
     case $choice in
         Fail2ban)
             run_app_script fail2ban
-            
         ;;
+        
         phpPGadmin)
             run_app_script phppgadmin_install_ubuntu16
+        ;;
+        
+        Netdata)
+            run_app_script netdata
         ;;
         
         OnlyOffice)
@@ -362,14 +369,14 @@ do
             run_app_script collabora
         ;;
 
-        Nextant)
-            run_app_script nextant
-        ;;
-
         Passman)
-            run_app_script passman
+           install_and_enable_app passman
         ;;
 
+        Talk)
+            install_and_enable_app spreed
+        ;;
+        
         Spreed.ME)
             run_app_script spreedme
         ;;
@@ -511,14 +518,21 @@ echo "$CLEARBOOT"
 ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
-Login to Nextcloud in your browser: $ADDRESS2
-
+Login to Nextcloud in your browser:
+- IP: $ADDRESS2 
+- Hostname: $(hostname -f)
 Some tips and tricks:
-- Publish your server online: https://goo.gl/iUGE2U
-- To login to MariaDB just type: mysql -u root
-- To update this VM just type: sudo bash /var/scripts/update.sh
-
-###################### Tech and Me - 2018 ######################"
+1. Publish your server online: https://goo.gl/iUGE2U
+2. To login to MariaDB just type: mysql -u root
+3. To update this VM just type: sudo bash /var/scripts/update.sh
+4. Change IP to something outside DHCP: sudo nano /etc/network/interfaces
+5. Please report any bugs here: https://github.com/nextcloud/vm/issues
+6. Please ask for help in the forums, visit our shop, or buy support from Nextcloud:
+- SUPPORT: https://shop.techandme.se/index.php/product/premium-support-per-30-minutes/
+- FORUM: https://help.nextcloud.com/ 
+- NEXTCLOUD: https://nextcloud.com/pricing/
+  
+################################## Tech and Me - 2018 ##################################"
 
 # Set trusted domain in config.php
 if [ -f "$SCRIPTS"/trusted.sh ] 
