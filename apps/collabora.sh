@@ -29,7 +29,7 @@ You can't run OnlyOffice at the same time as you run Collabora."
 fi
 
 # Notification
-whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
+msg_box "Before you start, please make sure that port 443 is directly forwarded to this machine!"
 
 # Get the latest packages
 apt update -q4 & spinner_loading
