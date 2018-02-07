@@ -14,11 +14,7 @@ DEBUG=0
 debug_mode
 
 # Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/onlyoffice.sh\n"
-    exit 1
-fi
+root_check
 
 # Test RAM size (4GB min) + CPUs (min 2)
 ram_check 4 OnlyOffice
@@ -27,13 +23,13 @@ cpu_check 2 OnlyOffice
 # Check if Collabora is running
 if [ -d "$NCPATH"/apps/richdocuments ]
 then
-    echo "It seems like Collabora is running."
-    echo "You can't run Collabora at the same time as you run OnlyOffice."
+msg_box "It seems like Collabora is running.
+You can't run Collabora at the same time as you run OnlyOffice."
     exit 1
 fi
 
 # Notification
-whiptail --msgbox "Please before you start, make sure that port 443 is directly forwarded to this machine!" "$WT_HEIGHT" "$WT_WIDTH"
+msg_box "Before you start, please make sure that port 443 is directly forwarded to this machine!"
 
 # Get the latest packages
 apt update -q4 & spinner_loading
@@ -42,17 +38,14 @@ apt update -q4 & spinner_loading
 echo "Checking if Nextcloud is installed..."
 if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
-    echo
-    echo "It seems like Nextcloud is not installed or that you don't use https on:"
-    echo "${NCDOMAIN//\\/}."
-    echo "Please install Nextcloud and make sure your domain is reachable, or activate SSL"
-    echo "on your domain to be able to run this script."
-    echo
-    echo "If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain."
-    echo "When SSL is activated, run these commands from your terminal:"
-    echo "sudo wget $APP/onlyoffice.sh"
-    echo "sudo bash onlyoffice.sh"
-    any_key "Press any key to continue... "
+msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+${NCDOMAIN//\\/}.
+Please install Nextcloud and make sure your domain is reachable, or activate SSL
+on your domain to be able to run this script.
+If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
+When SSL is activated, run these commands from your terminal:
+sudo wget $APP/onlyoffice.sh
+sudo bash onlyoffice.sh"
     exit 1
 fi
 
@@ -68,9 +61,8 @@ elif curl -s -k -m 10 "$SUBDOMAIN"; then
 elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null; then
    sleep 0.1
 else
-   echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
-   echo "it to this server before you can run this script."
-   any_key "Press any key to continue... "
+msg_box "Nope, it's not there. You have to create $SUBDOMAIN and point
+it to this server before you can run this script."
    exit 1
 fi
 

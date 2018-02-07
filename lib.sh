@@ -39,7 +39,7 @@ ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
 NCPASS=nextcloud
 NCUSER=ncadmin
-UNIXUSER=$SUDO_USER
+UNIXUSER="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 # MARIADB
