@@ -14,11 +14,7 @@ DEBUG=0
 debug_mode
 
 # Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash $SCRIPTS/collabora.sh\n"
-    exit 1
-fi
+root_check
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 Collabora
@@ -27,8 +23,8 @@ cpu_check 2 Collabora
 # Check if Onlyoffice is running
 if [ -d "$NCPATH"/apps/onlyoffice ]
 then
-    echo "It seems like OnlyOffice is running."
-    echo "You can't run OnlyOffice at the same time as you run Collabora."
+msg_box "It seems like OnlyOffice is running.
+You can't run OnlyOffice at the same time as you run Collabora."
     exit 1
 fi
 
@@ -42,17 +38,15 @@ apt update -q4 & spinner_loading
 echo "Checking if Nextcloud is installed..."
 if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
-    echo
-    echo "It seems like Nextcloud is not installed or that you don't use https on:"
-    echo "${NCDOMAIN//\\/}."
-    echo "Please install Nextcloud and make sure your domain is reachable, or activate SSL"
-    echo "on your domain to be able to run this script."
-    echo
-    echo "If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain."
-    echo "When SSL is activated, run these commands from your terminal:"
-    echo "sudo wget $APP/collabora.sh"
-    echo "sudo bash collabora.sh"
-    any_key "Press any key to continue... "
+msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+${NCDOMAIN//\\/}.
+Please install Nextcloud and make sure your domain is reachable, or activate SSL
+on your domain to be able to run this script.
+
+If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
+When SSL is activated, run these commands from your terminal:
+sudo wget $APP/collabora.sh
+sudo bash collabora.sh"
     exit 1
 fi
 
@@ -68,9 +62,8 @@ elif curl -s -k -m 10 "$SUBDOMAIN"; then
 elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null; then
    sleep 0.1
 else
-   echo "Nope, it's not there. You have to create $SUBDOMAIN and point"
-   echo "it to this server before you can run this script."
-   any_key "Press any key to continue... "
+msg_box "Nope, it's not there. You have to create $SUBDOMAIN and point
+it to this server before you can run this script."
    exit 1
 fi
 
