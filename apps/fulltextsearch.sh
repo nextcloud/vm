@@ -2,22 +2,14 @@
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
-######################## Change to MASTER before merge ###########################
-############################# Developed for NC 13 ################################
-
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/nc13-appinstall/lib.sh)
+ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset ES_INSTALL
 
 ES_VERSION=6.1.1
 ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
-
-######### FOR TESTING ########
-GITHUB_REPO=https://raw.githubusercontent.com/nextcloud/vm/full-text-search
-APP=$GITHUB_REPO/apps
-##############################
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
