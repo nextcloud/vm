@@ -117,7 +117,7 @@ which could be the case if you are running directly from the scripts and not the
 As long as the user you created have sudo permissions it's safe to continue.
 This would be the case if you in the previous step created a new user with the script.
 
-If the user you are running this script with  a user that doesn't have sudo permissions,
+If the user you are running this script with a user that doesn't have sudo permissions,
 please abort this script and report this issue to $ISSUES."
         fi
     fi
