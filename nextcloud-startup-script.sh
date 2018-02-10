@@ -209,11 +209,14 @@ clear
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
     # Change IP
-    printf "\n${Color_Off}OK, we assume you run this locally and we will now configure your IP to be static.${Color_Off}\n"
-    echo "Your internal IP is: $ADDRESS"
-    printf "\n${Color_Off}Write this down, you will need it to set static IP\n"
-    echo "in your router later. It's included in this guide:"
-    echo "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
+msg_box "OK, we assume you run this locally and we will now configure your IP to be static.
+
+Your internal IP is: $ADDRESS
+
+Write this down, you will need it to set static IP
+in your router later. It's included in this guide:
+
+https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     any_key "Press any key to set static IP..."
     ifdown "$IFACE"
     wait
@@ -239,11 +242,13 @@ then
     then
         # Connected!
         printf "${Green}Connected!${Color_Off}\n"
-        printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:\n"
-        printf "sudo nano /etc/network/interfaces\n"
-        echo "If you experience any bugs, please report it here:"
-        echo "$ISSUES"
-        any_key "Press any key to continue..."
+msg_box "We will use the DHCP IP: $ADDRESS
+
+If you want to change it later then just edit the interfaces file:
+sudo nano /etc/network/interfaces
+
+If you experience any bugs, please report it here:
+$ISSUES"
     else
         # Not connected!
         printf "${Red}Not Connected${Color_Off}\nYou should change your settings manually in the next step.\n"
