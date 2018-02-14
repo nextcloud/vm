@@ -94,10 +94,22 @@ cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
 );
 ADD_TO_CONFIG
 
-# Redis performance tweaks
+## Redis performance tweaks ##
 if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 then
     echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
+fi
+
+# Disable THP
+if ! grep -Fxq "never" /sys/kernel/mm/transparent_hugepage/enabled
+then
+    echo "never" > /sys/kernel/mm/transparent_hugepage/enabled
+fi
+
+# Raise TCP backlog
+if ! grep -Fxq "128" /proc/sys/net/core/somaxconn
+then
+    echo "512" > /proc/sys/net/core/somaxconn
 fi
 sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm .*|unixsocketperm 777|g" $REDIS_CONF
