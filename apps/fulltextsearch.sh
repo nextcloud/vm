@@ -117,6 +117,6 @@ chown -R www-data:www-data $NC_APPS_PATH
 
 # Final setup
 # Add password and user
-occ_command fulltextsearch:configure {\"search_platform\":\"OCA\\\\FullTextSearch_ElasticSearch\\\\Platform\\\\ElasticSearchPlatform\"}
-occ_command fulltextsearch_elasticsearch:configure {\"elastic_host\":\"http://username:password@localhost:9200\"\,\"elastic_index\":\"my_index\"}
+occ_command 'fulltextsearch:configure {\"search_platform\":\"OCA\\\\FullTextSearch_ElasticSearch\\\\Platform\\\\ElasticSearchPlatform\"}'
+occ_command 'fulltextsearch_elasticsearch:configure {\"elastic_host\":\"http://username:password@localhost:9200\"\,\"elastic_index\":\"my_index\"}'
 
