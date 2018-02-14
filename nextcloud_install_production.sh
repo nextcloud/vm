@@ -259,7 +259,7 @@ mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
 
 # Install Nextcloud
 cd "$NCPATH"
-check_command sudo -u www-data php occ maintenance:install \
+occ_command "maintenance:install" \
     --data-dir="$NCDATA" \
     --database="mysql" \
     --database-name="nextcloud_db" \
@@ -269,7 +269,7 @@ check_command sudo -u www-data php occ maintenance:install \
     --admin-pass="$NCPASS"
 echo
 echo "Nextcloud version:"
-sudo -u www-data php "$NCPATH"/occ status
+occ_command "status"
 sleep 3
 echo
 
@@ -291,8 +291,8 @@ done
 
 # Repair and set Nextcloud config values
 mysqlcheck -u root -p"$MARIADB_PASS" --auto-repair --optimize --all-databases
-check_command sudo -u www-data $NCPATH/occ config:system:set mysql.utf8mb4 --type boolean --value="true"
-check_command sudo -u www-data $NCPATH/occ maintenance:repair
+occ_command 'config:system:set mysql.utf8mb4 --type boolean --value="true"'
+occ_command "maintenance:repair"
 
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
@@ -313,10 +313,10 @@ sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.0/ap
 configure_max_upload
 
 # Set SMTP mail
-sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpmode --value="smtp"
+occ_command 'config:system:set mail_smtpmode --value="smtp"'
 
 # Set logrotate
-sudo -u www-data php "$NCPATH"/occ config:system:set log_rotate_size --value="10485760"
+occ_command 'config:system:set log_rotate_size --value="10485760"'
 
 # Enable OPCache for PHP 
 # https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
