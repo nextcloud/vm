@@ -106,16 +106,6 @@ Please report this to $ISSUES"
     exit 1
 fi
 
-# Create configuration YML 
-# TODO: add password, user etc
-cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
-readonlyrest:
-    access_control_rules:
-
-    - name: "Block 1 - Allowing anything from localhost"
-      hosts: [127.0.0.1]
-YML_CREATE
-
 # Restart Elastic Search
 check_command /etc/init.d/elasticsearch restart
 
@@ -126,7 +116,7 @@ install_and_enable_app files_fulltextsearch
 chown -R www-data:www-data $NC_APPS_PATH
 
 # Final setup
-# Add password and user values to FTS GUI TODO
-occ_command "config:app:set --value '1' fullnextsearch app_navigation"
-check_command occ_command "fulltextsearch:index"
+# Add password and user
+occ_command fulltextsearch:configure {\"search_platform\":\"OCA\\\\FullTextSearch_ElasticSearch\\\\Platform\\\\ElasticSearchPlatform\"}
+occ_command fulltextsearch_elasticsearch:configure {\"elastic_host\":\"http://username:password@localhost:9200\"\,\"elastic_index\":\"my_index\"}
 
