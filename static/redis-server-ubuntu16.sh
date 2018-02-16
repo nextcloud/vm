@@ -110,8 +110,8 @@ fi
 if ! grep -Fxq "net.core.somaxconn" /proc/sys/net/core/somaxconn
 then
     sed -i "s|net.core.somaxconn.*||g" /etc/sysctl.conf
-    sysctl -w net.core.somaxconn=1024
-    echo "net.core.somaxconn = 1024" >> /etc/sysctl.conf
+    sysctl -w net.core.somaxconn=512
+    echo "net.core.somaxconn = 512" >> /etc/sysctl.conf
 fi
 sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm .*|unixsocketperm 777|g" $REDIS_CONF
