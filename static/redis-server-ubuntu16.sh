@@ -109,6 +109,7 @@ fi
 # Raise TCP backlog
 if ! grep -Fxq "net.core.somaxconn" /proc/sys/net/core/somaxconn
 then
+    sed -i "s|net.core.somaxconn.*||g" /etc/sysctl.conf
     sysctl -w net.core.somaxconn=1024
     echo "net.core.somaxconn = 1024" >> /etc/sysctl.conf
 fi
