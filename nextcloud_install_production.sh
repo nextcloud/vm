@@ -340,7 +340,7 @@ install_and_enable_app previewgenerator
 if [ -d "$NC_APPS_PATH/previewgenerator" ]
 then
     crontab -u www-data -l | { cat; echo "@daily php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
-    sudo -u www-data php "$NCPATH"/occ preview:generate-all
+    occ_command "preview:generate-all"
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
 fi
