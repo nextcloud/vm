@@ -338,7 +338,7 @@ fi
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
 "phpMyadmin" "(*SQL GUI)       " OFF \
-"Netdata" "(*Real-time server monitoring)       " OFF \
+"Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Passman" "(Password storage)   " OFF \
