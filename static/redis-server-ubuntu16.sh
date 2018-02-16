@@ -107,9 +107,10 @@ then
 fi
 
 # Raise TCP backlog
-if ! grep -Fxq "128" /proc/sys/net/core/somaxconn
+if ! grep -Fxq "net.core.somaxconn" /proc/sys/net/core/somaxconn
 then
-    echo "512" > /proc/sys/net/core/somaxconn
+    sysctl -w net.core.somaxconn=1024
+    echo "net.core.somaxconn = 1024" >> /etc/sysctl.conf
 fi
 sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm .*|unixsocketperm 777|g" $REDIS_CONF
