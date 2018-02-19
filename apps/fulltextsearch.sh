@@ -79,7 +79,7 @@ sudo systemctl enable elasticsearch.service
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install ingest-attachment
+    ./elasticsearch-plugin install ingest-attachment
 fi
 
 # Check that ingest-attachment is properly installed
@@ -95,7 +95,7 @@ fi
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
+    ./elasticsearch-plugin install "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
 fi
 
 # Check that ReadOnlyREST is properly installed
