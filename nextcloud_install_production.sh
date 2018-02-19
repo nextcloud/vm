@@ -268,17 +268,17 @@ mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
 
 # Install Nextcloud
 cd "$NCPATH"
-occ_command "maintenance:install" \
+occ_command 'maintenance:install \
     --data-dir="$NCDATA" \
     --database="mysql" \
     --database-name="nextcloud_db" \
     --database-user="root" \
     --database-pass="$MARIADB_PASS" \
     --admin-user="$NCUSER" \
-    --admin-pass="$NCPASS"
+    --admin-pass="$NCPASS"'
 echo
 echo "Nextcloud version:"
-occ_command "status"
+occ_command 'status'
 sleep 3
 echo
 
@@ -301,7 +301,7 @@ done
 # Repair and set Nextcloud config values
 mysqlcheck -u root -p"$MARIADB_PASS" --auto-repair --optimize --all-databases
 occ_command 'config:system:set mysql.utf8mb4 --type boolean --value="true"'
-occ_command "maintenance:repair"
+occ_command 'maintenance:repair'
 
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
@@ -349,7 +349,7 @@ install_and_enable_app previewgenerator
 if [ -d "$NC_APPS_PATH/previewgenerator" ]
 then
     crontab -u www-data -l | { cat; echo "@daily php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
-    occ_command "preview:generate-all"
+    occ_command 'preview:generate-all'
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
 fi
