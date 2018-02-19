@@ -95,7 +95,7 @@ fi
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
+    check_command ./elasticsearch-plugin install https://github.com/nextcloud/vm/raw/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
 fi
 
 # Check that ReadOnlyREST is properly installed
