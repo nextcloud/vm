@@ -79,11 +79,11 @@ sudo systemctl enable elasticsearch.service
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    ./elasticsearch-plugin install ingest-attachment
+    check_command ./elasticsearch-plugin install ingest-attachment
 fi
 
 # Check that ingest-attachment is properly installed
-if ! [ "$(curl -s http://127.0.0.1:9300)" ]
+if ! [ "$(curl -s https://127.0.0.1:9300)" ]
 then
 msg_box "Installation failed!
 Please report this to $ISSUES"
@@ -91,15 +91,15 @@ Please report this to $ISSUES"
 fi
 
 # Install ReadOnlyREST
-# TODO Check with SHA
+######## TODO Check with SHA
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    ./elasticsearch-plugin install "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
+    check_command ./elasticsearch-plugin install "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
 fi
 
 # Check that ReadOnlyREST is properly installed
-if ! [ "$(curl -s http://127.0.0.1:9300)" ]
+if ! [ "$(curl -s https://127.0.0.1:9300)" ]
 then
 msg_box "Installation failed!
 Please report this to $ISSUES"
