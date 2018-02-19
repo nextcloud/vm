@@ -23,6 +23,15 @@ else
     apt install curl -y
 fi
 
+# Install lshw if not existing
+if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "lshw OK"
+else
+    apt update -q4 & spinner_loading
+    apt install lshw -y
+fi
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
