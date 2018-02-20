@@ -8,9 +8,6 @@ true
 ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset ES_INSTALL
 
-ES_VERSION=6.1.1
-ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -18,11 +15,7 @@ DEBUG=0
 debug_mode
 
 # Must be root
-if ! is_root
-then
-    msg_box "Must be root to run script, in Ubuntu type: sudo -i"
-    exit 1
-fi
+root_check
 
 # Make sure there is an Nextcloud installation
 if ! [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
