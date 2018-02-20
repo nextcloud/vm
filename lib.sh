@@ -107,7 +107,10 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-ROREST=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$ES_INSTALL" ] && ES_VERSION=6.1.1
+[ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
+[ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
 
 ## functions
 
