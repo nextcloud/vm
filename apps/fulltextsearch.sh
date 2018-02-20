@@ -106,6 +106,25 @@ Please report this to $ISSUES"
     exit 1
 fi
 
+# Create configuration YML 
+cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
+readonlyrest:
+
+
+  access_control_rules:
+
+  - name: Accept requests from cloud1 on $NCADMIN-index
+    groups: ["cloud1"]
+    indices: ["$NCADMIN-index"]
+
+
+  users:
+
+  - username: $NCADMIN
+    auth_key: $NCADMIN:$ROREST
+    groups: ["cloud1"]
+YML_CREATE
+
 # Restart Elastic Search
 check_command /etc/init.d/elasticsearch restart
 
