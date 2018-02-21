@@ -111,6 +111,7 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$ES_INSTALL" ] && ES_VERSION=6.1.1
 [ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+ESCONF="'fulltextsearch_elasticsearch:configure {\"elastic_host\":\"http://username:password@localhost:9200\"\,\"elastic_index\":\"my_index\"}'"
 
 ## functions
 
