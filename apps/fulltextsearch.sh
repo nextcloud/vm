@@ -67,6 +67,7 @@ check_command /etc/init.d/elasticsearch start
 
 # Enable on bootup
 sudo systemctl enable elasticsearch.service
+update-ca-certificates -f
 
 # Install ingest-attachment plugin
 if [ -d /usr/share/elasticsearch ]
