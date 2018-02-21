@@ -338,7 +338,7 @@ fi
 }
 
 check_command() {
-  if ! eval "$*"
+  if ! "$@";
   then
      printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
      echo "$* failed"
@@ -539,7 +539,7 @@ any_key() {
 
 # Example: occ_command 'maintenance:mode --on'
 occ_command() {
-check_command sudo -u www-data php "$NCPATH"/occ "$1"
+check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 ## bash colors
