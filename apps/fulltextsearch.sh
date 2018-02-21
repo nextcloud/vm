@@ -5,8 +5,10 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/improvments/lib.sh)
 unset ES_INSTALL
+
+######## CHANGE TO MASTER BEFORE MERGE ############
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -108,7 +110,7 @@ fi
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install file:///tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
+    check_command ./elasticsearch-plugin install file:///\/tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
     rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
 fi
 
