@@ -539,7 +539,7 @@ any_key() {
 
 # Example: occ_command 'maintenance:mode --on'
 occ_command() {
-check_command sudo -u www-data php "$NCPATH"/occ "$1"
+check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 ## bash colors
