@@ -377,13 +377,13 @@ install_and_enable_app() {
 if [ ! -d "$NC_APPS_PATH/$1" ]
 then
     echo "Installing $1..."
-    occ_command "app:install $1"
+    occ_command app:install $1
 fi
 
 # Enable $1
 if [ -d "$NC_APPS_PATH/$1" ]
 then
-    occ_command "app:enable $1"
+    occ_command app:enable $1
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 }
