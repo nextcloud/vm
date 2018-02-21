@@ -108,7 +108,7 @@ fi
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin file:///tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
+    check_command ./elasticsearch-plugin install file:///tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
     rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
 fi
 
