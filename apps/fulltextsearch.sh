@@ -10,6 +10,8 @@ unset ES_INSTALL
 
 ######## CHANGE TO MASTER BEFORE MERGE ############
 
+APP=https://raw.githubusercontent.com/nextcloud/vm/improvments/apps
+
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
