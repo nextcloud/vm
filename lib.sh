@@ -341,7 +341,7 @@ check_command() {
   if ! "$@";
   then
      printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
-     echo "$* failed"
+     echo "$@ failed"
     exit 1
   fi
 }
@@ -377,13 +377,13 @@ install_and_enable_app() {
 if [ ! -d "$NC_APPS_PATH/$1" ]
 then
     echo "Installing $1..."
-    occ_command app:install $1
+    occ_command app:install "$1"
 fi
 
 # Enable $1
 if [ -d "$NC_APPS_PATH/$1" ]
 then
-    occ_command app:enable $1
+    occ_command app:enable "$1"
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 }
