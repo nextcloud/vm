@@ -286,8 +286,8 @@ fi
 # Pretty URLs
 echo "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
-sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
-sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
+occ_command config:system:set htaccess.RewriteBase --value="/"
+occ_command maintenance:update:htaccess
 bash $SECURE & spinner_loading
 
 # Generate new SSH Keys
@@ -409,14 +409,14 @@ do
 done
 echo
 clear
-NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+NCADMIN=$(occ_command user:list | awk '{print $3}')
 printf "${Color_Off}\n"
 echo "For better security, change the Nextcloud password for [$NCADMIN]"
 echo "The current password for $NCADMIN is [$NCPASS]"
 any_key "Press any key to change password for Nextcloud..."
 while true
 do
-    sudo -u www-data php "$NCPATH/occ" user:resetpassword "$NCADMIN" && break
+    occ_command user:resetpassword "$NCADMIN" && break
 done
 clear
 
@@ -439,7 +439,7 @@ bash $SCRIPTS/temporary-fix.sh
 rm "$SCRIPTS"/temporary-fix.sh
 
 # Cleanup 1
-sudo -u www-data php "$NCPATH/occ" maintenance:repair
+occ_command maintenance:repair
 rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/change_mysql_pass.sh"
