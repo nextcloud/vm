@@ -341,7 +341,7 @@ check_command() {
   if ! "$@";
   then
      printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
-     echo "$@ failed"
+     echo "$* failed"
     exit 1
   fi
 }
