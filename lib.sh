@@ -59,7 +59,7 @@ SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # Nextcloud version
-[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ "status" | grep "versionstring" | awk '{print $3}')
+[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(occ_command status | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
 STABLEVERSION="nextcloud-$NCVERSION"
 NCMAJOR="${NCVERSION%%.*}"
@@ -110,7 +110,7 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$ES_INSTALL" ] && ES_VERSION=6.1.1
 [ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
-[ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+[ ! -z "$ES_INSTALL" ] && NCADMIN=$(occ_command user:list | awk '{print $3}')
 
 ## functions
 
