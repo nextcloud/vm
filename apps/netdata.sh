@@ -2,6 +2,8 @@
 
 # Tech and Me © - 2017, https://www.techandme.se/
 
+echo "Installing Netdata..."
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh

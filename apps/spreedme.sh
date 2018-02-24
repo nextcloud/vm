@@ -46,16 +46,16 @@ fi
 if [ -d "$NC_APPS_PATH/spreedme" ]
 then
     # Remove
-    occ_command 'app:disable spreedme'
+    occ_command app:disable spreedme
     echo "SpreedMe app already seems to be installed and will now be re-installed..."
     rm -R "NC_APPS_PATH/spreedme"
     # Reinstall
-    occ_command 'app:install spreedme'
+    occ_command app:install spreedme
 else
-    occ_command 'app:install spreedme'
+    occ_command app:install spreedme
 fi
-occ_command 'app:enable spreedme'
-chown -R www-data:www-data $NC_APPS_PATH
+occ_command app:enable spreedme
+chown -R www-data:www-data "$NC_APPS_PATH"
 
 # Generate secret keys
 SHAREDSECRET=$(openssl rand -hex 32)

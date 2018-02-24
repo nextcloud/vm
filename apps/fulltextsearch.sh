@@ -5,11 +5,12 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/improvments/lib.sh)
 unset ES_INSTALL
 
-ES_VERSION=6.1.1
-ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
+######## CHANGE TO MASTER BEFORE MERGE ############
+
+APP=https://raw.githubusercontent.com/nextcloud/vm/improvments/apps
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -18,14 +19,10 @@ DEBUG=0
 debug_mode
 
 # Must be root
-if ! is_root
-then
-    msg_box "Must be root to run script, in Ubuntu type: sudo -i"
-    exit 1
-fi
+root_check
 
 # Make sure there is an Nextcloud installation
-if ! [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
+if ! [ "$(occ_command -V)" ]
 then
     msg_box "It seems there is no Nextcloud server installed, please check your installation."
     exit 1
@@ -74,6 +71,7 @@ check_command /etc/init.d/elasticsearch start
 
 # Enable on bootup
 sudo systemctl enable elasticsearch.service
+update-ca-certificates -f
 
 # Install ingest-attachment plugin
 if [ -d /usr/share/elasticsearch ]
@@ -83,37 +81,66 @@ then
 fi
 
 # Check that ingest-attachment is properly installed
-if ! [ "$(curl -s http://127.0.0.1:9300)" ]
-then
-msg_box "Installation failed!
-Please report this to $ISSUES"
-    exit 1
-fi
+#if ! [ "$(curl -s http://127.0.0.1:9200)" ]
+#then
+#msg_box "Installation failed!
+#Please report this to $ISSUES"
+#    exit 1
+#fi
 
 # Install ReadOnlyREST
-# TODO Check with SHA
+echo "Downloading readonlyrest..."
+rm -f "/tmp/readonlyrest-1.16.15_es$ES_VERSION.zip"
+wget -q -T 10 -t 2 "https://github.com/nextcloud/vm/raw/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip" -P /tmp
+mkdir -p "$GPGDIR"
+wget -q -T 10 -t 2 "https://raw.githubusercontent.com/nextcloud/vm/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip.sha1" -P "$GPGDIR"
+echo "Verifying checksums..."
+sha1sum /tmp/readonlyrest-1.16.15_es"$ES_VERSION".zip | awk '{print $1}' > "$GPGDIR"/verify1
+cat "$GPGDIR"/readonlyrest-1.16.15_es"$ES_VERSION".zip.sha1 > "$GPGDIR"/verify2
+if [ -z "$(diff $GPGDIR/verify1 $GPGDIR/verify2)" ]
+then
+    echo "Checksum OK!"
+else
+msg_box "Checksum was not OK.
+
+Please report this to $ISSUES."
+rm -rf "$GPGDIR"
+rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
+exit 1
+fi
+
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install "$APP"/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
+    check_command ./elasticsearch-plugin install $APP/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip
+    rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
 fi
 
 # Check that ReadOnlyREST is properly installed
-if ! [ "$(curl -s http://127.0.0.1:9300)" ]
-then
-msg_box "Installation failed!
-Please report this to $ISSUES"
-    exit 1
-fi
+#if ! [ "$(curl -s http://127.0.0.1:9200)" ]
+#then
+#msg_box "Installation failed!
+#Please report this to $ISSUES"
+#    exit 1
+#fi
 
 # Create configuration YML 
-# TODO: add password, user etc
 cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
 readonlyrest:
-    access_control_rules:
 
-    - name: "Block 1 - Allowing anything from localhost"
-      hosts: [127.0.0.1]
+
+  access_control_rules:
+
+  - name: Accept requests from cloud1 on $NCADMIN-index
+    groups: ["cloud1"]
+    indices: ["$NCADMIN-index"]
+
+
+  users:
+
+  - username: $NCADMIN
+    auth_key: $NCADMIN:$ROREST
+    groups: ["cloud1"]
 YML_CREATE
 
 # Restart Elastic Search
@@ -126,7 +153,7 @@ install_and_enable_app files_fulltextsearch
 chown -R www-data:www-data $NC_APPS_PATH
 
 # Final setup
-# Add password and user values to FTS GUI TODO
-occ_command "config:app:set --value '1' fullnextsearch app_navigation"
-check_command occ_command "fulltextsearch:index"
-
+occ_command fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_ElasticSearch\\Platform\\ElasticSearchPlatform"}'
+occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http:\\\\${NCADMIN}:${ROREST}@localhost:9200\",\"elastic_index\":\"${NCADMIN}\"}"
+occ_command files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
+occ_command fulltextsearch:index

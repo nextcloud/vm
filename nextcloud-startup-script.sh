@@ -117,7 +117,7 @@ which could be the case if you are running directly from the scripts and not the
 As long as the user you created have sudo permissions it's safe to continue.
 This would be the case if you in the previous step created a new user with the script.
 
-If the user you are running this script with doesn't have sudo permissions,
+If the user you are running this script with a user that doesn't have sudo permissions,
 please abort this script and report this issue to $ISSUES."
         fi
     fi
@@ -130,6 +130,7 @@ is_process_running dpkg
 # Check where the best mirrors are and update
 msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
 This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
+
 We recomend you to change the mirrors based on where this is currently installed."
 echo "Checking current mirror..."
 printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
@@ -209,11 +210,14 @@ clear
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
     # Change IP
-    printf "\n${Color_Off}OK, we assume you run this locally and we will now configure your IP to be static.${Color_Off}\n"
-    echo "Your internal IP is: $ADDRESS"
-    printf "\n${Color_Off}Write this down, you will need it to set static IP\n"
-    echo "in your router later. It's included in this guide:"
-    echo "https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
+msg_box "OK, we assume you run this locally and we will now configure your IP to be static.
+
+Your internal IP is: $ADDRESS
+
+Write this down, you will need it to set static IP
+in your router later. It's included in this guide:
+
+https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     any_key "Press any key to set static IP..."
     ifdown "$IFACE"
     wait
@@ -239,11 +243,13 @@ then
     then
         # Connected!
         printf "${Green}Connected!${Color_Off}\n"
-        printf "We will use the DHCP IP: ${Green}$ADDRESS${Color_Off}. If you want to change it later then just edit the interfaces file:\n"
-        printf "sudo nano /etc/network/interfaces\n"
-        echo "If you experience any bugs, please report it here:"
-        echo "$ISSUES"
-        any_key "Press any key to continue..."
+msg_box "We will use the DHCP IP: $ADDRESS
+
+If you want to change it later then just edit the interfaces file:
+sudo nano /etc/network/interfaces
+
+If you experience any bugs, please report it here:
+$ISSUES"
     else
         # Not connected!
         printf "${Red}Not Connected${Color_Off}\nYou should change your settings manually in the next step.\n"
@@ -280,8 +286,8 @@ fi
 # Pretty URLs
 echo "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
-sudo -u www-data php $NCPATH/occ config:system:set htaccess.RewriteBase --value="/"
-sudo -u www-data php $NCPATH/occ maintenance:update:htaccess
+occ_command config:system:set htaccess.RewriteBase --value="/"
+occ_command maintenance:update:htaccess
 bash $SECURE & spinner_loading
 
 # Generate new SSH Keys
@@ -332,7 +338,7 @@ fi
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
 "phpMyadmin" "(*SQL GUI)       " OFF \
-"Netdata" "(*Real-time server monitoring)       " OFF \
+"Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Passman" "(Password storage)   " OFF \
@@ -403,14 +409,14 @@ do
 done
 echo
 clear
-NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+NCADMIN=$(occ_command user:list | awk '{print $3}')
 printf "${Color_Off}\n"
 echo "For better security, change the Nextcloud password for [$NCADMIN]"
 echo "The current password for $NCADMIN is [$NCPASS]"
 any_key "Press any key to change password for Nextcloud..."
 while true
 do
-    sudo -u www-data php "$NCPATH/occ" user:resetpassword "$NCADMIN" && break
+    occ_command user:resetpassword "$NCADMIN" && break
 done
 clear
 
@@ -433,7 +439,7 @@ bash $SCRIPTS/temporary-fix.sh
 rm "$SCRIPTS"/temporary-fix.sh
 
 # Cleanup 1
-sudo -u www-data php "$NCPATH/occ" maintenance:repair
+occ_command maintenance:repair
 rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/change_mysql_pass.sh"

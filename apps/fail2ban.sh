@@ -48,10 +48,10 @@ else
 fi
 
 # Set values in config.php
-sudo -u www-data php "$NCPATH/occ" config:system:set loglevel --value=2
-sudo -u www-data php "$NCPATH/occ" config:system:set log_type --value=file
-sudo -u www-data php "$NCPATH/occ" config:system:set logfile  --value="$NCLOG"
-sudo -u www-data php "$NCPATH/occ" config:system:set logtimezone  --value="$(cat /etc/timezone)"
+occ_command config:system:set loglevel --value=2
+occ_command config:system:set log_type --value=file
+occ_command config:system:set logfile  --value="$NCLOG"
+occ_command config:system:set logtimezone  --value="$(cat /etc/timezone)"
 
 # Create nextcloud.conf file
 cat << NCONF > /etc/fail2ban/filter.d/nextcloud.conf
