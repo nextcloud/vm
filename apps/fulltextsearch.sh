@@ -22,7 +22,7 @@ debug_mode
 root_check
 
 # Make sure there is an Nextcloud installation
-if ! [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
+if ! [ "$(occ_command -V)" ]
 then
     msg_box "It seems there is no Nextcloud server installed, please check your installation."
     exit 1
