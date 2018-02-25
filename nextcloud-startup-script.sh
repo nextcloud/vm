@@ -342,7 +342,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Passman" "(Password storage)   " OFF \
-"Full Text Search [BETA]" "(Elasticsearch)   " OFF \
+"FullTextSearch" "(Elasticsearch [still in BETA])   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
 "Spreed.ME" "(3rd-party Video calls and chat)   " OFF 2>results
 
@@ -373,7 +373,7 @@ do
            install_and_enable_app passman
         ;;
         
-        Full Text Search)
+        FullTextSearch)
            install_and_enable_app fulltextsearch
         ;;        
 
