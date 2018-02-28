@@ -5,12 +5,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/improvments/lib.sh)
+ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset ES_INSTALL
-
-######## CHANGE TO MASTER BEFORE MERGE ############
-
-APP=https://raw.githubusercontent.com/nextcloud/vm/improvments/apps
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -20,6 +16,9 @@ debug_mode
 
 # Must be root
 root_check
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
 # Make sure there is an Nextcloud installation
 if ! [ "$(occ_command -V)" ]
