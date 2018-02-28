@@ -13,11 +13,7 @@ DEBUG=0
 debug_mode
 
 # Must be root
-if ! is_root
-then
-    echo "Must be root to run script, in Ubuntu type: sudo -i"
-    exit 1
-fi
+root_check
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
