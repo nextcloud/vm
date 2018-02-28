@@ -542,6 +542,17 @@ occ_command() {
 check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
+lowest_compatible_nc() {
+if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
+then
+msg_box "This script is developed to work with Nextcloud $1 and later
+Please upgrade your Nextcloud to that version before running this script
+
+If you are using Nextcloud $1 and later and still see this message,
+please report this to $ISSUES"
+fi
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
