@@ -21,11 +21,10 @@ then
 fi
 
 # Check if Nextcloud exists
-if [ ! -d "$NCPATH" ]
-then
-    echo "Nextcloud does not seem to be installed. This script will exit..."
-    exit
-fi
+root_check
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
 # Install if missing
 install_if_not apache2
