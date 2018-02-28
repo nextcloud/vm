@@ -17,11 +17,10 @@ debug_mode
 # Solr Server & Nextant App Installation
 
 # Must be root
-if ! is_root
-then
-    echo "Must be root to run script, in Ubuntu type: sudo -i"
-    exit 1
-fi
+root_check
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 12
 
 msg_box "Nextant is not maintained anymore, and soon to be replaced with Full Text Search. Sorry, not much we can do about it. 
 
