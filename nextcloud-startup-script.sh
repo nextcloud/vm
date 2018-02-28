@@ -56,6 +56,9 @@ network_ok() {
 # Check if root
 root_check
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Check network
 if network_ok
 then
