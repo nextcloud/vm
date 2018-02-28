@@ -58,6 +58,9 @@ then
 docker images | grep -v REPOSITORY | awk '{print $1}' | xargs -L1 docker pull
 fi
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 ## OLD WAY ##
 #if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 #then
