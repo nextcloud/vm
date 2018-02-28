@@ -16,6 +16,9 @@ debug_mode
 # Check if root
 root_check
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 Collabora
 cpu_check 2 Collabora
