@@ -2,9 +2,10 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
+unset NC_UPDATE
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
@@ -377,7 +378,7 @@ do
         ;;
         
         FullTextSearch)
-           install_and_enable_app fulltextsearch
+           run_app_script fulltextsearch
         ;;        
 
         Talk)

@@ -48,9 +48,6 @@ debug_mode
 # Check if root
 root_check
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
-
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
@@ -271,14 +268,14 @@ mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
 
 # Install Nextcloud
 cd "$NCPATH"
-occ_command "maintenance:install \
-    --data-dir=$NCDATA \
-    --database=mysql \
-    --database-name=nextcloud_db \
-    --database-user=root \
-    --database-pass=$MARIADB_PASS \
-    --admin-user=$NCUSER \
-    --admin-pass=$NCPASS"
+occ_command maintenance:install \
+--data-dir="$NCDATA" \
+--database=mysql \
+--database-name=nextcloud_db \
+--database-user=root \
+--database-pass="$MARIADB_PASS" \
+--admin-user="$NCUSER" \
+--admin-pass="$NCPASS"
 echo
 echo "Nextcloud version:"
 occ_command status
