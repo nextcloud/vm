@@ -13,11 +13,7 @@ DEBUG=0
 debug_mode
 
 # Must be root
-if ! is_root
-then
-    echo "Must be root to run script, in Ubuntu type: sudo -i"
-    exit 1
-fi
+root_check
 
 # Check Ubuntu version
 echo "Checking server OS and version..."
@@ -94,11 +90,25 @@ cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
 );
 ADD_TO_CONFIG
 
-# Redis performance tweaks
+## Redis performance tweaks ##
 if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 then
     echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
 fi
+
+# Disable THP
+if ! grep -Fxq "never" /sys/kernel/mm/transparent_hugepage/enabled
+then
+    echo "never" > /sys/kernel/mm/transparent_hugepage/enabled
+fi
+
+# Raise TCP backlog
+#if ! grep -Fxq "net.core.somaxconn" /proc/sys/net/core/somaxconn
+#then
+#    sed -i "s|net.core.somaxconn.*||g" /etc/sysctl.conf
+#    sysctl -w net.core.somaxconn=512
+#    echo "net.core.somaxconn = 512" >> /etc/sysctl.conf
+#fi
 sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm .*|unixsocketperm 777|g" $REDIS_CONF
 sed -i "s|^port.*|port 0|" $REDIS_CONF

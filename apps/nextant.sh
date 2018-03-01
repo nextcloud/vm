@@ -17,11 +17,10 @@ debug_mode
 # Solr Server & Nextant App Installation
 
 # Must be root
-if ! is_root
-then
-    echo "Must be root to run script, in Ubuntu type: sudo -i"
-    exit 1
-fi
+root_check
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 12
 
 msg_box "Nextant is not maintained anymore, and soon to be replaced with Full Text Search. Sorry, not much we can do about it. 
 
@@ -32,7 +31,7 @@ You can find the repository here: https://github.com/nextcloud/fulltextsearch,
 but please send your PR to the Nextcloud VM repository"
 
 # Make sure there is an Nextcloud installation
-if ! [ "$(sudo -u www-data php $NCPATH/occ -V)" ]
+if ! [ "$(occ_command -V)" ]
 then
     echo "It seems there is no Nextcloud server installed, please check your installation."
     exit 1
@@ -107,8 +106,8 @@ check_command tar zxf nextant-1.0.8.tar.gz
 
 # Enable Nextant
 rm -r "$NT_RELEASE"
-check_command sudo -u www-data php $NCPATH/occ app:enable nextant
+occ_command app:enable nextant
 chown -R www-data:www-data $NCPATH/apps
-check_command sudo -u www-data php $NCPATH/occ nextant:test http://127.0.0.1:8983/solr/ nextant --save
-check_command sudo -u www-data php $NCPATH/occ nextant:index
+occ_command nextant:test http://127.0.0.1:8983/solr/ nextant --save
+occ_command nextant:index
 

@@ -15,12 +15,7 @@ DEBUG=0
 debug_mode
 
 # Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/phpmyadmin_install.sh\n" "$SCRIPTS"
-    sleep 3
-    exit 1
-fi
+root_check
 
 # Check that the script can see the external IP (apache fails otherwise)
 if [ -z "$WANIP4" ]
