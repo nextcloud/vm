@@ -6,7 +6,12 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
+<<<<<<< HEAD
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+=======
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+>>>>>>> 43ccc53... details (#484)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

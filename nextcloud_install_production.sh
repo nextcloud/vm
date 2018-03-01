@@ -48,9 +48,6 @@ debug_mode
 # Check if root
 root_check
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
-
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
@@ -231,6 +228,7 @@ bash $SECURE & spinner_loading
 # Install Nextcloud
 cd "$NCPATH"
 <<<<<<< HEAD
+<<<<<<< HEAD
 check_command sudo -u www-data php occ maintenance:install \
     --data-dir="$NCDATA" \
     --database="pgsql" \
@@ -249,6 +247,16 @@ occ_command "maintenance:install \
     --admin-user=$NCUSER \
     --admin-pass=$NCPASS"
 >>>>>>> 4be70d9... NC13 is required (#467)
+=======
+occ_command maintenance:install \
+--data-dir="$NCDATA" \
+--database=mysql \
+--database-name=nextcloud_db \
+--database-user=root \
+--database-pass="$MARIADB_PASS" \
+--admin-user="$NCUSER" \
+--admin-pass="$NCPASS"
+>>>>>>> 43ccc53... details (#484)
 echo
 echo "Nextcloud version:"
 occ_command status
