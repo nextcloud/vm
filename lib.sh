@@ -543,7 +543,7 @@ check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 lowest_compatible_nc() {
-if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
+if [ "${CURRENTVERSION%%.*}" -ht "$1" ]
 then
 msg_box "This script is developed to work with Nextcloud $1 and later
 Please upgrade your Nextcloud to that version before running this script
