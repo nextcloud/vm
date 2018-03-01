@@ -378,7 +378,7 @@ do
         ;;
         
         FullTextSearch)
-           install_and_enable_app fulltextsearch
+           run_app_script fulltextsearch
         ;;        
 
         Talk)
