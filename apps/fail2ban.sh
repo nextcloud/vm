@@ -15,12 +15,10 @@ DEBUG=0
 debug_mode
 
 # Check if root
-if ! is_root
-then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/fail2ban.sh\n" "$SCRIPTS"
-    sleep 3
-    exit 1
-fi
+root_check
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
 ### Local variables ###
 # location of Nextcloud logs
@@ -48,10 +46,10 @@ else
 fi
 
 # Set values in config.php
-sudo -u www-data php "$NCPATH/occ" config:system:set loglevel --value=2
-sudo -u www-data php "$NCPATH/occ" config:system:set log_type --value=file
-sudo -u www-data php "$NCPATH/occ" config:system:set logfile  --value="$NCLOG"
-sudo -u www-data php "$NCPATH/occ" config:system:set logtimezone  --value="$(cat /etc/timezone)"
+occ_command config:system:set loglevel --value=2
+occ_command config:system:set log_type --value=file
+occ_command config:system:set logfile  --value="$NCLOG"
+occ_command config:system:set logtimezone  --value="$(cat /etc/timezone)"
 
 # Create nextcloud.conf file
 cat << NCONF > /etc/fail2ban/filter.d/nextcloud.conf

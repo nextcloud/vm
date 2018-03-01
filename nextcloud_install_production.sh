@@ -23,6 +23,15 @@ else
     apt install curl -y
 fi
 
+# Install lshw if not existing
+if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "lshw OK"
+else
+    apt update -q4 & spinner_loading
+    apt install lshw -y
+fi
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -38,6 +47,9 @@ debug_mode
 
 # Check if root
 root_check
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
@@ -218,6 +230,7 @@ bash $SECURE & spinner_loading
 
 # Install Nextcloud
 cd "$NCPATH"
+<<<<<<< HEAD
 check_command sudo -u www-data php occ maintenance:install \
     --data-dir="$NCDATA" \
     --database="pgsql" \
@@ -226,12 +239,46 @@ check_command sudo -u www-data php occ maintenance:install \
     --database-pass="$PGDB_PASS" \
     --admin-user="$NCUSER" \
     --admin-pass="$NCPASS"
+=======
+occ_command "maintenance:install \
+    --data-dir=$NCDATA \
+    --database=mysql \
+    --database-name=nextcloud_db \
+    --database-user=root \
+    --database-pass=$MARIADB_PASS \
+    --admin-user=$NCUSER \
+    --admin-pass=$NCPASS"
+>>>>>>> 4be70d9... NC13 is required (#467)
 echo
 echo "Nextcloud version:"
-sudo -u www-data php "$NCPATH"/occ status
+occ_command status
 sleep 3
 echo
 
+<<<<<<< HEAD
+=======
+# Enable UTF8mb4 (4-byte support)
+databases=$(mysql -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
+for db in $databases; do
+    if [[ "$db" != "performance_schema" ]] && [[ "$db" != _* ]] && [[ "$db" != "information_schema" ]];
+    then
+        echo "Changing to UTF8mb4 on: $db"
+        mysql -u root -p"$MARIADB_PASS" -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+    fi
+done
+#if [ $? -ne 0 ]
+#then
+#    echo "UTF8mb4 was not set. Something is wrong."
+#    echo "Please report this bug to $ISSUES. Thank you!"
+#    exit 1
+#fi
+
+# Repair and set Nextcloud config values
+mysqlcheck -u root -p"$MARIADB_PASS" --auto-repair --optimize --all-databases
+occ_command config:system:set mysql.utf8mb4 --type boolean --value="true"
+occ_command maintenance:repair
+
+>>>>>>> 4be70d9... NC13 is required (#467)
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
@@ -251,10 +298,10 @@ sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.0/ap
 configure_max_upload
 
 # Set SMTP mail
-sudo -u www-data php "$NCPATH"/occ config:system:set mail_smtpmode --value="smtp"
+occ_command config:system:set mail_smtpmode --value="smtp"
 
 # Set logrotate
-sudo -u www-data php "$NCPATH"/occ config:system:set log_rotate_size --value="10485760"
+occ_command config:system:set log_rotate_size --value="10485760"
 
 # Enable OPCache for PHP 
 # https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
@@ -278,7 +325,7 @@ install_and_enable_app previewgenerator
 if [ -d "$NC_APPS_PATH/previewgenerator" ]
 then
     crontab -u www-data -l | { cat; echo "@daily php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
-    sudo -u www-data php "$NCPATH"/occ preview:generate-all
+    occ_command preview:generate-all
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
 fi

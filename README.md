@@ -43,6 +43,7 @@ DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
 `wget https://raw.githubusercontent.com/nextcloud/vm/postgresql/nextcloud_install_production.sh`
 2. Run the script with:<br>
 `sudo bash nextcloud_install_production.sh`
+Do not enable Redis Memcache support, please use the default [no].
 3. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
 `ssh <user>@IP-ADDRESS`<br>
 If it automatically runs as root when you reboot the machine, you have to abort it by pressing `CTRL+C` and run the script as the user you just created:<br>
