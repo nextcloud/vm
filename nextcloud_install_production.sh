@@ -227,42 +227,14 @@ bash $SECURE & spinner_loading
 
 # Install Nextcloud
 cd "$NCPATH"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 38503d3cadab7d9a2bb7ac092f198ef01b308f2b
-check_command sudo -u www-data php occ maintenance:install \
-    --data-dir="$NCDATA" \
-    --database="pgsql" \
-    --database-name="nextcloud_db" \
-    --database-user="$NCUSER" \
-    --database-pass="$PGDB_PASS" \
-    --admin-user="$NCUSER" \
-    --admin-pass="$NCPASS"
-<<<<<<< HEAD
-=======
-occ_command "maintenance:install \
-    --data-dir=$NCDATA \
-    --database=mysql \
-    --database-name=nextcloud_db \
-    --database-user=root \
-    --database-pass=$MARIADB_PASS \
-    --admin-user=$NCUSER \
-    --admin-pass=$NCPASS"
->>>>>>> 4be70d9... NC13 is required (#467)
-=======
 occ_command maintenance:install \
 --data-dir="$NCDATA" \
---database=mysql \
+--database=pgsql \
 --database-name=nextcloud_db \
---database-user=root \
---database-pass="$MARIADB_PASS" \
+--database-user=$NCUSER \
+--database-pass="$PGDB_PASS" \
 --admin-user="$NCUSER" \
 --admin-pass="$NCPASS"
->>>>>>> 43ccc53... details (#484)
-=======
->>>>>>> 38503d3cadab7d9a2bb7ac092f198ef01b308f2b
 echo
 echo "Nextcloud version:"
 occ_command status
