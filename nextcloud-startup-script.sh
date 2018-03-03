@@ -2,17 +2,10 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-<<<<<<< HEAD
-NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
-unset FIRST_IFACE
-unset CHECK_CURRENT_REPO
-unset NCDB
-=======
-NC_UPDATE=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 unset NC_UPDATE
->>>>>>> 43ccc53... details (#484)
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
