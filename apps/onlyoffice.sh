@@ -2,12 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-<<<<<<< HEAD
-OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
-=======
-NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset NC_UPDATE
->>>>>>> 43ccc53... details (#484)
 unset OO_INSTALL
 
 # Tech and Me © - 2018, https://www.techandme.se/
