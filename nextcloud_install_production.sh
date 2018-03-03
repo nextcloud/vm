@@ -231,7 +231,7 @@ occ_command maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
---database-user=$NCUSER \
+--database-user="$NCUSER" \
 --database-pass="$PGDB_PASS" \
 --admin-user="$NCUSER" \
 --admin-pass="$NCPASS"
