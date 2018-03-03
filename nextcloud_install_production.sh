@@ -229,6 +229,9 @@ bash $SECURE & spinner_loading
 cd "$NCPATH"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 38503d3cadab7d9a2bb7ac092f198ef01b308f2b
 check_command sudo -u www-data php occ maintenance:install \
     --data-dir="$NCDATA" \
     --database="pgsql" \
@@ -237,6 +240,7 @@ check_command sudo -u www-data php occ maintenance:install \
     --database-pass="$PGDB_PASS" \
     --admin-user="$NCUSER" \
     --admin-pass="$NCPASS"
+<<<<<<< HEAD
 =======
 occ_command "maintenance:install \
     --data-dir=$NCDATA \
@@ -257,36 +261,14 @@ occ_command maintenance:install \
 --admin-user="$NCUSER" \
 --admin-pass="$NCPASS"
 >>>>>>> 43ccc53... details (#484)
+=======
+>>>>>>> 38503d3cadab7d9a2bb7ac092f198ef01b308f2b
 echo
 echo "Nextcloud version:"
 occ_command status
 sleep 3
 echo
 
-<<<<<<< HEAD
-=======
-# Enable UTF8mb4 (4-byte support)
-databases=$(mysql -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
-for db in $databases; do
-    if [[ "$db" != "performance_schema" ]] && [[ "$db" != _* ]] && [[ "$db" != "information_schema" ]];
-    then
-        echo "Changing to UTF8mb4 on: $db"
-        mysql -u root -p"$MARIADB_PASS" -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-    fi
-done
-#if [ $? -ne 0 ]
-#then
-#    echo "UTF8mb4 was not set. Something is wrong."
-#    echo "Please report this bug to $ISSUES. Thank you!"
-#    exit 1
-#fi
-
-# Repair and set Nextcloud config values
-mysqlcheck -u root -p"$MARIADB_PASS" --auto-repair --optimize --all-databases
-occ_command config:system:set mysql.utf8mb4 --type boolean --value="true"
-occ_command maintenance:repair
-
->>>>>>> 4be70d9... NC13 is required (#467)
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
