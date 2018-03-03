@@ -425,7 +425,7 @@ echo "The current password for $NCADMIN is [$NCPASS]"
 any_key "Press any key to change password for Nextcloud..."
 while true
 do
-    occ_command user:resetpassword "$NCADMIN" && break
+    sudo -u www-data php "$NCPATH"/occ user:resetpassword "$NCADMIN" && break
 done
 clear
 
