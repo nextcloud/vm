@@ -5,11 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-<<<<<<< HEAD
-NEXTANT_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
-=======
-NC_UPDATE=1 && NEXTANT_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
->>>>>>> 43ccc53... details (#484)
+NC_UPDATE=1 && NEXTANT_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset NEXTANT_INSTALL
 unset NC_UPDATE
 
