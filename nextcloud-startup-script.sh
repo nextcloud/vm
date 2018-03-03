@@ -2,9 +2,10 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+NC_UPDATE=1 && NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
+unset NCDB
 unset NC_UPDATE
 
 # Tech and Me © - 2018, https://www.techandme.se/
@@ -347,13 +348,8 @@ fi
 
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
-<<<<<<< HEAD
 "phpPGadmin" "(PostgreSQL GUI)       " OFF \
 "Netdata" "(*Real-time server monitoring)       " OFF \
-=======
-"phpMyadmin" "(*SQL GUI)       " OFF \
-"Netdata" "(Real-time server monitoring)       " OFF \
->>>>>>> 4be70d9... NC13 is required (#467)
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Passman" "(Password storage)   " OFF \
