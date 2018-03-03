@@ -55,15 +55,7 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Nextcloud version
-<<<<<<< HEAD
-<<<<<<< HEAD
 [ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-=======
-[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(occ_command status | grep "versionstring" | awk '{print $3}')
->>>>>>> 4be70d9... NC13 is required (#467)
-=======
-[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
->>>>>>> 43ccc53... details (#484)
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
 STABLEVERSION="nextcloud-$NCVERSION"
 NCMAJOR="${NCVERSION%%.*}"
