@@ -5,7 +5,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+unset NC_UPDATE
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -21,11 +22,10 @@ then
 fi
 
 # Check if Nextcloud exists
-if [ ! -d "$NCPATH" ]
-then
-    echo "Nextcloud does not seem to be installed. This script will exit..."
-    exit
-fi
+root_check
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
 # Install if missing
 install_if_not apache2
@@ -46,16 +46,16 @@ fi
 if [ -d "$NC_APPS_PATH/spreedme" ]
 then
     # Remove
-    occ_command 'app:disable spreedme'
+    occ_command app:disable spreedme
     echo "SpreedMe app already seems to be installed and will now be re-installed..."
     rm -R "NC_APPS_PATH/spreedme"
     # Reinstall
-    occ_command 'app:install spreedme'
+    occ_command app:install spreedme
 else
-    occ_command 'app:install spreedme'
+    occ_command app:install spreedme
 fi
-occ_command 'app:enable spreedme'
-chown -R www-data:www-data $NC_APPS_PATH
+occ_command app:enable spreedme
+chown -R www-data:www-data "$NC_APPS_PATH"
 
 # Generate secret keys
 SHAREDSECRET=$(openssl rand -hex 32)

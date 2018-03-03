@@ -103,6 +103,11 @@ REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 
 SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
+# Full text Search
+[ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$ES_INSTALL" ] && ES_VERSION=6.1.1
+[ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
+[ ! -z "$ES_INSTALL" ] && NCADMIN=$(occ_command user:list | awk '{print $3}')
 
 ## functions
 
@@ -328,7 +333,7 @@ fi
 }
 
 check_command() {
-  if ! eval "$*"
+  if ! "$@";
   then
      printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
      echo "$* failed"
@@ -367,13 +372,13 @@ install_and_enable_app() {
 if [ ! -d "$NC_APPS_PATH/$1" ]
 then
     echo "Installing $1..."
-    occ_command "app:install $1"
+    occ_command app:install "$1"
 fi
 
 # Enable $1
 if [ -d "$NC_APPS_PATH/$1" ]
 then
-    occ_command "app:enable $1"
+    occ_command app:enable "$1"
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 }
@@ -529,7 +534,19 @@ any_key() {
 
 # Example: occ_command 'maintenance:mode --on'
 occ_command() {
-check_command sudo -u www-data php "$NCPATH"/occ "$1"
+check_command sudo -u www-data php "$NCPATH"/occ "$@";
+}
+
+lowest_compatible_nc() {
+if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
+then
+msg_box "This script is developed to work with Nextcloud $1 and later
+Please upgrade your Nextcloud to that version before running this script
+
+If you are using Nextcloud $1 and later and still see this message,
+please report this to $ISSUES"
+exit
+fi
 }
 
 ## bash colors

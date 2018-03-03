@@ -56,6 +56,9 @@ then
 docker images | grep -v REPOSITORY | awk '{print $1}' | xargs -L1 docker pull
 fi
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 ## OLD WAY ##
 #if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 #then
@@ -208,7 +211,7 @@ then
     echo "$BACKUP/themes/ exists"
     echo 
     printf "${Green}All files are backed up.${Color_Off}\n"
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
+    occ_command maintenance:mode --on
     echo "Removing old Nextcloud instance in 5 seconds..." && sleep 5
     rm -rf $NCPATH
     tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
@@ -216,8 +219,8 @@ then
     cp -R $BACKUP/themes "$NCPATH"/
     cp -R $BACKUP/config "$NCPATH"/
     bash $SECURE & spinner_loading
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
-    sudo -u www-data php "$NCPATH"/occ upgrade --no-app-disable
+    occ_command maintenance:mode --off
+    occ_command upgrade --no-app-disable
 else
 msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if the folders exist."
@@ -250,14 +253,14 @@ fi
 # Pretty URLs
 echo "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data "$NCPATH"
-sudo -u www-data php "$NCPATH"/occ config:system:set htaccess.RewriteBase --value="/"
-sudo -u www-data php "$NCPATH"/occ maintenance:update:htaccess
+occ_command config:system:set htaccess.RewriteBase --value="/"
+occ_command maintenance:update:htaccess
 bash "$SECURE"
 
 # Repair
-sudo -u www-data php "$NCPATH"/occ maintenance:repair
+occ_command maintenance:repair
 
-CURRENTVERSION_after=$(sudo -u www-data php "$NCPATH"/occ status | grep "versionstring" | awk '{print $3}')
+CURRENTVERSION_after=$(occ_command status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
 then
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
@@ -268,8 +271,8 @@ If you notice that some apps are disabled it's due to that they are not compatib
 To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
 
 Thank you for using Tech and Me's updater!"
-    sudo -u www-data php "$NCPATH"/occ status
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
+    occ_command status
+    occ_command maintenance:mode --off
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log
     ## Un-hash this if you want the system to reboot
     # reboot
@@ -283,6 +286,6 @@ Your files are still backed up at $BACKUP. No worries!
 Please report this issue to $ISSUES
 
 Maintenance mode is kept on."
-sudo -u www-data php "$NCPATH"/occ status
+occ_command status
     exit 1
 fi

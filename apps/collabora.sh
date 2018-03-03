@@ -2,7 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+unset NC_UPDATE
 unset COLLABORA_INSTALL
 
 # Tech and Me © - 2018, https://www.techandme.se/
@@ -15,6 +16,9 @@ debug_mode
 
 # Check if root
 root_check
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 Collabora
@@ -122,8 +126,8 @@ fi
 # Disable RichDocuments (Collabora App) if activated
 if [ -d "$NCPATH"/apps/richdocuments ]
 then
-    occ_command "app:disable richdocuments"
-    rm -r "$NCPATH"/apps/richdocuments
+    occ_command app:disable richdocuments
+    rm -r "$NCPATH_APPS_PATH"/richdocuments
 fi
 
 # Install Collabora docker
@@ -222,7 +226,7 @@ then
     a2ensite "$SUBDOMAIN.conf"
     service apache2 restart
 # Install Collabora App
-    occ_command "app:install richdocuments"
+    occ_command app:install richdocuments
 else
     printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: $ISSUES\n"
     any_key "Press any key to continue... "
@@ -233,10 +237,10 @@ fi
 if [ -d "$NC_APPS_PATH"/richdocuments ]
 then
 # Enable Collabora
-    occ_command "app:enable richdocuments"
-    occ_command "config:app:set richdocuments wopi_url --value=https://$SUBDOMAIN"
-    chown -R www-data:www-data $NCPATH/apps
-    occ_command "config:system:set trusted_domains 3 --value=$SUBDOMAIN"
+    occ_command app:enable richdocuments
+    occ_command config:app:set richdocuments wopi_url --value=https://"$SUBDOMAIN"
+    chown -R www-data:www-data "$NC_APPS_PATH"
+    occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
 # Add prune command
     {
     echo "#!/bin/bash"

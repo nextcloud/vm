@@ -13,6 +13,9 @@ true
 DEBUG=0
 debug_mode
 
+# Check if root
+root_check
+
 # Install packages for Webmin
 apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
 
