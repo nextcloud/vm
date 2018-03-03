@@ -545,6 +545,7 @@ Please upgrade your Nextcloud to that version before running this script
 
 If you are using Nextcloud $1 and later and still see this message,
 please report this to $ISSUES"
+exit
 fi
 }
 
