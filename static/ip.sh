@@ -14,6 +14,7 @@ unset FIRST_IFACE
 DEBUG=0
 debug_mode
 
+# Copy old interfaces file
 msg_box "Copying old interfaces file to:
 
 /etc/network/interfaces.old"
