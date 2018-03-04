@@ -14,6 +14,12 @@ unset FIRST_IFACE
 DEBUG=0
 debug_mode
 
+# Copy old interfaces file
+msg_box "Copying old interfaces file to:
+
+/etc/network/interfaces.old"
+check_command cp /etc/network/interfaces /etc/network/interfaces.old
+
 cat <<-IPCONFIG > "$INTERFACES"
 source /etc/network/interfaces.d/*
 
