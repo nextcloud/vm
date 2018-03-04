@@ -18,7 +18,7 @@ debug_mode
 msg_box "Copying old interfaces file to:
 
 /etc/network/interfaces.old"
-check_command cp /etc/network/interfaces /etc/network/interfaces.old
+check_command cp -v /etc/network/interfaces /etc/network/interfaces.old
 
 cat <<-IPCONFIG > "$INTERFACES"
 source /etc/network/interfaces.d/*
