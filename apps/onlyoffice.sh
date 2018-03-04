@@ -33,7 +33,7 @@ You can't run Collabora at the same time as you run OnlyOffice."
 fi
 
 # Notification
-msg_box "Before you start, please make sure that port 443 is directly forwarded to this machine!"
+msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
 
 # Get the latest packages
 apt update -q4 & spinner_loading
@@ -71,6 +71,7 @@ it to this server before you can run this script."
 fi
 
 # Check open ports with NMAP
+check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
 
 # Install Docker
