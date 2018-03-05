@@ -575,7 +575,6 @@ fi
 exit
 }
 
-
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
