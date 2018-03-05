@@ -570,6 +570,7 @@ msg_box "You now use the latest version of Nextcloud.
 You can now use the regular update script as usual.
 
 This is the command: sudo bash $SCRIPTS/update.sh"
+occ_command -V
 fi
 exit
 }
