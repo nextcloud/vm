@@ -577,7 +577,6 @@ Please report this to $ISSUES"
 occ_command -V
 exit
 fi
-
 }
 
 ## bash colors
