@@ -553,8 +553,8 @@ If you are using Nextcloud $1 and later and still see this message,
 or experience other issues then please report this to $ISSUES"
 
     # Do the upgrade
-    chown www-data:www-data "$NCPATH" -R
-    rm -Rf "$NCPATH"/assets
+    chown -R www-data:www-data "$NCPATH"
+    rm -rf "$NCPATH"/assets
     yes | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
     run_static_script setup_secure_permissions_nextcloud
     occ_command maintenance:mode --off
