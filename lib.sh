@@ -540,11 +540,33 @@ check_command sudo -u www-data php "$NCPATH"/occ "$@";
 lowest_compatible_nc() {
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
-msg_box "This script is developed to work with Nextcloud $1 and later
-Please upgrade your Nextcloud to that version before running this script
-
+msg_box "This script is developed to work with Nextcloud $1 and later.
+This means we can't use our own script for now. But don't worry,
+we automated the update process and we will now use Nextclouds updater instead.
 If you are using Nextcloud $1 and later and still see this message,
-please report this to $ISSUES"
+or experience other issues then please report this to $ISSUES"
+
+    # Do the upgrade
+    chown -R www-data:www-data "$NCPATH"
+    rm -rf "$NCPATH"/assets
+    yes | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
+    run_static_script setup_secure_permissions_nextcloud
+    occ_command maintenance:mode --off
+fi
+
+# Check new version
+# shellcheck source=lib.sh
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
+then
+msg_box "You now use the latest version of Nextcloud.
+You can now use the regular update script as usual.
+This is the command: sudo bash $SCRIPTS/update.sh"
+else
+msg_box "It appears that something went wrong with the update. 
+Please report this to $ISSUES"
+occ_command -V
 exit
 fi
 }
