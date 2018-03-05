@@ -561,6 +561,9 @@ or experience other issues then please report this to $ISSUES"
     occ_command maintenance:mode --off
 fi
 
+# Check new version
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
 msg_box "You now use the latest version of Nextcloud.
