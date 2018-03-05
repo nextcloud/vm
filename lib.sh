@@ -562,6 +562,7 @@ or experience other issues then please report this to $ISSUES"
 fi
 
 # Check new version
+# shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
