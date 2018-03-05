@@ -26,7 +26,7 @@ a domain that the SSL certs will be valid for.
 If you don't have a domain yet, get one before
 you run this script!
 
-You also have to open port 443 against this VMs
+You also have to open port 80+443 against this VMs
 IP address: $ADDRESS - do this in your router/FW.
 Here is a guide: https://goo.gl/Uyuf65
 
@@ -44,7 +44,7 @@ just type: sudo bash $SCRIPTS/activate-ssl.sh"
     exit
 fi
 
-if [[ "no" == $(ask_yes_or_no "Have you forwarded port 443 in your router?") ]]
+if [[ "no" == $(ask_yes_or_no "Have you forwarded port 80+443 in your router?") ]]
 then
 msg_box "OK, but if you want to run this script later,
 just type: sudo bash /var/scripts/activate-ssl.sh"
@@ -82,6 +82,7 @@ done
 # Check if port is open with NMAP
 sed -i "s|127.0.1.1.*|127.0.1.1       $domain nextcloud|g" /etc/hosts
 service networking restart
+check_open_port 80 "$domain"
 check_open_port 443 "$domain"
 
 # Fetch latest version of test-new-config.sh
