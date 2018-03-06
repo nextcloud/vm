@@ -562,7 +562,7 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL $GITHUB_REPOr/lib.sh)
+NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
 unset NC_UPDATE
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
