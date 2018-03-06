@@ -549,6 +549,8 @@ msg_box "This script is developed to work with Nextcloud $1 and later.
 This means we can't use our own script for now. But don't worry,
 we automated the update process and we will now use Nextclouds updater instead.
 
+Press [OK] to continue the update, or press [CTRL+C] to abort.
+
 If you are using Nextcloud $1 and later and still see this message,
 or experience other issues then please report this to $ISSUES"
 
