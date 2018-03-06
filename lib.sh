@@ -560,9 +560,7 @@ NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/l
 unset NC_UPDATE
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
-msg_box "You now use the latest version of Nextcloud.
-You can now use the regular update script as usual.
-This is the command: sudo bash $SCRIPTS/update.sh"
+    sleep 1
 else
 msg_box "It appears that something went wrong with the update. 
 Please report this to $ISSUES"
