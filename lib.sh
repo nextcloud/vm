@@ -346,6 +346,11 @@ check_command() {
   fi
 }
 
+# Example: occ_command 'maintenance:mode --on'
+occ_command() {
+check_command sudo -u www-data php "$NCPATH"/occ "$@";
+}
+
 network_ok() {
     echo "Testing if network is OK..."
     service networking restart
@@ -535,11 +540,6 @@ any_key() {
     local PROMPT="$1"
     read -r -p "$(printf "${Green}${PROMPT}${Color_Off}")" -n1 -s
     echo
-}
-
-# Example: occ_command 'maintenance:mode --on'
-occ_command() {
-check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 lowest_compatible_nc() {
