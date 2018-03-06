@@ -423,7 +423,7 @@ download_le_script() {
     fi
 }
 
-# Run any script in ../master
+# Run any script in ../postgresql
 # call like: run_main_script name_of_script
 run_main_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
@@ -556,7 +556,7 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
 unset NC_UPDATE
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
