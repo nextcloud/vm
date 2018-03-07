@@ -21,7 +21,14 @@ debug_mode
 root_check
 
 # Nextcloud 13 is required.
-lowest_compatible_nc 12
+if [ "${CURRENTVERSION%%.*}" -lt "13" ]
+then
+msg_box "This script is developed to work with Nextcloud 13 and later.
+
+Please use Full Text Search instead. You can find the script here:
+https://github.com/nextcloud/vm/blob/master/apps/fulltextsearch.sh"
+exit
+fi
 
 msg_box "Nextant is not maintained anymore, and soon to be replaced with Full Text Search. Sorry, not much we can do about it. 
 
