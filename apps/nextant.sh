@@ -21,7 +21,14 @@ debug_mode
 root_check
 
 # Nextcloud 13 is required.
-lowest_compatible_nc 12
+if [ "${CURRENTVERSION%%.*}" -lt "13" ]
+then
+msg_box "This script is developed to work with Nextcloud 13 and later.
+
+Please use Full Text Search instead. You can find the script here:
+https://github.com/nextcloud/vm/blob/master/apps/fulltextsearch.sh"
+exit
+fi
 
 # Make sure there is an Nextcloud installation
 if ! [ "$(occ_command -V)" ]
