@@ -20,10 +20,10 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 13 is required.
-if [ "${CURRENTVERSION%%.*}" -lt "13" ]
+# Nextcloud 12 is required.
+if [ ! "${CURRENTVERSION%%.*}" -le "12" ]
 then
-msg_box "This script is developed to work with Nextcloud 13 and later.
+msg_box "This script is developed to work with Nextcloud 12 and earlier.
 
 Please use Full Text Search instead. You can find the script here:
 https://github.com/nextcloud/vm/blob/master/apps/fulltextsearch.sh"
