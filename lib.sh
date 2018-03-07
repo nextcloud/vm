@@ -110,7 +110,7 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$ES_INSTALL" ] && ES_VERSION=6.1.1
 [ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
-[ ! -z "$ES_INSTALL" ] && NCADMIN=$(occ_command user:list | awk '{print $3}')
+[ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
 
 ## functions
 
@@ -346,6 +346,11 @@ check_command() {
   fi
 }
 
+# Example: occ_command 'maintenance:mode --on'
+occ_command() {
+check_command sudo -u www-data php "$NCPATH"/occ "$@";
+}
+
 network_ok() {
     echo "Testing if network is OK..."
     service networking restart
@@ -537,22 +542,40 @@ any_key() {
     echo
 }
 
-# Example: occ_command 'maintenance:mode --on'
-occ_command() {
-check_command sudo -u www-data php "$NCPATH"/occ "$@";
-}
-
 lowest_compatible_nc() {
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
-msg_box "This script is developed to work with Nextcloud $1 and later
-Please upgrade your Nextcloud to that version before running this script
+msg_box "This script is developed to work with Nextcloud $1 and later.
+This means we can't use our own script for now. But don't worry,
+we automated the update process and we will now use Nextclouds updater instead.
+
+Press [OK] to continue the update, or press [CTRL+C] to abort.
 
 If you are using Nextcloud $1 and later and still see this message,
-please report this to $ISSUES"
-exit
+or experience other issues then please report this to $ISSUES"
+
+    # Do the upgrade
+    chown -R www-data:www-data "$NCPATH"
+    rm -rf "$NCPATH"/assets
+    yes | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
+    run_static_script setup_secure_permissions_nextcloud
+    occ_command maintenance:mode --off
 fi
 
+# Check new version
+# shellcheck source=lib.sh
+NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
+unset NC_UPDATE
+if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
+then
+    sleep 1
+else
+msg_box "It appears that something went wrong with the update. 
+
+Please report this to $ISSUES"
+occ_command -V
+exit
+fi
 }
 
 ## bash colors
