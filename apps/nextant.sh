@@ -30,6 +30,14 @@ https://github.com/nextcloud/vm/blob/master/apps/fulltextsearch.sh"
 exit
 fi
 
+msg_box "Nextant is not maintained anymore, and is now replaced with Full Text Search. Sorry, not much we can do about it. 
+
+Nextant is still fully functional though, but it will not be developed any further.
+Please use Full Text Search instead. You can find the script here:
+https://github.com/nextcloud/vm/blob/master/apps/fulltextsearch.sh
+
+Please report any bugs regarding the script to $ISSUES"
+
 # Make sure there is an Nextcloud installation
 if ! [ "$(occ_command -V)" ]
 then
