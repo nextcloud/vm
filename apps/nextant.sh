@@ -108,9 +108,9 @@ check_command "echo \"SOLR_OPTS=\\\"\\\$SOLR_OPTS -Dsolr.allow.unsafe.resourcelo
 check_command service solr restart
 
 # Get nextant app for nextcloud
-check_command wget -q -P "$NC_APPS_PATH" https://github.com/nextcloud/fulltextsearch/releases/download/v1.0.8/nextant-1.0.8.tar.gz
+check_command wget -q -P "$NC_APPS_PATH" "$NT_DL"
 check_command cd "$NC_APPS_PATH"
-check_command tar zxf nextant-1.0.8.tar.gz
+check_command tar zxf "$NT_RELEASE"
 
 # Enable Nextant
 rm -r "$NT_RELEASE"
