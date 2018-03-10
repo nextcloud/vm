@@ -25,7 +25,7 @@
                 margin: 0 auto;
             }
             div.logo   {
-                background-image: url('/nextcloud/core/img/logo-icon.svg');
+                background-image: url('/nextcloud/core/img/logo.svg');
                 background-repeat: no-repeat; top center;
                 width: 50%;
                 height: 25%;
