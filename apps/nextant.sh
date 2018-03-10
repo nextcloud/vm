@@ -20,16 +20,23 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 12
+# Nextcloud 12 is required.
+if [ ! "${CURRENTVERSION%%.*}" -le "12" ]
+then
+msg_box "This script is developed to work with Nextcloud 12 and earlier.
 
-msg_box "Nextant is not maintained anymore, and soon to be replaced with Full Text Search. Sorry, not much we can do about it. 
+Please use Full Text Search instead. You can find the script here:
+https://github.com/nextcloud/vm/blob/master/apps/fulltextsearch.sh"
+exit
+fi
+
+msg_box "Nextant is not maintained anymore, and is now replaced with Full Text Search. Sorry, not much we can do about it. 
 
 Nextant is still fully functional though, but it will not be developed any further.
+Please use Full Text Search instead. You can find the script here:
+https://github.com/nextcloud/vm/blob/master/apps/fulltextsearch.sh
 
-If you want to help us move forward, then please help us develop a script for Full text Search instead.
-You can find the repository here: https://github.com/nextcloud/fulltextsearch, 
-but please send your PR to the Nextcloud VM repository"
+Please report any bugs regarding the script to $ISSUES"
 
 # Make sure there is an Nextcloud installation
 if ! [ "$(occ_command -V)" ]
@@ -101,9 +108,9 @@ check_command "echo \"SOLR_OPTS=\\\"\\\$SOLR_OPTS -Dsolr.allow.unsafe.resourcelo
 check_command service solr restart
 
 # Get nextant app for nextcloud
-check_command wget -q -P "$NC_APPS_PATH" https://github.com/nextcloud/fulltextsearch/releases/download/v1.0.8/nextant-1.0.8.tar.gz
+check_command wget -q -P "$NC_APPS_PATH" "$NT_DL"
 check_command cd "$NC_APPS_PATH"
-check_command tar zxf nextant-1.0.8.tar.gz
+check_command tar zxf "$NT_RELEASE"
 
 # Enable Nextant
 rm -r "$NT_RELEASE"
