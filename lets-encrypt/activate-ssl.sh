@@ -196,8 +196,8 @@ else
     echo "fail" > /tmp/le_test
 fi
 }
-certonly() {
-if eval "certbot certonly $default_le"
+dns() {
+if eval "certbot --manual --preferred-challenges dns certonly $default_le"
 then
     echo "success" > /tmp/le_test
 else
@@ -205,7 +205,7 @@ else
 fi
 }
 
-methods=(standalone webroot certonly)
+methods=(standalone webroot dns)
 
 create_config() {
 # $1 = method
@@ -234,7 +234,7 @@ elif [ "$method" == "webroot" ]
 then
     printf "${ICyan}It seems like no certs were generated, we will do 1 more try.${Color_Off}\n"
     any_key "Press any key to continue..."
-elif [ "$method" == "certonly" ]
+elif [ "$method" == "dns" ]
 then
     printf "${ICyan}It seems like no certs were generated, we will do 0 more tries.${Color_Off}\n"
     any_key "Press any key to continue..."
