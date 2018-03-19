@@ -554,11 +554,20 @@ Press [OK] to continue the update, or press [CTRL+C] to abort.
 If you are using Nextcloud $1 and later and still see this message,
 or experience other issues then please report this to $ISSUES"
 
+    # Download the latest updater
+    wget https://github.com/nextcloud/updater/archive/master.zip -P $NCPATH
+    install_if_not unzip
+    unzip $NCPATH/master.zip
+    mv $NCPATH/updater-master/ $NCPATH/updater/
+    download_static_script setup_secure_permissions_nextcloud -P $SCRIPTS
+    bash $SECURE
+
     # Do the upgrade
     chown -R www-data:www-data "$NCPATH"
     rm -rf "$NCPATH"/assets
     yes | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
-    run_static_script setup_secure_permissions_nextcloud
+    download_static_script setup_secure_permissions_nextcloud -P $SCRIPTS
+    bash $SECURE
     occ_command maintenance:mode --off
 fi
 
