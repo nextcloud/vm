@@ -21,7 +21,7 @@ check_command cp -v /etc/network/interfaces /tmp/interfaces.backup2
 
 # Check if this is VMware:
 install_if_not virt-what
-if ! [[ $(virt-what | grep "vmware") ]]
+if [ $(virt-what) == "vmware" ]
 then
 cat <<-IPCONFIG > "$INTERFACES"
 source /etc/network/interfaces.d/*
