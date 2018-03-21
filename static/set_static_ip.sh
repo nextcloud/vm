@@ -10,6 +10,11 @@ unset FIRST_IFACE
 # Check if root
 root_check
 
+# Download needed scripts for this to work
+download_static_script ip
+download_static_script ip2
+download_static_script test_connection
+
 # VPS?
 if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
 then
@@ -26,11 +31,11 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     wait
     ifup "$IFACE"
     wait
-    run_static_script ip
+    bash "$SCRIPTS"/ip.sh
     if [ -z "$IFACE" ]
     then
         echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
-        run_static_script ip2
+        bash "$SCRIPTS"/ip2.sh
     fi
     ifdown "$IFACE"
     wait
@@ -39,7 +44,7 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     echo
     echo "Testing if network is OK..."
     echo
-    CONTEST=$(run_static_script test_connection)
+    CONTEST=$(bash "$SCRIPTS"/test_connection.sh)
     if [ "$CONTEST" == "Connected!" ]
     then
         # Connected!
@@ -63,7 +68,7 @@ $ISSUES"
         wait
         ifup "$IFACE"
         wait
-        run_static_script test_connection
+        bash "$SCRIPTS"/test_connection.sh
         wait
     fi
 else
