@@ -50,7 +50,8 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     then
         # Connected!
         printf "${Green}Connected!${Color_Off}\n"
-msg_box "We will use the DHCP IP: $ADDRESS
+        sleep 1
+msg_box "We have now set $ADDRESS as your static IP.
 
 If you want to change it later then just edit the interfaces file:
 sudo nano /etc/network/interfaces
