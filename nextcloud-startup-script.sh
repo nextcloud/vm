@@ -165,7 +165,6 @@ download_static_script temporary-fix
 download_static_script security
 download_static_script update
 download_static_script trusted
-download_static_script ip
 download_static_script test_connection
 download_static_script setup_secure_permissions_nextcloud
 download_static_script change_mysql_pass
@@ -392,7 +391,6 @@ rm "$SCRIPTS"/temporary-fix.sh
 
 # Cleanup 1
 occ_command maintenance:repair
-rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/change_mysql_pass.sh"
 rm -f "$SCRIPTS/instruction.sh"
