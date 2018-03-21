@@ -12,7 +12,6 @@ root_check
 
 # Download needed scripts for this to work
 download_static_script ip
-download_static_script ip2
 download_static_script test_connection
 
 # VPS?
@@ -31,11 +30,13 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     wait
     ifup "$IFACE"
     wait
-    bash "$SCRIPTS"/ip.sh
+    bash "$SCRIPTS/ip.sh"
     if [ -z "$IFACE" ]
     then
         echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
-        bash "$SCRIPTS"/ip2.sh
+        download_static_script ip2
+        bash "$SCRIPTS/ip2.sh"
+        rm -f "$SCRIPTS/ip2.sh"
     fi
     ifdown "$IFACE"
     wait
@@ -44,7 +45,7 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     echo
     echo "Testing if network is OK..."
     echo
-    CONTEST=$(bash "$SCRIPTS"/test_connection.sh)
+    CONTEST=$(bash $SCRIPTS/test_connection.sh)
     if [ "$CONTEST" == "Connected!" ]
     then
         # Connected!
@@ -68,11 +69,10 @@ $ISSUES"
         wait
         ifup "$IFACE"
         wait
-        bash "$SCRIPTS"/test_connection.sh
+        bash "$SCRIPTS/test_connection.sh"
         wait
     fi
 else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
     sleep 5 & spinner_loading
 fi
-clear
