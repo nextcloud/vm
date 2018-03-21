@@ -364,17 +364,17 @@ fi
 
 # Extra configurations
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Security" "(Add extra security based on this http://goo.gl/gEJHi7" OFF \
-"Static-IP" "(Set static IP on this system)   " OFF 2>results
+"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
+"Static IP" "(Set static IP in Ubuntu with /etc/network/interfaces)" OFF 2>results
 
 while read -r -u 9 choice
 do
     case $choice in
-        Security)
+        "Security")
             run_static_script security
         ;;
-        
-        Static-IP)
+
+        "Static IP")
             run_static_script set_static_ip
         ;;
 
@@ -383,7 +383,6 @@ do
     esac
 done 9< results
 rm -f results
-clear
 
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
