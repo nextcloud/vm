@@ -555,16 +555,16 @@ If you are using Nextcloud $1 and later and still see this message,
 or experience other issues then please report this to $ISSUES"
 
     # Download the latest updater
-    cd $NCPATH
-    wget -q https://github.com/nextcloud/updater/archive/master.zip
-    install_if_not unzip
-    unzip -q master.zip
-    rm master.zip*
-    rm updater/ -R
-    mv updater-master/ updater/
-    download_static_script setup_secure_permissions_nextcloud -P $SCRIPTS
-    bash $SECURE
-    cd
+#    cd $NCPATH
+#    wget -q https://github.com/nextcloud/updater/archive/master.zip
+#    install_if_not unzip
+#    unzip -q master.zip
+#    rm master.zip*
+#    rm updater/ -R
+#    mv updater-master/ updater/
+#    download_static_script setup_secure_permissions_nextcloud -P $SCRIPTS
+#    bash $SECURE
+#    cd
 
     # Do the upgrade
     chown -R www-data:www-data "$NCPATH"
