@@ -22,12 +22,11 @@ Write this down, you will need it to set static IP
 in your router later. It's included in this guide:
 
 https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-    any_key "Press any key to set static IP..."
     ifdown "$IFACE"
     wait
     ifup "$IFACE"
     wait
-    bash "$SCRIPTS/ip.sh"
+    run_static_script ip
     if [ -z "$IFACE" ]
     then
         echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
@@ -40,7 +39,7 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     echo
     echo "Testing if network is OK..."
     echo
-    CONTEST=$(bash $SCRIPTS/test_connection.sh)
+    CONTEST=$(run_static_script test_connection)
     if [ "$CONTEST" == "Connected!" ]
     then
         # Connected!
@@ -64,7 +63,7 @@ $ISSUES"
         wait
         ifup "$IFACE"
         wait
-        bash "$SCRIPTS/test_connection.sh"
+        run_static_script test_connection
         wait
     fi
 else
