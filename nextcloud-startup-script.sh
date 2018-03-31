@@ -165,7 +165,6 @@ download_static_script temporary-fix
 download_static_script security
 download_static_script update
 download_static_script trusted
-download_static_script ip
 download_static_script test_connection
 download_static_script setup_secure_permissions_nextcloud
 download_static_script change_mysql_pass
@@ -200,79 +199,11 @@ It will also do the following:
 - Set new passwords to Linux and Nextcloud
 - Set new keyboard layout
 - Change timezone
-- Set static IP to the system (you have to set the same IP in
-  your router) https://www.techandme.se/open-port-80-443/
-  We don't set static IP if you run this on a *remote* VPS.
 
   The script will take about 10 minutes to finish,
   depending on your internet connection.
 
 ####################### Tech and Me - 2018 #######################"
-clear
-
-# VPS?
-if [[ "no" == $(ask_yes_or_no "Do you run this script on a *remote* VPS like DigitalOcean, HostGator or similar?") ]]
-then
-    # Change IP
-msg_box "OK, we assume you run this locally and we will now configure your IP to be static.
-
-Your internal IP is: $ADDRESS
-
-Write this down, you will need it to set static IP
-in your router later. It's included in this guide:
-
-https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-    any_key "Press any key to set static IP..."
-    ifdown "$IFACE"
-    wait
-    ifup "$IFACE"
-    wait
-    bash "$SCRIPTS/ip.sh"
-    if [ -z "$IFACE" ]
-    then
-        echo "IFACE is an emtpy value. Trying to set IFACE with another method..."
-        download_static_script ip2
-        bash "$SCRIPTS/ip2.sh"
-        rm -f "$SCRIPTS/ip2.sh"
-    fi
-    ifdown "$IFACE"
-    wait
-    ifup "$IFACE"
-    wait
-    echo
-    echo "Testing if network is OK..."
-    echo
-    CONTEST=$(bash $SCRIPTS/test_connection.sh)
-    if [ "$CONTEST" == "Connected!" ]
-    then
-        # Connected!
-        printf "${Green}Connected!${Color_Off}\n"
-msg_box "We will use the DHCP IP: $ADDRESS
-
-If you want to change it later then just edit the interfaces file:
-sudo nano /etc/network/interfaces
-
-If you experience any bugs, please report it here:
-$ISSUES"
-    else
-        # Not connected!
-        printf "${Red}Not Connected${Color_Off}\nYou should change your settings manually in the next step.\n"
-        any_key "Press any key to open /etc/network/interfaces..."
-        nano /etc/network/interfaces
-        service networking restart
-        clear
-        echo "Testing if network is OK..."
-        ifdown "$IFACE"
-        wait
-        ifup "$IFACE"
-        wait
-        bash "$SCRIPTS/test_connection.sh"
-        wait
-    fi
-else
-    echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
-    sleep 5 & spinner_loading
-fi
 clear
 
 # Set keyboard layout
@@ -285,6 +216,18 @@ then
 else
     dpkg-reconfigure keyboard-configuration
     clear
+fi
+
+# Change Timezone
+echo "Current timezone is $(cat /etc/timezone)"
+if [[ "no" == $(ask_yes_or_no "Do you want to change the timezone?") ]]
+then
+    echo "Not changing timezone..."
+    sleep 1
+    clear
+else
+    dpkg-reconfigure tzdata
+clear
 fi
 
 # Pretty URLs
@@ -326,19 +269,7 @@ else
 fi
 clear
 
-# Change Timezone
-echo "Current timezone is $(cat /etc/timezone)"
-if [[ "no" == $(ask_yes_or_no "Do you want to change the timezone?") ]]
-then
-    echo "Not changing timezone..."
-    sleep 1
-    clear
-else
-    dpkg-reconfigure tzdata
-clear
-fi
-
-
+# Install Apps
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
 "phpMyadmin" "(*SQL GUI)       " OFF \
@@ -396,18 +327,6 @@ done 9< results
 rm -f results
 clear
 
-# Add extra security
-if [[ "yes" == $(ask_yes_or_no "Do you want to add extra security, based on this: http://goo.gl/gEJHi7 ?") ]]
-then
-    bash $SCRIPTS/security.sh
-    rm "$SCRIPTS"/security.sh
-else
-    echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/security.sh"
-    any_key "Press any key to continue..."
-fi
-clear
-
 # Change password
 printf "${Color_Off}\n"
 echo "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
@@ -443,13 +362,34 @@ then
     sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
 fi
 
+# Extra configurations
+whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
+"Static IP" "(Set static IP in Ubuntu with /etc/network/interfaces)" OFF 2>results
+
+while read -r -u 9 choice
+do
+    case $choice in
+        "Security")
+            run_static_script security
+        ;;
+
+        "Static IP")
+            run_static_script set_static_ip
+        ;;
+
+        *)
+        ;;
+    esac
+done 9< results
+rm -f results
+
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
 rm "$SCRIPTS"/temporary-fix.sh
 
 # Cleanup 1
 occ_command maintenance:repair
-rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/change_mysql_pass.sh"
 rm -f "$SCRIPTS/instruction.sh"
@@ -523,12 +463,11 @@ apt autoclean
 CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
 echo "$CLEARBOOT"
 
-ADDRESS2=$(grep "address" /etc/network/interfaces | awk '$1 == "address" { print $2 }')
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
 
 Login to Nextcloud in your browser:
-- IP: $ADDRESS2 
+- IP: $ADDRESS
 - Hostname: $(hostname -f)
 
 Some tips and tricks:
