@@ -21,7 +21,7 @@ debug_mode
 root_check
 
 # Nextcloud 12 is required.
-if [ ! "${CURRENTVERSION%%.*}" -le "12" ]
+if [ ! "${CURRENTVERSION%%.*}" -le "13" ]
 then
 msg_box "This script is developed to work with Nextcloud 12 and earlier.
 

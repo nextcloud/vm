@@ -80,9 +80,9 @@ HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # Nextant
 # this var get's the latest automatically:
 SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-6].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
-[ ! -z "$NEXTANT_INSTALL" ] && NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/nextant/releases/latest | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
+[ ! -z "$NEXTANT_INSTALL" ] && NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/fulltextsearch/releases/10134699 | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
 NT_RELEASE=nextant-$NEXTANT_VERSION.tar.gz
-NT_DL=https://github.com/nextcloud/nextant/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
+NT_DL=https://github.com/nextcloud/fulltextsearch/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
 SOLR_RELEASE=solr-$SOLR_VERSION.tgz
 SOLR_DL=http://www-eu.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
 NC_APPS_PATH=$NCPATH/apps/
@@ -549,11 +549,24 @@ Press [OK] to continue the update, or press [CTRL+C] to abort.
 If you are using Nextcloud $1 and later and still see this message,
 or experience other issues then please report this to $ISSUES"
 
+    # Download the latest updater
+#    cd $NCPATH
+#    wget -q https://github.com/nextcloud/updater/archive/master.zip
+#    install_if_not unzip
+#    unzip -q master.zip
+#    rm master.zip*
+#    rm updater/ -R
+#    mv updater-master/ updater/
+#    download_static_script setup_secure_permissions_nextcloud -P $SCRIPTS
+#    bash $SECURE
+#    cd
+
     # Do the upgrade
     chown -R www-data:www-data "$NCPATH"
     rm -rf "$NCPATH"/assets
     yes | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
-    run_static_script setup_secure_permissions_nextcloud
+    download_static_script setup_secure_permissions_nextcloud -P $SCRIPTS
+    bash $SECURE
     occ_command maintenance:mode --off
 fi
 
