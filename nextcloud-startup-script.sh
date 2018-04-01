@@ -208,11 +208,6 @@ It will also do the following:
 - Set new passwords to Linux and Nextcloud
 - Set new keyboard layout
 - Change timezone
-<<<<<<< HEAD
-- Set static IP to the system
-  We don't set static IP if you run this on a *remote* VPS.
-=======
->>>>>>> 95c15bf... 13.0.2 (#499)
 
   The script will take about 10 minutes to finish,
   depending on your internet connection.
@@ -282,23 +277,7 @@ else
 fi
 clear
 
-<<<<<<< HEAD
-# Change Timezone
-echo "Current timezone is $(cat /etc/timezone)"
-if [[ "no" == $(ask_yes_or_no "Do you want to change the timezone?") ]]
-then
-    echo "Not changing timezone..."
-    sleep 1
-    clear
-else
-    dpkg-reconfigure tzdata
-    clear
-fi
-
-
-=======
 # Install Apps
->>>>>>> 95c15bf... 13.0.2 (#499)
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
 "phpPGadmin" "(PostgreSQL GUI)       " OFF \
@@ -419,11 +398,8 @@ rm "$SCRIPTS"/temporary-fix.sh
 
 # Cleanup 1
 occ_command maintenance:repair
-<<<<<<< HEAD
 rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/change_db_pass.sh"
-=======
->>>>>>> 95c15bf... 13.0.2 (#499)
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
