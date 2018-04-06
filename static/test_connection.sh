@@ -12,8 +12,8 @@ true
 DEBUG=0
 debug_mode
 
-$WGET -q --tries=20 --timeout=10 http://www.google.com -O /tmp/google.idx &> /dev/null
-if [ ! -s /tmp/google.idx ]
+$WGET -q --tries=20 --timeout=10 http://www.github.com -O /tmp/github.idx &> /dev/null
+if [ ! -s /tmp/github.idx ]
 then
     printf "${Red}Not Connected!${Color_Off}\n"
 else
