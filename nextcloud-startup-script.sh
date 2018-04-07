@@ -481,7 +481,7 @@ Login to Nextcloud in your browser:
 
 Some tips and tricks:
 1. Publish your server online: https://goo.gl/iUGE2U
-2. To login to MariaDB just type: mysql -u root
+2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
 3. To update this VM just type: sudo bash /var/scripts/update.sh
 4. Change IP to something outside DHCP: sudo nano /etc/network/interfaces
 5. Please report any bugs here: https://github.com/nextcloud/vm/issues
