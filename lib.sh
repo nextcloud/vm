@@ -15,7 +15,7 @@ GPGDIR=/tmp/gpg
 BACKUP=/var/NCBACKUP
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
-OS=$(grep -ic "Ubuntu" /etc/issue.net)
+OS=$(uname -v | grep -ic "Ubuntu")
 # Network
 [ ! -z "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
