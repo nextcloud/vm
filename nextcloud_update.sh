@@ -53,7 +53,7 @@ fi
 # This updates ALL Docker images:
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
-docker images | grep -v REPOSITORY | awk '{print $1}' | xargs -L1 docker pull
+    docker images --format "{{.Repository}}:{{.Tag}}" | grep :latest | xargs -L1 docker pull
 fi
 
 # Nextcloud 13 is required.
