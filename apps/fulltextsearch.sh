@@ -44,7 +44,7 @@ if [ -d "$NC_APPS_PATH"/nextant ]
 then
     # Remove Nextant
     msg_box "We will now remove Nextant + Solr and replace it with Full Text Search"
-    occ_command app:disbale nextant
+    occ_command app:disable nextant
     rm -rf $NC_APPS_PATH/nextant
     
     # Remove Solr
