@@ -7,9 +7,13 @@ addons:
   apt:
     sources:
     - debian-sid    # Grab shellcheck from the Debian repo (o_O)
-    packages:
-    - shellcheck
-    - binutils
+#    packages:
+#    - shellcheck
+
+before-script:
+  - "sudo apt-get install cabal-install"
+  - "cabal update"
+  - "cabal install shellcheck"
 
 script:
  - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
