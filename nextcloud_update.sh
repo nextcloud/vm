@@ -4,7 +4,6 @@ true
 # shellcheck source=lib.sh
 NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset NC_UPDATE
-unset MYCNFPW
 unset NCDB
 
 # Tech and Me © - 2018, https://www.techandme.se/
@@ -145,6 +144,53 @@ then
         echo "Doing pgdump of all databases..."
         check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.sql
     fi
+fi
+
+# If MariaDB then:
+mariadb_backup() {
+MYCNF=/root/.my.cnf
+MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
+NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+# Path to specific files
+# Make sure old instaces can upgrade as well
+if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
+then
+    regressionpw=$(cat /var/mysql_password.txt)
+cat << LOGIN > "$MYCNF"
+[client]
+password='$regressionpw'
+LOGIN
+    chmod 0600 $MYCNF
+    chown root:root $MYCNF
+    msg_box "Please restart the upgrade process, we fixed the password file $MYCNF."
+    exit 1    
+elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
+then
+    regressionpw=$(cat /var/mysql_password.txt)
+    {
+    echo "[client]"
+    echo "password='$regressionpw'"
+    } >> "$MYCNF"
+    msg_box "Please restart the upgrade process, we fixed the password file $MYCNF."
+    exit 1    
+fi
+
+# Backup MariaDB
+if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
+then
+    echo "Doing mysqldump of $NCCONFIGDB..."
+    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
+else
+    echo "Doing mysqldump of all databases..."
+    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
+fi
+}
+
+# Do the actual backup
+if which mysql > /dev/null
+then
+    mariadb_backup
 fi
 
 # Check if backup exists and move to old

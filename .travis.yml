@@ -1,16 +1,22 @@
 language: bash
 
+# Use container-based infrastructure for quicker build start-up
 sudo: false
 
 addons:
   apt:
     sources:
-    - debian-sid
-    packages:
-    - shellcheck
+    - debian-sid    # Grab shellcheck from the Debian repo (o_O)
+#    packages:
+#    - shellcheck
+
+before-script:
+  - "sudo apt-get install cabal-install"
+  - "cabal update"
+  - "cabal install shellcheck"
 
 script:
-  - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
+ - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
 
 matrix:
   fast_finish: true
