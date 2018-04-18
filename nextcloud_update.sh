@@ -27,8 +27,19 @@ is_process_running apt
 is_process_running dpkg
 
 # System Upgrade
+if which mysql > /dev/null
+then
+    apt-mark hold mariadb*
+fi
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+if which mysql > /dev/null
+then
+    apt-mark unhold mariadb*
+echo
+echo "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
+sleep 2
+fi
 
 # Update Redis PHP extention
 if type pecl > /dev/null 2>&1
