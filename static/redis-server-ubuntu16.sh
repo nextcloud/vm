@@ -83,7 +83,7 @@ cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
   array (
     'host' => '$REDIS_SOCK',
     'port' => 0,
-    'timeout' => 0,
+    'timeout' => 0.5,
     'dbindex' => 0,
     'password' => '$REDIS_PASS',
   ),
