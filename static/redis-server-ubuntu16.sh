@@ -45,7 +45,7 @@ sudo apt install -q -y \
     php-pear
 
 # Install PHPmodule
-if ! yes '' | pecl install -Z redis
+if ! yes no | pecl install -Z redis
 then
     msg_box "PHP module installation failed"
     exit 1
