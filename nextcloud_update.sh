@@ -48,6 +48,7 @@ then
     echo "Trying to upgrade the Redis Pecl extenstion..."
     yes no | pecl upgrade redis
     service redis-server restart
+    service apache2 restart
 fi
 
 # Update Netdata
