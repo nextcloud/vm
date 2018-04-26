@@ -43,8 +43,9 @@ if type pecl > /dev/null 2>&1
 then
     install_if_not php7.0-dev
     echo "Trying to upgrade the Redis Pecl extenstion..."
-    yes '' | pecl upgrade redis
+    yes no | pecl upgrade redis
     service redis-server restart
+    service apache2 restart
 fi
 
 # Update Netdata
