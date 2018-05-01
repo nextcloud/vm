@@ -123,7 +123,7 @@ then
     unzip -o /tmp/btrfsmaintenance.zip
     cd /tmp/btrfsmaintenance-master
     check_command bash dist-install.sh
-    check_command sed -i 's|BTRFS_DEFRAG_PATHS=.*|BTRFS_DEFRAG_PATHS="/mnt/ncdata"|g' /etc/default/btrfsmaintenance
+#    check_command sed -i 's|BTRFS_DEFRAG_PATHS=.*|BTRFS_DEFRAG_PATHS="/mnt/ncdata"|g' /etc/default/btrfsmaintenance
     check_command sed -i 's|BTRFS_DEFRAG_PERIOD=.*|BTRFS_DEFRAG_PERIOD="monthly"|g' /etc/default/btrfsmaintenance
     check_command sed -i 's|BTRFS_BALANCE_MOUNTPOINTS=.*|BTRFS_BALANCE_MOUNTPOINTS="/mnt/ncdata"|g' /etc/default/btrfsmaintenance
     check_command sed -i 's|BTRFS_SCRUB_MOUNTPOINTS=.*|BTRFS_SCRUB_MOUNTPOINTS="/mnt/ncdata"|g' /etc/default/btrfsmaintenance
