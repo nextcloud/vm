@@ -302,7 +302,10 @@ install_and_enable_app issuetemplate
 install_and_enable_app caniupdate
 
 # Install Figlet
-apt install figlet -y
+install_if_not figlet
+
+# To be able to use snakeoil certs
+install_if_not ssl-cert
 
 # Generate $HTTP_CONF
 if [ ! -f $HTTP_CONF ]
