@@ -29,6 +29,7 @@ then
     exit 1
 fi
 
+# Check distrobution and version
 check_distro_version
 
 echo
