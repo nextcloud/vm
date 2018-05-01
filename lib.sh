@@ -9,7 +9,7 @@ true
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
-NCDATA=/var/ncdata
+NCDATA=/mnt/ncdata
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 BACKUP=/var/NCBACKUP
