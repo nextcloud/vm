@@ -67,8 +67,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
 fi
 
 
-if ! version 16.04 "$DISTRO" 16.04.4; then
-msg_box "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
+if ! version 18.04 "$DISTRO" 18.04.4; then
+msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit 1
 fi
 
@@ -111,7 +111,7 @@ then
     apt install ifupdown -y -q
 fi
 sudo ifdown "$IFACE" && sudo ifup "$IFACE"
-if ! nslookup google.com
+if ! nslookup github.com
 then
 msg_box "Network NOT OK. You must have a working network connection to run this script."
     exit 1
@@ -180,23 +180,23 @@ a2enmod rewrite \
         ssl \
         setenvif
 
-# Install PHP 7.0
+# Install PHP 7.2
 apt update -q4 & spinner_loading
 check_command apt install -y \
-    libapache2-mod-php7.0 \
-    php7.0-common \
-    php7.0-intl \
-    php7.0-mcrypt \
-    php7.0-ldap \
-    php7.0-imap \
-    php7.0-cli \
-    php7.0-gd \
-    php7.0-pgsql \
-    php7.0-json \
-    php7.0-curl \
-    php7.0-xml \
-    php7.0-zip \
-    php7.0-mbstring \
+    libapache2-mod-php7.2 \
+    php7.2-common \
+    php7.2-intl \
+    php7.2-mcrypt \
+    php7.2-ldap \
+    php7.2-imap \
+    php7.2-cli \
+    php7.2-gd \
+    php7.2-pgsql \
+    php7.2-json \
+    php7.2-curl \
+    php7.2-xml \
+    php7.2-zip \
+    php7.2-mbstring \
     php-smbclient \
     php-imagick \
     libmagickcore-6.q16-2-extra
@@ -206,7 +206,10 @@ check_command apt install -y \
 # echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 
 # Install VM-tools
-apt install open-vm-tools -y
+install_if_not open-vm-tools
+
+# Format /dev/sdb to host the ncdata
+run_static_script format-sdb
 
 # Download and validate Nextcloud package
 check_command download_verify_nextcloud_stable
@@ -246,15 +249,15 @@ crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php >
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
-sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" /etc/php/7.2/apache2/php.ini
 # max_input_time
-sed -i "s|max_input_time =.*|max_input_time = 3600|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|max_input_time =.*|max_input_time = 3600|g" /etc/php/7.2/apache2/php.ini
 # memory_limit
-sed -i "s|memory_limit =.*|memory_limit = 512M|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|memory_limit =.*|memory_limit = 512M|g" /etc/php/7.2/apache2/php.ini
 # post_max
-sed -i "s|post_max_size =.*|post_max_size = 1100M|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|post_max_size =.*|post_max_size = 1100M|g" /etc/php/7.2/apache2/php.ini
 # upload_max
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.2/apache2/php.ini
 
 # Set max upload in Nextcloud .htaccess
 configure_max_upload
@@ -278,7 +281,7 @@ echo "opcache.memory_consumption=256"
 echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
-} >> /etc/php/7.0/apache2/php.ini
+} >> /etc/php/7.2/apache2/php.ini
 
 # Install preview generator
 install_and_enable_app previewgenerator
@@ -458,7 +461,7 @@ check_command run_static_script change-ncadmin-profile
 check_command run_static_script change-root-profile
 
 # Install Redis
-run_static_script redis-server-ubuntu16
+run_static_script redis-server-ubuntu
 
 # Upgrade
 apt update -q4 & spinner_loading
@@ -475,13 +478,13 @@ apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
 # Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
-# Kernel 4.4
-apt install --install-recommends -y \
-linux-virtual-lts-xenial \
-linux-tools-virtual-lts-xenial \
-linux-cloud-tools-virtual-lts-xenial \
-linux-image-virtual-lts-xenial \
-linux-image-extra-"$(uname -r)"
+# Kernel 4.15
+yes | apt install --install-recommends \
+linux-virtual \
+linux-tools-virtual \
+linux-cloud-tools-virtual \
+linux-image-virtual \
+linux-image-extra-virtual
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
