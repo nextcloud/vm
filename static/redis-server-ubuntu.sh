@@ -25,8 +25,8 @@ then
 fi
 
 
-if ! version 16.04 "$DISTRO" 16.04.4; then
-    echo "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
+if ! version 18.04 "$DISTRO" 18.04.4; then
+    echo "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit
 fi
 
@@ -40,8 +40,8 @@ fi
 apt update -q4 & spinner_loading
 sudo apt install -q -y \
     build-essential \
-    tcl8.5 \
-    php7.0-dev \
+    tcl8.6 \
+    php-dev \
     php-pear
 
 # Install PHPmodule

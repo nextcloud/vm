@@ -9,7 +9,7 @@ true
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
-NCDATA=/var/ncdata
+NCDATA=/mnt/ncdata
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 BACKUP=/var/NCBACKUP
@@ -96,7 +96,7 @@ UPLOADPATH=""
 SAVEPATH=""
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
-REDIS_SOCK=/var/run/redis/redis.sock
+REDIS_SOCK=/var/run/redis/redis-server.sock
 RSHUF=$(shuf -i 30-35 -n 1)
 REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
 # Extra security
@@ -270,8 +270,27 @@ else
 fi
 }
 
+check_distro_version() {
+# Check Ubuntu version
+echo "Checking server OS and version..."
+if [ "$OS" != 1 ]
+then
+msg_box "Ubuntu Server is required to run this script.
+Please install that distro and try again.
+
+You can find the download link here: https://www.ubuntu.com/download/server"
+    exit 1
+fi
+
+
+if ! version 18.04 "$DISTRO" 18.04.4; then
+msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
+    exit 1
+fi
+}
+
 configure_max_upload() {
-# Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
+# Increase max filesize (expects that changes are made in /etc/php/7.2/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
 sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
