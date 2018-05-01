@@ -55,22 +55,8 @@ cpu_check 1 Nextcloud
 # Create new current user
 run_static_script adduser nextcloud_install_production.sh
 
-# Check Ubuntu version
-echo "Checking server OS and version..."
-if [ "$OS" != 1 ]
-then
-msg_box "Ubuntu Server is required to run this script.
-Please install that distro and try again.
-
-You can find the download link here: https://www.ubuntu.com/download/server"
-    exit 1
-fi
-
-
-if ! version 18.04 "$DISTRO" 18.04.4; then
-msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
-    exit 1
-fi
+# Check distrobution and version
+check_distro_version
 
 # Check if key is available
 if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null
