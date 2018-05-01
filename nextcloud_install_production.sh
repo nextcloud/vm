@@ -48,6 +48,10 @@ debug_mode
 # Check if root
 root_check
 
+# Set locales
+install_if_not language-pack-en-base
+sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
@@ -82,30 +86,22 @@ fi
 if ! [ -x "$(command -v resolvconf)" ]
 then
     apt install resolvconf -y -q
-    dpkg-reconfigure resolvconf
+    check_command yes | dpkg-reconfigure --frontend=noninteractive resolvconf
 fi
 echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
 echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
-if ! [ -x "$(command -v nslookup)" ]
-then
-    apt install dnsutils -y -q
-fi
-if ! [ -x "$(command -v ifup)" ]
-then
-    apt install ifupdown -y -q
-fi
+install_if_not dnsutils
+install_if_not ifupdown
+
 sudo ifdown "$IFACE" && sudo ifup "$IFACE"
+
 if ! nslookup github.com
 then
 msg_box "Network NOT OK. You must have a working network connection to run this script."
     exit 1
 fi
-
-# Set locales
-apt install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Check where the best mirrors are and update
 echo
@@ -172,7 +168,6 @@ check_command apt install -y \
     libapache2-mod-php7.2 \
     php7.2-common \
     php7.2-intl \
-    php7.2-mcrypt \
     php7.2-ldap \
     php7.2-imap \
     php7.2-cli \
@@ -185,7 +180,7 @@ check_command apt install -y \
     php7.2-mbstring \
     php-smbclient \
     php-imagick \
-    libmagickcore-6.q16-2-extra
+    libmagickcore-6.q16-3-extra
 
 # Enable SMB client
 # echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
