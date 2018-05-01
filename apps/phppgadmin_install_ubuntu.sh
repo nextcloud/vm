@@ -29,22 +29,7 @@ then
     exit 1
 fi
 
-# Check Ubuntu version
-if [ "$OS" != 1 ]
-then
-    echo "Ubuntu Server is required to run this script."
-    echo "Please install that distro and try again."
-    sleep 3
-    exit 1
-fi
-
-
-if ! version 16.04 "$DISTRO" 16.04.4; then
-    echo "Ubuntu version seems to be $DISTRO"
-    echo "It must be between 16.04 - 16.04.4"
-    echo "Please install that version and try again."
-    exit 1
-fi
+check_distro_version
 
 echo
 echo "Installing and securing phpPGadmin..."
