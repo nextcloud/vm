@@ -24,40 +24,17 @@ then
     mkdir -p $SCRIPTS
 fi
 
-# Get packages to be able to install Redis
-apt update -q4 & spinner_loading
-sudo apt install -q -y \
-    build-essential \
-    tcl8.6 \
-    php-dev \
-    php-redis \
-    php-pear
+# Install Redis
+install_if_not php-redis
+install_if_not redis-server
 
-# Install PHPmodule
-if ! yes no | pecl install -Z redis
-then
-    msg_box "PHP module installation failed"
-    exit 1
-else
-    printf "${Green}\nPHP module installation OK!${Color_Off}\n"
-fi
 # Set globally doesn't work for some reason
 # touch /etc/php/7.0/mods-available/redis.ini
 # echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
 # phpenmod redis
 # Setting direct to apache2 works if 'libapache2-mod-php7.0' is installed
-echo 'extension=redis.so' >> /etc/php/7.0/apache2/php.ini
+echo 'extension=redis.so' >> /etc/php/7.2/apache2/php.ini
 service apache2 restart
-
-
-# Install Redis
-if ! apt -y install redis-server
-then
-    msg_box "Installation failed."
-    exit 1
-else
-    printf "${Green}\nRedis installation OK!${Color_Off}\n"
-fi
 
 # Prepare for adding redis configuration
 sed -i "s|);||g" $NCPATH/config/config.php
