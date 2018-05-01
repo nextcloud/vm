@@ -272,19 +272,19 @@ fi
 
 check_distro_version() {
 # Check Ubuntu version
+echo "Checking server OS and version..."
 if [ "$OS" != 1 ]
 then
-    echo "Ubuntu Server is required to run this script."
-    echo "Please install that distro and try again."
-    sleep 3
+msg_box "Ubuntu Server is required to run this script.
+Please install that distro and try again.
+
+You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-# Check version
+
 if ! version 18.04 "$DISTRO" 18.04.4; then
-    echo "Ubuntu version seems to be $DISTRO"
-    echo "It must be between 18.04 - 18.04.4"
-    echo "Please install that version and try again."
+msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
     exit 1
 fi
 }
