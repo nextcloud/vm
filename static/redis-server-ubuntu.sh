@@ -16,19 +16,7 @@ debug_mode
 root_check
 
 # Check Ubuntu version
-echo "Checking server OS and version..."
-if [ "$OS" != 1 ]
-then
-    echo "Ubuntu Server is required to run this script."
-    echo "Please install that distro and try again."
-    exit 1
-fi
-
-
-if ! version 18.04 "$DISTRO" 18.04.4; then
-    echo "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
-    exit
-fi
+check_distro_version
 
 # Check if dir exists
 if [ ! -d $SCRIPTS ]
@@ -42,6 +30,7 @@ sudo apt install -q -y \
     build-essential \
     tcl8.6 \
     php-dev \
+    php-redis \
     php-pear
 
 # Install PHPmodule
