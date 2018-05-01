@@ -10,6 +10,13 @@ unset FIRST_IFACE
 # Check if root
 root_check
 
+# Not compatible
+msg_box "ifupdown are deceperated in Ubuntu 18.04 and netplan.io is now used instead. 
+We are working on a new way to set static IP but it may take a while since our time is limited.
+
+Contributions are welcome!"
+exit 1
+
 # Download needed scripts for this to work
 download_static_script ip
 download_static_script test_connection
