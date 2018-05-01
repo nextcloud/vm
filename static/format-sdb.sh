@@ -51,7 +51,7 @@ exit 1
 fi
 
 # Get the name of the drive
-SDB=$(fdisk -l | grep sdb | awk '{print $2}' | cut -d ":" -f1)
+SDB=$(fdisk -l | grep sdb | awk '{print $2}' | cut -d ":" -f1 | head -1)
 if [ "$SDB" != "/dev/sdb" ]
 then
 msg_box "It seems like /dev/sdb does not exist.
@@ -106,11 +106,12 @@ then
 msg_box "$MOUNT_ mounted successfully in /etc/fstab with this command:
 $FSTAB
 
-The drive is formated as BTRFS and this is the device: $(btrfs fi show)"
+The drive is formated as BTRFS and this is the device:
+$(btrfs filesystem usage $MOUNT_)"
 fi
 
 # BTRFS maintenance
-msg_box "The script will now download a set of scripts to maintain the BTRFS mount.
+msg_box "This script will now download a set of scripts to maintain the BTRFS mount.
 
 The scripts and instructions can be found here: https://github.com/kdave/btrfsmaintenance"
 
@@ -126,6 +127,3 @@ then
 else
 msg_box "It seems like /etc/default/btrfsmaintenance already exists. Have you already run this script?"
 fi
-
-
-
