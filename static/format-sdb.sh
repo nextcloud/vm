@@ -7,6 +7,9 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
+# Check if root
+root_check
+
 LABEL_=ncdata
 MOUNT_=/mnt/ncdata
 format() {
