@@ -50,7 +50,7 @@ root_check
 
 # Set locales
 install_if_not language-pack-en-base
-sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
@@ -139,7 +139,7 @@ else
 fi
 
 # Install PostgreSQL
-sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
+sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt update -q4 & spinner_loading
 apt install postgresql-9.6 -y
