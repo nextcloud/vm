@@ -114,16 +114,21 @@ fi
 msg_box "This script will now download a set of scripts to maintain the BTRFS mount.
 
 The scripts and instructions can be found here: https://github.com/kdave/btrfsmaintenance"
-
 if [ ! -f /etc/default/btrfsmaintenance ]
 then
     cd /tmp || exit 1
     wget -O btrfsmaintenance.zip https://github.com/kdave/btrfsmaintenance/archive/master.zip
     install_if_not unzip
     unzip -o /tmp/btrfsmaintenance.zip
-    check_command bash /tmp/btrfsmaintenance-master/dist-install.sh
-    check_command sed -i "s|/|$MOUNT_|g" /etc/default/btrfsmaintenance
-    check_command bash /tmp/btrfsmaintenance-master/btrfsmaintenance-refresh-cron.sh
+    cd /tmp/btrfsmaintenance-master
+    check_command bash dist-install.sh
+    check_command sed -i 's|BTRFS_DEFRAG_PATHS=.*|BTRFS_DEFRAG_PATHS="$MOUNT_"|g' /etc/default/btrfsmaintenance
+    check_command sed -i 's|BTRFS_DEFRAG_PERIOD=.*|BTRFS_DEFRAG_PERIOD="monthly"|g' /etc/default/btrfsmaintenance
+    check_command sed -i 's|BTRFS_BALANCE_MOUNTPOINTS=.*|BTRFS_BALANCE_MOUNTPOINTS="$MOUNT_"|g' /etc/default/btrfsmaintenance
+    check_command sed -i 's|BTRFS_SCRUB_MOUNTPOINTS=.*|BTRFS_SCRUB_MOUNTPOINTS="$MOUNT_"|g' /etc/default/btrfsmaintenance
+    check_command sed -i 's|BTRFS_TRIM_MOUNTPOINTS=.*|BTRFS_TRIM_MOUNTPOINTS="auto"|g' /etc/default/btrfsmaintenance
+    check_command bash btrfsmaintenance-refresh-cron.sh
 else
 msg_box "It seems like /etc/default/btrfsmaintenance already exists. Have you already run this script?"
 fi
+
