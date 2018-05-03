@@ -76,24 +76,6 @@ Check this site for instructions on how to do it:
 http://www.nazimkaradag.com/2017/10/17/set-a-static-ip-on-ubuntu-17-10-with-netplan/
 
 We will put a example config for you when you hit OK, but please check the site to change it to your own values."
-
-# Create example file
-if [ ! -f /etc/netplan/01-netcfg.yaml ]
-then
-    touch /etc/netplan/01-netcfg.yaml
-cat << NETWORK_CREATE > /etc/netplan/01-netcfg.yaml
-Network: 
-	version: 2 
-	renderer: networkd
-	ethernets:
-		{$IFACE}: #object name
-			dhcp4: no # dhcp v4 disable
-			dhcp6: no # dhcp v6 disable
-			addresses: [{$ADDRESS}/24] # client IP address
-			gateway4: ${GATEWAY} # gateway adrdess
-			nameservers:
-				addresses: [9.9.9.9,149.112.112.112] #name servers
-NETWORK_CREATE        
         any_key "Press any key to open /etc/netplan/01-netcfg.yaml..."
         nano /etc/netplan/01-netcfg.yaml
         netplan apply
