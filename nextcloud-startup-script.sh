@@ -69,12 +69,16 @@ else
     echo "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
-    {
-        sed '/# The primary network interface/q' /etc/network/interfaces
-        printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"
-    } > /etc/network/interfaces.new
-    mv /etc/network/interfaces.new /etc/network/interfaces
-    service networking restart
+cat <<-SETDHCP > ""
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    $IFACE:
+      dhcp4: yes
+SETDHCP
+    check_command netplan apply
+fi
     # shellcheck source=lib.sh
     CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
     unset CHECK_CURRENT_REPO
