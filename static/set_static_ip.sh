@@ -33,11 +33,7 @@ Write this down, you will need it to set static IP
 in your router later. It's included in this guide:
 
 https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-    nmcli connection down id "$IFACE"
-    wait
-    nmcli connection up id "$IFACE"
-    wait
-    while true; do if [ "$(nmcli networking connectivity check)" == "full" ]; then echo "Connected!"; fi & break; done
+    test_connection
     bash "$SCRIPTS/ip.sh"
     if [ -z "$IFACE" ]
     then
@@ -46,14 +42,6 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
         bash "$SCRIPTS/ip2.sh"
         rm -f "$SCRIPTS/ip2.sh"
     fi
-    nmcli connection down id "$IFACE"
-    wait
-    nmcli connection up id "$IFACE"
-    wait
-    while true; do if [ "$(nmcli networking connectivity check)" == "full" ]; then echo "Connected!"; fi & break; done
-    echo
-    echo "Testing if network is OK..."
-    echo
     CONTEST=$(bash $SCRIPTS/test_connection.sh)
     if [ "$CONTEST" == "Connected!" ]
     then
@@ -79,15 +67,7 @@ We will put a example config for you when you hit OK, but please check the site 
         any_key "Press any key to open /etc/netplan/01-netcfg.yaml..."
         nano /etc/netplan/01-netcfg.yaml
         netplan apply
-        nmcli connection reload
-        clear
-        echo "Testing if network is OK..."
-        nmcli connection down id "$IFACE"
-        wait
-        nmcli connection up id "$IFACE"
-        wait
-        bash "$SCRIPTS/test_connection.sh"
-        wait
+        test_connection
     fi
 else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."
