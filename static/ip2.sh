@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Tech and Me © - 2018, https://www.techandme.se/
