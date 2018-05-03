@@ -24,31 +24,31 @@ install_if_not virt-what
 if [ "$(virt-what)" == "vmware" ]
 then
 cat <<-IPCONFIG > "$INTERFACES"
-network: 
-   version: 2 
+network:
+   version: 2
    renderer: networkd
    ethernets:
        $IFACE2: #object name
-       dhcp4: no # dhcp v4 disable
-       dhcp6: no # dhcp v6 disable
-       addresses: [$ADDRESS/24] # client IP address
-       gateway4: $GATEWAY # gateway address
-       nameservers:
-         addresses: [$DNS1,$DNS2] #name servers
+         dhcp4: no # dhcp v4 disable
+         dhcp6: no # dhcp v6 disable
+         addresses: [$ADDRESS/24] # client IP address
+         gateway4: $GATEWAY # gateway address
+         nameservers:
+           addresses: [$DNS1,$DNS2] #name servers
 IPCONFIG
 else
 cat <<-IPCONFIGnonvmware > "$INTERFACES"
-network: 
-   version: 2 
+network:
+   version: 2
    renderer: networkd
    ethernets:
        $IFACE2: #object name
-       dhcp4: no # dhcp v4 disable
-       dhcp6: no # dhcp v6 disable
-       addresses: [$ADDRESS/24] # client IP address
-       gateway4: $GATEWAY # gateway address
-       nameservers:
-         addresses: [$DNS1,$DNS2] #name servers
+         dhcp4: no # dhcp v4 disable
+         dhcp6: no # dhcp v6 disable
+         addresses: [$ADDRESS/24] # client IP address
+         gateway4: $GATEWAY # gateway address
+         nameservers:
+           addresses: [$DNS1,$DNS2] #name servers
 IPCONFIGnonvmware
 fi
 
