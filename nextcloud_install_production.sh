@@ -82,28 +82,8 @@ then
     mkdir -p "$SCRIPTS"
 fi
 
-# Change DNS
-if ! [ -x "$(command -v resolvconf)" ]
-then
-    apt install resolvconf -y -q
-    check_command yes | dpkg-reconfigure --frontend=noninteractive resolvconf
-fi
-echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
-echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
-
 # Check network
-install_if_not dnsutils
-nmcli connection down id "$IFACE"
-wait
-nmcli connection up id "$IFACE"
-wait
-while true; do if [ "$(nmcli networking connectivity check)" == "full" ]; then echo "Connected!"; fi && break; done
-
-if ! nslookup github.com
-then
-msg_box "Network NOT OK. You must have a working network connection to run this script."
-    exit 1
-fi
+test_connection
 
 # Check where the best mirrors are and update
 echo
