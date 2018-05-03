@@ -36,6 +36,7 @@ network:
          nameservers:
            addresses: [$DNS1,$DNS2] #name servers
 IPCONFIG
+    netplan apply
 else
 cat <<-IPCONFIGnonvmware > "$INTERFACES"
 network:
@@ -50,6 +51,7 @@ network:
          nameservers:
            addresses: [$DNS1,$DNS2] #name servers
 IPCONFIGnonvmware
+    netplan apply
 fi
 
 exit 0
