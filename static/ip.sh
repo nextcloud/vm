@@ -15,10 +15,10 @@ DEBUG=0
 debug_mode
 
 # Copy old interfaces file
-msg_box "Copying old interfaces file to:
+msg_box "Copying old netplan.io config file file to:
 
-/tmp/interfaces.backup"
-check_command cp -v /etc/network/interfaces /tmp/interfaces.backup
+/tmp/01-netcfg.yaml_backup"
+check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
 
 # Check if this is VMware:
 install_if_not virt-what

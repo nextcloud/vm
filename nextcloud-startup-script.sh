@@ -2,11 +2,10 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 && NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 unset NCDB
-unset NC_UPDATE
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
@@ -46,7 +45,7 @@ fi
 
 network_ok() {
     echo "Testing if network is OK..."
-    service networking restart
+    service network-manager restart
     if wget -q -T 20 -t 2 http://github.com -O /dev/null
     then
         return 0
@@ -55,11 +54,25 @@ network_ok() {
     fi
 }
 
+test_connection() {
+install_if_not dnsutils
+install_if_not network-manager
+check_command service network-manager restart
+ip link set "$IFACE" down
+wait
+ip link set "$IFACE" up
+wait
+check_command service network-manager restart
+if ! nslookup github.com
+then
+msg_box "Network NOT OK. You must have a working network connection to run this script.
+If you think that this is a bug, please report it to $ISSUES."
+    exit 1
+fi
+}
+
 # Check if root
 root_check
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
 
 # Check network
 if network_ok
@@ -69,22 +82,30 @@ else
     echo "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
-    {
-        sed '/# The primary network interface/q' /etc/network/interfaces
-        printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"
-    } > /etc/network/interfaces.new
-    mv /etc/network/interfaces.new /etc/network/interfaces
-    service networking restart
-    # shellcheck source=lib.sh
-    CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
-    unset CHECK_CURRENT_REPO
+cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    $IFACE:
+      dhcp4: yes
+SETDHCP
+    check_command netplan apply
+    test_connection
 fi
+    # shellcheck source=lib.sh
+    NC_UPDATE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+    unset CHECK_CURRENT_REPO
+    unset NC_UPDATE
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
 DEBUG=0
 debug_mode
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
 # Check that this run on the PostgreSQL VM
 if ! which psql > /dev/null

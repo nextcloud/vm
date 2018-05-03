@@ -196,7 +196,7 @@ done
 test_connection() {
 install_if_not dnsutils
 install_if_not network-manager
-check_command service network-manager start
+check_command service network-manager restart
 ip link set "$IFACE" down
 wait
 ip link set "$IFACE" up
