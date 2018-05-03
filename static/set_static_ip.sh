@@ -37,7 +37,7 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     wait
     nmcli connection up id "$IFACE"
     wait
-    while true; do if [ $(nmcli networking connectivity check) == "full" ]; then echo "Connected!"; fi && break; done
+    while true; do if [ "$(nmcli networking connectivity check)" == "full" ]; then echo "Connected!"; fi & break; done
     bash "$SCRIPTS/ip.sh"
     if [ -z "$IFACE" ]
     then
@@ -50,7 +50,7 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
     wait
     nmcli connection up id "$IFACE"
     wait
-    while true; do if [ $(nmcli networking connectivity check) == "full" ]; then echo "Connected!"; fi && break; done
+    while true; do if [ "$(nmcli networking connectivity check)" == "full" ]; then echo "Connected!"; fi & break; done
     echo
     echo "Testing if network is OK..."
     echo
