@@ -97,7 +97,7 @@ nmcli connection down id "$IFACE"
 wait
 nmcli connection up id "$IFACE"
 wait
-while true; do if [ $(nmcli networking connectivity check) == "full" ]; then echo "Connected!"; fi && break; done
+while true; do if [ "$(nmcli networking connectivity check)" == "full" ]; then echo "Connected!"; fi && break; done
 
 if ! nslookup github.com
 then
