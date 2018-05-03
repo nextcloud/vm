@@ -45,7 +45,7 @@ fi
 
 network_ok() {
     echo "Testing if network is OK..."
-    service networking restart
+    service network-manager restart
     if wget -q -T 20 -t 2 http://github.com -O /dev/null
     then
         return 0
@@ -57,7 +57,7 @@ network_ok() {
 test_connection() {
 install_if_not dnsutils
 install_if_not network-manager
-check_command service network-manager start
+check_command service network-manager restart
 ip link set "$IFACE" down
 wait
 ip link set "$IFACE" up
@@ -82,7 +82,7 @@ else
     echo "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
-cat <<-SETDHCP > ""
+cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
 network:
   version: 2
   renderer: networkd
