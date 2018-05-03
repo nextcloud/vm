@@ -193,6 +193,23 @@ do
 done
 }
 
+test_connection() {
+install_if_not dnsutils
+install_if_not network-manager
+check_command service network-manager start
+ip link set "$IFACE" down
+wait
+ip link set "$IFACE" up
+wait
+check_command service network-manager restart
+if ! nslookup github.com
+then
+msg_box "Network NOT OK. You must have a working network connection to run this script.
+If you think that this is a bug, please report it to $ISSUES."
+    exit 1
+fi
+}
+
 # Install certbot (Let's Encrypt)
 install_certbot() {
 certbot --version 2> /dev/null
