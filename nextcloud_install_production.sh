@@ -121,10 +121,10 @@ else
 fi
 
 # Install PostgreSQL
-sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+# sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
+# wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt update -q4 & spinner_loading
-apt install postgresql-9.6 -y
+apt install postgresql-10 -y
 
 # Create DB
 cd /tmp
