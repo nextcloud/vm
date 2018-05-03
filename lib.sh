@@ -204,7 +204,8 @@ wait
 check_command service network-manager restart
 if ! nslookup github.com
 then
-msg_box "Network NOT OK. You must have a working network connection to run this script."
+msg_box "Network NOT OK. You must have a working network connection to run this script.
+If you think that this is a bug, please report it to $ISSUES."
     exit 1
 fi
 }
