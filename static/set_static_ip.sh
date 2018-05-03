@@ -10,13 +10,6 @@ unset FIRST_IFACE
 # Check if root
 root_check
 
-# Not compatible
-msg_box "ifupdown are deceperated in Ubuntu 18.04 and netplan.io is now used instead. 
-We are working on a new way to set static IP but it may take a while since our time is limited.
-
-Contributions are welcome!"
-exit 1
-
 # Download needed scripts for this to work
 download_static_script ip
 download_static_script test_connection
@@ -61,7 +54,7 @@ msg_box "Not Connected!
 You should change your settings manually in the next step.
 
 Check this site for instructions on how to do it:
-http://www.nazimkaradag.com/2017/10/17/set-a-static-ip-on-ubuntu-17-10-with-netplan/
+https://netplan.io/examples
 
 We will put a example config for you when you hit OK, but please check the site to change it to your own values."
         any_key "Press any key to open /etc/netplan/01-netcfg.yaml..."
