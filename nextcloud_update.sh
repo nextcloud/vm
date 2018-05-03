@@ -41,16 +41,6 @@ echo "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt di
 sleep 2
 fi
 
-# Update Redis PHP extention
-if type pecl > /dev/null 2>&1
-then
-    install_if_not php-dev
-    echo "Trying to upgrade the Redis Pecl extenstion..."
-    yes no | pecl upgrade redis
-    service redis-server restart
-    service apache2 restart
-fi
-
 # Update Netdata
 if [ -d /etc/netdata ]
 then

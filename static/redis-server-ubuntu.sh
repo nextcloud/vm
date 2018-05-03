@@ -86,11 +86,6 @@ redis-cli SHUTDOWN
 chown redis:root /etc/redis/redis.conf
 chmod 600 /etc/redis/redis.conf
 
-# Cleanup
-apt purge -y \
-    git \
-    build-essential*
-
 apt update -q4 & spinner_loading
 apt autoremove -y
 apt autoclean

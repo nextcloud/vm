@@ -25,10 +25,10 @@ WGET="/usr/bin/wget"
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
 WANIP4=$(curl -s -m 5 ipinfo.io/ip)
 [ ! -z "$LOAD_IP6" ] && WANIP6=$(curl -s -k -m 7 https://6.ifcfg.me)
-IFCONFIG="/sbin/ifconfig"
-INTERFACES="/etc/network/interfaces"
-NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
+INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
+DNS1="9.9.9.9"
+DNS2="149.112.112.112"
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/postgresql"
 STATIC="$GITHUB_REPO/static"

@@ -33,10 +33,11 @@ Write this down, you will need it to set static IP
 in your router later. It's included in this guide:
 
 https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-    ifdown "$IFACE"
+    nmcli connection down id "$IFACE"
     wait
-    ifup "$IFACE"
+    nmcli connection up id "$IFACE"
     wait
+    while true; do if [ "$(nmcli networking connectivity check)" == "full" ]; then echo "Connected!"; fi & break; done
     bash "$SCRIPTS/ip.sh"
     if [ -z "$IFACE" ]
     then
@@ -45,10 +46,11 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
         bash "$SCRIPTS/ip2.sh"
         rm -f "$SCRIPTS/ip2.sh"
     fi
-    ifdown "$IFACE"
+    nmcli connection down id "$IFACE"
     wait
-    ifup "$IFACE"
+    nmcli connection up id "$IFACE"
     wait
+    while true; do if [ "$(nmcli networking connectivity check)" == "full" ]; then echo "Connected!"; fi & break; done
     echo
     echo "Testing if network is OK..."
     echo
@@ -60,22 +62,29 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
         sleep 1
 msg_box "We have now set $ADDRESS as your static IP.
 
-If you want to change it later then just edit the interfaces file:
-sudo nano /etc/network/interfaces
+If you want to change it later then just edit the netplan.io YAML file:
+sudo nano /etc/netplan/01-netcfg.yaml
 
 If you experience any bugs, please report it here:
 $ISSUES"
     else
         # Not connected!
-        printf "${Red}Not Connected${Color_Off}\nYou should change your settings manually in the next step.\n"
-        any_key "Press any key to open /etc/network/interfaces..."
-        nano /etc/network/interfaces
-        service networking restart
+msg_box "Not Connected!
+You should change your settings manually in the next step.
+
+Check this site for instructions on how to do it:
+http://www.nazimkaradag.com/2017/10/17/set-a-static-ip-on-ubuntu-17-10-with-netplan/
+
+We will put a example config for you when you hit OK, but please check the site to change it to your own values."
+        any_key "Press any key to open /etc/netplan/01-netcfg.yaml..."
+        nano /etc/netplan/01-netcfg.yaml
+        netplan apply
+        nmcli connection reload
         clear
         echo "Testing if network is OK..."
-        ifdown "$IFACE"
+        nmcli connection down id "$IFACE"
         wait
-        ifup "$IFACE"
+        nmcli connection up id "$IFACE"
         wait
         bash "$SCRIPTS/test_connection.sh"
         wait

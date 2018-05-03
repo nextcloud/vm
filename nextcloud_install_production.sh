@@ -93,9 +93,11 @@ echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
 
 # Check network
 install_if_not dnsutils
-install_if_not ifupdown
-
-sudo ifdown "$IFACE" && sudo ifup "$IFACE"
+nmcli connection down id "$IFACE"
+wait
+nmcli connection up id "$IFACE"
+wait
+while true; do if [ "$(nmcli networking connectivity check)" == "full" ]; then echo "Connected!"; fi && break; done
 
 if ! nslookup github.com
 then
