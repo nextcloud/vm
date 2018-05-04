@@ -66,7 +66,7 @@ check_command service network-manager restart
 if ! nslookup github.com
 then
 msg_box "Network NOT OK. You must have a working network connection to run this script.
-If you think that this is a bug, please report it to $ISSUES."
+If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
     exit 1
 fi
 }
