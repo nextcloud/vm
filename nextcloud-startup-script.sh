@@ -11,6 +11,13 @@ unset NCDB
 
 ## If you want debug mode, please activate it further down in the code at line ~60
 
+# FUNCTIONS #
+
+msg_box() {
+local PROMPT="$1"
+    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+}
+
 is_root() {
     if [[ "$EUID" -ne 0 ]]
     then
@@ -18,11 +25,6 @@ is_root() {
     else
         return 0
     fi
-}
-
-msg_box() {
-local PROMPT="$1"
-    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
 root_check() {
@@ -54,6 +56,23 @@ network_ok() {
     fi
 }
 
+# Install_if_not program
+install_if_not () {
+if [[ "$(is_this_installed "${1}")" != "${1} is installed, it must be a clean server." ]]
+then
+    apt update -q4 & spinner_loading && apt install "${1}" -y
+fi
+}
+
+check_command() {
+  if ! "$@";
+  then
+     printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
+     echo "$* failed"
+    exit 1
+  fi
+}
+
 test_connection() {
 install_if_not dnsutils
 install_if_not network-manager
@@ -70,6 +89,8 @@ If you think that this is a bug, please report it to https://github.com/nextclou
     exit 1
 fi
 }
+
+# END OF FUNCTIONS #
 
 # Check if root
 root_check
