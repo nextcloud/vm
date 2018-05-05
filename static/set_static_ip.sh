@@ -35,8 +35,7 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
         bash "$SCRIPTS/ip2.sh"
         rm -f "$SCRIPTS/ip2.sh"
     fi
-    CONTEST=$(bash $SCRIPTS/test_connection.sh)
-    if [ "$CONTEST" == "Connected!" ]
+    if network_ok
     then
         # Connected!
         printf "${Green}Connected!${Color_Off}\n"
