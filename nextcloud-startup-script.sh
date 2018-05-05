@@ -56,14 +56,6 @@ network_ok() {
     fi
 }
 
-# Install_if_not program
-install_if_not () {
-if [[ "$(is_this_installed "${1}")" != "${1} is installed, it must be a clean server." ]]
-then
-    apt update -q4 & spinner_loading && apt install "${1}" -y
-fi
-}
-
 check_command() {
   if ! "$@";
   then
@@ -71,23 +63,6 @@ check_command() {
      echo "$* failed"
     exit 1
   fi
-}
-
-test_connection() {
-install_if_not dnsutils
-install_if_not network-manager
-check_command service network-manager restart
-ip link set "$IFACE" down
-wait
-ip link set "$IFACE" up
-wait
-check_command service network-manager restart
-if ! nslookup github.com
-then
-msg_box "Network NOT OK. You must have a working network connection to run this script.
-If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
-    exit 1
-fi
 }
 
 # END OF FUNCTIONS #
@@ -110,14 +85,40 @@ network:
   ethernets:
     $IFACE:
       dhcp4: yes
+      dhcp6: yes
 SETDHCP
     check_command netplan apply
-    test_connection
+    check_command service network-manager restart
+    ip link set "$IFACE" down
+    wait
+    ip link set "$IFACE" up
+    wait
+    check_command service network-manager restart
+    echo "Checking connection..."
+    sleep 3
+    if ! nslookup github.com
+    then
+msg_box "Network NOT OK. You must have a working network connection to run this script
+If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
+    exit 1
+    fi
 fi
-    # shellcheck source=lib.sh
-    NC_UPDATE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
-    unset CHECK_CURRENT_REPO
-    unset NC_UPDATE
+
+# Check network again
+if network_ok
+then
+    printf "${Green}Online!${Color_Off}\n"
+else
+msg_box "Network NOT OK. You must have a working network connection to run this script
+If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
+    exit 1
+fi
+
+# shellcheck source=lib.sh
+NCDB=1 && CHECK_CURRENT_REPO=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/postgresql/lib.sh)
+unset NC_UPDATE
+unset CHECK_CURRENT_REPO
+unset NCDB
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -133,18 +134,6 @@ if ! which psql > /dev/null
 then
     echo "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
     echo "Aborting..."
-    exit 1
-fi
-
-# Check network
-if network_ok
-then
-    printf "${Green}Online!${Color_Off}\n"
-else
-msg_box "Network NOT OK!
-
-You must have a working Network connection to run this script.
-Please report this issue here: $ISSUES"
     exit 1
 fi
 
