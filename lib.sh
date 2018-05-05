@@ -384,7 +384,7 @@ check_command sudo -u www-data php "$NCPATH"/occ "$@";
 
 network_ok() {
     echo "Testing if network is OK..."
-    service networking restart
+    service network-manager restart
     if wget -q -T 20 -t 2 http://github.com -O /dev/null & spinner_loading
     then
         return 0
