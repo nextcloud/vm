@@ -30,7 +30,7 @@ GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/postgresql"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
 LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
@@ -43,6 +43,12 @@ UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 # Database
+MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+ETCMYCNF=/etc/mysql/my.cnf
+MYCNF=/root/.my.cnf
+-[ ! -z "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
 SHUF=$(shuf -i 25-29 -n 1)
 PGDB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
@@ -466,7 +472,7 @@ download_le_script() {
     fi
 }
 
-# Run any script in ../postgresql
+# Run any script in ../master
 # call like: run_main_script name_of_script
 run_main_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
