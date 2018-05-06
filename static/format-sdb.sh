@@ -32,32 +32,32 @@ isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device memeber of a zp
 if isPathMounted "/mnt/ncdata";      #Spaces in path names are ok.
 then
 msg_box "/mnt/ncdata is mounted and need to be unmounted before you can run this script."
-exit 1
+    exit 1
 fi
 
 if isDevMounted "/dev/sdb";
 then
 msg_box "/dev/sdb is mounted and need to be unmounted before you can run this script."
-exit 1
+    exit 1
 fi
 
 #Universal:
 if isMounted "/mnt/ncdata";
 then
 msg_box "/mnt/ncdata is mounted and need to be unmounted before you can run this script."
-exit 1
+    exit 1
 fi
 
 if isMounted "/dev/sdb1";
 then
 msg_box "/dev/sdb1 is mounted and need to be unmounted before you can run this script."
-exit 1
+    exit 1
 fi
 
 if isDevPartOfZFS "sdb";
 then
 msg_box "/dev/sdb is a member of a ZFS pool and needs to be removed from any zpool before you can run this script."
-exit 1
+    exit 1
 fi
 
 
