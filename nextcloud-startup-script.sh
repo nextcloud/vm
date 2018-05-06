@@ -255,7 +255,7 @@ then
     clear
 else
     dpkg-reconfigure keyboard-configuration
-clear
+    clear
 fi
 
 # Change Timezone
@@ -267,7 +267,7 @@ then
     clear
 else
     dpkg-reconfigure tzdata
-clear
+    clear
 fi
 
 # Pretty URLs
