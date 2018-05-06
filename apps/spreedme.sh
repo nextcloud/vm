@@ -37,9 +37,9 @@ then
     echo "SpreeMe Snap already seems to be installed and wil now be re-installed..."
     snap remove spreedme
     rm -rf "$SNAPDIR"
-    snap install spreedme
+    snap install --edge spreedme
 else
-    snap install spreedme
+    snap install --edge spreedme
 fi
 
 # Install and activate the SpreedMe app
