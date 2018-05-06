@@ -15,6 +15,7 @@ install_if_not zfsutils-linux
 
 LABEL_=ncdata
 MOUNT_=/mnt/$LABEL_
+
 format() {
 # umount if mounted
 umount /mnt/* &> /dev/null
@@ -59,7 +60,6 @@ then
 msg_box "/dev/sdb is a member of a ZFS pool and needs to be removed from any zpool before you can run this script."
     exit 1
 fi
-
 
 # Get the name of the drive
 SDB=$(fdisk -l | grep sdb | awk '{print $2}' | cut -d ":" -f1 | head -1)
@@ -113,8 +113,12 @@ format
 # Success!
 if grep "$LABEL_" /etc/mtab
 then
-msg_box "$MOUNT_ mounted successfully as a ZFS volume:
+msg_box "$MOUNT_ mounted successfully as a ZFS volume.
 
+Automatic scrubbing is done montly via a cronjob that you can find here:
+/etc/cron.d/zfsutils-linux
+
+CURRENT STATUS:
 $(zpool status $LABEL_)
 
 $(zpool list)"
