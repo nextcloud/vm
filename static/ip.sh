@@ -15,68 +15,44 @@ DEBUG=0
 debug_mode
 
 # Copy old interfaces file
-msg_box "Copying old interfaces file to:
+msg_box "Copying old netplan.io config file file to:
 
-/tmp/interfaces.backup"
-check_command cp -v /etc/network/interfaces /tmp/interfaces.backup
+/tmp/01-netcfg.yaml_backup"
+check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
 
 # Check if this is VMware:
 install_if_not virt-what
 if [ "$(virt-what)" == "vmware" ]
 then
 cat <<-IPCONFIG > "$INTERFACES"
-source /etc/network/interfaces.d/*
-
-# The loopback network interface
-auto lo $IFACE
-iface lo inet loopback
-
-# The primary network interface
-iface $IFACE inet static
-pre-up /sbin/ethtool -K $IFACE tso off
-pre-up /sbin/ethtool -K $IFACE gso off
-# Fixes https://github.com/nextcloud/vm/issues/92:
-pre-up ip link set dev $IFACE mtu 1430
-
-# Best practice is to change the static address
-# to something outside your DHCP range.
-address $ADDRESS
-netmask $NETMASK
-gateway $GATEWAY
-
-# This is an autoconfigured IPv6 interface
-# iface $IFACE inet6 auto
-
-# Exit and save:	[CTRL+X] + [Y] + [ENTER]
-# Exit without saving:	[CTRL+X]
-
+network:
+   version: 2
+   renderer: networkd
+   ethernets:
+       $IFACE: #object name
+         dhcp4: no # dhcp v4 disable
+         dhcp6: no # dhcp v6 disable
+         addresses: [$ADDRESS/24] # client IP address
+         gateway4: $GATEWAY # gateway address
+         nameservers:
+           addresses: [$DNS1,$DNS2] #name servers
 IPCONFIG
+    netplan apply
 else
 cat <<-IPCONFIGnonvmware > "$INTERFACES"
-source /etc/network/interfaces.d/*
-
-# The loopback network interface
-auto lo $IFACE
-iface lo inet loopback
-
-# The primary network interface
-iface $IFACE inet static
-# Fixes https://github.com/nextcloud/vm/issues/92:
-pre-up ip link set dev $IFACE mtu 1430
-
-# Best practice is to change the static address
-# to something outside your DHCP range.
-address $ADDRESS
-netmask $NETMASK
-gateway $GATEWAY
-
-# This is an autoconfigured IPv6 interface
-# iface $IFACE inet6 auto
-
-# Exit and save:	[CTRL+X] + [Y] + [ENTER]
-# Exit without saving:	[CTRL+X]
-
+network:
+   version: 2
+   renderer: networkd
+   ethernets:
+       $IFACE: #object name
+         dhcp4: no # dhcp v4 disable
+         dhcp6: no # dhcp v6 disable
+         addresses: [$ADDRESS/24] # client IP address
+         gateway4: $GATEWAY # gateway address
+         nameservers:
+           addresses: [$DNS1,$DNS2] #name servers
 IPCONFIGnonvmware
+    netplan apply
 fi
 
 exit 0

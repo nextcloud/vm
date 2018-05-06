@@ -26,10 +26,7 @@ Write this down, you will need it to set static IP
 in your router later. It's included in this guide:
 
 https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
-    ifdown "$IFACE"
-    wait
-    ifup "$IFACE"
-    wait
+    test_connection
     bash "$SCRIPTS/ip.sh"
     if [ -z "$IFACE" ]
     then
@@ -38,40 +35,31 @@ https://www.techandme.se/open-port-80-443/ (step 1 - 5)"
         bash "$SCRIPTS/ip2.sh"
         rm -f "$SCRIPTS/ip2.sh"
     fi
-    ifdown "$IFACE"
-    wait
-    ifup "$IFACE"
-    wait
-    echo
-    echo "Testing if network is OK..."
-    echo
-    CONTEST=$(bash $SCRIPTS/test_connection.sh)
-    if [ "$CONTEST" == "Connected!" ]
+    if network_ok
     then
         # Connected!
         printf "${Green}Connected!${Color_Off}\n"
         sleep 1
 msg_box "We have now set $ADDRESS as your static IP.
 
-If you want to change it later then just edit the interfaces file:
-sudo nano /etc/network/interfaces
+If you want to change it later then just edit the netplan.io YAML file:
+sudo nano /etc/netplan/01-netcfg.yaml
 
 If you experience any bugs, please report it here:
 $ISSUES"
     else
         # Not connected!
-        printf "${Red}Not Connected${Color_Off}\nYou should change your settings manually in the next step.\n"
-        any_key "Press any key to open /etc/network/interfaces..."
-        nano /etc/network/interfaces
-        service networking restart
-        clear
-        echo "Testing if network is OK..."
-        ifdown "$IFACE"
-        wait
-        ifup "$IFACE"
-        wait
-        bash "$SCRIPTS/test_connection.sh"
-        wait
+msg_box "Not Connected!
+You should change your settings manually in the next step.
+
+Check this site for instructions on how to do it:
+https://netplan.io/examples
+
+We will put a example config for you when you hit OK, but please check the site to change it to your own values."
+        any_key "Press any key to open /etc/netplan/01-netcfg.yaml..."
+        nano /etc/netplan/01-netcfg.yaml
+        netplan apply
+        test_connection
     fi
 else
     echo "OK, then we will not set a static IP as your VPS provider already have setup the network for you..."

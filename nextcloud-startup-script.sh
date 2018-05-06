@@ -2,14 +2,21 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
-unset NC_UPDATE
+unset NCDB
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
 ## If you want debug mode, please activate it further down in the code at line ~60
+
+# FUNCTIONS #
+
+msg_box() {
+local PROMPT="$1"
+    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+}
 
 is_root() {
     if [[ "$EUID" -ne 0 ]]
@@ -18,11 +25,6 @@ is_root() {
     else
         return 0
     fi
-}
-
-msg_box() {
-local PROMPT="$1"
-    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
 root_check() {
@@ -45,7 +47,7 @@ fi
 
 network_ok() {
     echo "Testing if network is OK..."
-    service networking restart
+    service network-manager restart
     if wget -q -T 20 -t 2 http://github.com -O /dev/null
     then
         return 0
@@ -54,11 +56,19 @@ network_ok() {
     fi
 }
 
+check_command() {
+  if ! "$@";
+  then
+     printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
+     echo "$* failed"
+    exit 1
+  fi
+}
+
+# END OF FUNCTIONS #
+
 # Check if root
 root_check
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
 
 # Check network
 if network_ok
@@ -68,16 +78,47 @@ else
     echo "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
-    {
-        sed '/# The primary network interface/q' /etc/network/interfaces
-        printf 'auto %s\niface %s inet dhcp\n# This is an autoconfigured IPv6 interface\niface %s inet6 auto\n' "$IFACE" "$IFACE" "$IFACE"
-    } > /etc/network/interfaces.new
-    mv /etc/network/interfaces.new /etc/network/interfaces
-    service networking restart
-    # shellcheck source=lib.sh
-    CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-    unset CHECK_CURRENT_REPO
+cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    $IFACE:
+      dhcp4: yes
+      dhcp6: yes
+SETDHCP
+    check_command netplan apply
+    check_command service network-manager restart
+    ip link set "$IFACE" down
+    wait
+    ip link set "$IFACE" up
+    wait
+    check_command service network-manager restart
+    echo "Checking connection..."
+    sleep 3
+    if ! nslookup github.com
+    then
+msg_box "Network NOT OK. You must have a working network connection to run this script
+If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
+    exit 1
+    fi
 fi
+
+# Check network again
+if network_ok
+then
+    printf "${Green}Online!${Color_Off}\n"
+else
+msg_box "Network NOT OK. You must have a working network connection to run this script
+If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
+    exit 1
+fi
+
+# shellcheck source=lib.sh
+NCDB=1 && CHECK_CURRENT_REPO=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+unset CHECK_CURRENT_REPO
+unset NCDB
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -85,15 +126,14 @@ fi
 DEBUG=0
 debug_mode
 
-# Check network
-if network_ok
-then
-    printf "${Green}Online!${Color_Off}\n"
-else
-msg_box "Network NOT OK!
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
-You must have a working Network connection to run this script.
-Please report this issue here: $ISSUES"
+# Check that this run on the PostgreSQL VM
+if ! which psql > /dev/null
+then
+    echo "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
+    echo "Aborting..."
     exit 1
 fi
 
@@ -167,7 +207,7 @@ download_static_script update
 download_static_script trusted
 download_static_script test_connection
 download_static_script setup_secure_permissions_nextcloud
-download_static_script change_mysql_pass
+download_static_script change_db_pass
 download_static_script nextcloud
 download_static_script update-config
 download_static_script index
@@ -190,8 +230,8 @@ msg_box "This script will configure your Nextcloud and activate SSL.
 It will also do the following:
 
 - Generate new SSH keys for the server
-- Generate new MariaDB password
-- Install phpMyadmin and make it secure
+- Generate new PotgreSQL password
+- Install phpPGadmin and make it secure
 - Install selected apps and automatically configure them
 - Detect and set hostname
 - Upgrade your system and Nextcloud to latest version
@@ -215,7 +255,7 @@ then
     clear
 else
     dpkg-reconfigure keyboard-configuration
-    clear
+clear
 fi
 
 # Change Timezone
@@ -242,12 +282,11 @@ printf "\nGenerating new SSH keys for the server...\n"
 rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
-# Generate new MariaDB password
-echo "Generating new MARIADB password..."
-if bash "$SCRIPTS/change_mysql_pass.sh" && wait
-then
-    rm "$SCRIPTS/change_mysql_pass.sh"
-fi
+# Generate new PostgreSQL password
+echo "Generating new PostgreSQL password..."
+check_command bash "$SCRIPTS/change_db_pass.sh"
+sleep 3
+clear
 
 msg_box "The following script will install a trusted
 SSL certificate through Let's Encrypt.
@@ -272,8 +311,8 @@ clear
 # Install Apps
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
-"phpMyadmin" "(*SQL GUI)       " OFF \
-"Netdata" "(Real-time server monitoring)       " OFF \
+"phpPGadmin" "(PostgreSQL GUI)       " OFF \
+"Netdata" "(*Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Passman" "(Password storage)   " OFF \
@@ -288,12 +327,12 @@ do
             run_app_script fail2ban
         ;;
         
-        Netdata)
-            run_app_script netdata
+        phpPGadmin)
+            run_app_script phppgadmin_install_ubuntu
         ;;
         
-        phpMyadmin)
-            run_app_script phpmyadmin_install_ubuntu16
+        Netdata)
+            run_app_script netdata
         ;;
         
         OnlyOffice)
@@ -390,8 +429,9 @@ rm "$SCRIPTS"/temporary-fix.sh
 
 # Cleanup 1
 occ_command maintenance:repair
+rm -f "$SCRIPTS/ip.sh"
+rm -f "$SCRIPTS/change_db_pass.sh"
 rm -f "$SCRIPTS/test_connection.sh"
-rm -f "$SCRIPTS/change_mysql_pass.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
@@ -472,7 +512,7 @@ Login to Nextcloud in your browser:
 
 Some tips and tricks:
 1. Publish your server online: https://goo.gl/iUGE2U
-2. To login to MariaDB just type: mysql -u root
+2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
 3. To update this VM just type: sudo bash /var/scripts/update.sh
 4. Change IP to something outside DHCP: sudo nano /etc/network/interfaces
 5. Please report any bugs here: https://github.com/nextcloud/vm/issues
@@ -492,12 +532,6 @@ fi
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
-
-# Shutdown MariaDB gracefully
-echo "Shutting down MariaDB..."
-check_command sudo systemctl stop mariadb.service
-rm -f /var/lib/mysql/ib_logfile[01]
-echo
 
 # Reboot
 any_key "Installation finished, press any key to reboot system..."
