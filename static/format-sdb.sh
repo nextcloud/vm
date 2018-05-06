@@ -72,6 +72,10 @@ then
 msg_box "Formatting $SDB when you hit OK.
 
 *** WARNING: ALL YOUR DATA WILL BE ERASED! ***"
+    if zpool list | grep ncdata > /dev/null
+    then
+        check_command zpool destroy ncdata
+    fi
     check_command wipefs -a -f "$SDB"
     sleep 0.5
     check_command zpool create -f -o ashift=12 "$LABEL_" "$SDB"
