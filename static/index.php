@@ -121,10 +121,9 @@
         <h2>Access Webmin</h2>
 
         <div class="information">
-            <p>Use one of the following addresses, HTTPS is preferred:
+            <p>Use the following address:
             <h3>
                 <ul>
-                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>:10000">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)</li>
                     <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:10000">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)</li>
                 </ul>
             </h3>
