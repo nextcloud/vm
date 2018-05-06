@@ -242,7 +242,7 @@ then
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
     echo "Docker automatic prune job added."
     echo
-    echo "OnlyOffice is now succesfully installed."
+    echo "OnlyOffice is now successfully installed."
     echo "You may have to reboot before Docker will load correctly."
     any_key "Press any key to continue... "
 fi
