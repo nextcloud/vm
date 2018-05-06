@@ -102,12 +102,6 @@ fi
 }
 format
 
-# Remove old mount point in fstab if existing
-if  grep "ncdata" /etc/fstab
-then
-    sed -i 10q /etc/fstab > /dev/null
-fi
-
 # Success!
 if grep "$LABEL_" /etc/mtab
 then
