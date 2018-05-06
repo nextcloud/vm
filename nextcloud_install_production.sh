@@ -48,6 +48,10 @@ debug_mode
 # Check if root
 root_check
 
+# Set locales
+install_if_not language-pack-en-base
+sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
@@ -55,21 +59,8 @@ cpu_check 1 Nextcloud
 # Create new current user
 run_static_script adduser nextcloud_install_production.sh
 
-# Check Ubuntu version
-echo "Checking server OS and version..."
-if [ "$OS" != 1 ]
-then
-msg_box "Ubuntu Server is required to run this script.
-Please install that distro and try again.
-
-You can find the download link here: https://www.ubuntu.com/download/server"
-    exit 1
-fi
-
-if ! version 16.04 "$DISTRO" 16.04.4; then
-msg_box "Ubuntu version $DISTRO must be between 16.04 - 16.04.4"
-    exit 1
-fi
+# Check distrobution and version
+check_distro_version
 
 # Check if key is available
 if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null
@@ -91,34 +82,8 @@ then
     mkdir -p "$SCRIPTS"
 fi
 
-# Change DNS
-if ! [ -x "$(command -v resolvconf)" ]
-then
-    apt install resolvconf -y -q
-    dpkg-reconfigure resolvconf
-fi
-echo "nameserver 9.9.9.9" > /etc/resolvconf/resolv.conf.d/base
-echo "nameserver 149.112.112.112" >> /etc/resolvconf/resolv.conf.d/base
-
 # Check network
-if ! [ -x "$(command -v nslookup)" ]
-then
-    apt install dnsutils -y -q
-fi
-if ! [ -x "$(command -v ifup)" ]
-then
-    apt install ifupdown -y -q
-fi
-sudo ifdown "$IFACE" && sudo ifup "$IFACE"
-if ! nslookup google.com
-then
-msg_box "Network NOT OK. You must have a working network connection to run this script."
-    exit 1
-fi
-
-# Set locales
-apt install language-pack-en-base -y
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+test_connection
 
 # Check where the best mirrors are and update
 echo
@@ -155,56 +120,19 @@ else
     clear
 fi
 
-# Update system
+# Install PostgreSQL
+# sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
+# wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt update -q4 & spinner_loading
+apt install postgresql-10 -y
 
-# Write MariaDB pass to file and keep it safe
-{
-echo "[client]"
-echo "password='$MARIADB_PASS'"
-} > "$MYCNF"
-chmod 0600 $MYCNF
-chown root:root $MYCNF
-
-# Install MARIADB
-apt install software-properties-common -y
-sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.ddg.lth.se/mariadb/repo/10.2/ubuntu xenial main'
-sudo debconf-set-selections <<< "mariadb-server-10.2 mysql-server/root_password password $MARIADB_PASS"
-sudo debconf-set-selections <<< "mariadb-server-10.2 mysql-server/root_password_again password $MARIADB_PASS"
-apt update -q4 & spinner_loading
-check_command apt install mariadb-server-10.2 -y
-
-# Prepare for Nextcloud installation
-# https://blog.v-gar.de/2018/02/en-solved-error-1698-28000-in-mysqlmariadb/
-mysql -u root mysql -p"$MARIADB_PASS" -e "UPDATE user SET plugin='' WHERE user='root';"
-mysql -u root mysql -p"$MARIADB_PASS" -e "UPDATE user SET password=PASSWORD('$MARIADB_PASS') WHERE user='root';"
-mysql -u root -p"$MARIADB_PASS" -e "flush privileges;"
-
-# mysql_secure_installation
-apt -y install expect
-SECURE_MYSQL=$(expect -c "
-set timeout 10
-spawn mysql_secure_installation
-expect \"Enter current password for root (enter for none):\"
-send \"$MARIADB_PASS\r\"
-expect \"Change the root password?\"
-send \"n\r\"
-expect \"Remove anonymous users?\"
-send \"y\r\"
-expect \"Disallow root login remotely?\"
-send \"y\r\"
-expect \"Remove test database and access to it?\"
-send \"y\r\"
-expect \"Reload privilege tables now?\"
-send \"y\r\"
-expect eof
-")
-echo "$SECURE_MYSQL"
-apt -y purge expect
-
-# Write a new MariaDB config
-run_static_script new_etc_mycnf
+# Create DB
+cd /tmp
+sudo -u postgres psql <<END
+CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
+CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
+END
+service postgresql restart
 
 # Install Apache
 check_command apt install apache2 -y
@@ -216,35 +144,35 @@ a2enmod rewrite \
         ssl \
         setenvif
 
-# Install PHP 7.0
+# Install PHP 7.2
 apt update -q4 & spinner_loading
 check_command apt install -y \
-    libapache2-mod-php7.0 \
-    php7.0-common \
-    php7.0-mysql \
-    php7.0-intl \
-    php7.0-mcrypt \
-    php7.0-ldap \
-    php7.0-imap \
-    php7.0-cli \
-    php7.0-gd \
-    php7.0-pgsql \
-    php7.0-json \
-    php7.0-sqlite3 \
-    php7.0-curl \
-    php7.0-xml \
-    php7.0-zip \
-    php7.0-mbstring \
+    libapache2-mod-php7.2 \
+    php7.2-common \
+    php7.2-intl \
+    php7.2-ldap \
+    php7.2-imap \
+    php7.2-cli \
+    php7.2-gd \
+    php7.2-pgsql \
+    php7.2-json \
+    php7.2-curl \
+    php7.2-xml \
+    php7.2-zip \
+    php7.2-mbstring \
     php-smbclient \
     php-imagick \
-    libmagickcore-6.q16-2-extra
+    libmagickcore-6.q16-3-extra
 
 # Enable SMB client
 # echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
 # echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
 
 # Install VM-tools
-apt install open-vm-tools -y
+install_if_not open-vm-tools
+
+# Format /dev/sdb to host the ncdata
+run_static_script format-sdb
 
 # Download and validate Nextcloud package
 check_command download_verify_nextcloud_stable
@@ -263,17 +191,14 @@ rm "$HTML/$STABLEVERSION.tar.bz2"
 download_static_script setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
-# Create database nextcloud_db
-mysql -u root -p"$MARIADB_PASS" -e "CREATE DATABASE IF NOT EXISTS nextcloud_db;"
-
 # Install Nextcloud
 cd "$NCPATH"
 occ_command maintenance:install \
 --data-dir="$NCDATA" \
---database=mysql \
+--database=pgsql \
 --database-name=nextcloud_db \
---database-user=root \
---database-pass="$MARIADB_PASS" \
+--database-user="$NCUSER" \
+--database-pass="$PGDB_PASS" \
 --admin-user="$NCUSER" \
 --admin-pass="$NCPASS"
 echo
@@ -282,41 +207,20 @@ occ_command status
 sleep 3
 echo
 
-# Enable UTF8mb4 (4-byte support)
-databases=$(mysql -u root -p"$MARIADB_PASS" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
-for db in $databases; do
-    if [[ "$db" != "performance_schema" ]] && [[ "$db" != _* ]] && [[ "$db" != "information_schema" ]];
-    then
-        echo "Changing to UTF8mb4 on: $db"
-        mysql -u root -p"$MARIADB_PASS" -e "ALTER DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-    fi
-done
-#if [ $? -ne 0 ]
-#then
-#    echo "UTF8mb4 was not set. Something is wrong."
-#    echo "Please report this bug to $ISSUES. Thank you!"
-#    exit 1
-#fi
-
-# Repair and set Nextcloud config values
-mysqlcheck -u root -p"$MARIADB_PASS" --auto-repair --optimize --all-databases
-occ_command config:system:set mysql.utf8mb4 --type boolean --value="true"
-occ_command maintenance:repair
-
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
-sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" /etc/php/7.2/apache2/php.ini
 # max_input_time
-sed -i "s|max_input_time =.*|max_input_time = 3600|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|max_input_time =.*|max_input_time = 3600|g" /etc/php/7.2/apache2/php.ini
 # memory_limit
-sed -i "s|memory_limit =.*|memory_limit = 512M|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|memory_limit =.*|memory_limit = 512M|g" /etc/php/7.2/apache2/php.ini
 # post_max
-sed -i "s|post_max_size =.*|post_max_size = 1100M|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|post_max_size =.*|post_max_size = 1100M|g" /etc/php/7.2/apache2/php.ini
 # upload_max
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.0/apache2/php.ini
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.2/apache2/php.ini
 
 # Set max upload in Nextcloud .htaccess
 configure_max_upload
@@ -340,7 +244,7 @@ echo "opcache.memory_consumption=256"
 echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
-} >> /etc/php/7.0/apache2/php.ini
+} >> /etc/php/7.2/apache2/php.ini
 
 # Install preview generator
 install_and_enable_app previewgenerator
@@ -361,7 +265,10 @@ install_and_enable_app issuetemplate
 install_and_enable_app caniupdate
 
 # Install Figlet
-apt install figlet -y
+install_if_not figlet
+
+# To be able to use snakeoil certs
+install_if_not ssl-cert
 
 # Generate $HTTP_CONF
 if [ ! -f $HTTP_CONF ]
@@ -520,7 +427,7 @@ check_command run_static_script change-ncadmin-profile
 check_command run_static_script change-root-profile
 
 # Install Redis
-run_static_script redis-server-ubuntu16
+run_static_script redis-server-ubuntu
 
 # Upgrade
 apt update -q4 & spinner_loading
@@ -537,13 +444,13 @@ apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
 # Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
-# Kernel 4.4
-apt install --install-recommends -y \
-linux-virtual-lts-xenial \
-linux-tools-virtual-lts-xenial \
-linux-cloud-tools-virtual-lts-xenial \
-linux-image-virtual-lts-xenial \
-linux-image-extra-"$(uname -r)"
+# Kernel 4.15
+yes | apt install --install-recommends \
+linux-virtual \
+linux-tools-virtual \
+linux-cloud-tools-virtual \
+linux-image-virtual \
+linux-image-extra-virtual
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading

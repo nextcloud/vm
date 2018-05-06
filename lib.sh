@@ -9,7 +9,7 @@ true
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
-NCDATA=/var/ncdata
+NCDATA=/mnt/ncdata
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 BACKUP=/var/NCBACKUP
@@ -25,10 +25,10 @@ WGET="/usr/bin/wget"
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
 WANIP4=$(curl -s -m 5 ipinfo.io/ip)
 [ ! -z "$LOAD_IP6" ] && WANIP6=$(curl -s -k -m 7 https://6.ifcfg.me)
-IFCONFIG="/sbin/ifconfig"
-INTERFACES="/etc/network/interfaces"
-NETMASK=$($IFCONFIG | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2)
+INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
+DNS1="9.9.9.9"
+DNS2="149.112.112.112"
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
@@ -42,7 +42,7 @@ NCUSER=ncadmin
 UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
-# MARIADB
+# Database
 SHUF=$(shuf -i 25-29 -n 1)
 MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
@@ -50,14 +50,16 @@ NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head 
 ETCMYCNF=/etc/mysql/my.cnf
 MYCNF=/root/.my.cnf
 [ ! -z "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
+PGDB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 [ ! -z "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
+PHPMPGDMIN_CONF="/etc/apache2/conf-available/phppgadmin.conf"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
-HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # Nextcloud version
 [ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
@@ -80,6 +82,7 @@ CERTFILES="$LETSENCRYPTPATH/live"
 DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 # Collabora App
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
+HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # Nextant
 # this var get's the latest automatically:
 SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-6].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
@@ -99,7 +102,7 @@ UPLOADPATH=""
 SAVEPATH=""
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
-REDIS_SOCK=/var/run/redis/redis.sock
+REDIS_SOCK=/var/run/redis/redis-server.sock
 RSHUF=$(shuf -i 30-35 -n 1)
 REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
 # Extra security
@@ -196,6 +199,25 @@ do
 done
 }
 
+test_connection() {
+install_if_not dnsutils
+install_if_not network-manager
+check_command service network-manager restart
+ip link set "$IFACE" down
+wait
+ip link set "$IFACE" up
+wait
+check_command service network-manager restart
+echo "Checking connection..."
+sleep 3
+if ! nslookup github.com
+then
+msg_box "Network NOT OK. You must have a working network connection to run this script
+If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
+    exit 1
+fi
+}
+
 # Install certbot (Let's Encrypt)
 install_certbot() {
 certbot --version 2> /dev/null
@@ -211,9 +233,7 @@ else
     apt update -q4 & spinner_loading
     apt install certbot -y -q
     apt update -q4 & spinner_loading
-    apt-mark hold mariadb*
     apt dist-upgrade -y
-    apt-mark unhold mariadb*
 fi
 }
 
@@ -224,7 +244,7 @@ service apache2 reload
 certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
 }
 
-# Check if port is open # check_open_port 443
+# Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
 # Check to see if user already has nmap installed on their system
 if [ "$(dpkg-query -s nmap 2> /dev/null | grep -c "ok installed")" == "1" ]
@@ -275,8 +295,27 @@ else
 fi
 }
 
+check_distro_version() {
+# Check Ubuntu version
+echo "Checking server OS and version..."
+if [ "$OS" != 1 ]
+then
+msg_box "Ubuntu Server is required to run this script.
+Please install that distro and try again.
+
+You can find the download link here: https://www.ubuntu.com/download/server"
+    exit 1
+fi
+
+
+if ! version 18.04 "$DISTRO" 18.04.4; then
+msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
+    exit 1
+fi
+}
+
 configure_max_upload() {
-# Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
+# Increase max filesize (expects that changes are made in /etc/php/7.2/apache2/php.ini)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
 sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
@@ -353,7 +392,7 @@ check_command sudo -u www-data php "$NCPATH"/occ "$@";
 
 network_ok() {
     echo "Testing if network is OK..."
-    service networking restart
+    service network-manager restart
     if wget -q -T 20 -t 2 http://github.com -O /dev/null & spinner_loading
     then
         return 0
@@ -584,7 +623,6 @@ then
     sleep 1
 else
 msg_box "It appears that something went wrong with the update. 
-
 Please report this to $ISSUES"
 occ_command -V
 exit

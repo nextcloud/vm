@@ -135,21 +135,21 @@
             <p>Note: Webmin is installed when you run the setup script. To access Webmin externally you have to open port 10000 in your router.</p>
         </div>
 
-        <h2>Access phpMyadmin</h2>
+        <h2>Access phpPGadmin</h2>
 
         <div class="information">
             <p>Use one of the following addresses, HTTPS is preffered:
             <h3>
                 <ul>
-                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>/phpmyadmin">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)</li>
-                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/phpmyadmin">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)</li>
+                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>/phppgadmin">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)</li>
+                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/phppgadmin">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)</li>
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
                 <a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login details</a>
             </h3>
-            <p>Note: Your external IP is set as approved in /etc/apache2/conf-available/phpmyadmin.conf, all other access is forbidden.</p>
+            <p>Note: Your LAN IP is set as approved in /etc/apache2/conf-available/phppgadmin.conf, all other access is forbidden.</p>
         </div>
     </body>
 </html>

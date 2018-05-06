@@ -2,9 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && MYCNFPW=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
-unset MYCNFPW
 unset NCDB
 
 # Tech and Me © - 2018, https://www.techandme.se/
@@ -28,24 +27,18 @@ is_process_running apt
 is_process_running dpkg
 
 # System Upgrade
-apt-mark hold mariadb*
-apt-mark hold mariadb-server-10.2*
+if which mysql > /dev/null
+then
+    apt-mark hold mariadb*
+fi
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-apt-mark unhold mariadb*
-apt-mark unhold mariadb-server-10.2*
+if which mysql > /dev/null
+then
+    apt-mark unhold mariadb*
 echo
 echo "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
 sleep 2
-
-# Update Redis PHP extention
-if type pecl > /dev/null 2>&1
-then
-    install_if_not php7.0-dev
-    echo "Trying to upgrade the Redis Pecl extenstion..."
-    yes no | pecl upgrade redis
-    service redis-server restart
-    service apache2 restart
 fi
 
 # Update Netdata
@@ -61,7 +54,7 @@ fi
 # This updates ALL Docker images:
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
-docker images --format "{{.Repository}}:{{.Tag}}" | grep :latest | xargs -L1 docker pull
+    docker images --format "{{.Repository}}:{{.Tag}}" | grep :latest | xargs -L1 docker pull
 fi
 
 # Nextcloud 13 is required.
@@ -126,6 +119,42 @@ else
     exit 0
 fi
 
+# Upgrade Nextcloud
+echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
+if ! wget -q --show-progress -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2"
+then
+msg_box "Nextcloud does not exist. You were looking for: $NCVERSION
+Please check available versions here: $NCREPO"
+    exit 1
+else
+    rm -f "$STABLEVERSION.tar.bz2"
+fi
+
+echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
+echo "Press CTRL+C to abort."
+sleep 10
+
+# Backup PostgreSQL
+if which psql > /dev/null
+then
+    cd /tmp
+    if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
+    then
+        echo "Doing pgdump of $NCCONFIGDB..."
+        check_command sudo -u postgres pg_dump "$NCCONFIGDB"  > "$BACKUP"/nextclouddb.sql
+    else
+        echo "Doing pgdump of all databases..."
+        check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.sql
+    fi
+fi
+
+# If MariaDB then:
+mariadb_backup() {
+MYCNF=/root/.my.cnf
+MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
+NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+# Path to specific files
 # Make sure old instaces can upgrade as well
 if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
 then
@@ -149,31 +178,22 @@ then
     exit 1    
 fi
 
-if [ -z "$MARIADBMYCNFPASS" ]
+# Backup MariaDB
+if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
 then
-msg_box "Something went wrong with copying your mysql password to $MYCNF.
-
-We wrote a guide on how to fix this. You can find the guide here:
-https://www.techandme.se/reset-mysql-5-7-root-password/"
-    exit 1
+    echo "Doing mysqldump of $NCCONFIGDB..."
+    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
 else
-    rm -f /var/mysql_password.txt
+    echo "Doing mysqldump of all databases..."
+    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
 fi
+}
 
-# Upgrade Nextcloud
-echo "Checking latest released version on the Nextcloud download server and if it's possible to download..."
-if ! wget -q --show-progress -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2"
+# Do the actual backup
+if which mysql > /dev/null
 then
-msg_box "Nextcloud does not exist. You were looking for: $NCVERSION
-Please check available versions here: $NCREPO"
-    exit 1
-else
-    rm -f "$STABLEVERSION.tar.bz2"
+    mariadb_backup
 fi
-
-echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
-echo "Press CTRL+C to abort."
-sleep 10
 
 # Check if backup exists and move to old
 echo "Backing up data..."
@@ -203,16 +223,6 @@ then
     exit 1
 else
     printf "${Green}\nBackup OK!${Color_Off}\n"
-fi
-
-# Backup MARIADB
-if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
-then
-    echo "Doing mysqldump of $NCCONFIGDB..."
-    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
-else
-    echo "Doing mysqldump of all databases..."
-    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
 fi
 
 # Download and validate Nextcloud package
