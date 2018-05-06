@@ -60,7 +60,7 @@ then
 msg_box "It seems like /dev/sdb does not exist.
 This script requires that you mount a second drive to hold the data.
 
-Please shutdown there server and mount a second drive.
+Please shutdown the server and mount a second drive, then start this script again.
 
 If you want help you can buy support in our shop:
 https://shop.techandme.se/index.php/product/premium-support-per-30-minutes/"
@@ -89,7 +89,7 @@ else
 msg_box "It seems like /dev/sdb does not exist.
 This script requires that you mount a second drive to hold the data.
 
-Please shutdown there server and mount a second drive.
+Please shutdown the server and mount a second drive, then start this script again.
 
 If you want help you can buy support in our shop:
 https://shop.techandme.se/index.php/product/premium-support-per-30-minutes/"
@@ -107,9 +107,10 @@ fi
 # Success!
 if grep "$LABEL_" /etc/mtab
 then
-msg_box "$MOUNT_ mounted successfully as ZFS volume:
+msg_box "$MOUNT_ mounted successfully as a ZFS volume:
 
-The drive is formated as ZFS and this is the device:
-$(zpool status $LABEL_)"
+$(zpool status $LABEL_)
+
+$(zpool list)"
 fi
 
