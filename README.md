@@ -30,13 +30,17 @@ DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
 #### Minimum requirements:
 * A clean Ubuntu Server 16.04.X
 * OpenSSH (preferred)
-* 20 GB HDD
+* 20 GB HDD for OS
+* XX GB HDD for DATA (/mnt/ncdata)
 * At least 1 vCPU and 2 GB RAM (4 GB minimum if you are running OnlyOffice)
 * A working internet connection (the script needs it to download files and variables)
 
 #### Recommended
 * Thick provisioned (better performance and easier to maintain)
 * DHCP available
+* 40 GB HDD for OS
+* 4 vCPU
+* 4 GB RAM
 
 #### Installation
 1. Get the latest install script from master:<br>
