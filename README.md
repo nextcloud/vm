@@ -28,7 +28,7 @@
 DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
 
 #### Minimum requirements:
-* A clean Ubuntu Server 16.04.X
+* A clean Ubuntu Server 18.04.X
 * OpenSSH (preferred)
 * 20 GB HDD for OS
 * XX GB HDD for DATA (/mnt/ncdata)
