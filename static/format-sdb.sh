@@ -82,7 +82,7 @@ msg_box "Formatting $SDB when you hit OK.
     check_command zpool set failmode=continue "$LABEL_"
     check_command zfs set mountpoint="$MOUNT_" "$LABEL_"
     check_command zfs set compression=lz4 "$LABEL_"
-    check_command zfs set sync=enabled "$LABEL_"
+    check_command zfs set sync=always "$LABEL_"
     check_command zfs set xattr=sa "$LABEL_"
     check_command zfs set primarycache=all "$LABEL_"
     check_command zfs set atime=off "$LABEL_"
