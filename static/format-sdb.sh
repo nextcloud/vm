@@ -27,6 +27,7 @@ mkdir -p "$MOUNT_"
 isMounted() { findmnt -rno SOURCE,TARGET "$1" >/dev/null;} #path or device
 isDevMounted() { findmnt -rno SOURCE        "$1" >/dev/null;} #device only
 isPathMounted() { findmnt -rno        TARGET "$1" >/dev/null;} #path   only
+isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device memeber of a zpool
 
 if isPathMounted "/mnt/ncdata";      #Spaces in path names are ok.
 then
@@ -52,6 +53,13 @@ then
 msg_box "/dev/sdb1 is mounted and need to be unmounted before you can run this script."
 exit 1
 fi
+
+if isDevPartOfZFS "sdb";
+then
+echo "/dev/sdb is a member of a ZFS pool and needs to be removed from any zpool before you can run this script."
+exit 1
+fi
+
 
 # Get the name of the drive
 SDB=$(fdisk -l | grep sdb | awk '{print $2}' | cut -d ":" -f1 | head -1)
