@@ -56,7 +56,7 @@ fi
 
 if isDevPartOfZFS "sdb";
 then
-echo "/dev/sdb is a member of a ZFS pool and needs to be removed from any zpool before you can run this script."
+msg_box "/dev/sdb is a member of a ZFS pool and needs to be removed from any zpool before you can run this script."
 exit 1
 fi
 
