@@ -72,9 +72,9 @@ then
 msg_box "Formatting $SDB when you hit OK.
 
 *** WARNING: ALL YOUR DATA WILL BE ERASED! ***"
-    if zpool list | grep ncdata > /dev/null
+    if zpool list | grep "$LABEL_" > /dev/null
     then
-        check_command zpool destroy ncdata
+        check_command zpool destroy "$LABEL_"
     fi
     check_command wipefs -a -f "$SDB"
     sleep 0.5
