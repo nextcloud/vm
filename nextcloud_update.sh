@@ -9,6 +9,8 @@ true
 
 network_ok
 
+exit 1
+
 msg_box "Since we migrated the PosgreSQL branch to master on Github the update script from the PostgreSQL branch will be removed soon.
 You can read the release note here: https://www.techandme.se/release-note-nextcloud-13-0-2/
 
