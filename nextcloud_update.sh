@@ -22,7 +22,7 @@ If you experience any bugs, please report them to $ISSUES."
 if rm -f $SCRIPTS/update.sh
 then
 msg_box "The old update.sh couldn't be removed.
-Please report this to $ISSUES
+Please report this to $ISSUES"
 fi
 
 download_static_script update
