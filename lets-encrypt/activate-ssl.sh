@@ -81,7 +81,7 @@ done
 
 # Check if port is open with NMAP
 sed -i "s|127.0.1.1.*|127.0.1.1       $domain nextcloud|g" /etc/hosts
-service networking restart
+network_ok
 check_open_port 80 "$domain"
 check_open_port 443 "$domain"
 
