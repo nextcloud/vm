@@ -76,26 +76,7 @@ check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
 
 # Install Docker
-if [ "$(dpkg-query -W -f='${Status}' docker-ce 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    docker -v
-else
-    apt update -q4 & spinner_loading
-    apt install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-    apt-key fingerprint 0EBFCD88
-    add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) \
-    stable"
-    apt update
-    apt install docker-ce -y
-    docker -v
-fi
+install_if_not docker.io
 
 # Load aufs
 apt-get install linux-image-extra-"$(uname -r)" -y
