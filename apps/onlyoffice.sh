@@ -78,8 +78,8 @@ check_open_port 443 "$SUBDOMAIN"
 install_if_not docker.io
 
 # Load aufs
-apt-get install linux-image-extra-"$(uname -r)" -y
-# apt install aufs-tools -y # already included in the docker-ce package
+# apt-get install linux-image-extra-"$(uname -r)" -y # doesn't exist in Ubuntu 18.04
+install_if_not aufs-tools # already included in the docker-ce package
 AUFS=$(grep -r "aufs" /etc/modules)
 if ! [ "$AUFS" = "aufs" ]
 then
