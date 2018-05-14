@@ -445,7 +445,7 @@ find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -nam
 
 # Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
 # Kernel 4.15
-yes | apt install --install-recommends \
+apt install -y --install-recommends \
 linux-virtual \
 linux-tools-virtual \
 linux-cloud-tools-virtual \
