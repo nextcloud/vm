@@ -76,7 +76,8 @@ check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
 
 # Install Docker
-install_if_not docker.io
+install_if_not curl
+curl -fsSL get.docker.com | sh
 
 # Load aufs
 # apt-get install linux-image-extra-"$(uname -r)" -y # doesn't exist in Ubuntu 18.04
