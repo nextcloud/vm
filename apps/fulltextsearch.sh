@@ -117,7 +117,7 @@ then
 fi
 
 # Check that ReadOnlyREST is properly installed
-#if ! [ "$(curl -s http://127.0.0.1:9200)" ]
+#if ! [ "$(curl -s 127.0.0.1:9200)" ]
 #then
 #msg_box "Installation failed!
 #Please report this to $ISSUES"
