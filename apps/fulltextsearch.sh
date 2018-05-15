@@ -81,12 +81,12 @@ then
 fi
 
 # Check that ingest-attachment is properly installed
-#if ! [ "$(curl -s http://127.0.0.1:9200)" ]
-#then
-#msg_box "Installation failed!
-#Please report this to $ISSUES"
-#    exit 1
-#fi
+if ! [ "$(curl -s 127.0.0.1:9200)" ]
+then
+msg_box "Installation failed!
+Please report this to $ISSUES"
+    exit 1
+fi
 
 # Install ReadOnlyREST
 echo "Downloading readonlyrest..."
@@ -117,12 +117,12 @@ then
 fi
 
 # Check that ReadOnlyREST is properly installed
-#if ! [ "$(curl -s 127.0.0.1:9200)" ]
-#then
-#msg_box "Installation failed!
-#Please report this to $ISSUES"
-#    exit 1
-#fi
+if ! [ "$(curl -s 127.0.0.1:9200)" ]
+then
+msg_box "Installation failed!
+Please report this to $ISSUES"
+    exit 1
+fi
 
 # Create configuration YML 
 cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
