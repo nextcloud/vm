@@ -202,12 +202,12 @@ done
 test_connection() {
 install_if_not dnsutils
 install_if_not network-manager
-check_command service network-manager restart
+check_command service networking restart
 ip link set "$IFACE" down
 wait
 ip link set "$IFACE" up
 wait
-check_command service network-manager restart
+check_command service networking restart
 echo "Checking connection..."
 sleep 3
 if ! nslookup github.com
