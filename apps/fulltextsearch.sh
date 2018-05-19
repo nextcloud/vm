@@ -68,6 +68,7 @@ check_command echo "deb https://artifacts.elastic.co/packages/$ES_DEB_VERSION.x/
 apt update -q4 & spinner_loading
 apt install elasticsearch=$ES_VERSION -y
 check_command /etc/init.d/elasticsearch start
+apt-mark hold elasticsearch
 
 # Enable on bootup
 sudo systemctl enable elasticsearch.service
