@@ -68,6 +68,7 @@ check_command echo "deb https://artifacts.elastic.co/packages/$ES_DEB_VERSION.x/
 apt update -q4 & spinner_loading
 apt install elasticsearch=$ES_VERSION -y
 check_command /etc/init.d/elasticsearch start
+apt-mark hold elasticsearch
 
 # Enable on bootup
 sudo systemctl enable elasticsearch.service
@@ -81,12 +82,12 @@ then
 fi
 
 # Check that ingest-attachment is properly installed
-#if ! [ "$(curl -s http://127.0.0.1:9200)" ]
-#then
-#msg_box "Installation failed!
-#Please report this to $ISSUES"
-#    exit 1
-#fi
+if ! [ "$(curl -s 127.0.0.1:9200)" ]
+then
+msg_box "Installation failed!
+Please report this to $ISSUES"
+    exit 1
+fi
 
 # Install ReadOnlyREST
 echo "Downloading readonlyrest..."
@@ -117,12 +118,12 @@ then
 fi
 
 # Check that ReadOnlyREST is properly installed
-#if ! [ "$(curl -s http://127.0.0.1:9200)" ]
-#then
-#msg_box "Installation failed!
-#Please report this to $ISSUES"
-#    exit 1
-#fi
+if ! [ "$(curl -s 127.0.0.1:9200)" ]
+then
+msg_box "Installation failed!
+Please report this to $ISSUES"
+    exit 1
+fi
 
 # Create configuration YML 
 cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
@@ -154,6 +155,6 @@ chown -R www-data:www-data $NC_APPS_PATH
 
 # Final setup
 occ_command fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_ElasticSearch\\Platform\\ElasticSearchPlatform"}'
-occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http:\\\\${NCADMIN}:${ROREST}@localhost:9200\",\"elastic_index\":\"${NCADMIN}\"}"
+occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${NCADMIN}:${ROREST}@localhost:9200\",\"elastic_index\":\"${NCADMIN}-index\"}"
 occ_command files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 occ_command fulltextsearch:index
