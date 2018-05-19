@@ -154,6 +154,6 @@ chown -R www-data:www-data $NC_APPS_PATH
 
 # Final setup
 occ_command fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_ElasticSearch\\Platform\\ElasticSearchPlatform"}'
-occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http:\\\\${NCADMIN}:${ROREST}@localhost:9200\",\"elastic_index\":\"${NCADMIN}\"}"
+occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://\\${NCADMIN}:${ROREST}@localhost:9200\",\"elastic_index\":\"${NCADMIN}\"}"
 occ_command files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 occ_command fulltextsearch:index
