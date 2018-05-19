@@ -78,22 +78,11 @@ check_open_port 443 "$SUBDOMAIN"
 install_if_not curl
 curl -fsSL get.docker.com | sh
 
-# Load aufs
-# apt-get install linux-image-extra-"$(uname -r)" -y # doesn't exist in Ubuntu 18.04
-install_if_not aufs-tools # already included in the docker-ce package
-AUFS=$(grep -r "aufs" /etc/modules)
-if ! [ "$AUFS" = "aufs" ]
-then
-    echo "aufs" >> /etc/modules
-fi
-
-# Set docker storage driver to AUFS
-AUFS2=$(grep -r "aufs" /etc/default/docker)
-if ! [ "$AUFS2" = 'DOCKER_OPTS="--storage-driver=aufs"' ]
-then
-    echo 'DOCKER_OPTS="--storage-driver=aufs"' >> /etc/default/docker
-    service docker restart
-fi
+# Set overlay2
+check_command cp -v /lib/systemd/system/docker.service /etc/systemd/system/
+sed -i "s|ExecStart=/usr/bin/dockerd -H fd://|ExecStart=/usr/bin/dockerd --storage-driver=overlay2 -H fd://|g" /etc/systemd/system/docker.service
+systemctl daemon-reload
+systemctl restart docker
 
 # Check of docker runs and kill it
 DOCKERPS=$(docker ps -a -q)
