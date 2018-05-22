@@ -210,13 +210,17 @@ wait
 echo "Checking connection..."
 check_command service network-manager restart
 sleep 2
-if  nslookup github.com
+if nslookup github.com
 then
     echo "Online!"
 elif ! nslookup github.com
 then
     echo "Trying to restart networking service..."
     check_command service networking restart
+    if nslookup github.com
+    then
+        echo "Online!"
+    fi
 else
     if ! nslookup github.com
     then
