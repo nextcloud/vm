@@ -204,9 +204,9 @@ install_if_not dnsutils
 install_if_not network-manager
 check_command service network-manager restart
 ip link set "$IFACE" down
-wait
+sleep 2
 ip link set "$IFACE" up
-wait
+sleep 2
 echo "Checking connection..."
 check_command service network-manager restart
 sleep 2
@@ -216,7 +216,7 @@ then
 elif ! nslookup github.com
 then
     echo "Trying to restart networking service..."
-    check_command service networking restart
+    check_command service networking restart && sleep 2
     if nslookup github.com
     then
         echo "Online!"
