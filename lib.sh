@@ -204,9 +204,9 @@ install_if_not dnsutils
 install_if_not network-manager
 check_command service network-manager restart
 ip link set "$IFACE" down
-wait
+sleep 1
 ip link set "$IFACE" up
-wait
+sleep 1
 echo "Checking connection..."
 check_command service network-manager restart
 sleep 2
