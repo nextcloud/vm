@@ -200,8 +200,22 @@ done
 }
 
 test_connection() {
-install_if_not dnsutils
-install_if_not network-manager
+# Install dnsutils if not existing
+if [ "$(dpkg-query -W -f='${Status}' "dnsutils" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    sleep 0.1
+else
+    apt update -q4 & spinner_loading
+    apt install dnsutils -y
+fi
+# Install network-manager if not existing
+if [ "$(dpkg-query -W -f='${Status}' "network-manager" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    sleep 0.1
+else
+    apt update -q4 & spinner_loading
+    apt install network-manager -y
+fi
 check_command service network-manager restart
 ip link set "$IFACE" down
 sleep 2
