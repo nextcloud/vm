@@ -19,12 +19,23 @@ TURN_PORT=587
 TURN_SECRET="$(cat /dev/urandom | tr -dc a-zA-Z0-9 | fold -w 64 | head -n 1)"
 TURN_DOMAIN="$(occ_command config:system:get overwrite.cli.url | sed 's#https://##;s#/##')"
 
+# Check if Nextcloud is installed
+echo "Checking if Nextcloud is installed..."
+if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
+then
+msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+${NCDOMAIN//\\/}.
+Please install Nextcloud and make sure your domain is reachable, or activate SSL
+on your domain to be able to run this script.
+If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
+When SSL is activated, run these commands from your terminal:
+sudo wget $APP/talk.sh
+sudo bash talk.sh"
+    exit 1
+fi
 
 echo "Installing Talk..."
 check_open_port "$TURN_PORT" "$TURN_DOMAIN"
-
-# Install coturn
-install_if_not coturn
 
 # Enable Spreed (Talk)
 if [ -d "$NC_APPS_PATH"/spreed ]
@@ -40,7 +51,6 @@ fi
 
 # Install TURN
 check_command install_if_not coturn
-
 sudo sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
 
 # Generate $TURN_CONF
