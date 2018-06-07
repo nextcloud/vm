@@ -16,8 +16,8 @@ debug_mode
 TALK_CONF="/etc/turnserver.conf"
 
 echo "Installing Talk..."
-check_open_port 443 $TALKDOMAIN
-check_open_port 80 $TALKDOMAIN
+check_open_port 443 "$TALKDOMAIN"
+check_open_port 80 "$TALKDOMAIN"
 
 # Install Apache2
 install_if_not apache2
