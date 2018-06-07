@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2017, https://www.techandme.se/
-
-echo "Installing Netdata..."
+# Tech and Me © - 2018, https://www.techandme.se/
 
 # shellcheck disable=2034,2059
 true
@@ -25,6 +23,10 @@ check_open_port 80
 check_command install_if_not coturn
 
 sudo sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
+
+# Generate SSL
+
+# Reverse Proxy?
 
 # Generate $HTTP_CONF
 if [ ! -f $TALK_CONF ]
@@ -52,13 +54,13 @@ TALK_CREATE
     echo "TALK_CONF was successfully created"
 fi
 
-# Retsart the TURN server
+# Restart the TURN server
 sudo systemctl restart coturn
 
 # Install and enable app from App Store 
 install_and_enable_app spreed
 
-# occ_command for setting values in app (check with @mario which ones that are avaliable)
+# occ_command for setting values in app (check with @mario which ones that are available)
 STUN servers: your.domain.org:<yourChosenPortNumber>
 TURN server: your.domain.org:<yourChosenPortNumber>
 TURN secret: <yourChosen/GeneratedSecret>
