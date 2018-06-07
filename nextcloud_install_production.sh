@@ -83,7 +83,7 @@ then
 fi
 
 # Check network
-test_connection
+network_ok
 
 # Check where the best mirrors are and update
 echo
