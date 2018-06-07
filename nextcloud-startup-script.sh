@@ -352,7 +352,7 @@ do
         ;;        
 
         Talk)
-            install_and_enable_app spreed
+            run_app_script talk
         ;;
         
         Spreed.ME)
