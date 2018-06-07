@@ -1,13 +1,36 @@
+#!/bin/bash
+
+# Tech and Me © - 2017, https://www.techandme.se/
+
+echo "Installing Netdata..."
+
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
+TALK_CONF="/etc/turnserver.conf"
+
+echo "Installing Talk..."
 check_open_port 443
 check_open_port 80
 
-## Put talk on a subdomain? E.g. talk.domain.com?
-
-install_if_not coturn
+# Install TURN
+check_command install_if_not coturn
 
 sudo sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
 
-cat EOF /etc/turnserver.conf (WITH TLS)
+# Generate $HTTP_CONF
+if [ ! -f $TALK_CONF ]
+then
+    touch "$TALK_CONF"
+    cat << TALK_CREATE > "$TALK_CONF"
 tls-listening-port=443
 fingerprint
 lt-cred-mech
@@ -25,12 +48,15 @@ no-tlsv1_1
 cipher-list="ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AES:RSA+3DES:!ADH:!AECDH:!MD5"
 no-loopback-peers
 no-multicast-peers
+TALK_CREATE
+    echo "TALK_CONF was successfully created"
+fi
 
----- end of EOF -------
-
+# Retsart the TURN server
 sudo systemctl restart coturn
 
-
+# Install and enable app from App Store 
+install_and_enable_app spreed
 
 # occ_command for setting values in app (check with @mario which ones that are avaliable)
 STUN servers: your.domain.org:<yourChosenPortNumber>
