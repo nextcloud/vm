@@ -45,7 +45,7 @@ fi
 
 # Install TURN
 check_command install_if_not coturn
-check_comman sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
+check_command sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
 
 # Generate $TURN_CONF
 cat << TURN_CREATE > "$TURN_CONF"
