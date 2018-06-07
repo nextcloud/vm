@@ -13,7 +13,12 @@ true
 DEBUG=0
 debug_mode
 
+# Move to lib.sh
 TALK_CONF="/etc/turnserver.conf"
+TALKPROXY=
+TALKSUBDOMAIN=
+DHPARAMS= # need another name?
+
 
 echo "Installing Talk..."
 check_open_port 443 "$TALKDOMAIN"
@@ -117,7 +122,7 @@ then
     #TURN secret: <yourChosen/GeneratedSecret>
     #UDP and TCP
     chown -R www-data:www-data "$NC_APPS_PATH"
-    occ_command config:system:set trusted_domains 4 --value="$SUBDOMAIN"
+    occ_command config:system:set trusted_domains 4 --value="$TALKDOMAIN"
 fi
 
 # Install TURN
