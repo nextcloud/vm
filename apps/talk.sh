@@ -19,21 +19,20 @@ bps-capacity=0
 stale-nonce
 cert=/path/to/your/cert.pem (same as for nextcloud itself)
 pkey=/path/to/your/privkey.pem (same as for nextcloud itself)
-cipher-list="ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AES:RSA+3DES:!ADH:!AECDH:!MD5"
-no-loopback-peers
-no-multicast-peers
 dh-file=/path/to/your/dhparams.pem (same as nextcloud)
 no-tlsv1
 no-tlsv1_1
+cipher-list="ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AES:RSA+3DES:!ADH:!AECDH:!MD5"
+no-loopback-peers
+no-multicast-peers
+
 ---- end of EOF -------
 
 sudo systemctl restart coturn
 
 
 
-Configure Nextcloud Talk to use your TURN server
-Go to Nextcloud admin panel > Talk settings. Btw. if you already have your own TURN server, you can and may want to use it as STUN server as well:
-
+# occ_command for setting values in app (check with @mario which ones that are avaliable)
 STUN servers: your.domain.org:<yourChosenPortNumber>
 TURN server: your.domain.org:<yourChosenPortNumber>
 TURN secret: <yourChosen/GeneratedSecret>
