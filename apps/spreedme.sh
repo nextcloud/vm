@@ -48,7 +48,7 @@ then
     # Remove
     occ_command app:disable spreedme
     echo "SpreedMe app already seems to be installed and will now be re-installed..."
-    rm -R "NC_APPS_PATH/spreedme"
+    rm -R "$NC_APPS_PATH/spreedme"
     # Reinstall
     occ_command app:install spreedme
 else
