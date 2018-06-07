@@ -16,7 +16,8 @@ debug_mode
 # Move to lib.sh
 TURN_CONF="/etc/turnserver.conf"
 TURN_PORT=587 
-TURN_SECRET="$(cat /dev/urandom | tr -dc a-zA-Z0-9 | fold -w 64 | head -n 1)"
+SHUF=$(shuf -i 25-29 -n 1)
+TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 TURN_DOMAIN="$(occ_command config:system:get overwrite.cli.url | sed 's#https://##;s#/##')"
 
 # Check if Nextcloud is installed
