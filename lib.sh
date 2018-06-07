@@ -115,13 +115,13 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
 # Talk
-TURN_CONF="/etc/turnserver.conf"
-TURN_PORT=587 
-SHUF=$(shuf -i 25-29 -n 1)
-TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
+[ ! -z "$TURN_INSTALL" ] && TURN_PORT=587 
+[ ! -z "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
+[ ! -z "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$TURN_INSTALL" ] && TURN_DOMAIN=$(whiptail --title "Techandme.se - Nextcloud Talk" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
-STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
-TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
+[ ! -z "$TURN_INSTALL" ] && STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
+[ ! -z "$TURN_INSTALL" ] && TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
 
 ## functions
 
