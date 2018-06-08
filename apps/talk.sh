@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/penzoiders/vm/master/lib.sh) # FOR TESTING!
 unset TURN_INSTALL
 
 # Check for errors + debug code and abort if something isn't right
@@ -14,7 +14,8 @@ unset TURN_INSTALL
 DEBUG=0
 debug_mode
 
-echo "Installing Talk..."
+echo "Installing Nextcloud Talk..."
+
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
 if ! curl -s https://"${TURN_DOMAIN//\\/}"/status.php | grep -q 'installed":true'
@@ -32,8 +33,8 @@ fi
 
 # Let the user choose port. TURN_PORT in msg_box is taken from lib.sh and later changed if user decides to.
 NONO_PORTS=(22 25 53 80 443 3306 5432 7983 8983 10000)
-msg_box "The default port for Talk used in this script is port $TURN_PORT. That port is used for SMTP over TLS, but is also
-a port that is likley to be open in most firewalls.
+msg_box "The default port for Talk used in this script is port $TURN_PORT. That port is used for SMTP over TLS, 
+but is also a port that is likley to be open in most firewalls.
 
 You will now be given the option to change this port to something of your own. 
 Please keep in mind NOT to use the following ports as they are likley to be in use already: 
@@ -68,10 +69,18 @@ containsElement () {
 
 if containsElement "$TURN_PORT" "${NONO_PORTS[@]}"
 then
-        echo "Choose another port..."
-else
-        echo "Port should be free..."
+    msg_box "You have to choose another port. Please start over."
 fi
+
+# Warn user to open port
+msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
+After you hit OK the script will check for the firewall and eventually exit on failure.
+To run again the setup, after fixing your firewall:
+sudo wget $APP/talk.sh
+sudo bash talk.sh"
+
+# Check if the port is open
+check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 
 # Install TURN
 check_command install_if_not coturn
@@ -104,16 +113,6 @@ echo "TURN_CONF was successfully created"
 
 # Restart the TURN server
 check_command systemctl restart coturn
-
-# Warn user to open port
-msg_box "Open $TURN_PORT TCP/UDP on your firewall or your TURN/STUN server won't work!
-After you hit OK the script will check for the firewall and eventually exit on failure.
-To run again the setup, after fixing your firewall:
-sudo wget $APP/talk.sh
-sudo bash talk.sh"
-
-# Check if the port is open
-check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 
 # Enable Spreed (Talk)
 if [ -d "$NC_APPS_PATH"/spreed ]
