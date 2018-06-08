@@ -73,19 +73,6 @@ else
         echo "Port should be free..."
 fi
 
-# Check if the port is open
-check_open_port "$TURN_PORT" "$TURN_DOMAIN"
-
-# Enable Spreed (Talk)
-if [ -d "$NC_APPS_PATH"/spreed ]
-then
-# Enable Talk
-    occ_command app:enable spreed
-    occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --update-only --output json
-    occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --update-only --output json
-    chown -R www-data:www-data "$NC_APPS_PATH"
-fi
-
 # Install TURN
 check_command install_if_not coturn
 check_command sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
@@ -117,3 +104,17 @@ echo "TURN_CONF was successfully created"
 
 # Restart the TURN server
 check_command systemctl restart coturn
+
+
+# Check if the port is open
+check_open_port "$TURN_PORT" "$TURN_DOMAIN"
+
+# Enable Spreed (Talk)
+if [ -d "$NC_APPS_PATH"/spreed ]
+then
+# Enable Talk
+    occ_command app:enable spreed
+    occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --update-only --output json
+    occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --update-only --output json
+    chown -R www-data:www-data "$NC_APPS_PATH"
+fi
