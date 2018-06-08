@@ -172,7 +172,7 @@ check_command apt install -y \
 install_if_not open-vm-tools
 
 # Check if Xenserver
-if [ /dev/xvdb ]; then
+if [ '/dev/xvdb' ]; then
 # Format /dev/xvdb to host the ncdata
 run_static_script format-xvdb
 else
