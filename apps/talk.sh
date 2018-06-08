@@ -30,6 +30,49 @@ sudo bash talk.sh"
     exit 1
 fi
 
+# Let the user choose port
+NONO_PORTS=(22 25 53 80 443 3306 5432 7983 8983 10000)
+msg_box "The default port for Talk used in this script is port 587. That port is used for SMTP over TLS, but is also
+a port that is likley to be open in most firewalls.
+
+You will now be given the option to change this port to something of your own. 
+Please keep in mind NOT to use the following ports as they are likley to be in use already: 
+$NONO_PORTS"
+
+if [[ "yes" == $(ask_yes_or_no "Do you want to change port?") ]]
+then
+    while true
+    do
+    # Ask for port
+cat << ENTERDOMAIN
++---------------------------------------------------------------+
+|    Please enter the port you will use for Nextcloud Talk:     |         |
++---------------------------------------------------------------+
+ENTERDOMAIN
+    echo
+    read -r TURN_PORT
+    echo
+    if [[ "yes" == $(ask_yes_or_no "Is this correct? $TURN_PORT") ]]
+    then
+        break
+    fi
+    done
+fi
+
+containsElement () {
+  local e match="$1"
+  shift
+  for e; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+if containsElement $TURN_PORT "${NONO_PORTS[@]}"
+then
+        echo "Choose another port..."
+else
+        echo "Port should be free..."
+fi
+
 # Check if the port is open
 check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 
