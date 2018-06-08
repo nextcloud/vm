@@ -171,8 +171,14 @@ check_command apt install -y \
 # Install VM-tools
 install_if_not open-vm-tools
 
+# Check if Xenserver
+if [ /dev/xvdb ]; then
+# Format /dev/xvdb to host the ncdata
+run_static_script format-xvdb
+else
 # Format /dev/sdb to host the ncdata
 run_static_script format-sdb
+fi
 
 # Download and validate Nextcloud package
 check_command download_verify_nextcloud_stable
