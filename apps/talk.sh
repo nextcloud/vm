@@ -30,9 +30,9 @@ sudo bash talk.sh"
     exit 1
 fi
 
-# Let the user choose port
+# Let the user choose port. TURN_PORT in msg_box is taken from lib.sh and later changed if user decides to.
 NONO_PORTS=(22 25 53 80 443 3306 5432 7983 8983 10000)
-msg_box "The default port for Talk used in this script is port 587. That port is used for SMTP over TLS, but is also
+msg_box "The default port for Talk used in this script is port $TURN_PORT. That port is used for SMTP over TLS, but is also
 a port that is likley to be open in most firewalls.
 
 You will now be given the option to change this port to something of your own. 
@@ -46,7 +46,7 @@ then
     # Ask for port
 cat << ENTERDOMAIN
 +---------------------------------------------------------------+
-|    Please enter the port you will use for Nextcloud Talk:     |         |
+|    Please enter the port you will use for Nextcloud Talk:     |
 +---------------------------------------------------------------+
 ENTERDOMAIN
     echo
