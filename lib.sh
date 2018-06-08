@@ -119,7 +119,7 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$TURN_INSTALL" ] && TURN_PORT=587 
 [ ! -z "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
 [ ! -z "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ ! -z "$TURN_INSTALL" ] && TURN_DOMAIN=$(whiptail --title "Techandme.se - Nextcloud Talk" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+[ ! -z "$TURN_INSTALL" ] && TURN_DOMAIN=$(occ_command config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 [ ! -z "$TURN_INSTALL" ] && STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
 [ ! -z "$TURN_INSTALL" ] && TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
 
