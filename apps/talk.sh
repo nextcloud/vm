@@ -37,7 +37,7 @@ a port that is likley to be open in most firewalls.
 
 You will now be given the option to change this port to something of your own. 
 Please keep in mind NOT to use the following ports as they are likley to be in use already: 
-${NONO_PORTS[@]}"
+${NONO_PORTS[*]}"
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to change port?") ]]
 then
