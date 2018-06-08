@@ -109,7 +109,15 @@ no-stdout-log
 simple-log
 log-file=/var/log/turnserver.log
 TURN_CREATE
-echo "TURN_CONF was successfully created"
+if [ -f "$TURN_CONF" ];
+then
+    echo "$TURN_CONF was successfully created"
+    sleep 1
+else
+    echo "Unable to create $TURN_CONF, exiting..."
+    echo "Please report this issue here $ISSUES"
+    exit 1
+fi
 
 # Restart the TURN server
 check_command systemctl restart coturn
