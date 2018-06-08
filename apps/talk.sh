@@ -105,9 +105,15 @@ echo "TURN_CONF was successfully created"
 # Restart the TURN server
 check_command systemctl restart coturn
 
+# Warn user to open port
+msg_box "Open $TURN_PORT on your firewall or your TURN/STUN server won't work!
+After you hit OK the script will check for the firewall and eventually exit on failure.
+To run again the setup, after fixing your firewall:
+sudo wget $APP/talk.sh
+sudo bash talk.sh"
 
 # Check if the port is open
-check_open_port "$TURN_PORT" "$TURN_DOMAIN"
+check_open_port "$TU RN_PORT" "$TURN_DOMAIN"
 
 # Enable Spreed (Talk)
 if [ -d "$NC_APPS_PATH"/spreed ]
