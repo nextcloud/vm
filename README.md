@@ -88,6 +88,10 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** You can download the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
 
+**Q: Can I use Xenserver or XCP-ng?**
+<br />
+**A:** Yes you can, however, these have to be manually setup, the OVA is not configured for these Hypervisors.
+
 **Q: The downloaded file is just a few kilobyte, or corrupted**
 <br />
 **A:** This is due to heavy load on the server. Please try again in a few minutes.
