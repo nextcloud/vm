@@ -123,9 +123,11 @@ sudo bash talk.sh"
 check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 
 # Enable Spreed (Talk)
+STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
+TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
 if [ ! -d "$NC_APPS_PATH"/spreed ]
 then
-# Enable Talk
+    # Enable Talk
     install_and_enable_app spreed
     occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --update-only --output json
     occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --update-only --output json
