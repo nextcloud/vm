@@ -123,10 +123,10 @@ fi
 check_command systemctl restart coturn
 
 # Enable Spreed (Talk)
-if [ -d "$NC_APPS_PATH"/spreed ]
+if [ ! -d "$NC_APPS_PATH"/spreed ]
 then
 # Enable Talk
-    occ_command app:enable spreed
+    install_and_enable_app spreed
     occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --update-only --output json
     occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --update-only --output json
     chown -R www-data:www-data "$NC_APPS_PATH"
