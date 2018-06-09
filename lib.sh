@@ -91,7 +91,7 @@ NT_RELEASE=nextant-$NEXTANT_VERSION.tar.gz
 NT_DL=https://github.com/nextcloud/fulltextsearch/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
 SOLR_RELEASE=solr-$SOLR_VERSION.tgz
 SOLR_DL=http://www-eu.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
-NC_APPS_PATH=$NCPATH/apps/
+NC_APPS_PATH=$NCPATH/apps
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
@@ -114,6 +114,12 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$ES_INSTALL" ] && ES_VERSION=6.1.1
 [ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+# Talk
+[ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
+[ ! -z "$TURN_INSTALL" ] && TURN_PORT=587 
+[ ! -z "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
+[ ! -z "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 
 ## functions
 
