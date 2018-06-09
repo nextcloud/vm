@@ -110,7 +110,6 @@ TURN_CREATE
 if [ -f "$TURN_CONF" ];
 then
     echo "$TURN_CONF was successfully created"
-    sleep 1
 else
     echo "Unable to create $TURN_CONF, exiting..."
     echo "Please report this issue here $ISSUES"
@@ -123,6 +122,7 @@ check_command systemctl restart coturn
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
 After you hit OK the script will check for the firewall and eventually exit on failure.
+
 To run again the setup, after fixing your firewall:
 sudo wget $APP/talk.sh
 sudo bash talk.sh"
@@ -135,7 +135,6 @@ STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
 TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
 if [ ! -d "$NC_APPS_PATH"/spreed ]
 then
-    # Enable Talk
     install_and_enable_app spreed
     occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
     occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
