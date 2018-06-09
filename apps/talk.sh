@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/penzoiders/vm/master/lib.sh) # FOR TESTING!
+TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset TURN_INSTALL
 
 # Check for errors + debug code and abort if something isn't right
@@ -25,6 +25,7 @@ ${TURN_DOMAIN//\\/}.
 Please install Nextcloud and make sure your domain is reachable, or activate SSL
 on your domain to be able to run this script.
 If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
+
 When SSL is activated, run these commands from your terminal:
 sudo wget $APP/talk.sh
 sudo bash talk.sh"
@@ -133,3 +134,10 @@ then
     occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
+
+if [ -d "$NC_APPS_PATH"/spreed ]
+then
+msg_box "Nextcloud Talk is now installed. For a complete experiance, please download the Talk app from Google Play.
+You can get it here: https://play.google.com/store/apps/details?id=com.nextcloud.talk2&hl=en_US"
+fi
+
