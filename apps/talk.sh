@@ -129,7 +129,7 @@ if [ ! -d "$NC_APPS_PATH"/spreed ]
 then
     # Enable Talk
     install_and_enable_app spreed
-    occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --update-only --output json
-    occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --update-only --output json
+    occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
+    occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
