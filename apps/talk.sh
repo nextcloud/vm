@@ -71,6 +71,7 @@ containsElement () {
 if containsElement "$TURN_PORT" "${NONO_PORTS[@]}"
 then
     msg_box "You have to choose another port. Please start over."
+    exit 1
 fi
 
 # Install TURN
