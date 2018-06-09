@@ -72,16 +72,6 @@ then
     msg_box "You have to choose another port. Please start over."
 fi
 
-# Warn user to open port
-msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
-After you hit OK the script will check for the firewall and eventually exit on failure.
-To run again the setup, after fixing your firewall:
-sudo wget $APP/talk.sh
-sudo bash talk.sh"
-
-# Check if the port is open
-check_open_port "$TURN_PORT" "$TURN_DOMAIN"
-
 # Install TURN
 check_command install_if_not coturn
 check_command sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
@@ -121,6 +111,16 @@ fi
 
 # Restart the TURN server
 check_command systemctl restart coturn
+
+# Warn user to open port
+msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
+After you hit OK the script will check for the firewall and eventually exit on failure.
+To run again the setup, after fixing your firewall:
+sudo wget $APP/talk.sh
+sudo bash talk.sh"
+
+# Check if the port is open
+check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 
 # Enable Spreed (Talk)
 if [ ! -d "$NC_APPS_PATH"/spreed ]
