@@ -33,15 +33,13 @@ isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device memeber of a zp
 # Check what Hypervisor disks are available
 if partprobe /dev/sdb &>/dev/null;	#HyperV, VMware, VirtualBox Hypervisors
 then
-DEVTYPE=sdb
-fi
-if partprobe /dev/xvdb &>/dev/null;	#Xen Hypervisors
+    DEVTYPE=sdb
+elif partprobe /dev/xvdb &>/dev/null;	#Xen Hypervisors
 then
-DEVTYPE=xvdb
-fi
-if partprobe /dev/vdb &>/dev/null;	#KVM Hypervisor
+    DEVTYPE=xvdb
+elif partprobe /dev/vdb &>/dev/null;	#KVM Hypervisor
 then
-DEVTYPE=vdb
+    DEVTYPE=vdb
 fi
 
 if isPathMounted "/mnt/ncdata";      #Spaces in path names are ok.
