@@ -19,10 +19,11 @@
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
 * You? :)
 
-## No longer active maintainers
+## Special thanks to
 * [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
 * [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
 * [Stefan Heitmüller](https://github.com/morph027) @ [morph027's Blog](https://morph027.gitlab.io/)
+* [Lorenzo Faleschini](https://github.com/penzoiders)
 
 ## Build your own VM, or install on a VPS
 DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
