@@ -39,6 +39,10 @@ if partprobe /dev/xvdb &>/dev/null;	#Xen Hypervisors
 then
 DEVTYPE=xvdb
 fi
+if partprobe /dev/vdb &>/dev/null;	#KVM Hypervisor
+then
+DEVTYPE=vdb
+fi
 
 if isPathMounted "/mnt/ncdata";      #Spaces in path names are ok.
 then
