@@ -57,9 +57,6 @@ then
     docker images --format "{{.Repository}}:{{.Tag}}" | grep :latest | xargs -L1 docker pull
 fi
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
-
 ## OLD WAY ##
 #if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 #then
@@ -82,6 +79,9 @@ update-grub
 
 # Remove update lists
 rm /var/lib/apt/lists/* -r
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
 # Set secure permissions
 if [ ! -f "$SECURE" ]
