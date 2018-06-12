@@ -30,15 +30,27 @@ isDevMounted() { findmnt -rno SOURCE        "$1" >/dev/null;} #device only
 isPathMounted() { findmnt -rno        TARGET "$1" >/dev/null;} #path   only
 isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device memeber of a zpool
 
+# Check what Hypervisor disks are available
+if partprobe /dev/sdb &>/dev/null;	#HyperV, VMware, VirtualBox Hypervisors
+then
+    DEVTYPE=sdb
+elif partprobe /dev/xvdb &>/dev/null;	#Xen Hypervisors
+then
+    DEVTYPE=xvdb
+elif partprobe /dev/vdb &>/dev/null;	#KVM Hypervisor
+then
+    DEVTYPE=vdb
+fi
+
 if isPathMounted "/mnt/ncdata";      #Spaces in path names are ok.
 then
 msg_box "/mnt/ncdata is mounted and need to be unmounted before you can run this script."
     exit 1
 fi
 
-if isDevMounted "/dev/sdb";
+if isDevMounted "/dev/$DEVTYPE";
 then
-msg_box "/dev/sdb is mounted and need to be unmounted before you can run this script."
+msg_box "/dev/$DEVTYPE is mounted and need to be unmounted before you can run this script."
     exit 1
 fi
 
@@ -49,23 +61,23 @@ msg_box "/mnt/ncdata is mounted and need to be unmounted before you can run this
     exit 1
 fi
 
-if isMounted "/dev/sdb1";
+if isMounted "/dev/${DEVTYPE}1";
 then
-msg_box "/dev/sdb1 is mounted and need to be unmounted before you can run this script."
+msg_box "/dev/${DEVTYPE}1 is mounted and need to be unmounted before you can run this script."
     exit 1
 fi
 
-if isDevPartOfZFS "sdb";
+if isDevPartOfZFS "$DEVTYPE";
 then
-msg_box "/dev/sdb is a member of a ZFS pool and needs to be removed from any zpool before you can run this script."
+msg_box "/dev/$DEVTYPE is a member of a ZFS pool and needs to be removed from any zpool before you can run this script."
     exit 1
 fi
 
 # Get the name of the drive
-SDB=$(fdisk -l | grep sdb | awk '{print $2}' | cut -d ":" -f1 | head -1)
-if [ "$SDB" != "/dev/sdb" ]
+DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
+if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
 then
-msg_box "It seems like /dev/sdb does not exist.
+msg_box "It seems like /dev/$DEVTYPE does not exist.
 This script requires that you mount a second drive to hold the data.
 
 Please shutdown the server and mount a second drive, then start this script again.
@@ -77,16 +89,16 @@ fi
 
 if lsblk -l -n | grep -v mmcblk | grep disk | awk '{ print $1 }' | tail -1 > /dev/null
 then
-msg_box "Formatting $SDB when you hit OK.
+msg_box "Formatting $DISKTYPE when you hit OK.
 
 *** WARNING: ALL YOUR DATA WILL BE ERASED! ***"
     if zpool list | grep "$LABEL_" > /dev/null
     then
         check_command zpool destroy "$LABEL_"
     fi
-    check_command wipefs -a -f "$SDB"
+    check_command wipefs -a -f "$DISKTYPE"
     sleep 0.5
-    check_command zpool create -f -o ashift=12 "$LABEL_" "$SDB"
+    check_command zpool create -f -o ashift=12 "$LABEL_" "$DISKTYPE"
     check_command zpool set failmode=continue "$LABEL_"
     check_command zfs set mountpoint="$MOUNT_" "$LABEL_"
     check_command zfs set compression=lz4 "$LABEL_"
@@ -98,7 +110,7 @@ msg_box "Formatting $SDB when you hit OK.
     check_command zfs set logbias=latency "$LABEL_"
 
 else
-msg_box "It seems like /dev/sdb does not exist.
+msg_box "It seems like /dev/$DEVTYPE does not exist.
 This script requires that you mount a second drive to hold the data.
 
 Please shutdown the server and mount a second drive, then start this script again.
