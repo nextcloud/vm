@@ -143,6 +143,7 @@ fi
 
 if [ -d "$NC_APPS_PATH"/spreed ]
 then
-msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit: https://nextcloud.com/talk/"
+msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:
+https://nextcloud.com/talk/"
 fi
 
