@@ -143,7 +143,6 @@ fi
 
 if [ -d "$NC_APPS_PATH"/spreed ]
 then
-msg_box "Nextcloud Talk is now installed. For a complete experiance, please download the Talk app from Google Play.
-You can get it here: https://play.google.com/store/apps/details?id=com.nextcloud.talk2&hl=en_US"
+msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit: https://nextcloud.com/talk/"
 fi
 
