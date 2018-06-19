@@ -91,7 +91,7 @@ fi
 
 # Install ReadOnlyREST
 echo "Downloading readonlyrest..."
-wget -q -T 10 -t 2 $ZIPBALL -P /tmp/fulltextsearch-files
+wget -q -T 10 -t 2 "$ZIPBALL" -P /tmp/fulltextsearch-files
 
 #mkdir -p "$GPGDIR"
 #wget -q -T 10 -t 2 "https://raw.githubusercontent.com/nextcloud/vm/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip.sha1" -P "$GPGDIR"
