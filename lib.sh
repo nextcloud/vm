@@ -111,9 +111,12 @@ ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
 [ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ ! -z "$ES_INSTALL" ] && ES_VERSION=6.1.1
+[ ! -z "$ES_INSTALL" ] && ES_VERSION=6.3.0
 [ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+[ ! -z "$ES_INSTALL" ] && RORESTVERSION="$(curl -s https://api.github.com/repos/sscarduzio/elasticsearch-readonlyrest-plugin/tags | grep "name" | cut -d\" -f4 | head -1)"
+[ ! -z "$ES_INSTALL" ] && ZIPBALL="https://api.github.com/repos/sscarduzio/elasticsearch-readonlyrest-plugin/zipball/$RORESTVERSION"
+
 # Talk
 [ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
 [ ! -z "$TURN_INSTALL" ] && TURN_PORT=587 
