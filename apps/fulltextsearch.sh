@@ -66,7 +66,7 @@ check_command apt install apt-transport-https -y
 check_command wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 check_command echo "deb https://artifacts.elastic.co/packages/$ES_DEB_VERSION.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-"$ES_DEB_VERSION".x.list
 apt update -q4 & spinner_loading
-apt install elasticsearch=$ES_VERSION -y
+apt install elasticsearch="$ES_VERSION" -y
 check_command /etc/init.d/elasticsearch start
 apt-mark hold elasticsearch
 
