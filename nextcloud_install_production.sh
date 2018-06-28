@@ -82,6 +82,10 @@ then
     mkdir -p "$SCRIPTS"
 fi
 
+# Install needed network
+install_if_not netplan.io
+install_if_not network-manager
+
 # Check network
 network_ok
 
