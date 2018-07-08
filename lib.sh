@@ -116,7 +116,7 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
 # Talk
 [ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
-[ ! -z "$TURN_INSTALL" ] && TURN_PORT=587 
+[ ! -z "$TURN_INSTALL" ] && TURN_PORT=5349
 [ ! -z "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
 [ ! -z "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
