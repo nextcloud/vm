@@ -330,7 +330,7 @@ fi
 check_distro_version() {
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if uname -v | grep -ic "bionic"
+if uname -a | grep -ic "bionic"
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu"  
