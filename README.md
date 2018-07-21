@@ -133,8 +133,8 @@ Keep asking questions so that we can add them here.
 
 **Q: How to install apps if not selected during first install?**
 <br />
-**A:** Go to the apps folder in this repo and download the script in raw format and run them. For the calendar:
-`wget https://raw.githubusercontent.com/nextcloud/vm/master/apps/calendar.sh && sudo bash calendar.sh`
+**A:** Go to the apps folder in this repo and download the script in raw format and run them. For installing Talk:
+`wget https://raw.githubusercontent.com/nextcloud/vm/master/apps/talk.sh && sudo bash talk.sh`
 
 **Q: How to continue from partially installed system? - You got the FQDN wrong/You put in a bad password/ etc...**
 <br />
