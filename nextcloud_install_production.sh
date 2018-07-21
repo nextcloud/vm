@@ -32,6 +32,15 @@ else
     apt install lshw -y
 fi
 
+# Install net-tools if not existing
+if [ "$(dpkg-query -W -f='${Status}' "net-tools" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "net-tools OK"
+else
+    apt update -q4 & spinner_loading
+    apt install net-tools -y
+fi
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh

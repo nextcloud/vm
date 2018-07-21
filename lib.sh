@@ -15,7 +15,6 @@ GPGDIR=/tmp/gpg
 BACKUP=/var/NCBACKUP
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
-OS=$(uname -v | grep -ic "Ubuntu")
 # Network
 [ ! -z "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
@@ -119,7 +118,7 @@ APACHE2=/etc/apache2/apache2.conf
 
 # Talk
 [ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
-[ ! -z "$TURN_INSTALL" ] && TURN_PORT=587 
+[ ! -z "$TURN_INSTALL" ] && TURN_PORT=5349
 [ ! -z "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
 [ ! -z "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
@@ -334,6 +333,14 @@ fi
 check_distro_version() {
 # Check Ubuntu version
 echo "Checking server OS and version..."
+if uname -a | grep -ic "bionic"
+then
+    OS=1
+elif uname -v | grep -ic "Ubuntu"  
+then 
+    OS=1
+fi
+
 if [ "$OS" != 1 ]
 then
 msg_box "Ubuntu Server is required to run this script.
@@ -342,7 +349,6 @@ Please install that distro and try again.
 You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
-
 
 if ! version 18.04 "$DISTRO" 18.04.4; then
 msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
