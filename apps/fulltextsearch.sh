@@ -56,76 +56,13 @@ then
     deluser --group solr
 fi
 
-# Installing requirements
-echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-check_command apt install openjdk-8-jre -y
-check_command apt install apt-transport-https -y
-
-# Install Elastic
-check_command wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-check_command echo "deb https://artifacts.elastic.co/packages/$ES_DEB_VERSION.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-"$ES_DEB_VERSION".x.list
-apt update -q4 & spinner_loading
-apt install elasticsearch="$ES_VERSION" -y
-check_command /etc/init.d/elasticsearch start
-apt-mark hold elasticsearch
-
-# Enable on bootup
-sudo systemctl enable elasticsearch.service
-update-ca-certificates -f
-
-# Install ingest-attachment plugin
-if [ -d /usr/share/elasticsearch ]
-then
-    cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install ingest-attachment
-fi
-
-# Check that ingest-attachment is properly installed
-if ! [ "$(curl -s 127.0.0.1:9200)" ]
-then
-msg_box "Installation failed!
-Please report this to $ISSUES"
-    exit 1
-fi
-
-# Install ReadOnlyREST
-echo "Downloading readonlyrest..."
-wget -q -T 10 -t 2 "$ZIPBALL" -P /tmp/fulltextsearch-files
-
-#mkdir -p "$GPGDIR"
-#wget -q -T 10 -t 2 "https://raw.githubusercontent.com/nextcloud/vm/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip.sha1" -P "$GPGDIR"
-#echo "Verifying checksums..."
-#sha1sum /tmp/readonlyrest-1.16.15_es"$ES_VERSION".zip | awk '{print $1}' > "$GPGDIR"/verify1
-#cat "$GPGDIR"/readonlyrest-1.16.15_es"$ES_VERSION".zip.sha1 > "$GPGDIR"/verify2
-#if [ -z "$(diff $GPGDIR/verify1 $GPGDIR/verify2)" ]
-#then
-#    echo "Checksum OK!"
-#else
-#msg_box "Checksum was not OK.
-#
-#Please report this to $ISSUES."
-#rm -rf "$GPGDIR"
-#rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
-#exit 1
-#fi
-
-if [ -d /usr/share/elasticsearch ]
-then
-    cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install "$ZIPBALL"
-    rm -f /tmp/fulltextsearch-files/"$RORESTVERSION"
-fi
-
-# Check that ReadOnlyREST is properly installed
-if ! [ "$(curl -s 127.0.0.1:9200)" ]
-then
-msg_box "Installation failed!
-Please report this to $ISSUES"
-    exit 1
-fi
+#Prepare docker env
+mkdir /usr/share/elasticsearch/data
+docker pull ark74/nc_fts-rorest:1.6.22_es6.3.1
 
 # Create configuration YML 
+mkdir /etc/elasticsearch/
+
 cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
 readonlyrest:
 
@@ -144,8 +81,15 @@ readonlyrest:
     groups: ["cloud1"]
 YML_CREATE
 
-# Restart Elastic Search
-check_command /etc/init.d/elasticsearch restart
+# Run Elastic Search Docker
+docker run -d --restart always \
+--name es6.3-rorest_1.6.22 \
+-p 9200:9200 \
+-p 9300:9300 \
+--mount source=esdata,target=/usr/share/elasticsearch/data \
+-v /etc/elasticsearch/:/etc/elasticsearch/ \
+-i -t ark74/nc_fts-rorest:1.6.22_es6.3.1 \
+-e "discovery.type=single-node"
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
