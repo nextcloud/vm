@@ -56,6 +56,10 @@ then
     deluser --group solr
 fi
 
+#Install docker (the ugly way)
+curl -fsSL get.docker.com -o get-docker.sh
+bash get-docker.sh
+
 #Prepare docker env
 nc_rores6x="ark74/nc_rores6.x:1.6.23_es6.3.2"
 rores6x_name="es6.3.2-rores_1.6.23"
