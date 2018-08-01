@@ -76,6 +76,7 @@ readonlyrest:
   - name: Accept requests from cloud1 on $NCADMIN-index
     groups: ["cloud1"]
     indices: ["$NCADMIN-index"]
+    
   users:
   - username: $NCADMIN
     auth_key: $NCADMIN:$ROREST
@@ -96,6 +97,8 @@ docker run -d --restart always \
 -e "discovery.type=single-node" \
 -i -t $nc_rores6x
 
+docker restart $rores6x_name
+
 echo "Waiting for docker bootstraping..."
 secs=$((20))
 while [ $secs -gt 0 ]; do
@@ -103,7 +106,6 @@ while [ $secs -gt 0 ]; do
    sleep 1
    : $((secs--))
 done
-
 docker logs $rores6x_name
 
 # Get Full Text Search app for nextcloud
