@@ -57,39 +57,49 @@ then
 fi
 
 #Prepare docker env
-mkdir /usr/share/elasticsearch/data
-docker pull ark74/nc_fts-rorest:1.6.22_es6.3.1
+nc_rores6x="ark74/nc_rores6.x:1.6.23_es6.3.2"
+rores6x_name="es6.3.2-rores_1.6.23"
+mkdir /opt/es/
+sysctl -w vm.max_map_count=262144
+
+docker pull $nc_rores6x
 
 # Create configuration YML 
-mkdir /etc/elasticsearch/
-
 cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
 readonlyrest:
-
-
   access_control_rules:
-
   - name: Accept requests from cloud1 on $NCADMIN-index
     groups: ["cloud1"]
     indices: ["$NCADMIN-index"]
-
-
   users:
-
   - username: $NCADMIN
     auth_key: $NCADMIN:$ROREST
     groups: ["cloud1"]
 YML_CREATE
 
+# Set persmissions
+chown 1000:1000 -R  /opt/es/
+chmod ug+rwx -R  /opt/es/
+
 # Run Elastic Search Docker
 docker run -d --restart always \
---name es6.3-rorest_1.6.22 \
+--name $rores6x_name \
 -p 9200:9200 \
 -p 9300:9300 \
---mount source=esdata,target=/usr/share/elasticsearch/data \
--v /etc/elasticsearch/:/etc/elasticsearch/ \
--i -t ark74/nc_fts-rorest:1.6.22_es6.3.1 \
--e "discovery.type=single-node"
+-v esdata:/usr/share/elasticsearch/data \
+-v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
+-e "discovery.type=single-node" \
+-i -t $nc_rores6x
+
+echo "Waiting docker bootstrap..."
+secs=$((15))
+while [ $secs -gt 0 ]; do
+   echo -ne "$secs\033[0K\r"
+   sleep 1
+   : $((secs--))
+done
+
+docker logs $rores6x_name
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
