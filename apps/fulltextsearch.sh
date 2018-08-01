@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Tech and Me © - 2018, https://www.techandme.se/
+# SwITNet Ltd © - 2018, https://switnet.net/
 
 # shellcheck disable=2034,2059
 true
