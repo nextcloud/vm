@@ -69,7 +69,7 @@ sysctl -w vm.max_map_count=262144
 docker pull $nc_rores6x
 
 # Create configuration YML 
-cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
+cat << YML_CREATE > /opt/es/readonlyrest.yml
 readonlyrest:
   access_control_rules:
   - name: Accept requests from cloud1 on $NCADMIN-index
@@ -95,8 +95,8 @@ docker run -d --restart always \
 -e "discovery.type=single-node" \
 -i -t $nc_rores6x
 
-echo "Waiting docker bootstrap..."
-secs=$((15))
+echo "Waiting for docker bootstraping..."
+secs=$((20))
 while [ $secs -gt 0 ]; do
    echo -ne "$secs\033[0K\r"
    sleep 1
