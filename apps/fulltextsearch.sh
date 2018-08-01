@@ -58,6 +58,7 @@ then
 fi
 
 #Install docker (the ugly way)
+echo "Installing Docker CE..."
 curl -fsSL get.docker.com -o get-docker.sh
 bash get-docker.sh
 
