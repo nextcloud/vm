@@ -66,7 +66,7 @@ check_command apt install apt-transport-https -y
 check_command wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 check_command echo "deb https://artifacts.elastic.co/packages/$ES_DEB_VERSION.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-"$ES_DEB_VERSION".x.list
 apt update -q4 & spinner_loading
-apt install elasticsearch=$ES_VERSION -y
+apt install elasticsearch="$ES_VERSION" -y
 check_command /etc/init.d/elasticsearch start
 apt-mark hold elasticsearch
 
@@ -91,30 +91,30 @@ fi
 
 # Install ReadOnlyREST
 echo "Downloading readonlyrest..."
-rm -f "/tmp/readonlyrest-1.16.15_es$ES_VERSION.zip"
-wget -q -T 10 -t 2 "https://github.com/nextcloud/vm/raw/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip" -P /tmp
-mkdir -p "$GPGDIR"
-wget -q -T 10 -t 2 "https://raw.githubusercontent.com/nextcloud/vm/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip.sha1" -P "$GPGDIR"
-echo "Verifying checksums..."
-sha1sum /tmp/readonlyrest-1.16.15_es"$ES_VERSION".zip | awk '{print $1}' > "$GPGDIR"/verify1
-cat "$GPGDIR"/readonlyrest-1.16.15_es"$ES_VERSION".zip.sha1 > "$GPGDIR"/verify2
-if [ -z "$(diff $GPGDIR/verify1 $GPGDIR/verify2)" ]
-then
-    echo "Checksum OK!"
-else
-msg_box "Checksum was not OK.
+wget -q -T 10 -t 2 "$ZIPBALL" -P /tmp/fulltextsearch-files
 
-Please report this to $ISSUES."
-rm -rf "$GPGDIR"
-rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
-exit 1
-fi
+#mkdir -p "$GPGDIR"
+#wget -q -T 10 -t 2 "https://raw.githubusercontent.com/nextcloud/vm/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip.sha1" -P "$GPGDIR"
+#echo "Verifying checksums..."
+#sha1sum /tmp/readonlyrest-1.16.15_es"$ES_VERSION".zip | awk '{print $1}' > "$GPGDIR"/verify1
+#cat "$GPGDIR"/readonlyrest-1.16.15_es"$ES_VERSION".zip.sha1 > "$GPGDIR"/verify2
+#if [ -z "$(diff $GPGDIR/verify1 $GPGDIR/verify2)" ]
+#then
+#    echo "Checksum OK!"
+#else
+#msg_box "Checksum was not OK.
+#
+#Please report this to $ISSUES."
+#rm -rf "$GPGDIR"
+#rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
+#exit 1
+#fi
 
 if [ -d /usr/share/elasticsearch ]
 then
     cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install $APP/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip
-    rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
+    check_command ./elasticsearch-plugin install "$ZIPBALL"
+    rm -f /tmp/fulltextsearch-files/"$RORESTVERSION"
 fi
 
 # Check that ReadOnlyREST is properly installed
