@@ -197,7 +197,7 @@ else
 fi
 }
 dns() {
-if eval "certbot --manual --preferred-challenges dns certonly $default_le"
+if eval "certbot --manual --manual-public-ip-logging-ok --preferred-challenges dns certonly $default_le"
 then
     echo "success" > /tmp/le_test
 else
