@@ -96,11 +96,6 @@ NC_APPS_PATH=$NCPATH/apps
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
-#Full Text Search
-#Prepare docker env
-DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
-nc_rores6x="ark74/nc_rores6.x:1.6.23_es6.3.2"
-rores6x_name="es6.3.2-rores_1.6.23"
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
@@ -122,6 +117,10 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$ES_INSTALL" ] && ES_VERSION="$(echo "$RORESTVERSION" | awk -F'es' '{print $2}')"
 [ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo "$ES_VERSION" | head -c 1)"
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+#Prepare docker env
+[ ! -z "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
+[ ! -z "$ES_INSTALL" ] && nc_rores6x="ark74/nc_rores6.x:1.6.23_es6.3.2"
+[ ! -z "$ES_INSTALL" ] && rores6x_name="es6.3.2-rores_1.6.23"
 
 # Talk
 [ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
