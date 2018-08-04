@@ -109,7 +109,6 @@
             <p>Use one of the following addresses, HTTPS is preffered:
             <h3>
                 <ul>
-                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>/nextcloud">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)
                     <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/nextcloud">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
                 </ul>
             </h3>
