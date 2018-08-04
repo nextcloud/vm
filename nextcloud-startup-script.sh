@@ -317,6 +317,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Passman" "(Password storage)   " OFF \
 "FullTextSearch" "(Elasticsearch [still in BETA])   " OFF \
+"PreviewGenerator" "(Pre-generate previews)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
 "Spreed.ME" "(3rd-party Video calls and chat)   " OFF 2>results
 
@@ -349,7 +350,11 @@ do
         
         FullTextSearch)
            run_app_script fulltextsearch
-        ;;        
+        ;;             
+        
+        PreviewGenerator)
+           run_app_script previewgenerator
+        ;;   
 
         Talk)
             run_app_script talk
