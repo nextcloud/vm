@@ -693,9 +693,9 @@ fi
 }
 
 install_docker() {
-if [ $DOCKER_INS == "docker-ce" ] || \
-[ $DOCKER_INS == "docker-ee" ] || \
-[ $DOCKER_INS == "docker.io" ] ; then
+if [ "$DOCKER_INS" = "docker-ce" ] || \
+[ "$DOCKER_INS" = "docker-ee" ] || \
+[ "$DOCKER_INS" = "docker.io" ] ; then
 	echo "Docker seems to be installed, skipping..."
 else
 	echo "Installing Docker CE..."
