@@ -17,11 +17,15 @@ root_check
 # Add modsecurity
 apt install libapache2-mod-security2  modsecurity-crs -y
 mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
-# Do not enable the next line unless you know what you are doing. This will enable active defence.
-# sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine on/g' /etc/modsecurity/modsecurity.conf
-# You can monitor tail -f /var/log/apache2/modsec_audit.log
 
-/bin/cat <<MODSECWHITE >"/etc/modsecurity/whitelist.conf"
+msg_box "WARNING: Do not enable active defence if you don't know what you're doing!
+You can monitor tail -f /var/log/apache2/modsec_audit.log"
+if [[ "no" == $(ask_yes_or_no "Do you want to enable active defence?") ]]
+then
+    sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine on/g' /etc/modsecurity/modsecurity.conf
+fi
+
+cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
 <Directory $NCPATH>
 # VIDEOS
   SecRuleRemoveById 958291             # Range Header Checks
