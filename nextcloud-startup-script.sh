@@ -219,6 +219,11 @@ chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
 # Change 000-default to $WEB_ROOT
 sed -i "s|DocumentRoot /var/www/html|DocumentRoot $HTML|g" /etc/apache2/sites-available/000-default.conf
 
+# Make possible to see the welcome screen (without this php-fpm won't reach it)
+ sed -i '14i\        <FilesMatch \\.php$>' /etc/apache2/sites-available/000-default.conf
+ sed -i '15i\        SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"' /etc/apache2/sites-available/000-default.conf
+ sed -i '16i\        </FilesMatch>' /etc/apache2/sites-available/000-default.conf
+
 # Make $SCRIPTS excutable
 chmod +x -R $SCRIPTS
 chown root:root -R $SCRIPTS
@@ -394,7 +399,7 @@ clear
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
-service apache2 reload
+restart_webserver
 
 # Increase max filesize (expects that changes are made in $PHP_INI)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
