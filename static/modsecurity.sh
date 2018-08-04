@@ -14,6 +14,13 @@ debug_mode
 # Check if root
 root_check
 
+# Add modsecurity
+apt install libapache2-mod-security2  modsecurity-crs -y
+mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
+# Do not enable the next line unless you know what you are doing. This will enable active defence.
+# sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine on/g' /etc/modsecurity/modsecurity.conf
+# You can monitor tail -f /var/log/apache2/modsec_audit.log
+
 /bin/cat <<MODSECWHITE >"/etc/modsecurity/whitelist.conf"
 <Directory $NCPATH>
 # VIDEOS
