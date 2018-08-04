@@ -82,6 +82,7 @@ fi
 is_this_installed postgresql
 is_this_installed apache2
 is_this_installed php
+is_this_installed php-fpm
 is_this_installed mysql-common
 is_this_installed mariadb-server
 
@@ -160,26 +161,25 @@ a2enmod rewrite \
 # Install PHP 7.2
 apt update -q4 & spinner_loading
 check_command apt install -y \
-    libapache2-mod-php7.2 \
-    php7.2-common \
+    php-fpm \
     php7.2-intl \
     php7.2-ldap \
     php7.2-imap \
-    php7.2-cli \
     php7.2-gd \
     php7.2-pgsql \
-    php7.2-json \
     php7.2-curl \
     php7.2-xml \
     php7.2-zip \
     php7.2-mbstring \
+    php7.2-soap \
+    php-pear \
     php-smbclient \
     php-imagick \
     libmagickcore-6.q16-3-extra
 
-# Enable SMB client
-# echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
-# echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
+# Enable SMB client # already loaded with php-smbclient
+# echo '# This enables php-smbclient' >> /etc/php/7.2/apache2/php.ini
+# echo 'extension="smbclient.so"' >> /etc/php/7.2/apache2/php.ini
 
 # Install VM-tools
 install_if_not open-vm-tools
@@ -225,15 +225,15 @@ crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php >
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
-sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" $PHP_INI
 # max_input_time
-sed -i "s|max_input_time =.*|max_input_time = 3600|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|max_input_time =.*|max_input_time = 3600|g" $PHP_INI
 # memory_limit
-sed -i "s|memory_limit =.*|memory_limit = 512M|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|memory_limit =.*|memory_limit = 512M|g" $PHP_INI
 # post_max
-sed -i "s|post_max_size =.*|post_max_size = 1100M|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|post_max_size =.*|post_max_size = 1100M|g" $PHP_INI
 # upload_max
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" $PHP_INI
 
 # Set max upload in Nextcloud .htaccess
 configure_max_upload
@@ -245,7 +245,7 @@ occ_command config:system:set mail_smtpmode --value="smtp"
 occ_command config:system:set log_rotate_size --value="10485760"
 
 # Enable OPCache for PHP 
-# https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+# https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 phpenmod opcache
 {
 echo "# OPcache settings for Nextcloud"
@@ -257,7 +257,7 @@ echo "opcache.memory_consumption=256"
 echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
-} >> /etc/php/7.2/apache2/php.ini
+} >> $PHP_INI
 
 # Install preview generator
 install_and_enable_app previewgenerator
