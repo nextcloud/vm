@@ -6,6 +6,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
+#NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset ES_INSTALL
@@ -57,17 +58,11 @@ then
     deluser --group solr
 fi
 
-#Install docker (the ugly way)
-echo "Installing Docker CE..."
-curl -fsSL get.docker.com -o get-docker.sh
-bash get-docker.sh
+#Check & install docker
+install_docker
 
-#Prepare docker env
-nc_rores6x="ark74/nc_rores6.x:1.6.23_es6.3.2"
-rores6x_name="es6.3.2-rores_1.6.23"
-mkdir /opt/es/
-sysctl -w vm.max_map_count=262144
-
+set_max_count
+mkdir $RORDIR
 docker pull $nc_rores6x
 
 # Create configuration YML 
