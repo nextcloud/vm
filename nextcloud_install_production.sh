@@ -83,6 +83,9 @@ is_this_installed postgresql
 is_this_installed apache2
 is_this_installed php
 is_this_installed php-fpm
+is_this_installed php7.2-fpm
+is_this_installed php7.1-fpm
+is_this_installed php7.0-fpm
 is_this_installed mysql-common
 is_this_installed mariadb-server
 
