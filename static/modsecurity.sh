@@ -2,8 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-MYCNFPW=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset MYCNFPW
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -15,6 +14,7 @@ debug_mode
 root_check
 
 # Add modsecurity
+apt update -q4 & spinner_loading
 apt install libapache2-mod-security2  modsecurity-crs -y
 mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
 
