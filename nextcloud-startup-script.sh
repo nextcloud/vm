@@ -391,15 +391,9 @@ clear
 a2dismod status
 service apache2 reload
 
-# Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
+# Increase max filesize (expects that changes are made in $PHP_INI)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
-VALUE="# php_value upload_max_filesize 513M"
-if ! grep -Fxq "$VALUE" $NCPATH/.htaccess
-then
-    sed -i 's/  php_value upload_max_filesize 513M/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
-    sed -i 's/  php_value post_max_size 513M/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
-    sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
-fi
+configure_max_upload
 
 # Extra configurations
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
