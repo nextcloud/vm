@@ -34,6 +34,7 @@ The preferred user is 'ncadmin'."
         do
             sudo passwd "$NEWUSER" && break
         done
-        sudo -u "$NEWUSER" sudo bash "$1"
+        download_static_script $1
+        sudo -u "$NEWUSER" sudo bash "$SCRIPTS"/"$1.sh"
     fi
 fi
