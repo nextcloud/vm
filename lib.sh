@@ -253,6 +253,11 @@ If you think that this is a bug, please report it to https://github.com/nextclou
 fi
 }
 
+restart_webserver() {
+check_command systemctl restart apache2
+check_command systemctl restart php7.2-fpm.service
+}
+
 # Install certbot (Let's Encrypt)
 install_certbot() {
 certbot --version 2> /dev/null
