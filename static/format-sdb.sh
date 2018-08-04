@@ -10,9 +10,6 @@ true
 # Check if root
 root_check
 
-# Check if ZFS utils are installed
-install_if_not zfsutils-linux 
-
 LABEL_=ncdata
 MOUNT_=/mnt/$LABEL_
 
@@ -23,12 +20,6 @@ umount /mnt/* &> /dev/null
 # mkdir if not existing
 mkdir -p "$MOUNT_"
 
-# Check still not mounted
-#These functions return exit codes: 0 = found, 1 = not found
-isMounted() { findmnt -rno SOURCE,TARGET "$1" >/dev/null;} #path or device
-isDevMounted() { findmnt -rno SOURCE        "$1" >/dev/null;} #device only
-isPathMounted() { findmnt -rno        TARGET "$1" >/dev/null;} #path   only
-isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device memeber of a zpool
 
 # Check what Hypervisor disks are available
 if partprobe /dev/sdb &>/dev/null;	#HyperV, VMware, VirtualBox Hypervisors
@@ -40,7 +31,23 @@ then
 elif partprobe /dev/vdb &>/dev/null;	#KVM Hypervisor
 then
     DEVTYPE=vdb
+else
+msg_box "It seems like you didn't mount a second disk. 
+To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
+
+This sript will now exit. Please mount a second disk and start over."
+exit 1
 fi
+
+# Check if ZFS utils are installed
+install_if_not zfsutils-linux 
+
+# Check still not mounted
+#These functions return exit codes: 0 = found, 1 = not found
+isMounted() { findmnt -rno SOURCE,TARGET "$1" >/dev/null;} #path or device
+isDevMounted() { findmnt -rno SOURCE        "$1" >/dev/null;} #device only
+isPathMounted() { findmnt -rno        TARGET "$1" >/dev/null;} #path   only
+isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device memeber of a zpool
 
 if isPathMounted "/mnt/ncdata";      #Spaces in path names are ok.
 then
