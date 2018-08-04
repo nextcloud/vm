@@ -147,12 +147,8 @@ then
     ServerName $domain
 
 ### SETTINGS ###
-    <FilesMatch \.php$>
-        # 2.4.10+ can proxy to unix socket
-        SetHandler "proxy:unix:/var/run/php/php7.2-fpm.sock|fcgi://localhost/"
- 
-        # Else we can just use a tcp socket:
-        #SetHandler "proxy:fcgi://127.0.0.1:9000"
+    <FilesMatch \\.php$>
+        SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
     DocumentRoot $NCPATH
