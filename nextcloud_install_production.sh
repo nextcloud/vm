@@ -176,6 +176,9 @@ check_command apt install -y \
     php-smbclient \
     php-imagick \
     libmagickcore-6.q16-3-extra
+    
+# Use TCP-socket (UNIX socket is faster, and TCP gives more overhead)
+# sed -i "s|listen = /run/php/php7.2-fpm.sock|listen = 127.0.0.1:9000|g" $PHP_WWW_CONF
 
 # Enable SMB client # already loaded with php-smbclient
 # echo '# This enables php-smbclient' >> /etc/php/7.2/apache2/php.ini
