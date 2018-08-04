@@ -149,7 +149,7 @@ END
 service postgresql restart
 
 # Install Apache
-check_command apt install apache2 -y
+check_command apt install apache2 libapache2-mod-fastcgi -y 
 a2enmod rewrite \
         headers \
         env \
@@ -157,6 +157,10 @@ a2enmod rewrite \
         mime \
         ssl \
         setenvif
+        actions \
+        fastcgi \
+        alias \
+        proxy_fcgi
 
 # Install PHP 7.2
 apt update -q4 & spinner_loading
@@ -299,6 +303,14 @@ then
 #    ServerAlias subdomain.example.com
 
 ### SETTINGS ###
+    <FilesMatch \.php$>
+        # 2.4.10+ can proxy to unix socket
+        SetHandler "proxy:unix:/var/run/php/php7.2-fpm.sock|fcgi://localhost/"
+ 
+        # Else we can just use a tcp socket:
+        #SetHandler "proxy:fcgi://127.0.0.1:9000"
+    </FilesMatch>
+
     DocumentRoot $NCPATH
 
     <Directory $NCPATH>
@@ -340,6 +352,14 @@ then
 #    ServerAlias subdomain.example.com
 
 ### SETTINGS ###
+    <FilesMatch \.php$>
+        # 2.4.10+ can proxy to unix socket
+        SetHandler "proxy:unix:/var/run/php/php7.2-fpm.sock|fcgi://localhost/"
+ 
+        # Else we can just use a tcp socket:
+        #SetHandler "proxy:fcgi://127.0.0.1:9000"
+    </FilesMatch>
+
     DocumentRoot $NCPATH
 
     <Directory $NCPATH>
