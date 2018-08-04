@@ -42,6 +42,8 @@ then
     sudo hostnamectl set-hostname "$FQDOMAIN"
     # Change /etc/hosts as well
     sed -i "s|127.0.1.1.*|127.0.1.1       $FQDOMAIN $(hostname -s)|g" /etc/hosts
+    # And in the php-fpm pool conf
+    sed -i "s|env[HOSTNAME] = .*|env[HOSTNAME] = $(hostname -f)|g" $PHP_POOL_DIR/nextcloud.conf
 fi
 
 # Set trusted domains
