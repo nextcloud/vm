@@ -13,6 +13,8 @@ NCDATA=/mnt/ncdata
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 BACKUP=/var/NCBACKUP
+RORDIR=/opt/es/
+
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 # Network
@@ -94,6 +96,11 @@ NC_APPS_PATH=$NCPATH/apps
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
+#Full Text Search
+#Prepare docker env
+DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
+nc_rores6x="ark74/nc_rores6.x:1.6.23_es6.3.2"
+rores6x_name="es6.3.2-rores_1.6.23"
 # phpMyadmin
 PHPMYADMINDIR=/usr/share/phpmyadmin
 PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
@@ -674,6 +681,30 @@ occ_command -V
 exit
 fi
 }
+
+set_max_count() {
+if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
+	echo "Max map count already set, skipping..."
+else
+	sysctl -w vm.max_map_count=262144
+	echo "#Docker ES max virtual memory
+	vm.max_map_count=262144" >> /etc/sysctl.conf
+fi
+}
+
+install_docker() {
+if [ $DOCKER_INS == "docker-ce" ] || \
+[ $DOCKER_INS == "docker-ee" ] || \
+[ $DOCKER_INS == "docker.io" ] ; then
+	echo "Docker seems to be installed, skipping..."
+else
+	echo "Installing Docker CE..."
+	curl -fsSL get.docker.com -o get-docker.sh
+	bash get-docker.sh
+	rm -rf get-docker.sh
+fi
+}
+
 
 ## bash colors
 # Reset
