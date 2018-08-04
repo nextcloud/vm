@@ -7,7 +7,7 @@
 true
 # shellcheck source=lib.sh
 #NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/Ark74/vm/master/lib.sh)
 unset NC_UPDATE
 unset ES_INSTALL
 
@@ -80,8 +80,8 @@ readonlyrest:
 YML_CREATE
 
 # Set persmissions
-chown 1000:1000 -R  /opt/es/
-chmod ug+rwx -R  /opt/es/
+chown 1000:1000 -R  $RORDIR
+chmod ug+rwx -R  $RORDIR
 
 # Run Elastic Search Docker
 docker run -d --restart always \

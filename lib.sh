@@ -687,8 +687,9 @@ if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
 	echo "Max map count already set, skipping..."
 else
 	sysctl -w vm.max_map_count=262144
-	echo "#Docker ES max virtual memory
-	vm.max_map_count=262144" >> /etc/sysctl.conf
+	echo "###################################################################" >> /etc/sysctl.conf
+	echo "# Docker ES max virtual memory" >> /etc/sysctl.conf
+	echo "vm.max_map_count=262144" >> /etc/sysctl.conf
 fi
 }
 
