@@ -149,7 +149,7 @@ END
 service postgresql restart
 
 # Install Apache
-check_command apt install apache2 libapache2-mod-fastcgi -y 
+check_command apt install apache2 libapache2-mod-fcgid -y 
 a2enmod rewrite \
         headers \
         env \
