@@ -159,7 +159,7 @@ a2enmod rewrite \
         dir \
         mime \
         ssl \
-        setenvif
+        setenvif \
         proxy_fcgi
         
 # Install PHP 7.2
