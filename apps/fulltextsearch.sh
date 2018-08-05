@@ -32,7 +32,7 @@ fi
 # Check if it's a clean install
 if [ -d "$RORDIR" ]
 then
-msg_box "It seems like "$RORDIR" already exists. Have you already run this script?
+msg_box "It seems like $RORDIR already exists. Have you already run this script?
 If yes, revert all the settings and try again, it must be a clean install."
     exit 1
 fi
