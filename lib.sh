@@ -13,6 +13,8 @@ NCDATA=/mnt/ncdata
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 BACKUP=/var/NCBACKUP
+RORDIR=/opt/es/
+
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 # Network
@@ -112,10 +114,11 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-[ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ ! -z "$ES_INSTALL" ] && ES_VERSION=6.1.1
-[ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+[ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
+[ ! -z "$ES_INSTALL" ] && nc_rores6x="ark74/nc_rores6.x:1.6.23_es6.3.2"
+[ ! -z "$ES_INSTALL" ] && rores6x_name="es6.3.2-rores_1.6.23"
 # Talk
 [ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
 [ ! -z "$TURN_INSTALL" ] && TURN_PORT=5349
@@ -679,6 +682,33 @@ occ_command -V
 exit
 fi
 }
+
+set_max_count() {
+if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
+	echo "Max map count already set, skipping..."
+else
+	sysctl -w vm.max_map_count=262144
+	{
+  	echo "###################################################################"
+  	echo "# Docker ES max virtual memory"
+  	echo "vm.max_map_count=262144"
+	} >> /etc/sysctl.conf
+fi
+}
+
+install_docker() {
+if [ "$DOCKER_INS" = "docker-ce" ] || \
+[ "$DOCKER_INS" = "docker-ee" ] || \
+[ "$DOCKER_INS" = "docker.io" ] ; then
+	echo "Docker seems to be installed, skipping..."
+else
+	echo "Installing Docker CE..."
+	curl -fsSL get.docker.com -o get-docker.sh
+	bash get-docker.sh
+	rm -rf get-docker.sh
+fi
+}
+
 
 ## bash colors
 # Reset

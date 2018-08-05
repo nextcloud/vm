@@ -66,7 +66,9 @@ ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
 # Create new current user
-run_static_script adduser nextcloud_install_production.sh
+download_static_script adduser
+bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
+rm $SCRIPTS/adduser.sh
 
 # Check distrobution and version
 check_distro_version
