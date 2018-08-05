@@ -9,7 +9,7 @@ true
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
-DEBUG=0
+DEBUG=1
 debug_mode
 
 if [[ $UNIXUSER != "ncadmin" ]]
@@ -34,6 +34,6 @@ The preferred user is 'ncadmin'."
         do
             sudo passwd "$NEWUSER" && break
         done
-        sudo -u "$NEWUSER" sudo bash "$2"
+        sudo -u "$NEWUSER" sudo bash "$1"
     fi
 fi
