@@ -9,7 +9,7 @@ true
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
-DEBUG=1
+DEBUG=0
 debug_mode
 
 if [[ $UNIXUSER != "ncadmin" ]]
