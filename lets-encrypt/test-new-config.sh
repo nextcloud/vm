@@ -2,7 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/php-fpm/lib.sh)
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
@@ -43,7 +43,7 @@ then
     # Change /etc/hosts as well
     sed -i "s|127.0.1.1.*|127.0.1.1       $FQDOMAIN $(hostname -s)|g" /etc/hosts
     # And in the php-fpm pool conf
-    sed -i "s|env[HOSTNAME] = .*|env[HOSTNAME] = $(hostname -f)|g" "$PHP_POOL_DIR"/nextcloud.conf
+    sed -i 's|env\[HOSTNAME\] = .*|env[HOSTNAME] = $(hostname -f)|g' "$PHP_POOL_DIR"/nextcloud.conf
 fi
 
 # Set trusted domains
