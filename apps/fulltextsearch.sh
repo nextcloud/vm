@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Tech and Me © - 2018, https://www.techandme.se/
+# SwITNet Ltd © - 2018, https://switnet.net/
 
 # shellcheck disable=2034,2059
 true
@@ -56,96 +57,51 @@ then
     deluser --group solr
 fi
 
-# Installing requirements
-echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-check_command apt install openjdk-8-jre -y
-check_command apt install apt-transport-https -y
+#Check & install docker
+install_docker
 
-# Install Elastic
-check_command wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-check_command echo "deb https://artifacts.elastic.co/packages/$ES_DEB_VERSION.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-"$ES_DEB_VERSION".x.list
-apt update -q4 & spinner_loading
-apt install elasticsearch=$ES_VERSION -y
-check_command /etc/init.d/elasticsearch start
-apt-mark hold elasticsearch
-
-# Enable on bootup
-sudo systemctl enable elasticsearch.service
-update-ca-certificates -f
-
-# Install ingest-attachment plugin
-if [ -d /usr/share/elasticsearch ]
-then
-    cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install ingest-attachment
-fi
-
-# Check that ingest-attachment is properly installed
-if ! [ "$(curl -s 127.0.0.1:9200)" ]
-then
-msg_box "Installation failed!
-Please report this to $ISSUES"
-    exit 1
-fi
-
-# Install ReadOnlyREST
-echo "Downloading readonlyrest..."
-rm -f "/tmp/readonlyrest-1.16.15_es$ES_VERSION.zip"
-wget -q -T 10 -t 2 "https://github.com/nextcloud/vm/raw/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip" -P /tmp
-mkdir -p "$GPGDIR"
-wget -q -T 10 -t 2 "https://raw.githubusercontent.com/nextcloud/vm/master/apps/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip.sha1" -P "$GPGDIR"
-echo "Verifying checksums..."
-sha1sum /tmp/readonlyrest-1.16.15_es"$ES_VERSION".zip | awk '{print $1}' > "$GPGDIR"/verify1
-cat "$GPGDIR"/readonlyrest-1.16.15_es"$ES_VERSION".zip.sha1 > "$GPGDIR"/verify2
-if [ -z "$(diff $GPGDIR/verify1 $GPGDIR/verify2)" ]
-then
-    echo "Checksum OK!"
-else
-msg_box "Checksum was not OK.
-
-Please report this to $ISSUES."
-rm -rf "$GPGDIR"
-rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
-exit 1
-fi
-
-if [ -d /usr/share/elasticsearch ]
-then
-    cd /usr/share/elasticsearch/bin
-    check_command ./elasticsearch-plugin install $APP/fulltextsearch-files/readonlyrest-1.16.15_es$ES_VERSION.zip
-    rm -f /tmp/fulltextsearch-files/readonlyrest-1.16.15_es"$ES_VERSION".zip
-fi
-
-# Check that ReadOnlyREST is properly installed
-if ! [ "$(curl -s 127.0.0.1:9200)" ]
-then
-msg_box "Installation failed!
-Please report this to $ISSUES"
-    exit 1
-fi
+set_max_count
+mkdir $RORDIR
+docker pull $nc_rores6x
 
 # Create configuration YML 
-cat << YML_CREATE > /etc/elasticsearch/readonlyrest.yml
+cat << YML_CREATE > /opt/es/readonlyrest.yml
 readonlyrest:
-
-
   access_control_rules:
-
   - name: Accept requests from cloud1 on $NCADMIN-index
     groups: ["cloud1"]
     indices: ["$NCADMIN-index"]
-
-
+    
   users:
-
   - username: $NCADMIN
     auth_key: $NCADMIN:$ROREST
     groups: ["cloud1"]
 YML_CREATE
 
-# Restart Elastic Search
-check_command /etc/init.d/elasticsearch restart
+# Set persmissions
+chown 1000:1000 -R  $RORDIR
+chmod ug+rwx -R  $RORDIR
+
+# Run Elastic Search Docker
+docker run -d --restart always \
+--name $rores6x_name \
+-p 9200:9200 \
+-p 9300:9300 \
+-v esdata:/usr/share/elasticsearch/data \
+-v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
+-e "discovery.type=single-node" \
+-i -t $nc_rores6x
+
+docker restart $rores6x_name
+
+echo "Waiting for docker bootstraping..."
+secs=$((20))
+while [ $secs -gt 0 ]; do
+   echo -ne "$secs\033[0K\r"
+   sleep 1
+   : $((secs--))
+done
+docker logs $rores6x_name
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
