@@ -438,7 +438,7 @@ fi
 # Restart Apache2 to enable new config
 restart_webserver
 
-whiptail --title "Which apps/programs do you want to install?" --checklist --separate-output "" 10 40 3 \
+whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "              " on \
 "Contacts" "              " on \
 "Webmin" "              " on 2>results
