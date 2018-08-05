@@ -417,7 +417,7 @@ If you like to enable HTTP/2 nevertheless, we can upgrade your Apache2 from Ondr
 https://launchpad.net/~ondrej/+archive/ubuntu/apache2
 
 Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues.
-E.g. the Nextcloud Spreed video calls app does not yet work with HTTP/2 enabled."
+So please think twice before enabling it"
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 system wide?") ]]
 then
