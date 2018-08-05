@@ -33,7 +33,7 @@ DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
 * OpenSSH (preferred)
 * 20 GB HDD for OS
 * XX GB HDD for DATA (/mnt/ncdata)
-* At least 1 vCPU and 2 GB RAM (4 GB minimum if you are running OnlyOffice)
+* Absolute minimum is 1 vCPU and 2 GB RAM (4 GB minimum if you are running OnlyOffice)
 * A working internet connection (the script needs it to download files and variables)
 
 #### Recommended
