@@ -34,6 +34,6 @@ The preferred user is 'ncadmin'."
         do
             sudo passwd "$NEWUSER" && break
         done
-        sudo -u "$NEWUSER" sudo bash "$1"
+        sudo -u "$NEWUSER" sudo bash "$2"
     fi
 fi
