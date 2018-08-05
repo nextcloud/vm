@@ -195,7 +195,7 @@ listen = /run/php/php7.2-fpm.nextcloud.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
-# Tested with 2 GB RAM:
+;; Tested with 2 GB RAM:
 pm.max_children = 8
 pm.start_servers = 3
 pm.min_spare_servers = 2
