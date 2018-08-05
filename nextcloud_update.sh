@@ -275,6 +275,10 @@ then
     bash $SECURE & spinner_loading
     occ_command maintenance:mode --off
     occ_command upgrade --no-app-disable
+    # Optimize
+    echo "Optimizing Nextcloud..."
+    yes | occ_command db:convert-filecache-bigint
+    occ_command db:add-missing-indices
 else
 msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if the folders exist."
