@@ -21,6 +21,7 @@ if [ -d "$NC_APPS_PATH/previewgenerator" ]
 then
     # Enable previews (remove the # to enable the specific preview)
     occ_command config:system:set enable_previews --value=true --type=boolean
+    occ_command config:system:set preview_libreoffice_path --value='/usr/bin/libreoffice'
 #    occ_command config:system:set enabledPreviewProviders 0 --value='OC\\Preview\\PNG'
 #    occ_command config:system:set enabledPreviewProviders 1 --value='OC\\Preview\\JPEG'
 #    occ_command config:system:set enabledPreviewProviders 2 --value='OC\\Preview\\GIF'
