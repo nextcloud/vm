@@ -60,9 +60,8 @@ fi
 # Check & install docker
 install_docker
 set_max_count
-mkdir -p $RORDIR
-docker pull $nc_rores6x
-docker pull $nc_fts
+mkdir -p "$RORDIR"
+docker pull "$nc_fts"
 
 # Create configuration YML 
 cat << YML_CREATE > /opt/es/readonlyrest.yml
