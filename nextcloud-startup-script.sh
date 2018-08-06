@@ -325,7 +325,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
 "Passman" "(Password storage)   " OFF \
-"FullTextSearch" "(Elasticsearch [still in BETA])   " OFF \
+"FullTextSearch" "(Elasticsearch for Nextcloud)   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
 "Spreed.ME" "(3rd-party Video calls and chat)   " OFF 2>results
