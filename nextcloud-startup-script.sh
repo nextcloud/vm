@@ -232,8 +232,7 @@ msg_box "This script will configure your Nextcloud and activate SSL.
 It will also do the following:
 
 - Generate new SSH keys for the server
-- Generate new PotgreSQL password
-- Install phpPGadmin and make it secure
+- Generate new PostgreSQL password
 - Install selected apps and automatically configure them
 - Detect and set hostname
 - Upgrade your system and Nextcloud to latest version
@@ -241,6 +240,9 @@ It will also do the following:
 - Set new passwords to Linux and Nextcloud
 - Set new keyboard layout
 - Change timezone
+- Set correct Rewriterules for Nextcloud
+- Copy content from .htaccess to .user.ini (because we use php-fpm)
+- Add additional options if you choose them
 
   The script will take about 10 minutes to finish,
   depending on your internet connection.
