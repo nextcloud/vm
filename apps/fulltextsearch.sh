@@ -62,6 +62,7 @@ install_docker
 set_max_count
 mkdir -p $RORDIR
 docker pull $nc_rores6x
+docker pull $nc_fts
 
 # Create configuration YML 
 cat << YML_CREATE > /opt/es/readonlyrest.yml
@@ -83,15 +84,15 @@ chmod ug+rwx -R  $RORDIR
 
 # Run Elastic Search Docker
 docker run -d --restart always \
---name $rores6x_name \
+--name $fts_es_name \
 -p 9200:9200 \
 -p 9300:9300 \
 -v esdata:/usr/share/elasticsearch/data \
 -v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
 -e "discovery.type=single-node" \
--i -t $nc_rores6x
+-i -t $nc_fts
 
-docker restart $rores6x_name
+docker restart $fts_es_name
 
 echo "Waiting for docker bootstraping..."
 secs=$((20))
@@ -100,7 +101,7 @@ while [ $secs -gt 0 ]; do
    sleep 1
    : $((secs--))
 done
-docker logs $rores6x_name
+docker logs $fts_es_name
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
