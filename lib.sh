@@ -700,15 +700,13 @@ install_docker() {
 if [ "$DOCKER_INS" = "docker-ce" ] || \
 [ "$DOCKER_INS" = "docker-ee" ] || \
 [ "$DOCKER_INS" = "docker.io" ] ; then
-	echo "Docker seems to be installed, skipping..."
+    echo "Docker seems to be installed, skipping..."
 else
-	echo "Installing Docker CE..."
-	curl -fsSL get.docker.com -o get-docker.sh
-	bash get-docker.sh
-	rm -rf get-docker.sh
+    echo "Installing Docker CE..."
+    install_if_not curl
+    curl -fsSL get.docker.com | sh
 fi
 }
-
 
 ## bash colors
 # Reset
