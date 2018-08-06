@@ -697,11 +697,8 @@ fi
 }
 
 install_docker() {
-if [ "$DOCKER_INS" = "docker-ce" ] || \
-[ "$DOCKER_INS" = "docker-ee" ] || \
-[ "$DOCKER_INS" = "docker.io" ] ; then
-    echo "Docker seems to be installed, skipping..."
-else
+if ! docker -v &> /dev/null
+then
     echo "Installing Docker CE..."
     install_if_not curl
     curl -fsSL get.docker.com | sh
