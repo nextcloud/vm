@@ -34,13 +34,13 @@ echo
 # Install Adminer
 apt update -q4 & spinner_loading
 install_if_not adminer
-sudo wget -q "http://www.adminer.org/latest.php" -O /usr/share/adminer/latest.php
-sudo ln -s /usr/share/adminer/latest.php /usr/share/adminer/adminer.php
+sudo wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
+sudo ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
-Alias /adminer.php /usr/share/adminer/adminer.php
+Alias /adminer.php "$ADMINERDIR"/adminer.php
 
-<Directory /usr/share/adminer>
+<Directory "$ADMINERDIR">
 
 <IfModule mod_dir.c>
 DirectoryIndex adminer.php
@@ -65,8 +65,8 @@ http://$ADDRESS/adminer.php
 You can download more plugins and get more information here: 
 https://www.adminer.org
 
-Your PostgreSQL connection information can be found in $NCPATH/config/confgi.php
+Your PostgreSQL connection information can be found in $NCPATH/config/confgig.php
 
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
-/etc/apache2/conf-available/adminer.conf"
+$ADMINER_CONF"
 fi
