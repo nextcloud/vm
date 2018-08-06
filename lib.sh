@@ -365,11 +365,15 @@ fi
 }
 
 configure_max_upload() {
-# Increase max filesize (expects that changes are made in /etc/php/7.2/apache2/php.ini)
+# Increase max filesize (expects that changes are made in $PHP_INI)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
-sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
-sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
-sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
+echo "Setting max_upload size.."
+# Copy settings from .htaccess to user.ini. beacuse we run php-fpm Documented here: https://docs.nextcloud.com/server/13/admin_manual/installation/source_installation.html#php-fpm-configuration-notes
+cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
+# Do the acutal change
+sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.user.ini
+sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.user.ini
+sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.user.ini
 }
 
 # Check if program is installed (is_this_installed apache2)
