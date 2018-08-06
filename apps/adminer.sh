@@ -68,7 +68,7 @@ http://$ADDRESS/adminer.php
 You can download more plugins and get more information here: 
 https://www.adminer.org
 
-Your PostgreSQL connection information can be found in $NCPATH/config/confgig.php
+Your PostgreSQL connection information can be found in $NCPATH/config/config.php
 
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
