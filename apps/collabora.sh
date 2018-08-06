@@ -76,8 +76,7 @@ check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
 
 # Install Docker
-install_if_not curl
-curl -fsSL get.docker.com | sh
+install_docker
 
 # Set devicemapper
 check_command cp -v /lib/systemd/system/docker.service /etc/systemd/system/
