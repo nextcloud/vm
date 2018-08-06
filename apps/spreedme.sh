@@ -108,7 +108,7 @@ then
 fi
 
 # Restart services
-service apache2 restart
+restart_webserver
 if ! systemctl restart snap.spreedme.spreed-webrtc.service
 then
 msg_box "Something is wrong, the installation did not finish correctly.

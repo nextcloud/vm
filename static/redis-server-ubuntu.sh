@@ -34,7 +34,7 @@ install_if_not redis-server
 # phpenmod redis
 # Setting direct to apache2 works
 echo 'extension=redis.so' >> $PHP_INI
-service apache2 restart
+restart_webserver
 
 # Prepare for adding redis configuration
 sed -i "s|);||g" $NCPATH/config/config.php
