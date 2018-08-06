@@ -46,7 +46,7 @@ apt install -y -q \
 # Allow local access
 sed -i "s|Require local|Require ip $GATEWAY/24|g" /etc/apache2/conf-available/phppgadmin.conf
 
-if ! service apache2 restart
+if ! restart_webserver
 then
     echo "Apache2 could not restart..."
     echo "The script will exit."

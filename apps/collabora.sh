@@ -196,13 +196,13 @@ then
     printf "Certs are generated!\n"
     printf "${Color_Off}\n"
     a2ensite "$SUBDOMAIN.conf"
-    service apache2 restart
+    restart_webserver
 # Install Collabora App
     occ_command app:install richdocuments
 else
     printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: $ISSUES\n"
     any_key "Press any key to continue... "
-    service apache2 restart
+    restart_webserver
 fi
 
 # Enable RichDocuments (Collabora App)
