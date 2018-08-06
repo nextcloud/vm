@@ -324,6 +324,16 @@ occ_command config:system:set htaccess.RewriteBase --value="/"
 occ_command maintenance:update:htaccess
 bash "$SECURE"
 
+# Update .user.ini in case stuff was added to .htaccess
+if [ "$NCPATH/.htaccess" -nt "$NCPATH/.user.ini" ]
+then
+    cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
+    sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.user.ini
+    sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.user.ini
+    sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.user.ini
+    restart_webserver
+fi
+
 # Repair
 occ_command maintenance:repair
 
