@@ -329,7 +329,7 @@ do
             run_app_script fail2ban
         ;;
         
-        phpPGadmin)
+        Adminer)
             run_app_script adminer
         ;;
         
