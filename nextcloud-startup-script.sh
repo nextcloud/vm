@@ -313,7 +313,7 @@ clear
 # Install Apps
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
-"phpPGadmin" "(PostgreSQL GUI)       " OFF \
+"Adminer" "(PostgreSQL GUI)       " OFF \
 "Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
@@ -330,7 +330,7 @@ do
         ;;
         
         phpPGadmin)
-            run_app_script phppgadmin_install_ubuntu
+            run_app_script adminer
         ;;
         
         Netdata)
