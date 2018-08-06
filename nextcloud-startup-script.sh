@@ -322,10 +322,10 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
 "Adminer" "(PostgreSQL GUI)       " OFF \
 "Netdata" "(Real-time server monitoring)       " OFF \
-"Collabora" "(Online editing 2GB RAM)   " OFF \
-"OnlyOffice" "(Online editing 4GB RAM)   " OFF \
+"Collabora" "(Online editing [2GB RAM])   " OFF \
+"OnlyOffice" "(Online editing [4GB RAM])   " OFF \
 "Passman" "(Password storage)   " OFF \
-"FullTextSearch" "(Elasticsearch for Nextcloud)   " OFF \
+"FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
 "Spreed.ME" "(3rd-party Video calls and chat)   " OFF 2>results
