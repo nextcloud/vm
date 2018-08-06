@@ -143,6 +143,9 @@ sleep 10
 # Stop Apache2
 check_command service apache2 stop
 
+# Create backup dir (/var/NCBACKUP/)
+mkdir -p "$BACKUP"
+
 # Backup PostgreSQL
 if which psql > /dev/null
 then
