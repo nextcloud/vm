@@ -38,9 +38,9 @@ sudo wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
 sudo ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
-Alias /adminer.php "$ADMINERDIR"/adminer.php
+Alias /adminer.php $ADMINERDIR/adminer.php
 
-<Directory "$ADMINERDIR">
+<Directory $ADMINERDIR>
 
 <IfModule mod_dir.c>
 DirectoryIndex adminer.php
