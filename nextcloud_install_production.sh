@@ -310,6 +310,9 @@ install_and_enable_app issuetemplate
 # Install CanIUpdate?
 install_and_enable_app caniupdate
 
+# Install PDF Viewer
+install_and_enable_app files_pdfviewer
+
 # Install Figlet
 install_if_not figlet
 
