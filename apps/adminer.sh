@@ -56,7 +56,7 @@ ADMINER_CREATE
 # Enable config
 check_command a2enconf adminer.conf
 
-if ! webserver_restart
+if ! restart_webserver
 then
 msg_box "Apache2 could not restart...
 The script will exit."
