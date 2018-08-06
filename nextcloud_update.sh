@@ -50,6 +50,15 @@ then
     fi
 fi
 
+# Update adminer
+if [ -d $ADMINERDIR ]
+then
+    echo "Updating Adminer..."
+    rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+    wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
+    ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+fi
+
 # Update docker images
 # This updates ALL Docker images:
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]

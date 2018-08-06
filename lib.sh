@@ -56,8 +56,6 @@ NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 [ ! -z "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-PHPMPGDMIN_CONF="/etc/apache2/conf-available/phppgadmin.conf"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
@@ -99,11 +97,9 @@ SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_co
 # PHP-FPM
 PHP_INI=/etc/php/7.2/fpm/php.ini
 PHP_POOL_DIR=/etc/php/7.2/fpm/pool.d
-# phpMyadmin
-PHPMYADMINDIR=/usr/share/phpmyadmin
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-UPLOADPATH=""
-SAVEPATH=""
+# Adminer
+ADMINERDIR=/usr/share/adminer
+ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
