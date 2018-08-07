@@ -338,8 +338,11 @@ then
 #    ServerAlias subdomain.example.com
 
 ### SETTINGS ###
-    <FilesMatch \\.php$>
+    # http://lost.l-w.ca/0x05/apache-mod_proxy_fcgi-and-php-fpm/
+    <FilesMatch "\.php$">
+      <If "-f %{SCRIPT_FILENAME}">
         SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"
+      </If>
     </FilesMatch>
 
     DocumentRoot $NCPATH
@@ -397,8 +400,11 @@ then
 #    ServerAlias subdomain.example.com
 
 ### SETTINGS ###
-    <FilesMatch \\.php$>
+    # http://lost.l-w.ca/0x05/apache-mod_proxy_fcgi-and-php-fpm/
+    <FilesMatch "\.php$">
+      <If "-f %{SCRIPT_FILENAME}">
         SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"
+      </If>
     </FilesMatch>
 
     DocumentRoot $NCPATH
