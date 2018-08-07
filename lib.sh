@@ -216,7 +216,7 @@ export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 if [ $PHP_FPM_MAX_CHILDREN -lt 8 ]
 then
 msg_box "It seems like php-fpm max_children are less than 8, which means that php-fpm won't function properly.
-Import this VM again and then raise the amount of RAM with at least 2 GB, and then run this script again.
+Import this VM again and then raise the amount of RAM with at least 1 GB, and then run this script again.
 
 This script will now exit."
 exit 1
