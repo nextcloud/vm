@@ -29,7 +29,7 @@
 DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
 
 #### Minimum requirements:
-* A clean Ubuntu Server 18.04.X
+* A clean [Ubuntu Server 18.04.X](http://cdimage.ubuntu.com/releases/18.04/release/) using the alternative installer
 * OpenSSH (preferred)
 * 20 GB HDD for OS
 * XX GB HDD for DATA (/mnt/ncdata)
@@ -62,6 +62,8 @@ Great news! We have forked this repository and created a Raspberry Pi image that
 https://github.com/techandme/NextBerry or here https://www.techandme.se/nextberry-rpi/.
 
 We call it NextBerry and it's confirmed to be working on Raspberry Pi 2 & 3.
+
+NOTE (2018-08-01): This is not maintained anymore, but keeping the info in case someone wants to pick it up again.
 
 ## I want to test RC!
 No problem! We made it simple. Run `update.sh` but abort it before it starts so that you have the latest `nextcloud_update.sh`. Then put this in your `nextcloud_update.sh` below the curl command (lib.sh) but before everything else and run it:
