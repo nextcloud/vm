@@ -102,6 +102,11 @@ while [ $secs -gt 0 ]; do
 done
 docker logs $fts_es_name
 
+# Calculate max_children after app is installed to ensure this is enough RAM for php-fpm
+calculate_max_children
+check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" $PHP_POOL_DIR/nextcloud.conf
+restart_webserver
+
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
 install_and_enable_app fulltextsearch_elasticsearch
