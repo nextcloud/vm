@@ -216,9 +216,10 @@ export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 echo "Automatically configures PHP-FPM 'max_children'..." 
 if [ $PHP_FPM_MAX_CHILDREN -lt 8 ]
 then
-msg_box "It seems like php-fpm max_children are less than 8, which means that php-fpm won't function properly.
+msg_box "The current max_children value available to set is: $PHP_FPM_MAX_CHILDREN which means that php-fpm won't function properly.
+The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
 
-The absolute minimum to run the VM is 2 GB RAM, but we recomend 4 GB RAM.
+The absolute minimum amount of RAM to run the VM is 2 GB, but we recomend 4 GB.
 
 You now have two choices:
 1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
