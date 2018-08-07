@@ -229,7 +229,9 @@ You now have two choices:
    3) Full Text Search
 
 This script will now exit. 
-The installation was not successful, sorry for the inconvenience."
+The installation was not successful, sorry for the inconvenience.
+
+If you think this is a bug, please report it to $ISSUES"
 exit 1
 else
     echo "PHP-FPM max_children is $PHP_FPM_MAX_CHILDREN"
