@@ -213,7 +213,7 @@ average_php_memory_requirement=50
 total_memory=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
 export PHP_FPM_MAX_CHILDREN=$((total_memory/average_php_memory_requirement))
 
-if $PHP_FPM_MAX_CHILDREN -lt 1
+if [ $PHP_FPM_MAX_CHILDREN -lt 1 ]
 then
 msg_box "It seems like php-fpm max_children are less than 1, which means that php-fpm won't function properly.
 Import this VM again and then raise the amount of RAM with at least 2 GB, and then run this script again.
