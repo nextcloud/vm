@@ -421,7 +421,7 @@ If you like to enable HTTP/2 nevertheless, we can upgrade your Apache2 from Ondr
 https://launchpad.net/~ondrej/+archive/ubuntu/apache2
 
 Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues.
-So please think twice before enabling it"
+So please think twice before enabling it."
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 system wide?") ]]
 then
