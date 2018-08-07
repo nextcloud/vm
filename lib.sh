@@ -210,12 +210,12 @@ calculate_max_children() {
 # Calculate max_children depending on RAM
 # Tends to be between 30-50MB
 average_php_memory_requirement=50
-total_memory=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
-export PHP_FPM_MAX_CHILDREN=$((total_memory/average_php_memory_requirement))
+available_memory=$(awk '/MemAvailable/ {printf "%d", $2/1024}' /proc/meminfo)
+export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 
-if [ $PHP_FPM_MAX_CHILDREN -lt 1 ]
+if [ $PHP_FPM_MAX_CHILDREN -lt 8 ]
 then
-msg_box "It seems like php-fpm max_children are less than 1, which means that php-fpm won't function properly.
+msg_box "It seems like php-fpm max_children are less than 8, which means that php-fpm won't function properly.
 Import this VM again and then raise the amount of RAM with at least 2 GB, and then run this script again.
 
 This script will now exit."
