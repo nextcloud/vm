@@ -178,10 +178,9 @@ cat << HTTP2_ENABLE > "$HTTP2_CONF"
     H2Direct on
 </IfModule>
 HTTP2_ENABLE
-    echo "$HTTP2_CONF was successfully created"
-    a2enmod http2
-    restart_webserver
-fi
+echo "$HTTP2_CONF was successfully created"
+a2enmod http2
+restart_webserver
         
 # Install PHP 7.2
 apt update -q4 & spinner_loading
