@@ -219,7 +219,7 @@ then
 msg_box "The current max_children value available to set is $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
 The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
 
-The absolute minimum amount of RAM to run the VM is 2 GB, but we recomend 4 GB.
+The absolute minimum amount of RAM required to run the VM is 2 GB, but we recomend 4 GB.
 
 You now have two choices:
 1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
