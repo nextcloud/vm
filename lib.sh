@@ -206,6 +206,14 @@ do
 done
 }
 
+calculate_max_children() {
+# Calculate max_children depending on RAM
+# Tends to be between 30-50MB
+average_php_memory_requirement=50
+total_memory=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo)
+export PHP_FPM_MAX_CHILDREN=$(($total_memory/$average_php_memory_requirement))
+}
+
 test_connection() {
 # Install dnsutils if not existing
 if [ "$(dpkg-query -W -f='${Status}' "dnsutils" 2>/dev/null | grep -c "ok installed")" == "1" ]
