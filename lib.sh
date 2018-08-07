@@ -213,12 +213,23 @@ average_php_memory_requirement=50
 available_memory=$(awk '/MemAvailable/ {printf "%d", $2/1024}' /proc/meminfo)
 export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 
+echo "Automatically configures PHP-FPM 'max_children'..." 
 if [ $PHP_FPM_MAX_CHILDREN -lt 8 ]
 then
 msg_box "It seems like php-fpm max_children are less than 8, which means that php-fpm won't function properly.
-Import this VM again and then raise the amount of RAM with at least 1 GB, and then run this script again.
 
-This script will now exit."
+The absolute minimum to run the VM is 2 GB RAM, but we recomend 4 GB RAM.
+
+You now have two choices:
+1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
+   installing it in the same way as you did before.
+2. Import this VM again without raising the RAM, but don't install any of the following apps:
+   1) Collabora
+   2) OnlyOffice
+   3) Full Text Search
+
+This script will now exit. 
+The installation was not successful, sorry for the inconvenience."
 exit 1
 else
     echo "PHP-FPM max_children is $PHP_FPM_MAX_CHILDREN"
