@@ -522,8 +522,6 @@ bash $SCRIPTS/update.sh
 # Cleanup 2
 apt autoremove -y
 apt autoclean
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
-echo "$CLEARBOOT"
 
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
