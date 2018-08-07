@@ -439,7 +439,6 @@ rm -f results
 # Calculate max_children after all apps are installed
 calculate_max_children
 check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" $PHP_POOL_DIR/nextcloud.conf
-restart_webserver
 
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
