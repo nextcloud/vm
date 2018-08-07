@@ -164,7 +164,6 @@ a2enmod rewrite \
         mime \
         dir \
         authz_core \
-        unixd \
         alias
 
 # We don't use Apache PHP (just to be sure)
@@ -191,6 +190,9 @@ check_command apt install -y \
     php7.2-bz2 \
     php-pear \
     libmagickcore-6.q16-3-extra
+    
+# Enable php-fpm
+a2enconf php7.2-fpm
 
 # Calculate max_children for php-fpm (this will be run in the end of the startup script as well)
 calculate_max_children
@@ -204,7 +206,7 @@ listen = /run/php/php7.2-fpm.nextcloud.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
-;; Tested with 2 GB RAM:
+;; max_children is set dynamically with calculate_max_children()
 pm.max_children = $PHP_FPM_MAX_CHILDREN
 pm.start_servers = 3
 pm.min_spare_servers = 2
@@ -221,15 +223,9 @@ POOL_CONF
 
 # Disable the idling example pool.
 mv $PHP_POOL_DIR/www.conf $PHP_POOL_DIR/www.conf.backup
-    
-# Enable php-fpm
-a2enconf php7.2-fpm
 
 # Restart Webserver
 restart_webserver
-    
-# Use TCP-socket (UNIX socket is faster, and TCP gives more overhead)
-# sed -i "s|listen = /run/php/php7.2-fpm.sock|listen = 127.0.0.1:9000|g" $PHP_WWW_CONF
 
 # Enable SMB client # already loaded with php-smbclient
 # echo '# This enables php-smbclient' >> /etc/php/7.2/apache2/php.ini
