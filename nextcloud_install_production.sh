@@ -164,7 +164,8 @@ a2enmod rewrite \
         mime \
         dir \
         authz_core \
-        alias
+        alias \
+        ssl
 
 # We don't use Apache PHP (just to be sure)
 a2dismod mpm_prefork
