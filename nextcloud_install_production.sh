@@ -157,12 +157,18 @@ service postgresql restart
 check_command apt install apache2 -y 
 a2enmod rewrite \
         headers \
-        env \
-        dir \
-        mime \
-        ssl \
+        proxy \
+        proxy_fcgi \
         setenvif \
-        proxy_fcgi
+        env \
+        mime \
+        dir \
+        authz_core \
+        unixd \
+        alias
+
+# We don't use Apache PHP (just to be sure)
+a2dismod mpm_prefork
         
 # Install PHP 7.2
 apt update -q4 & spinner_loading
@@ -185,7 +191,10 @@ check_command apt install -y \
     php7.2-bz2 \
     php-pear \
     libmagickcore-6.q16-3-extra
-    
+
+# Calculate max_children for php-fpm (this will be run in the end of the startup script as well)
+calculate_max_children
+
 # Set up a php-fpm pool with a unixsocket
 cat << POOL_CONF > "$PHP_POOL_DIR/nextcloud.conf"
 [NextCloud]
@@ -196,7 +205,7 @@ listen.owner = www-data
 listen.group = www-data
 pm = dynamic
 ;; Tested with 2 GB RAM:
-pm.max_children = 8
+pm.max_children = $PHP_FPM_MAX_CHILDREN
 pm.start_servers = 3
 pm.min_spare_servers = 2
 pm.max_spare_servers = 3
@@ -353,6 +362,20 @@ then
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
+    
+    # The following lines prevent .htaccess and .htpasswd files from being
+    # viewed by Web clients.
+    <Files ".ht*">
+    Require all denied
+    </Files>
+    
+    # Disable HTTP TRACE method.
+    TraceEnable off
+
+    # Disable HTTP TRACK method.
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^TRACK
+    RewriteRule .* - [R=405,L]
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
@@ -398,6 +421,20 @@ then
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
+    
+    # The following lines prevent .htaccess and .htpasswd files from being
+    # viewed by Web clients.
+    <Files ".ht*">
+    Require all denied
+    </Files>
+    
+    # Disable HTTP TRACE method.
+    TraceEnable off
+
+    # Disable HTTP TRACK method.
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^TRACK
+    RewriteRule .* - [R=405,L]
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
