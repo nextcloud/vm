@@ -115,7 +115,7 @@ If you think that this is a bug, please report it to https://github.com/nextclou
 fi
 
 # shellcheck source=lib.sh
-NCDB=1 && CHECK_CURRENT_REPO=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && CHECK_CURRENT_REPO=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/php-fpm/lib.sh)
 unset NC_UPDATE
 unset CHECK_CURRENT_REPO
 unset NCDB
@@ -439,6 +439,7 @@ rm -f results
 # Calculate max_children after all apps are installed
 calulate_max_children
 check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" $PHP_POOL_DIR/nextcloud.conf
+restart_webserver
 
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
