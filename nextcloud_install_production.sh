@@ -455,23 +455,14 @@ a2ensite nextcloud_ssl_domain_self_signed.conf
 a2ensite nextcloud_http_domain_self_signed.conf
 a2dissite default-ssl
 
-# Enable HTTP/2 server wide, if user decides to
-msg_box "Your official package repository does not provide an Apache2 package with HTTP/2 module included.
-If you like to enable HTTP/2 nevertheless, we can upgrade your Apache2 from Ondrejs PPA:
-https://launchpad.net/~ondrej/+archive/ubuntu/apache2
+# Enable new config
+a2ensite nextcloud_ssl_domain_self_signed.conf
+a2ensite nextcloud_http_domain_self_signed.conf
+a2dissite default-ssl
 
-Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues.
-So please think twice before enabling it."
-
-if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 system wide?") ]]
-then
-    # Adding PPA
-    add-apt-repository ppa:ondrej/apache2 -y
-    apt update -q4 & spinner_loading
-    apt upgrade apache2 -y
-    
-    # Enable HTTP/2 module & protocol
-    cat << HTTP2_ENABLE > "$HTTP2_CONF"
+# Enable HTTP/2 server wide
+echo "Enabling HTTP/2 server wide..."
+cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
     Protocols h2 h2c http/1.1
     H2Direct on
@@ -479,10 +470,8 @@ then
 HTTP2_ENABLE
     echo "$HTTP2_CONF was successfully created"
     a2enmod http2
+    restart_webserver
 fi
-
-# Restart Apache2 to enable new config
-restart_webserver
 
 whiptail --title "Install apps or software" --checklist --separate-output "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "              " on \
