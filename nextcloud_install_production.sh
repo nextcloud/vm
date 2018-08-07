@@ -274,6 +274,10 @@ echo
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
+# Link .htaccess to .user.ini because the changes happen in .htaccess
+rm -f $NCPATH/.user.ini
+ln -s $NCPATH/.htaccess $NCPATH/.user.ini
+
 # Change values in php.ini (increase max file size)
 # max_execution_time
 sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" $PHP_INI
