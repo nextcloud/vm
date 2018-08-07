@@ -228,7 +228,7 @@ sed -i "s|DocumentRoot /var/www/html|DocumentRoot $HTML|g" /etc/apache2/sites-av
  sed -i '17i\      SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"' /etc/apache2/sites-available/000-default.conf
  sed -i '18i\   </If>' /etc/apache2/sites-available/000-default.conf
  sed -i '19i\   </FilesMatch>' /etc/apache2/sites-available/000-default.conf
- sed -i '20i\' /etc/apache2/sites-available/000-default.conf
+ sed -i '20i\    ' /etc/apache2/sites-available/000-default.conf
 
 # Make $SCRIPTS excutable
 chmod +x -R $SCRIPTS
