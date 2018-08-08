@@ -16,9 +16,6 @@ debug_mode
 # Check if root
 root_check
 
-# Warn user about HTTP/2
-http2_warn Extra-Security
-
 # Based on: http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
 
 # Protect against DDOS
