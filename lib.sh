@@ -13,6 +13,8 @@ NCDATA=/mnt/ncdata
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 BACKUP=/var/NCBACKUP
+RORDIR=/opt/es/
+
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 UNIV=$(apt-cache policy | grep http | awk '{print $3}' | grep universe | head -n 1 | cut -d "/" -f 2)
@@ -55,8 +57,6 @@ NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 [ ! -z "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-PHPMPGDMIN_CONF="/etc/apache2/conf-available/phppgadmin.conf"
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
@@ -95,11 +95,9 @@ NC_APPS_PATH=$NCPATH/apps
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
-# phpMyadmin
-PHPMYADMINDIR=/usr/share/phpmyadmin
-PHPMYADMIN_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
-UPLOADPATH=""
-SAVEPATH=""
+# Adminer
+ADMINERDIR=/usr/share/adminer
+ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
@@ -110,10 +108,11 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-[ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ ! -z "$ES_INSTALL" ] && ES_VERSION=6.1.1
-[ ! -z "$ES_INSTALL" ] && ES_DEB_VERSION="$(echo $ES_VERSION | head -c 1)"
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+[ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
+[ ! -z "$ES_INSTALL" ] && nc_fts="ark74/nc_fts:latest"
+[ ! -z "$ES_INSTALL" ] && fts_es_name="fts_esror"
 # Talk
 [ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
 [ ! -z "$TURN_INSTALL" ] && TURN_PORT=5349
@@ -681,6 +680,32 @@ then
 else
         echo "Adding required repo (universe)."
         add-apt-repository universe
+fi
+}
+
+set_max_count() {
+if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
+	echo "Max map count already set, skipping..."
+else
+	sysctl -w vm.max_map_count=262144
+	{
+  	echo "###################################################################"
+  	echo "# Docker ES max virtual memory"
+  	echo "vm.max_map_count=262144"
+	} >> /etc/sysctl.conf
+fi
+}
+
+install_docker() {
+if [ "$DOCKER_INS" = "docker-ce" ] || \
+[ "$DOCKER_INS" = "docker-ee" ] || \
+[ "$DOCKER_INS" = "docker.io" ] ; then
+	echo "Docker seems to be installed, skipping..."
+else
+	echo "Installing Docker CE..."
+	curl -fsSL get.docker.com -o get-docker.sh
+	bash get-docker.sh
+	rm -rf get-docker.sh
 fi
 }
 

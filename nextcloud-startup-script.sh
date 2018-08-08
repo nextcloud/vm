@@ -153,7 +153,9 @@ Please create a user with sudo permissions and the run this command:
 sudo -u [user-with-sudo-permissions] sudo bash /var/scripts/nextcloud-startup-script.sh
 
 We will do this for you when you hit OK."
-       run_static_script adduser $SCRIPTS/nextcloud-startup-script.sh
+       download_static_script adduser
+       bash $SCRIPTS/adduser.sh "$SCRIPTS/nextcloud-startup-script.sh"
+       rm $SCRIPTS/adduser.sh
        else
 msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
 which could be the case if you are running directly from the scripts and not the VM.
@@ -230,8 +232,7 @@ msg_box "This script will configure your Nextcloud and activate SSL.
 It will also do the following:
 
 - Generate new SSH keys for the server
-- Generate new PotgreSQL password
-- Install phpPGadmin and make it secure
+- Generate new PostgreSQL password
 - Install selected apps and automatically configure them
 - Detect and set hostname
 - Upgrade your system and Nextcloud to latest version
@@ -239,6 +240,9 @@ It will also do the following:
 - Set new passwords to Linux and Nextcloud
 - Set new keyboard layout
 - Change timezone
+- Set correct Rewriterules for Nextcloud
+- Copy content from .htaccess to .user.ini (because we use php-fpm)
+- Add additional options if you choose them
 
   The script will take about 10 minutes to finish,
   depending on your internet connection.
@@ -311,7 +315,7 @@ clear
 # Install Apps
 whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
-"phpPGadmin" "(PostgreSQL GUI)       " OFF \
+"Adminer" "(PostgreSQL GUI)       " OFF \
 "Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing 2GB RAM)   " OFF \
 "OnlyOffice" "(Online editing 4GB RAM)   " OFF \
@@ -327,8 +331,8 @@ do
             run_app_script fail2ban
         ;;
         
-        phpPGadmin)
-            run_app_script phppgadmin_install_ubuntu
+        Adminer)
+            run_app_script adminer
         ;;
         
         Netdata)

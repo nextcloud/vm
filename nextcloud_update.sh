@@ -50,6 +50,15 @@ then
     fi
 fi
 
+# Update adminer
+if [ -d $ADMINERDIR ]
+then
+    echo "Updating Adminer..."
+    rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+    wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
+    ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+fi
+
 # Update docker images
 # This updates ALL Docker images:
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
@@ -139,6 +148,12 @@ fi
 echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
 echo "Press CTRL+C to abort."
 sleep 10
+
+# Stop Apache2
+check_command service apache2 stop
+
+# Create backup dir (/var/NCBACKUP/)
+mkdir -p "$BACKUP"
 
 # Backup PostgreSQL
 if which psql > /dev/null
@@ -275,11 +290,18 @@ then
     bash $SECURE & spinner_loading
     occ_command maintenance:mode --off
     occ_command upgrade --no-app-disable
+    # Optimize
+    echo "Optimizing Nextcloud..."
+    yes | occ_command db:convert-filecache-bigint
+    occ_command db:add-missing-indices
 else
 msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if the folders exist."
     exit 1
 fi
+
+# Start Apache2
+check_command service apache2 start
 
 # Recover apps that exists in the backed up apps folder
 # run_static_script recover_apps
