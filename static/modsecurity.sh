@@ -14,7 +14,7 @@ debug_mode
 root_check
 
 # Warn user about HTTP/2
-http2_warn
+http2_warn ModSecurity
 
 # Add modsecurity
 apt update -q4 & spinner_loading
@@ -80,7 +80,7 @@ cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
 </Directory>
 MODSECWHITE
 
-if [ -f /etc/modsecurity/whitelist.conf]
+if [ -f /etc/modsecurity/whitelist.conf ]
 then
     echo "Modescurity activated!" && sleep 1
 fi
