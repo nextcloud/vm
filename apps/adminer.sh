@@ -16,6 +16,9 @@ debug_mode
 # Check if root
 root_check
 
+# Warn user about HTTP/2
+http2_warn Adminer
+
 # Check that the script can see the external IP (apache fails otherwise)
 if [ -z "$WANIP4" ]
 then
