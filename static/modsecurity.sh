@@ -19,7 +19,15 @@ apt install libapache2-mod-security2  modsecurity-crs -y
 mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
 
 msg_box "WARNING: Do not enable active defence if you don't know what you're doing!
-You can monitor tail -f /var/log/apache2/modsec_audit.log"
+For example it will break OnlyOffice, and may break other stuff as well in Nextcloud.
+
+You can monitor the aduit log by typing this command in your shell:
+tail -f /var/log/apache2/modsec_audit.log
+
+You can disable it by typing this command in your shell:
+sed -i 's/SecRuleEngine .*/SecRuleEngine DetectionOnly/g' /etc/modsecurity/modsecurity.conf
+
+You have been warnned."
 if [[ "no" == $(ask_yes_or_no "Do you want to enable active defence?") ]]
 then
     sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine on/g' /etc/modsecurity/modsecurity.conf
