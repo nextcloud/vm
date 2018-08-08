@@ -669,6 +669,7 @@ any_key() {
 }
 
 lowest_compatible_nc() {
+CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}'
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
 msg_box "This script is developed to work with Nextcloud $1 and later.
