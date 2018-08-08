@@ -85,6 +85,10 @@ fi
 is_this_installed postgresql
 is_this_installed apache2
 is_this_installed php
+is_this_installed php-fpm
+is_this_installed php7.2-fpm
+is_this_installed php7.1-fpm
+is_this_installed php7.0-fpm
 is_this_installed mysql-common
 is_this_installed mariadb-server
 
@@ -151,38 +155,95 @@ END
 service postgresql restart
 
 # Install Apache
-check_command apt install apache2 -y
+check_command apt install apache2 -y 
 a2enmod rewrite \
         headers \
+        proxy \
+        proxy_fcgi \
+        setenvif \
         env \
-        dir \
         mime \
-        ssl \
-        setenvif
+        dir \
+        authz_core \
+        alias \
+        ssl
 
+# We don't use Apache PHP (just to be sure)
+a2dismod mpm_prefork
+
+# Enable HTTP/2 server wide
+echo "Enabling HTTP/2 server wide..."
+cat << HTTP2_ENABLE > "$HTTP2_CONF"
+<IfModule http2_module>
+    Protocols h2 h2c http/1.1
+    H2Direct on
+</IfModule>
+HTTP2_ENABLE
+echo "$HTTP2_CONF was successfully created"
+a2enmod http2
+restart_webserver
+        
 # Install PHP 7.2
 apt update -q4 & spinner_loading
 check_command apt install -y \
-    libapache2-mod-php7.2 \
-    php7.2-common \
+    php7.2-fpm \
     php7.2-intl \
     php7.2-ldap \
     php7.2-imap \
-    php7.2-cli \
     php7.2-gd \
     php7.2-pgsql \
-    php7.2-json \
     php7.2-curl \
     php7.2-xml \
     php7.2-zip \
     php7.2-mbstring \
-    php-smbclient \
-    php-imagick \
+    php7.2-soap \
+    php7.2-smbclient \
+    php7.2-imagick \
+    php7.2-json \
+    php7.2-gmp \
+    php7.2-bz2 \
+    php-pear \
     libmagickcore-6.q16-3-extra
+    
+# Enable php-fpm
+a2enconf php7.2-fpm
 
-# Enable SMB client
-# echo '# This enables php-smbclient' >> /etc/php/7.0/apache2/php.ini
-# echo 'extension="smbclient.so"' >> /etc/php/7.0/apache2/php.ini
+# Calculate max_children for php-fpm (this will be run in the end of the startup script as well)
+calculate_max_children
+
+# Set up a php-fpm pool with a unixsocket
+cat << POOL_CONF > "$PHP_POOL_DIR/nextcloud.conf"
+[NextCloud]
+user = www-data
+group = www-data
+listen = /run/php/php7.2-fpm.nextcloud.sock
+listen.owner = www-data
+listen.group = www-data
+pm = dynamic
+;; max_children is set dynamically with calculate_max_children()
+pm.max_children = $PHP_FPM_MAX_CHILDREN
+pm.start_servers = 3
+pm.min_spare_servers = 2
+pm.max_spare_servers = 3
+pm.max_requests = 500
+env[HOSTNAME] = $(hostname -f)
+env[PATH] = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+env[TMP] = /tmp
+env[TMPDIR] = /tmp
+env[TEMP] = /tmp
+security.limit_extensions = .php
+php_admin_value [cgi.fix_pathinfo] = 1
+POOL_CONF
+
+# Disable the idling example pool.
+mv $PHP_POOL_DIR/www.conf $PHP_POOL_DIR/www.conf.backup
+
+# Restart Webserver
+restart_webserver
+
+# Enable SMB client # already loaded with php-smbclient
+# echo '# This enables php-smbclient' >> /etc/php/7.2/apache2/php.ini
+# echo 'extension="smbclient.so"' >> /etc/php/7.2/apache2/php.ini
 
 # Install VM-tools
 install_if_not open-vm-tools
@@ -228,17 +289,17 @@ crontab -u www-data -l | { cat; echo "*/15  *  *  *  * php -f $NCPATH/cron.php >
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
-sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" $PHP_INI
 # max_input_time
-sed -i "s|max_input_time =.*|max_input_time = 3600|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|max_input_time =.*|max_input_time = 3600|g" $PHP_INI
 # memory_limit
-sed -i "s|memory_limit =.*|memory_limit = 512M|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|memory_limit =.*|memory_limit = 512M|g" $PHP_INI
 # post_max
-sed -i "s|post_max_size =.*|post_max_size = 1100M|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|post_max_size =.*|post_max_size = 1100M|g" $PHP_INI
 # upload_max
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" /etc/php/7.2/apache2/php.ini
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" $PHP_INI
 
-# Set max upload in Nextcloud .htaccess
+# Set max upload in Nextcloud .user.ini
 configure_max_upload
 
 # Set SMTP mail
@@ -248,7 +309,7 @@ occ_command config:system:set mail_smtpmode --value="smtp"
 occ_command config:system:set log_rotate_size --value="10485760"
 
 # Enable OPCache for PHP 
-# https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+# https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 phpenmod opcache
 {
 echo "# OPcache settings for Nextcloud"
@@ -260,25 +321,16 @@ echo "opcache.memory_consumption=256"
 echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
-} >> /etc/php/7.2/apache2/php.ini
-
-# Install preview generator
-install_and_enable_app previewgenerator
-
-# Run the first preview generation and add crontab
-if [ -d "$NC_APPS_PATH/previewgenerator" ]
-then
-    crontab -u www-data -l | { cat; echo "@daily php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
-    occ_command preview:generate-all
-    touch /var/log/previewgenerator.log
-    chown www-data:www-data /var/log/previewgenerator.log
-fi
+} >> $PHP_INI
 
 # Install issuetemplate
 install_and_enable_app issuetemplate
 
 # Install CanIUpdate?
 install_and_enable_app caniupdate
+
+# Install PDF Viewer
+install_and_enable_app files_pdfviewer
 
 # Install Figlet
 install_if_not figlet
@@ -299,6 +351,10 @@ then
 #    ServerAlias subdomain.example.com
 
 ### SETTINGS ###
+    <FilesMatch "\.php$">
+        SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"
+    </FilesMatch>
+
     DocumentRoot $NCPATH
 
     <Directory $NCPATH>
@@ -316,6 +372,20 @@ then
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
+    
+    # The following lines prevent .htaccess and .htpasswd files from being
+    # viewed by Web clients.
+    <Files ".ht*">
+    Require all denied
+    </Files>
+    
+    # Disable HTTP TRACE method.
+    TraceEnable off
+
+    # Disable HTTP TRACK method.
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^TRACK
+    RewriteRule .* - [R=405,L]
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
@@ -340,6 +410,10 @@ then
 #    ServerAlias subdomain.example.com
 
 ### SETTINGS ###
+    <FilesMatch "\.php$">
+        SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"
+    </FilesMatch>
+
     DocumentRoot $NCPATH
 
     <Directory $NCPATH>
@@ -357,6 +431,20 @@ then
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
+    
+    # The following lines prevent .htaccess and .htpasswd files from being
+    # viewed by Web clients.
+    <Files ".ht*">
+    Require all denied
+    </Files>
+    
+    # Disable HTTP TRACE method.
+    TraceEnable off
+
+    # Disable HTTP TRACK method.
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^TRACK
+    RewriteRule .* - [R=405,L]
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
@@ -374,36 +462,12 @@ a2ensite nextcloud_ssl_domain_self_signed.conf
 a2ensite nextcloud_http_domain_self_signed.conf
 a2dissite default-ssl
 
-# Enable HTTP/2 server wide, if user decides to
-msg_box "Your official package repository does not provide an Apache2 package with HTTP/2 module included.
-If you like to enable HTTP/2 nevertheless, we can upgrade your Apache2 from Ondrejs PPA:
-https://launchpad.net/~ondrej/+archive/ubuntu/apache2
+# Enable new config
+a2ensite nextcloud_ssl_domain_self_signed.conf
+a2ensite nextcloud_http_domain_self_signed.conf
+a2dissite default-ssl
 
-Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues.
-E.g. the Nextcloud Spreed video calls app does not yet work with HTTP/2 enabled."
-
-if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 system wide?") ]]
-then
-    # Adding PPA
-    add-apt-repository ppa:ondrej/apache2 -y
-    apt update -q4 & spinner_loading
-    apt upgrade apache2 -y
-    
-    # Enable HTTP/2 module & protocol
-    cat << HTTP2_ENABLE > "$HTTP2_CONF"
-<IfModule http2_module>
-    Protocols h2 h2c http/1.1
-    H2Direct on
-</IfModule>
-HTTP2_ENABLE
-    echo "$HTTP2_CONF was successfully created"
-    a2enmod http2
-fi
-
-# Restart Apache2 to enable new config
-service apache2 restart
-
-whiptail --title "Which apps/programs do you want to install?" --checklist --separate-output "" 10 40 3 \
+whiptail --title "Install apps or software" --checklist --separate-output "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "              " on \
 "Contacts" "              " on \
 "Webmin" "              " on 2>results
@@ -453,8 +517,6 @@ apt dist-upgrade -y
 apt purge lxd -y
 
 # Cleanup
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e ''"$(uname -r | cut -f1,2 -d"-")"'' | grep -e '[0-9]' | xargs sudo apt -y purge)
-echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete

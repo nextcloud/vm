@@ -106,15 +106,16 @@
         <h2>Access Nextcloud</h2>
 
         <div class="information">
-            <p>Use one of the following addresses, HTTPS is preffered:
+            <p>Use the following address:
             <h3>
                 <ul>
-                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>/nextcloud">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)
                     <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/nextcloud">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
                 </ul>
             </h3>
-            <p>Note: Please accept the warning in the browser if you connect via HTTPS. It is recommended<br>
-            to <a href="https://www.techandme.se/publish-your-server-online" target="_blank">buy your own certificate and replace the self-signed certificate to your own.</a></p>
+            <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
+            It's recomended to <a href="https://www.techandme.se/publish-your-server-online" target="_blank">buy your own certificate $
+            <p>The easiest way to get a real SSL certificate though is to run the script included in this VM:<br>
+            sudo bash /var/scripts/activate-ssl.sh
             <p>Note: Before you can login you have to run the setup script, as descirbed in the video above.</p>
         </div>
 

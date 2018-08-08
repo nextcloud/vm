@@ -32,7 +32,7 @@ GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/php-fpm"
 STATIC="$GITHUB_REPO/static"
 LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
@@ -95,6 +95,9 @@ NC_APPS_PATH=$NCPATH/apps
 SOLR_HOME=/home/$SUDO_USER/solr_install/
 SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
 SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
+# PHP-FPM
+PHP_INI=/etc/php/7.2/fpm/php.ini
+PHP_POOL_DIR=/etc/php/7.2/fpm/pool.d
 # Adminer
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
@@ -204,6 +207,59 @@ do
 done
 }
 
+# Warn user that HTTP/2 will be disabled if installing app that use Apache2 PHP instead of PHP-FPM
+# E.g: http2_warn Modsecurity
+http2_warn() {
+msg_box "This VM has HTTP/2 enabled by default. 
+
+If you continue with installing $1, HTTP/2 will be disabled since it's not compatible with the mpm module used by $1.
+
+This is what Apache will say in the error.log if you enable $1 anyway:
+
+The mpm module (prefork.c) is not supported by mod_http2.
+The mpm determines how things are processed in your server.
+HTTP/2 has more demands in this regard and the currently selected mpm will just not do.
+This is an advisory warning. Your server will continue to work, but the HTTP/2 protocol will be inactive."
+
+if [[ "no" == $(ask_yes_or_no "Do you really want to enable $1 anyway?") ]]
+then
+    exit 1
+fi
+}
+
+calculate_max_children() {
+# Calculate max_children depending on RAM
+# Tends to be between 30-50MB
+average_php_memory_requirement=50
+available_memory=$(awk '/MemAvailable/ {printf "%d", $2/1024}' /proc/meminfo)
+export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
+
+echo "Automatically configures PHP-FPM 'max_children'..." 
+if [ $PHP_FPM_MAX_CHILDREN -lt 8 ]
+then
+msg_box "The current max_children value available to set is $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
+The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
+
+The absolute minimum amount of RAM required to run the VM is 2 GB, but we recomend 4 GB.
+
+You now have two choices:
+1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
+   installing it in the same way as you did before.
+2. Import this VM again without raising the RAM, but don't install any of the following apps:
+   1) Collabora
+   2) OnlyOffice
+   3) Full Text Search
+
+This script will now exit. 
+The installation was not successful, sorry for the inconvenience.
+
+If you think this is a bug, please report it to $ISSUES"
+exit 1
+else
+    echo "PHP-FPM max_children is $PHP_FPM_MAX_CHILDREN"
+fi
+}
+
 test_connection() {
 # Install dnsutils if not existing
 if [ "$(dpkg-query -W -f='${Status}' "dnsutils" 2>/dev/null | grep -c "ok installed")" == "1" ]
@@ -248,6 +304,11 @@ If you think that this is a bug, please report it to https://github.com/nextclou
     exit 1
     fi
 fi
+}
+
+restart_webserver() {
+check_command systemctl restart apache2
+check_command systemctl restart php7.2-fpm.service
 }
 
 # Install certbot (Let's Encrypt)
@@ -330,10 +391,10 @@ fi
 check_distro_version() {
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if uname -a | grep -ic "bionic"
+if uname -a | grep -ic "bionic" &> /dev/null
 then
     OS=1
-elif uname -v | grep -ic "Ubuntu"  
+elif uname -v | grep -ic "Ubuntu" &> /dev/null
 then 
     OS=1
 fi
@@ -354,11 +415,15 @@ fi
 }
 
 configure_max_upload() {
-# Increase max filesize (expects that changes are made in /etc/php/7.2/apache2/php.ini)
+# Increase max filesize (expects that changes are made in $PHP_INI)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
-sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
-sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
-sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
+echo "Setting max_upload size in PHP..."
+# Copy settings from .htaccess to user.ini. beacuse we run php-fpm. Documented here: https://docs.nextcloud.com/server/13/admin_manual/installation/source_installation.html#php-fpm-configuration-notes
+cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
+# Do the acutal change
+sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.user.ini
+sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.user.ini
+sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.user.ini
 }
 
 # Check if program is installed (is_this_installed apache2)
@@ -697,15 +762,11 @@ fi
 }
 
 install_docker() {
-if [ "$DOCKER_INS" = "docker-ce" ] || \
-[ "$DOCKER_INS" = "docker-ee" ] || \
-[ "$DOCKER_INS" = "docker.io" ] ; then
-	echo "Docker seems to be installed, skipping..."
-else
-	echo "Installing Docker CE..."
-	curl -fsSL get.docker.com -o get-docker.sh
-	bash get-docker.sh
-	rm -rf get-docker.sh
+if ! docker -v &> /dev/null
+then
+    echo "Installing Docker CE..."
+    install_if_not curl
+    curl -fsSL get.docker.com | sh
 fi
 }
 

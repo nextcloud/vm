@@ -16,6 +16,9 @@ debug_mode
 # Check if root
 root_check
 
+# Warn user about HTTP/2
+http2_warn Adminer
+
 # Check that the script can see the external IP (apache fails otherwise)
 if [ -z "$WANIP4" ]
 then
@@ -38,9 +41,9 @@ sudo wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
 sudo ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
-Alias /adminer.php "$ADMINERDIR"/adminer.php
+Alias /adminer.php $ADMINERDIR/adminer.php
 
-<Directory "$ADMINERDIR">
+<Directory $ADMINERDIR>
 
 <IfModule mod_dir.c>
 DirectoryIndex adminer.php
@@ -56,7 +59,7 @@ ADMINER_CREATE
 # Enable config
 check_command a2enconf adminer.conf
 
-if ! webserver_restart
+if ! restart_webserver
 then
 msg_box "Apache2 could not restart...
 The script will exit."
@@ -68,7 +71,7 @@ http://$ADDRESS/adminer.php
 You can download more plugins and get more information here: 
 https://www.adminer.org
 
-Your PostgreSQL connection information can be found in $NCPATH/config/confgig.php
+Your PostgreSQL connection information can be found in $NCPATH/config/config.php
 
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"

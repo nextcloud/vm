@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2017, https://www.techandme.se/
+# Tech and Me © - 2018, https://www.techandme.se/
 
 echo "Installing Netdata..."
 

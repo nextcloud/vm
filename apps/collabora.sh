@@ -76,8 +76,7 @@ check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
 
 # Install Docker
-install_if_not curl
-curl -fsSL get.docker.com | sh
+install_docker
 
 # Set devicemapper
 check_command cp -v /lib/systemd/system/docker.service /etc/systemd/system/
@@ -196,13 +195,13 @@ then
     printf "Certs are generated!\n"
     printf "${Color_Off}\n"
     a2ensite "$SUBDOMAIN.conf"
-    service apache2 restart
+    restart_webserver
 # Install Collabora App
     occ_command app:install richdocuments
 else
     printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: $ISSUES\n"
     any_key "Press any key to continue... "
-    service apache2 restart
+    restart_webserver
 fi
 
 # Enable RichDocuments (Collabora App)

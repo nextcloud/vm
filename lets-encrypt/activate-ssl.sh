@@ -147,6 +147,9 @@ then
     ServerName $domain
 
 ### SETTINGS ###
+    <FilesMatch "\.php$">
+        SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"
+    </FilesMatch>
 
     DocumentRoot $NCPATH
 
@@ -163,7 +166,19 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-
+    
+    # The following lines prevent .htaccess and .htpasswd files from being
+    # viewed by Web clients.
+    <Files ".ht*">
+    Require all denied
+    </Files>
+    
+    # Disable HTTP TRACE method.
+    TraceEnable off
+    # Disable HTTP TRACK method.
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^TRACK
+    RewriteRule .* - [R=405,L]
 
 ### LOCATION OF CERT FILES ###
 

@@ -221,6 +221,15 @@ chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
 # Change 000-default to $WEB_ROOT
 sed -i "s|DocumentRoot /var/www/html|DocumentRoot $HTML|g" /etc/apache2/sites-available/000-default.conf
 
+# Make possible to see the welcome screen (without this php-fpm won't reach it)
+ sed -i '14i\    # http://lost.l-w.ca/0x05/apache-mod_proxy_fcgi-and-php-fpm/' /etc/apache2/sites-available/000-default.conf
+ sed -i '15i\   <FilesMatch "\.php$">' /etc/apache2/sites-available/000-default.conf
+ sed -i '16i\    <If "-f %{SCRIPT_FILENAME}">' /etc/apache2/sites-available/000-default.conf
+ sed -i '17i\      SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"' /etc/apache2/sites-available/000-default.conf
+ sed -i '18i\   </If>' /etc/apache2/sites-available/000-default.conf
+ sed -i '19i\   </FilesMatch>' /etc/apache2/sites-available/000-default.conf
+ sed -i '20i\    ' /etc/apache2/sites-available/000-default.conf
+
 # Make $SCRIPTS excutable
 chmod +x -R $SCRIPTS
 chown root:root -R $SCRIPTS
@@ -317,10 +326,11 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Fail2ban" "(Extra Bruteforce protection)   " OFF \
 "Adminer" "(PostgreSQL GUI)       " OFF \
 "Netdata" "(Real-time server monitoring)       " OFF \
-"Collabora" "(Online editing 2GB RAM)   " OFF \
-"OnlyOffice" "(Online editing 4GB RAM)   " OFF \
+"Collabora" "(Online editing [2GB RAM])   " OFF \
+"OnlyOffice" "(Online editing [4GB RAM])   " OFF \
 "Passman" "(Password storage)   " OFF \
-"FullTextSearch" "(Elasticsearch [still in BETA])   " OFF \
+"FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
+"PreviewGenerator" "(Pre-generate previews)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
 "Spreed.ME" "(3rd-party Video calls and chat)   " OFF 2>results
 
@@ -353,7 +363,11 @@ do
         
         FullTextSearch)
            run_app_script fulltextsearch
-        ;;        
+        ;;             
+        
+        PreviewGenerator)
+           run_app_script previewgenerator
+        ;;   
 
         Talk)
             run_app_script talk
@@ -393,21 +407,16 @@ clear
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
-service apache2 reload
+restart_webserver
 
-# Increase max filesize (expects that changes are made in /etc/php/7.0/apache2/php.ini)
+# Increase max filesize (expects that changes are made in $PHP_INI)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
-VALUE="# php_value upload_max_filesize 513M"
-if ! grep -Fxq "$VALUE" $NCPATH/.htaccess
-then
-    sed -i 's/  php_value upload_max_filesize 513M/# php_value upload_max_filesize 511M/g' "$NCPATH"/.htaccess
-    sed -i 's/  php_value post_max_size 513M/# php_value post_max_size 511M/g' "$NCPATH"/.htaccess
-    sed -i 's/  php_value memory_limit 512M/# php_value memory_limit 512M/g' "$NCPATH"/.htaccess
-fi
+configure_max_upload
 
 # Extra configurations
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
+"ModSecurity" "(Add ModSecurity for Apache2" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF 2>results
 
 while read -r -u 9 choice
@@ -415,6 +424,10 @@ do
     case $choice in
         "Security")
             run_static_script security
+        ;;
+        
+        "ModSecurity")
+            run_static_script modsecurity
         ;;
 
         "Static IP")
@@ -426,6 +439,11 @@ do
     esac
 done 9< results
 rm -f results
+
+# Calculate max_children after all apps are installed
+calculate_max_children
+check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" $PHP_POOL_DIR/nextcloud.conf
+restart_webserver
 
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
@@ -504,8 +522,6 @@ bash $SCRIPTS/update.sh
 # Cleanup 2
 apt autoremove -y
 apt autoclean
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e "$(uname -r | cut -f1,2 -d"-")" | grep -e "[0-9]" | xargs sudo apt -y purge)
-echo "$CLEARBOOT"
 
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!

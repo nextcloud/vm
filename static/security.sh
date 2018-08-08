@@ -13,6 +13,9 @@ true
 DEBUG=0
 debug_mode
 
+# Check if root
+root_check
+
 # Based on: http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
 
 # Protect against DDOS
@@ -71,7 +74,7 @@ fi
 # Enable $SPAMHAUS
 sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
 
-check_command service apache2 restart
+restart_webserver
 echo "Security added!"
 sleep 3
 

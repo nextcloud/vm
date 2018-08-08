@@ -30,9 +30,9 @@ then
 fi
 
 # Check if it's a clean install
-if [ -d /usr/share/elasticsearch ]
+if [ -d "$RORDIR" ]
 then
-msg_box "It seems like /usr/share/elasticsearch already exists. Have you already run this script?
+msg_box "It seems like $RORDIR already exists. Have you already run this script?
 If yes, revert all the settings and try again, it must be a clean install."
     exit 1
 fi
@@ -57,12 +57,11 @@ then
     deluser --group solr
 fi
 
-#Check & install docker
+# Check & install docker
 install_docker
-
 set_max_count
-mkdir $RORDIR
-docker pull $nc_fts
+mkdir -p "$RORDIR"
+docker pull "$nc_fts"
 
 # Create configuration YML 
 cat << YML_CREATE > /opt/es/readonlyrest.yml

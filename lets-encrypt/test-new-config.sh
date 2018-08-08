@@ -19,7 +19,7 @@ a2ensite "$1"
 a2dissite nextcloud_ssl_domain_self_signed.conf
 a2dissite nextcloud_http_domain_self_signed.conf
 a2dissite 000-default.conf
-if service apache2 restart
+if restart_webserver
 then
 msg_box "New settings works! SSL is now activated and OK!
 
@@ -42,6 +42,8 @@ then
     sudo hostnamectl set-hostname "$FQDOMAIN"
     # Change /etc/hosts as well
     sed -i "s|127.0.1.1.*|127.0.1.1       $FQDOMAIN $(hostname -s)|g" /etc/hosts
+    # And in the php-fpm pool conf
+    sed -i "s|env\[HOSTNAME\] = .*|env[HOSTNAME] = $(hostname -f)|g" "$PHP_POOL_DIR"/nextcloud.conf
 fi
 
 # Set trusted domains
@@ -80,7 +82,7 @@ else
     a2ensite nextcloud_ssl_domain_self_signed.conf
     a2ensite nextcloud_http_domain_self_signed.conf
     a2ensite 000-default.conf
-    service apache2 restart
+    restart_webserver
     printf "${ICyan}Couldn't load new config, reverted to old settings. Self-signed SSL is OK!${Color_Off}\n"
     any_key "Press any key to continue... "
     exit 1
