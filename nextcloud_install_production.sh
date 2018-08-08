@@ -72,6 +72,7 @@ rm $SCRIPTS/adduser.sh
 
 # Check distrobution and version
 check_distro_version
+check_universe
 
 # Check if key is available
 if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null
