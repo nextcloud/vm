@@ -170,18 +170,6 @@ a2enmod rewrite \
 
 # We don't use Apache PHP (just to be sure)
 a2dismod mpm_prefork
-
-# Enable HTTP/2 server wide
-echo "Enabling HTTP/2 server wide..."
-cat << HTTP2_ENABLE > "$HTTP2_CONF"
-<IfModule http2_module>
-    Protocols h2 h2c http/1.1
-    H2Direct on
-</IfModule>
-HTTP2_ENABLE
-echo "$HTTP2_CONF was successfully created"
-a2enmod http2
-restart_webserver
         
 # Install PHP 7.2
 apt update -q4 & spinner_loading
@@ -207,6 +195,18 @@ check_command apt install -y \
     
 # Enable php-fpm
 a2enconf php7.2-fpm
+
+# Enable HTTP/2 server wide
+echo "Enabling HTTP/2 server wide..."
+cat << HTTP2_ENABLE > "$HTTP2_CONF"
+<IfModule http2_module>
+    Protocols h2 h2c http/1.1
+    H2Direct on
+</IfModule>
+HTTP2_ENABLE
+echo "$HTTP2_CONF was successfully created"
+a2enmod http2
+restart_webserver
 
 # Calculate max_children for php-fpm (this will be run in the end of the startup script as well)
 calculate_max_children
