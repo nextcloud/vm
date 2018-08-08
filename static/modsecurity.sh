@@ -13,9 +13,6 @@ debug_mode
 # Check if root
 root_check
 
-# Warn user about HTTP/2
-http2_warn ModSecurity
-
 # Add modsecurity
 apt update -q4 & spinner_loading
 install_if_not libapache2-mod-security2 
@@ -82,6 +79,6 @@ MODSECWHITE
 
 if [ -f /etc/modsecurity/whitelist.conf ]
 then
-    echo "Modescurity activated!"
+    echo "ModSecurity activated!"
     restart_webserver
 fi
