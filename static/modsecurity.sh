@@ -82,5 +82,6 @@ MODSECWHITE
 
 if [ -f /etc/modsecurity/whitelist.conf ]
 then
-    echo "Modescurity activated!" && sleep 1
+    echo "Modescurity activated!"
+    restart_webserver
 fi
