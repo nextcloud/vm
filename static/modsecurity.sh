@@ -13,9 +13,13 @@ debug_mode
 # Check if root
 root_check
 
+# Warn user about HTTP/2
+http2_warn
+
 # Add modsecurity
 apt update -q4 & spinner_loading
-apt install libapache2-mod-security2  modsecurity-crs -y
+install_if_not libapache2-mod-security2 
+install_if_not modsecurity-crs
 mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
 
 msg_box "WARNING: Do not enable active defence if you don't know what you're doing!
@@ -28,9 +32,9 @@ You can disable it by typing this command in your shell:
 sed -i 's/SecRuleEngine .*/SecRuleEngine DetectionOnly/g' /etc/modsecurity/modsecurity.conf
 
 You have been warnned."
-if [[ "no" == $(ask_yes_or_no "Do you want to enable active defence?") ]]
+if [[ "yes" == $(ask_yes_or_no "Do you want to enable active defence?") ]]
 then
-    sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine on/g' /etc/modsecurity/modsecurity.conf
+    sed -i 's/SecRuleEngine .*/SecRuleEngine on/g' /etc/modsecurity/modsecurity.conf
 fi
 
 cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
@@ -75,3 +79,8 @@ cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
   #SecRuleRemoveById 981222 981405 981185 981184
 </Directory>
 MODSECWHITE
+
+if [ -f /etc/modsecurity/whitelist.conf]
+then
+    echo "Modescurity activated!" && sleep 1
+fi
