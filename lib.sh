@@ -207,6 +207,26 @@ do
 done
 }
 
+# Warn user that HTTP/2 will be disabled if installing app that use Apache2 PHP instead of PHP-FPM
+# E.g: http2_warn Modsecurity
+http2_warn() {
+msg_box "This VM has HTTP/2 enabled by default. 
+
+If you continue with installing $1, HTTP/2 will be disabled since it's not compatible with the mpm module used by $1.
+
+This is what Apache will say in the error.log if you enable $1 anyway:
+
+The mpm module (prefork.c) is not supported by mod_http2.
+The mpm determines how things are processed in your server.
+HTTP/2 has more demands in this regard and the currently selected mpm will just not do.
+This is an advisory warning. Your server will continue to work, but the HTTP/2 protocol will be inactive."
+
+if [[ "no" == $(ask_yes_or_no "Do you really want to enable $1 anyway?") ]]
+then
+    exit 1
+fi
+}
+
 calculate_max_children() {
 # Calculate max_children depending on RAM
 # Tends to be between 30-50MB
