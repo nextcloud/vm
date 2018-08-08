@@ -8,7 +8,7 @@ sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/g
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/php-fpm/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check if dpkg or apt is running
 is_process_running apt
@@ -44,7 +44,7 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/php-fpm/lib.sh)
+FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 
@@ -170,6 +170,18 @@ a2enmod rewrite \
 
 # We don't use Apache PHP (just to be sure)
 a2dismod mpm_prefork
+
+# Enable HTTP/2 server wide
+echo "Enabling HTTP/2 server wide..."
+cat << HTTP2_ENABLE > "$HTTP2_CONF"
+<IfModule http2_module>
+    Protocols h2 h2c http/1.1
+    H2Direct on
+</IfModule>
+HTTP2_ENABLE
+echo "$HTTP2_CONF was successfully created"
+a2enmod http2
+restart_webserver
         
 # Install PHP 7.2
 apt update -q4 & spinner_loading
@@ -450,34 +462,10 @@ a2ensite nextcloud_ssl_domain_self_signed.conf
 a2ensite nextcloud_http_domain_self_signed.conf
 a2dissite default-ssl
 
-# Enable HTTP/2 server wide, if user decides to
-msg_box "Your official package repository does not provide an Apache2 package with HTTP/2 module included.
-If you like to enable HTTP/2 nevertheless, we can upgrade your Apache2 from Ondrejs PPA:
-https://launchpad.net/~ondrej/+archive/ubuntu/apache2
-
-Enabling HTTP/2 can bring a performance advantage, but may also have some compatibility issues.
-So please think twice before enabling it."
-
-if [[ "yes" == $(ask_yes_or_no "Do you want to enable HTTP/2 system wide?") ]]
-then
-    # Adding PPA
-    add-apt-repository ppa:ondrej/apache2 -y
-    apt update -q4 & spinner_loading
-    apt upgrade apache2 -y
-    
-    # Enable HTTP/2 module & protocol
-    cat << HTTP2_ENABLE > "$HTTP2_CONF"
-<IfModule http2_module>
-    Protocols h2 h2c http/1.1
-    H2Direct on
-</IfModule>
-HTTP2_ENABLE
-    echo "$HTTP2_CONF was successfully created"
-    a2enmod http2
-fi
-
-# Restart Apache2 to enable new config
-restart_webserver
+# Enable new config
+a2ensite nextcloud_ssl_domain_self_signed.conf
+a2ensite nextcloud_http_domain_self_signed.conf
+a2dissite default-ssl
 
 whiptail --title "Install apps or software" --checklist --separate-output "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "              " on \
@@ -529,8 +517,6 @@ apt dist-upgrade -y
 apt purge lxd -y
 
 # Cleanup
-CLEARBOOT=$(dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e ''"$(uname -r | cut -f1,2 -d"-")"'' | grep -e '[0-9]' | xargs sudo apt -y purge)
-echo "$CLEARBOOT"
 apt autoremove -y
 apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
