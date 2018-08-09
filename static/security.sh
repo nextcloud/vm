@@ -26,9 +26,9 @@ apt update -q4 & spinner_loading
 apt -y install libapache2-mod-evasive
 mkdir -p /var/log/apache2/evasive
 chown -R www-data:root /var/log/apache2/evasive
-if [ ! -f $ENVASIVE ]
+if [ ! -f "$ENVASIVE" ]
 then
-    touch $ENVASIVE
+    touch "$ENVASIVE"
     cat << ENVASIVE > "$ENVASIVE"
 DOSHashTableSize 2048
 DOSPageCount 20  # maximum number of requests for the same page
@@ -50,19 +50,20 @@ exit
 # Protect against DNS Injection
 # Insipired by: https://www.c-rieger.de/nextcloud-13-nginx-installation-guide-for-ubuntu-18-04-lts/#spamhausproject
 
+# shellcheck disable=SC2016
 DATE='$(date +%Y-%m-%d)'
 cat << SPAMHAUS_ENABLE > "$SCRIPTS/spamhaus_cronjob.sh"
 #!/bin/bash
 # Thanks to @ank0m
-EXEC_DATE=`date +%Y-%m-%d`
+EXEC_DATE='date +%Y-%m-%d'
 SPAMHAUS_DROP="/usr/local/src/drop.txt"
 SPAMHAUS_eDROP="/usr/local/src/edrop.txt"
 URL="https://www.spamhaus.org/drop/drop.txt"
 eURL="https://www.spamhaus.org/drop/edrop.txt"
 DROP_ADD_TO_UFW="/usr/local/src/DROP2.txt"
 eDROP_ADD_TO_UFW="/usr/local/src/eDROP2.txt"
-DROP_ARCHIVE_FILE="/usr/local/src/DROP_$EXEC_DATE"
-eDROP_ARCHIVE_FILE="/usr/local/src/eDROP_$EXEC_DATE"
+DROP_ARCHIVE_FILE="/usr/local/src/DROP_{$EXEC_DATE}"
+eDROP_ARCHIVE_FILE="/usr/local/src/eDROP_{$EXEC_DATE}"
 # All credits for the following BLACKLISTS goes to "The Spamhaus Project" - https://www.spamhaus.org
 echo "Start time: $(date)"
 echo " "
@@ -103,13 +104,13 @@ echo End time: $(date)
 SPAMHAUS_ENABLE
 
 # Make the file executable
-chmod +x $SCRIPTS/spamhaus_cronjob.sh
+chmod +x "$SCRIPTS"/spamhaus_cronjob.sh
 
 # Add it to crontab
 (crontab -l ; echo "10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1") | crontab -u root -
 
 # Run it for the first time
-check_command bash $SCRIPTS/spamhaus_cronjob.sh
+check_command bash "$SCRIPTS"/spamhaus_cronjob.sh
 
 # Enable $SPAMHAUS
 if sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
