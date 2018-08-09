@@ -37,7 +37,7 @@ If yes, revert all the settings and try again, it must be a clean install."
     exit 1
 fi
 
-echo "Starting to setup Elastic Search & Full Text Search on Nextcloud..."
+echo "Installing Elastic Search & Full Text Search on Nextcloud..."
 apt update -q4 & spinner_loading
 
 # Disable and remove Nextant + Solr
