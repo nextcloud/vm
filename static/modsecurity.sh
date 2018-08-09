@@ -13,7 +13,7 @@ debug_mode
 # Check if root
 root_check
 
-echo "installing ModSecurity..."
+echo "Installing ModSecurity..."
 echo
 
 # Add modsecurity
