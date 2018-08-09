@@ -30,7 +30,6 @@ fi
 # Check distrobution and version
 check_distro_version
 
-echo
 echo "Installing and securing Adminer..."
 echo
 

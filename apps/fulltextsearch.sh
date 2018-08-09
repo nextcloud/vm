@@ -37,8 +37,8 @@ If yes, revert all the settings and try again, it must be a clean install."
     exit 1
 fi
 
-echo "Starting to setup Elastic Search & Full Text Search on Nextcloud..."
-apt update -q4 & spinner_loading
+echo "Installing Elastic Search & Full Text Search on Nextcloud..."
+echo
 
 # Disable and remove Nextant + Solr
 if [ -d "$NC_APPS_PATH"/nextant ]
@@ -58,6 +58,7 @@ then
 fi
 
 # Check & install docker
+apt update -q4 & spinner_loading
 install_docker
 set_max_count
 mkdir -p "$RORDIR"

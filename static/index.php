@@ -113,9 +113,9 @@
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
-            It's recomended to <a href="https://www.techandme.se/publish-your-server-online" target="_blank">buy your own certificate $
-            <p>The easiest way to get a real SSL certificate though is to run the script included in this VM:<br>
-            sudo bash /var/scripts/activate-ssl.sh
+             It's recomended to <a href="https://www.techandme.se/publish-your-server-online" target="_blank">buy your own certificate and replace the self-signed certificate to your own.</a></p>
+            <p>The easiest way to get a real SSL certificate though is to run the script included in this VM.<br>
+            Just run 'sudo bash /var/scripts/activate-ssl.sh' from your terminal and follow the instructions.
             <p>Note: Before you can login you have to run the setup script, as descirbed in the video above.</p>
         </div>
 

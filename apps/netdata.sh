@@ -15,6 +15,9 @@ true
 DEBUG=0
 debug_mode
 
+echo "Installing Netdata..."
+echo
+
 # Download and install Netdata
 if [ -d /etc/netdata ]
 then
@@ -63,8 +66,3 @@ https://github.com/firehol/netdata/wiki/Configuration"
 # Cleanup
 rm -rf /tmp/netdata*
 fi
-clear
-
-exit
-
-

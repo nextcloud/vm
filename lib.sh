@@ -32,7 +32,7 @@ GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/php-fpm"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
 LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
@@ -234,7 +234,7 @@ average_php_memory_requirement=50
 available_memory=$(awk '/MemAvailable/ {printf "%d", $2/1024}' /proc/meminfo)
 export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 
-echo "Automatically configures PHP-FPM 'max_children'..." 
+echo "Automatically configures pm.max_children for php-fpm..."
 if [ $PHP_FPM_MAX_CHILDREN -lt 8 ]
 then
 msg_box "The current max_children value available to set is $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
@@ -256,7 +256,7 @@ The installation was not successful, sorry for the inconvenience.
 If you think this is a bug, please report it to $ISSUES"
 exit 1
 else
-    echo "PHP-FPM max_children is $PHP_FPM_MAX_CHILDREN"
+    echo "pm.max_children was set to $PHP_FPM_MAX_CHILDREN"
 fi
 }
 
