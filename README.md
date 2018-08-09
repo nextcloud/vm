@@ -91,6 +91,19 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** You can download the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
 
+**Q: How do I run the occ command?**
+<br />
+**A:** We've added an alias for that as well. As root, just run `nextcloud_occ`
+
+**Q: How to update Nextcloud VM?**
+<br />
+**A:** You can not use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built in script instead:
+`sudo bash /var/scripts/update.sh` or run `run_nextcloud_update` as root from your terminal.
+
+**Q: Where do I tweak the settings for php-fpm?**
+<br />
+**A:** You can change the settings in /etc/php/7.2/fpm/pool.d/nextcloud.conf, but be aware; only change it if you know what you are doing!
+
 **Q: The downloaded file is just a few kilobyte, or corrupted**
 <br />
 **A:** This is due to heavy load on the server. Please try again in a few minutes.
@@ -127,11 +140,6 @@ Keep asking questions so that we can add them here.
 **Q: I have found a bug that I want to report, where do I do that?**
 <br />
 **A:** Just submit your report here: https://github.com/nextcloud/vm/issues/new
-
-**Q: How to update Nextcloud VM?**
-<br />
-**A:** You can not use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built in script instead:
-`sudo bash /var/scripts/update.sh`
 
 **Q: How to install apps if not selected during first install?**
 <br />
