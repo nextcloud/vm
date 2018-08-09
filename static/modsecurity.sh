@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# Tech and Me © - 2018, https://www.techandme.se/
+
+echo "Installing ModSecurity..."
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -12,9 +17,6 @@ debug_mode
 
 # Check if root
 root_check
-
-echo "Installing ModSecurity..."
-echo
 
 # Add modsecurity
 apt update -q4 & spinner_loading
@@ -81,10 +83,10 @@ cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
 MODSECWHITE
 
 # Don't log in Apache2 error.log, only in a seperate log (/var/log/apache2/modsec_audit.log)
-check command sed -i 's|SecDefaultAction "phase:1,log,auditlog,pass"|# SecDefaultAction "phase:1,log,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
-check command sed -i 's|SecDefaultAction "phase:2,log,auditlog,pass"|# SecDefaultAction "phase:2,log,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
-check command sed -i 's|# SecDefaultAction "phase:1,nolog,auditlog,pass"|SecDefaultAction "phase:1,nolog,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
-check command sed -i 's|# SecDefaultAction "phase:2,nolog,auditlog,pass"|SecDefaultAction "phase:2,nolog,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
+check_command sed -i 's|SecDefaultAction "phase:1,log,auditlog,pass"|# SecDefaultAction "phase:1,log,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
+check_command sed -i 's|SecDefaultAction "phase:2,log,auditlog,pass"|# SecDefaultAction "phase:2,log,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
+check_command sed -i 's|# SecDefaultAction "phase:1,nolog,auditlog,pass"|SecDefaultAction "phase:1,nolog,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
+check_command sed -i 's|# SecDefaultAction "phase:2,nolog,auditlog,pass"|SecDefaultAction "phase:2,nolog,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
 
 if [ -f /etc/modsecurity/whitelist.conf ]
 then
