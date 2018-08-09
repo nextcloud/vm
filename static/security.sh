@@ -2,7 +2,9 @@
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
-# shellcheck disable=2034,2059
+# REMOVE disable of SC2154 WHEN PUTTING SPAMHAUS IN PRODUCTION (it's just to fixing travis for now)
+
+# shellcheck disable=2034,2059,SC2154
 true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -45,11 +47,8 @@ fi
 a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 
 # Don't enable SpamHaus now as it's now working anyway
+# REMOVE disable of SC2154 WHEN PUTTING SPAMHAUS IN PRODUCTION (it's just to fixing travis for now) 
 exit
-
-# REMOVE disable of SC2154 WHEN PUTTING SPAMHAUS IN PRODUCTION (it's just to fixing travis for now)
-# shellcheck disable=SC2154
-true
 
 # Protect against DNS Injection
 # Insipired by: https://www.c-rieger.de/nextcloud-13-nginx-installation-guide-for-ubuntu-18-04-lts/#spamhausproject
