@@ -47,6 +47,9 @@ a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 # Don't enable SpamHaus now as it's now working anyway
 exit
 
+# REMOVE WHEN PUTTING SPAMHAUS IN PRODUCTION (it's just to fixing travis for now)
+# shellcheck disable=SC2154
+
 # Protect against DNS Injection
 # Insipired by: https://www.c-rieger.de/nextcloud-13-nginx-installation-guide-for-ubuntu-18-04-lts/#spamhausproject
 
