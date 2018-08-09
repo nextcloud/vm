@@ -238,7 +238,7 @@ POOL_CONF
 # Disable the idling example pool.
 mv $PHP_POOL_DIR/www.conf $PHP_POOL_DIR/www.conf.backup
 
-# Restart Webserver
+# Enable the new php-fpm config
 restart_webserver
 
 # Enable SMB client # already loaded with php-smbclient
