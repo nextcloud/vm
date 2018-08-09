@@ -2,6 +2,8 @@
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
+echo "Installing Nextcloud Talk..."
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -20,8 +22,6 @@ root_check
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
-
-echo "Installing Nextcloud Talk..."
 
 # Check if Nextcloud is installed
 echo "Checking if Nextcloud is installed..."
