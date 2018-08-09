@@ -1,12 +1,15 @@
 #!/bin/bash
+
+echo "Installing OnlyOffice..."
+
+# Tech and Me © - 2018, https://www.techandme.se/
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset OO_INSTALL
-
-# Tech and Me © - 2018, https://www.techandme.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -31,9 +34,6 @@ msg_box "It seems like Collabora is running.
 You can't run Collabora at the same time as you run OnlyOffice."
     exit 1
 fi
-
-echo "Installing OnlyOffice..."
-echo
 
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
