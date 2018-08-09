@@ -34,7 +34,7 @@ sed -i 's/SecRuleEngine .*/SecRuleEngine DetectionOnly/g' /etc/modsecurity/modse
 You have been warnned."
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable active defence?") ]]
 then
-    sed -i 's/SecRuleEngine .*/SecRuleEngine on/g' /etc/modsecurity/modsecurity.conf
+    sed -i 's|SecRuleEngine .*|SecRuleEngine on|g' /etc/modsecurity/modsecurity.conf
 fi
 
 cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
@@ -79,6 +79,12 @@ cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
   #SecRuleRemoveById 981222 981405 981185 981184
 </Directory>
 MODSECWHITE
+
+# Don't log in Apache2 error.log, only in a seperate log (/var/log/apache2/modsec_audit.log)
+check command sed -i 's|SecDefaultAction "phase:1,log,auditlog,pass"|# SecDefaultAction "phase:1,log,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
+check command sed -i 's|SecDefaultAction "phase:2,log,auditlog,pass"|# SecDefaultAction "phase:2,log,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
+check command sed -i 's|# SecDefaultAction "phase:1,nolog,auditlog,pass"|SecDefaultAction "phase:1,nolog,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
+check command sed -i 's|# SecDefaultAction "phase:2,nolog,auditlog,pass"|SecDefaultAction "phase:2,nolog,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
 
 if [ -f /etc/modsecurity/whitelist.conf ]
 then
