@@ -194,13 +194,13 @@ then
     then
         openssl dhparam -dsaparam -out "$DHPARAMS" 4096
     fi
-    printf "%b" "${Cyan}Certs are generated!\n${Color_Off}"
+    printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
 # Install Collabora App
     occ_command app:install richdocuments
 else
-    printf "%b" "${ICyan}It seems like no certs were generated, please report this issue here: $ISSUES\n${Color_Off}"
+    printf "%b" "${IRed}It seems like no certs were generated, please report this issue here: $ISSUES\n${Color_Off}"
     any_key "Press any key to continue... "
     restart_webserver
 fi
