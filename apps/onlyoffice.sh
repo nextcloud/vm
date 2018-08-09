@@ -32,6 +32,9 @@ You can't run Collabora at the same time as you run OnlyOffice."
     exit 1
 fi
 
+echo "Installing OnlyOffice..."
+echo
+
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
 
