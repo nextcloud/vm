@@ -16,6 +16,9 @@ debug_mode
 # Check if root
 root_check
 
+echo "Installing Extra Security..."
+echo
+
 # Based on: http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
 
 # Protect against DDOS
@@ -42,7 +45,7 @@ fi
 a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 
 # Protect against DNS Injection
-apt -y install libapache2-mod-spamhaus
+install_if_not libapache2-mod-spamhaus
 if [ ! -f $SPAMHAUS ]
 then
     touch $SPAMHAUS
@@ -72,9 +75,8 @@ else
 fi
 
 # Enable $SPAMHAUS
-sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
-
-restart_webserver
-echo "Security added!"
-sleep 3
-
+if sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
+then
+    echo "Security added!"
+    restart_webserver
+fi
