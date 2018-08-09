@@ -4,7 +4,7 @@ Thank you for reporting your issue to us!
 Please report only issues corresponding to the VM for Nextcloud 10 or later. If you found a bug that is related to the  server core, 
 you can file your report here: https://github.com/nextcloud/server
 
-Also, please notice that most times issues occur due to user error. We are happy to help, and appriciate that you report bugs, but if you are looking for help - please use the Nextcloud forums instead. You can find the forum here: https://help.nextcloud.com/c/support/appliances-docker-snappy-vm 
+If you are loking for help, please use the [Nextcloud forums](https://help.nextcloud.com/c/support/appliances-docker-snappy-vm) instead. You can also buy support [here](https://shop.hanssonit.se)
 
 Thank you!
 -->
@@ -23,9 +23,7 @@ Tell us what happens instead
 
 **Server version:** (see your admin page)
 
-**VM version** (Scripted install from master **OR** Released version)
-
-**Updated from an older installed version or fresh install:**
+**How did you install the VM?** (Scripted install from master **OR** Released version)
 
 ## Network
 **Do you use DHCP?**
@@ -37,7 +35,7 @@ Tell us what happens instead
 Please use http://hastebin.com/ for long error messages or logs. Thanks!
 -->
 
-#### Log file (/var/ncdata/nextcloud.log)
+#### Log file (/mnt/ncdata/nextcloud.log)
 ```
 Insert your nextcloud.log file here
 ```
