@@ -338,42 +338,52 @@ while read -r -u 9 choice
 do
     case $choice in
         Fail2ban)
+            clear
             run_app_script fail2ban
         ;;
         
         Adminer)
+            clear
             run_app_script adminer
         ;;
         
         Netdata)
+            clear
             run_app_script netdata
         ;;
         
         OnlyOffice)
+            clear
             run_app_script onlyoffice
         ;;
         
         Collabora)
+            clear
             run_app_script collabora
         ;;
 
         Passman)
+            clear
            install_and_enable_app passman
         ;;
         
         FullTextSearch)
+            clear
            run_app_script fulltextsearch
         ;;             
         
         PreviewGenerator)
+            clear
            run_app_script previewgenerator
         ;;   
 
         Talk)
+            clear
             run_app_script talk
         ;;
         
         Spreed.ME)
+            clear
             run_app_script spreedme
         ;;
 
@@ -423,14 +433,17 @@ while read -r -u 9 choice
 do
     case $choice in
         "Security")
+            clear
             run_static_script security
         ;;
         
         "ModSecurity")
+            clear
             run_static_script modsecurity
         ;;
 
         "Static IP")
+            clear
             run_static_script set_static_ip
         ;;
 
@@ -513,9 +526,8 @@ mesg n
 
 ROOTNEWPROFILE
 
-clear
-
 # Upgrade system
+clear
 echo "System will now upgrade..."
 bash $SCRIPTS/update.sh
 
