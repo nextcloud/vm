@@ -27,6 +27,9 @@ root_check
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
+echo "Installing Spreed.ME..."
+echo
+
 # Install if missing
 install_if_not apache2
 install_if_not snapd
@@ -122,4 +125,3 @@ You may have to change SPREED_WEBRTC_ORIGIN in:
 (sudo nano) $NCPATH/apps/spreedme/config/config.php"
     exit 0
 fi
-clear
