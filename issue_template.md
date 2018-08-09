@@ -4,7 +4,7 @@ Thank you for reporting your issue to us!
 Please report only issues corresponding to the VM for Nextcloud 10 or later. If you found a bug that is related to the  server core, 
 you can file your report here: https://github.com/nextcloud/server
 
-If you are loking for help, please use the [Nextcloud forums](https://help.nextcloud.com/c/support/appliances-docker-snappy-vm) instead. You can also buy support [here](https://shop.hanssonit.se)
+If you are looking for help and not report any bugs, please use the Nextcloud forums: (https://help.nextcloud.com/c/support/appliances-docker-snappy-vm)  instead. You can also buy support here: https://shop.hanssonit.se
 
 Thank you!
 -->
