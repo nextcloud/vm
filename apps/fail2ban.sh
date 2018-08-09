@@ -3,6 +3,8 @@
 # Tech and Me © - 2018, https://www.techandme.se/
 # Inspired by https://github.com/nextcloud/nextcloudpi/blob/master/etc/nextcloudpi-config.d/fail2ban.sh
 
+echo "Installing Fail2ban..."
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -30,8 +32,6 @@ BANTIME_=600000
 FINDTIME_=1800
 # failed attempts before banning an IP
 MAXRETRY_=10
-
-echo "Installing Fail2ban..."
 
 apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
