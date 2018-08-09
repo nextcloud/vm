@@ -2,6 +2,8 @@
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
+echo "Installing Spreed.ME..."
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -26,9 +28,6 @@ root_check
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
-
-echo "Installing Spreed.ME..."
-echo
 
 # Install if missing
 install_if_not apache2
