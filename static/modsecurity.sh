@@ -13,6 +13,9 @@ debug_mode
 # Check if root
 root_check
 
+echo "installing ModSecurity..."
+echo
+
 # Add modsecurity
 apt update -q4 & spinner_loading
 install_if_not libapache2-mod-security2 
