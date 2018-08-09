@@ -2,6 +2,8 @@
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
+echo "Installing Webmin..."
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -15,9 +17,6 @@ debug_mode
 
 # Check if root
 root_check
-
-echo "Installing Webmin..."
-echo
 
 # Install packages for Webmin
 apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python

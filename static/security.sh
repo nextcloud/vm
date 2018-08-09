@@ -3,7 +3,6 @@
 # Tech and Me © - 2018, https://www.techandme.se/
 
 # REMOVE disable of SC2154 WHEN PUTTING SPAMHAUS IN PRODUCTION (it's just to fixing travis for now)
-
 # shellcheck disable=2034,2059,SC2154
 true
 # shellcheck source=lib.sh
@@ -19,7 +18,6 @@ debug_mode
 root_check
 
 echo "Installing Extra Security..."
-echo
 
 # Based on: http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
 

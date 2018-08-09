@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Tech and Me © - 2018, https://www.techandme.se/
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh

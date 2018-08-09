@@ -1,12 +1,15 @@
 #!/bin/bash
+
+# Tech and Me © - 2018, https://www.techandme.se/
+
+echo "Installing Collabora..."
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset COLLABORA_INSTALL
-
-# Tech and Me © - 2018, https://www.techandme.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -31,9 +34,6 @@ msg_box "It seems like OnlyOffice is running.
 You can't run OnlyOffice at the same time as you run Collabora."
     exit 1
 fi
-
-echo "Installing Collabora..."
-echo
 
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
@@ -194,15 +194,13 @@ then
     then
         openssl dhparam -dsaparam -out "$DHPARAMS" 4096
     fi
-    printf "${ICyan}\n"
-    printf "Certs are generated!\n"
-    printf "${Color_Off}\n"
+    printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
 # Install Collabora App
     occ_command app:install richdocuments
 else
-    printf "${ICyan}\nIt seems like no certs were generated, please report this issue here: $ISSUES\n"
+    printf "%b" "${IRed}It seems like no certs were generated, please report this issue here: $ISSUES\n${Color_Off}"
     any_key "Press any key to continue... "
     restart_webserver
 fi

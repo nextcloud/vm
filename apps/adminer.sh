@@ -2,6 +2,8 @@
 
 # Tech and Me © - 2018, https://www.techandme.se/
 
+echo "Installing and securing Adminer..."
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -29,9 +31,6 @@ fi
 
 # Check distrobution and version
 check_distro_version
-
-echo "Installing and securing Adminer..."
-echo
 
 # Install Adminer
 apt update -q4 & spinner_loading

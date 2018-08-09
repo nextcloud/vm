@@ -3,6 +3,8 @@
 # Tech and Me © - 2018, https://www.techandme.se/
 # SwITNet Ltd © - 2018, https://switnet.net/
 
+echo "Installing Elastic Search & Full Text Search on Nextcloud..."
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -36,9 +38,6 @@ msg_box "It seems like $RORDIR already exists. Have you already run this script?
 If yes, revert all the settings and try again, it must be a clean install."
     exit 1
 fi
-
-echo "Installing Elastic Search & Full Text Search on Nextcloud..."
-echo
 
 # Disable and remove Nextant + Solr
 if [ -d "$NC_APPS_PATH"/nextant ]
