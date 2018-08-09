@@ -243,15 +243,15 @@ attempts_left() {
 local method="$1"
 if [ "$method" == "standalone" ]
 then
-    printf "${ICyan}It seems like no certs were generated, we will do 2 more tries.${Color_Off}\n"
+    printf "%b" "${ICyan}It seems like no certs were generated, we will do 2 more tries.\n${Color_Off}"
     any_key "Press any key to continue..."
 elif [ "$method" == "webroot" ]
 then
-    printf "${ICyan}It seems like no certs were generated, we will do 1 more try.${Color_Off}\n"
+    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
     any_key "Press any key to continue..."
 elif [ "$method" == "dns" ]
 then
-    printf "${ICyan}It seems like no certs were generated, we will do 0 more tries.${Color_Off}\n"
+    printf "%b" "${IRed}It seems like no certs were generated, please check your DNS and try again.\n${Color_Off}"
     any_key "Press any key to continue..."
 fi
 }
