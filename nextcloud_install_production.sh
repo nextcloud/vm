@@ -213,7 +213,7 @@ calculate_max_children
 
 # Set up a php-fpm pool with a unixsocket
 cat << POOL_CONF > "$PHP_POOL_DIR/nextcloud.conf"
-[NextCloud]
+[Nextcloud]
 user = www-data
 group = www-data
 listen = /run/php/php7.2-fpm.nextcloud.sock
