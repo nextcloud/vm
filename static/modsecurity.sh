@@ -27,7 +27,7 @@ mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.co
 msg_box "WARNING: Do not enable active defence if you don't know what you're doing!
 For example it will break OnlyOffice, and may break other stuff as well in Nextcloud.
 
-You can monitor the aduit log by typing this command in your shell:
+You can monitor the audit log by typing this command in your shell:
 tail -f /var/log/apache2/modsec_audit.log
 
 You can disable it by typing this command in your shell:
