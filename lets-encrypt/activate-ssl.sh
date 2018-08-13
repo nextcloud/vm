@@ -19,10 +19,10 @@ root_check
 if [ -f  "$PHP_POOL_DIR"/nextcloud.conf ]
 then
     sleep 0.1
-elif dpkg -s php7.2-fpm | grep "Status: install ok installed" & >/dev/null
+elif dpkg -s php7.2-fpm | grep "Status: install ok installed" &>/dev/null
 then
     sleep 0.1
-elif dpkg -s php-fpm | grep "Status: install ok installed" & > /dev/null
+elif dpkg -s php-fpm | grep "Status: install ok installed" &>/dev/null
 then
     sleep 0.1
 else
