@@ -770,8 +770,8 @@ fi
 }
 
 # Remove all dockers excluding one
-# docker_prune_execpt_this fts_esror 'Full Text Search'
-docker_prune_execpt_this() {
+# docker_prune_except_this fts_esror 'Full Text Search'
+docker_prune_except_this() {
 DOCKERPS=$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')
 if [ "$DOCKERPS" != "" ]
 then
@@ -789,7 +789,7 @@ fi
 }
 
 # Remove old Collabora and OnlyOffice images
-# docker_prune_office_collabora 'collabora/code' 'onlyoffice/documentserver'
+# docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
 docker_prune_this() {
 # Collabora
 DOCKERIMG="$(docker images $1 | awk '{print $1}' | tail -1)"
