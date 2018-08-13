@@ -790,7 +790,7 @@ fi
 
 # Remove old Collabora and OnlyOffice images
 # docker_prune_office_collabora 'collabora/code' 'onlyoffice/documentserver'
-docker_prune_office_collabora() {
+docker_prune_this() {
 # Collabora
 DOCKERIMG="$(docker images $1 | awk '{print $1}' | tail -1)"
 if [ "$DOCKERIMG" = "collabora/code" ]
