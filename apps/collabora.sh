@@ -87,15 +87,9 @@ sed -i "s|ExecStart=/usr/bin/dockerd -H fd://|ExecStart=/usr/bin/dockerd --stora
 systemctl daemon-reload
 systemctl restart docker
 
-# Check of docker runs and kill it
-DOCKERPS=$(docker ps -a -q)
-if [ "$DOCKERPS" != "" ]
-then
-    echo "Removing old Docker instance(s)... ($DOCKERPS)"
-    any_key "Press any key to continue. Press CTRL+C to abort"
-    docker stop "$DOCKERPS"
-    docker rm "$DOCKERPS"
-fi
+# Check if OnlyOffice or Collabora is previously installed
+# If yes, then stop and prune the docker container
+docker_prune_execpt_this 'collabora/code' 'onlyoffice/documentserver'
 
 # Disable RichDocuments (Collabora App) if activated
 if [ -d "$NCPATH"/apps/richdocuments ]
