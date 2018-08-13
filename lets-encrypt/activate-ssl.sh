@@ -15,6 +15,22 @@ debug_mode
 # Check if root
 root_check
 
+# You can't run the script if you are not using PHP-FPM
+if [ -f  "$PHP_POOL_DIR"/nextcloud.conf ]
+then
+    sleep 0.1
+elif dpkg -s php7.2-fpm | grep "Status: install ok installed" & >/dev/null
+then
+    sleep 0.1
+elif dpkg -s php-fpm | grep "Status: install ok installed" & > /dev/null
+then
+    sleep 0.1
+else
+msg_box "You can't use this script without PHP-FPM at the moment, we are working on a fix to make it backwards compatible.
+
+Thank you for understanding."
+fi
+
 # Information
 msg_box "Important! Please read this:
 
