@@ -215,11 +215,10 @@ msg_box "This VM has HTTP/2 enabled by default.
 If you continue with installing $1, HTTP/2 will be disabled since it's not compatible with the mpm module used by $1.
 
 This is what Apache will say in the error.log if you enable $1 anyway:
-
-The mpm module (prefork.c) is not supported by mod_http2.
+'The mpm module (prefork.c) is not supported by mod_http2.
 The mpm determines how things are processed in your server.
 HTTP/2 has more demands in this regard and the currently selected mpm will just not do.
-This is an advisory warning. Your server will continue to work, but the HTTP/2 protocol will be inactive."
+This is an advisory warning. Your server will continue to work, but the HTTP/2 protocol will be inactive.'"
 
 if [[ "no" == $(ask_yes_or_no "Do you really want to enable $1 anyway?") ]]
 then
@@ -767,6 +766,57 @@ then
     echo "Installing Docker CE..."
     install_if_not curl
     curl -fsSL get.docker.com | sh
+fi
+}
+
+# Remove all dockers excluding one
+# docker_prune_execpt_this fts_esror 'Full Text Search'
+docker_prune_execpt_this() {
+DOCKERPS=$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')
+if [ "$DOCKERPS" != "" ]
+then
+msg_box "Removing old Docker instance(s)... ($DOCKERPS)
+
+Please note that we will not remove $1 ($2).
+
+You will be given the option to abort when you hit OK."
+    any_key "Press any key to continue. Press CTRL+C to abort"
+    docker stop "$(docker ps -a | grep -v $1 | awk 'NR>1 {print $1}')"
+    docker container prune -f
+    docker image prune -a -f
+    docker volume prune -f
+fi
+}
+
+# Remove old Collabora and OnlyOffice images
+# docker_prune_office_collabora 'collabora/code' 'onlyoffice/documentserver'
+docker_prune_office_collabora() {
+# Collabora
+DOCKERIMG="$(docker images $1 | awk '{print $1}' | tail -1)"
+if [ "$DOCKERIMG" = "collabora/code" ]
+then
+msg_box "Removing old Docker image... ($DOCKERIMG)
+
+You will be given the option to abort when you hit OK."
+    any_key "Press any key to continue. Press CTRL+C to abort"
+    docker stop "$(docker container ls | grep "$1" | awk '{print $1}' | tail -1)"
+    docker container prune -f
+    docker image prune -a -f
+    docker volume prune -f
+fi
+
+# OnlyOffice
+DOCKERIMG="$(docker images $2 | awk '{print $1}' | tail -1)"
+if [ "$DOCKERIMG" = "onlyoffice/documentserver" ]
+then
+msg_box "Removing old Docker image ($DOCKERIMG)
+
+You will be given the option to abort when you hit OK."
+    any_key "Press any key to continue. Press CTRL+C to abort"
+    docker stop "$(docker container ls | grep "$2" | awk '{print $1}' | tail -1)"
+    docker container prune -f
+    docker image prune -a -f
+    docker volume prune -f
 fi
 }
 
