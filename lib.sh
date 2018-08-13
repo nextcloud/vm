@@ -772,6 +772,7 @@ fi
 # Remove all dockers excluding one
 # docker_prune_except_this fts_esror 'Full Text Search'
 docker_prune_except_this() {
+echo "Checking if there are any old images and removing them..."
 DOCKERPS=$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')
 if [ "$DOCKERPS" != "" ]
 then
@@ -781,7 +782,7 @@ Please note that we will not remove $1 ($2).
 
 You will be given the option to abort when you hit OK."
     any_key "Press any key to continue. Press CTRL+C to abort"
-    docker stop "$(docker ps -a | grep -v $1 | awk 'NR>1 {print $1}')"
+    docker stop "$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')"
     docker container prune -f
     docker image prune -a -f
     docker volume prune -f
@@ -792,7 +793,7 @@ fi
 # docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
 docker_prune_this() {
 # Collabora
-DOCKERIMG="$(docker images $1 | awk '{print $1}' | tail -1)"
+DOCKERIMG="$(docker images "$1" | awk '{print $1}' | tail -1)"
 if [ "$DOCKERIMG" = "collabora/code" ]
 then
 msg_box "Removing old Docker image... ($DOCKERIMG)
@@ -806,7 +807,7 @@ You will be given the option to abort when you hit OK."
 fi
 
 # OnlyOffice
-DOCKERIMG="$(docker images $2 | awk '{print $1}' | tail -1)"
+DOCKERIMG="$(docker images "$2" | awk '{print $1}' | tail -1)"
 if [ "$DOCKERIMG" = "onlyoffice/documentserver" ]
 then
 msg_box "Removing old Docker image ($DOCKERIMG)
