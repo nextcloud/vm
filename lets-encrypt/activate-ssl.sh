@@ -29,6 +29,7 @@ else
 msg_box "You can't use this script without PHP-FPM at the moment, we are working on a fix to make it backwards compatible.
 
 Thank you for understanding."
+exit
 fi
 
 # Information
