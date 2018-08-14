@@ -91,14 +91,18 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** You can download the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
 
-**Q: How do I run the occ command?**
-<br />
-**A:** We've added an alias for that as well. As root, just run `nextcloud_occ`
-
 **Q: How to update Nextcloud VM?**
 <br />
 **A:** You can not use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built in script instead:
 `sudo bash /var/scripts/update.sh` or run `run_nextcloud_update` as root from your terminal.
+
+**Q: How do I run the occ command?**
+<br />
+**A:** We've added an alias for that as well. As root, just run `nextcloud_occ`
+
+**Q: The mcrypt module is missing in the VM, why?**
+<br />
+**A:** https://github.com/nextcloud/vm/issues/629
 
 **Q: Where do I tweak the settings for php-fpm?**
 <br />
