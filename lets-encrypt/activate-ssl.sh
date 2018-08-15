@@ -208,6 +208,22 @@ then
 SSL_CREATE
 fi
 
+# Check if PHP-FPM installed, and if not, remove PHP-FPM related lines in config
+if [ ! -f  "$PHP_POOL_DIR"/nextcloud.conf ]
+then
+    sleep 0.1
+elif ! dpkg -s php7.2-fpm | grep "Status: install ok installed" &>/dev/null
+then
+    sleep 0.1
+elif ! dpkg -s php-fpm | grep "Status: install ok installed" &>/dev/null
+then
+    sleep 0.1
+else
+    sed -i "s|<FilesMatch.*||g" $ssl_conf
+    sed -i "s|SetHandler.*||g" $ssl_conf
+    sed -i "s|</FilesMatch.*||g" $ssl_conf
+fi
+
 # Methods
 default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
 
