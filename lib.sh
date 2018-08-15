@@ -340,12 +340,12 @@ ssl_config_for_regular_apache_php() {
 # Check if PHP-FPM installed, and if not, remove PHP-FPM related lines in config
 if [ ! -f  "$PHP_POOL_DIR"/nextcloud.conf ]
 then
-    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" $ssl_conf
+    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
     sed -i "s|SetHandler.*|#|g" "$1"
     sed -i "s|</FilesMatch.*|#|g" "$1"
 elif ! dpkg -s php7.2-fpm | grep "Status: install ok installed" >/dev/null 2>&1
 then
-    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" $ssl_conf
+    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
     sed -i "s|SetHandler.*|#|g" "$1"
     sed -i "s|</FilesMatch.*|#|g" "$1"
 fi
