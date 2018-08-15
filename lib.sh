@@ -336,21 +336,6 @@ service apache2 reload
 certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
 }
 
-ssl_config_for_regular_apache_php() {
-# Check if PHP-FPM installed, and if not, remove PHP-FPM related lines in config
-if [ ! -f  "$PHP_POOL_DIR"/nextcloud.conf ]
-then
-    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
-    sed -i "s|SetHandler.*|#|g" "$1"
-    sed -i "s|</FilesMatch.*|#|g" "$1"
-elif ! dpkg -s php7.2-fpm | grep "Status: install ok installed" >/dev/null 2>&1
-then
-    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
-    sed -i "s|SetHandler.*|#|g" "$1"
-    sed -i "s|</FilesMatch.*|#|g" "$1"
-fi
-}
-
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
 # Check to see if user already has nmap installed on their system
