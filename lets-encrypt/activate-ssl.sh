@@ -197,7 +197,7 @@ then
     sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" $ssl_conf
     sed -i "s|SetHandler.*|#|g" $ssl_conf
     sed -i "s|</FilesMatch.*|#|g" $ssl_conf
-elif ! : dpkg -s php7.2-fpm | grep "Status: install ok installed" >/dev/null 2>&1
+elif ! dpkg -s php7.2-fpm | grep "Status: install ok installed" >/dev/null 2>&1
 then
     sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" $ssl_conf
     sed -i "s|SetHandler.*|#|g" $ssl_conf
