@@ -15,23 +15,6 @@ debug_mode
 # Check if root
 root_check
 
-# You can't run the script if you are not using PHP-FPM
-if [ -f  "$PHP_POOL_DIR"/nextcloud.conf ]
-then
-    sleep 0.1
-elif dpkg -s php7.2-fpm | grep "Status: install ok installed" &>/dev/null
-then
-    sleep 0.1
-elif dpkg -s php-fpm | grep "Status: install ok installed" &>/dev/null
-then
-    sleep 0.1
-else
-msg_box "You can't use this script without PHP-FPM at the moment, we are working on a fix to make it backwards compatible.
-
-Thank you for understanding."
-exit
-fi
-
 # Information
 msg_box "Important! Please read this:
 
@@ -206,6 +189,19 @@ then
 
 </VirtualHost>
 SSL_CREATE
+fi
+
+# Check if PHP-FPM is installed and if not, then remove PHP-FPM related lines from config
+if [ ! -f  "$PHP_POOL_DIR"/nextcloud.conf ]
+then
+    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$ssl_conf"
+    sed -i "s|SetHandler.*|#|g" "$ssl_conf"
+    sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
+elif ! dpkg -s php7.2-fpm | grep "Status: install ok installed" >/dev/null 2>&1
+then
+    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
+    sed -i "s|SetHandler.*|#|g" "$ssl_conf"
+    sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
 fi
 
 # Methods
