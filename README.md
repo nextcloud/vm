@@ -13,7 +13,7 @@
 * Report [your issue](https://github.com/nextcloud/vm/issues/new)
 * Help us with [existing issues](https://github.com/nextcloud/vm/issues)
 * Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
-* [Donate](https://shop.techandme.se/index.php/product-category/donate/) or buy our [pre-configured VMs](https://shop.techandme.se/index.php/product-category/virtual-machine/): 500 GB, 1 TB, PostgreSQL or Hyper-V.
+* [Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, PostgreSQL or Hyper-V.
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
 * [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
@@ -135,11 +135,11 @@ Keep asking questions so that we can add them here.
 
 **Q: Do you have a pre-configured Hyper-V VM?**
 <br />
-**A:** Yes we have, you can download it here: https://shop.techandme.se/index.php/product/nextcloud-vm-microsoft-hyper-v-vhd/
+**A:** Yes we have, you can download it here: https://shop.hanssonit.se/product/nextcloud-vm-microsoft-hyper-v-vhd/
 
 **Q: I want a bigger version of this VM, where can I find that?**
 <br />
-**A:** You can download it here: https://shop.techandme.se/index.php/product/nextcloud-vm-500gb/
+**A:** You can download it here: https://shop.hanssonit.se/product/nextcloud-vm-500gb/
 
 **Q: I have found a bug that I want to report, where do I do that?**
 <br />
