@@ -684,7 +684,7 @@ spinner_loading() {
 
 any_key() {
     local PROMPT="$1"
-    read -r -p "$(printf "${Green}${PROMPT}${Color_Off}")" -n1 -s
+    read -r -p "$(printf "%b" "${Green}${PROMPT}${Color_Off}")" -n1 -s
     echo
 }
 
