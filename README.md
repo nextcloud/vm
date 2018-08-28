@@ -108,6 +108,10 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** You can change the settings in /etc/php/7.2/fpm/pool.d/nextcloud.conf, but be aware; only change it if you know what you are doing!
 
+**Q: Some apps are not installed (like issuetemplate for example), when running the setup script**
+<br />
+**A:** https://github.com/nextcloud/vm/issues/639#issuecomment-416472543
+
 **Q: The downloaded file is just a few kilobyte, or corrupted**
 <br />
 **A:** This is due to heavy load on the server. Please try again in a few minutes.
