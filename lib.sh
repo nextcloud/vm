@@ -307,7 +307,13 @@ fi
 
 restart_webserver() {
 check_command systemctl restart apache2
-check_command systemctl restart php7.2-fpm.service
+if ! which php7.2-fpm > /dev/null
+then
+    echo "php7.2-fpm is not installed, not restarting"
+else
+    check_command systemctl restart php7.2-fpm.service
+fi
+
 }
 
 # Install certbot (Let's Encrypt)
