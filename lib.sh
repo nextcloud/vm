@@ -114,7 +114,7 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
 [ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
-[ ! -z "$ES_INSTALL" ] && nc_fts="ark74/nc_fts:latest"
+[ ! -z "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
 [ ! -z "$ES_INSTALL" ] && fts_es_name="fts_esror"
 # Talk
 [ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
