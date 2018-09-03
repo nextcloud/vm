@@ -27,7 +27,7 @@
 
 ## Build your own VM, or install on a VPS
 DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc<br>
-Please not that you have to add a second storage and [rename](https://www.digitalocean.com/docs/volumes/how-to/create-and-attach/) it to `vdb` before you can run the script.
+Please note that you have to add a second storage and [rename](https://www.digitalocean.com/docs/volumes/how-to/create-and-attach/) it to `vdb` before you can run the script.
 
 #### Minimum requirements:
 * A clean [Ubuntu Server 18.04.X](http://cdimage.ubuntu.com/releases/18.04/release/) using the alternative installer
