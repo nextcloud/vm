@@ -396,11 +396,11 @@ clear
 
 # Change password
 printf "${Color_Off}\n"
-echo "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
+echo "For better security, change the system user password for [$(who|awk '{print $1}')]"
 any_key "Press any key to change password for system user..."
 while true
 do
-    sudo passwd "$(getent group sudo | cut -d: -f4 | cut -d, -f1)" && break
+    sudo passwd "$(who|awk '{print $1}')" && break
 done
 echo
 clear
