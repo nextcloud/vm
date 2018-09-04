@@ -323,15 +323,6 @@ echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
 } >> $PHP_INI
 
-# Install issuetemplate
-install_and_enable_app issuetemplate
-
-# Install CanIUpdate?
-install_and_enable_app caniupdate
-
-# Install PDF Viewer
-install_and_enable_app files_pdfviewer
-
 # Install Figlet
 install_if_not figlet
 
@@ -462,15 +453,14 @@ fi
 a2ensite nextcloud_ssl_domain_self_signed.conf
 a2ensite nextcloud_http_domain_self_signed.conf
 a2dissite default-ssl
-
-# Enable new config
-a2ensite nextcloud_ssl_domain_self_signed.conf
-a2ensite nextcloud_http_domain_self_signed.conf
-a2dissite default-ssl
+restart_webserver
 
 whiptail --title "Install apps or software" --checklist --separate-output "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Calendar" "              " on \
-"Contacts" "              " on \
+"Calendar" "            " on \
+"Contacts" "            " on \
+"IssueTemplate" "       " on \
+"CanIUpdate" "          " on \
+"PDFViewer" "           " on \
 "Webmin" "              " on 2>results
 
 while read -r -u 9 choice
@@ -481,6 +471,15 @@ do
         ;;
         Contacts)
             install_and_enable_app contacts
+        ;;
+        IssueTemplate)
+            install_and_enable_app issuetemplate
+        ;;
+        CanIUpdate)
+            install_and_enable_app caniupdate
+        ;;
+        PDFViewer)
+            install_and_enable_app files_pdfviewer
         ;;
         Webmin)
             run_app_script webmin

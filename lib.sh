@@ -114,7 +114,7 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
 [ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
-[ ! -z "$ES_INSTALL" ] && nc_fts="ark74/nc_fts:latest"
+[ ! -z "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
 [ ! -z "$ES_INSTALL" ] && fts_es_name="fts_esror"
 # Talk
 [ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
@@ -307,7 +307,11 @@ fi
 
 restart_webserver() {
 check_command systemctl restart apache2
-check_command systemctl restart php7.2-fpm.service
+if which php7.2-fpm > /dev/null
+then
+    check_command systemctl restart php7.2-fpm.service
+fi
+
 }
 
 # Install certbot (Let's Encrypt)
@@ -684,7 +688,7 @@ spinner_loading() {
 
 any_key() {
     local PROMPT="$1"
-    read -r -p "$(printf "${Green}${PROMPT}${Color_Off}")" -n1 -s
+    read -r -p "$(printf "%b" "${Green}${PROMPT}${Color_Off}")" -n1 -s
     echo
 }
 

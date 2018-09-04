@@ -26,7 +26,8 @@
 * [Lorenzo Faleschini](https://github.com/penzoiders)
 
 ## Build your own VM, or install on a VPS
-DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc
+DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc<br>
+Please note that you have to add a second storage and [rename](https://www.digitalocean.com/docs/volumes/how-to/create-and-attach/) it to `vdb` before you can run the script.
 
 #### Minimum requirements:
 * A clean [Ubuntu Server 18.04.X](http://cdimage.ubuntu.com/releases/18.04/release/) using the alternative installer
@@ -107,6 +108,10 @@ Keep asking questions so that we can add them here.
 **Q: Where do I tweak the settings for php-fpm?**
 <br />
 **A:** You can change the settings in /etc/php/7.2/fpm/pool.d/nextcloud.conf, but be aware; only change it if you know what you are doing!
+
+**Q: Some apps are not installed (like issuetemplate for example), when running the setup script**
+<br />
+**A:** https://github.com/nextcloud/vm/issues/639#issuecomment-416472543
 
 **Q: The downloaded file is just a few kilobyte, or corrupted**
 <br />
