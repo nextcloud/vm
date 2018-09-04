@@ -124,3 +124,5 @@ You may have to change SPREED_WEBRTC_ORIGIN in:
 (sudo nano) $NCPATH/apps/spreedme/config/config.php"
     exit 0
 fi
+
+exit
