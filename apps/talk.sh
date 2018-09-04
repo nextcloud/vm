@@ -148,3 +148,4 @@ msg_box "Nextcloud Talk is now installed. For more information about Nextcloud T
 https://nextcloud.com/talk/"
 fi
 
+exit
