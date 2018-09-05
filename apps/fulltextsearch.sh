@@ -109,6 +109,4 @@ then
 msg_box "Full Text Search was successfully installed!"
 fi
 
-# Fix "/dev/fd/63: line 691: read: read error: 0: Resource temporarily unavailable" when running in the startup-script
-bash
 exit
