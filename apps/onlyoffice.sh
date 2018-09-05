@@ -182,7 +182,7 @@ then
     restart_webserver
 # Install Onlyoffice App
     cd "$NC_APPS_PATH"
-    check_command git clone https://github.com/ONLYOFFICE/onlyoffice-owncloud.git onlyoffice
+    check_command git clone https://github.com/ONLYOFFICE/onlyoffice-nextcloud.git onlyoffice
 else
     printf "%b" "${IRed}It seems like no certs were generated, please report this issue here: $ISSUES\n${Color_Off}"
     any_key "Press any key to continue... "
