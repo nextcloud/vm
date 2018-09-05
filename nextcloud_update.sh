@@ -289,7 +289,7 @@ then
     cp -R $BACKUP/config "$NCPATH"/
     bash $SECURE & spinner_loading
     occ_command maintenance:mode --off
-    occ_command upgrade --no-app-disable
+    occ_command upgrade
     # Optimize
     echo "Optimizing Nextcloud..."
     yes | occ_command db:convert-filecache-bigint
