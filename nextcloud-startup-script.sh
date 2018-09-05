@@ -158,12 +158,12 @@ We will do this for you when you hit OK."
        rm $SCRIPTS/adduser.sh
        else
 msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
-which could be the case if you are running directly from the scripts and not the VM.
+which could be the case if you are running directly from the scripts on Gihub and not the VM.
 
 As long as the user you created have sudo permissions it's safe to continue.
-This would be the case if you in the previous step created a new user with the script.
+This would be the case if you created a new user with the script in the previous step.
 
-If the user you are running this script with a user that doesn't have sudo permissions,
+If the user you are running this script with is a user that doesn't have sudo permissions,
 please abort this script and report this issue to $ISSUES."
         fi
     fi
@@ -177,7 +177,7 @@ is_process_running dpkg
 msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
 This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
 
-We recomend you to change the mirrors based on where this is currently installed."
+If you are located outside of Europe, we recomend you to change the mirrors so that downloads are faster."
 echo "Checking current mirror..."
 printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
 
