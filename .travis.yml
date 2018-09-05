@@ -1,16 +1,4 @@
 language: bash
-
 sudo: false
-
-addons:
-  apt:
-    sources:
-    - debian-sid
-    packages:
-    - shellcheck
-
 script:
-  - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
-
-matrix:
-  fast_finish: true
+  - bash -c 'shopt -s globstar; shellcheck -x **/*.{sh,ksh,bash}'
