@@ -28,7 +28,7 @@ WGET="/usr/bin/wget"
 WANIP4=$(curl -s -m 5 ipinfo.io/ip)
 [ ! -z "$LOAD_IP6" ] && WANIP6=$(curl -s -k -m 7 https://6.ifcfg.me)
 INTERFACES="/etc/netplan/01-netcfg.yaml"
-GATEWAY=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
+GATEWAY=$(ip route | grep default | awk '{print $3}')
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
 # Repo
@@ -688,8 +688,7 @@ spinner_loading() {
 
 any_key() {
     local PROMPT="$1"
-    read -r -p "$(printf "%b" "${Green}${PROMPT}${Color_Off}")" -n1 -s
-    echo
+    read -sn 1 -p "$(printf "%b" "${Green}${PROMPT}${Color_Off}")";echo
 }
 
 lowest_compatible_nc() {

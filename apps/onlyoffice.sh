@@ -211,3 +211,5 @@ then
     echo "You may have to reboot before Docker will load correctly."
     any_key "Press any key to continue... "
 fi
+
+exit

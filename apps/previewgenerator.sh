@@ -64,3 +64,5 @@ then
     # Pre generate everything
     occ_command preview:generate-all
 fi
+
+exit

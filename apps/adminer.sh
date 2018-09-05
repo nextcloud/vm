@@ -74,3 +74,5 @@ Your PostgreSQL connection information can be found in $NCPATH/config/config.php
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
 fi
+
+exit

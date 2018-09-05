@@ -28,3 +28,5 @@ then
     apt update -q4 & spinner_loading
     apt install webmin -y
 fi
+
+exit
