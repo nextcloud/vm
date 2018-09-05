@@ -1,4 +1,4 @@
 language: bash
 sudo: false
 script:
-  - bash -c 'shopt -s globstar; shellcheck -x **/*.{sh,ksh,bash}'
+  - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
