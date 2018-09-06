@@ -32,7 +32,7 @@ Tell us what happens instead
 
 ## Logs / Screenshots
 <!--
-Please use http://hastebin.com/ for long error messages or logs. Thanks!
+################  Please use https://0bin.net for long error messages or logs. Thanks! ################
 -->
 
 #### Log file (/mnt/ncdata/nextcloud.log)
