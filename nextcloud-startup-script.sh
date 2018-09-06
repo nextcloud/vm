@@ -286,6 +286,7 @@ fi
 # Pretty URLs
 echo "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
+sed -i "s|'overwrite.cli.url'.*|'overwrite.cli.url' => 'https://localhost/',|g" $NCPATH/config/config.php
 occ_command config:system:set htaccess.RewriteBase --value="/"
 occ_command maintenance:update:htaccess
 bash $SECURE & spinner_loading
