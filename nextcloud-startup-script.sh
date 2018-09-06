@@ -204,7 +204,6 @@ echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
 # All the shell scripts in static (.sh)
 download_static_script temporary-fix
-download_static_script security
 download_static_script update
 download_static_script trusted
 download_static_script test_connection
@@ -526,6 +525,12 @@ fi
 mesg n
 
 ROOTNEWPROFILE
+
+# Download all app scripts
+echo "Downloading all the latest app scripts to $SCRIPTS/apps..."
+mkdir -p $SCRIPTS/apps
+cd $SCRIPTS/apps
+check_command curl -s https://codeload.github.com/nextcloud/vm/tar.gz/master | tar -xz --strip=2 vm-master/apps
 
 # Upgrade system
 clear
