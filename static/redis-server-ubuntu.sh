@@ -26,6 +26,7 @@ fi
 
 # Install Redis
 install_if_not php7.2-dev
+pecl channel-update pecl.php.net
 if ! yes no | pecl install -Z redis
 then
     msg_box "PHP module installation failed"
