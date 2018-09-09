@@ -50,6 +50,15 @@ then
     fi
 fi
 
+# Update Redis PHP extension
+if type pecl > /dev/null 2>&1
+then
+    install_if_not php7.2-dev
+    echo "Trying to upgrade the Redis Pecl extenstion..."
+    yes no | pecl upgrade redis
+    service redis-server restart
+fi
+
 # Update adminer
 if [ -d $ADMINERDIR ]
 then
