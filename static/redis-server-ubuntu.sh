@@ -25,7 +25,14 @@ then
 fi
 
 # Install Redis
-install_if_not php-redis
+install_if_not php7.2-dev
+if ! yes no | pecl install -Z redis
+then
+    msg_box "PHP module installation failed"
+exit 1
+else
+    printf "${Green}\nPHP module installation OK!${Color_Off}\n"
+fi
 install_if_not redis-server
 
 # Set globally doesn't work for some reason
