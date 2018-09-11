@@ -53,10 +53,15 @@ fi
 # Update Redis PHP extension
 if type pecl > /dev/null 2>&1
 then
+    if type php7.2 > /dev/null 2>&1
+    then
     install_if_not php7.2-dev
-    echo "Trying to upgrade the Redis Pecl extenstion..."
-    yes no | pecl upgrade redis
-    service redis-server restart
+    else
+    install_if_not php7.0-dev
+    fi
+echo "Trying to upgrade the Redis Pecl extenstion..."
+yes no | pecl upgrade redis
+service redis-server restart
 fi
 
 # Update adminer
