@@ -328,7 +328,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing [2GB RAM])   " OFF \
 "OnlyOffice" "(Online editing [4GB RAM])   " OFF \
-"Passman" "(Password storage)   " OFF \
+"Bitwarden" "(Password storage) - COMING SOON   " OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
@@ -362,9 +362,9 @@ do
             run_app_script collabora
         ;;
 
-        Passman)
+        Bitwarden)
             clear
-           install_and_enable_app passman
+           echo "Bitwarden is not yet scripted, it will come soon" && sleep 3
         ;;
         
         FullTextSearch)
