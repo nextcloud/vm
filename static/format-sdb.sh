@@ -27,9 +27,9 @@ if [ "$SYSVENDOR" == "VMware, Inc." ];
 then
     SYSNAME="VMware"
     DEVTYPE=sdb
-elif [ "$SYSVENDOR" == "HyperV" ];
+elif [ "$SYSVENDOR" == "Microsoft Corporation" ];
 then
-    SYSNAME="$SYSVENDOR"
+    SYSNAME="Hyper-V"
     DEVTYPE=sdb
 elif [ "$SYSVENDOR" == "innotek GmbH" ];
 then
@@ -37,15 +37,15 @@ then
     DEVTYPE=sdb
 elif [ "$SYSVENDOR" == "Xen" ];
 then
-    SYSNAME="$SYSVENDOR/XCP-NG"
+    SYSNAME="Xen/XCP-NG"
     DEVTYPE=xvdb
 elif [ "$SYSVENDOR" == "QEMU" ];
 then
-    SYSNAME="$SYSVENDOR/KVM"
+    SYSNAME="KVM/QEMU"
     DEVTYPE=vdb
 elif [ "$SYSVENDOR" == "DigitalOcean" ];
 then
-    SYSNAME="$SYSVENDOR"
+    SYSNAME="DigitalOcean"
     DEVTYPE=sda
 else
     SYSNAME="machines"
