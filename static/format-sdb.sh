@@ -97,7 +97,7 @@ fi
 DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
 if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
 then
-msg_box "It seems like your $SYSNAME secondary volume ($DISKTYPE) does not exist.
+msg_box "It seems like your $SYSNAME secondary volume (/dev/$DEVTYPE) does not exist.
 This script requires that you mount a second drive to hold the data.
 
 Please shutdown the server and mount a second drive, then start this script again.
