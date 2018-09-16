@@ -20,7 +20,6 @@ umount /mnt/* &> /dev/null
 # mkdir if not existing
 mkdir -p "$MOUNT_"
 
-
 # Check what Hypervisor disks are available
 SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 if [ "$SYSVENDOR" == "VMware, Inc." ];
@@ -56,6 +55,20 @@ msg_box "It seems like you didn't mount a second disk.
 To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
 
 This script will now exit. Please mount a second disk and start over."
+exit 1
+fi
+
+# Get the name of the drive
+DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
+if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
+then
+msg_box "It seems like your $SYSNAME secondary volume (/dev/$DEVTYPE) does not exist.
+This script requires that you mount a second drive to hold the data.
+
+Please shutdown the server and mount a second drive, then start this script again.
+
+If you want help you can buy support in our shop:
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 exit 1
 fi
 
@@ -98,20 +111,6 @@ if isDevPartOfZFS "$DEVTYPE";
 then
 msg_box "/dev/$DEVTYPE is a member of a ZFS pool and needs to be removed from any zpool before you can run this script."
     exit 1
-fi
-
-# Get the name of the drive
-DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
-if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
-then
-msg_box "It seems like your $SYSNAME secondary volume (/dev/$DEVTYPE) does not exist.
-This script requires that you mount a second drive to hold the data.
-
-Please shutdown the server and mount a second drive, then start this script again.
-
-If you want help you can buy support in our shop:
-https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
-exit 1
 fi
 
 if lsblk -l -n | grep -v mmcblk | grep disk | awk '{ print $1 }' | tail -1 > /dev/null
