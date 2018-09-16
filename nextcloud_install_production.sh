@@ -102,6 +102,9 @@ fi
 install_if_not netplan.io
 install_if_not network-manager
 
+# Format /dev/sdb to host the ncdata
+run_static_script format-sdb
+
 # Change DNS system wide
 sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
 sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
@@ -252,9 +255,6 @@ restart_webserver
 
 # Install VM-tools
 install_if_not open-vm-tools
-
-# Format /dev/sdb to host the ncdata
-run_static_script format-sdb
 
 # Download and validate Nextcloud package
 check_command download_verify_nextcloud_stable
