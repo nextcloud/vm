@@ -48,6 +48,7 @@ then
     SYSNAME="DigitalOcean"
     DEVTYPE=sda
 elif partprobe /dev/sdb &>/dev/null;
+then
     SYSNAME="machines"
     DEVTYPE=sdb
 else
