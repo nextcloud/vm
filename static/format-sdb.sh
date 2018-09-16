@@ -47,9 +47,15 @@ elif [ "$SYSVENDOR" == "DigitalOcean" ];
 then
     SYSNAME="DigitalOcean"
     DEVTYPE=sda
-else
+elif partprobe /dev/sdb &>/dev/null;
     SYSNAME="machines"
     DEVTYPE=sdb
+else
+msg_box "It seems like you didn't mount a second disk. 
+To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
+
+This sript will now exit. Please mount a second disk and start over."
+exit 1
 fi
 
 # Check if ZFS utils are installed
@@ -103,7 +109,7 @@ This script requires that you mount a second drive to hold the data.
 Please shutdown the server and mount a second drive, then start this script again.
 
 If you want help you can buy support in our shop:
-https://shop.techandme.se/index.php/product/premium-support-per-30-minutes/"
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 exit 1
 fi
 
