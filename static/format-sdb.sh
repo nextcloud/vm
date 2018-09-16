@@ -20,22 +20,55 @@ umount /mnt/* &> /dev/null
 # mkdir if not existing
 mkdir -p "$MOUNT_"
 
-
 # Check what Hypervisor disks are available
-if partprobe /dev/sdb &>/dev/null;	#HyperV, VMware, VirtualBox Hypervisors
+SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
+if [ "$SYSVENDOR" == "VMware, Inc." ];
 then
+    SYSNAME="VMware"
     DEVTYPE=sdb
-elif partprobe /dev/xvdb &>/dev/null;	#Xen Hypervisors
+elif [ "$SYSVENDOR" == "Microsoft Corporation" ];
 then
+    SYSNAME="Hyper-V"
+    DEVTYPE=sdb
+elif [ "$SYSVENDOR" == "innotek GmbH" ];
+then
+    SYSNAME="VirtualBox"
+    DEVTYPE=sdb
+elif [ "$SYSVENDOR" == "Xen" ];
+then
+    SYSNAME="Xen/XCP-NG"
     DEVTYPE=xvdb
-elif partprobe /dev/vdb &>/dev/null;	#KVM Hypervisor
+elif [ "$SYSVENDOR" == "QEMU" ];
 then
+    SYSNAME="KVM/QEMU"
     DEVTYPE=vdb
+elif [ "$SYSVENDOR" == "DigitalOcean" ];
+then
+    SYSNAME="DigitalOcean"
+    DEVTYPE=sda
+elif partprobe /dev/sdb &>/dev/null;
+then
+    SYSNAME="machines"
+    DEVTYPE=sdb
 else
 msg_box "It seems like you didn't mount a second disk. 
 To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
 
 This script will now exit. Please mount a second disk and start over."
+exit 1
+fi
+
+# Get the name of the drive
+DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
+if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
+then
+msg_box "It seems like your $SYSNAME secondary volume (/dev/$DEVTYPE) does not exist.
+This script requires that you mount a second drive to hold the data.
+
+Please shutdown the server and mount a second drive, then start this script again.
+
+If you want help you can buy support in our shop:
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 exit 1
 fi
 
@@ -80,23 +113,9 @@ msg_box "/dev/$DEVTYPE is a member of a ZFS pool and needs to be removed from an
     exit 1
 fi
 
-# Get the name of the drive
-DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
-if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
-then
-msg_box "It seems like /dev/$DEVTYPE does not exist.
-This script requires that you mount a second drive to hold the data.
-
-Please shutdown the server and mount a second drive, then start this script again.
-
-If you want help you can buy support in our shop:
-https://shop.techandme.se/index.php/product/premium-support-per-30-minutes/"
-exit 1
-fi
-
 if lsblk -l -n | grep -v mmcblk | grep disk | awk '{ print $1 }' | tail -1 > /dev/null
 then
-msg_box "Formatting $DISKTYPE when you hit OK.
+msg_box "Formatting your $SYSNAME secondary volume ($DISKTYPE) when you hit OK.
 
 *** WARNING: ALL YOUR DATA WILL BE ERASED! ***"
     if zpool list | grep "$LABEL_" > /dev/null
