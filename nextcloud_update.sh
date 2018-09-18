@@ -132,8 +132,8 @@ and major releases without skipping any of them, as skipping releases increases 
 errors. Major releases are 9, 10, 11 and 12. Point releases are intermediate releases for each
 major release. For example, 9.0.52 and 10.0.2 are point releases.
 
-Please contact Tech and Me to help you with upgrading between major versions.
-https://shop.techandme.se/index.php/product-category/support/"
+Please contact Tech and Me (T&M Hansson IT AB) to help you with upgrading between major versions.
+https://shop.hanssonit.se/product-category/support/"
     exit 1
 fi
 
