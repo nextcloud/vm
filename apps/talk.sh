@@ -28,7 +28,7 @@ echo "Checking if Nextcloud is installed..."
 if ! curl -s https://"${TURN_DOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
 msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-${TURN_DOMAIN//\\/}.
+${TURN_DOMAIN//\\/}
 Please install Nextcloud and make sure your domain is reachable, or activate SSL
 on your domain to be able to run this script.
 If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
