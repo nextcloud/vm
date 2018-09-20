@@ -327,9 +327,9 @@ then
 fi
 
 # Add header for Nextcloud 14
-if -f [ /etc/apache2/sites-available/$(hostname -f).conf ]
+if -f [ /etc/apache2/sites-available/"$(hostname -f)".conf ]
 then
-    if ! grep -q 'Header always set Referrer-Policy "strict-origin"' /etc/apache2/sites-available/$(hostname -f).conf
+    if ! grep -q 'Header always set Referrer-Policy "strict-origin"' /etc/apache2/sites-available/"$(hostname -f)".conf
     then
         sed -i '/Header add Strict-Transport-Security/a    Header always set Referrer-Policy "strict-origin"' /etc/apache2/sites-available/$(hostname -f).conf
     fi
