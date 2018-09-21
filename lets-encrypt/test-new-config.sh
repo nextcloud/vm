@@ -73,8 +73,9 @@ add_crontab_le
 chmod +x $SCRIPTS/letsencryptrenew.sh
 
 # Cleanup
-rm $SCRIPTS/test-new-config.sh ## Remove ??
-rm $SCRIPTS/activate-ssl.sh ## Remove ??
+rm -f $SCRIPTS/test-new-config.sh
+rm -f $SCRIPTS/activate-ssl.sh
+rm -f /var/www/index.php
 
 else
 # If it fails, revert changes back to normal
