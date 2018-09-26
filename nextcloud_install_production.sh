@@ -57,6 +57,9 @@ debug_mode
 # Check if root
 root_check
 
+# Check network
+network_ok
+
 # Set locales
 install_if_not language-pack-en-base
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
@@ -109,8 +112,6 @@ run_static_script format-sdb
 sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
 sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
 check_command systemctl restart network-manager.service
-
-# Check network
 network_ok
 
 # Check where the best mirrors are and update
