@@ -173,7 +173,6 @@ then
     mkdir -p $BACKUP
 fi
 
-
 # Backup PostgreSQL
 if which psql > /dev/null
 then
@@ -346,6 +345,13 @@ chown -R root:root "$BACKUP"
 
 # Set max upload in Nextcloud .htaccess
 configure_max_upload
+
+# Disable support app
+if [ -d $NC_APPS_PATH/support
+then
+    occ_command app:disable support
+    rm -rf $NC_APPS_PATH/support
+fi
 
 # Set $THEME_NAME
 VALUE2="$THEME_NAME"
