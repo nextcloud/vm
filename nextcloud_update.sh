@@ -347,7 +347,7 @@ chown -R root:root "$BACKUP"
 configure_max_upload
 
 # Disable support app
-if [ -d $NC_APPS_PATH/support
+if [ -d $NC_APPS_PATH/support ]
 then
     occ_command app:disable support
     rm -rf $NC_APPS_PATH/support
