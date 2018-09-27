@@ -12,7 +12,7 @@ HTML=/var/www
 NCDATA=/mnt/ncdata
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
-BACKUP=/var/NCBACKUP
+BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
 
 # Ubuntu OS

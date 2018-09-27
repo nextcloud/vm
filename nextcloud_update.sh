@@ -166,8 +166,13 @@ sleep 10
 # Stop Apache2
 check_command service apache2 stop
 
-# Create backup dir (/var/NCBACKUP/)
-mkdir -p "$BACKUP"
+# Create backup dir (/mnt/NCBACKUP/)
+if [ ! -d "$BACKUP" ]
+then
+    BACKUP=/var/NCBACKUP
+    mkdir -p $BACKUP
+fi
+
 
 # Backup PostgreSQL
 if which psql > /dev/null
@@ -235,8 +240,8 @@ echo "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
 if [ -d $BACKUP ]
 then
-    mkdir -p "/var/NCBACKUP_OLD/$DATE"
-    mv $BACKUP/* "/var/NCBACKUP_OLD/$DATE"
+    mkdir -p "$BACKUP-OLD/$DATE"
+    mv $BACKUP/* "$BACKUP-OLD/$DATE"
     rm -R $BACKUP
     mkdir -p $BACKUP
 fi
