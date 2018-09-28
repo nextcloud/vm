@@ -320,14 +320,14 @@ certbot --version 2> /dev/null
 LE_IS_AVAILABLE=$?
 if [ $LE_IS_AVAILABLE -eq 0 ]
 then
-    certbot --version
+    certbot --version 2> /dev/null
 else
     echo "Installing certbot (Let's Encrypt)..."
     apt update -q4 & spinner_loading
-    apt install software-properties-common -y
+    install_if_not software-properties-common
     add-apt-repository ppa:certbot/certbot -y
     apt update -q4 & spinner_loading
-    apt install certbot -y -q
+    install_if_not certbot
     apt update -q4 & spinner_loading
     apt dist-upgrade -y
 fi
