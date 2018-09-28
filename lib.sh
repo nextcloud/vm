@@ -324,7 +324,7 @@ then
 else
     echo "Installing certbot (Let's Encrypt)..."
     apt update -q4 & spinner_loading
-    apt install software-properties-common
+    apt install software-properties-common -y
     add-apt-repository ppa:certbot/certbot -y
     apt update -q4 & spinner_loading
     apt install certbot -y -q
