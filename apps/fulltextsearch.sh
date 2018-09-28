@@ -49,8 +49,8 @@ then
 fi
 
 # Remove app and drop existing tables if they exist (PostgreSQL)
-PASS=$(grep 'dbpassword' /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 USER=$(grep 'dbuser' $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+PASS=$(grep 'dbpassword' $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 if [ -d $NC_APPS_PATH/fulltextsearch ]
 then
     occ_command app:disable fulltextsearch
