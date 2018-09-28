@@ -59,13 +59,13 @@ docker pull "$nc_fts"
 cat << YML_CREATE > /opt/es/readonlyrest.yml
 readonlyrest:
   access_control_rules:
-  - name: Accept requests from cloud1 on $NCADMIN-index
+  - name: Accept requests from cloud1 on $INDEX_USER-index
     groups: ["cloud1"]
-    indices: ["$NCADMIN-index"]
+    indices: ["$INDEX_USER-index"]
     
   users:
-  - username: $NCADMIN
-    auth_key: $NCADMIN:$ROREST
+  - username: $INDEX_USER
+    auth_key: $INDEX_USER:$ROREST
     groups: ["cloud1"]
 YML_CREATE
 
@@ -102,7 +102,7 @@ chown -R www-data:www-data $NC_APPS_PATH
 
 # Final setup
 occ_command fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_ElasticSearch\\Platform\\ElasticSearchPlatform"}'
-occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${NCADMIN}:${ROREST}@localhost:9200\",\"elastic_index\":\"${NCADMIN}-index\"}"
+occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${ROREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
 occ_command files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 if occ_command fulltextsearch:index < /dev/null
 then
