@@ -49,27 +49,29 @@ then
 fi
 
 # Remove app and drop existing tables if they exist (PostgreSQL)
+PASS=$(grep 'dbpassword' /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+USER=$(grep 'dbuser' $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 if [ -d $NC_APPS_PATH/fulltextsearch ]
 then
     occ_command app:disable fulltextsearch
     rm -rf $NC_APPS_PATH/fulltextsearch
-    PGPASSWORD="$(grep "dbpassword" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")" psql -U "$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g") -h 127.0.0.1 nextcloud_db -c "DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;")"
-    PGPASSWORD="$(grep "dbpassword" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")" psql -U "$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g") -h 127.0.0.1 nextcloud_db -c "DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;")"
-    PGPASSWORD="$(grep "dbpassword" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")" psql -U "$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g") -h 127.0.0.1 nextcloud_db -c "DROP TABLE IF EXISTS fulltextsearch CASCADE;")"
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
 elif [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
 then
     occ_command app:disable fulltextsearch_elasticsearch
     rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
-    PGPASSWORD="$(grep "dbpassword" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")" psql -U "$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g") -h 127.0.0.1 nextcloud_db -c "DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;")"
-    PGPASSWORD="$(grep "dbpassword" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")" psql -U "$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g") -h 127.0.0.1 nextcloud_db -c "DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;")"
-    PGPASSWORD="$(grep "dbpassword" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")" psql -U "$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g") -h 127.0.0.1 nextcloud_db -c "DROP TABLE IF EXISTS fulltextsearch CASCADE;")"
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
 elif [ -d $NC_APPS_PATH/files_fulltextsearch ]
 then
     occ_command app:disable files_fulltextsearch
     rm -rf $NC_APPS_PATH/files_fulltextsearch
-    PGPASSWORD="$(grep "dbpassword" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")" psql -U "$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g") -h 127.0.0.1 nextcloud_db -c "DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;")"
-    PGPASSWORD="$(grep "dbpassword" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")" psql -U "$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g") -h 127.0.0.1 nextcloud_db -c "DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;")"
-    PGPASSWORD="$(grep "dbpassword" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")" psql -U "$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g") -h 127.0.0.1 nextcloud_db -c "DROP TABLE IF EXISTS fulltextsearch CASCADE;")"
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
 fi
 
 # Check & install docker
