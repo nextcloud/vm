@@ -208,7 +208,7 @@ then
     echo "Docker automatic prune job added."
     echo
     service docker restart
-    docker restart code
+    docker restart onlyoffice
     echo "OnlyOffice is now successfully installed."
     any_key "Press any key to continue... "
 fi
