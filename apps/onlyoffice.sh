@@ -99,7 +99,7 @@ fi
 
 # Install Onlyoffice docker
 docker pull onlyoffice/documentserver:latest
-docker run -i -t -d -p 127.0.0.3:9090:80 --restart always onlyoffice/documentserver
+docker run -i -t -d -p 127.0.0.3:9090:80 --restart always --name onlyoffice onlyoffice/documentserver
 
 # Install apache2 
 install_if_not apache2
@@ -207,8 +207,9 @@ then
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
     echo "Docker automatic prune job added."
     echo
+    service docker restart
+    docker restart onlyoffice
     echo "OnlyOffice is now successfully installed."
-    echo "You may have to reboot before Docker will load correctly."
     any_key "Press any key to continue... "
 fi
 

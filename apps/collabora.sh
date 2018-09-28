@@ -100,7 +100,7 @@ fi
 
 # Install Collabora docker
 docker pull collabora/code:latest
-docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always --cap-add MKNOD collabora/code
+docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always --name code --cap-add MKNOD collabora/code
 
 # Install Apache2
 install_if_not apache2
@@ -217,8 +217,9 @@ then
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
     echo "Docker automatic prune job added."
     echo
+    service docker restart
+    docker restart code
     echo "Collabora is now succesfylly installed."
-    echo "You may have to reboot before Docker will load correctly."
     any_key "Press any key to continue... "
 fi
 
