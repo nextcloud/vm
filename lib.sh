@@ -111,7 +111,7 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-[ ! -z "$ES_INSTALL" ] && NCADMIN=$(sudo -u www-data php $NCPATH/occ user:list | awk '{print $3}')
+[ ! -z "$ES_INSTALL" ] && INDEX_USER=$(tr -dc '[:lower:]' < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
 [ ! -z "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
