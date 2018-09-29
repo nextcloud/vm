@@ -53,25 +53,27 @@ USER=$(grep 'dbuser' $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]/
 PASS=$(grep 'dbpassword' $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 if [ -d $NC_APPS_PATH/fulltextsearch ]
 then
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
+    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
     occ_command app:disable fulltextsearch
     rm -rf $NC_APPS_PATH/fulltextsearch
+fi
+if [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
+then
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
-elif [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
-then
     occ_command app:disable fulltextsearch_elasticsearch
     rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
+fi
+if [ -d $NC_APPS_PATH/files_fulltextsearch ]
+then
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
-elif [ -d $NC_APPS_PATH/files_fulltextsearch ]
-then
     occ_command app:disable files_fulltextsearch
     rm -rf $NC_APPS_PATH/files_fulltextsearch
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
 fi
 
 # Check & install docker
@@ -79,7 +81,13 @@ apt update -q4 & spinner_loading
 install_docker
 set_max_count
 mkdir -p "$RORDIR"
-docker pull "$nc_fts"
+result=$(sudo docker images -q $fts_es_name)
+if [[ -n "$result" ]]; then
+then
+    docker stop $fts_es_name && docker rm $fts_es_name 
+else
+    docker pull "$nc_fts"
+fi
 
 # Create configuration YML 
 cat << YML_CREATE > /opt/es/readonlyrest.yml
