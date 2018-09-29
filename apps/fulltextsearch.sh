@@ -48,30 +48,21 @@ then
     deluser --group solr
 fi
 
-# Remove app and drop existing tables if they exist (PostgreSQL)
-USER=$(grep 'dbuser' $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-PASS=$(grep 'dbpassword' $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+# Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
 if [ -d $NC_APPS_PATH/fulltextsearch ]
 then
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
+    echo "Removing old version of Full Text Search and resetting the app..."
+    occ_command fulltextsearch:reset
     occ_command app:disable fulltextsearch
     rm -rf $NC_APPS_PATH/fulltextsearch
 fi
 if [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
 then
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
     occ_command app:disable fulltextsearch_elasticsearch
     rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
 fi
 if [ -d $NC_APPS_PATH/files_fulltextsearch ]
 then
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
     occ_command app:disable files_fulltextsearch
     rm -rf $NC_APPS_PATH/files_fulltextsearch
 fi
