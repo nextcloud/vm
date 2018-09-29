@@ -48,12 +48,36 @@ then
     deluser --group solr
 fi
 
+# Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
+if [ -d $NC_APPS_PATH/fulltextsearch ]
+then
+    echo "Removing old version of Full Text Search and resetting the app..."
+    occ_command fulltextsearch:reset
+    occ_command app:disable fulltextsearch
+    rm -rf $NC_APPS_PATH/fulltextsearch
+fi
+if [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
+then
+    occ_command app:disable fulltextsearch_elasticsearch
+    rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
+fi
+if [ -d $NC_APPS_PATH/files_fulltextsearch ]
+then
+    occ_command app:disable files_fulltextsearch
+    rm -rf $NC_APPS_PATH/files_fulltextsearch
+fi
+
 # Check & install docker
 apt update -q4 & spinner_loading
 install_docker
 set_max_count
 mkdir -p "$RORDIR"
-docker pull "$nc_fts"
+if docker ps -a | grep "$fts_es_name"
+then
+    docker stop "$fts_es_name" && docker rm "$fts_es_name" && docker pull "$nc_fts"
+else
+    docker pull "$nc_fts"
+fi
 
 # Create configuration YML 
 cat << YML_CREATE > /opt/es/readonlyrest.yml
