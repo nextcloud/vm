@@ -57,9 +57,6 @@ debug_mode
 # Check if root
 root_check
 
-# Check network
-network_ok
-
 # Set locales
 install_if_not language-pack-en-base
 sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
