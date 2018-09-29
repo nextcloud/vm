@@ -82,7 +82,7 @@ install_docker
 set_max_count
 mkdir -p "$RORDIR"
 result=$(sudo docker images -q $fts_es_name)
-if [[ -n "$result" ]]; then
+if [[ -n "$result" ]]
 then
     docker stop $fts_es_name && docker rm $fts_es_name 
 else
