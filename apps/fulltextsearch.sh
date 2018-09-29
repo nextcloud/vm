@@ -84,10 +84,9 @@ apt update -q4 & spinner_loading
 install_docker
 set_max_count
 mkdir -p "$RORDIR"
-result=$(sudo docker images -q $fts_es_name)
-if [[ -n "$result" ]]
+if docker ps -a | grep "$fts_es_name"
 then
-    docker stop $fts_es_name && docker rm $fts_es_name 
+    docker stop "$fts_es_name" && docker rm "$fts_es_name" && docker pull "$nc_fts"
 else
     docker pull "$nc_fts"
 fi
