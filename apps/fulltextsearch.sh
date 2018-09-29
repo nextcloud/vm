@@ -53,7 +53,6 @@ USER=$(grep 'dbuser' $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]/
 PASS=$(grep 'dbpassword' $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 if [ -d $NC_APPS_PATH/fulltextsearch ]
 then
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'SET client_min_messages = error;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
@@ -62,7 +61,6 @@ then
 fi
 if [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
 then
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'SET client_min_messages = error;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
@@ -71,7 +69,6 @@ then
 fi
 if [ -d $NC_APPS_PATH/files_fulltextsearch ]
 then
-    PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'SET client_min_messages = error;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_ticks CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS oc_fulltextsearch_indexes CASCADE;'
     PGPASSWORD="$PASS" psql -U "$USER" -h 127.0.0.1 nextcloud_db -c 'DROP TABLE IF EXISTS fulltextsearch CASCADE;'
