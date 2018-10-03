@@ -56,7 +56,7 @@ If it automatically runs as root when you reboot the machine, you have to abort 
 4. Please note that the installation/setup is *not* finnished by just running the `nextcloud_install_production.sh` When you login with the (new) sudo user you ran the script with in step 2 you will automatically be presented with the setup script.
 
 ## Machine configuration of the released version
-Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
+Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
 
 ## Do you want to run this on your Raspberry Pi?
 Great news! We have forked this repository and created a Raspberry Pi image that you can download from here: 
