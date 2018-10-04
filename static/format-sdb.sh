@@ -153,7 +153,7 @@ if grep "$LABEL_" /etc/mtab
 then
 msg_box "$MOUNT_ mounted successfully as a ZFS volume.
 
-Automatic scrubbing is done montly via a cronjob that you can find here:
+Automatic scrubbing is done monthly via a cronjob that you can find here:
 /etc/cron.d/zfsutils-linux
 
 CURRENT STATUS:
