@@ -53,7 +53,7 @@ The script will mount and format the drive. Please select Manually Format & Moun
 `ssh <user>@IP-ADDRESS`<br>
 If it automatically runs as root when you reboot the machine, you have to abort it by pressing `CTRL+C` and run the script as the user you just created:<br>
 `sudo -u <user> sudo bash /var/scripts/nextcloud-startup-script.sh` <br>
-4. Please note that the installation/setup is *not* finnished by just running the `nextcloud_install_production.sh` When you login with the (new) sudo user you ran the script with in step 2 you will automatically be presented with the setup script.
+4. Please note that the installation/setup is *not* finished by just running the `nextcloud_install_production.sh` When you login with the (new) sudo user you ran the script with in step 2 you will automatically be presented with the setup script.
 
 ## Machine configuration of the released version
 Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
@@ -94,7 +94,7 @@ Keep asking questions so that we can add them here.
 
 **Q: How to update Nextcloud VM?**
 <br />
-**A:** You can not use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built in script instead:
+**A:** You cannot use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built-in script instead:
 `sudo bash /var/scripts/update.sh` or run `run_nextcloud_update` as root from your terminal.
 
 **Q: How do I run the occ command?**
@@ -107,13 +107,13 @@ Keep asking questions so that we can add them here.
 
 **Q: Where do I tweak the settings for php-fpm?**
 <br />
-**A:** You can change the settings in /etc/php/7.2/fpm/pool.d/nextcloud.conf, but be aware; only change it if you know what you are doing!
+**A:** You can change the settings in `/etc/php/7.2/fpm/pool.d/nextcloud.conf`, but be aware; only change it if you know what you are doing!
 
 **Q: Some apps are not installed (like issuetemplate for example), when running the setup script**
 <br />
 **A:** https://github.com/nextcloud/vm/issues/639#issuecomment-416472543
 
-**Q: The downloaded file is just a few kilobyte, or corrupted**
+**Q: The downloaded file is just a few kilobytes, or corrupted**
 <br />
 **A:** This is due to heavy load on the server. Please try again in a few minutes.
 
@@ -169,7 +169,7 @@ Keep asking questions so that we can add them here.
 
 **Q: How to backup?**
 <br />
-**A:** There are several ways. We recomend Rsync to a NAS or similar. You can find a script here: https://www.techandme.se/rsync-backup-script/
+**A:** There are several ways. We recommend Rsync to a NAS or similar. You can find a script here: https://www.techandme.se/rsync-backup-script/
 
 **Q:  Can I install in a VM with a NAT and port redirection of port 443 & 10000 & 22?**
 <br />
