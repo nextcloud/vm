@@ -92,6 +92,11 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** You can download the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
 
+**Q: Why are my apps are disabled during an upgrade?**
+<br />
+**A:** Check [here](https://github.com/nextcloud/server/issues/11102#issuecomment-427685621
+).
+
 **Q: How to update Nextcloud VM?**
 <br />
 **A:** You can not use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built in script instead:
