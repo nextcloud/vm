@@ -391,7 +391,7 @@ msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_afte
 If you notice that some apps are disabled it's due to that they are not compatible with the new Nextcloud version.
 To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
 
-Thank you for using T\&M Hansson IT's updater!"
+Thank you for using T&M Hansson IT's updater!"
     occ_command status
     occ_command maintenance:mode --off
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log
