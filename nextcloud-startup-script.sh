@@ -229,7 +229,7 @@ It will also do the following:
   The script will take about 10 minutes to finish,
   depending on your internet connection.
 
-####################### T&M Hansson IT - $(date +"%Y") #######################"
+ ###################### T&M Hansson IT - $(date +"%Y") ######################"
 clear
 
 # Set keyboard layout
@@ -550,19 +550,28 @@ Login to Nextcloud in your browser:
 - IP: $ADDRESS
 - Hostname: $(hostname -f)
 
-Some tips and tricks:
-1. Publish your server online: https://goo.gl/iUGE2U
-2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
-3. To update this VM just type: sudo bash /var/scripts/update.sh
-4. Change IP to something outside DHCP: sudo nano /etc/netplan/01-netcfg.yaml
-5. Please report any bugs here: https://github.com/nextcloud/vm/issues
-6. For a better experiance it's a good idea to setup an email account here: https://yourcloud.xyz/settings/admin 
-7. Please ask for help in the forums, visit our shop, or buy support from Nextcloud:
+SUPPORT:
+Please ask for help in the forums, visit our shop to buy support,
+or buy a yearly subscription from Nextcloud:
 - SUPPORT: https://shop.hanssonit.se/product/premium-support-per-30-minutes/
-- FORUM: https://help.nextcloud.com/ 
-- NEXTCLOUD: https://nextcloud.com/pricing/
-  
-################################## T&M Hansson IT - $(date +"%Y") ##################################"
+- FORUM: https://help.nextcloud.com/
+- SUBSCRIPTION: https://nextcloud.com/pricing/ (Please refer to @enoch85)
+
+Please report any bugs here: https://github.com/nextcloud/vm/issues
+
+TIPS & TRICKS:
+1. Publish your server online: https://goo.gl/iUGE2U
+
+2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
+
+3. To update this VM just type: sudo bash /var/scripts/update.sh
+
+4. Change IP to something outside DHCP: sudo nano /etc/netplan/01-netcfg.yaml
+
+5. For a better experiance it's a good idea to setup an email account here:
+   https://yourcloud.xyz/settings/admin
+
+ ######################### T&M Hansson IT - $(date +"%Y") #########################  "
 
 # Set trusted domain in config.php
 if [ -f "$SCRIPTS"/trusted.sh ] 
