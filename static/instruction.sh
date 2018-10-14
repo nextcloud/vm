@@ -33,7 +33,7 @@ cat << INST2
 | Detailed instructions for setting this up can be found here:          |
 | https://www.techandme.se/nextcloud-update-is-now-fully-automated/     |
 |                                                                       |
-|  ####################### T&M Hansson IT - $(date +"%Y") ########################  |
+|  ##################### T&M Hansson IT - $(date +"%Y") #######################  |
 +-----------------------------------------------------------------------+
 INST2
 
