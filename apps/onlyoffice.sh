@@ -2,7 +2,7 @@
 
 echo "Installing OnlyOffice..."
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
 true

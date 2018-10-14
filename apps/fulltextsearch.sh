@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 # SwITNet Ltd © - 2018, https://switnet.net/
 
 echo "Installing Elastic Search & Full Text Search on Nextcloud..."

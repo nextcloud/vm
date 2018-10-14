@@ -7,7 +7,7 @@ unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 unset NCDB
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 ## If you want debug mode, please activate it further down in the code at line ~60
 
@@ -229,7 +229,7 @@ It will also do the following:
   The script will take about 10 minutes to finish,
   depending on your internet connection.
 
-####################### Tech and Me - 2018 #######################"
+####################### T&M Hansson IT - $(date +"%Y") #######################"
 clear
 
 # Set keyboard layout
@@ -562,7 +562,7 @@ Some tips and tricks:
 - FORUM: https://help.nextcloud.com/ 
 - NEXTCLOUD: https://nextcloud.com/pricing/
   
-################################## Tech and Me - 2018 ##################################"
+################################## T&M Hansson IT - $(date +"%Y") ##################################"
 
 # Set trusted domain in config.php
 if [ -f "$SCRIPTS"/trusted.sh ] 

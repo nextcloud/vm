@@ -6,7 +6,7 @@ NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/v
 unset NC_UPDATE
 unset NCDB
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -132,7 +132,7 @@ and major releases without skipping any of them, as skipping releases increases 
 errors. Major releases are 9, 10, 11 and 12. Point releases are intermediate releases for each
 major release. For example, 9.0.52 and 10.0.2 are point releases.
 
-Please contact Tech and Me (T&M Hansson IT AB) to help you with upgrading between major versions.
+Please contact T\&M Hansson IT AB to help you with upgrading between major versions.
 https://shop.hanssonit.se/product-category/support/"
     exit 1
 fi
@@ -391,7 +391,7 @@ msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_afte
 If you notice that some apps are disabled it's due to that they are not compatible with the new Nextcloud version.
 To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
 
-Thank you for using Tech and Me's updater!"
+Thank you for using T\&M Hansson IT's updater!"
     occ_command status
     occ_command maintenance:mode --off
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log

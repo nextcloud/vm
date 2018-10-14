@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
 true
@@ -33,7 +33,7 @@ cat << INST2
 | Detailed instructions for setting this up can be found here:          |
 | https://www.techandme.se/nextcloud-update-is-now-fully-automated/     |
 |                                                                       |
-|  ####################### Tech and Me - 2018 ########################  |
+|  ####################### T&M Hansson IT - $(date +"%Y") ########################  |
 +-----------------------------------------------------------------------+
 INST2
 

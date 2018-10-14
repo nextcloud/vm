@@ -16,7 +16,7 @@
 * [Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, PostgreSQL or Hyper-V.
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
-* [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
+* [Daniel Hanson](https://github.com/enoch85) @ [T&M Hansson IT AB](https://www.hanssonit.se)
 * You? :)
 
 ## Special thanks to

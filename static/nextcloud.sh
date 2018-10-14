@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 WANIP6=$(curl -s -k -m 7 https://6.ifcfg.me)
 WANIP4=$(curl -s -m 5 ipinfo.io/ip)
