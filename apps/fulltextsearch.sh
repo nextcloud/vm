@@ -109,7 +109,7 @@ docker run -d --restart always \
 
 # Wait for bootstraping
 docker restart $fts_es_name
-countdown 'Waiting for docker bootstraping...' '20'
+countdown "Waiting for docker bootstraping..." "20"
 docker logs $fts_es_name
 
 # Get Full Text Search app for nextcloud
