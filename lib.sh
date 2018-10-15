@@ -824,6 +824,17 @@ You will be given the option to abort when you hit OK."
 fi
 }
 
+# countdown 'message looks like this' 10
+countdown() {
+echo "$1"
+secs="$(($2))"
+while [ $secs -gt 0 ]; do
+   echo -ne "$secs\033[0K\r"
+   sleep 1
+   : $((secs--))
+done
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
