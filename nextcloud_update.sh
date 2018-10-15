@@ -22,6 +22,10 @@ THEME_NAME=""
 # Must be root
 root_check
 
+msg_box "There's a bug in the Redis update process, we are working on it.
+Please try to upgrade again later"
+exit
+
 # Check if dpkg or apt is running
 is_process_running apt
 is_process_running dpkg
