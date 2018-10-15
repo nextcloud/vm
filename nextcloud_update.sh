@@ -159,7 +159,7 @@ else
     rm -f "$STABLEVERSION.tar.bz2"
 fi
 
-countdown 'Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort.' 10
+countdown 'Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort.' '10'
 
 # Stop Apache2
 check_command service apache2 stop
@@ -297,7 +297,7 @@ then
     echo 
     printf "${Green}All files are backed up.${Color_Off}\n"
     occ_command maintenance:mode --on
-    countdown 'Removing old Nextcloud instance in 5 seconds...' 5
+    countdown 'Removing old Nextcloud instance in 5 seconds...' '5'
     rm -rf $NCPATH
     tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
     rm "$HTML/$STABLEVERSION.tar.bz2"
