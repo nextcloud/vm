@@ -51,17 +51,31 @@ then
 fi
 
 # Update Redis PHP extension
-if type pecl > /dev/null 2>&1
+echo "Trying to upgrade the Redis PECL extenstion..."
+if ! pecl list | grep redis >/dev/null 2>&1
 then
-    if type php7.2 > /dev/null 2>&1
+    if dpkg -l | grep php7.2 > /dev/null 2>&1
     then
-    install_if_not php7.2-dev
+        install_if_not php7.2-dev
     else
-    install_if_not php7.0-dev
+        install_if_not php7.0-dev
     fi
-echo "Trying to upgrade the Redis Pecl extenstion..."
-yes no | pecl upgrade redis
-service redis-server restart
+    apt purge php-redis -y
+    apt autoremove -y
+    pecl channel-update pecl.php.net
+    yes no | pecl install redis
+    service redis-server restart
+elif pecl list | grep redis >/dev/null 2>&1
+then
+    if dpkg -l | grep php7.2 > /dev/null 2>&1
+    then
+        install_if_not php7.2-dev
+    else
+        install_if_not php7.0-dev
+    fi
+    pecl channel-update pecl.php.net
+    yes no | pecl upgrade redis
+    service redis-server restart
 fi
 
 # Update adminer
@@ -320,7 +334,7 @@ fi
 check_command service apache2 start
 
 # Recover apps that exists in the backed up apps folder
-# run_static_script recover_apps
+run_static_script recover_apps
 
 # Enable Apps
 if [ -d "$SNAPDIR" ]
