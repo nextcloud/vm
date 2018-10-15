@@ -835,8 +835,6 @@ while [ $secs -gt 0 ]; do
 done
 }
 
-countdown 'message... looks like this' 10
-
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
