@@ -33,6 +33,7 @@ cpu_check 2 Bitwarden
 
 # Install Docker
 install_docker
+install_if_not docker-compose
 
 # Install Bitwarden
 install_if_not curl
@@ -41,4 +42,7 @@ curl -s -o bitwarden.sh \
     && chmod +x bitwarden.sh
 check_command ./bitwarden.sh install
 check_command ./bitwarden.sh start
-check_command ./bitwarden.sh updatedb
+if check_command ./bitwarden.sh updatedb
+then
+msg_box "Bitwarden was sucessfully installed!"
+fi
