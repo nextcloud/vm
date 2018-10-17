@@ -147,6 +147,7 @@ network:
 IPCONFIG
 
 msg_box "These are your settings, please make sure they are correct:
+
 $(cat /etc/netplan/01-netcfg.yaml)"
     netplan try
     fi
