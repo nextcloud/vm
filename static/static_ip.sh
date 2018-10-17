@@ -60,8 +60,8 @@ then
 fi
 done
 
-# Check if this is VMware:
-if ! [ -z $IFACE ]
+# Check if IFACE is empty, if yes, try another method:
+if ! [ -z "$IFACE" ]
 then
 cat <<-IPCONFIG > "$INTERFACES"
 network:
