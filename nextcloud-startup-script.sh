@@ -149,7 +149,6 @@ IPCONFIG
 msg_box "These are your settings, please make sure they are correct:
 $(cat /etc/netplan/01-netcfg.yaml)"
     netplan try
-        fi
     fi
 fi
 
@@ -163,7 +162,7 @@ msg_box "Network NOT OK. You must have a working network connection to run this 
 Please contact us for support:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/
 
-Please also post this issue on: https://github.com/nextcloud/vm/issues
+Please also post this issue on: https://github.com/nextcloud/vm/issues"
     exit 1
 fi
 
