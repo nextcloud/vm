@@ -366,7 +366,7 @@ do
 
         Bitwarden)
             clear
-            run_app_script bitwarden
+            run_app_script tmbitwarden
         ;;
         
         FullTextSearch)
