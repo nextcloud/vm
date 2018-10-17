@@ -499,7 +499,7 @@ do
 
         "Static IP")
             clear
-            run_static_script set_static_ip
+            run_static_script static_ip
         ;;
 
         *)
