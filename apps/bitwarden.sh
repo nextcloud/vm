@@ -31,8 +31,11 @@ It's a good idea to read that before you start this script."
 ram_check 2 Bitwarden
 cpu_check 2 Bitwarden
 
-install_if_not curl
+# Install Docker
+install_docker
 
+# Install Bitwarden
+install_if_not curl
 curl -s -o bitwarden.sh \
     https://raw.githubusercontent.com/bitwarden/core/master/scripts/bitwarden.sh \
     && chmod +x bitwarden.sh
