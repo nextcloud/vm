@@ -95,7 +95,7 @@ SETDHCP
     wait
     check_command service network-manager restart
     echo "Checking connection..."
-    sleep 3
+    sleep 1
     if ! nslookup github.com
     then
 msg_box "The script failed to get an address from DHCP.
@@ -103,35 +103,34 @@ You must have a working network connection to run this script.
 
 You will now be provided with the option to set a static IP manually instead."
 
-# Copy old interfaces file
-msg_box "Copying old netplan.io config file file to:
-/tmp/01-netcfg.yaml_backup"
-check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
+    # Copy old interfaces file
+    msg_box "Copying old netplan.io config file file to:
+    /tmp/01-netcfg.yaml_backup"
+    check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
 
-echo
-# Ask for domain name
+    # Ask for IP address
 cat << ENTERIP
 +-------------------------------------------------------------+
 |    Please enter the static IP address you want to set,      |
 |    including the subnet. Like this: 192.168.1.100/24        |
 +-------------------------------------------------------------+
 ENTERIP
-echo
-read -r LANIP
-echo
+    echo
+    read -r LANIP
+    echo
 
-# Ask for domain name
+    # Ask for gateway address
 cat << ENTERGATEWAY
 +-------------------------------------------------------------+
 |    Please enter the gateway address you want to set,        |
 |    Like this: 192.168.1.1                                   |
 +-------------------------------------------------------------+
 ENTERGATEWAY
-echo
-read -r GATEWAYIP
-echo
+    echo
+    read -r GATEWAYIP
+    echo
 
-# Create the Static IP file
+    # Create the Static IP file
 cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
 network:
    version: 2
