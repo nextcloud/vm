@@ -104,8 +104,8 @@ You must have a working network connection to run this script.
 You will now be provided with the option to set a static IP manually instead."
 
     # Copy old interfaces file
-    msg_box "Copying old netplan.io config file file to:
-    /tmp/01-netcfg.yaml_backup"
+msg_box "Copying old netplan.io config file file to:
+/tmp/01-netcfg.yaml_backup"
     check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
 
     # Ask for IP address
