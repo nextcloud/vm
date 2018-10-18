@@ -110,10 +110,10 @@ You will now be provided with the option to set a static IP manually instead."
 
     # Ask for IP address
 cat << ENTERIP
-+-------------------------------------------------------------+
-|    Please enter the static IP address you want to set,      |
-|    including the subnet. Like this: 192.168.1.100/24        |
-+-------------------------------------------------------------+
++----------------------------------------------------------+
+|    Please enter the static IP address you want to set,   |
+|    including the subnet. Example: 192.168.1.100/24       |
++----------------------------------------------------------+
 ENTERIP
     echo
     read -r LANIP
@@ -121,10 +121,10 @@ ENTERIP
 
     # Ask for gateway address
 cat << ENTERGATEWAY
-+-------------------------------------------------------------+
-|    Please enter the gateway address you want to set,        |
-|    Like this: 192.168.1.1                                   |
-+-------------------------------------------------------------+
++----------------------------------------------------------+
+|    Please enter the gateway address you want to set,     |
+|    Example: 192.168.1.1                                  |
++----------------------------------------------------------+
 ENTERGATEWAY
     echo
     read -r GATEWAYIP
