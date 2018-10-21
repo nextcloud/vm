@@ -227,7 +227,7 @@ is_process_running dpkg
 
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
-# All the shell scripts in static (.sh)
+# Scripts in static (.sh, .php, .py)
 download_static_script temporary-fix
 download_static_script update
 download_static_script trusted
