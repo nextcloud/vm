@@ -219,7 +219,7 @@ then
     echo
     service docker restart
     docker restart code
-    echo "Collabora is now succesfylly installed."
+    echo "Collabora is now successfully installed."
     any_key "Press any key to continue... "
 fi
 
