@@ -16,6 +16,10 @@ debug_mode
 # Check if root
 root_check
 
+# At least port 80 needs to be open on localhost
+network_ok
+check_open_port 80 localhost
+
 # Get PageKite
 if ! install_if_not pagekite
 then
