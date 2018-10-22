@@ -303,24 +303,47 @@ check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 clear
 
-msg_box "The following script will install a trusted
-SSL certificate through Let's Encrypt.
+msg_box "You will now be give the option to setup your own domain with Nextcloud.
+Here you have two options:
+
+1. Install a trusted SSL certificate through Let's Encrypt on your existing domain.
+2. Use Pagekite (yourdomain.pagekite.me) if you don't own a domain.
 
 It's recommended to use SSL together with Nextcloud.
+Both options are good, but we recomend option 1 as it's 'your own'.
+Option 1 is a good alternative for novice users though as it's fairly easy to setup.
+
 Please open port 80 and 443 to this servers IP before you continue.
-
 More information can be found here:
-https://www.techandme.se/open-port-80-443/"
+https://www.techandme.se/open-port-80-443/
 
-# Let's Encrypt
-if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
-then
-    bash $SCRIPTS/activate-ssl.sh
-else
-    echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    any_key "Press any key to continue..."
-fi
+If option 1 should fail for any reason, you can run the script again.
+You can find the autmated Let's Encrypt script here:
+$SCRIPTS/activate-ssl.sh"
+
+# Install SSL
+whiptail --title "Install SSL with your own domain" --checklist --separate-output "Choose the best option for your setup.\nSelect by pressing the spacebar." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Lets-Encrypt" "(SSL on your exisitng domain - recomended)   " ON \
+"PageKite" "(3rd party service including SSL)   " OFF 2>results
+
+while read -r -u 9 choice
+do
+    case $choice in
+        Lets-Encrypt)
+            clear
+            bash $SCRIPTS/activate-ssl.sh
+        ;;
+        
+        PageKite)
+            clear
+            run_app_script pagekite
+        ;;
+
+        *)
+        ;;
+    esac
+done 9< results
+rm -f results
 clear
 
 # Install Apps
