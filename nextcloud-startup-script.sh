@@ -310,7 +310,7 @@ Here you have two options:
 2. Use Pagekite (yourdomain.pagekite.me) if you don't own a domain.
 
 It's recommended to use SSL together with Nextcloud.
-Both options are good, but we recomend option 1 as it's 'your own'.
+Both options are good, but we recommend option 1 as it's 'your own'.
 Option 1 is a good alternative for novice users though as it's fairly easy to setup.
 
 Please open port 80 and 443 to this servers IP before you continue.
@@ -318,7 +318,7 @@ More information can be found here:
 https://www.techandme.se/open-port-80-443/
 
 If option 1 should fail for any reason, you can run the script again.
-You can find the autmated Let's Encrypt script here:
+You can find the automated Let's Encrypt script here:
 $SCRIPTS/activate-ssl.sh"
 
 # Install SSL
