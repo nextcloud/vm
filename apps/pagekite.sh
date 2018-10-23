@@ -20,14 +20,18 @@ root_check
 network_ok
 check_open_port 80 localhost
 
-# Get PageKite
-if ! install_if_not pagekite
-then
-    curl -s https://pagekite.net/pk/ | sudo bash
-fi
+# Install PageKite
+install_if_not pagekite
 
 # Do the signup
 # pagekite.py [--options] [service] kite-name [+flags]
-pagekite.py --signup
+pagekite --signup
+pagekite --daemonize
 
-# and so on and so on
+# fetch the yourdomain.pagekite.me somehow to set trusted host (nextcloud config.php)
+
+# Create virtual hosts (redirect http --> https
+
+# make TLS- TLS all the way
+
+# and so on and so on 
