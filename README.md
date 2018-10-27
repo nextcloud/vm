@@ -38,22 +38,19 @@ The script will mount and format the drive. Please select Manually Format & Moun
 * A working internet connection (the script needs it to download files and variables)
 
 #### Recommended
-* Thick provisioned (better performance and easier to maintain)
 * DHCP available
 * 40 GB HDD for OS
 * 4 vCPU
 * 4 GB RAM
 
 #### Installation
-1. Get the latest install script from master:<br>
-`wget https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh`
-2. Run the script with:<br>
-`sudo bash nextcloud_install_production.sh`
-3. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
+1. Get the latest install script from master and install it with a sudo user:<br>
+`curl -sSL https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh | sudo bash
+2. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
 `ssh <user>@IP-ADDRESS`<br>
 If it automatically runs as root when you reboot the machine, you have to abort it by pressing `CTRL+C` and run the script as the user you just created:<br>
 `sudo -u <user> sudo bash /var/scripts/nextcloud-startup-script.sh` <br>
-4. Please note that the installation/setup is *not* finished by just running the `nextcloud_install_production.sh` When you login with the (new) sudo user you ran the script with in step 2 you will automatically be presented with the setup script.
+3. Please note that the installation/setup is *not* finished by just running the `nextcloud_install_production.sh` When you login with the (new) sudo user you ran the script with in step 2 you will automatically be presented with the setup script.
 
 ## Machine configuration of the released version
 Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
