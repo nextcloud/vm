@@ -94,19 +94,6 @@ then
     docker images --format "{{.Repository}}:{{.Tag}}" | grep :latest | xargs -L1 docker pull
 fi
 
-## OLD WAY ##
-#if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
-#then
-#    echo "Updating Docker container for OnlyOffice..."
-#    docker pull onlyoffice/documentserver
-#fi
-#
-#if [ "$(docker image inspect collabora/code >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
-#then
-#    echo "Updating Docker container for Collabora..."
-#    docker pull collabora/code
-#fi
-
 # Cleanup un-used packages
 apt autoremove -y
 apt autoclean
@@ -133,6 +120,9 @@ then
     download_static_script setup_secure_permissions_nextcloud
     chmod +x "$SECURE"
 fi
+
+# Update all Nextcloud apps
+occ_command app:update --all
 
 # Major versions unsupported
 if [ "${CURRENTVERSION%%.*}" == "$NCBAD" ]
