@@ -308,8 +308,8 @@ configure_max_upload
 # Set SMTP mail
 occ_command config:system:set mail_smtpmode --value="smtp"
 
-# Forget login/session when browser or browser tab closes
-occ_command config:system:set remember_login_cookie_lifetime --value="0"
+# Forget login/session after 30 minutes
+occ_command config:system:set remember_login_cookie_lifetime --value="1800"
 
 # Set logrotate (max 10 MB)
 occ_command config:system:set log_rotate_size --value="10485760"
