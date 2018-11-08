@@ -469,6 +469,10 @@ do
 done
 clear
 
+# Set notification for admin
+sudo -u www-data php /var/www/nextcloud/occ notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notficatoins and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." ncadmin "Please setup SMTP"
+sudo -u www-data php /var/www/nextcloud/occ notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" ncadmin "Do you need support?"
+
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
 restart_webserver
