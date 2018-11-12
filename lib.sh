@@ -69,13 +69,13 @@ NCBAD=$((NCMAJOR-2))
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # OnlyOffice URL
-[ ! -z "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "Techandme.se OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+[ ! -z "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain
-[ ! -z "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "Techandme.se OnlyOffice" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+[ ! -z "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Collabora Docker URL
-[ ! -z "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+[ ! -z "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain
-[ ! -z "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "Techandme.se Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+[ ! -z "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Letsencrypt
 LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
@@ -822,6 +822,17 @@ You will be given the option to abort when you hit OK."
     docker image prune -a -f
     docker volume prune -f
 fi
+}
+
+# countdown 'message looks like this' 10
+countdown() {
+echo "$1"
+secs="$(($2))"
+while [ $secs -gt 0 ]; do
+   echo -ne "$secs\033[0K\r"
+   sleep 1
+   : $((secs--))
+done
 }
 
 ## bash colors

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 echo "Installing Spreed.ME..."
 
@@ -33,10 +33,10 @@ lowest_compatible_nc 13
 install_if_not apache2
 install_if_not snapd
 
-# Install Nextcloud Spreedme Snap
+# Install Nextcloud Spreed.ME Snap
 if [ -d "$SNAPDIR" ]
 then
-    echo "SpreeMe Snap already seems to be installed and wil now be re-installed..."
+    echo "Spreed.ME Snap already seems to be installed and will now be re-installed..."
     snap remove spreedme
     rm -rf "$SNAPDIR"
     snap install --edge spreedme
@@ -44,12 +44,12 @@ else
     snap install --edge spreedme
 fi
 
-# Install and activate the SpreedMe app
+# Install and activate the Spreed.ME app
 if [ -d "$NC_APPS_PATH/spreedme" ]
 then
     # Remove
     occ_command app:disable spreedme
-    echo "SpreedMe app already seems to be installed and will now be re-installed..."
+    echo "Spreed.ME app already seems to be installed and will now be re-installed..."
     rm -R "$NC_APPS_PATH/spreedme"
     # Reinstall
     occ_command app:install spreedme
@@ -118,7 +118,7 @@ msg_box "Something is wrong, the installation did not finish correctly.
 Please report this to $ISSUES"
     exit 1
 else
-msg_box "Success! SpreedMe is now installed and configured.
+msg_box "Success! Spreed.ME is now installed and configured.
 
 You may have to change SPREED_WEBRTC_ORIGIN in:
 (sudo nano) $NCPATH/apps/spreedme/config/config.php"

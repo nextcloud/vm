@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -308,7 +308,10 @@ configure_max_upload
 # Set SMTP mail
 occ_command config:system:set mail_smtpmode --value="smtp"
 
-# Set logrotate
+# Forget login/session after 30 minutes
+occ_command config:system:set remember_login_cookie_lifetime --value="1800"
+
+# Set logrotate (max 10 MB)
 occ_command config:system:set log_rotate_size --value="10485760"
 
 # Enable OPCache for PHP 

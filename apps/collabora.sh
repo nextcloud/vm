@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 echo "Installing Collabora..."
 
@@ -219,7 +219,7 @@ then
     echo
     service docker restart
     docker restart code
-    echo "Collabora is now succesfylly installed."
+    echo "Collabora is now successfully installed."
     any_key "Press any key to continue... "
 fi
 

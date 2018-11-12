@@ -16,7 +16,7 @@
 * [Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, PostgreSQL or Hyper-V.
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
-* [Daniel Hanson](https://github.com/enoch85) @ [Tech and Me](https://www.techandme.se)
+* [Daniel Hanson](https://github.com/enoch85) @ [T&M Hansson IT AB](https://www.hanssonit.se)
 * You? :)
 
 ## Special thanks to
@@ -36,27 +36,25 @@ The script will mount and format the drive. Please select Manually Format & Moun
 * XX GB HDD for DATA (/mnt/ncdata)
 * Absolute minimum is 1 vCPU and 2 GB RAM (4 GB minimum if you are running OnlyOffice)
 * A working internet connection (the script needs it to download files and variables)
+* [VMware Player](https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html) (works with other hypervisors as well).
 
 #### Recommended
-* Thick provisioned (better performance and easier to maintain)
 * DHCP available
 * 40 GB HDD for OS
 * 4 vCPU
 * 4 GB RAM
 
 #### Installation
-1. Get the latest install script from master:<br>
-`wget https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh`
-2. Run the script with:<br>
-`sudo bash nextcloud_install_production.sh`
-3. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
+1. Get the latest install script from master and install it with a sudo user:<br>
+`curl -sSL https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh | sudo bash`
+2. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
 `ssh <user>@IP-ADDRESS`<br>
 If it automatically runs as root when you reboot the machine, you have to abort it by pressing `CTRL+C` and run the script as the user you just created:<br>
 `sudo -u <user> sudo bash /var/scripts/nextcloud-startup-script.sh` <br>
-4. Please note that the installation/setup is *not* finnished by just running the `nextcloud_install_production.sh` When you login with the (new) sudo user you ran the script with in step 2 you will automatically be presented with the setup script.
+3. Please note that the installation/setup is *not* finished by just running the `nextcloud_install_production.sh` When you login with the (new) sudo user you ran the script with in step 2 you will automatically be presented with the setup script.
 
 ## Machine configuration of the released version
-Please check the configuration here: https://www.techandme.se/machine-setup-nextcloud/
+Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
 
 ## Do you want to run this on your Raspberry Pi?
 Great news! We have forked this repository and created a Raspberry Pi image that you can download from here: 
@@ -92,9 +90,14 @@ Keep asking questions so that we can add them here.
 <br />
 **A:** You can download the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
 
+**Q: Why are my apps are disabled during an upgrade?**
+<br />
+**A:** Check [here](https://github.com/nextcloud/server/issues/11102#issuecomment-427685621
+).
+
 **Q: How to update Nextcloud VM?**
 <br />
-**A:** You can not use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built in script instead:
+**A:** You cannot use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built-in script instead:
 `sudo bash /var/scripts/update.sh` or run `run_nextcloud_update` as root from your terminal.
 
 **Q: How do I run the occ command?**
@@ -107,13 +110,13 @@ Keep asking questions so that we can add them here.
 
 **Q: Where do I tweak the settings for php-fpm?**
 <br />
-**A:** You can change the settings in /etc/php/7.2/fpm/pool.d/nextcloud.conf, but be aware; only change it if you know what you are doing!
+**A:** You can change the settings in `/etc/php/7.2/fpm/pool.d/nextcloud.conf`, but be aware; only change it if you know what you are doing!
 
 **Q: Some apps are not installed (like issuetemplate for example), when running the setup script**
 <br />
 **A:** https://github.com/nextcloud/vm/issues/639#issuecomment-416472543
 
-**Q: The downloaded file is just a few kilobyte, or corrupted**
+**Q: The downloaded file is just a few kilobytes, or corrupted**
 <br />
 **A:** This is due to heavy load on the server. Please try again in a few minutes.
 
@@ -169,12 +172,11 @@ Keep asking questions so that we can add them here.
 
 **Q: How to backup?**
 <br />
-**A:** There are several ways. We recomend Rsync to a NAS or similar. You can find a script here: https://www.techandme.se/rsync-backup-script/
+**A:** There are several ways. We recommend Rsync to a NAS or similar. You can find a script here: https://www.techandme.se/rsync-backup-script/
 
 **Q:  Can I install in a VM with a NAT and port redirection of port 443 & 10000 & 22?**
 <br />
 **A:** Yes, check this out: https://www.techandme.se/publish-your-server-online/
 
 ## First look
-
-![alt tag](https://raw.githubusercontent.com/nextcloud/screenshots/master/vm/first-look.jpg)
+![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)

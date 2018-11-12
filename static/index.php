@@ -75,16 +75,16 @@
         <br>
         <div class="logo"></div>
         <div class="logotext">
-            <h2><a href="https://github.com/nextcloud/vm" target="_blank">Nextcloud VM</a> - by <a href="https://nextcloud.com" target="_blank">Nextcloud Community</a></h2>
+            <h2><a href="https://github.com/nextcloud/vm" target="_blank">Nextcloud VM</a> - by <a href="https://www.hanssonit.se/nextcloud-vm/" target="_blank">T&M Hansson IT AB</a></h2>
         </div>
         <br>
         <div class="information">
             <p>Thank you for downloading the pre-configured Nextcloud VM! If you see this page, you have successfully mounted the Nextcloud VM on the computer that will act as host for Nextcloud.</p>
             <p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.</p>
-            <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels. You can also check the <a href="https://www.techandme.se/complete-install-instructions-nextcloud/" target="_blank">complete install instructions</a>.</p>
+            <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels. You can also check the <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm" target="_blank">complete install instructions</a>.</p>
         </div>
 
-        <h2><a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login</a> to Nextcloud</h2>
+        <h2><a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm?currentPageId=W6yo9OPiqQz3_Mpy" target="_blank">Login</a> to Nextcloud</h2>
 
         <div class="information">
             <p>Default User:</p>
@@ -130,7 +130,7 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
-                <a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login details</a>
+                <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm?currentPageId=W6yo9OPiqQz3_Mpy" target="_blank">Login details</a>
             </h3>
             <p>Note: Webmin is installed when you run the setup script. To access Webmin externally you have to open port 10000 in your router.</p>
         </div>
@@ -147,7 +147,7 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
-                <a href="https://www.techandme.se/user-and-password-nextcloud/" target="_blank">Login details</a>
+                <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm?currentPageId=W6yo9OPiqQz3_Mpy" target="_blank">Login details</a>
             </h3>
             <p>Note: Your LAN IP is set as approved in /etc/apache2/conf-available/adminer.conf, all other access is forbidden.</p>
         </div>

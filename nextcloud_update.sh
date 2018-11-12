@@ -6,7 +6,7 @@ NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/v
 unset NC_UPDATE
 unset NCDB
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -48,17 +48,31 @@ then
 fi
 
 # Update Redis PHP extension
-if type pecl > /dev/null 2>&1
+echo "Trying to upgrade the Redis PECL extenstion..."
+if ! pecl list | grep redis >/dev/null 2>&1
 then
-    if type php7.2 > /dev/null 2>&1
+    if dpkg -l | grep php7.2 > /dev/null 2>&1
     then
-    install_if_not php7.2-dev
+        install_if_not php7.2-dev
     else
-    install_if_not php7.0-dev
+        install_if_not php7.0-dev
     fi
-echo "Trying to upgrade the Redis Pecl extenstion..."
-yes no | pecl upgrade redis
-service redis-server restart
+    apt purge php-redis -y
+    apt autoremove -y
+    pecl channel-update pecl.php.net
+    yes no | pecl install redis
+    service redis-server restart
+elif pecl list | grep redis >/dev/null 2>&1
+then
+    if dpkg -l | grep php7.2 > /dev/null 2>&1
+    then
+        install_if_not php7.2-dev
+    else
+        install_if_not php7.0-dev
+    fi
+    pecl channel-update pecl.php.net
+    yes no | pecl upgrade redis
+    service redis-server restart
 fi
 
 # Update adminer
@@ -129,7 +143,7 @@ and major releases without skipping any of them, as skipping releases increases 
 errors. Major releases are 9, 10, 11 and 12. Point releases are intermediate releases for each
 major release. For example, 9.0.52 and 10.0.2 are point releases.
 
-Please contact Tech and Me (T&M Hansson IT AB) to help you with upgrading between major versions.
+Please contact T\&M Hansson IT AB to help you with upgrading between major versions.
 https://shop.hanssonit.se/product-category/support/"
     exit 1
 fi
@@ -156,9 +170,7 @@ else
     rm -f "$STABLEVERSION.tar.bz2"
 fi
 
-echo "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds..."
-echo "Press CTRL+C to abort."
-sleep 10
+countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort." "10"
 
 # Stop Apache2
 check_command service apache2 stop
@@ -287,7 +299,7 @@ then
     echo 
     printf "${Green}All files are backed up.${Color_Off}\n"
     occ_command maintenance:mode --on
-    echo "Removing old Nextcloud instance in 5 seconds..." && sleep 5
+    countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
     tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
     rm "$HTML/$STABLEVERSION.tar.bz2"
@@ -309,7 +321,7 @@ fi
 check_command service apache2 start
 
 # Recover apps that exists in the backed up apps folder
-# run_static_script recover_apps
+run_static_script recover_apps
 
 # Enable Apps
 if [ -d "$SNAPDIR" ]
@@ -370,7 +382,7 @@ msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_afte
 If you notice that some apps are disabled it's due to that they are not compatible with the new Nextcloud version.
 To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
 
-Thank you for using Tech and Me's updater!"
+Thank you for using T&M Hansson IT's updater!"
     occ_command status
     occ_command maintenance:mode --off
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log

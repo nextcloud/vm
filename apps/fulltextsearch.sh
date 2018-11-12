@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 # SwITNet Ltd © - 2018, https://switnet.net/
 
 echo "Installing Elastic Search & Full Text Search on Nextcloud..."
@@ -107,15 +107,9 @@ docker run -d --restart always \
 -e "discovery.type=single-node" \
 -i -t $nc_fts
 
+# Wait for bootstraping
 docker restart $fts_es_name
-
-echo "Waiting for docker bootstraping..."
-secs=$((20))
-while [ $secs -gt 0 ]; do
-   echo -ne "$secs\033[0K\r"
-   sleep 1
-   : $((secs--))
-done
+countdown "Waiting for docker bootstraping..." "20"
 docker logs $fts_es_name
 
 # Get Full Text Search app for nextcloud

@@ -7,7 +7,7 @@ unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 unset NCDB
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 ## If you want debug mode, please activate it further down in the code at line ~60
 
@@ -229,7 +229,7 @@ It will also do the following:
   The script will take about 10 minutes to finish,
   depending on your internet connection.
 
-####################### Tech and Me - 2018 #######################"
+ ###################### T&M Hansson IT - $(date +"%Y") ######################"
 clear
 
 # Set keyboard layout
@@ -330,7 +330,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing [2GB RAM])   " OFF \
 "OnlyOffice" "(Online editing [4GB RAM])   " OFF \
-"Bitwarden" "(Password storage) - COMING SOON   " OFF \
+"Bitwarden" "(Password manager) - NOT STABLE   " OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
@@ -366,7 +366,7 @@ do
 
         Bitwarden)
             clear
-           echo "Bitwarden is not yet scripted, it will come soon" && sleep 3
+            run_app_script tmbitwarden
         ;;
         
         FullTextSearch)
@@ -416,6 +416,10 @@ do
     sudo -u www-data php "$NCPATH"/occ user:resetpassword "$NCADMIN" && break
 done
 clear
+
+# Set notification for admin
+sudo -u www-data php /var/www/nextcloud/occ notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notficatoins and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." ncadmin "Please setup SMTP"
+sudo -u www-data php /var/www/nextcloud/occ notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" ncadmin "Do you need support?"
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
@@ -550,19 +554,28 @@ Login to Nextcloud in your browser:
 - IP: $ADDRESS
 - Hostname: $(hostname -f)
 
-Some tips and tricks:
-1. Publish your server online: https://goo.gl/iUGE2U
-2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
-3. To update this VM just type: sudo bash /var/scripts/update.sh
-4. Change IP to something outside DHCP: sudo nano /etc/netplan/01-netcfg.yaml
-5. Please report any bugs here: https://github.com/nextcloud/vm/issues
-6. For a better experiance it's a good idea to setup an email account here: https://yourcloud.xyz/settings/admin 
-7. Please ask for help in the forums, visit our shop, or buy support from Nextcloud:
+SUPPORT:
+Please ask for help in the forums, visit our shop to buy support,
+or buy a yearly subscription from Nextcloud:
 - SUPPORT: https://shop.hanssonit.se/product/premium-support-per-30-minutes/
-- FORUM: https://help.nextcloud.com/ 
-- NEXTCLOUD: https://nextcloud.com/pricing/
-  
-################################## Tech and Me - 2018 ##################################"
+- FORUM: https://help.nextcloud.com/
+- SUBSCRIPTION: https://nextcloud.com/pricing/ (Please refer to @enoch85)
+
+Please report any bugs here: https://github.com/nextcloud/vm/issues
+
+TIPS & TRICKS:
+1. Publish your server online: https://goo.gl/iUGE2U
+
+2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
+
+3. To update this VM just type: sudo bash /var/scripts/update.sh
+
+4. Change IP to something outside DHCP: sudo nano /etc/netplan/01-netcfg.yaml
+
+5. For a better experiance it's a good idea to setup an email account here:
+   https://yourcloud.xyz/settings/admin
+
+ ######################### T&M Hansson IT - $(date +"%Y") #########################  "
 
 # Set trusted domain in config.php
 if [ -f "$SCRIPTS"/trusted.sh ] 

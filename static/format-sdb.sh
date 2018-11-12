@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tech and Me © - 2018, https://www.techandme.se/
+# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
 true
@@ -153,7 +153,7 @@ if grep "$LABEL_" /etc/mtab
 then
 msg_box "$MOUNT_ mounted successfully as a ZFS volume.
 
-Automatic scrubbing is done montly via a cronjob that you can find here:
+Automatic scrubbing is done monthly via a cronjob that you can find here:
 /etc/cron.d/zfsutils-linux
 
 CURRENT STATUS:
