@@ -36,6 +36,7 @@ The script will mount and format the drive. Please select Manually Format & Moun
 * XX GB HDD for DATA (/mnt/ncdata)
 * Absolute minimum is 1 vCPU and 2 GB RAM (4 GB minimum if you are running OnlyOffice)
 * A working internet connection (the script needs it to download files and variables)
+* [VMware Player](https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html) (works with other hypervisors as well).
 
 #### Recommended
 * DHCP available
