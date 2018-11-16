@@ -400,6 +400,12 @@ then
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
 then 
     OS=1
+elif uname -a | grep -ic "bionic" &> /dev/null
+then
+    OS=1
+elif uname -v | grep -ic "Ubuntu" &> /dev/null
+then 
+    OS=1
 fi
 
 if [ "$OS" != 1 ]
