@@ -95,12 +95,60 @@ SETDHCP
     wait
     check_command service network-manager restart
     echo "Checking connection..."
-    sleep 3
+    sleep 1
     if ! nslookup github.com
     then
-msg_box "Network NOT OK. You must have a working network connection to run this script
-If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
-    exit 1
+msg_box "The script failed to get an address from DHCP.
+You must have a working network connection to run this script.
+
+You will now be provided with the option to set a static IP manually instead."
+
+    # Copy old interfaces file
+msg_box "Copying old netplan.io config file file to:
+/tmp/01-netcfg.yaml_backup"
+    check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
+
+    # Ask for IP address
+cat << ENTERIP
++----------------------------------------------------------+
+|    Please enter the static IP address you want to set,   |
+|    including the subnet. Example: 192.168.1.100/24       |
++----------------------------------------------------------+
+ENTERIP
+    echo
+    read -r LANIP
+    echo
+
+    # Ask for gateway address
+cat << ENTERGATEWAY
++----------------------------------------------------------+
+|    Please enter the gateway address you want to set,     |
+|    Example: 192.168.1.1                                  |
++----------------------------------------------------------+
+ENTERGATEWAY
+    echo
+    read -r GATEWAYIP
+    echo
+
+    # Create the Static IP file
+cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
+network:
+   version: 2
+   renderer: networkd
+   ethernets:
+       $IFACE: #object name
+         dhcp4: no # dhcp v4 disable
+         dhcp6: no # dhcp v6 disable
+         addresses: [$LANIP] # client IP address
+         gateway4: $GATEWAYIP # gateway address
+         nameservers:
+           addresses: [9.9.9.9,149.112.112.112] #name servers
+IPCONFIG
+
+msg_box "These are your settings, please make sure they are correct:
+
+$(cat /etc/netplan/01-netcfg.yaml)"
+    netplan try
     fi
 fi
 
@@ -109,8 +157,12 @@ if network_ok
 then
     printf "${Green}Online!${Color_Off}\n"
 else
-msg_box "Network NOT OK. You must have a working network connection to run this script
-If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
+msg_box "Network NOT OK. You must have a working network connection to run this script.
+
+Please contact us for support:
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/
+
+Please also post this issue on: https://github.com/nextcloud/vm/issues"
     exit 1
 fi
 
@@ -175,7 +227,7 @@ is_process_running dpkg
 
 echo
 echo "Getting scripts from GitHub to be able to run the first setup..."
-# All the shell scripts in static (.sh)
+# Scripts in static (.sh, .php, .py)
 download_static_script temporary-fix
 download_static_script update
 download_static_script trusted
@@ -450,7 +502,7 @@ do
 
         "Static IP")
             clear
-            run_static_script set_static_ip
+            run_static_script static_ip
         ;;
 
         *)
