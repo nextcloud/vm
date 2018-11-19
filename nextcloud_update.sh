@@ -31,6 +31,13 @@ if which mysql > /dev/null
 then
     apt-mark hold mariadb*
 fi
+
+# Hold docker-ce since it breaks devicemapper
+if which docker > /dev/null
+then
+    apt-mark hold docker-ce
+fi
+
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 if which mysql > /dev/null
