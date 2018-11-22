@@ -2,13 +2,13 @@
 
 # T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
-WANIP6=$(curl -s -k -m 7 https://6.ifcfg.me)
-WANIP4=$(curl -s -m 5 ipinfo.io/ip)
+WANIP6=$(curl -s -k -m 7 ipv6bot.whatismyipaddress.com)
+WANIP4=$(curl -s -m 5 ipv4bot.whatismyipaddress.com)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 clear
 figlet -f small Nextcloud
-echo "     https://www.nextcloud.com"
+echo "https://www.hanssonit.se/nextcloud-vm"
 echo
 echo
 echo "Hostname: $(hostname -s)"
