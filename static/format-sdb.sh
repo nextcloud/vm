@@ -94,7 +94,7 @@ msg_box "/dev/$DEVTYPE is mounted and need to be unmounted before you can run th
     exit 1
 fi
 
-#Universal:
+# Universal:
 if isMounted "/mnt/ncdata";
 then
 msg_box "/mnt/ncdata is mounted and need to be unmounted before you can run this script."
@@ -148,6 +148,15 @@ fi
 }
 format
 
+# Do a backup of the ZFS mount
+if dpkg -l | grep libzfs2linux
+then
+    if grep -r $LABEL_ /etc/mtab
+    then
+        install_if_not zfs-auto-snapshot
+    fi
+fi  
+
 # Success!
 if grep "$LABEL_" /etc/mtab
 then
@@ -156,9 +165,13 @@ msg_box "$MOUNT_ mounted successfully as a ZFS volume.
 Automatic scrubbing is done monthly via a cronjob that you can find here:
 /etc/cron.d/zfsutils-linux
 
+Automatic snapshots are taken with 'zfs-auto-snapshot'. You can list current snapshots with:
+'sudo zfs list -t snapshot'. 
+Manpage is here: 
+http://manpages.ubuntu.com/manpages/bionic/man8/zfs-auto-snapshot.8.html
+
 CURRENT STATUS:
 $(zpool status $LABEL_)
 
 $(zpool list)"
 fi
-
