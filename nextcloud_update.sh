@@ -267,7 +267,7 @@ then
 fi
 
 # Do a backup of the ZFS mount
-if dpkg -li | grep libzfs2linux
+if dpkg -l | grep libzfs2linux
 then
     if grep -r ncdata /etc/mtab
     then
