@@ -10,6 +10,10 @@ true
 # Check if root
 root_check
 
+# Needs to be Ubuntu 18.04 and Multiverse
+check_distro_version
+check_multiverse
+
 LABEL_=ncdata
 MOUNT_=/mnt/$LABEL_
 
