@@ -154,6 +154,7 @@ then
     if grep -r $LABEL_ /etc/mtab
     then
         install_if_not zfs-auto-snapshot
+        sed -i "s|date --utc|date|g" /usr/sbin/zfs-auto-snapshot
     fi
 fi  
 
