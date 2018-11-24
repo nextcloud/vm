@@ -272,6 +272,7 @@ then
     if grep -r ncdata /etc/mtab
     then
         install_if_not zfs-auto-snapshot
+        sed -i "s|date --utc|date|g" /usr/sbin/zfs-auto-snapshot
         check_command zfs-auto-snapshot -r ncdata
     fi
 fi  
