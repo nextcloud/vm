@@ -24,7 +24,7 @@ echo -e "|"  "${Green}be the default ('nextcloud') or the one chosen during inst
 cat << INST2
 |                                                                       |
 | If you have never done this before you can follow the complete        |
-| installation instructions here: https://goo.gl/JVxuPh                 |
+| installation instructions here: https://bit.ly/2S8eGfS                |
 |                                                                       |
 | You can schedule the Nextcloud update process using a cron job.       |
 | This is done using a script built into this VM that automatically     |
