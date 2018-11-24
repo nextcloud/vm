@@ -266,6 +266,16 @@ then
     mkdir -p $BACKUP
 fi
 
+# Do a backup of the ZFS mount
+if dpkg -l | grep libzfs2linux
+then
+    if grep -r ncdata /etc/mtab
+    then
+        install_if_not zfs-auto-snapshot
+        check_command zfs-auto-snapshot -r ncdata
+    fi
+fi  
+   
 # Backup data
 for folders in config themes apps
 do
