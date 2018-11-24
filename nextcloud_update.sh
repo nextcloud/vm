@@ -271,6 +271,7 @@ if dpkg -l | grep libzfs2linux
 then
     if grep -r ncdata /etc/mtab
     then
+        check_multiverse
         install_if_not zfs-auto-snapshot
         sed -i "s|date --utc|date|g" /usr/sbin/zfs-auto-snapshot
         check_command zfs-auto-snapshot -r ncdata
