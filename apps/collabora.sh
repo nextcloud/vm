@@ -81,9 +81,12 @@ check_open_port 443 "$SUBDOMAIN"
 # Install Docker
 install_docker
 
-# Set devicemapper
-check_command cp -v /lib/systemd/system/docker.service /etc/systemd/system/
-sed -i "s|ExecStart=/usr/bin/dockerd -H fd://|ExecStart=/usr/bin/dockerd --storage-driver=devicemapper -H fd://|g" /etc/systemd/system/docker.service
+# Set overlay2
+cat << OVERLAY2 > /etc/docker/daemon.json
+{
+  "storage-driver": "overlay2"
+}
+OVERLAY2
 systemctl daemon-reload
 systemctl restart docker
 
