@@ -359,15 +359,22 @@ fi
 # Add header for Nextcloud 14
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
 then
-    if ! grep -q 'Header always set Referrer-Policy "strict-origin"' /etc/apache2/sites-available/"$(hostname -f)".conf
+    if grep -q 'Header always set Referrer-Policy' /etc/apache2/sites-available/"$(hostname -f)".conf
     then
-        sed -i '/Header add Strict-Transport-Security/a    Header always set Referrer-Policy "strict-origin"' /etc/apache2/sites-available/"$(hostname -f)".conf
+        sed -i '/Header always set Referrer-Policy/d' /etc/apache2/sites-available/"$(hostname -f)".conf
         restart_webserver
     fi
 fi
 
 # Change owner of $BACKUP folder to root
 chown -R root:root "$BACKUP"
+
+# Pretty URLs
+echo "Setting RewriteBase to \"/\" in config.php..."
+chown -R www-data:www-data "$NCPATH"
+occ_command config:system:set htaccess.RewriteBase --value="/"
+occ_command maintenance:update:htaccess
+bash "$SECURE"
 
 # Set max upload in Nextcloud .htaccess
 configure_max_upload
@@ -378,13 +385,6 @@ then
     occ_command app:disable support
     rm -rf $NC_APPS_PATH/support
 fi
-
-# Pretty URLs
-echo "Setting RewriteBase to \"/\" in config.php..."
-chown -R www-data:www-data "$NCPATH"
-occ_command config:system:set htaccess.RewriteBase --value="/"
-occ_command maintenance:update:htaccess
-bash "$SECURE"
 
 # Update .user.ini in case stuff was added to .htaccess
 if [ "$NCPATH/.htaccess" -nt "$NCPATH/.user.ini" ]
