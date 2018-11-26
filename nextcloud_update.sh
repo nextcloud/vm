@@ -28,6 +28,13 @@ if which mysql > /dev/null
 then
     apt-mark hold mariadb*
 fi
+
+# Hold docker-ce since it breaks devicemapper
+if which docker > /dev/null
+then
+    apt-mark hold docker-ce
+fi
+
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 if which mysql > /dev/null
@@ -62,6 +69,7 @@ then
     pecl channel-update pecl.php.net
     yes no | pecl install redis
     service redis-server restart
+    restart_webserver
 elif pecl list | grep redis >/dev/null 2>&1
 then
     if dpkg -l | grep php7.2 > /dev/null 2>&1
@@ -73,6 +81,7 @@ then
     pecl channel-update pecl.php.net
     yes no | pecl upgrade redis
     service redis-server restart
+    restart_webserver
 fi
 
 # Update adminer
@@ -116,6 +125,12 @@ rm /var/lib/apt/lists/* -r
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
+
+# Fix bug in nextcloud.sh
+if grep "https://6.ifcfg.me" $SCRIPTS/nextcloud.sh
+then
+   sed -i "s|https://6.ifcfg.me|https://ipv6bot.whatismyipaddress.com|g" $SCRIPTS/nextcloud.sh
+fi
 
 # Set secure permissions
 if [ ! -f "$SECURE" ]
@@ -254,6 +269,18 @@ then
     mkdir -p $BACKUP
 fi
 
+# Do a backup of the ZFS mount
+if dpkg -l | grep libzfs2linux
+then
+    if grep -r ncdata /etc/mtab
+    then
+        check_multiverse
+        install_if_not zfs-auto-snapshot
+        sed -i "s|date --utc|date|g" /usr/sbin/zfs-auto-snapshot
+        check_command zfs-auto-snapshot -r ncdata
+    fi
+fi  
+   
 # Backup data
 for folders in config apps
 do

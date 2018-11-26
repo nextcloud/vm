@@ -73,6 +73,7 @@ rm $SCRIPTS/adduser.sh
 # Check distrobution and version
 check_distro_version
 check_universe
+check_multiverse
 
 # Check if key is available
 if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null
@@ -399,7 +400,7 @@ then
     cat << SSL_CREATE > "$SSL_CONF"
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    Header always set Referrer-Policy "strict-origin"
+    # Header always set Referrer-Policy "strict-origin"
     SSLEngine on
 
 ### YOUR SERVER ADDRESS ###
