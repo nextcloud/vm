@@ -784,6 +784,14 @@ then
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi
+# Set overlay2
+cat << OVERLAY2 > /etc/docker/daemon.json
+{
+  "storage-driver": "overlay2"
+}
+OVERLAY2
+systemctl daemon-reload
+systemctl restart docker
 }
 
 # Remove all dockers excluding one
