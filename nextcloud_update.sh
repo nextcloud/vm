@@ -16,9 +16,6 @@ debug_mode
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 
-# Put your theme name here:
-THEME_NAME=""
-
 # Must be root
 root_check
 
@@ -285,7 +282,7 @@ then
 fi  
    
 # Backup data
-for folders in config themes apps
+for folders in config apps
 do
     if [[ "$(rsync -Aax $NCPATH/$folders $BACKUP)" -eq 0 ]]
     then
@@ -326,15 +323,6 @@ fi
 if [ -d $BACKUP/apps/ ]
 then
     echo "$BACKUP/apps/ exists"
-else
-msg_box "Something went wrong with backing up your old nextcloud instance
-Please check in $BACKUP if apps/ folder exist."
-    exit 1
-fi
-
-if [ -d $BACKUP/themes/ ]
-then
-    echo "$BACKUP/themes/ exists"
     echo 
     printf "${Green}All files are backed up.${Color_Off}\n"
     occ_command maintenance:mode --on
@@ -342,7 +330,6 @@ then
     rm -rf $NCPATH
     tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
     rm "$HTML/$STABLEVERSION.tar.bz2"
-    cp -R $BACKUP/themes "$NCPATH"/
     cp -R $BACKUP/config "$NCPATH"/
     bash $SECURE & spinner_loading
     occ_command maintenance:mode --off
@@ -390,14 +377,6 @@ if [ -d $NC_APPS_PATH/support ]
 then
     occ_command app:disable support
     rm -rf $NC_APPS_PATH/support
-fi
-
-# Set $THEME_NAME
-VALUE2="$THEME_NAME"
-if ! grep -Fxq "$VALUE2" "$NCPATH/config/config.php"
-then
-    sed -i "s|'theme' => '',|'theme' => '$THEME_NAME',|g" "$NCPATH"/config/config.php
-    echo "Theme set"
 fi
 
 # Pretty URLs
