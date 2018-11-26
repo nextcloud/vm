@@ -129,6 +129,12 @@ rm /var/lib/apt/lists/* -r
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
+# Fix bug in nextcloud.sh
+if grep "https://6.ifcfg.me" $SCRIPTS/nextcloud.sh
+then
+   sed -i "s|https://6.ifcfg.me|ipv6bot.whatismyipaddress.com|g" $SCRIPTS/nextcloud.sh
+fi
+
 # Set secure permissions
 if [ ! -f "$SECURE" ]
 then
