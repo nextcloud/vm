@@ -356,7 +356,7 @@ then
     run_app_script spreedme
 fi
 
-# Add header for Nextcloud 14
+# Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
 then
     if grep -q 'Header always set Referrer-Policy' /etc/apache2/sites-available/"$(hostname -f)".conf
