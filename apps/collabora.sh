@@ -81,15 +81,6 @@ check_open_port 443 "$SUBDOMAIN"
 # Install Docker
 install_docker
 
-# Set overlay2
-cat << OVERLAY2 > /etc/docker/daemon.json
-{
-  "storage-driver": "overlay2"
-}
-OVERLAY2
-systemctl daemon-reload
-systemctl restart docker
-
 # Check if OnlyOffice or Collabora is previously installed
 # If yes, then stop and prune the docker container
 docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
