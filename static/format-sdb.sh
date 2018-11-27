@@ -62,6 +62,11 @@ This script will now exit. Please mount a second disk and start over."
 exit 1
 fi
 
+msg_box "You will now see a list with available devices. Choose the device where you want to put your nextcloud data. 
+Attention, the selected device will be formatted"
+lsblk
+read -e -p "Enter the drive for the nextcloud data:" -i $DEVTYPE DEVTYPE
+
 # Get the name of the drive
 DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
 if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
