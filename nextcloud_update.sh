@@ -30,25 +30,29 @@ then
 fi
 
 # Update docker-ce to overlay2 since devicemapper is deprecated
-if which docker > /dev/null
+if command -v docker > /dev/null
 then
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
-        service docker stop
-        check_command cp -v /lib/systemd/system/docker.service /etc/systemd/system/
+        if docker ps -a | grep -q fts_esror
+        then
+            FTS_ES=INSTALLED
+        fi
+        sed -i "s|devicemapper|overlay2|g" /etc/systemd/system/docker.service
+        check_command systemctl daemon-reload
+        check_command systemctl restart docker
         apt-mark unhold docker-ce
-        apt update -q4 & spinner_loading
-        apt upgrade docker-ce -y
-# Set overlay2
-cat << OVERLAY2 > /etc/docker/daemon.json
-{
-  "storage-driver": "overlay2"
-}
-OVERLAY2
-        systemctl daemon-reload
-        systemctl restart docker
+        if [[ $FTS_ES == "INSTALLED" ]]
+        then
+            NCDB=1 && NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+            docker pull "$nc_fts"
+            docker restart "$fts_es_name"
+        fi
     fi
 fi
+
+# Install Full Text Search again if it was uninstalled
+
 
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
