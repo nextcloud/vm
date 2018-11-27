@@ -35,12 +35,12 @@ then
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
         echo "Changing to Overlay2 for Docker CE..."
-        sed -i "s|devicemapper|overlay2|g" /etc/systemd/system/docker.service
-        check_command systemctl daemon-reload
-        sleep 5
-        check_command systemctl restart docker
-        sleep 2
+        echo "Please report any issues to $ISSUES."
         apt-mark unhold docker-ce
+        check_command systemctl docker stop
+        check_command rm-f /etc/systemd/system/docker.service
+        check_command rm -Rf /var/run/docker*
+        install_docker
     fi
 fi
 
