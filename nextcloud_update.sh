@@ -33,6 +33,7 @@ fi
 if which docker > /dev/null
 then
     if grep -q "devicemapper" /etc/systemd/system/docker.service
+    then
         service docker stop
         check_command cp -v /lib/systemd/system/docker.service /etc/systemd/system/
         apt-mark unhold docker-ce
