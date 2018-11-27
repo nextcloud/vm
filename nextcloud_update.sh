@@ -34,22 +34,11 @@ if command -v docker > /dev/null
 then
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
-        if docker ps -a | grep -q fts_esror
-        then
-            FTS_ES=INSTALLED
-        fi
         echo "Changing to Overlay2 for Docker-CE..."
         sed -i "s|devicemapper|overlay2|g" /etc/systemd/system/docker.service
         check_command systemctl daemon-reload
         check_command systemctl restart docker
         apt-mark unhold docker-ce
-        if [[ $FTS_ES == "INSTALLED" ]]
-        then
-        # shellcheck source=lib.sh
-        NCDB=1 && NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-            docker pull "$nc_fts"
-            docker restart "$fts_es_name"
-        fi
     fi
 fi
 
