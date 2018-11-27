@@ -29,10 +29,24 @@ then
     apt-mark hold mariadb*
 fi
 
-# Hold docker-ce since it breaks devicemapper
+# Update docker-ce to overlay2 since devicemapper is deprecated
 if which docker > /dev/null
 then
-    apt-mark hold docker-ce
+    if grep -q "devicemapper" /etc/systemd/system/docker.service
+        service docker stop
+        check_command cp -v /lib/systemd/system/docker.service /etc/systemd/system/
+        apt-mark unhold docker-ce
+        apt update -q4 & spinner_loading
+        apt upgrade docker-ce -y
+# Set overlay2
+cat << OVERLAY2 > /etc/docker/daemon.json
+{
+  "storage-driver": "overlay2"
+}
+OVERLAY2
+        systemctl daemon-reload
+        systemctl restart docker
+    fi
 fi
 
 apt update -q4 & spinner_loading
