@@ -44,7 +44,7 @@ then
         apt-mark unhold docker-ce
         if [[ $FTS_ES == "INSTALLED" ]]
         then
-            NCDB=1 && NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
             docker pull "$nc_fts"
             docker restart "$fts_es_name"
         fi
