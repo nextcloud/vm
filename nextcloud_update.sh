@@ -37,7 +37,9 @@ then
         echo "Changing to Overlay2 for Docker CE..."
         sed -i "s|devicemapper|overlay2|g" /etc/systemd/system/docker.service
         check_command systemctl daemon-reload
+        sleep 5
         check_command systemctl restart docker
+        sleep 2
         apt-mark unhold docker-ce
     fi
 fi
