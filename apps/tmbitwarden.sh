@@ -22,7 +22,7 @@ msg_box "Bitwarden is a password manager that is seperate from Nextcloud, though
 
 If you just want to run Bitwarden locally (not connecting your smartphone) then you can use 'localhost' as domain.
 If you on the other hand want to run this on a domain, then please create a DNS record and point it to this server.
-Well add support for SSL in a later version of this script, but for now you have to do that stuff manually.
+We'll add support for SSL in a later version of this script, but for now you have to do that stuff manually.
 
 The script is based on this documentation: https://help.bitwarden.com/article/install-on-premise/
 It's a good idea to read that before you start this script."

@@ -80,12 +80,6 @@ check_open_port 443 "$SUBDOMAIN"
 # Install Docker
 install_docker
 
-# Set devicemapper
-check_command cp -v /lib/systemd/system/docker.service /etc/systemd/system/
-sed -i "s|ExecStart=/usr/bin/dockerd -H fd://|ExecStart=/usr/bin/dockerd --storage-driver=devicemapper -H fd://|g" /etc/systemd/system/docker.service
-systemctl daemon-reload
-systemctl restart docker
-
 # Check if OnlyOffice or Collabora is previously installed
 # If yes, then stop and prune the docker container
 docker_prune_this 'collabora/code' 'onlyoffice/documentserver'

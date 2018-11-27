@@ -17,7 +17,6 @@ RORDIR=/opt/es/
 
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
-UNIV=$(apt-cache policy | grep http | awk '{print $3}' | grep universe | head -n 1 | cut -d "/" -f 2)
 # Network
 [ ! -z "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
@@ -394,7 +393,13 @@ fi
 check_distro_version() {
 # Check Ubuntu version
 echo "Checking server OS and version..."
-if uname -a | grep -ic "bionic" &> /dev/null
+if lsb_release -c | grep -ic "bionic" &> /dev/null
+then
+    OS=1
+elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
+then 
+    OS=1
+elif uname -a | grep -ic "bionic" &> /dev/null
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu" &> /dev/null
@@ -741,12 +746,21 @@ fi
 
 # Check universe reposiroty
 check_universe() {
-if [ "$UNIV" = "universe" ]
+UNIV=$(apt-cache policy | grep http | awk '{print $3}' | grep universe | head -n 1 | cut -d "/" -f 2)
+if [ "$UNIV" != "universe" ]
 then
-        echo "Seems that required repositories are ok."
-else
-        echo "Adding required repo (universe)."
-        add-apt-repository universe
+    echo "Adding required repo (universe)."
+    add-apt-repository universe
+fi
+}
+
+# Check universe reposiroty
+check_multiverse() {
+MULTIV=$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | head -n 1 | cut -d "/" -f 2)
+if [ "$MULTIV" != "multiverse" ]
+then
+    echo "Adding required repo (multiverse)."
+    add-apt-repository multiverse
 fi
 }
 
@@ -770,6 +784,14 @@ then
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi
+# Set overlay2
+cat << OVERLAY2 > /etc/docker/daemon.json
+{
+  "storage-driver": "overlay2"
+}
+OVERLAY2
+systemctl daemon-reload
+systemctl restart docker
 }
 
 # Remove all dockers excluding one
