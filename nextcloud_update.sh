@@ -30,7 +30,7 @@ then
 fi
 
 # Update docker-ce to overlay2 since devicemapper is deprecated
-if command -v docker > /dev/null
+if docker -v &> /dev/null
 then
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
@@ -38,6 +38,8 @@ then
         echo "Please report any issues to $ISSUES."
         apt-mark unhold docker-ce
         check_command systemctl docker stop
+        check_command apt purge docker-ce -y
+        check_command apt autoremove -y
         check_command rm-f /etc/systemd/system/docker.service
         check_command rm -Rf /var/run/docker*
         install_docker
