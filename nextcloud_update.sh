@@ -145,9 +145,12 @@ rm /var/lib/apt/lists/* -r
 lowest_compatible_nc 13
 
 # Fix bug in nextcloud.sh
-if grep "https://6.ifcfg.me" $SCRIPTS/nextcloud.sh
+if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh
 then
-   sed -i "s|https://6.ifcfg.me|https://ipv6bot.whatismyipaddress.com|g" $SCRIPTS/nextcloud.sh
+   rm -f "$SCRIPTS/nextcloud.sh"
+   download_static_script nextcloud
+   chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
+   chmod +x "$SCRIPTS/nextcloud.sh"
 fi
 
 # Set secure permissions
