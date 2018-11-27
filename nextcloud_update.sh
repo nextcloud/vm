@@ -34,7 +34,7 @@ if command -v docker > /dev/null
 then
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
-        echo "Changing to Overlay2 for Docker-CE..."
+        echo "Changing to Overlay2 for Docker CE..."
         sed -i "s|devicemapper|overlay2|g" /etc/systemd/system/docker.service
         check_command systemctl daemon-reload
         check_command systemctl restart docker
