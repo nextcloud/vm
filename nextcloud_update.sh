@@ -51,9 +51,6 @@ then
     fi
 fi
 
-# Install Full Text Search again if it was uninstalled
-
-
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 if which mysql > /dev/null
