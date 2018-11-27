@@ -149,7 +149,7 @@ if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh
 then
    rm -f "$SCRIPTS/nextcloud.sh"
    download_static_script nextcloud
-   chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
+   chown "$(getent group sudo | cut -d: -f4 | cut -d, -f1)":"$(getent group sudo | cut -d: -f4 | cut -d, -f1)" "$SCRIPTS/nextcloud.sh"
    chmod +x "$SCRIPTS/nextcloud.sh"
 fi
 
