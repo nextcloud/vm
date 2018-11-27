@@ -38,6 +38,7 @@ then
         then
             FTS_ES=INSTALLED
         fi
+        echo "Changing to Overlay2 for Docker-CE..."
         sed -i "s|devicemapper|overlay2|g" /etc/systemd/system/docker.service
         check_command systemctl daemon-reload
         check_command systemctl restart docker
