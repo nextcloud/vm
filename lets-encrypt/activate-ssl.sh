@@ -135,7 +135,7 @@ then
 <VirtualHost *:443>
 
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    Header always set Referrer-Policy "strict-origin"
+    # Header always set Referrer-Policy "strict-origin"
     SSLEngine on
     SSLCompression off
     SSLProtocol all -SSLv2 -SSLv3

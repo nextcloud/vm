@@ -73,6 +73,7 @@ rm $SCRIPTS/adduser.sh
 # Check distrobution and version
 check_distro_version
 check_universe
+check_multiverse
 
 # Check if key is available
 if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null
@@ -308,7 +309,10 @@ configure_max_upload
 # Set SMTP mail
 occ_command config:system:set mail_smtpmode --value="smtp"
 
-# Set logrotate
+# Forget login/session after 30 minutes
+occ_command config:system:set remember_login_cookie_lifetime --value="1800"
+
+# Set logrotate (max 10 MB)
 occ_command config:system:set log_rotate_size --value="10485760"
 
 # Enable OPCache for PHP 
@@ -396,7 +400,7 @@ then
     cat << SSL_CREATE > "$SSL_CONF"
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    Header always set Referrer-Policy "strict-origin"
+    # Header always set Referrer-Policy "strict-origin"
     SSLEngine on
 
 ### YOUR SERVER ADDRESS ###
