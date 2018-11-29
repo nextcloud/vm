@@ -63,9 +63,34 @@ exit 1
 fi
 
 msg_box "You will now see a list with available devices. Choose the device where you want to put your nextcloud data. 
-Attention, the selected device will be formatted"
-lsblk
-read -e -p "Enter the drive for the nextcloud data:" -i $DEVTYPE DEVTYPE
+Attention, the selected device will be formatted!"
+AvailableDEVICES=$(lsblk | grep "disk" | awk '{print $1}')
+
+# Save current IFS
+SAVEIFS=$IFS
+# Change IFS to new line. 
+IFS=$'\n'
+# Create Array
+AvailableDEVICES=($AvailableDEVICES)
+# Restore IFS
+IFS=$SAVEIFS
+
+DEVTYPE=sdb
+
+# Ask for user input
+while 
+	lsblk
+	read -e -p "Enter the drive for the nextcloud data:" -i $DEVTYPE userinput
+	userinput=$(echo $userinput | awk '{print $1}')
+	for item in "${AvailableDEVICES[@]}"; do
+		[[ $userinput == "$item" ]]  && devtype_present=1 && DEVTYPE=$userinput
+	done	
+
+	[[ -z ${devtype_present+x} ]]
+do
+	printf "${BRed}$DEVTYPE is not a valid disk. Please try again.${Color_Off}\n"
+    :
+done
 
 # Get the name of the drive
 DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
