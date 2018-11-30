@@ -47,7 +47,7 @@ IFS=$SAVEIFS
 while 
 	lsblk
 	read -r -e -p "Enter the drive for the nextcloud data:" -i "$DEVTYPE" userinput
-	userinput=$(echo $userinput | awk '{print $1}')
+	userinput=$(echo "$userinput" | awk '{print $1}')
 	for item in "${AvailableDEVICES[@]}"; do
 		[[ $userinput == "$item" ]]  && devtype_present=1 && DEVTYPE="$userinput"
 	done	
