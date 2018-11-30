@@ -330,6 +330,11 @@ echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
 } >> $PHP_INI
 
+# Fix https://github.com/nextcloud/vm/issues/714
+echo "Optimizing Nextcloud..."
+yes | occ_command db:convert-filecache-bigint
+occ_command db:add-missing-indices
+
 # Install Figlet
 install_if_not figlet
 
