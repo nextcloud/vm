@@ -37,12 +37,16 @@ then
         echo "Changing to Overlay2 for Docker CE..."
         echo "Please report any issues to $ISSUES."
         apt-mark unhold docker-ce
-        check_command systemctl stop docker
-        check_command apt purge docker-ce -y
-        check_command apt autoremove -y
-        check_command rm -f /etc/systemd/system/docker.service
-        check_command rm -Rf /var/run/docker*
-        install_docker
+        # Set overlay2
+cat << OVERLAY2 > /etc/docker/daemon.json
+{
+  "storage-driver": "overlay2"
+}
+OVERLAY2
+        rm -f /etc/systemd/system/docker.service
+        systemctl restart docker.service
+        check_command systemctl daemon-reload
+        check_command systemctl restart docker
     fi
 fi
 
