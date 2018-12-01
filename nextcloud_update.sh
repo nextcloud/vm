@@ -37,10 +37,10 @@ then
         echo "Changing to Overlay2 for Docker CE..."
         echo "Please report any issues to $ISSUES."
         apt-mark unhold docker-ce
-        check_command systemctl docker stop
+        check_command systemctl stop docker
         check_command apt purge docker-ce -y
         check_command apt autoremove -y
-        check_command rm-f /etc/systemd/system/docker.service
+        check_command rm -f /etc/systemd/system/docker.service
         check_command rm -Rf /var/run/docker*
         install_docker
     fi
