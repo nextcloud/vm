@@ -91,7 +91,7 @@ do
 done
 
 # Get the name of the drive
-DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
+DISKTYPE=$(fdisk -l | grep "$DEVTYPE" | awk '{print $2}' | cut -d ":" -f1 | head -1)
 if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
 then
 msg_box "It seems like your $SYSNAME secondary volume (/dev/$DEVTYPE) does not exist.
