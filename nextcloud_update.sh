@@ -37,7 +37,8 @@ then
         echo "Changing to Overlay2 for Docker CE..."
         echo "Please report any issues to $ISSUES."
         apt-mark unhold docker-ce
-        # Set overlay2
+        echo "Setting overlay2 in /etc/docker/daemon.json"
+# Set overlay2
 cat << OVERLAY2 > /etc/docker/daemon.json
 {
   "storage-driver": "overlay2"
@@ -45,7 +46,9 @@ cat << OVERLAY2 > /etc/docker/daemon.json
 OVERLAY2
         rm -f /etc/systemd/system/docker.service
         systemctl restart docker.service
-        check_command systemctl daemon-reload
+        echo "Reloading daemon"
+        systemctl daemon-reload
+        echo "Restarting the docker service"
         check_command systemctl restart docker
     fi
 fi
