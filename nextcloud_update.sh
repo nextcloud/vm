@@ -29,10 +29,15 @@ then
     apt-mark hold mariadb*
 fi
 
-# Hold docker-ce since it breaks devicemapper
-if which docker > /dev/null
+# Update docker-ce to overlay2 since devicemapper is deprecated
+if [ -f /etc/systemd/system/docker.service ]
 then
-    apt-mark hold docker-ce
+    if grep -q "devicemapper" /etc/systemd/system/docker.service
+    then
+        echo "Changing to Overlay2 for Docker CE..."
+        echo "Please report any issues to $ISSUES."
+	run_static_script docker_overlay2
+    fi
 fi
 
 apt update -q4 & spinner_loading
