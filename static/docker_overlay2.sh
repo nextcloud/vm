@@ -32,7 +32,7 @@ save_images() {
   local images
   while read -r image; do
      images+=("$image"); 
-  done <<< "$(cat ${DB_FILE})"
+  done <<< "$(cat "${DB_FILE}")"
   
   local name tag id
   for image in "${images[@]}"; do
@@ -68,7 +68,7 @@ load_images() {
   local images
   while read -r image; do
      images+=("$image"); 
-  done <<< "$(cat ${DB_FILE})"
+  done <<< "$(cat "${DB_FILE}")"
 
   local name tag id
   for image in "${images[@]}"; do
@@ -95,11 +95,11 @@ load_images() {
 }
 
 # Save all docker images in one file
-check_command docker ps -a > $DOCKERBACKUP/dockerps.txt
-check_command docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > $DOCKERBACKUP/mydockersimages.list
+check_command docker ps -a > "$DOCKERBACKUP"/dockerps.txt
+check_command docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > "$DOCKERBACKUP"/mydockersimages.list
 msg_box "The following images will be saved to $DOCKERBACKUP/images
 
-$(cat $DOCKERBACKUP/mydockersimages.list)
+$(cat "$DOCKERBACKUP"/mydockersimages.list)
 
 It may take a while so please be patient."
 
