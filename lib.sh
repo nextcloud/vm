@@ -14,6 +14,7 @@ SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
+DOCKERBACKUP=$NCDATA/DOCKERBACKUP
 
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
@@ -936,12 +937,10 @@ On_IWhite='\e[0;107m'   # White
 
 # Credits to: https://gist.github.com/hydra1983/22b2bed38b4f5f56caa87c830c96378d
 
-DOCKERBACKUP=$NCDATA/DOCKERBACKUP
-
 readonly DB_FILE="$DOCKERBACKUP/images.db"
 readonly IMG_DIR="$DOCKERBACKUP/images"
 
-save-images() {
+save_images() {
   echo "Create ${DB_FILE}"
   echo "$(docker images|grep -v 'IMAGE ID'|awk '{printf("%s %s %s\n", $1, $2, $3)}'|column -t)" > "${DB_FILE}"
   
@@ -975,7 +974,7 @@ save-images() {
   done
 }
 
-load-images() {
+load_images() {
   if [[ ! -f "${DB_FILE}" ]]; then
     echo "No ${DB_FILE} to read"
     exit 0
