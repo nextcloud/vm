@@ -32,6 +32,7 @@ fi
 # Update docker-ce to overlay2 since devicemapper is deprecated
 if docker -v &> /dev/null
 then
+    DOCKERBACKUP=$NCDATA/DOCKERBACKUP
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
         echo "Changing to Overlay2 for Docker CE..."
