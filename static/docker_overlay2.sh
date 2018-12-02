@@ -100,6 +100,7 @@ load_images() {
 }
 
 # Save all docker images in one file
+check_command service docker stop
 check_command docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > $DOCKERBACKUP/mydockersimages.list
 msg_box "The following images will be saved to $DOCKERBACKUP/images
 
