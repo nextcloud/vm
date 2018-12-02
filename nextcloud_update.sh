@@ -44,7 +44,7 @@ msg_box "The following images will be saved to $DOCKERBACKUP/alldockerimages.tar
 $(cat $DOCKERBACKUP/mydockersimages.list)
 
 It may take a while so please be patient."
-	docker save $(docker images -q) -o $DOCKERBACKUP/alldockerimages.tar.gz
+	docker save "$(docker images -q)" -o $DOCKERBACKUP/alldockerimages.tar.gz
 
 	echo "Setting overlay2 in /etc/docker/daemon.json"
         # Set overlay2
