@@ -25,6 +25,11 @@ readonly DB_FILE="$DOCKERBACKUP/images.db"
 readonly IMG_DIR="$DOCKERBACKUP/images"
 
 save_images() {
+  echo "Create ${IMG_DIR}"
+  if [[ ! -d "${IMG_DIR}" ]]; then
+    mkdir "${IMG_DIR}"
+  fi
+  
   echo "Create ${DB_FILE}"
   docker images|grep -v 'IMAGE ID'|awk '{printf("%s %s %s\n", $1, $2, $3)}'|column -t > "${DB_FILE}"
   
@@ -33,11 +38,6 @@ save_images() {
   while read -r image; do
      images+=("$image"); 
   done <<< "$(cat ${DB_FILE})"
-
-  echo "Create ${IMG_DIR}"
-  if [[ ! -d "${IMG_DIR}" ]]; then
-    mkdir "${IMG_DIR}"
-  fi
   
   local name tag id
   for image in "${images[@]}"; do
