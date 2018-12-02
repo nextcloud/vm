@@ -138,7 +138,7 @@ msg_box "Your Docker images are now imported to overlay2, but not yet running.
 
 To start the images again, please run the appropriate 'docker run' command for each docker.
 These are all the imported docker images:
-$(cat "$DB_FILE")
+$(cat "${DB_FILE}")
 
 You can also find the file with the imported docker images here:
 $DB_FILE
