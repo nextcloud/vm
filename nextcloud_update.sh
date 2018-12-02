@@ -73,12 +73,13 @@ msg_box "Your Docker images are now imported to overlay2, but not yet running.
 
 To start the images again, please run the appropriate 'docker run' command for each docker.
 These are all the imported docker images:
-$(cat $DOCKERBACKUP/mydockersimages.list)
+$(cat $DB_FILE)
 
 You can also find the file with the imported docker images here:
-$DOCKERBACKUP/mydockersimages.list
+$DB_FILE
 
 If you experiance any issues, please report them to $ISSUES."
+rm -f $DOCKERBACKUP/mydockersimages.list
 fi
 
 apt update -q4 & spinner_loading
