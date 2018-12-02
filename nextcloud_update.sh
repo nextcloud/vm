@@ -45,11 +45,13 @@ msg_box "The following images will be saved to $DOCKERBACKUP/alldockerimages.tar
 $(cat $DOCKERBACKUP/mydockersimages.list)
 
 It may take a while so please be patient."
+	set -x
 	IDS="$(docker images | awk '{print $3}' | tr -d 'IMAGE')"
 	check_command docker save "$IDS" -o $DOCKERBACKUP/alldockerimages.tar.gz
-
+	set +x
+	
+	# Set overlay2
 	echo "Setting overlay2 in /etc/docker/daemon.json"
-        # Set overlay2
 cat << OVERLAY2 > /etc/docker/daemon.json
 {
   "storage-driver": "overlay2"
