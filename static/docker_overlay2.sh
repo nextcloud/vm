@@ -16,8 +16,6 @@ debug_mode
 # https://www.techandme.se/changes-to-docker-ce-in-the-nextcloud-vm/
 # Credits to: https://gist.github.com/hydra1983/22b2bed38b4f5f56caa87c830c96378d
 
-DOCKERBACKUP=$(grep "datadir" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")/DOCKERBACKUP
-
 readonly DB_FILE="$DOCKERBACKUP/images.db"
 readonly IMG_DIR="$DOCKERBACKUP/images"
 
