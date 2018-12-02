@@ -934,6 +934,7 @@ On_IWhite='\e[0;107m'   # White
 
 
 ############ TEMPORARY ############
+# Migrating Docker images to overlay2
 
 # Credits to: https://gist.github.com/hydra1983/22b2bed38b4f5f56caa87c830c96378d
 
@@ -942,7 +943,7 @@ readonly IMG_DIR="$DOCKERBACKUP/images"
 
 save_images() {
   echo "Create ${DB_FILE}"
-  echo "$(docker images|grep -v 'IMAGE ID'|awk '{printf("%s %s %s\n", $1, $2, $3)}'|column -t)" > "${DB_FILE}"
+  docker images|grep -v 'IMAGE ID'|awk '{printf("%s %s %s\n", $1, $2, $3)}'|column -t > "${DB_FILE}"
   
   echo "Read ${DB_FILE}"
   local images
@@ -957,9 +958,9 @@ save_images() {
   
   local name tag id
   for image in "${images[@]}"; do
-    name=$(echo $image|awk '{print $1}')
-    tag=$(echo $image|awk '{print $2}')
-    id=$(echo $image|awk '{print $3}')
+    name=$(echo "$image"|awk '{print $1}')
+    tag=$(echo "$image"|awk '{print $2}')
+    id=$(echo "$image"|awk '{print $3}')
         
     if [[ "${id}" != "" ]]; then
       local imgPath="${IMG_DIR}/${id}.dim"
@@ -993,20 +994,20 @@ load_images() {
 
   local name tag id
   for image in "${images[@]}"; do
-    name=$(echo $image|awk '{print $1}')
-    tag=$(echo $image|awk '{print $2}')
-    id=$(echo $image|awk '{print $3}')
+    name=$(echo "$image"|awk '{print $1}')
+    tag=$(echo "$image"|awk '{print $2}')
+    id=$(echo "$image"|awk '{print $3}')
         
     if [[ "${id}" != "" ]]; then
       local imgPath="${IMG_DIR}/${id}.dim"
 
-      if [[ "$(docker images|grep ${id} | grep ${name} | grep ${tag})" == "" ]]; then        
+      if [[ "$(docker images|grep "${id}" | grep "${name}" | grep "${tag}")" == "" ]]; then        
         if [[ "$(docker images|grep ${id})" == "" ]]; then
           echo "[DEBUG] load ${id} ${name}:${tag} from ${imgPath}"
           docker load -i "${imgPath}"
         else
           echo "[DEBUG] tag ${id} as ${name}:${tag}"
-          docker tag ${id} ${name}:${tag}
+          docker tag "${id}" "${name}":"${tag}"
         fi
       else
         echo "[DEBUG] ${id} ${name}:${tag} already loaded"
