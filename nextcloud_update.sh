@@ -83,7 +83,7 @@ $DOCKERBACKUP/mydockersimages.list
 
 If you experiance any issues, please report them to $ISSUES."
     # Tag the imported images
-    while read REPOSITORY TAG IMAGE_ID
+    while read -r REPOSITORY TAG IMAGE_ID
     do
         echo "== Tagging $REPOSITORY $TAG $IMAGE_ID =="
         docker tag "$IMAGE_ID" "$REPOSITORY:$TAG"
