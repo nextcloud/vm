@@ -46,7 +46,7 @@ $(cat $DOCKERBACKUP/mydockersimages.list)
 
 It may take a while so please be patient."
 	IDS="$(docker images | awk '{print $3}' | tr -d 'IMAGE')"
-	check_command docker save $IDS -o $DOCKERBACKUP/alldockerimages.tar.gz
+	check_command docker save "$IDS" -o $DOCKERBACKUP/alldockerimages.tar.gz
 
 	echo "Setting overlay2 in /etc/docker/daemon.json"
         # Set overlay2
