@@ -36,7 +36,16 @@ then
     then
         echo "Changing to Overlay2 for Docker CE..."
         echo "Please report any issues to $ISSUES."
-        echo "Setting overlay2 in /etc/docker/daemon.json"
+        # Save all docker images in one file
+	docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > $DOCKERBACKUP/mydockersimages.list
+msg_box "The following images will be saved to $DOCKERBACKUP/alldockerimages.tar.gz
+
+$(cat $DOCKERBACKUP/mydockersimages.list)
+
+It may take a while so please be patient."
+	docker save $(docker images -q) -o $DOCKERBACKUP/alldockerimages.tar.gz
+
+	echo "Setting overlay2 in /etc/docker/daemon.json"
         # Set overlay2
 cat << OVERLAY2 > /etc/docker/daemon.json
 {
@@ -55,6 +64,22 @@ OVERLAY2
     rm -Rf /var/cache/apt/archives/docker*
     rm -Rf /var/cache/apt/archives/container*
     rm -Rf /var/cache/apt/archives/aufs*
+    # Upgrade docker and load the saved images
+    rm -Rf /var/lib/docker
+    apt update -q4 & spinner_loading
+    apt upgrade docker-ce -y
+    echo "Importing saved docker images to overlay2..."
+    docker load -i $DOCKERBACKUP/alldockerimages.tar.gz
+msg_box "Your Docker images are now imported to overlay2, but not yet running.
+
+To start the images again, please run the appropriate 'docker run' command for each docker.
+These are all the imported docker images:
+$(cat $DOCKERBACKUP/mydockersimages.list)
+
+You can also find the file with the imported docker images here:
+$DOCKERBACKUP/mydockersimages.list
+
+If you experiance any issues, please report them to $ISSUES."
 fi
 
 apt update -q4 & spinner_loading
