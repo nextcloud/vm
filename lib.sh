@@ -967,7 +967,7 @@ save_images() {
 
       if [[ ! -f "${imgPath}" ]] ; then
         echo "[DEBUG] save ${id} ${name}:${tag} to ${imgPath}"
-        (time  docker save -o "${imgPath}" ${name}:${tag}) 2>&1 | grep real
+        (time  docker save -o "${imgPath}" "${name}":"${tag}") 2>&1 | grep real
       else
         echo "[DEBUG] ${id} ${name}:${tag} already saved"
       fi
@@ -1002,7 +1002,7 @@ load_images() {
       local imgPath="${IMG_DIR}/${id}.dim"
 
       if [[ "$(docker images|grep "${id}" | grep "${name}" | grep "${tag}")" == "" ]]; then        
-        if [[ "$(docker images|grep ${id})" == "" ]]; then
+        if [[ "$(docker images|grep "${id}")" == "" ]]; then
           echo "[DEBUG] load ${id} ${name}:${tag} from ${imgPath}"
           docker load -i "${imgPath}"
         else
