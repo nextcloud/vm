@@ -101,30 +101,36 @@ msg_box "The following images will be saved to $DOCKERBACKUP/images
 $(cat $DOCKERBACKUP/mydockersimages.list)
 
 It may take a while so please be patient."
-	check_command save_images
-	# Set overlay2
-	echo "Setting overlay2 in /etc/docker/daemon.json"
+
+check_command save_images
+
+# Set overlay2
+echo "Setting overlay2 in /etc/docker/daemon.json"
+
 cat << OVERLAY2 > /etc/docker/daemon.json
 {
   "storage-driver": "overlay2"
 }
 OVERLAY2
-        rm -f /etc/systemd/system/docker.service
-        systemctl restart docker.service
-        echo "Reloading daemon"
-        systemctl daemon-reload
-        echo "Restarting the docker service"
-        check_command systemctl restart docker
-        apt-mark unhold docker-ce
-    fi
+rm -f /etc/systemd/system/docker.service
+systemctl restart docker.service
+echo "Reloading daemon"
+systemctl daemon-reload
+echo "Restarting the docker service"
+check_command systemctl restart docker
+apt-mark unhold docker-ce
+
 # Remove old cached versions to avoid failures on update to new version
 rm -Rf /var/cache/apt/archives/docker*
 rm -Rf /var/cache/apt/archives/container*
 rm -Rf /var/cache/apt/archives/aufs*
-# Upgrade docker and load the saved images
+
+# Upgrade docker to latest version
 rm -Rf /var/lib/docker
 apt update -q4 & spinner_loading
 apt upgrade docker-ce -y
+
+# Load docker images back
 echo "Importing saved docker images to overlay2..."
 check_command load_images
 msg_box "Your Docker images are now imported to overlay2, but not yet running.
