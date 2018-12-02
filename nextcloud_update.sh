@@ -51,6 +51,10 @@ OVERLAY2
         echo "Restarting the docker service"
         check_command systemctl restart docker
     fi
+    # Remove old cached versions to avoid failures on update to new version
+    rm -Rf /var/cache/apt/archives/docker*
+    rm -Rf /var/cache/apt/archives/container*
+    rm -Rf /var/cache/apt/archives/aufs*
 fi
 
 apt update -q4 & spinner_loading
