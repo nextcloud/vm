@@ -32,24 +32,18 @@ fi
 # Update docker-ce to overlay2 since devicemapper is deprecated
 if docker -v &> /dev/null
 then
-    DOCKERBACKUP=$NCDATA/DOCKERBACKUP
-    mkdir -p $DOCKERBACKUP
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
         echo "Changing to Overlay2 for Docker CE..."
         echo "Please report any issues to $ISSUES."
         # Save all docker images in one file
 	check_command docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > $DOCKERBACKUP/mydockersimages.list
-msg_box "The following images will be saved to $DOCKERBACKUP/alldockerimages.tar.gz
+msg_box "The following images will be saved to $DOCKERBACKUP/images
 
 $(cat $DOCKERBACKUP/mydockersimages.list)
 
 It may take a while so please be patient."
-	set -x
-	IDS="$(docker images | awk '{print $3}' | tr -d 'IMAGE')"
-	check_command docker save "$IDS" -o $DOCKERBACKUP/alldockerimages.tar.gz
-	set +x
-	
+	check_command save-images	
 	# Set overlay2
 	echo "Setting overlay2 in /etc/docker/daemon.json"
 cat << OVERLAY2 > /etc/docker/daemon.json
@@ -74,7 +68,7 @@ OVERLAY2
     apt update -q4 & spinner_loading
     apt upgrade docker-ce -y
     echo "Importing saved docker images to overlay2..."
-    check_command docker load -i $DOCKERBACKUP/alldockerimages.tar.gz
+    check_command load-images
 msg_box "Your Docker images are now imported to overlay2, but not yet running.
 
 To start the images again, please run the appropriate 'docker run' command for each docker.
@@ -85,12 +79,6 @@ You can also find the file with the imported docker images here:
 $DOCKERBACKUP/mydockersimages.list
 
 If you experiance any issues, please report them to $ISSUES."
-    # Tag the imported images
-    while read -r REPOSITORY TAG IMAGE_ID
-    do
-        echo "== Tagging $REPOSITORY $TAG $IMAGE_ID =="
-        docker tag "$IMAGE_ID" "$REPOSITORY:$TAG"
-    done < $DOCKERBACKUP/mydockersimages.list
 fi
 
 apt update -q4 & spinner_loading
