@@ -43,7 +43,7 @@ msg_box "The following images will be saved to $DOCKERBACKUP/images
 $(cat $DOCKERBACKUP/mydockersimages.list)
 
 It may take a while so please be patient."
-	check_command save-images	
+	check_command save_images	
 	# Set overlay2
 	echo "Setting overlay2 in /etc/docker/daemon.json"
 cat << OVERLAY2 > /etc/docker/daemon.json
@@ -68,7 +68,7 @@ OVERLAY2
     apt update -q4 & spinner_loading
     apt upgrade docker-ce -y
     echo "Importing saved docker images to overlay2..."
-    check_command load-images
+    check_command load_images
 msg_box "Your Docker images are now imported to overlay2, but not yet running.
 
 To start the images again, please run the appropriate 'docker run' command for each docker.
