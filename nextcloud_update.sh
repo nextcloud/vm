@@ -30,7 +30,7 @@ then
 fi
 
 # Update docker-ce to overlay2 since devicemapper is deprecated
-if docker -v &> /dev/null
+if [ -f /etc/systemd/system/docker.service ]
 then
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
