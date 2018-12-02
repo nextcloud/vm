@@ -33,6 +33,7 @@ fi
 if docker -v &> /dev/null
 then
     DOCKERBACKUP=$NCDATA/DOCKERBACKUP
+    mkdir -p $DOCKERBACKUP
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
         echo "Changing to Overlay2 for Docker CE..."
