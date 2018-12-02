@@ -2,7 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+DOCKEROVERLAY2=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset DOCKEROVERLAY2
 
 # T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
