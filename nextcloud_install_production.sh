@@ -103,8 +103,16 @@ fi
 install_if_not netplan.io
 install_if_not network-manager
 
-# Format /dev/sdb to host the ncdata
-run_static_script format-sdb
+# Format the second disk
+msg_box "This VM is designed to run with two disks, one for OS and one for DATA.
+
+You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
+if [[ "no" == $(ask_yes_or_no "Do you want to choose disk by yourself?") ]]
+then
+	run_static_script format-sdb
+else
+	run_static_script format-chosen
+fi
 
 # Change DNS system wide
 sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
