@@ -2,7 +2,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+DOCKEROVERLAY2=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset DOCKEROVERLAY2
 
 # T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
@@ -16,15 +17,15 @@ debug_mode
 # https://www.techandme.se/changes-to-docker-ce-in-the-nextcloud-vm/
 # Credits to: https://gist.github.com/hydra1983/22b2bed38b4f5f56caa87c830c96378d
 
-if [ ! -d $NCDATA ]
-then
-    DOCKERBACKUP=/var/DOCKERBACKUP
-fi
-
 readonly DB_FILE="$DOCKERBACKUP/images.db"
 readonly IMG_DIR="$DOCKERBACKUP/images"
 
 save_images() {
+  echo "Create ${IMG_DIR}"
+  if [[ ! -d "${IMG_DIR}" ]]; then
+    mkdir "${IMG_DIR}"
+  fi
+  
   echo "Create ${DB_FILE}"
   docker images|grep -v 'IMAGE ID'|awk '{printf("%s %s %s\n", $1, $2, $3)}'|column -t > "${DB_FILE}"
   
@@ -32,12 +33,7 @@ save_images() {
   local images
   while read -r image; do
      images+=("$image"); 
-  done <<< "$(cat ${DB_FILE})"
-
-  echo "Create ${IMG_DIR}"
-  if [[ ! -d "${IMG_DIR}" ]]; then
-    mkdir "${IMG_DIR}"
-  fi
+  done <<< "$(cat "${DB_FILE}")"
   
   local name tag id
   for image in "${images[@]}"; do
@@ -73,7 +69,7 @@ load_images() {
   local images
   while read -r image; do
      images+=("$image"); 
-  done <<< "$(cat ${DB_FILE})"
+  done <<< "$(cat "${DB_FILE}")"
 
   local name tag id
   for image in "${images[@]}"; do
@@ -100,11 +96,11 @@ load_images() {
 }
 
 # Save all docker images in one file
-check_command docker ps -a > $DOCKERBACKUP/dockerps.txt
-check_command docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > $DOCKERBACKUP/mydockersimages.list
+check_command docker ps -a > "$DOCKERBACKUP"/dockerps.txt
+check_command docker images | sed '1d' | awk '{print $1 " " $2 " " $3}' > "$DOCKERBACKUP"/mydockersimages.list
 msg_box "The following images will be saved to $DOCKERBACKUP/images
 
-$(cat $DOCKERBACKUP/mydockersimages.list)
+$(cat "$DOCKERBACKUP"/mydockersimages.list)
 
 It may take a while so please be patient."
 
@@ -143,10 +139,10 @@ msg_box "Your Docker images are now imported to overlay2, but not yet running.
 
 To start the images again, please run the appropriate 'docker run' command for each docker.
 These are all the imported docker images:
-$(cat $DB_FILE)
+$(cat "${DB_FILE}")
 
 You can also find the file with the imported docker images here:
 $DB_FILE
 
 If you experiance any issues, please report them to $ISSUES."
-rm -f $DOCKERBACKUP/mydockersimages.list
+rm -f "$DOCKERBACKUP"/mydockersimages.list
