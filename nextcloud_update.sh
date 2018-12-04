@@ -142,7 +142,10 @@ then
 fi
 
 # Update all Nextcloud apps
-occ_command app:update --all
+if [ "${CURRENTVERSION%%.*}" -ge "15" ]
+then
+    occ_command app:update --all
+fi
 
 # Major versions unsupported
 if [ "${CURRENTVERSION%%.*}" == "$NCBAD" ]
