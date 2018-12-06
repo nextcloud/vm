@@ -5,6 +5,7 @@
 **Build Status:**
 [![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
 <br>
+**Well, is this stable?**
 ![Stability Status](https://img.shields.io/badge/stability-stable-brightgreen.svg)
 ## Support the development
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
