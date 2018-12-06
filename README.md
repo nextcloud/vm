@@ -2,11 +2,9 @@
 **Downloads from Github:**
 ![Downloads](https://img.shields.io/github/downloads/nextcloud/vm/total.svg)
 <br>
-**Join our IRC channel:**
-[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme) 
-<br>
 **Build Status:**
 [![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
+<br>
 ![Stability Status](https://img.shields.io/badge/stability-stable-brightgreen.svg)
 ## Support the development
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
