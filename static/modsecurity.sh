@@ -70,8 +70,8 @@ cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
   SecRuleRemoveById 981401             # Content-Type Response Header is Missing and X-Content-Type-Options is either missing or not set to 'nosniff'
   SecRuleRemoveById 200002             # Failed to parse request body
 
-  # UPLOADS ( 5 MB max excluding file size )
-  SecRequestBodyNoFilesLimit 5242880
+  # UPLOADS ( 20 MB max excluding file size )
+  SecRequestBodyNoFilesLimit 20971520
 
   # GENERAL
   SecRuleRemoveById 960017             # Host header is a numeric IP address
