@@ -217,8 +217,8 @@ else
     echo "fail" > /tmp/le_test
 fi
 }
-webroot() {
-if eval "certbot certonly --webroot --webroot-path $NCPATH $default_le"
+tls-sni() {
+if eval "certbot certonly --preferred-challenges tls-sni $default_le"
 then
     echo "success" > /tmp/le_test
 else
@@ -234,7 +234,7 @@ else
 fi
 }
 
-methods=(standalone webroot dns)
+methods=(standalone tls-sni dns)
 
 create_config() {
 # $1 = method
@@ -259,7 +259,7 @@ if [ "$method" == "standalone" ]
 then
     printf "%b" "${ICyan}It seems like no certs were generated, we will do 2 more tries.\n${Color_Off}"
     any_key "Press any key to continue..."
-elif [ "$method" == "webroot" ]
+elif [ "$method" == "tls-sni" ]
 then
     printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
     any_key "Press any key to continue..."
