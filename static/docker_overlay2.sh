@@ -17,6 +17,15 @@ debug_mode
 # https://www.techandme.se/changes-to-docker-ce-in-the-nextcloud-vm/
 # Credits to: https://gist.github.com/hydra1983/22b2bed38b4f5f56caa87c830c96378d
 
+# Check if aufs and don't run
+if grep -q "aufs" /etc/default/docker
+then
+msg_box "This script doesn't support images that uses the AUFS driver, sorry
+
+You are welcome to send a PR, or report an issue here: $ISSUES"
+    exit 1
+fi
+
 readonly DB_FILE="$DOCKERBACKUP/images.db"
 readonly IMG_DIR="$DOCKERBACKUP/images"
 
