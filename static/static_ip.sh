@@ -20,7 +20,7 @@ clear
 msg_box "Copying old netplan.io config file file to:
 
 /tmp/01-netcfg.yaml_backup"
-check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
+[[ -f /etc/netplan/01-netcfg.yaml ]] && check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
 
 echo
 while true
