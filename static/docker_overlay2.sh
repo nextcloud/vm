@@ -24,7 +24,7 @@ readonly IMG_DIR="$DOCKERBACKUP/images"
 # This updates ALL Docker images:
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
-    docker images --format "{{.Repository}}:{{.Tag}}" | grep :latest | xargs -L1 docker pull
+    docker images --format | xargs -L1 docker pull
 fi
 
 if [ -f $SCRIPTS/dockerprune.sh ]
@@ -32,7 +32,7 @@ then
     bash $SCRIPTS/dockerprune.sh
 else
     docker container prune -f
-    docker image prune -a -f
+    docker image prune -f
     docker volume prune -f
 fi
 
