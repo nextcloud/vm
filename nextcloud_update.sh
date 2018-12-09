@@ -36,7 +36,7 @@ then
     then
         echo "Changing to Overlay2 for Docker CE..."
         echo "Please report any issues to $ISSUES."
-	run_static_script docker_overlay2
+        run_static_script docker_overlay2
     elif grep -q "aufs" /etc/default/docker
     then
         apt-mark hold docker-ce
