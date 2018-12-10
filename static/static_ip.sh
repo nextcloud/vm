@@ -16,7 +16,7 @@ debug_mode
 
 clear
 
-# Copy old interfaces file
+# Copy old interfaces files
 msg_box "Copying old netplan.io config files file to:
 
 /tmp/netplan_io_backup/"
