@@ -29,10 +29,19 @@ then
     apt-mark hold mariadb*
 fi
 
-# Hold docker-ce since it breaks devicemapper
-if which docker > /dev/null
+# Update docker-ce to overlay2 since devicemapper is deprecated
+if [ -f /etc/systemd/system/docker.service ]
 then
-    apt-mark hold docker-ce
+    if grep -q "devicemapper" /etc/systemd/system/docker.service
+    then
+        echo "Changing to Overlay2 for Docker CE..."
+        echo "Please report any issues to $ISSUES."
+        run_static_script docker_overlay2
+    elif grep -q "aufs" /etc/default/docker
+    then
+        apt-mark hold docker-ce
+        run_static_script docker_overlay2
+    fi
 fi
 
 apt update -q4 & spinner_loading
@@ -100,19 +109,6 @@ then
     docker images --format "{{.Repository}}:{{.Tag}}" | grep :latest | xargs -L1 docker pull
 fi
 
-## OLD WAY ##
-#if [ "$(docker image inspect onlyoffice/documentserver >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
-#then
-#    echo "Updating Docker container for OnlyOffice..."
-#    docker pull onlyoffice/documentserver
-#fi
-#
-#if [ "$(docker image inspect collabora/code >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
-#then
-#    echo "Updating Docker container for Collabora..."
-#    docker pull collabora/code
-#fi
-
 # Cleanup un-used packages
 apt autoremove -y
 apt autoclean
@@ -147,6 +143,12 @@ then
     rm "$SCRIPTS"/setup_secure_permissions_nextcloud.*
     download_static_script setup_secure_permissions_nextcloud
     chmod +x "$SECURE"
+fi
+
+# Update all Nextcloud apps
+if [ "${CURRENTVERSION%%.*}" -ge "15" ]
+then
+    occ_command app:update --all
 fi
 
 # Major versions unsupported

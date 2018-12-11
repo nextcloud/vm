@@ -103,10 +103,14 @@ You must have a working network connection to run this script.
 
 You will now be provided with the option to set a static IP manually instead."
 
-    # Copy old interfaces file
-msg_box "Copying old netplan.io config file file to:
-/tmp/01-netcfg.yaml_backup"
-    check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
+    # Copy old interfaces files
+msg_box "Copying old netplan.io config files file to:
+/tmp/netplan_io_backup/"
+    if [ -d /etc/netplan/ ] 
+    then
+        mkdir -p /tmp/netplan_io_backup
+        check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
+    fi
 
     # Ask for IP address
 cat << ENTERIP

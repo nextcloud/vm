@@ -24,8 +24,11 @@ install_if_not libapache2-mod-security2
 install_if_not modsecurity-crs
 mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
 
-msg_box "WARNING: Do not enable active defence if you don't know what you're doing!
-For example it will break OnlyOffice, and may break other stuff as well in Nextcloud.
+msg_box "WARNING WARNING WARNING WARNING WARNING WARNING:
+
+Do not enable active defence if you don't know what you're doing!
+It will break OnlyOffice, and it may break other stuff as well in Nextcloud as it's
+blocking access to files automatically.
 
 You can monitor the audit log by typing this command in your shell:
 tail -f /var/log/apache2/modsec_audit.log
@@ -33,7 +36,7 @@ tail -f /var/log/apache2/modsec_audit.log
 You can disable it by typing this command in your shell:
 sed -i 's/SecRuleEngine .*/SecRuleEngine DetectionOnly/g' /etc/modsecurity/modsecurity.conf
 
-You have been warned."
+YOU HAVE BEEN WARNED."
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable active defence?") ]]
 then
     sed -i 's|SecRuleEngine .*|SecRuleEngine on|g' /etc/modsecurity/modsecurity.conf
@@ -67,8 +70,8 @@ cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
   SecRuleRemoveById 981401             # Content-Type Response Header is Missing and X-Content-Type-Options is either missing or not set to 'nosniff'
   SecRuleRemoveById 200002             # Failed to parse request body
 
-  # UPLOADS ( 5 MB max excluding file size )
-  SecRequestBodyNoFilesLimit 5242880
+  # UPLOADS ( 20 MB max excluding file size )
+  SecRequestBodyNoFilesLimit 20971520
 
   # GENERAL
   SecRuleRemoveById 960017             # Host header is a numeric IP address

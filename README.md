@@ -2,18 +2,17 @@
 **Downloads from Github:**
 ![Downloads](https://img.shields.io/github/downloads/nextcloud/vm/total.svg)
 <br>
-**Join our IRC channel:**
-[![irc](https://img.shields.io/badge/irc%20channel-%23techandme%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=techandme) 
-<br>
 **Build Status:**
 [![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
+<br>
+**Well, is this stable?**
 ![Stability Status](https://img.shields.io/badge/stability-stable-brightgreen.svg)
 ## Support the development
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
 * Report [your issue](https://github.com/nextcloud/vm/issues/new)
 * Help us with [existing issues](https://github.com/nextcloud/vm/issues)
 * Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
-* [Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, PostgreSQL or Hyper-V.
+* **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB or Hyper-V.**
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
 * [Daniel Hanson](https://github.com/enoch85) @ [T&M Hansson IT AB](https://www.hanssonit.se)
@@ -46,7 +45,7 @@ The script will mount and format the drive. Please select Manually Format & Moun
 
 #### Installation
 1. Get the latest install script from master and install it with a sudo user:<br>
-`curl -sSL https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh | sudo bash`
+`sudo bash -c "$(wget -q -O - https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh)"`
 2. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
 `ssh <user>@IP-ADDRESS`<br>
 If it automatically runs as root when you reboot the machine, you have to abort it by pressing `CTRL+C` and run the script as the user you just created:<br>
@@ -55,6 +54,9 @@ If it automatically runs as root when you reboot the machine, you have to abort 
 
 ## Machine configuration of the released version
 Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
+
+## Full documentation
+You can find the full documentatoin [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm)
 
 ## Do you want to run this on your Raspberry Pi?
 Great news! We have forked this repository and created a Raspberry Pi image that you can download from here: 

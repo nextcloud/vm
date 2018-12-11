@@ -16,11 +16,15 @@ debug_mode
 
 clear
 
-# Copy old interfaces file
-msg_box "Copying old netplan.io config file file to:
+# Copy old interfaces files
+msg_box "Copying old netplan.io config files file to:
 
-/tmp/01-netcfg.yaml_backup"
-check_command cp -v /etc/netplan/01-netcfg.yaml /tmp/01-netcfg.yaml_backup
+/tmp/netplan_io_backup/"
+if [ -d /etc/netplan/ ] 
+then
+    mkdir -p /tmp/netplan_io_backup
+    check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
+fi
 
 echo
 while true

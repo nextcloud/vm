@@ -121,6 +121,8 @@ APACHE2=/etc/apache2/apache2.conf
 [ ! -z "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
 [ ! -z "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ ! -z "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
+# Migrate Docker to overlay2
+[ ! -z "$DOCKEROVERLAY2" ] && DOCKERBACKUP=$(grep "datadir" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")/DOCKERBACKUP
 
 ## functions
 

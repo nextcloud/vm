@@ -30,8 +30,8 @@ You also have to open port 80+443 against this VMs
 IP address: $ADDRESS - do this in your router/FW.
 Here is a guide: https://goo.gl/Uyuf65
 
-This script is located in $SCRIPTS and you
-can run this script after you got a domain.
+You can find the script here: $SCRIPTS/activate-ssl.sh 
+and you can run it after you got a domain.
 
 Please don't run this script if you don't have
 a domain yet. You can get one for a fair price here:
@@ -217,8 +217,8 @@ else
     echo "fail" > /tmp/le_test
 fi
 }
-webroot() {
-if eval "certbot certonly --webroot --webroot-path $NCPATH $default_le"
+tls-sni() {
+if eval "certbot certonly --preferred-challenges tls-sni $default_le"
 then
     echo "success" > /tmp/le_test
 else
@@ -234,7 +234,7 @@ else
 fi
 }
 
-methods=(standalone webroot dns)
+methods=(standalone tls-sni dns)
 
 create_config() {
 # $1 = method
@@ -259,7 +259,7 @@ if [ "$method" == "standalone" ]
 then
     printf "%b" "${ICyan}It seems like no certs were generated, we will do 2 more tries.\n${Color_Off}"
     any_key "Press any key to continue..."
-elif [ "$method" == "webroot" ]
+elif [ "$method" == "tls-sni" ]
 then
     printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
     any_key "Press any key to continue..."
