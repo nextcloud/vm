@@ -389,7 +389,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Bitwarden" "(Password manager) - NOT STABLE   " OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
-"Talk" "(Nextcloud Video calls and chat)   " OFF \ 2>results
+"Talk" "(Nextcloud Video calls and chat)   " OFF 2>results
 
 while read -r -u 9 choice
 do
