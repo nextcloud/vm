@@ -2,12 +2,12 @@
 
 # T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
-echo "Installing ModSecurity..."
-
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+print_text_in_color "$Cyan" "Installing ModSecurity..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -93,6 +93,6 @@ check_command sed -i 's|# SecDefaultAction "phase:2,nolog,auditlog,pass"|SecDefa
 
 if [ -f /etc/modsecurity/whitelist.conf ]
 then
-    echo "ModSecurity activated!"
+    print_text_in_color "$Cyan" "ModSecurity activated!"
     restart_webserver
 fi

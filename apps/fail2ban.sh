@@ -3,13 +3,13 @@
 # T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 # Inspired by https://github.com/nextcloud/nextcloudpi/blob/master/etc/nextcloudpi-config.d/fail2ban.sh
 
-echo "Installing Fail2ban..."
-
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
+
+print_text_in_color "$Cyan" "Installing Fail2ban..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -39,8 +39,8 @@ check_command update-rc.d fail2ban disable
 
 if [ -z "$NCLOG" ]
 then
-    echo "nextcloud.log not found"
-    echo "Please add your logpath to $NCPATH/config/config.php and restart this script."
+    print_text_in_color "$Red" "nextcloud.log not found"
+    print_text_in_color "$Red" "Please add your logpath to $NCPATH/config/config.php and restart this script."
     exit 1
 else
     chown www-data:www-data "$NCLOG"

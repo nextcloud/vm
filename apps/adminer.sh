@@ -2,12 +2,12 @@
 
 # T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
-echo "Installing and securing Adminer..."
-
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+print_text_in_color "$Cyan" "Installing and securing Adminer..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -24,7 +24,7 @@ http2_warn Adminer
 # Check that the script can see the external IP (apache fails otherwise)
 if [ -z "$WANIP4" ]
 then
-    echo "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again"
+    print_text_in_color "$Cyan" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again"
     sleep 3
     exit 1
 fi
