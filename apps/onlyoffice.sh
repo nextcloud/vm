@@ -177,7 +177,7 @@ then
     cd "$NC_APPS_PATH"
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-nextcloud.git onlyoffice
 else
-    printf "%b" "${IRed}It seems like no certs were generated, please report this issue here: $ISSUES\n${Color_Off}"
+	print_text_in_color "$Red" "It seems like no certs were generated, please report this issue here: $ISSUES"
     any_key "Press any key to continue... "
     restart_webserver
 fi
