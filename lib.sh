@@ -540,13 +540,13 @@ if [ ! -d "$NC_APPS_PATH/$1" ]
 then
     echo "Installing $1..."
 	# occ_command not possible here because it uses check_command and will exit if occ_command fails
-	result=$(sudo -u www-data php /var/www/nextcloud/occ app:install "$1")
+	result=$(sudo -u www-data php ${NCPATH}/occ app:install "$1")
 	if [ "$result" = "Error: Could not download app $1" ]
 	then
 msg_box "$result
 Maybe the app is not compatible with the current installed nextcloud version.
 You can try to install the app manually after the script has finished with the following command:
-'sudo -u www-data php /var/www/nextcloud/occ app:install $1'"
+'sudo -u www-data php ${NCPATH}/occ app:install $1'"
 	# Now return to not enable an app which has not been installed.
 	return 0
 	fi
