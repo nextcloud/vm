@@ -150,7 +150,7 @@ HTTPS_CREATE
 
     if [ -f "$HTTPS_CONF" ];
     then
-        print_text_in_color "$Cyan" "$HTTPS_CONF was successfully created"
+        print_text_in_color "$Green" "$HTTPS_CONF was successfully created."
         sleep 1
     else
         print_text_in_color "$Red" "Unable to create vhost, exiting..."
@@ -201,7 +201,7 @@ then
     print_text_in_color "$Cyan" "Docker automatic prune job added."
     service docker restart
     docker restart onlyoffice
-    print_text_in_color "$Cyan" "OnlyOffice is now successfully installed."
+    print_text_in_color "$Green" "OnlyOffice is now successfully installed."
     any_key "Press any key to continue... "
 fi
 

@@ -17,7 +17,7 @@ is_process_running dpkg
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    print_text_in_color "$Cyan" "curl OK"
+    print_text_in_color "$Green" "curl OK"
 else
     apt update -q4 & spinner_loading
     apt install curl -y
@@ -26,7 +26,7 @@ fi
 # Install lshw if not existing
 if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    print_text_in_color "$Cyan" "lshw OK"
+    print_text_in_color "$Green" "lshw OK"
 else
     apt update -q4 & spinner_loading
     apt install lshw -y
@@ -35,7 +35,7 @@ fi
 # Install net-tools if not existing
 if [ "$(dpkg-query -W -f='${Status}' "net-tools" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    print_text_in_color "$Cyan" "net-tools OK"
+    print_text_in_color "$Green" "net-tools OK"
 else
     apt update -q4 & spinner_loading
     apt install net-tools -y
@@ -219,7 +219,7 @@ cat << HTTP2_ENABLE > "$HTTP2_CONF"
     H2Direct on
 </IfModule>
 HTTP2_ENABLE
-print_text_in_color "$Cyan" "$HTTP2_CONF was successfully created"
+print_text_in_color "$Green" "$HTTP2_CONF was successfully created"
 a2enmod http2
 restart_webserver
 
@@ -403,7 +403,7 @@ then
 
 </VirtualHost>
 HTTP_CREATE
-    print_text_in_color "$Cyan" "$HTTP_CONF was successfully created"
+    print_text_in_color "$Green" "$HTTP_CONF was successfully created."
 fi
 
 # Generate $SSL_CONF
@@ -466,7 +466,7 @@ then
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
 SSL_CREATE
-    print_text_in_color "$Cyan" "$SSL_CONF was successfully created"
+    print_text_in_color "$Green" "$SSL_CONF was successfully created."
 fi
 
 # Enable new config

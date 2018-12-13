@@ -93,6 +93,6 @@ check_command sed -i 's|# SecDefaultAction "phase:2,nolog,auditlog,pass"|SecDefa
 
 if [ -f /etc/modsecurity/whitelist.conf ]
 then
-    print_text_in_color "$Cyan" "ModSecurity activated!"
+    print_text_in_color "$Green" "ModSecurity activated!"
     restart_webserver
 fi

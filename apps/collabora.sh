@@ -161,7 +161,7 @@ HTTPS_CREATE
 
     if [ -f "$HTTPS_CONF" ];
     then
-        print_text_in_color "$Cyan" "$HTTPS_CONF was successfully created"
+        print_text_in_color "$Green" "$HTTPS_CONF was successfully created."
         sleep 1
     else
         print_text_in_color "$Red" "Unable to create vhost, exiting..."
@@ -187,7 +187,7 @@ then
 # Install Collabora App
     occ_command app:install richdocuments
 else
-	print_text_in_color "$Cyan" "It seems like no certs were generated, please report this issue here: $ISSUES"
+	print_text_in_color "$Red" "It seems like no certs were generated, please report this issue here: $ISSUES"
     any_key "Press any key to continue... "
     restart_webserver
 fi
@@ -211,7 +211,7 @@ then
     print_text_in_color "$Cyan" "Docker automatic prune job added."
     service docker restart
     docker restart code
-    print_text_in_color "$Cyan" "Collabora is now successfully installed."
+    print_text_in_color "$Green" "Collabora is now successfully installed."
     any_key "Press any key to continue... "
 fi
 

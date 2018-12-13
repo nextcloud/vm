@@ -24,7 +24,7 @@ http2_warn Adminer
 # Check that the script can see the external IP (apache fails otherwise)
 if [ -z "$WANIP4" ]
 then
-    print_text_in_color "$Cyan" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again"
+    print_text_in_color "$Red" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again."
     sleep 3
     exit 1
 fi

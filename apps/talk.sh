@@ -110,7 +110,7 @@ log-file=/var/log/turnserver.log
 TURN_CREATE
 if [ -f "$TURN_CONF" ];
 then
-    print_text_in_color "$Cyan" "$TURN_CONF was successfully created"
+    print_text_in_color "$Green" "$TURN_CONF was successfully created."
 else
     print_text_in_color "$Red" "Unable to create $TURN_CONF, exiting..."
     print_text_in_color "$Red" "Please report this issue here $ISSUES"

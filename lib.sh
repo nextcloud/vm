@@ -256,7 +256,7 @@ The installation was not successful, sorry for the inconvenience.
 If you think this is a bug, please report it to $ISSUES"
 exit 1
 else
-    print_text_in_color "$Cyan" "pm.max_children was set to $PHP_FPM_MAX_CHILDREN"
+    print_text_in_color "$Green" "pm.max_children was set to $PHP_FPM_MAX_CHILDREN"
 fi
 }
 
@@ -287,14 +287,14 @@ check_command service network-manager restart
 sleep 2
 if nslookup github.com
 then
-    print_text_in_color "$Cyan" "Online!"
+    print_text_in_color "$Green" "Online!"
 elif ! nslookup github.com
 then
     print_text_in_color "$Cyan" "Trying to restart networking service..."
     check_command service networking restart && sleep 2
     if nslookup github.com
     then
-        print_text_in_color "$Cyan" "Online!"
+        print_text_in_color "$Green" "Online!"
     fi
 else
     if ! nslookup github.com

@@ -124,7 +124,7 @@ fi
 if [ ! -f "$ssl_conf" ]
 then
     touch "$ssl_conf"
-    print_text_in_color "$Cyan" "$ssl_conf was successfully created"
+    print_text_in_color "$Green" "$ssl_conf was successfully created."
     sleep 2
     cat << SSL_CREATE > "$ssl_conf"
 <VirtualHost *:80>
