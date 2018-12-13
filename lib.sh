@@ -493,7 +493,7 @@ fi
 check_command() {
   if ! "$@";
   then
-     print_text_in_color "$Red" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+     print_text_in_color "$Cyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
 	 print_text_in_color "$Red" "$* failed"
     exit 1
   fi
