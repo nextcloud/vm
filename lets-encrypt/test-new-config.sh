@@ -37,7 +37,7 @@ Feel free to contribute to this project: https://goo.gl/3fQD65"
 FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
 if [ "$(hostname)" != "$FQDOMAIN" ]
 then
-    echo "Setting hostname to $FQDOMAIN..."
+    print_text_in_color "$Cyan" "Setting hostname to $FQDOMAIN..."
     sudo sh -c "echo 'ServerName $FQDOMAIN' >> /etc/apache2/apache2.conf"
     sudo hostnamectl set-hostname "$FQDOMAIN"
     # Change /etc/hosts as well

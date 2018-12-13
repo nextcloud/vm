@@ -2,13 +2,13 @@
 
 # T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
-echo "Installing Spreed.ME..."
-
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
+
+print_text_in_color "$Cyan" "Installing Spreed.ME..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -36,7 +36,7 @@ install_if_not snapd
 # Install Nextcloud Spreed.ME Snap
 if [ -d "$SNAPDIR" ]
 then
-    echo "Spreed.ME Snap already seems to be installed and will now be re-installed..."
+    print_text_in_color "$Cyan" "Spreed.ME Snap already seems to be installed and will now be re-installed..."
     snap remove spreedme
     rm -rf "$SNAPDIR"
     snap install --edge spreedme
@@ -49,7 +49,7 @@ if [ -d "$NC_APPS_PATH/spreedme" ]
 then
     # Remove
     occ_command app:disable spreedme
-    echo "Spreed.ME app already seems to be installed and will now be re-installed..."
+    print_text_in_color "$Cyan" "Spreed.ME app already seems to be installed and will now be re-installed..."
     rm -R "$NC_APPS_PATH/spreedme"
     # Reinstall
     occ_command app:install spreedme

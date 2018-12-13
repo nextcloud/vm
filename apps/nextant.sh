@@ -41,28 +41,27 @@ Please report any bugs regarding the script to $ISSUES"
 # Make sure there is an Nextcloud installation
 if ! [ "$(occ_command -V)" ]
 then
-    echo "It seems there is no Nextcloud server installed, please check your installation."
+    print_text_in_color "$Red" "It seems there is no Nextcloud server installed, please check your installation."
     exit 1
 fi
 
 # Check if it's a clean install
 if [ -d "$SOLR_HOME" ]
 then
-    echo
-    echo "It seems like $SOLR_HOME already exists. Have you already run this script?"
-    echo "If yes, revert all the settings and try again, it must be a clean install."
+    print_text_in_color "$Red" "It seems like $SOLR_HOME already exists. Have you already run this script?"
+    print_text_in_color "$Red" "If yes, revert all the settings and try again, it must be a clean install."
     exit 1
 fi
 
-echo "Starting to setup Solr & Nextant on Nextcloud..."
+print_text_in_color "$Cyan" "Starting to setup Solr & Nextant on Nextcloud..."
 
 # Installing requirements
 apt update -q4 & spinner_loading
 apt install default-jre -y
 
 # Getting and installing Apache Solr
-echo "Installing Apache Solr"
-echo "It might take some time depending on your bandwith, please be patient..."
+print_text_in_color "$Cyan" "Installing Apache Solr"
+print_text_in_color "$Cyan" "It might take some time depending on your bandwith, please be patient..."
 mkdir -p "$SOLR_HOME"
 check_command cd "$SOLR_HOME" 
 wget -q "$SOLR_DL" --show-progress
@@ -72,7 +71,7 @@ then
     rm -rf "${SOLR_HOME:?}/$SOLR_RELEASE"
     wget -q https://raw.githubusercontent.com/apache/lucene-solr/master/solr/bin/install_solr_service.sh -P $SCRIPTS/
 else
-    echo "Solr failed to install, something is wrong with the Solr installation"
+    print_text_in_color "$Red" "Solr failed to install, something is wrong with the Solr installation"
     exit 1
 fi
 
@@ -89,7 +88,7 @@ if service solr start
 then
     sudo -u solr /opt/solr/bin/solr create -c nextant 
 else
-    echo "Solr failed to start, something is wrong with the Solr installation"
+    print_text_in_color "$Red" "Solr failed to start, something is wrong with the Solr installation"
     exit 1
 fi
 
