@@ -116,6 +116,6 @@ check_command bash "$SCRIPTS"/spamhaus_cronjob.sh
 # Enable $SPAMHAUS
 if sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
 then
-    print_text_in_color "$Cyan" "Security added!"
+    print_text_in_color "$Green" "Security added!"
     restart_webserver
 fi
