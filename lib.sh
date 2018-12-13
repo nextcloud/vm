@@ -581,8 +581,8 @@ download_static_script() {
     if ! { wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.php" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"; }
     then
         print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
-        print_text_in_color "$Red" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
-        print_text_in_color "$Red" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$Cyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
+        print_text_in_color "$Cyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
@@ -595,8 +595,8 @@ download_le_script() {
     if ! { wget -q "${LETS_ENC}/${1}.sh" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.php" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.py" -P "$SCRIPTS"; }
     then
         print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
-        print_text_in_color "$Red" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
-        print_text_in_color "$Red" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$Cyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
+        print_text_in_color "$Cyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
@@ -619,7 +619,7 @@ run_main_script() {
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$Red" "Downloading ${1} failed"
-        print_text_in_color "$Red" "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
+        print_text_in_color "$Cyan" "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
         exit 1
     fi
 }
@@ -643,7 +643,7 @@ run_static_script() {
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$Red" "Downloading ${1} failed"
-        print_text_in_color "$Red" "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
+        print_text_in_color "$Cyan" "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
         exit 1
     fi
 }
@@ -666,7 +666,7 @@ run_app_script() {
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$Red" "Downloading ${1} failed"
-        print_text_in_color "$Red" "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
+        print_text_in_color "$Cyan" "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
         exit
     fi
 }
