@@ -23,6 +23,7 @@
 * [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
 * [Stefan Heitmüller](https://github.com/morph027) @ [morph027's Blog](https://morph027.gitlab.io/)
 * [Lorenzo Faleschini](https://github.com/penzoiders)
+* [@ggeorgg](https://github.com/ggeorgg)
 
 ## Build your own VM, or install on a VPS
 DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc<br>
