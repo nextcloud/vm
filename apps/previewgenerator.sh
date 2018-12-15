@@ -16,6 +16,18 @@ debug_mode
 # Check if root
 root_check
 
+msg_box "Please note that this will put your server at risk as it will install a package called 'imagick' which is known to have several flaws.
+
+You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743
+
+You can choose to cancel installing this in the next step."
+if [[ "no" == $(ask_yes_or_no "Do you still want to continue?") ]]
+then
+    exit
+else
+    sleep 1
+fi
+
 # Install preview generator
 install_and_enable_app previewgenerator
 
@@ -60,6 +72,8 @@ then
     # Install needed dependencies
     install_if_not ffmpeg
     install_if_not libreoffice
+    install_if_not php-imagick
+    install_if_not libmagickcore-6.q16-3-extra
     
     # Pre generate everything
     occ_command preview:generate-all
