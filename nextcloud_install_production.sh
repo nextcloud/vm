@@ -204,7 +204,7 @@ check_command apt install -y \
     php7.2-json \
     php7.2-gmp \
     php7.2-bz2 \
-    php-pear \
+    php-pear
     # php7.2-imagick \
     # libmagickcore-6.q16-3-extra
     
