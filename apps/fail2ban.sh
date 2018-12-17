@@ -9,7 +9,7 @@ true
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 
-print_text_in_color "$Cyan" "Installing Fail2ban..."
+print_text_in_color "$ICyan" "Installing Fail2ban..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

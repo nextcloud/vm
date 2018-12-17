@@ -46,7 +46,7 @@ fi
 }
 
 network_ok() {
-    print_text_in_color "$Cyan" "Testing if network is OK..."
+    print_text_in_color "$ICyan" "Testing if network is OK..."
     service network-manager restart
     if wget -q -T 20 -t 2 http://github.com -O /dev/null
     then
@@ -59,7 +59,7 @@ network_ok() {
 check_command() {
   if ! "$@";
   then
-     print_text_in_color "$Cyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
 	 print_text_in_color "$Red" "$* failed"
     exit 1
   fi
@@ -73,9 +73,9 @@ root_check
 # Check network
 if network_ok
 then
-    printf "${Green}Online!${Color_Off}\n"
+    printf "${IGreen}Online!${Color_Off}\n"
 else
-    print_text_in_color "$Cyan" "Setting correct interface..."
+    print_text_in_color "$ICyan" "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
 cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
@@ -94,7 +94,7 @@ SETDHCP
     ip link set "$IFACE" up
     wait
     check_command service network-manager restart
-    print_text_in_color "$Cyan" "Checking connection..."
+    print_text_in_color "$ICyan" "Checking connection..."
     sleep 1
     if ! nslookup github.com
     then
@@ -159,7 +159,7 @@ fi
 # Check network again
 if network_ok
 then
-    printf "${Green}Online!${Color_Off}\n"
+    printf "${IGreen}Online!${Color_Off}\n"
 else
 msg_box "Network NOT OK. You must have a working network connection to run this script.
 
@@ -230,7 +230,7 @@ is_process_running apt
 is_process_running dpkg
 
 echo
-print_text_in_color "$Cyan" "Getting scripts from GitHub to be able to run the first setup..."
+print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
 # Scripts in static (.sh, .php, .py)
 download_static_script temporary-fix
 download_static_script update
@@ -289,10 +289,10 @@ It will also do the following:
 clear
 
 # Set keyboard layout
-print_text_in_color "$Cyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+print_text_in_color "$ICyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-    print_text_in_color "$Cyan" "Not changing keyboard layout..."
+    print_text_in_color "$ICyan" "Not changing keyboard layout..."
     sleep 1
     clear
 else
@@ -301,10 +301,10 @@ else
 fi
 
 # Change Timezone
-print_text_in_color "$Cyan" "Current timezone is $(cat /etc/timezone)"
+print_text_in_color "$ICyan" "Current timezone is $(cat /etc/timezone)"
 if [[ "no" == $(ask_yes_or_no "Do you want to change the timezone?") ]]
 then
-    print_text_in_color "$Cyan" "Not changing timezone..."
+    print_text_in_color "$ICyan" "Not changing timezone..."
     sleep 1
     clear
 else
@@ -317,15 +317,15 @@ msg_box "To make downloads as fast as possible when updating you should have mir
 This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
 
 If you are located outside of Europe, we recomend you to change the mirrors so that downloads are faster."
-print_text_in_color "$Cyan" "Checking current mirror..."
-print_text_in_color "$Cyan" "Your current server repository is: $REPO"
+print_text_in_color "$ICyan" "Checking current mirror..."
+print_text_in_color "$ICyan" "Your current server repository is: $REPO"
 
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-    print_text_in_color "$Cyan" "Keeping $REPO as mirror..."
+    print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
     sleep 1
 else
-    print_text_in_color "$Cyan" "Locating the best mirrors..."
+    print_text_in_color "$ICyan" "Locating the best mirrors..."
     apt update -q4 & spinner_loading
     apt install python-pip -y
     pip install \
@@ -341,7 +341,7 @@ fi
 clear
 
 # Pretty URLs
-print_text_in_color "$Cyan" "Setting RewriteBase to \"/\" in config.php..."
+print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
 occ_command config:system:set overwrite.cli.url --value="http://localhost/"
 occ_command config:system:set htaccess.RewriteBase --value="/"
@@ -354,7 +354,7 @@ rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
 # Generate new PostgreSQL password
-print_text_in_color "$Cyan" "Generating new PostgreSQL password..."
+print_text_in_color "$ICyan" "Generating new PostgreSQL password..."
 check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 clear
@@ -374,7 +374,7 @@ then
     bash $SCRIPTS/activate-ssl.sh
 else
     echo
-    print_text_in_color "$Cyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
+    print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     any_key "Press any key to continue..."
 fi
 clear
@@ -448,7 +448,7 @@ clear
 
 # Change passwords
 # CLI USER
-print_text_in_color "$Cyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
+print_text_in_color "$ICyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
 any_key "Press any key to change password for system user..."
 while true
 do
@@ -593,13 +593,13 @@ mesg n
 ROOTNEWPROFILE
 
 # Download all app scripts
-print_text_in_color "$Cyan" "Downloading all the latest app scripts to $SCRIPTS/apps..."
+print_text_in_color "$ICyan" "Downloading all the latest app scripts to $SCRIPTS/apps..."
 mkdir -p $SCRIPTS/apps
 cd $SCRIPTS/apps
 check_command curl -s https://codeload.github.com/nextcloud/vm/tar.gz/master | tar -xz --strip=2 vm-master/apps
 
 # Upgrade system
-print_text_in_color "$Cyan" "System will now upgrade..."
+print_text_in_color "$ICyan" "System will now upgrade..."
 bash $SCRIPTS/update.sh
 
 # Cleanup 2

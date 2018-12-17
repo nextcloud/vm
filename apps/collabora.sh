@@ -9,7 +9,7 @@ NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.co
 unset NC_UPDATE
 unset COLLABORA_INSTALL
 
-print_text_in_color "$Cyan" "Installing Collabora..."
+print_text_in_color "$ICyan" "Installing Collabora..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -42,7 +42,7 @@ msg_box "Before you start, please make sure that port 80+443 is directly forward
 apt update -q4 & spinner_loading
 
 # Check if Nextcloud is installed
-print_text_in_color "$Cyan" "Checking if Nextcloud is installed..."
+print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
 if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
 msg_box "It seems like Nextcloud is not installed or that you don't use https on:
@@ -58,7 +58,7 @@ sudo bash collabora.sh"
 fi
 
 # Check if $SUBDOMAIN exists and is reachable
-print_text_in_color "$Cyan" "Checking if $SUBDOMAIN exists and is reachable..."
+print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
 if wget -q -T 10 -t 2 --spider "$SUBDOMAIN"; then
    sleep 0.1
 elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$SUBDOMAIN"; then
@@ -161,7 +161,7 @@ HTTPS_CREATE
 
     if [ -f "$HTTPS_CONF" ];
     then
-        print_text_in_color "$Green" "$HTTPS_CONF was successfully created."
+        print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
         sleep 1
     else
         print_text_in_color "$Red" "Unable to create vhost, exiting..."
@@ -208,10 +208,10 @@ then
     } > "$SCRIPTS/dockerprune.sh"
     chmod a+x "$SCRIPTS/dockerprune.sh"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
-    print_text_in_color "$Cyan" "Docker automatic prune job added."
+    print_text_in_color "$ICyan" "Docker automatic prune job added."
     service docker restart
     docker restart code
-    print_text_in_color "$Green" "Collabora is now successfully installed."
+    print_text_in_color "$IGreen" "Collabora is now successfully installed."
     any_key "Press any key to continue... "
 fi
 

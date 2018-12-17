@@ -34,8 +34,8 @@ if [ -f /etc/systemd/system/docker.service ]
 then
     if grep -q "devicemapper" /etc/systemd/system/docker.service
     then
-        print_text_in_color "$Cyan" "Changing to Overlay2 for Docker CE..."
-        print_text_in_color "$Cyan" "Please report any issues to $ISSUES."
+        print_text_in_color "$ICyan" "Changing to Overlay2 for Docker CE..."
+        print_text_in_color "$ICyan" "Please report any issues to $ISSUES."
         run_static_script docker_overlay2
     elif grep -q "aufs" /etc/default/docker
     then
@@ -50,7 +50,7 @@ if which mysql > /dev/null
 then
     apt-mark unhold mariadb*
 echo
-print_text_in_color "$Cyan" "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
+print_text_in_color "$ICyan" "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
 sleep 2
 fi
 
@@ -64,7 +64,7 @@ then
 fi
 
 # Update Redis PHP extension
-print_text_in_color "$Cyan" "Trying to upgrade the Redis PECL extenstion..."
+print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extenstion..."
 if ! pecl list | grep redis >/dev/null 2>&1
 then
     if dpkg -l | grep php7.2 > /dev/null 2>&1
@@ -96,7 +96,7 @@ fi
 # Update adminer
 if [ -d $ADMINERDIR ]
 then
-    print_text_in_color "$Cyan" "Updating Adminer..."
+    print_text_in_color "$ICyan" "Updating Adminer..."
     rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
     wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
@@ -171,16 +171,16 @@ fi
 # Check if new version is larger than current version installed.
 if version_gt "$NCVERSION" "$CURRENTVERSION"
 then
-    print_text_in_color "$Cyan" "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
-	print_text_in_color "$Green" "New version available! Upgrade continues..."
+    print_text_in_color "$ICyan" "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
+	print_text_in_color "$IGreen" "New version available! Upgrade continues..."
 else
-    print_text_in_color "$Cyan" "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
-	print_text_in_color "$Cyan" "No need to upgrade, this script will exit..."
+    print_text_in_color "$ICyan" "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
+	print_text_in_color "$ICyan" "No need to upgrade, this script will exit..."
     exit 0
 fi
 
 # Upgrade Nextcloud
-print_text_in_color "$Cyan" "Checking latest released version on the Nextcloud download server and if it's possible to download..."
+print_text_in_color "$ICyan" "Checking latest released version on the Nextcloud download server and if it's possible to download..."
 if ! wget -q --show-progress -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2"
 then
 msg_box "Nextcloud does not exist. You were looking for: $NCVERSION
@@ -208,10 +208,10 @@ then
     cd /tmp
     if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
     then
-        print_text_in_color "$Cyan" "Doing pgdump of $NCCONFIGDB..."
+        print_text_in_color "$ICyan" "Doing pgdump of $NCCONFIGDB..."
         check_command sudo -u postgres pg_dump "$NCCONFIGDB"  > "$BACKUP"/nextclouddb.sql
     else
-        print_text_in_color "$Cyan" "Doing pgdump of all databases..."
+        print_text_in_color "$ICyan" "Doing pgdump of all databases..."
         check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.sql
     fi
 fi
@@ -249,10 +249,10 @@ fi
 # Backup MariaDB
 if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
 then
-    print_text_in_color "$Cyan" "Doing mysqldump of $NCCONFIGDB..."
+    print_text_in_color "$ICyan" "Doing mysqldump of $NCCONFIGDB..."
     check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
 else
-    print_text_in_color "$Cyan" "Doing mysqldump of all databases..."
+    print_text_in_color "$ICyan" "Doing mysqldump of all databases..."
     check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
 fi
 }
@@ -264,7 +264,7 @@ then
 fi
 
 # Check if backup exists and move to old
-print_text_in_color "$Cyan" "Backing up data..."
+print_text_in_color "$ICyan" "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
 if [ -d $BACKUP ]
 then
@@ -302,7 +302,7 @@ then
     msg_box "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
 else
-    printf "${Green}\nBackup OK!${Color_Off}\n"
+    printf "${IGreen}\nBackup OK!${Color_Off}\n"
 fi
 
 # Download and validate Nextcloud package
@@ -310,7 +310,7 @@ check_command download_verify_nextcloud_stable
 
 if [ -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
-    print_text_in_color "$Cyan" "$HTML/$STABLEVERSION.tar.bz2 exists"
+    print_text_in_color "$ICyan" "$HTML/$STABLEVERSION.tar.bz2 exists"
 else
     msg_box "Aborting, something went wrong with the download"
     exit 1
@@ -318,7 +318,7 @@ fi
 
 if [ -d $BACKUP/config/ ]
 then
-    print_text_in_color "$Cyan" "$BACKUP/config/ exists"
+    print_text_in_color "$ICyan" "$BACKUP/config/ exists"
 else
 msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if config/ folder exist."
@@ -327,9 +327,9 @@ fi
 
 if [ -d $BACKUP/apps/ ]
 then
-    print_text_in_color "$Cyan" "$BACKUP/apps/ exists"
+    print_text_in_color "$ICyan" "$BACKUP/apps/ exists"
     echo 
-    printf "${Green}All files are backed up.${Color_Off}\n"
+    printf "${IGreen}All files are backed up.${Color_Off}\n"
     occ_command maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
@@ -340,7 +340,7 @@ then
     occ_command maintenance:mode --off
     occ_command upgrade
     # Optimize
-    print_text_in_color "$Cyan" "Optimizing Nextcloud..."
+    print_text_in_color "$ICyan" "Optimizing Nextcloud..."
     yes | occ_command db:convert-filecache-bigint
     occ_command db:add-missing-indices
 else
@@ -375,7 +375,7 @@ fi
 chown -R root:root "$BACKUP"
 
 # Pretty URLs
-print_text_in_color "$Cyan" "Setting RewriteBase to \"/\" in config.php..."
+print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data "$NCPATH"
 occ_command config:system:set htaccess.RewriteBase --value="/"
 occ_command maintenance:update:htaccess

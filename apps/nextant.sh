@@ -53,15 +53,15 @@ then
     exit 1
 fi
 
-print_text_in_color "$Cyan" "Starting to setup Solr & Nextant on Nextcloud..."
+print_text_in_color "$ICyan" "Starting to setup Solr & Nextant on Nextcloud..."
 
 # Installing requirements
 apt update -q4 & spinner_loading
 apt install default-jre -y
 
 # Getting and installing Apache Solr
-print_text_in_color "$Cyan" "Installing Apache Solr"
-print_text_in_color "$Cyan" "It might take some time depending on your bandwith, please be patient..."
+print_text_in_color "$ICyan" "Installing Apache Solr"
+print_text_in_color "$ICyan" "It might take some time depending on your bandwith, please be patient..."
 mkdir -p "$SOLR_HOME"
 check_command cd "$SOLR_HOME" 
 wget -q "$SOLR_DL" --show-progress

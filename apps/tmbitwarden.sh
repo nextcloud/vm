@@ -7,7 +7,7 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-print_text_in_color "$Cyan" "Installing Bitwarden password manager..."
+print_text_in_color "$ICyan" "Installing Bitwarden password manager..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

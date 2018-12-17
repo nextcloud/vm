@@ -90,7 +90,7 @@ check_command download_le_script test-new-config
 
 # Check if $domain exists and is reachable
 echo
-print_text_in_color "$Cyan" "Checking if $domain exists and is reachable..."
+print_text_in_color "$ICyan" "Checking if $domain exists and is reachable..."
 if wget -q -T 10 -t 2 --spider "$domain"; then
     sleep 1
 elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$domain"; then
@@ -124,7 +124,7 @@ fi
 if [ ! -f "$ssl_conf" ]
 then
     touch "$ssl_conf"
-    print_text_in_color "$Green" "$ssl_conf was successfully created."
+    print_text_in_color "$IGreen" "$ssl_conf was successfully created."
     sleep 2
     cat << SSL_CREATE > "$ssl_conf"
 <VirtualHost *:80>
