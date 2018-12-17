@@ -706,7 +706,7 @@ spinner_loading() {
 
 any_key() {
     local PROMPT="$1"
-    read -r -sn 1 -p "$(printf "%b" "${Green}${PROMPT}${Color_Off}")";echo
+    read -r -sn 1 -p "$(printf "%b" "${IGreen}${PROMPT}${Color_Off}")";echo
 }
 
 lowest_compatible_nc() {
