@@ -461,7 +461,7 @@ mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
 if [ "${mem_available}" -lt "$((${1}*1002400))" ]
 then
     print_text_in_color "${Red}" "Error: ${1} GB RAM required to install ${2}!" >&2
-    print_text_in_color "${Red}" "Current RAM is: ("$((mem_available/1002400))" GB)"" >&2
+    print_text_in_color "${Red}" "Current RAM is: ("$((mem_available/1002400))" GB)" >&2
     sleep 3
     msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
 
