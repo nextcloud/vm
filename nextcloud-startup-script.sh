@@ -461,7 +461,6 @@ NCADMIN=$(occ_command user:list | awk '{print $3}')
 print_text_in_color "$ICyan" "The current admin user in Nextcloud is [$NCADMIN]"
 print_text_in_color "$ICyan" "We will now replace this user with your own."
 any_key "Press any key to replace the current admin user for  Nextcloud..."
-
 # Create new user
 while true
 do
@@ -469,7 +468,6 @@ do
     read -r NEWUSER
     sudo -u www-data $NCPATH/occ user:add "$NEWUSER" -g admin && break
 done
-
 # Delete old user
 if [[ "$NCADMIN" ]]
 then
@@ -477,7 +475,7 @@ then
     occ_command user:delete "$NCADMIN"
 fi
 
-# Set notification for admin
+# Set notifications for admin
 NCADMIN=$(occ_command user:list | awk '{print $3}')
 occ_command notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notficatoins and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." "$NCADMIN" "Please setup SMTP"
 occ_command notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" "$NCADMIN" "Do you need support?"
