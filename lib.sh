@@ -202,7 +202,7 @@ do
     if [ "${RESULT:-null}" = null ]; then
             break
     else
-            print_text_in_color "$Cyan" "${PROCESS} is running. Waiting for it to stop..."
+            print_text_in_color "$ICyan" "${PROCESS} is running. Waiting for it to stop..."
             sleep 10
     fi
 done
@@ -234,7 +234,7 @@ average_php_memory_requirement=50
 available_memory=$(awk '/MemAvailable/ {printf "%d", $2/1024}' /proc/meminfo)
 export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 
-print_text_in_color "$Cyan" "Automatically configures pm.max_children for php-fpm..."
+print_text_in_color "$ICyan" "Automatically configures pm.max_children for php-fpm..."
 if [ $PHP_FPM_MAX_CHILDREN -lt 8 ]
 then
 msg_box "The current max_children value available to set is $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
@@ -256,7 +256,7 @@ The installation was not successful, sorry for the inconvenience.
 If you think this is a bug, please report it to $ISSUES"
 exit 1
 else
-    print_text_in_color "$Green" "pm.max_children was set to $PHP_FPM_MAX_CHILDREN"
+    print_text_in_color "$IGreen" "pm.max_children was set to $PHP_FPM_MAX_CHILDREN"
 fi
 }
 
@@ -282,19 +282,19 @@ ip link set "$IFACE" down
 sleep 2
 ip link set "$IFACE" up
 sleep 2
-print_text_in_color "$Cyan" "Checking connection..."
+print_text_in_color "$ICyan" "Checking connection..."
 check_command service network-manager restart
 sleep 2
 if nslookup github.com
 then
-    print_text_in_color "$Green" "Online!"
+    print_text_in_color "$IGreen" "Online!"
 elif ! nslookup github.com
 then
-    print_text_in_color "$Cyan" "Trying to restart networking service..."
+    print_text_in_color "$ICyan" "Trying to restart networking service..."
     check_command service networking restart && sleep 2
     if nslookup github.com
     then
-        print_text_in_color "$Green" "Online!"
+        print_text_in_color "$IGreen" "Online!"
     fi
 else
     if ! nslookup github.com
@@ -323,7 +323,7 @@ if [ $LE_IS_AVAILABLE -eq 0 ]
 then
     certbot --version 2> /dev/null
 else
-    print_text_in_color "$Cyan" "Installing certbot (Let's Encrypt)..."
+    print_text_in_color "$ICyan" "Installing certbot (Let's Encrypt)..."
     apt update -q4 & spinner_loading
     install_if_not software-properties-common
     add-apt-repository ppa:certbot/certbot -y
@@ -352,7 +352,7 @@ fi
 apt update -q4 & spinner_loading
 if [ "$NMAPSTATUS" = "preinstalled" ]
 then
-      print_text_in_color "$Cyan" "nmap is already installed..."
+      print_text_in_color "$ICyan" "nmap is already installed..."
 else
     apt install nmap -y
 fi
@@ -360,10 +360,10 @@ fi
 # Check if $1 is open using nmap, if not notify the user
 if [ "$(nmap -sS -p "$1" "$WANIP4" | grep -c "open")" == "1" ]
 then
-  printf "${Green}Port $1 is open on $WANIP4!${Color_Off}\n"
+  print_text_in_color "${IGreen}" "Port $1 is open on $WANIP4!"
   if [ "$NMAPSTATUS" = "preinstalled" ]
   then
-    print_text_in_color "$Cyan" "nmap was previously installed, not removing."
+    print_text_in_color "$ICyan" "nmap was previously installed, not removing."
   else
     apt remove --purge nmap -y
   fi
@@ -371,10 +371,10 @@ else
   whiptail --msgbox "Port $1 is not open on $WANIP4. We will do a second try on $2 instead." "$WT_HEIGHT" "$WT_WIDTH"
   if [[ "$(nmap -sS -PN -p "$1" "$2" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
   then
-      printf "${Green}Port $1 is open on $2!${Color_Off}\n"
+      print_text_in_color "${IGreen}" "Port $1 is open on $2!"
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
-        print_text_in_color "$Cyan" "nmap was previously installed, not removing."
+        print_text_in_color "$ICyan" "nmap was previously installed, not removing."
       else
         apt remove --purge nmap -y
       fi
@@ -383,7 +383,7 @@ else
       any_key "Press any key to exit... "
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
-        print_text_in_color "$Cyan" "nmap was previously installed, not removing."
+        print_text_in_color "$ICyan" "nmap was previously installed, not removing."
       else
         apt remove --purge nmap -y
       fi
@@ -394,7 +394,7 @@ fi
 
 check_distro_version() {
 # Check Ubuntu version
-print_text_in_color "$Cyan" "Checking server OS and version..."
+print_text_in_color "$ICyan" "Checking server OS and version..."
 if lsb_release -c | grep -ic "bionic" &> /dev/null
 then
     OS=1
@@ -427,7 +427,7 @@ fi
 configure_max_upload() {
 # Increase max filesize (expects that changes are made in $PHP_INI)
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
-print_text_in_color "$Cyan" "Setting max_upload size in PHP..."
+print_text_in_color "$ICyan" "Setting max_upload size in PHP..."
 # Copy settings from .htaccess to user.ini. beacuse we run php-fpm. Documented here: https://docs.nextcloud.com/server/13/admin_manual/installation/source_installation.html#php-fpm-configuration-notes
 cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
 # Do the acutal change
@@ -453,24 +453,24 @@ then
 fi
 }
 
-# Test RAM size 
+# Test RAM size
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
 # Example: ram_check 2 Nextcloud
 ram_check() {
 mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
 if [ "${mem_available}" -lt "$((${1}*1002400))" ]
 then
-    printf "${Red}Error: ${1} GB RAM required to install ${2}!${Color_Off}\n" >&2
-    printf "${Red}Current RAM is: ("$((mem_available/1002400))" GB)${Color_Off}\n" >&2
+    print_text_in_color "${Red}" "Error: ${1} GB RAM required to install ${2}!" >&2
+    print_text_in_color "${Red}" "Current RAM is: ("$((mem_available/1002400))" GB)" >&2
     sleep 3
     msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
-    
-    In nextcloud_install_production.sh you can find the check somewhere around line #34. 
-    
+
+    In nextcloud_install_production.sh you can find the check somewhere around line #34.
+
     Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
 else
-    printf "${Green}RAM for ${2} OK! ("$((mem_available/1002400))" GB)${Color_Off}\n"
+    print_text_in_color "${IGreen}" "RAM for ${2} OK! ($((mem_available/1002400)) GB)"
 fi
 }
 
@@ -481,19 +481,19 @@ cpu_check() {
 nr_cpu="$(nproc)"
 if [ "${nr_cpu}" -lt "${1}" ]
 then
-    printf "${Red}Error: ${1} CPU required to install ${2}!${Color_Off}\n" >&2
-    printf "${Red}Current CPU: ("$((nr_cpu))")${Color_Off}\n" >&2
+    print_text_in_color "${Red}" "Error: ${1} CPU required to install ${2}!" >&2
+    print_text_in_color "${Red}" "Current CPU: ($((nr_cpu)))" >&2
     sleep 3
     exit 1
 else
-    printf "${Green}CPU for ${2} OK! ("$((nr_cpu))")${Color_Off}\n"
+    print_text_in_color "${IGreen}" "CPU for ${2} OK! ($((nr_cpu)))"
 fi
 }
 
 check_command() {
   if ! "$@";
   then
-     print_text_in_color "$Cyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
 	 print_text_in_color "$Red" "$* failed"
     exit 1
   fi
@@ -505,7 +505,7 @@ check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 network_ok() {
-    print_text_in_color "$Cyan" "Testing if network is OK..."
+    print_text_in_color "$ICyan" "Testing if network is OK..."
     if ! service network-manager restart > /dev/null
     then
         service networking restart > /dev/null
@@ -538,7 +538,7 @@ install_and_enable_app() {
 # Download and install $1
 if [ ! -d "$NC_APPS_PATH/$1" ]
 then
-    print_text_in_color "$Cyan" "Installing $1..."
+    print_text_in_color "$ICyan" "Installing $1..."
     # occ_command not possible here because it uses check_command and will exit if occ_command fails
     result=$(sudo -u www-data php ${NCPATH}/occ app:install "$1")
     if [ "$result" = "Error: Could not download app $1" ]
@@ -581,8 +581,8 @@ download_static_script() {
     if ! { wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.php" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"; }
     then
         print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
-        print_text_in_color "$Cyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
-        print_text_in_color "$Cyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
+        print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
@@ -595,8 +595,8 @@ download_le_script() {
     if ! { wget -q "${LETS_ENC}/${1}.sh" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.php" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.py" -P "$SCRIPTS"; }
     then
         print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
-        print_text_in_color "$Cyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
-        print_text_in_color "$Cyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
+        print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
@@ -619,7 +619,7 @@ run_main_script() {
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$Red" "Downloading ${1} failed"
-        print_text_in_color "$Cyan" "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
+        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
         exit 1
     fi
 }
@@ -643,7 +643,7 @@ run_static_script() {
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$Red" "Downloading ${1} failed"
-        print_text_in_color "$Cyan" "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
+        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
         exit 1
     fi
 }
@@ -666,7 +666,7 @@ run_app_script() {
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$Red" "Downloading ${1} failed"
-        print_text_in_color "$Cyan" "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
+        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
         exit
     fi
 }
@@ -762,7 +762,7 @@ check_universe() {
 UNIV=$(apt-cache policy | grep http | awk '{print $3}' | grep universe | head -n 1 | cut -d "/" -f 2)
 if [ "$UNIV" != "universe" ]
 then
-    print_text_in_color "$Cyan" "Adding required repo (universe)."
+    print_text_in_color "$ICyan" "Adding required repo (universe)."
     add-apt-repository universe
 fi
 }
@@ -772,14 +772,14 @@ check_multiverse() {
 MULTIV=$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | head -n 1 | cut -d "/" -f 2)
 if [ "$MULTIV" != "multiverse" ]
 then
-    print_text_in_color "$Cyan" "Adding required repo (multiverse)."
+    print_text_in_color "$ICyan" "Adding required repo (multiverse)."
     add-apt-repository multiverse
 fi
 }
 
 set_max_count() {
 if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
-	print_text_in_color "$Cyan" "Max map count already set, skipping..."
+	print_text_in_color "$ICyan" "Max map count already set, skipping..."
 else
 	sysctl -w vm.max_map_count=262144
 	{
@@ -793,7 +793,7 @@ fi
 install_docker() {
 if ! docker -v &> /dev/null
 then
-    print_text_in_color "$Cyan" "Installing Docker CE..."
+    print_text_in_color "$ICyan" "Installing Docker CE..."
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi
@@ -810,7 +810,7 @@ systemctl restart docker
 # Remove all dockers excluding one
 # docker_prune_except_this fts_esror 'Full Text Search'
 docker_prune_except_this() {
-print_text_in_color "$Cyan" "Checking if there are any old images and removing them..."
+print_text_in_color "$ICyan" "Checking if there are any old images and removing them..."
 DOCKERPS=$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')
 if [ "$DOCKERPS" != "" ]
 then
@@ -861,7 +861,7 @@ fi
 
 # countdown 'message looks like this' 10
 countdown() {
-print_text_in_color "$Cyan" "$1"
+print_text_in_color "$ICyan" "$1"
 secs="$(($2))"
 while [ $secs -gt 0 ]; do
    echo -ne "$secs\033[0K\r"

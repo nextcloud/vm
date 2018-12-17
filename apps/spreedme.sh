@@ -8,7 +8,7 @@ true
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 
-print_text_in_color "$Cyan" "Installing Spreed.ME..."
+print_text_in_color "$ICyan" "Installing Spreed.ME..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -19,7 +19,7 @@ debug_mode
 # Check if root
 if ! is_root
 then
-    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${Cyan}sudo ${Color_Off}bash %s/nextcloud_install_production.sh\n" "$SCRIPTS"
+    printf "\n${Red}Sorry, you are not root.\n${Color_Off}You must type: ${ICyan}sudo ${Color_Off}bash %s/nextcloud_install_production.sh\n" "$SCRIPTS"
     exit 1
 fi
 
@@ -36,7 +36,7 @@ install_if_not snapd
 # Install Nextcloud Spreed.ME Snap
 if [ -d "$SNAPDIR" ]
 then
-    print_text_in_color "$Cyan" "Spreed.ME Snap already seems to be installed and will now be re-installed..."
+    print_text_in_color "$ICyan" "Spreed.ME Snap already seems to be installed and will now be re-installed..."
     snap remove spreedme
     rm -rf "$SNAPDIR"
     snap install --edge spreedme
@@ -49,7 +49,7 @@ if [ -d "$NC_APPS_PATH/spreedme" ]
 then
     # Remove
     occ_command app:disable spreedme
-    print_text_in_color "$Cyan" "Spreed.ME app already seems to be installed and will now be re-installed..."
+    print_text_in_color "$ICyan" "Spreed.ME app already seems to be installed and will now be re-installed..."
     rm -R "$NC_APPS_PATH/spreedme"
     # Reinstall
     occ_command app:install spreedme

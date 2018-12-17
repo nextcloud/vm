@@ -9,7 +9,7 @@ NC_UPDATE=1 && TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nex
 unset NC_UPDATE
 unset TURN_INSTALL
 
-print_text_in_color "$Cyan" "Installing Nextcloud Talk..."
+print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -24,7 +24,7 @@ root_check
 lowest_compatible_nc 13
 
 # Check if Nextcloud is installed
-print_text_in_color "$Cyan" "Checking if Nextcloud is installed..."
+print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
 if ! curl -s https://"${TURN_DOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
 msg_box "It seems like Nextcloud is not installed or that you don't use https on:
@@ -110,7 +110,7 @@ log-file=/var/log/turnserver.log
 TURN_CREATE
 if [ -f "$TURN_CONF" ];
 then
-    print_text_in_color "$Green" "$TURN_CONF was successfully created."
+    print_text_in_color "$IGreen" "$TURN_CONF was successfully created."
 else
     print_text_in_color "$Red" "Unable to create $TURN_CONF, exiting..."
     print_text_in_color "$Red" "Please report this issue here $ISSUES"

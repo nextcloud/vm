@@ -17,7 +17,7 @@ debug_mode
 # Check if root
 root_check
 
-print_text_in_color "$Cyan" "Installing Extra Security..."
+print_text_in_color "$ICyan" "Installing Extra Security..."
 
 # Based on: http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
 
@@ -116,6 +116,6 @@ check_command bash "$SCRIPTS"/spamhaus_cronjob.sh
 # Enable $SPAMHAUS
 if sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
 then
-    print_text_in_color "$Green" "Security added!"
+    print_text_in_color "$IGreen" "Security added!"
     restart_webserver
 fi

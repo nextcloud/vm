@@ -23,7 +23,7 @@ Please create a user with sudo permissions if you want an optimal installation.
 The preferred user is 'ncadmin'."
     if [[ "no" == $(ask_yes_or_no "Do you want to create a new user?") ]]
     then
-        print_text_in_color "$Cyan" "Not adding another user..."
+        print_text_in_color "$ICyan" "Not adding another user..."
         sleep 1
     else
         read -r -p "Enter name of the new user: " NEWUSER

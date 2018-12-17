@@ -10,7 +10,7 @@ NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextc
 unset NC_UPDATE
 unset ES_INSTALL
 
-print_text_in_color "$Cyan" "Installing Elastic Search & Full Text Search on Nextcloud..."
+print_text_in_color "$ICyan" "Installing Elastic Search & Full Text Search on Nextcloud..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -51,7 +51,7 @@ fi
 # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
 if [ -d $NC_APPS_PATH/fulltextsearch ]
 then
-    print_text_in_color "$Cyan" "Removing old version of Full Text Search and resetting the app..."
+    print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
     occ_command fulltextsearch:reset
     occ_command app:disable fulltextsearch
     rm -rf $NC_APPS_PATH/fulltextsearch

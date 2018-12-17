@@ -32,7 +32,7 @@ then
     msg_box "PHP module installation failed"
 exit 1
 else
-    printf "${Green}\nPHP module installation OK!${Color_Off}\n"
+    printf "${IGreen}\nPHP module installation OK!${Color_Off}\n"
 fi
 install_if_not redis-server
 

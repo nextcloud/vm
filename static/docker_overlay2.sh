@@ -30,15 +30,15 @@ readonly DB_FILE="$DOCKERBACKUP/images.db"
 readonly IMG_DIR="$DOCKERBACKUP/images"
 
 save_images() {
-  print_text_in_color "$Cyan" "Create ${IMG_DIR}"
+  print_text_in_color "$ICyan" "Create ${IMG_DIR}"
   if [[ ! -d "${IMG_DIR}" ]]; then
     mkdir "${IMG_DIR}"
   fi
   
-  print_text_in_color "$Cyan" "Create ${DB_FILE}"
+  print_text_in_color "$ICyan" "Create ${DB_FILE}"
   docker images|grep -v 'IMAGE ID'|awk '{printf("%s %s %s\n", $1, $2, $3)}'|column -t > "${DB_FILE}"
   
-  print_text_in_color "$Cyan" "Read ${DB_FILE}"
+  print_text_in_color "$ICyan" "Read ${DB_FILE}"
   local images
   while read -r image; do
      images+=("$image"); 
@@ -54,10 +54,10 @@ save_images() {
       local imgPath="${IMG_DIR}/${id}.dim"
 
       if [[ ! -f "${imgPath}" ]] ; then
-        print_text_in_color "$Cyan" "[DEBUG] save ${id} ${name}:${tag} to ${imgPath}"
+        print_text_in_color "$ICyan" "[DEBUG] save ${id} ${name}:${tag} to ${imgPath}"
         (time  docker save -o "${imgPath}" "${name}":"${tag}") 2>&1 | grep real
       else
-        print_text_in_color "$Cyan" "[DEBUG] ${id} ${name}:${tag} already saved"
+        print_text_in_color "$ICyan" "[DEBUG] ${id} ${name}:${tag} already saved"
       fi
     fi    
   done
@@ -65,16 +65,16 @@ save_images() {
 
 load_images() {
   if [[ ! -f "${DB_FILE}" ]]; then
-    print_text_in_color "$Cyan" "No ${DB_FILE} to read"
+    print_text_in_color "$ICyan" "No ${DB_FILE} to read"
     exit 0
   fi
 
   if [[ ! -d "${IMG_DIR}" ]]; then
-    print_text_in_color "$Cyan" "No ${IMG_DIR} to load images"
+    print_text_in_color "$ICyan" "No ${IMG_DIR} to load images"
     exit 0
   fi
 
-  print_text_in_color "$Cyan" "Read ${DB_FILE}"
+  print_text_in_color "$ICyan" "Read ${DB_FILE}"
   local images
   while read -r image; do
      images+=("$image"); 
@@ -91,14 +91,14 @@ load_images() {
 
       if [[ "$(docker images|grep "${id}" | grep "${name}" | grep "${tag}")" == "" ]]; then        
         if [[ "$(docker images|grep "${id}")" == "" ]]; then
-          print_text_in_color "$Cyan" "[DEBUG] load ${id} ${name}:${tag} from ${imgPath}"
+          print_text_in_color "$ICyan" "[DEBUG] load ${id} ${name}:${tag} from ${imgPath}"
           docker load -i "${imgPath}"
         else
-          print_text_in_color "$Cyan" "[DEBUG] tag ${id} as ${name}:${tag}"
+          print_text_in_color "$ICyan" "[DEBUG] tag ${id} as ${name}:${tag}"
           docker tag "${id}" "${name}":"${tag}"
         fi
       else
-        print_text_in_color "$Cyan" "[DEBUG] ${id} ${name}:${tag} already loaded"
+        print_text_in_color "$ICyan" "[DEBUG] ${id} ${name}:${tag} already loaded"
       fi
     fi
   done
@@ -116,7 +116,7 @@ It may take a while so please be patient."
 check_command save_images
 
 # Set overlay2
-print_text_in_color "$Cyan" "Setting overlay2 in /etc/docker/daemon.json"
+print_text_in_color "$ICyan" "Setting overlay2 in /etc/docker/daemon.json"
 
 cat << OVERLAY2 > /etc/docker/daemon.json
 {
@@ -125,9 +125,9 @@ cat << OVERLAY2 > /etc/docker/daemon.json
 OVERLAY2
 rm -f /etc/systemd/system/docker.service
 systemctl restart docker.service
-print_text_in_color "$Cyan" "Reloading daemon"
+print_text_in_color "$ICyan" "Reloading daemon"
 systemctl daemon-reload
-print_text_in_color "$Cyan" "Restarting the docker service"
+print_text_in_color "$ICyan" "Restarting the docker service"
 check_command systemctl restart docker
 apt-mark unhold docker-ce
 
@@ -142,7 +142,7 @@ apt update -q4 & spinner_loading
 apt upgrade docker-ce -y
 
 # Load docker images back
-print_text_in_color "$Cyan" "Importing saved docker images to overlay2..."
+print_text_in_color "$ICyan" "Importing saved docker images to overlay2..."
 check_command load_images
 msg_box "Your Docker images are now imported to overlay2, but not yet running.
 

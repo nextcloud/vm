@@ -7,7 +7,7 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-print_text_in_color "$Cyan" "Installing ModSecurity..."
+print_text_in_color "$ICyan" "Installing ModSecurity..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -93,6 +93,6 @@ check_command sed -i 's|# SecDefaultAction "phase:2,nolog,auditlog,pass"|SecDefa
 
 if [ -f /etc/modsecurity/whitelist.conf ]
 then
-    print_text_in_color "$Green" "ModSecurity activated!"
+    print_text_in_color "$IGreen" "ModSecurity activated!"
     restart_webserver
 fi
