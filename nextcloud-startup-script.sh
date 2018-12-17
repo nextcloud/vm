@@ -474,6 +474,7 @@ then
     print_text_in_color "$ICyan" "Deleting $NCADMIN..."
     occ_command user:delete "$NCADMIN"
 fi
+clear
 
 # Set notifications for admin
 NCADMIN=$(occ_command user:list | awk '{print $3}')
@@ -598,7 +599,6 @@ cd $SCRIPTS/apps
 check_command curl -s https://codeload.github.com/nextcloud/vm/tar.gz/master | tar -xz --strip=2 vm-master/apps
 
 # Upgrade system
-clear
 print_text_in_color "$Cyan" "System will now upgrade..."
 bash $SCRIPTS/update.sh
 
