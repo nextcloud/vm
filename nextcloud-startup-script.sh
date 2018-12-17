@@ -446,8 +446,8 @@ done 9< results
 rm -f results
 clear
 
-# Change password
-printf "${Color_Off}\n"
+# Change passwords
+# CLI USER
 print_text_in_color "$Cyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
 any_key "Press any key to change password for system user..."
 while true
@@ -456,20 +456,31 @@ do
 done
 echo
 clear
+# NEXTCLOUD USER
 NCADMIN=$(occ_command user:list | awk '{print $3}')
-printf "${Color_Off}\n"
-print_text_in_color "$Cyan" "For better security, change the Nextcloud password for [$NCADMIN]"
-print_text_in_color "$Cyan" "The current password for $NCADMIN is [$NCPASS]"
-any_key "Press any key to change password for Nextcloud..."
+print_text_in_color "$ICyan" "The current admin user in Nextcloud is [$NCADMIN]"
+print_text_in_color "$ICyan" "We will now replace this user with your own."
+any_key "Press any key to replace the current admin user for  Nextcloud..."
+
+# Create new user
 while true
 do
-    sudo -u www-data php "$NCPATH"/occ user:resetpassword "$NCADMIN" && break
+    print_text_in_color "$ICyan" "Please enter the username for your new user:"
+    read -r NEWUSER
+    sudo -u www-data $NCPATH/occ user:add "$NEWUSER" -g admin && break
 done
-clear
+
+# Delete old user
+if [[ "$NCADMIN" ]]
+then
+    print_text_in_color "$ICyan" "Deleting $NCADMIN..."
+    occ_command user:delete "$NCADMIN"
+fi
 
 # Set notification for admin
-sudo -u www-data php /var/www/nextcloud/occ notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notficatoins and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." ncadmin "Please setup SMTP"
-sudo -u www-data php /var/www/nextcloud/occ notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" ncadmin "Do you need support?"
+NCADMIN=$(occ_command user:list | awk '{print $3}')
+occ_command notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notficatoins and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." "$NCADMIN" "Please setup SMTP"
+occ_command notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" "$NCADMIN" "Do you need support?"
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
