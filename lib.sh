@@ -360,7 +360,7 @@ fi
 # Check if $1 is open using nmap, if not notify the user
 if [ "$(nmap -sS -p "$1" "$WANIP4" | grep -c "open")" == "1" ]
 then
-  printf "${Green}Port $1 is open on $WANIP4!${Color_Off}\n"
+  printf "${IGreen}Port $1 is open on $WANIP4!${Color_Off}\n"
   if [ "$NMAPSTATUS" = "preinstalled" ]
   then
     print_text_in_color "$Cyan" "nmap was previously installed, not removing."
@@ -371,7 +371,7 @@ else
   whiptail --msgbox "Port $1 is not open on $WANIP4. We will do a second try on $2 instead." "$WT_HEIGHT" "$WT_WIDTH"
   if [[ "$(nmap -sS -PN -p "$1" "$2" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
   then
-      printf "${Green}Port $1 is open on $2!${Color_Off}\n"
+      printf "${IGreen}Port $1 is open on $2!${Color_Off}\n"
       if [ "$NMAPSTATUS" = "preinstalled" ]
       then
         print_text_in_color "$Cyan" "nmap was previously installed, not removing."
@@ -470,7 +470,7 @@ then
     Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
 else
-    printf "${Green}RAM for ${2} OK! ("$((mem_available/1002400))" GB)${Color_Off}\n"
+    printf "${IGreen}RAM for ${2} OK! ("$((mem_available/1002400))" GB)${Color_Off}\n"
 fi
 }
 
@@ -486,7 +486,7 @@ then
     sleep 3
     exit 1
 else
-    printf "${Green}CPU for ${2} OK! ("$((nr_cpu))")${Color_Off}\n"
+    printf "${IGreen}CPU for ${2} OK! ("$((nr_cpu))")${Color_Off}\n"
 fi
 }
 

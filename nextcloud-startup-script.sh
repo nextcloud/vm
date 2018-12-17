@@ -73,7 +73,7 @@ root_check
 # Check network
 if network_ok
 then
-    printf "${Green}Online!${Color_Off}\n"
+    printf "${IGreen}Online!${Color_Off}\n"
 else
     print_text_in_color "$Cyan" "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
@@ -159,7 +159,7 @@ fi
 # Check network again
 if network_ok
 then
-    printf "${Green}Online!${Color_Off}\n"
+    printf "${IGreen}Online!${Color_Off}\n"
 else
 msg_box "Network NOT OK. You must have a working network connection to run this script.
 

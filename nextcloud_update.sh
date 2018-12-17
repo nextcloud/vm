@@ -302,7 +302,7 @@ then
     msg_box "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
 else
-    printf "${Green}\nBackup OK!${Color_Off}\n"
+    printf "${IGreen}\nBackup OK!${Color_Off}\n"
 fi
 
 # Download and validate Nextcloud package
@@ -329,7 +329,7 @@ if [ -d $BACKUP/apps/ ]
 then
     print_text_in_color "$Cyan" "$BACKUP/apps/ exists"
     echo 
-    printf "${Green}All files are backed up.${Color_Off}\n"
+    printf "${IGreen}All files are backed up.${Color_Off}\n"
     occ_command maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
