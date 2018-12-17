@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "Installing OnlyOffice..."
-
 # T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
@@ -10,6 +8,8 @@ true
 NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset OO_INSTALL
+
+print_text_in_color "$Cyan" "Installing OnlyOffice..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -42,7 +42,7 @@ msg_box "Before you start, please make sure that port 80+443 is directly forward
 apt update -q4 & spinner_loading
 
 # Check if Nextcloud is installed
-echo "Checking if Nextcloud is installed..."
+print_text_in_color "$Cyan" "Checking if Nextcloud is installed..."
 if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
 msg_box "It seems like Nextcloud is not installed or that you don't use https on:
@@ -57,8 +57,7 @@ sudo bash onlyoffice.sh"
 fi
 
 # Check if $SUBDOMAIN exists and is reachable
-echo
-echo "Checking if $SUBDOMAIN exists and is reachable..."
+print_text_in_color "$Cyan" "Checking if $SUBDOMAIN exists and is reachable..."
 if wget -q -T 10 -t 2 --spider "$SUBDOMAIN"; then
    sleep 0.1
 elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$SUBDOMAIN"; then
@@ -151,11 +150,11 @@ HTTPS_CREATE
 
     if [ -f "$HTTPS_CONF" ];
     then
-        echo "$HTTPS_CONF was successfully created"
+        print_text_in_color "$Green" "$HTTPS_CONF was successfully created."
         sleep 1
     else
-        echo "Unable to create vhost, exiting..."
-        echo "Please report this issue here $ISSUES"
+        print_text_in_color "$Red" "Unable to create vhost, exiting..."
+        print_text_in_color "$Red" "Please report this issue here $ISSUES"
         exit 1
     fi
 fi
@@ -178,7 +177,7 @@ then
     cd "$NC_APPS_PATH"
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-nextcloud.git onlyoffice
 else
-    printf "%b" "${IRed}It seems like no certs were generated, please report this issue here: $ISSUES\n${Color_Off}"
+	print_text_in_color "$Red" "It seems like no certs were generated, please report this issue here: $ISSUES"
     any_key "Press any key to continue... "
     restart_webserver
 fi
@@ -199,11 +198,10 @@ then
     } > "$SCRIPTS/dockerprune.sh"
     chmod a+x "$SCRIPTS/dockerprune.sh"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
-    echo "Docker automatic prune job added."
-    echo
+    print_text_in_color "$Cyan" "Docker automatic prune job added."
     service docker restart
     docker restart onlyoffice
-    echo "OnlyOffice is now successfully installed."
+    print_text_in_color "$Green" "OnlyOffice is now successfully installed."
     any_key "Press any key to continue... "
 fi
 

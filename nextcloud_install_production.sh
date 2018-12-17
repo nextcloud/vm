@@ -17,7 +17,7 @@ is_process_running dpkg
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    echo "curl OK"
+    print_text_in_color "$Green" "curl OK"
 else
     apt update -q4 & spinner_loading
     apt install curl -y
@@ -26,7 +26,7 @@ fi
 # Install lshw if not existing
 if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    echo "lshw OK"
+    print_text_in_color "$Green" "lshw OK"
 else
     apt update -q4 & spinner_loading
     apt install lshw -y
@@ -35,7 +35,7 @@ fi
 # Install net-tools if not existing
 if [ "$(dpkg-query -W -f='${Status}' "net-tools" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    echo "net-tools OK"
+    print_text_in_color "$Green" "net-tools OK"
 else
     apt update -q4 & spinner_loading
     apt install net-tools -y
@@ -125,10 +125,10 @@ echo
 printf "Your current server repository is:  ${Cyan}%s${Color_Off}\n" "$REPO"
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-    echo "Keeping $REPO as mirror..."
+    print_text_in_color "$Cyan" "Keeping $REPO as mirror..."
     sleep 1
 else
-   echo "Locating the best mirrors..."
+   print_text_in_color "$Cyan" "Locating the best mirrors..."
    apt update -q4 & spinner_loading
    apt install python-pip -y
    pip install \
@@ -144,10 +144,10 @@ fi
 clear
 
 # Set keyboard layout
-echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+print_text_in_color "$Cyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-    echo "Not changing keyboard layout..."
+    print_text_in_color "$Cyan" "Not changing keyboard layout..."
     sleep 1
     clear
 else
@@ -201,25 +201,25 @@ check_command apt install -y \
     php7.2-mbstring \
     php7.2-soap \
     php7.2-smbclient \
-    php7.2-imagick \
     php7.2-json \
     php7.2-gmp \
     php7.2-bz2 \
-    php-pear \
-    libmagickcore-6.q16-3-extra
+    php-pear
+    # php7.2-imagick \
+    # libmagickcore-6.q16-3-extra
     
 # Enable php-fpm
 a2enconf php7.2-fpm
 
 # Enable HTTP/2 server wide
-echo "Enabling HTTP/2 server wide..."
+print_text_in_color "$Cyan" "Enabling HTTP/2 server wide..."
 cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
     Protocols h2 h2c http/1.1
     H2Direct on
 </IfModule>
 HTTP2_ENABLE
-echo "$HTTP2_CONF was successfully created"
+print_text_in_color "$Green" "$HTTP2_CONF was successfully created"
 a2enmod http2
 restart_webserver
 
@@ -291,7 +291,7 @@ occ_command maintenance:install \
 --admin-user="$NCUSER" \
 --admin-pass="$NCPASS"
 echo
-echo "Nextcloud version:"
+print_text_in_color "$Cyan" "Nextcloud version:"
 occ_command status
 sleep 3
 echo
@@ -339,7 +339,7 @@ echo "opcache.validate_timestamps=1"
 } >> $PHP_INI
 
 # Fix https://github.com/nextcloud/vm/issues/714
-echo "Optimizing Nextcloud..."
+print_text_in_color "$Cyan" "Optimizing Nextcloud..."
 yes | occ_command db:convert-filecache-bigint
 occ_command db:add-missing-indices
 
@@ -403,7 +403,7 @@ then
 
 </VirtualHost>
 HTTP_CREATE
-    echo "$HTTP_CONF was successfully created"
+    print_text_in_color "$Green" "$HTTP_CONF was successfully created."
 fi
 
 # Generate $SSL_CONF
@@ -466,7 +466,7 @@ then
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
 SSL_CREATE
-    echo "$SSL_CONF was successfully created"
+    print_text_in_color "$Green" "$SSL_CONF was successfully created."
 fi
 
 # Enable new config
@@ -557,5 +557,5 @@ bash $SECURE & spinner_loading
 sudo /usr/lib/update-notifier/update-motd-updates-available --force
 
 # Reboot
-echo "Installation done, system will now reboot..."
+print_text_in_color "$Cyan" "Installation done, system will now reboot..."
 reboot

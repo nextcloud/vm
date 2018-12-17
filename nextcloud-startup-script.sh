@@ -46,7 +46,7 @@ fi
 }
 
 network_ok() {
-    echo "Testing if network is OK..."
+    print_text_in_color "$Cyan" "Testing if network is OK..."
     service network-manager restart
     if wget -q -T 20 -t 2 http://github.com -O /dev/null
     then
@@ -59,8 +59,8 @@ network_ok() {
 check_command() {
   if ! "$@";
   then
-     printf "${IRed}Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!${Color_Off}\n"
-     echo "$* failed"
+     print_text_in_color "$Cyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+	 print_text_in_color "$Red" "$* failed"
     exit 1
   fi
 }
@@ -75,7 +75,7 @@ if network_ok
 then
     printf "${Green}Online!${Color_Off}\n"
 else
-    echo "Setting correct interface..."
+    print_text_in_color "$Cyan" "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
 cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
@@ -94,7 +94,7 @@ SETDHCP
     ip link set "$IFACE" up
     wait
     check_command service network-manager restart
-    echo "Checking connection..."
+    print_text_in_color "$Cyan" "Checking connection..."
     sleep 1
     if ! nslookup github.com
     then
@@ -188,8 +188,8 @@ lowest_compatible_nc 13
 # Check that this run on the PostgreSQL VM
 if ! which psql > /dev/null
 then
-    echo "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
-    echo "Aborting..."
+    print_text_in_color "$Red" "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
+    print_text_in_color "$Red" "Aborting..."
     exit 1
 fi
 
@@ -230,7 +230,7 @@ is_process_running apt
 is_process_running dpkg
 
 echo
-echo "Getting scripts from GitHub to be able to run the first setup..."
+print_text_in_color "$Cyan" "Getting scripts from GitHub to be able to run the first setup..."
 # Scripts in static (.sh, .php, .py)
 download_static_script temporary-fix
 download_static_script update
@@ -289,10 +289,10 @@ It will also do the following:
 clear
 
 # Set keyboard layout
-echo "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
+print_text_in_color "$Cyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
 if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
 then
-    echo "Not changing keyboard layout..."
+    print_text_in_color "$Cyan" "Not changing keyboard layout..."
     sleep 1
     clear
 else
@@ -301,10 +301,10 @@ else
 fi
 
 # Change Timezone
-echo "Current timezone is $(cat /etc/timezone)"
+print_text_in_color "$Cyan" "Current timezone is $(cat /etc/timezone)"
 if [[ "no" == $(ask_yes_or_no "Do you want to change the timezone?") ]]
 then
-    echo "Not changing timezone..."
+    print_text_in_color "$Cyan" "Not changing timezone..."
     sleep 1
     clear
 else
@@ -317,15 +317,15 @@ msg_box "To make downloads as fast as possible when updating you should have mir
 This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
 
 If you are located outside of Europe, we recomend you to change the mirrors so that downloads are faster."
-echo "Checking current mirror..."
-printf "Your current server repository is:  ${Cyan}$REPO${Color_Off}\n"
+print_text_in_color "$Cyan" "Checking current mirror..."
+print_text_in_color "$Cyan" "Your current server repository is: $REPO"
 
 if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
 then
-    echo "Keeping $REPO as mirror..."
+    print_text_in_color "$Cyan" "Keeping $REPO as mirror..."
     sleep 1
 else
-    echo "Locating the best mirrors..."
+    print_text_in_color "$Cyan" "Locating the best mirrors..."
     apt update -q4 & spinner_loading
     apt install python-pip -y
     pip install \
@@ -341,7 +341,7 @@ fi
 clear
 
 # Pretty URLs
-echo "Setting RewriteBase to \"/\" in config.php..."
+print_text_in_color "$Cyan" "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
 occ_command config:system:set overwrite.cli.url --value="http://localhost/"
 occ_command config:system:set htaccess.RewriteBase --value="/"
@@ -354,7 +354,7 @@ rm -v /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
 
 # Generate new PostgreSQL password
-echo "Generating new PostgreSQL password..."
+print_text_in_color "$Cyan" "Generating new PostgreSQL password..."
 check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 clear
@@ -374,7 +374,7 @@ then
     bash $SCRIPTS/activate-ssl.sh
 else
     echo
-    echo "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
+    print_text_in_color "$Cyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
     any_key "Press any key to continue..."
 fi
 clear
@@ -446,9 +446,9 @@ done 9< results
 rm -f results
 clear
 
-# Change password
-printf "${Color_Off}\n"
-echo "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
+# Change passwords
+# CLI USER
+print_text_in_color "$Cyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
 any_key "Press any key to change password for system user..."
 while true
 do
@@ -456,20 +456,30 @@ do
 done
 echo
 clear
+# NEXTCLOUD USER
 NCADMIN=$(occ_command user:list | awk '{print $3}')
-printf "${Color_Off}\n"
-echo "For better security, change the Nextcloud password for [$NCADMIN]"
-echo "The current password for $NCADMIN is [$NCPASS]"
-any_key "Press any key to change password for Nextcloud..."
+print_text_in_color "$ICyan" "The current admin user in Nextcloud is [$NCADMIN]"
+print_text_in_color "$ICyan" "We will now replace this user with your own."
+any_key "Press any key to replace the current admin user for  Nextcloud..."
+# Create new user
 while true
 do
-    sudo -u www-data php "$NCPATH"/occ user:resetpassword "$NCADMIN" && break
+    print_text_in_color "$ICyan" "Please enter the username for your new user:"
+    read -r NEWUSER
+    sudo -u www-data $NCPATH/occ user:add "$NEWUSER" -g admin && break
 done
+# Delete old user
+if [[ "$NCADMIN" ]]
+then
+    print_text_in_color "$ICyan" "Deleting $NCADMIN..."
+    occ_command user:delete "$NCADMIN"
+fi
 clear
 
-# Set notification for admin
-sudo -u www-data php /var/www/nextcloud/occ notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notficatoins and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." ncadmin "Please setup SMTP"
-sudo -u www-data php /var/www/nextcloud/occ notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" ncadmin "Do you need support?"
+# Set notifications for admin
+NCADMIN=$(occ_command user:list | awk '{print $3}')
+occ_command notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notficatoins and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." "$NCADMIN" "Please setup SMTP"
+occ_command notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" "$NCADMIN" "Do you need support?"
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
@@ -583,14 +593,13 @@ mesg n
 ROOTNEWPROFILE
 
 # Download all app scripts
-echo "Downloading all the latest app scripts to $SCRIPTS/apps..."
+print_text_in_color "$Cyan" "Downloading all the latest app scripts to $SCRIPTS/apps..."
 mkdir -p $SCRIPTS/apps
 cd $SCRIPTS/apps
 check_command curl -s https://codeload.github.com/nextcloud/vm/tar.gz/master | tar -xz --strip=2 vm-master/apps
 
 # Upgrade system
-clear
-echo "System will now upgrade..."
+print_text_in_color "$Cyan" "System will now upgrade..."
 bash $SCRIPTS/update.sh
 
 # Cleanup 2
