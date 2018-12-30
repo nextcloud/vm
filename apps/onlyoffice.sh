@@ -84,7 +84,7 @@ install_docker
 docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
 
 # Disable Onlyoffice if activated
-if [ -d "$NCPATH"/apps/onlyoffice ]
+if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
     occ_command app:disable onlyoffice
     rm -r "$NC_APPS_PATH"/onlyoffice
