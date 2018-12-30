@@ -85,10 +85,10 @@ install_docker
 docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
 
 # Disable RichDocuments (Collabora App) if activated
-if [ -d "$NCPATH"/apps/richdocuments ]
+if [ -d "$NC_APPS_PATH"/richdocuments ]
 then
     occ_command app:disable richdocuments
-    rm -r "$NCPATH_APPS_PATH"/richdocuments
+    rm -r "$NC_APPS_PATH"/richdocuments
 fi
 
 # Install Collabora docker
