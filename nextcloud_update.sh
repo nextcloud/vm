@@ -123,12 +123,26 @@ rm /var/lib/apt/lists/* -r
 lowest_compatible_nc 13
 
 # Fix bug in nextcloud.sh
-if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh
+CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
+if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh &>/dev/null
 then
    rm -f "$SCRIPTS/nextcloud.sh"
    download_static_script nextcloud
-   chown "$(getent group sudo | cut -d: -f4 | cut -d, -f1)":"$(getent group sudo | cut -d: -f4 | cut -d, -f1)" "$SCRIPTS/nextcloud.sh"
+   chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
    chmod +x "$SCRIPTS/nextcloud.sh"
+elif [ -f $SCRIPTS/techandme.sh ]
+then
+   rm -f "$SCRIPTS/techandme.sh"
+   download_static_script nextcloud
+   chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
+   chmod +x "$SCRIPTS/nextcloud.sh"
+   if [ -f /home/"$CURRUSR"/.bash_profile ]
+   then
+       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.bash_profile
+   elif [ -f /home/"$CURRUSR"/.profile ]
+   then
+       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.profile
+   fi
 fi
 
 # Set secure permissions
