@@ -102,11 +102,14 @@ then
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
-# Update docker images
-# This updates ALL Docker images:
+# Update ALL Docker images automatically with watchtower:
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
-    docker images --format "{{.Repository}}:{{.Tag}}" | grep :latest | xargs -L1 docker pull
+    cont_name=watchtower
+    if ! docker ps -a --format '{{.Names}}' | grep -Eq "^${cont_name}\$";
+    then
+        docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock v2tec/watchtower --cleanup --interval 3600
+    fi
 fi
 
 # Cleanup un-used packages
