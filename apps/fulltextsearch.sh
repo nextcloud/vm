@@ -101,6 +101,7 @@ chmod ug+rwx -R  $RORDIR
 docker run -d --restart always \
 --name $fts_es_name \
 --ulimit memlock=-1:-1 \
+--ulimit nofile=65536:65536 \
 -p 9200:9200 \
 -p 9300:9300 \
 -v esdata:/usr/share/elasticsearch/data \
