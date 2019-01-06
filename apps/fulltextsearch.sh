@@ -38,7 +38,7 @@ then
     msg_box "We will now remove Nextant + Solr and replace it with Full Text Search"
     occ_command app:disable nextant
     rm -rf $NC_APPS_PATH/nextant
-    
+
     # Remove Solr
     service solr stop
     rm -rf /var/solr
@@ -86,7 +86,7 @@ readonlyrest:
   - name: Accept requests from cloud1 on $INDEX_USER-index
     groups: ["cloud1"]
     indices: ["$INDEX_USER-index"]
-    
+
   users:
   - username: $INDEX_USER
     auth_key: $INDEX_USER:$ROREST
@@ -105,6 +105,8 @@ docker run -d --restart always \
 -v esdata:/usr/share/elasticsearch/data \
 -v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
 -e "discovery.type=single-node" \
+-e bootstrap.memory_lock=true \
+-e ES_JAVA_OPTS="-Xms512M -Xmx512M" \
 -i -t $nc_fts
 
 # Wait for bootstraping
