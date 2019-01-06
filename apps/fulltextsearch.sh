@@ -105,8 +105,9 @@ docker run -d --restart always \
 -v esdata:/usr/share/elasticsearch/data \
 -v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
 -e "discovery.type=single-node" \
--e bootstrap.memory_lock=true \
+-e "bootstrap.memory_lock=true" \
 -e ES_JAVA_OPTS="-Xms512M -Xmx512M" \
+--ulimit memlock=-1:-1
 -i -t $nc_fts
 
 # Wait for bootstraping
