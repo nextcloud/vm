@@ -100,6 +100,7 @@ chmod ug+rwx -R  $RORDIR
 # Run Elastic Search Docker
 docker run -d --restart always \
 --name $fts_es_name \
+--ulimit memlock=-1:-1 \
 -p 9200:9200 \
 -p 9300:9300 \
 -v esdata:/usr/share/elasticsearch/data \
@@ -107,7 +108,6 @@ docker run -d --restart always \
 -e "discovery.type=single-node" \
 -e "bootstrap.memory_lock=true" \
 -e ES_JAVA_OPTS="-Xms512M -Xmx512M" \
---ulimit memlock=-1:-1
 -i -t $nc_fts
 
 # Wait for bootstraping
