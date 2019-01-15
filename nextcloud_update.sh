@@ -108,7 +108,7 @@ then
     cont_name=watchtower
     if ! docker ps -a --format '{{.Names}}' | grep -Eq "^${cont_name}\$";
     then
-        docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock v2tec/watchtower --cleanup --interval 3600
+        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock v2tec/watchtower --cleanup --interval 3600
     fi
 fi
 
