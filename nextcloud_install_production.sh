@@ -223,9 +223,6 @@ print_text_in_color "$IGreen" "$HTTP2_CONF was successfully created"
 a2enmod http2
 restart_webserver
 
-# Calculate max_children for php-fpm (this will be run in the end of the startup script as well)
-calculate_max_children
-
 # Set up a php-fpm pool with a unixsocket
 cat << POOL_CONF > "$PHP_POOL_DIR/nextcloud.conf"
 [Nextcloud]
@@ -235,8 +232,8 @@ listen = /run/php/php7.2-fpm.nextcloud.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
-;; max_children is set dynamically with calculate_max_children()
-pm.max_children = $PHP_FPM_MAX_CHILDREN
+;; max_children is set dynamically with caulculate_php_fpm()
+pm.max_children = 8
 pm.start_servers = 3
 pm.min_spare_servers = 2
 pm.max_spare_servers = 3
@@ -255,6 +252,9 @@ mv $PHP_POOL_DIR/www.conf $PHP_POOL_DIR/www.conf.backup
 
 # Enable the new php-fpm config
 restart_webserver
+
+# Calculate the values of PHP-FPM based on the amount of RAM available (it's done in the startup script as well)
+caulculate_php_fpm
 
 # Enable SMB client # already loaded with php-smbclient
 # echo '# This enables php-smbclient' >> /etc/php/7.2/apache2/php.ini
