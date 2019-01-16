@@ -235,6 +235,7 @@ min_start_servers=20
 # Maximum amount of children is only set if the min_start_servers value are met
 min_max_spare_servers=35
 
+# Calculate the sum of the current values
 CURRENT_START="$(grep pm.start_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')"
 CURRENT_MAX="$(grep pm.max_spare_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')"
 CURRENT_MIN="$(grep pm.min_spare_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')"
@@ -244,7 +245,7 @@ CURRENT_SUM="$((CURRENT_START + CURRENT_MAX + CURRENT_MIN))"
 # Tends to be between 30-50MB per children
 average_php_memory_requirement=50
 available_memory=$(awk '/MemAvailable/ {printf "%d", $2/1024}' /proc/meminfo)
-export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
+PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 
 # Lowest possible value is 8
 print_text_in_color "$ICyan" "Automatically configures pm.max_children for php-fpm..."
