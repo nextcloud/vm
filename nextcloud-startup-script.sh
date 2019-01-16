@@ -519,10 +519,7 @@ do
 done 9< results
 rm -f results
 
-# Calculate max_children after all apps are installed, if below 8 then abort.
-calculate_max_children
-
-# Calculate the values of PHP-FPM based on the amount of RAM available
+# Calculate the values of PHP-FPM based on the amount of RAM available (minimum 2 GB or 8 children)
 caulculate_php_fpm
 
 # Add temporary fix if needed
