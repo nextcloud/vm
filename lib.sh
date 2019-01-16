@@ -271,7 +271,7 @@ min_max_spare_servers=35
 CURRENT_START="$(grep pm.start_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')"
 CURRENT_MAX="$(grep pm.max_spare_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')"
 CURRENT_MIN="$(grep pm.min_spare_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')"
-CURRENT_SUM="$(($CURRENT_START + $CURRENT_MAX + $CURRENT_MIN))"
+CURRENT_SUM="$((CURRENT_START + CURRENT_MAX + CURRENT_MIN))"
 
 # Calculate max_children depending on RAM
 # Tends to be between 30-50MB per children
@@ -302,9 +302,9 @@ else
         then
             if [ "$(grep pm.start_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')" -lt $min_start_servers ]
             then
-                check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = $(($PHP_FPM_MAX_CHILDREN - 30))|g" $PHP_POOL_DIR/nextcloud.conf
+                check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = $((PHP_FPM_MAX_CHILDREN - 30))|g" $PHP_POOL_DIR/nextcloud.conf
                 restart_webserver
-                print_text_in_color "$IGreen" "pm.max_spare_servers was set to $(($PHP_FPM_MAX_CHILDREN - 30))"
+                print_text_in_color "$IGreen" "pm.max_spare_servers was set to $((PHP_FPM_MAX_CHILDREN - 30))"
             fi
         fi
     fi
