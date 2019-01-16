@@ -519,10 +519,11 @@ do
 done 9< results
 rm -f results
 
-# Calculate max_children after all apps are installed
+# Calculate max_children after all apps are installed, if below 8 then abort.
 calculate_max_children
-check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" $PHP_POOL_DIR/nextcloud.conf
-restart_webserver
+
+# Calculate the values of PHP-FPM based on the amount of RAM available
+caulculate_php_fpm
 
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
