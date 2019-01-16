@@ -227,39 +227,6 @@ then
 fi
 }
 
-calculate_max_children() {
-# Calculate max_children depending on RAM
-# Tends to be between 30-50MB
-average_php_memory_requirement=50
-available_memory=$(awk '/MemAvailable/ {printf "%d", $2/1024}' /proc/meminfo)
-export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
-
-print_text_in_color "$ICyan" "Automatically configures pm.max_children for php-fpm..."
-if [ $PHP_FPM_MAX_CHILDREN -lt 8 ]
-then
-msg_box "The current max_children value available to set is $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
-The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
-
-The absolute minimum amount of RAM required to run the VM is 2 GB, but we recomend 4 GB.
-
-You now have two choices:
-1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
-   installing it in the same way as you did before.
-2. Import this VM again without raising the RAM, but don't install any of the following apps:
-   1) Collabora
-   2) OnlyOffice
-   3) Full Text Search
-
-This script will now exit. 
-The installation was not successful, sorry for the inconvenience.
-
-If you think this is a bug, please report it to $ISSUES"
-exit 1
-else
-    print_text_in_color "$IGreen" "pm.max_children was set to $PHP_FPM_MAX_CHILDREN"
-fi
-}
-
 caulculate_php_fpm() {
 # Minimum amount of max children (lower than this won't work with 2 GB RAM)
 min_max_children=8
@@ -283,13 +250,24 @@ export PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 print_text_in_color "$ICyan" "Automatically configures pm.max_children for php-fpm..."
 if [ $PHP_FPM_MAX_CHILDREN -lt $min_max_children ]
 then
-    print_text_in_color "$IRed" "Failed to set pm.max_children as the value was lower than $min_max_children"
-    print_text_in_color "$ICyan" "Please raise your amount of RAM with at least 2 GB"
-    sleep 5
+msg_box "The current max_children value available to set is $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
+The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
+
+The absolute minimum amount of RAM required to run the VM is 2 GB, but we recomend 4 GB.
+
+You now have two choices:
+1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
+   installing it in the same way as you did before.
+2. Import this VM again without raising the RAM, but don't install any of the following apps:
+   1) Collabora
+   2) OnlyOffice
+   3) Full Text Search
+
+This script will now exit. 
+The installation was not successful, sorry for the inconvenience.
+
+If you think this is a bug, please report it to $ISSUES"
 exit 1
-elif [ $PHP_FPM_MAX_CHILDREN -eq "$(grep pm.max_children $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')" ]
-then
-   print_text_in_color "$IGreen" "No need to set anything, values was already equal to the current value"
 else
     check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" $PHP_POOL_DIR/nextcloud.conf
     restart_webserver
