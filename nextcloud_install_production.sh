@@ -232,7 +232,7 @@ listen = /run/php/php7.2-fpm.nextcloud.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
-;; max_children is set dynamically with calculate_max_children() and/or caulculate_php_fpm()
+;; max_children is set dynamically with caulculate_php_fpm()
 pm.max_children = 8
 pm.start_servers = 3
 pm.min_spare_servers = 2
