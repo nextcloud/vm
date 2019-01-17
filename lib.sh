@@ -304,20 +304,14 @@ fi
 
 test_connection() {
 # Install dnsutils if not existing
-if [ "$(dpkg-query -W -f='${Status}' "dnsutils" 2>/dev/null | grep -c "ok installed")" == "1" ]
+if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
 then
-    sleep 0.1
-else
-    apt update -q4 & spinner_loading
-    apt install dnsutils -y
+    apt update -q4 & spinner_loading && apt install dnsutils -y
 fi
 # Install network-manager if not existing
-if [ "$(dpkg-query -W -f='${Status}' "network-manager" 2>/dev/null | grep -c "ok installed")" == "1" ]
+if ! dpkg-query -W -f='${Status}' "network-manager" | grep -q "ok installed"
 then
-    sleep 0.1
-else
-    apt update -q4 & spinner_loading
-    apt install network-manager -y
+    apt update -q4 & spinner_loading && apt install network-manager -y
 fi
 check_command service network-manager restart
 ip link set "$IFACE" down
