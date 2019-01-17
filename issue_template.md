@@ -21,7 +21,9 @@ Tell us what happens instead
 
 ## Server configuration
 
-**Server version:** (see your admin page)
+**Nextcloud server version:** (see your admin page)
+
+**Server OS** (Ubuntu server is default)
 
 **How did you install the VM?** (Scripted install from master **OR** Released version)
 
