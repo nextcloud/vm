@@ -488,8 +488,8 @@ fi
 }
 
 # Install_if_not program
-install_if_not () {
-if [[ "$(is_this_installed "${1}")" != "${1} is installed, it must be a clean server." ]]
+install_if_not() {
+if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
     apt update -q4 & spinner_loading && apt install "${1}" -y
 fi
