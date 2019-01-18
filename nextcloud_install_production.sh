@@ -479,7 +479,6 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "Calendar" "            " on \
 "Contacts" "            " on \
 "IssueTemplate" "       " on \
-"CanIUpdate" "          " on \
 "PDFViewer" "           " on \
 "Webmin" "              " on 2>results
 
@@ -494,9 +493,6 @@ do
         ;;
         IssueTemplate)
             install_and_enable_app issuetemplate
-        ;;
-        CanIUpdate)
-            install_and_enable_app caniupdate
         ;;
         PDFViewer)
             install_and_enable_app files_pdfviewer
