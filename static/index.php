@@ -17,7 +17,7 @@
                 align: center;
                 text-align: center;
                 background: #0082c9; /* Old browsers */
-                background-image: url('https://raw.githubusercontent.com/nextcloud/server/master/core/img/background.jpg');
+                background-image: url('https://raw.githubusercontent.com/nextcloud/server/master/core/img/background.png');
                 background-size: cover;
             }
             div.logotext   {
@@ -25,7 +25,7 @@
                 margin: 0 auto;
             }
             div.logo   {
-                background-image: url('/nextcloud/core/img/logo.svg');
+                background-image: url('/nextcloud/core/img/logo/logo.svg');
                 background-repeat: no-repeat; top center;
                 width: 50%;
                 height: 25%;
