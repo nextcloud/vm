@@ -13,4 +13,6 @@ true
 DEBUG=0
 debug_mode
 
+caulculate_php_fpm
+
 exit
