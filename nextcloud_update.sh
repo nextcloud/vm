@@ -401,13 +401,6 @@ bash "$SECURE"
 # Set max upload in Nextcloud .htaccess
 configure_max_upload
 
-# Disable support app
-if [ -d $NC_APPS_PATH/support ]
-then
-    occ_command app:disable support
-    rm -rf $NC_APPS_PATH/support
-fi
-
 # Update .user.ini in case stuff was added to .htaccess
 if [ "$NCPATH/.htaccess" -nt "$NCPATH/.user.ini" ]
 then
