@@ -323,6 +323,10 @@ occ_command config:system:set remember_login_cookie_lifetime --value="1800"
 # Set logrotate (max 10 MB)
 occ_command config:system:set log_rotate_size --value="10485760"
 
+# Don't show "Get your own free account"
+# To fix: remove ' ' from false otherwise it won't apply
+occ_command config:system:set simpleSignUpLink.shown --value="false"
+
 # Enable OPCache for PHP 
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 phpenmod opcache
