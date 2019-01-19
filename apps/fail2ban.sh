@@ -31,7 +31,7 @@ BANTIME_=600000
 # cooldown time for incorrect passwords
 FINDTIME_=1800
 # failed attempts before banning an IP
-MAXRETRY_=10
+MAXRETRY_=20
 
 apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
