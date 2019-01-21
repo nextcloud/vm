@@ -254,7 +254,7 @@ mv $PHP_POOL_DIR/www.conf $PHP_POOL_DIR/www.conf.backup
 restart_webserver
 
 # Calculate the values of PHP-FPM based on the amount of RAM available (it's done in the startup script as well)
-caulculate_php_fpm
+calculate_php_fpm
 
 # Enable SMB client # already loaded with php-smbclient
 # echo '# This enables php-smbclient' >> /etc/php/7.2/apache2/php.ini
