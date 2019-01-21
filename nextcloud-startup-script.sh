@@ -520,7 +520,7 @@ done 9< results
 rm -f results
 
 # Calculate the values of PHP-FPM based on the amount of RAM available (minimum 2 GB or 8 children)
-caulculate_php_fpm
+calculate_php_fpm
 
 # Add temporary fix if needed
 bash $SCRIPTS/temporary-fix.sh
