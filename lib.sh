@@ -212,7 +212,7 @@ start_if_stopped() {
 if ! pgrep $1
 then
     print_text_in_color "$ICyan" "Starting $1..."
-    service $1 start
+    check_command service $1 start
 fi
 }
 
