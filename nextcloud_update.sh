@@ -367,7 +367,7 @@ Please check in $BACKUP if the folders exist."
 fi
 
 # Start Apache2
-check_command service apache2 start
+start_if_stopped apache2
 
 # Recover apps that exists in the backed up apps folder
 run_static_script recover_apps

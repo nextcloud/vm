@@ -208,6 +208,14 @@ do
 done
 }
 
+start_if_stopped() {
+if ! pgrep "$1"
+then
+    print_text_in_color "$ICyan" "Starting $1..."
+    check_command service "$1" start
+fi
+}
+
 # Warn user that HTTP/2 will be disabled if installing app that use Apache2 PHP instead of PHP-FPM
 # E.g: http2_warn Modsecurity
 http2_warn() {
