@@ -14,6 +14,12 @@ unset FIRST_IFACE
 DEBUG=0
 debug_mode
 
+# Must be root
+root_check
+
+# Check Ubuntu version
+check_distro_version
+
 clear
 
 # Copy old interfaces files
