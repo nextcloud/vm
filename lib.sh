@@ -625,6 +625,7 @@ check_command sudo -u www-data php "$NCPATH"/occ "$@";
 
 network_ok() {
     print_text_in_color "$ICyan" "Testing if network is OK..."
+    install_if_not network-manager
     if ! service network-manager restart > /dev/null
     then
         service networking restart > /dev/null
