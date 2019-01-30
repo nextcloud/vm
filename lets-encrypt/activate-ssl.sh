@@ -217,8 +217,8 @@ else
     echo "fail" > /tmp/le_test
 fi
 }
-tls-sni() {
-if eval "certbot certonly --preferred-challenges tls-sni $default_le"
+tls-alpn-01() {
+if eval "certbot certonly --preferred-challenges tls-alpn-01 $default_le"
 then
     echo "success" > /tmp/le_test
 else
@@ -234,7 +234,7 @@ else
 fi
 }
 
-methods=(standalone tls-sni dns)
+methods=(standalone dns)
 
 create_config() {
 # $1 = method
@@ -259,10 +259,10 @@ if [ "$method" == "standalone" ]
 then
     printf "%b" "${ICyan}It seems like no certs were generated, we will do 2 more tries.\n${Color_Off}"
     any_key "Press any key to continue..."
-elif [ "$method" == "tls-sni" ]
-then
-    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
-    any_key "Press any key to continue..."
+#elif [ "$method" == "tls-alpn-01" ]
+#then
+#    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
+#    any_key "Press any key to continue..."
 elif [ "$method" == "dns" ]
 then
     printf "%b" "${IRed}It seems like no certs were generated, please check your DNS and try again.\n${Color_Off}"
