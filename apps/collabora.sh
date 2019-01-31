@@ -27,14 +27,6 @@ lowest_compatible_nc 13
 ram_check 2 Collabora
 cpu_check 2 Collabora
 
-# Check if Onlyoffice is running
-if [ -d "$NCPATH"/apps/onlyoffice ]
-then
-msg_box "It seems like OnlyOffice is running.
-You can't run OnlyOffice at the same time as you run Collabora."
-    exit 1
-fi
-
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
 
@@ -87,8 +79,15 @@ docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
 # Disable RichDocuments (Collabora App) if activated
 if [ -d "$NC_APPS_PATH"/richdocuments ]
 then
-    occ_command app:disable richdocuments
+    occ_command app:remove richdocuments
     rm -r "$NC_APPS_PATH"/richdocuments
+fi
+
+# Disable OnlyOffice (Collabora App) if activated
+if [ -d "$NC_APPS_PATH"/onlyoffice ]
+then
+    occ_command app:remove onlyoffice
+    rm -r "$NC_APPS_PATH"/onlyoffice
 fi
 
 # Install Collabora docker
@@ -103,6 +102,11 @@ a2enmod proxy
 a2enmod proxy_wstunnel
 a2enmod proxy_http
 a2enmod ssl
+
+if [ -f "$HTTPS_CONF" ]
+then
+    rm -f "$HTTPS_CONF"
+fi
 
 # Create Vhost for Collabora online in Apache2
 if [ ! -f "$HTTPS_CONF" ];
