@@ -102,7 +102,7 @@ a2enmod ssl
 
 if [ -f "$HTTPS_CONF" ]
 then
-    a2dissite "$HTTPS_CONF"
+    a2dissite "$SUBDOMAIN.conf"
     rm -f "$HTTPS_CONF"
 fi
 
