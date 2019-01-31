@@ -80,14 +80,12 @@ docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
 if [ -d "$NC_APPS_PATH"/richdocuments ]
 then
     occ_command app:remove richdocuments
-    rm -r "$NC_APPS_PATH"/richdocuments
 fi
 
 # Disable OnlyOffice (Collabora App) if activated
 if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
     occ_command app:remove onlyoffice
-    rm -r "$NC_APPS_PATH"/onlyoffice
 fi
 
 # Install Collabora docker
