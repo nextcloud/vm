@@ -105,6 +105,7 @@ a2enmod ssl
 
 if [ -f "$HTTPS_CONF" ]
 then
+    a2dissite "$HTTPS_CONF"
     rm -f "$HTTPS_CONF"
 fi
 
