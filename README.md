@@ -43,6 +43,7 @@ The script will mount and format the drive. Please select Manually Format & Moun
 * 40 GB HDD for OS
 * 4 vCPU
 * 4 GB RAM
+* Port 80 and 443 open to the server. [Here's](https://letsencrypt.org/docs/allow-port-80/) why port 80 is recomended. Yes, the VM handles redirection to 443.
 
 #### Installation
 1. Get the latest install script from master and install it with a sudo user:<br>
