@@ -386,7 +386,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing [2GB RAM])   " OFF \
 "OnlyOffice" "(Online editing [4GB RAM])   " OFF \
-"Bitwarden" "(Password manager) - NOT STABLE   " OFF \
+"Bitwarden" "(External password manager)   " OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF 2>results
