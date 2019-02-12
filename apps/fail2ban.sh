@@ -60,7 +60,7 @@ ignoreregex =
 NCONF
 
 # Disable default Debian sshd chain
-sed -i 's/true/false/' /etc/fail2ban/jail.d/defaults-debian.conf 
+check_command sed -i "s|true|false|g" /etc/fail2ban/jail.d/defaults-debian.conf 
 
 # Create jail.local file
 cat << FCONF > /etc/fail2ban/jail.local
