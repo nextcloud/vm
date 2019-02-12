@@ -59,6 +59,9 @@ failregex = ^.*Login failed: '.*' \(Remote IP: '<HOST>'.*$
 ignoreregex =
 NCONF
 
+# Disable default Debian sshd chain
+sed -i 's/true/false/' /etc/fail2ban/jail.d/defaults-debian.conf 
+
 # Create jail.local file
 cat << FCONF > /etc/fail2ban/jail.local
 # The DEFAULT allows a global definition of the options. They can be overridden
