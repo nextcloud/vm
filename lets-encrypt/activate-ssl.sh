@@ -297,6 +297,6 @@ https://github.com/nextcloud/vm
 The script will now do some cleanup and revert the settings."
 
 # Cleanup
-apt remove letsencrypt -y
+apt remove certbot -y
 apt autoremove -y
 clear
