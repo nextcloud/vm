@@ -27,6 +27,15 @@ We'll add support for SSL in a later version of this script, but for now you hav
 The script is based on this documentation: https://help.bitwarden.com/article/install-on-premise/
 It's a good idea to read that before you start this script."
 
+if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
+then
+msg_box "OK, please do the necessary preparations before you run this script and then simply run it again once you're done.
+The script is located at: $SCRIPTS/apps/tmbitwarden.sh"
+    exit
+else
+    sleep 0.1
+fi
+
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 Bitwarden
 cpu_check 2 Bitwarden
