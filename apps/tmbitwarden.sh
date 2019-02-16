@@ -53,6 +53,8 @@ curl -s -o bitwarden.sh \
     https://raw.githubusercontent.com/bitwarden/core/master/scripts/bitwarden.sh \
     && chmod +x bitwarden.sh
 check_command ./bitwarden.sh install
+sed -i "s|http_port.*|http_port: 8080|g" $HOME/bwdata/config.yml
+sed -i "s|https_port.*|https_port: 8443|g" $HOME/bwdata/config.yml
 check_command ./bitwarden.sh start
 check_command service apache2 start
 if check_command ./bitwarden.sh updatedb
