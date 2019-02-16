@@ -52,7 +52,7 @@ install_docker
 install_if_not docker-compose
 
 # Stop Apache to not conflict when LE is run
-systemctl stop apache2.service
+check_command systemctl stop apache2.service
 
 # Install Bitwarden 
 install_if_not curl
@@ -73,4 +73,4 @@ msg_box "Bitwarden installation failed! We wil now remove necesary configs to ru
 fi
 
 # Start Apache2
-systemctl start apache2.service
+check_command systemctl start apache2.service
