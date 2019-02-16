@@ -29,6 +29,10 @@ It's a good idea to read that before you start this script.
 
 Please also report any issues regarding this script setup to $ISSUES"
 
+msg_box "The necessary preparations to run expose Bitwarden to the internet are:
+1. The HTTP proxy and HTTPS ports for Bitwarden are 8080 and 8443, please open those ports before running this script.
+2. Please create a DNS record and point that to this server."
+
 if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
 then
 msg_box "OK, please do the necessary preparations before you run this script and then simply run it again once you're done.
@@ -39,7 +43,7 @@ else
 fi
 
 # Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 Bitwarden
+ram_check 3 Bitwarden
 cpu_check 2 Bitwarden
 
 # Install Docker
@@ -47,7 +51,6 @@ install_docker
 install_if_not docker-compose
 
 # Install Bitwarden
-check_command service apache2 stop
 install_if_not curl
 curl -s -o bitwarden.sh \
     https://raw.githubusercontent.com/bitwarden/core/master/scripts/bitwarden.sh \
@@ -55,9 +58,12 @@ curl -s -o bitwarden.sh \
 check_command ./bitwarden.sh install
 sed -i "s|http_port.*|http_port: 8080|g" $HOME/bwdata/config.yml
 sed -i "s|https_port.*|https_port: 8443|g" $HOME/bwdata/config.yml
+check_command ./bitwarden.sh rebuild
 check_command ./bitwarden.sh start
-check_command service apache2 start
 if check_command ./bitwarden.sh updatedb
 then
-msg_box "Bitwarden was sucessfully installed!"
+msg_box "Bitwarden was sucessfully installed! Please visit $(cat $HOME/bwdata/config.yml | grep 'url:' | awk '{print$2}') to setup your account."
+else
+msg_box "Bitwarden installation failed! We wil now remove necesary configs to run this script again"
+    rm -rf $HOME/bwdata/
 fi
