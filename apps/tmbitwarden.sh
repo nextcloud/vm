@@ -66,9 +66,9 @@ check_command ./bitwarden.sh rebuild
 check_command ./bitwarden.sh start
 if check_command ./bitwarden.sh updatedb
 then
-msg_box "Bitwarden was sucessfully installed! Please visit $(grep 'url:' "$HOME"/bwdata/config.yml | awk '{print$2}') to setup your account."
+msg_box "Bitwarden was sucessfully installed! Please visit $(grep 'url:' "$HOME"/bwdata/config.yml | awk '{print$2}'):8443 to setup your account."
 else
-msg_box "Bitwarden installation failed! We wil now remove necesary configs to run this script again"
+msg_box "Bitwarden installation failed! We will now remove necessary configs to be able to run this script again"
     rm -rf "$HOME"/bwdata/
 fi
 
