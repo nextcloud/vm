@@ -22,10 +22,12 @@ msg_box "Bitwarden is a password manager that is seperate from Nextcloud, though
 
 If you just want to run Bitwarden locally (not connecting your smartphone) then you can use 'localhost' as domain.
 If you on the other hand want to run this on a domain, then please create a DNS record and point it to this server.
-We'll add support for SSL in a later version of this script, but for now you have to do that stuff manually.
+In the process of setting up Bitwarden you will be asked to generate an SSL cert with Let's Enrypt so no need to get your own prior to this setup.
 
 The script is based on this documentation: https://help.bitwarden.com/article/install-on-premise/
-It's a good idea to read that before you start this script."
+It's a good idea to read that before you start this script.
+
+Please also report any issues regarding this script setup to $ISSUES"
 
 if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
 then
@@ -45,12 +47,14 @@ install_docker
 install_if_not docker-compose
 
 # Install Bitwarden
+check_command service apache2 stop
 install_if_not curl
 curl -s -o bitwarden.sh \
     https://raw.githubusercontent.com/bitwarden/core/master/scripts/bitwarden.sh \
     && chmod +x bitwarden.sh
 check_command ./bitwarden.sh install
 check_command ./bitwarden.sh start
+check_command service apache2 start
 if check_command ./bitwarden.sh updatedb
 then
 msg_box "Bitwarden was sucessfully installed!"
