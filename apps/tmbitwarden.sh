@@ -31,7 +31,8 @@ Please also report any issues regarding this script setup to $ISSUES"
 
 msg_box "The necessary preparations to run expose Bitwarden to the internet are:
 1. The HTTP proxy and HTTPS ports for Bitwarden are 8080 and 8443, please open those ports before running this script.
-2. Please create a DNS record and point that to this server."
+2. Please create a DNS record and point that to this server.
+3. Raise the of this server RAM to at least 3 GB."
 
 if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
 then
@@ -42,7 +43,7 @@ else
     sleep 0.1
 fi
 
-# Test RAM size (2GB min) + CPUs (min 2)
+# Test RAM size (3 GB min) + CPUs (min 2)
 ram_check 3 Bitwarden
 cpu_check 2 Bitwarden
 
@@ -50,7 +51,11 @@ cpu_check 2 Bitwarden
 install_docker
 install_if_not docker-compose
 
+# Stop Apache to not conflict when LE is run
+systemctl stop apache2.service
+
 # Install Bitwarden
+check_command systemctl stop 
 install_if_not curl
 curl -s -o bitwarden.sh \
     https://raw.githubusercontent.com/bitwarden/core/master/scripts/bitwarden.sh \
@@ -67,3 +72,6 @@ else
 msg_box "Bitwarden installation failed! We wil now remove necesary configs to run this script again"
     rm -rf $HOME/bwdata/
 fi
+
+# Start Apache2
+systemctl start apache2.service
