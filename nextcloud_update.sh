@@ -93,6 +93,27 @@ then
     restart_webserver
 fi
 
+# Check if redis.so is enabled
+if [ -f /etc/php/7.2/apache2/php.ini ]
+then
+    if ! [ "$(grep -R redis.so /etc/php/7.2/apache2/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+    then
+    echo "extension=redis.so" >> /etc/php/7.2/apache2/php.ini
+elif [ -f /etc/php/7.2/fpm/php.ini ]
+then
+        if ! [ "$(grep -R redis.so /etc/php/7.2/fpm/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+        then
+            echo "extension=redis.so" >> /etc/php/7.2/fpm/php.ini
+elif [ -f /etc/php/7.0/apache2/php.ini ]
+then
+            if ! [ "$(grep -R redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+            then
+                echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
+            fi
+        fi
+    fi
+fi
+
 # Update adminer
 if [ -d $ADMINERDIR ]
 then
