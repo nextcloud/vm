@@ -133,8 +133,6 @@ then
     restart_webserver
 fi
 
-
-
 # Update adminer
 if [ -d $ADMINERDIR ]
 then
