@@ -62,6 +62,7 @@ then
         bash /usr/src/netdata.git/netdata-updater.sh
     fi
 fi
+#!/bin/bash
 
 # Update Redis PHP extension
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extenstion..."
@@ -78,6 +79,26 @@ then
     pecl channel-update pecl.php.net
     yes no | pecl install redis
     service redis-server restart
+    # Check if redis.so is enabled
+    if [ -f /etc/php/7.2/apache2/php.ini ]
+    then
+        if ! [ "$(grep -R redis.so /etc/php/7.2/apache2/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+        then
+        echo "extension=redis.so" >> /etc/php/7.2/apache2/php.ini
+    elif [ -f /etc/php/7.2/fpm/php.ini ]
+    then
+            if ! [ "$(grep -R redis.so /etc/php/7.2/fpm/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+            then
+                echo "extension=redis.so" >> /etc/php/7.2/fpm/php.ini
+    elif [ -f /etc/php/7.0/apache2/php.ini ]
+    then
+                if ! [ "$(grep -R redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+                then
+                    echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
+                fi
+            fi
+        fi
+    fi
     restart_webserver
 elif pecl list | grep redis >/dev/null 2>&1
 then
@@ -90,29 +111,30 @@ then
     pecl channel-update pecl.php.net
     yes no | pecl upgrade redis
     service redis-server restart
-    restart_webserver
-fi
-
-# Check if redis.so is enabled
-if [ -f /etc/php/7.2/apache2/php.ini ]
-then
-    if ! [ "$(grep -R redis.so /etc/php/7.2/apache2/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+        # Check if redis.so is enabled
+    if [ -f /etc/php/7.2/apache2/php.ini ]
     then
-    echo "extension=redis.so" >> /etc/php/7.2/apache2/php.ini
-elif [ -f /etc/php/7.2/fpm/php.ini ]
-then
-        if ! [ "$(grep -R redis.so /etc/php/7.2/fpm/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+        if ! [ "$(grep -R redis.so /etc/php/7.2/apache2/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
         then
-            echo "extension=redis.so" >> /etc/php/7.2/fpm/php.ini
-elif [ -f /etc/php/7.0/apache2/php.ini ]
-then
-            if ! [ "$(grep -R redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+        echo "extension=redis.so" >> /etc/php/7.2/apache2/php.ini
+    elif [ -f /etc/php/7.2/fpm/php.ini ]
+    then
+            if ! [ "$(grep -R redis.so /etc/php/7.2/fpm/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
             then
-                echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
+                echo "extension=redis.so" >> /etc/php/7.2/fpm/php.ini
+    elif [ -f /etc/php/7.0/apache2/php.ini ]
+    then
+                if ! [ "$(grep -R redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
+                then
+                    echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
+                fi
             fi
         fi
     fi
+    restart_webserver
 fi
+
+
 
 # Update adminer
 if [ -d $ADMINERDIR ]
