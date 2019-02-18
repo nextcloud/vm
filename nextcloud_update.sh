@@ -110,7 +110,7 @@ then
     pecl channel-update pecl.php.net
     yes no | pecl upgrade redis
     service redis-server restart
-        # Check if redis.so is enabled
+    # Check if redis.so is enabled
     if [ -f /etc/php/7.2/apache2/php.ini ]
     then
         if ! [ "$(grep -R extension=redis.so /etc/php/7.2/apache2/php.ini)" == "extension=redis.so" ] > /dev/null 2>&1
