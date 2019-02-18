@@ -62,7 +62,6 @@ then
         bash /usr/src/netdata.git/netdata-updater.sh
     fi
 fi
-#!/bin/bash
 
 # Update Redis PHP extension
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extenstion..."
