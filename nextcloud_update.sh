@@ -84,7 +84,7 @@ then
     then
         ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
     # PHP 7.2 apache
-    elif [ -f /etc/php/7.0/apache2/php.ini ]
+    elif [ -f /etc/php/7.2/apache2/php.ini ]
     then
         ! [[ "$(grep -R extension=redis.so /etc/php/7.2/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.2/apache2/php.ini
     # PHP 7.2 fpm
