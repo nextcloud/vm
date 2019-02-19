@@ -90,7 +90,7 @@ then
     # PHP 7.2 fpm
     elif [ -f "$PHP_INI" ]
     then
-        ! [[ "$(grep -R extension=redis.so $PHP_INI)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
+        ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
     fi
     restart_webserver
 elif pecl list | grep redis >/dev/null 2>&1
