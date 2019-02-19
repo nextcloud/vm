@@ -102,7 +102,7 @@ Keep asking questions so that we can add them here.
 **Q: How to update Nextcloud VM?**
 <br />
 **A:** You cannot use the built in updater in Nextcloud GUI due to secure permissions on this VM. Use the built-in script instead:
-`sudo bash /var/scripts/update.sh` or run `run_nextcloud_update` as root from your terminal.
+`sudo bash /var/scripts/update.sh` or run `run_update_nextcloud` as root from your terminal.
 
 **Q: How do I run the occ command?**
 <br />
