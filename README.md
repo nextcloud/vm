@@ -180,7 +180,7 @@ Keep asking questions so that we can add them here.
 
 **Q:  Can I install in a VM with a NAT and port redirection of port 443 & 10000 & 22?**
 <br />
-**A:** Yes, check this out: https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online?currentPageId=bhm84kqhv0jgro7odnjg
+**A:** Yes, check this out: https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online
 
 ## First look
 ![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
