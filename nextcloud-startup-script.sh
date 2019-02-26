@@ -7,7 +7,7 @@ unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 unset NCDB
 
-# T&M Hansson IT AB © - 2018, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 ## If you want debug mode, please activate it further down in the code at line ~60
 
