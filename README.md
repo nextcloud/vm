@@ -58,7 +58,7 @@ If it automatically runs as root when you reboot the machine, you have to abort 
 Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
 
 ## Full documentation
-You can find the full documentatoin [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm)
+You can find the full documentation [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm)
 
 ## Do you want to run this on your Raspberry Pi?
 Great news! We have forked this repository and created a Raspberry Pi image that you can download from here: 
