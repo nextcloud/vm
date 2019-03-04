@@ -182,12 +182,6 @@ then
     mkdir -p "$SCRIPTS"
     download_static_script setup_secure_permissions_nextcloud
     chmod +x "$SECURE"
-elif grep "postgresql" "$SECURE"
-then
-    mkdir -p "$SCRIPTS"
-    rm "$SCRIPTS"/setup_secure_permissions_nextcloud.*
-    download_static_script setup_secure_permissions_nextcloud
-    chmod +x "$SECURE"
 fi
 
 # Update all Nextcloud apps
