@@ -30,7 +30,7 @@ DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc<br>
 The script will mount and format the drive. Please select Manually Format & Mount when adding the second volume.
 
 #### Minimum requirements:
-* A clean [Ubuntu Server 18.04.X](http://cdimage.ubuntu.com/releases/18.04/release/) using the alternative installer
+* A clean [Ubuntu Server 18.04.X](http://cdimage.ubuntu.com/releases/18.04/release/ubuntu-18.04.2-server-amd64.iso) using the alternative installer
 * OpenSSH (preferred)
 * 20 GB HDD for OS
 * XX GB HDD for DATA (/mnt/ncdata)
