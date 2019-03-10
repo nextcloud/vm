@@ -65,6 +65,16 @@ check_command() {
   fi
 }
 
+# Colors
+Color_Off='\e[0m'
+IRed='\e[0;91m'
+IGreen='\e[0;92m'
+ICyan='\e[0;96m'
+
+print_text_in_color() {
+	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
+}
+
 # END OF FUNCTIONS #
 
 # Check if root
