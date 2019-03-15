@@ -38,5 +38,6 @@ fi
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to reboot your server after every update at 22:00 (22 PM)") ]]
 then
-    crontab -u root -l | { cat; echo "0 22 * * SUN reboot"; } | crontab -u root -
+    crontab -u root -l | grep -v "$SCRIPTS/update.sh" | crontab -u root -
+    crontab -u root -l | { cat; echo "0 18 * * SUN $SCRIPTS/update.sh && reboot"; } | crontab -u root -
 fi
