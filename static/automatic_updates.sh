@@ -27,7 +27,7 @@ to run this option.
 
 You can disable the automatic updates by entering the crontab file like this:
 'sudo crontab -e -u root'
-Then just put a hash (#) in front of the row that you want to disable
+Then just put a hash (#) in front of the row that you want to disable.
 
 In the next step you will be able to choose to proceed or exit."
 
