@@ -503,7 +503,8 @@ configure_max_upload
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "ModSecurity" "(Add ModSecurity for Apache2" OFF \
-"Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF 2>results
+"Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 2>results
 
 while read -r -u 9 choice
 do
@@ -522,6 +523,11 @@ do
             clear
             run_static_script static_ip
         ;;
+        
+	"Automatic updates")
+            clear
+            run_static_script automatic_updates
+        ;;	
 
         *)
         ;;

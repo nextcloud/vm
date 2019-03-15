@@ -30,8 +30,7 @@ cat << INST2
 | This is done using a script built into this VM that automatically     |
 | updates Nextcloud, sets secure permissions, and logs the successful   |
 | update to /var/log/cronjobs_success.log                               |
-| Detailed instructions for setting this up can be found here:          |
-| https://www.techandme.se/nextcloud-update-is-now-fully-automated/     |
+| Just choose to configure it when aksed to do so later in this script. |
 |                                                                       |
 |  ##################### T&M Hansson IT - $(date +"%Y") #######################  |
 +-----------------------------------------------------------------------+
