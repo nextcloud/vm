@@ -17,8 +17,8 @@ debug_mode
 
 # Check if root
 root_check
-  
-msg_box "This option will update your server every week on Sundays at 18:00 (6 PM). 
+
+msg_box "This option will update your server every week on Saturdays at 18:00 (6 PM).
 The update will run the built in script '$SCRIPTS/update.sh' which will update both the server packages and Nextcloud itself.
 
 You can read more about it here: https://www.techandme.se/nextcloud-update-is-now-fully-automated/
@@ -33,10 +33,10 @@ In the next step you will be able to choose to proceed or exit."
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable automatic updates?") ]]
 then
-    crontab -u root -l | { cat; echo "0 18 * * SUN $SCRIPTS/update.sh"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "0 18 * * 6 $SCRIPTS/update.sh > /var/scripts/update_log"; } | crontab -u root -
     if [[ "yes" == $(ask_yes_or_no "Do you want to reboot your server after every update?") ]]
     then
-        crontab -u root -l | grep -v "$SCRIPTS/update.sh" | crontab -u root -
-        crontab -u root -l | { cat; echo "0 18 * * SUN $SCRIPTS/update.sh && reboot"; } | crontab -u root -
+        sed -i "s|exit|shutdown -r +1|g" "$SCRIPTS"/update.sh
+        echo "exit" >> "$SCRIPTS"/update.sh
     fi
 fi
