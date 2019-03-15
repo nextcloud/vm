@@ -12,7 +12,7 @@ In the next step you will be able to choose to proceed or exit."
 ask_yes_no "Do you want to continue?"
 
 
-crontab -u root -l | { cat; echo "0 18 * * SUN $SRIPTS/update.sh.sh"; } | crontab -u root -
+crontab -u root -l | { cat; echo "0 18 * * SUN $SRIPTS/update.sh"; } | crontab -u root -
 
 
 ask_yes_no "Do you want to reboot your server after every upgrade?
