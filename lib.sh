@@ -14,6 +14,7 @@ SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
+NC_APPS_PATH=$NCPATH/apps
 
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
@@ -82,18 +83,6 @@ DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 # Collabora App
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
-# Nextant
-# this var get's the latest automatically:
-SOLR_VERSION=$(curl -s https://github.com/apache/lucene-solr/tags | grep -o "release.*</span>$" | grep -o '[0-6].[0-9].[0-9]' | sort -t. -k1,1n -k2,2n -k3,3n | tail -n1)
-[ ! -z "$NEXTANT_INSTALL" ] && NEXTANT_VERSION=$(curl -s https://api.github.com/repos/nextcloud/fulltextsearch/releases/10134699 | grep 'tag_name' | cut -d\" -f4 | sed -e "s|v||g")
-NT_RELEASE=nextant-$NEXTANT_VERSION.tar.gz
-NT_DL=https://github.com/nextcloud/fulltextsearch/releases/download/v$NEXTANT_VERSION/$NT_RELEASE
-SOLR_RELEASE=solr-$SOLR_VERSION.tgz
-SOLR_DL=http://www-eu.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR_RELEASE
-NC_APPS_PATH=$NCPATH/apps
-SOLR_HOME=/home/$SUDO_USER/solr_install/
-SOLR_JETTY=/opt/solr/server/etc/jetty-http.xml
-SOLR_DSCONF=/opt/solr-$SOLR_VERSION/server/solr/configsets/data_driven_schema_configs/conf/solrconfig.xml
 # PHP-FPM
 PHP_INI=/etc/php/7.2/fpm/php.ini
 PHP_POOL_DIR=/etc/php/7.2/fpm/pool.d
