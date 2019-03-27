@@ -1,30 +1,22 @@
-# Nextcloud VM
-**Downloads from Github:**
-![Downloads](https://img.shields.io/github/downloads/nextcloud/vm/total.svg)
-<br>
-**Build Status:**
-[![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
-<br>
-**Well, is this stable?**
-![Stability Status](https://img.shields.io/badge/stability-stable-brightgreen.svg)
-## Support the development
-* [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
-* Report [your issue](https://github.com/nextcloud/vm/issues/new)
-* Help us with [existing issues](https://github.com/nextcloud/vm/issues)
-* Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
-* **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB or Hyper-V.**
+Nextcloud VM
+============
 
-## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
-* [Daniel Hanson](https://github.com/enoch85) @ [T&M Hansson IT AB](https://www.hanssonit.se)
-* You? :)
+Server installation. Simplified. :cloud:
+--------------------------------
 
-## Special thanks to
-* [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
-* [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
-* [Stefan Heitmüller](https://github.com/morph027) @ [morph027's Blog](https://morph027.gitlab.io/)
-* [Lorenzo Faleschini](https://github.com/penzoiders)
-* [Georg Großmann](https://github.com/ggeorgg)
+#### Interactive Guidance
+> **Nextcloud VM** — _(aka **N**extcloud **V**irtual **M**achine_ or _**NVM**)_ — helps you create a personal or corporate [Nextcloud Server] _faster_ and _easier._ Fundamentally, NVM is a carefully crafted _family_ of [\*nix] scripts which interactively guide you through a quality-controlled installation to obtain an [A+ security-rated] Nextcloud instance.
 
+#### Curated Extras
+> The Nextcloud [app store] extends core features by allowing you to enable a multitude of free one-click apps. However, _integration apps_ there like [Collabora Online] and [ONLYOFFICE] are solely _bridges_ to Nextcloud. You’re still required to install those services _separately_, which can be complex. NVM provides optional _**full installation of select curated apps**_, including those and others. Monitor and manage your cloud using any web browser with NVM’s hand-picked collection of power utilities featuring stunning, modern UIs.
+
+#### All Systems Go
+> NVM can check for and install _stable_ updates to keep things current, smooth, and secure.
+
+   
+--------------------
+
+  
 ## Build your own VM, or install on a VPS
 DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc<br>
 The script will mount and format the drive. Please select Manually Format & Mount when adding the second volume.
@@ -197,3 +189,37 @@ Keep asking questions so we can add them here.
 
 ## First look
 ![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
+
+**Downloads from Github:**
+![Downloads](https://img.shields.io/github/downloads/nextcloud/vm/total.svg)
+<br>
+**Build Status:**
+[![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
+<br>
+**Well, is this stable?**
+![Stability Status](https://img.shields.io/badge/stability-stable-brightgreen.svg)
+
+## Support the development
+* [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
+* Report [your issue](https://github.com/nextcloud/vm/issues/new)
+* Help us with [existing issues](https://github.com/nextcloud/vm/issues)
+* Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
+* **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB or Hyper-V.**
+
+## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
+* [Daniel Hanson](https://github.com/enoch85) @ [T&M Hansson IT AB](https://www.hanssonit.se)
+* You? :)
+
+## Special thanks to
+* [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
+* [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
+* [Stefan Heitmüller](https://github.com/morph027) @ [morph027's Blog](https://morph027.gitlab.io/)
+* [Lorenzo Faleschini](https://github.com/penzoiders)
+* [Georg Großmann](https://github.com/ggeorgg)
+
+[Nextcloud Server]: https://bit.ly/2CHIUkA
+[app store]: https://bit.ly/2HUy4v9
+[\*nix]: https://bit.ly/2UaCC7b
+[A+ security-rated]: https://bit.ly/2mvlyJ3
+[Collabora Online]: https://bit.ly/2WjVVZ8
+[ONLYOFFICE]: https://bit.ly/2FA0TKj
