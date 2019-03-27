@@ -13,9 +13,14 @@ Server installation. Simplified. :cloud:
 #### All Systems Go
 > NVM can check for and install _stable_ updates to keep things current, smooth, and secure.
 
-   
 --------------------
 
+## Support the development
+* [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
+* Report [your issue](https://github.com/nextcloud/vm/issues/new)
+* Help us with [existing issues](https://github.com/nextcloud/vm/issues)
+* Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
+* **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB or Hyper-V.**
   
 ## Build your own VM, or install on a VPS
 DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc<br>
@@ -198,13 +203,6 @@ Keep asking questions so we can add them here.
 <br>
 **Well, is this stable?**
 ![Stability Status](https://img.shields.io/badge/stability-stable-brightgreen.svg)
-
-## Support the development
-* [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
-* Report [your issue](https://github.com/nextcloud/vm/issues/new)
-* Help us with [existing issues](https://github.com/nextcloud/vm/issues)
-* Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
-* **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB or Hyper-V.**
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
 * [Daniel Hanson](https://github.com/enoch85) @ [T&M Hansson IT AB](https://www.hanssonit.se)
