@@ -210,7 +210,7 @@ errors. Major releases are 9, 10, 11 and 12. Point releases are intermediate rel
 major release. For example, 9.0.52 and 10.0.2 are point releases.
 
 Please contact T\&M Hansson IT AB to help you with upgrading between major versions.
-https://shop.hanssonit.se/product-category/support/"
+https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
     exit 1
 fi
 
