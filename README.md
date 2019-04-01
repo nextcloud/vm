@@ -174,7 +174,7 @@ Keep asking questions so we can add them here.
 
 **Q: I typed in the wrong \[domain name | password | etc]! Can I abort and resume?**
 <br />
-**A:** Sorry: *NO.* Extract the VM again and start over. The script can *not* be run twice in a row.
+**A:** Sorry, *no.* Extract the VM again and start over. The script can *not* be run twice in a row.
 
 **Q: Does automatic update affect both Ubuntu and Nextcloud?**
 <br />
@@ -182,7 +182,7 @@ Keep asking questions so we can add them here.
 
 **Q: Can I enable / disable auto updates of my OS / Nextcloud?**
 <br />
-**A:** Uh huh. It’s controlled by a cronjob. Disable the cronjob to disable auto updates.
+**A:** Yes. It’s controlled by a cronjob. Disable the cronjob to disable auto updates.
 
 **Q: How do I backup?**
 <br />
@@ -195,13 +195,17 @@ Keep asking questions so we can add them here.
 ## First look
 ![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
 
+## The usual tags
 **Downloads from Github:**
+<br>
 ![Downloads](https://img.shields.io/github/downloads/nextcloud/vm/total.svg)
 <br>
 **Build Status:**
+<br>
 [![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
 <br>
-**Well, is this stable?**
+**Stability Status:**
+<br>
 ![Stability Status](https://img.shields.io/badge/stability-stable-brightgreen.svg)
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
