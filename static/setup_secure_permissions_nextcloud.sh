@@ -30,9 +30,12 @@ printf "chown Directories\n"
 chown -R ${rootuser}:${htgroup} ${NCPATH}/
 chown -R ${htuser}:${htgroup} ${NCPATH}/apps/
 chown -R ${htuser}:${htgroup} ${NCPATH}/config/
-chown -R ${htuser}:${htgroup} ${NCDATA}/
 chown -R ${htuser}:${htgroup} ${NCPATH}/themes/
 chown -R ${htuser}:${htgroup} ${NCPATH}/updater/
+if ! [ $(ls -ld ${NCDATA} | awk '{print$3$4}') == ${htuser}${htgroup} ]
+then
+    chown -R ${htuser}:${htgroup} ${NCDATA}/
+fi
 
 chmod +x ${NCPATH}/occ
 
