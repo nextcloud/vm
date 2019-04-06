@@ -191,7 +191,7 @@ then
 fi
 
 # Change simple signup
-if grep -r "free account" "$NCPATH"/core/templates/layout.public.php
+if grep -rq "free account" "$NCPATH"/core/templates/layout.public.php
 then
     sed -i "s|https://nextcloud.com/signup/|https://www.hanssonit.se/nextcloud-vm/|g" "$NCPATH"/core/templates/layout.public.php
     sed -i "s|Get your own free account|Get your own free Nextcloud VM|g" "$NCPATH"/core/templates/layout.public.php
