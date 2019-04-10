@@ -47,7 +47,7 @@ The script will mount and format the drive. Please select Manually Format & Moun
 
 #### Installation
 1. Get the latest install script from master and install it with a sudo user:<br>
-`curl https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh | sudo bash"`
+`curl https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh | sudo bash`
 2. When the VM is installed it will automatically reboot. Remember to login with the user you created:<br>
 `ssh <user>@IP-ADDRESS`<br>
 If it automatically runs as root when you reboot the machine, you have to abort it by pressing `CTRL+C` and run the script as the user you just created:<br>
