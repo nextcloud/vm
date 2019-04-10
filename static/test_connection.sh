@@ -13,7 +13,7 @@ DEBUG=0
 debug_mode
 
 curl_to_dir() {
-    check_command curl -sSL $1/$2 -o $3/$2
+    check_command curl -sSL "$1"/"$2" -o "$3"/"$2"
 }
 
 # Colors

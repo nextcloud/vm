@@ -199,7 +199,7 @@ done
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-    if [[ "$(curl -sfIL --retry 3 $1 | grep Status: | awk '{print$2}')" -eq 200 ]]
+    if [[ "$(curl -sfIL --retry 3 "$1" | grep Status: | awk '{print$2}')" -eq 200 ]]
     then
         return 0
     else
@@ -212,7 +212,7 @@ site_200() {
 # 2 = name of file
 # 3 = directory that the file should end up in
 curl_to_dir() {
-    check_command curl -sSL $1/$2 -o $3/$2
+    check_command curl -sSL "$1"/"$2" -o "$3"/"$2"
 }
 
 start_if_stopped() {

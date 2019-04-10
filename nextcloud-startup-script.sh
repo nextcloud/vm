@@ -47,7 +47,7 @@ fi
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-    if [[ "$(curl -sfIL --retry 3 $1 | grep Status: | awk '{print$2}')" -eq 200 ]]
+    if [[ "$(curl -sfIL --retry 3 "$1" | grep Status: | awk '{print$2}')" -eq 200 ]]
     then
         return 0
     else
