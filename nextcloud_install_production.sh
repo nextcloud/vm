@@ -521,7 +521,7 @@ rm -f results
 # Get needed scripts for first bootup
 if [ ! -f "$SCRIPTS"/nextcloud-startup-script.sh ]
 then
-check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
+    curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
 fi
 download_static_script instruction
 download_static_script history
