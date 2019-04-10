@@ -44,20 +44,15 @@ on your domain to be able to run this script.
 
 If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
 When SSL is activated, run these commands from your terminal:
-sudo wget $APP/collabora.sh
+sudo curl -sLO $APP/collabora.sh
 sudo bash collabora.sh"
     exit 1
 fi
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
-if wget -q -T 10 -t 2 --spider "$SUBDOMAIN"; then
-   sleep 0.1
-elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$SUBDOMAIN"; then
-   sleep 0.1
-elif curl -s -k -m 10 "$SUBDOMAIN"; then
-   sleep 0.1
-elif curl -s -k -m 10 "https://$SUBDOMAIN" -o /dev/null; then
+if site_200 "$SUBDOMAIN"
+then
    sleep 0.1
 else
 msg_box "Nope, it's not there. You have to create $SUBDOMAIN and point

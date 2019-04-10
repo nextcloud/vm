@@ -197,6 +197,24 @@ do
 done
 }
 
+# Checks if site is reachable with a HTTP 200 status
+site_200() {
+    if [[ "$(curl -sfIL --retry 3 $1 | grep Status: | awk '{print$2}')" -eq 200 ]]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# A function to fetch a file with curl to a directory
+# 1 = https://example.com
+# 2 = name of file
+# 3 = directory that the file should end up in
+curl_to_dir() {
+    check_command curl -sSL $1/$2 -o $3/$2
+}
+
 start_if_stopped() {
 if ! pgrep "$1"
 then
@@ -619,13 +637,7 @@ network_ok() {
     then
         service networking restart > /dev/null
     fi
-    sleep 2
-    if wget -q -T 20 -t 2 http://github.com -O /dev/null & spinner_loading
-    then
-        return 0
-    else
-        return 1
-    fi
+    sleep 5 && site_200 github.com
 }
 
 # Whiptail auto-size
@@ -672,9 +684,9 @@ fi
 
 download_verify_nextcloud_stable() {
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
-wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -P "$HTML"
+curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2" "$HTML"
 mkdir -p "$GPGDIR"
-wget -q "$NCREPO/$STABLEVERSION.tar.bz2.asc" -P "$GPGDIR"
+curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
 chmod -R 600 "$GPGDIR"
 gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
 gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
@@ -687,9 +699,9 @@ rm -f releases
 download_static_script() {
     # Get ${1} script
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if ! { wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.php" -P "$SCRIPTS" || wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"; }
+    if ! { curl_to_dir "${STATIC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.py" "$SCRIPTS"; }
     then
-        print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
+        print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
         print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
         print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
@@ -701,9 +713,9 @@ download_static_script() {
 download_le_script() {
     # Get ${1} script
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if ! { wget -q "${LETS_ENC}/${1}.sh" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.php" -P "$SCRIPTS" || wget -q "${LETS_ENC}/${1}.py" -P "$SCRIPTS"; }
+    if ! { curl_to_dir "${LETS_ENC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.py" "$SCRIPTS"; }
     then
-        print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|.php|.py' again."
+        print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
         print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
         print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
@@ -714,21 +726,21 @@ download_le_script() {
 # call like: run_main_script name_of_script
 run_main_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if wget -q "${GITHUB_REPO}/${1}.sh" -P "$SCRIPTS"
+    if curl_to_dir "${GITHUB_REPO}" "${1}.sh" "$SCRIPTS"
     then
         bash "${SCRIPTS}/${1}.sh"
         rm -f "${SCRIPTS}/${1}.sh"
-    elif wget -q "${GITHUB_REPO}/${1}.php" -P "$SCRIPTS"
+    elif curl_to_dir "${GITHUB_REPO}" "${1}.php" "$SCRIPTS"
     then
         php "${SCRIPTS}/${1}.php"
         rm -f "${SCRIPTS}/${1}.php"
-    elif wget -q "${GITHUB_REPO}/${1}.py" -P "$SCRIPTS"
+    elif curl_to_dir "${GITHUB_REPO}" "${1}.py" "$SCRIPTS"
     then
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$Red" "Downloading ${1} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo wget ${GITHUB_REPO}/${1}.sh|php|py' again."
+        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${GITHUB_REPO}/${1}.sh|php|py' again."
         exit 1
     fi
 }
@@ -738,21 +750,21 @@ run_main_script() {
 run_static_script() {
     # Get ${1} script
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if wget -q "${STATIC}/${1}.sh" -P "$SCRIPTS"
+    if curl_to_dir "${STATIC}" "${1}.sh" "$SCRIPTS"
     then
         bash "${SCRIPTS}/${1}.sh"
         rm -f "${SCRIPTS}/${1}.sh"
-    elif wget -q "${STATIC}/${1}.php" -P "$SCRIPTS"
+    elif curl_to_dir "${STATIC}" "${1}.php" "$SCRIPTS"
     then
         php "${SCRIPTS}/${1}.php"
         rm -f "${SCRIPTS}/${1}.php"
-    elif wget -q "${STATIC}/${1}.py" -P "$SCRIPTS"
+    elif curl_to_dir "${STATIC}" "${1}.py" "$SCRIPTS"
     then
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$Red" "Downloading ${1} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo wget ${STATIC}/${1}.sh|php|py' again."
+        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|php|py' again."
         exit 1
     fi
 }
@@ -761,21 +773,21 @@ run_static_script() {
 # call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
 run_app_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if wget -q "${APP}/${1}.sh" -P "$SCRIPTS"
+    if curl_to_dir "${APP}" "${1}.sh" "$SCRIPTS"
     then
         bash "${SCRIPTS}/${1}.sh"
         rm -f "${SCRIPTS}/${1}.sh"
-    elif wget -q "${APP}/${1}.php" -P "$SCRIPTS"
+    elif curl_to_dir "${APP}" "${1}.php" "$SCRIPTS"
     then
         php "${SCRIPTS}/${1}.php"
         rm -f "${SCRIPTS}/${1}.php"
-    elif wget -q "${APP}/${1}.py" -P "$SCRIPTS"
+    elif curl_to_dir "${APP}" "${1}.py" "$SCRIPTS"
     then
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$Red" "Downloading ${1} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo wget ${APP}/${1}.sh|php|py' again."
+        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${APP}/${1}.sh|php|py' again."
         exit
     fi
 }
@@ -832,7 +844,7 @@ or experience other issues then please report this to $ISSUES"
 
     # Download the latest updater
 #    cd $NCPATH
-#    wget -q https://github.com/nextcloud/updater/archive/master.zip
+#    curl sLO https://github.com/nextcloud/updater/archive/master.zip
 #    install_if_not unzip
 #    unzip -q master.zip
 #    rm master.zip*

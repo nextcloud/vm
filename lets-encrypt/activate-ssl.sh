@@ -91,14 +91,9 @@ check_command download_le_script test-new-config
 # Check if $domain exists and is reachable
 echo
 print_text_in_color "$ICyan" "Checking if $domain exists and is reachable..."
-if wget -q -T 10 -t 2 --spider "$domain"; then
-    sleep 1
-elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$domain"; then
-    sleep 1
-elif curl -s -k -m 10 "$domain"; then
-    sleep 1
-elif curl -s -k -m 10 "https://$domain" -o /dev/null ; then
-    sleep 1
+if site_200 "$domain"
+then
+    sleep 0.1
 else
 msg_box "Nope, it's not there. You have to create $domain and point
 it to this server before you can run this script."

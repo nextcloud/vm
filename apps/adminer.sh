@@ -35,8 +35,8 @@ check_distro_version
 # Install Adminer
 apt update -q4 & spinner_loading
 install_if_not adminer
-sudo wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
-sudo ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
+ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
 Alias /adminer.php $ADMINERDIR/adminer.php
