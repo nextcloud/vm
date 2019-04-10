@@ -211,6 +211,10 @@ site_200() {
 # 2 = name of file
 # 3 = directory that the file should end up in
 curl_to_dir() {
+if [ ! -d "$3" ]
+then
+    mkdir -p "$3"
+fi
     check_command curl -sSL "$1"/"$2" -o "$3"/"$2"
 }
 
