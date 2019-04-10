@@ -45,15 +45,24 @@ More information can be found here: https://unix.stackexchange.com/a/3064"
 fi
 }
 
-network_ok() {
-    print_text_in_color "$ICyan" "Testing if network is OK..."
-    service network-manager restart
-    if wget -q -T 20 -t 2 http://github.com -O /dev/null
+# Checks if site is reachable with a HTTP 200 status
+site_200() {
+    if [[ "$(curl -sfIL --retry 3 "$1" | grep Status: | awk '{print$2}')" -eq 200 ]]
     then
         return 0
     else
         return 1
     fi
+}
+
+network_ok() {
+    print_text_in_color "$ICyan" "Testing if network is OK..."
+    install_if_not network-manager
+    if ! service network-manager restart > /dev/null
+    then
+        service networking restart > /dev/null
+    fi
+    sleep 5 && site_200 github.com
 }
 
 check_command() {
@@ -116,7 +125,7 @@ You will now be provided with the option to set a static IP manually instead."
     # Copy old interfaces files
 msg_box "Copying old netplan.io config files file to:
 /tmp/netplan_io_backup/"
-    if [ -d /etc/netplan/ ] 
+    if [ -d /etc/netplan/ ]
     then
         mkdir -p /tmp/netplan_io_backup
         check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/

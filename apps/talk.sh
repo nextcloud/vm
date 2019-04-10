@@ -34,7 +34,7 @@ on your domain to be able to run this script.
 If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
 
 When SSL is activated, run these commands from your terminal:
-sudo wget $APP/talk.sh
+sudo curl -sLO $APP/talk.sh
 sudo bash talk.sh"
     exit 1
 fi
@@ -125,7 +125,7 @@ msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN 
 After you hit OK the script will check for the firewall and eventually exit on failure.
 
 To run again the setup, after fixing your firewall:
-sudo wget $APP/talk.sh
+sudo -sLO $APP/talk.sh
 sudo bash talk.sh"
 
 # Check if the port is open

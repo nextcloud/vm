@@ -12,10 +12,24 @@ true
 DEBUG=0
 debug_mode
 
-$WGET -q --tries=20 --timeout=10 http://www.github.com -O /tmp/github.idx &> /dev/null
-if [ ! -s /tmp/github.idx ]
+curl_to_dir() {
+    check_command curl -sSL "$1"/"$2" -o "$3"/"$2"
+}
+
+# Colors
+Color_Off='\e[0m'
+IRed='\e[0;91m'
+IGreen='\e[0;92m'
+ICyan='\e[0;96m'
+
+print_text_in_color() {
+        printf "%b%s%b\n" "$1" "$2" "$Color_Off"
+}
+
+curl_to_dir google.com google.connectiontest /tmp
+if [ ! -s /tmp/google.connectiontest ]
 then
-    printf "${Red}Not Connected!${Color_Off}\n"
+    print_text_in_color "$IRed" "Not connected!"
 else
-    printf "Connected!\n"
+    print_text_in_color "$IGreen" "Connected!"
 fi
