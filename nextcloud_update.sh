@@ -191,7 +191,7 @@ then
 fi
 
 # Change simple signup
-if grep -r "free account" "$NCPATH"/core/templates/layout.public.php
+if grep -rq "free account" "$NCPATH"/core/templates/layout.public.php
 then
     sed -i "s|https://nextcloud.com/signup/|https://www.hanssonit.se/nextcloud-vm/|g" "$NCPATH"/core/templates/layout.public.php
     sed -i "s|Get your own free account|Get your own free Nextcloud VM|g" "$NCPATH"/core/templates/layout.public.php
@@ -393,6 +393,27 @@ else
 msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if the folders exist."
     exit 1
+fi
+
+# Update Bitwarden
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+then
+    if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
+    then
+        if [ "$(dpkg-query -W -f='${Status}' "apache2" 2>/dev/null | grep -c "ok installed")" == "1" ]
+        then
+            if [ -d /root/bwdata ]
+                then
+                    if [ -f /root/bitwarden.sh ]
+                        then
+                            print_text_in_color "$IGreen" "Upgrading Bitwarden..."
+                            sleep 2
+                            bash /root/bitwarden.sh updateself
+                            bash /root/bitwarden.sh update
+                    fi
+            fi
+        fi
+    fi
 fi
 
 # Start Apache2
