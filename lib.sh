@@ -198,10 +198,23 @@ done
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-    if curl -sfIL --retry 3 "$1" | grep "HTTP/1.1 200 OK"
+    print_text_in_color "$ICyan" "Checking DNS with nslookup..."
+    if nslookup "${1}" >/dev/null 2>&1
     then
+        print_text_in_color "$IGreen" "DNS seems correct"
         return 0
     else
+        print_text_in_color "$IRed" "DNS doesn't seem to be configured correctly"
+        return 1
+    fi
+
+    print_text_in_color "$ICyan" "Checking if it's reachable with a 200 status..."
+    if curl -sfIL --retry 3 "${1}" | grep "HTTP/1.1 200 OK" >/dev/null 2>&1
+    then
+        print_text_in_color "$IGreen" "HTTP/1.1 200 OK"
+        return 0
+    else
+        print_text_in_color "$IRed" "curl didn't exit with a HTTP/1.1 200 OK status"
         return 1
     fi
 }
