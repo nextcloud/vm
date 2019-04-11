@@ -13,6 +13,9 @@ true
 DEBUG=0
 debug_mode
 
+# Check if root
+root_check
+
 htuser='www-data'
 htgroup='www-data'
 rootuser='root'
@@ -22,7 +25,7 @@ NCDATA="$(grep 'datadir' "$NCPATH"/config/config.php | awk '{print $3}' | cut -d
 printf "Creating possible missing Directories\n"
 mkdir -p $NCPATH/data
 mkdir -p $NCPATH/updater
-mkdir -p $NCDATA
+mkdir -p "$NCDATA"
 
 printf "chmod Files and Directories\n"
 find ${NCPATH}/ -type f -print0 | xargs -0 chmod 0640
@@ -36,7 +39,7 @@ chown -R ${htuser}:${htgroup} ${NCPATH}/themes/
 chown -R ${htuser}:${htgroup} ${NCPATH}/updater/
 if ! [ "$(ls -ld ${NCDATA} | awk '{print$3$4}')" == ${htuser}${htgroup} ]
 then
-    chown -R ${htuser}:${htgroup} ${NCDATA}/
+    chown -R ${htuser}:${htgroup} "${NCDATA}/"
 fi
 
 chmod +x ${NCPATH}/occ
@@ -47,8 +50,8 @@ then
     chmod 0644 ${NCPATH}/.htaccess
     chown ${rootuser}:${htgroup} ${NCPATH}/.htaccess
 fi
-if [ -f ${NCDATA}/.htaccess ]
+if [ -f "${NCDATA}/.htaccess" ]
 then
-    chmod 0644 ${NCDATA}/.htaccess
-    chown ${rootuser}:${htgroup} ${NCDATA}/.htaccess
+    chmod 0644 "${NCDATA}/.htaccess"
+    chown ${rootuser}:${htgroup} "${NCDATA}/.htaccess"
 fi
