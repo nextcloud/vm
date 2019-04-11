@@ -198,24 +198,40 @@ done
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
+print_text_in_color "$ICyan" "Checking for a '200 OK' status with curl..."
+        CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
+        if [[ "$CURL_STATUS" = "200" ]]
+        then
+            print_text_in_color "$IGreen" "curl produced a 200 status, everything seems OK!"
+            return 0
+        else
+            print_text_in_color "$IRed" "curl didn't produce a 200 status, is the site reachable?"
+            return 1
+        fi
+}
+
+# Do the same thing as in site_200 but with nslookup as well.
+domain_check_200() {
     print_text_in_color "$ICyan" "Checking DNS with nslookup..."
     if nslookup "${1}" >/dev/null 2>&1
     then
-        print_text_in_color "$IGreen" "DNS seems correct"
-        return 0
+        print_text_in_color "$IGreen" "DNS seems correct!"
+        print_text_in_color "$ICyan" "Checking for a '200 OK' status with curl..."
+        CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
+        if [[ "$CURL_STATUS" = "200" ]]
+        then
+            print_text_in_color "$IGreen" "curl produced a 200 status, everything seems OK!"
+            return 0
+        else
+            print_text_in_color "$IRed" "curl didn't produce a 200 status, is the site reachable?"
+            return 1
+        fi
     else
-        print_text_in_color "$IRed" "DNS doesn't seem to be configured correctly"
-        return 1
-    fi
-
-    print_text_in_color "$ICyan" "Checking if it's reachable with a 200 status..."
-    if curl -sfIL --retry 3 "${1}" | grep "HTTP/1.1 200 OK" >/dev/null 2>&1
-    then
-        print_text_in_color "$IGreen" "HTTP/1.1 200 OK"
-        return 0
-    else
-        print_text_in_color "$IRed" "curl didn't exit with a HTTP/1.1 200 OK status"
-        return 1
+        if ! nslookup "${1}"
+        then
+            print_text_in_color "$IRed" "DNS lookup failed. Please check your DNS settings! Maybe the domain isn't propagated yet?"
+            return 1
+        fi
     fi
 }
 
