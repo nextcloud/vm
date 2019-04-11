@@ -51,7 +51,7 @@ fi
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
-if site_200 "$SUBDOMAIN"
+if domain_check_200 "$SUBDOMAIN"
 then
    sleep 0.1
 else
