@@ -13,40 +13,47 @@ true
 DEBUG=0
 debug_mode
 
+# Check if root
+root_check
+
 htuser='www-data'
 htgroup='www-data'
 rootuser='root'
 
-printf "Creating possible missing Directories\n"
-mkdir -p $NCPATH/data
-mkdir -p $NCPATH/updater
-mkdir -p $NCDATA
+NCDATA="$(grep 'datadir' "$NCPATH"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
 
-printf "chmod Files and Directories\n"
-find ${NCPATH}/ -type f -print0 | xargs -0 chmod 0640
-find ${NCPATH}/ -type d -print0 | xargs -0 chmod 0750
+print_text_in_color "$IGreen" "Setting secure permissions..."
+print_text_in_color "$ICyan" "Creating possible missing Directories"
+mkdir -p "$NCPATH"/data
+mkdir -p "$NCPATH"/updater
+mkdir -p "$NCDATA"
 
-printf "chown Directories\n"
-chown -R ${rootuser}:${htgroup} ${NCPATH}/
-chown -R ${htuser}:${htgroup} ${NCPATH}/apps/
-chown -R ${htuser}:${htgroup} ${NCPATH}/config/
-chown -R ${htuser}:${htgroup} ${NCPATH}/themes/
-chown -R ${htuser}:${htgroup} ${NCPATH}/updater/
-if ! [ "$(ls -ld ${NCDATA} | awk '{print$3$4}')" == ${htuser}${htgroup} ]
+print_text_in_color "$ICyan" "chmod Files and Directories"
+find "${NCPATH}"/ -type f -print0 | xargs -0 chmod 0640
+find "${NCPATH}"/ -type d -print0 | xargs -0 chmod 0750
+
+print_text_in_color "$ICyan" "chown Directories"
+chown -R "${rootuser}":"${htgroup}" "${NCPATH}"/
+chown -R "${htuser}":"${htgroup}" "${NCPATH}"/apps/
+chown -R "${htuser}":"${htgroup}" "${NCPATH}"/config/
+chown -R "${htuser}":"${htgroup}" "${NCPATH}"/themes/
+chown -R "${htuser}":"${htgroup}" "${NCPATH}"/updater/
+if ! [ "$(ls -ld "${NCDATA}" | awk '{print$3$4}')" == "${htuser}""${htgroup}" ]
 then
-    chown -R ${htuser}:${htgroup} ${NCDATA}/
+    chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
 fi
 
-chmod +x ${NCPATH}/occ
+chmod +x "${NCPATH}"/occ
 
-printf "chmod/chown .htaccess\n"
-if [ -f ${NCPATH}/.htaccess ]
+print_text_in_color "$ICyan" "chmod/chown .htaccess"
+if [ -f "${NCPATH}"/.htaccess ]
 then
-    chmod 0644 ${NCPATH}/.htaccess
-    chown ${rootuser}:${htgroup} ${NCPATH}/.htaccess
+    chmod 0644 "${NCPATH}"/.htaccess
+    chown "${rootuser}":"${htgroup}" "${NCPATH}"/.htaccess
 fi
-if [ -f ${NCDATA}/.htaccess ]
+if [ -f "${NCDATA}"/.htaccess ]
 then
-    chmod 0644 ${NCDATA}/.htaccess
-    chown ${rootuser}:${htgroup} ${NCDATA}/.htaccess
+    chmod 0644 "${NCDATA}"/.htaccess
+    chown "${rootuser}":"${htgroup}" "${NCDATA}"/.htaccess
 fi
+
