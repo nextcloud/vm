@@ -82,7 +82,7 @@ done
 # Check if $domain exists and is reachable
 echo
 print_text_in_color "$ICyan" "Checking if $domain exists and is reachable..."
-if site_200 "$domain"
+if domain_check_200 "$domain"
 then
     sleep 0.1
 else
