@@ -20,7 +20,11 @@ htuser='www-data'
 htgroup='www-data'
 rootuser='root'
 
-NCDATA="$(grep 'datadir' "$NCPATH"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
+# Only check for existing datadir if Nextcloud is installed
+if [ -f "$NCPATH"/config/config.php ]
+then
+    NCDATA="$(grep 'datadir' "$NCPATH"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
+fi
 
 print_text_in_color "$IGreen" "Setting secure permissions..."
 print_text_in_color "$ICyan" "Creating possible missing Directories"
