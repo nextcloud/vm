@@ -244,7 +244,7 @@ if [ ! -d "$3" ]
 then
     mkdir -p "$3"
 fi
-    check_command curl -sSL "$1"/"$2" -o "$3"/"$2"
+    curl -sfL "$1"/"$2" -o "$3"/"$2"
 }
 
 start_if_stopped() {
