@@ -17,7 +17,7 @@ htuser='www-data'
 htgroup='www-data'
 rootuser='root'
 
-NCDATA="$(grep datadir $NCPATH/config/config.php | awk '{ print $3}' | cut -d "'" -f2)"
+NCDATA="$(grep 'datadir' "$NCPATH"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
 
 printf "Creating possible missing Directories\n"
 mkdir -p $NCPATH/data
