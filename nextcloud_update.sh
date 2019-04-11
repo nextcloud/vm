@@ -176,6 +176,10 @@ then
    fi
 fi
 
+###### TEMPORARY 2019-04-11 ###########
+# Replace the permissions script
+run_static_script setup_secure_permissions_nextcloud
+
 # Set secure permissions
 if [ ! -f "$SECURE" ]
 then
