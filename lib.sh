@@ -198,7 +198,7 @@ done
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-print_text_in_color "$ICyan" "Checking for a '200 OK' status with curl..."
+print_text_in_color "$ICyan" "Checking for a '200' status on "${1}" with curl..."
         CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
         if [[ "$CURL_STATUS" = "200" ]]
         then
@@ -212,20 +212,11 @@ print_text_in_color "$ICyan" "Checking for a '200 OK' status with curl..."
 
 # Do the same thing as in site_200 but with nslookup as well.
 domain_check_200() {
-    print_text_in_color "$ICyan" "Checking DNS with nslookup..."
+    print_text_in_color "$ICyan" "Checking DNS for ${1} with nslookup..."
     if nslookup "${1}" >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "DNS seems correct!"
-        print_text_in_color "$ICyan" "Checking for a '200 OK' status with curl..."
-        CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
-        if [[ "$CURL_STATUS" = "200" ]]
-        then
-            print_text_in_color "$IGreen" "curl produced a 200 status, everything seems OK!"
-            return 0
-        else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is the site reachable?"
-            return 1
-        fi
+        site_200 "${1}"
     else
         if ! nslookup "${1}"
         then
