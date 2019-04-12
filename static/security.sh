@@ -69,7 +69,7 @@ eDROP_ARCHIVE_FILE="/usr/local/src/eDROP_{$EXEC_DATE}"
 echo "Start time: $(date)"
 echo " "
 echo "Download daily DROP file:"
-wget -q -O - "$URL" > $SPAMHAUS_DROP
+curl -fsSL "$URL" > $SPAMHAUS_DROP
 grep -v '^;' $SPAMHAUS_DROP | cut -d ' ' -f 1 > $DROP_ADD_TO_UFW
 echo " "
 echo "Extract DROP IP addresses and add to UFW:"
@@ -81,7 +81,7 @@ echo " "
 echo "Downloading eDROP list and import to UFW"
 echo " "
 echo "Download daily eDROP file:"
-wget -q -O - "$eURL" > $SPAMHAUS_eDROP
+curl -fsSL "$eURL" > $SPAMHAUS_eDROP
 grep -v '^;' $SPAMHAUS_eDROP | cut -d ' ' -f 1 > $eDROP_ADD_TO_UFW
 echo " "
 echo "Extract eDROP IP addresses and add to UFW:"

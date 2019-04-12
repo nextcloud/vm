@@ -68,7 +68,7 @@ cpu_check 1 Nextcloud
 # Create new current user
 download_static_script adduser
 bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
-rm $SCRIPTS/adduser.sh
+rm -f $SCRIPTS/adduser.sh
 
 # Check distrobution and version
 check_distro_version
@@ -76,7 +76,7 @@ check_universe
 check_multiverse
 
 # Check if key is available
-if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null
+if ! site_200 "$NCREPO"
 then
 msg_box "Nextcloud repo is not available, exiting..."
     exit 1
@@ -157,7 +157,7 @@ fi
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
-# wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+# curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt update -q4 & spinner_loading
 apt install postgresql-10 -y
 
@@ -521,7 +521,7 @@ rm -f results
 # Get needed scripts for first bootup
 if [ ! -f "$SCRIPTS"/nextcloud-startup-script.sh ]
 then
-check_command wget -q "$GITHUB_REPO"/nextcloud-startup-script.sh -P "$SCRIPTS"
+    check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
 fi
 download_static_script instruction
 download_static_script history

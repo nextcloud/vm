@@ -169,8 +169,9 @@ Keep asking questions so we can add them here.
 
 **Q: How do I install apps that weren’t selected during the first install?**
 <br />
+
 **A:** Easy! All app installer scripts are [in our repo](https://github.com/nextcloud/vm/tree/master/apps). Just download and execute the script(s) for your desired app(s). For example, to install Nextcloud Talk run:
-`wget https://raw.githubusercontent.com/nextcloud/vm/master/apps/talk.sh && sudo bash talk.sh`
+`curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/talk.sh && sudo bash talk.sh`
 
 **Q: I typed in the wrong \[domain name | password | etc]! Can I abort and resume?**
 <br />

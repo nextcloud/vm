@@ -126,7 +126,7 @@ if [ -d $ADMINERDIR ]
 then
     print_text_in_color "$ICyan" "Updating Adminer..."
     rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
-    wget -q "http://www.adminer.org/latest.php" -O "$ADMINERDIR"/latest.php
+    curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
@@ -175,6 +175,10 @@ then
        sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.profile
    fi
 fi
+
+###### TEMPORARY 2019-04-11 ###########
+# Replace the permissions script
+run_static_script setup_secure_permissions_nextcloud
 
 # Set secure permissions
 if [ ! -f "$SECURE" ]
@@ -227,7 +231,7 @@ fi
 
 # Upgrade Nextcloud
 print_text_in_color "$ICyan" "Checking latest released version on the Nextcloud download server and if it's possible to download..."
-if ! wget -q --show-progress -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2"
+if ! curl -fSLO --retry 3 "$NCREPO/$STABLEVERSION.tar.bz2"
 then
 msg_box "Nextcloud does not exist. You were looking for: $NCVERSION
 Please check available versions here: $NCREPO"
