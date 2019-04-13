@@ -45,14 +45,17 @@ More information can be found here: https://unix.stackexchange.com/a/3064"
 fi
 }
 
-# Checks if site is reachable with a HTTP 200 status
 site_200() {
-    if [[ "$(curl -sfIL --retry 3 "$1" | grep Status: | awk '{print$2}')" -eq 200 ]]
-    then
-        return 0
-    else
-        return 1
-    fi
+print_text_in_color "$ICyan" "Checking for a '200' status on ${1} with curl..."
+        CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
+        if [[ "$CURL_STATUS" = "200" ]]
+        then
+            print_text_in_color "$IGreen" "curl produced a 200 status, everything seems OK!"
+            return 0
+        else
+            print_text_in_color "$IRed" "curl didn't produce a 200 status, is the site reachable?"
+            return 1
+        fi
 }
 
 network_ok() {
