@@ -500,7 +500,7 @@ clear
 
 # Set notifications for admin
 NCADMIN=$(occ_command user:list | awk '{print $3}')
-occ_command notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notficatoins and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." "$NCADMIN" "Please setup SMTP"
+occ_command notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." "$NCADMIN" "Please setup SMTP"
 occ_command notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" "$NCADMIN" "Do you need support?"
 
 # Fixes https://github.com/nextcloud/vm/issues/58
