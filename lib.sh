@@ -213,12 +213,12 @@ print_text_in_color "$ICyan" "Checking for a '200' status on ${1} with curl..."
 # Do the same thing as in site_200 but with nslookup as well.
 domain_check_200() {
     print_text_in_color "$ICyan" "Checking DNS for ${1} with nslookup..."
-    if nslookup "${1}" >/dev/null 2>&1
+    if nslookup "${1}" $DNS1 >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "DNS seems correct!"
         site_200 "${1}"
     else
-        if ! nslookup "${1}"
+        if ! nslookup "${1}" $DNS1
         then
             print_text_in_color "$IRed" "DNS lookup failed. Please check your DNS settings! Maybe the domain isn't propagated yet?"
             return 1
