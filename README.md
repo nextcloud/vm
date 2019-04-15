@@ -44,7 +44,7 @@ The script will mount and format the drive. Please select Manually Format & Moun
 
 #### INSTALLATION: OVERVIEW
 
-_**Two**_ scripts run _**consecutively**_ to create your Nextcloud instance, seperated by a reboot. The first script (`nextcloud_install_production.sh`) automatically executes when launching your new VM for the first time. It helps you choose and install features, create your user account, and then reboots. After the VM reboots and you login with the new user name you created, the second script (`nextcloud-startup-script.sh`) completes setup.
+_**Two**_ scripts run _**consecutively**_ to create your Nextcloud instance, seperated by a reboot. The first script (`nextcloud_install_production.sh`) is used to to the main installation, e.g. when installing it on a new server. It helps you choose and install features, create your user account, and then reboots. After the VM reboots and you login with the new user name you created, the second script (`nextcloud-startup-script.sh`) completes setup.
 
 #### INSTALLATION: STEP-BY-STEP
 
