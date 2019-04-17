@@ -488,7 +488,7 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "Contacts" "            " on \
 "IssueTemplate" "       " on \
 "PDFViewer" "           " on \
-"Extract" "   " on \
+"Extract" "             " on \
 "Webmin" "              " on 2>results
 
 while read -r -u 9 choice
