@@ -324,10 +324,6 @@ occ_command config:system:set remember_login_cookie_lifetime --value="1800"
 # Set logrotate (max 10 MB)
 occ_command config:system:set log_rotate_size --value="10485760"
 
-# Don't show "Get your own free account"
-# To fix: remove ' ' from false otherwise it won't apply
-# occ_command config:system:set simpleSignUpLink.shown --value="false"
-
 # Change simple signup
 if grep -rq "free account" "$NCPATH"/core/templates/layout.public.php
 then
@@ -492,6 +488,7 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "Contacts" "            " on \
 "IssueTemplate" "       " on \
 "PDFViewer" "           " on \
+"Extract" "   " on \
 "Webmin" "              " on 2>results
 
 while read -r -u 9 choice
@@ -508,6 +505,13 @@ do
         ;;
         PDFViewer)
             install_and_enable_app files_pdfviewer
+        ;;
+	Extract)
+        if install_and_enable_app extract
+	then
+	    install_if_not unrar
+	    install_if_not unzip
+	fi
         ;;
         Webmin)
             run_app_script webmin
