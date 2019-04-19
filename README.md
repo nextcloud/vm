@@ -19,9 +19,15 @@ Server installation. Simplified. :cloud:
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
 * Report [your issue](https://github.com/nextcloud/vm/issues/new)
 * Help us with [existing issues](https://github.com/nextcloud/vm/issues)
-* Write scripts so that this can be installed with [Vagrant](https://www.vagrantup.com/docs/getting-started/) or similar
+* Write scripts so that the release process becomes automated with [Vagrant](https://www.vagrantup.com/docs/getting-started/), [Terraform](https://www.terraform.io/) or similar
 * **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB or Hyper-V.**
   
+## Machine configuration of the released version
+Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
+
+## Full documentation
+You can find the full documentation [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm)
+
 ## Build your own VM, or install on a VPS
 DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc<br>
 The script will mount and format the drive. Please select Manually Format & Mount when adding the second volume.
@@ -63,11 +69,6 @@ After the first script completes ...
 > **Setup is *not* finished after running the *first* script.
 > *Both* must execute *consecutively*.**
 
-## Machine configuration of the released version
-Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
-
-## Full documentation
-You can find the full documentation [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm)
 
 ## Do you want to run this on your Raspberry Pi?
 Great news! We’ve forked this repository and created a Raspberry Pi image. Download it [here](https://github.com/techandme/NextBerry) or [here](https://www.techandme.se/nextberry-rpi/).
