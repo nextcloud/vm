@@ -13,6 +13,9 @@ unset DOCKEROVERLAY2
 DEBUG=0
 debug_mode
 
+# Must be root
+root_check
+
 ### Migrating Docker images to overlay2 ###
 # https://www.techandme.se/changes-to-docker-ce-in-the-nextcloud-vm/
 # Credits to: https://gist.github.com/hydra1983/22b2bed38b4f5f56caa87c830c96378d
