@@ -150,9 +150,6 @@ update-grub
 # Remove update lists
 rm /var/lib/apt/lists/* -r
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
-
 # Fix bug in nextcloud.sh
 CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
 if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh &>/dev/null
@@ -194,6 +191,9 @@ then
     occ_command app:update --all
 fi
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Change simple signup
 if grep -rq "free account" "$NCPATH"/core/templates/layout.public.php
 then
@@ -210,8 +210,8 @@ Latest release: $NCVERSION
 
 It is best to keep your Nextcloud server upgraded regularly, and to install all point releases
 and major releases without skipping any of them, as skipping releases increases the risk of
-errors. Major releases are 9, 10, 11 and 12. Point releases are intermediate releases for each
-major release. For example, 9.0.52 and 10.0.2 are point releases.
+errors. Major releases are 13, 14, 15 and 16. Point releases are intermediate releases for each
+major release. For example, 14.0.52 and 15.0.2 are point releases.
 
 Please contact T\&M Hansson IT AB to help you with upgrading between major versions.
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
@@ -227,6 +227,20 @@ else
     print_text_in_color "$ICyan" "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
 	print_text_in_color "$ICyan" "No need to upgrade, this script will exit..."
     exit 0
+fi
+
+# Check if PHP version is compatible with $NCVERSION
+PHP_VER=71
+NC_VER=16
+if [ "${NCVERSION%%.*}" -eq "$NC_VER" ]
+then
+    if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
+    then
+msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+
+If you need support, please visit https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+        exit
+    fi
 fi
 
 # Upgrade Nextcloud
