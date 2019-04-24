@@ -232,7 +232,7 @@ fi
 # Check if PHP version is compatible with $NCVERSION
 PHP_VER=71
 NC_VER=16
-if [ "${NCVERSION%%.*}" -eq "$NC_VER" ]
+if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
 then
     if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
     then
