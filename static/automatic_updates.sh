@@ -22,8 +22,7 @@ msg_box "This option will update your server every week on Saturdays at 18:00 (6
 The update will run the built in script '$SCRIPTS/update.sh' which will update both the server packages and Nextcloud itself.
 
 You can read more about it here: https://www.techandme.se/nextcloud-update-is-now-fully-automated/
-Please keep in mind that automatic updates might fail hence it's important to have a proper backup in place if you plan
-to run this option.
+Please keep in mind that automatic updates might fail hence it's important to have a proper backup in place if you plan to run this option.
 
 You can disable the automatic updates by entering the crontab file like this:
 'sudo crontab -e -u root'
