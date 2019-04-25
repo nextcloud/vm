@@ -26,48 +26,8 @@ Server installation. Simplified. :cloud:
 Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
 
 ## Full documentation
-You can find the full documentation [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm)
-
-## Build your own VM, or install on a VPS
-DigitalOcean example: https://youtu.be/LlqY5Y6P9Oc<br>
-The script will mount and format the drive. Please select Manually Format & Mount when adding the second volume.
-
-#### MINIMUM SYSTEM REQUIREMENTS
-* A clean [Ubuntu Server 18.04.X](http://cdimage.ubuntu.com/releases/18.04/release/ubuntu-18.04.2-server-amd64.iso) using the alternative installer
-* OpenSSH (preferred)
-* 20 GB HDD for OS
-* XX GB HDD for DATA (/mnt/ncdata)
-* Absolute minimum is 1 vCPU and 2 GB RAM (4 GB minimum if you are running OnlyOffice)
-* A working internet connection (the script needs it to download files and variables)
-* [VMware Player](https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html) (fully tested with Hyper-V and KVM as well).
-
-#### RECOMMENDED
-* DHCP available
-* 40 GB HDD for OS
-* 4 vCPU
-* 4 GB RAM
-* Ports 80 and 443 open to the server. [Here’s](https://letsencrypt.org/docs/allow-port-80/) why port 80 is recomended. Yes: the VM handles redirection to 443.
-
-#### INSTALLATION: OVERVIEW
-
-_**Two**_ scripts run _**consecutively**_ to create your Nextcloud instance, seperated by a reboot. The first script (`nextcloud_install_production.sh`) is used to to the main installation, e.g. when installing it on a new server. It helps you choose and install features, create your user account, and then reboots. After the VM reboots and you login with the new user name you created, the second script (`nextcloud-startup-script.sh`) completes setup.
-
-#### INSTALLATION: STEP-BY-STEP
-
-- **STEP 1** — Download and execute the latest Nextcloud VM installer script using _**su**per user **do** (sudo):_<br>
-`sudo bash -c "$(wget -q -O - https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh)"` <br>
-After the first script completes ...
-- **STEP 2** — The VM automatically reboots.
-- **STEP 3** — Login with your new user name locally or remotely (via CLI: `ssh <user>@IP-ADDRESS`). The second script executes and completes installation.
-
-> ##### AN IMPORTANT NOTE
-> *If the VM automatically runs as **root** after rebooting,
-> press `CTRL+C` to abort `nextcloud-startup-script.sh.`
-> Then manually run the startup script
-> as your newly-created **user**:*
-> `sudo -u <user> sudo bash /var/scripts/nextcloud-startup-script.sh` — 
-> **Setup is *not* finished after running the *first* script.
-> *Both* must execute *consecutively*.**
+* [VM](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm)
+* [Install with scripts](https://docs.hanssonit.se/s/bj0vl1ihv0jgrmfm08j0/build-your-own/d/bj0vl4ahv0jgrmfm0950/nextcloud-vm?currentPageId=bj0vl8qhv0jgrmfm095g)
 
 
 ## Do you want to run this on your Raspberry Pi?
