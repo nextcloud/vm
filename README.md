@@ -22,23 +22,14 @@ Server installation. Simplified. :cloud:
 * Write scripts so that the release process becomes automated with [Vagrant](https://www.vagrantup.com/docs/getting-started/), [Terraform](https://www.terraform.io/) or similar
 * **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB or Hyper-V.**
   
-## Machine configuration of the released version
-Please check the configuration [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
-
 ## Full documentation
 * [VM](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm)
 * [Install with scripts](https://docs.hanssonit.se/s/bj0vl1ihv0jgrmfm08j0/build-your-own/d/bj0vl4ahv0jgrmfm0950/nextcloud-vm?currentPageId=bj0vl8qhv0jgrmfm095g)
-
-
-## Do you want to run this on your Raspberry Pi?
-Great news! We’ve forked this repository and created a Raspberry Pi image. Download it [here](https://github.com/techandme/NextBerry) or [here](https://www.techandme.se/nextberry-rpi/).
-
-We call it NextBerry and it’s confirmed to be working on Raspberry Pi 2 & 3.
-
-NOTE (2018-08-01): This is not maintained anymore, but keeping the info in case someone wants to pick it up again.
+* [FAQ](https://docs.hanssonit.se/s/bj101nihv0jgrmfm09f0/faq/d/bj101pihv0jgrmfm0a10/nextcloud-vm?currentPageId=bj101sqhv0jgrmfm0a1g)
+* [Machine configuration of the released version](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
 
 ## I want to test a Release Candidate (RC)!
-No problem, brave explorer! We made it simple. Run `update.sh` but abort it before it starts so that you have the latest `nextcloud_update.sh`. Then put this in your `nextcloud_update.sh` below the curl command (lib.sh) but before everything else and run it.
+No problem, brave explorer! We made it simple. Run `update.sh` but abort it before it starts so that you have the latest `nextcloud_update.sh`. Then put this in your `nextcloud_update.sh` below the curl command (lib.sh) but before the check for major versions and run it.
 
 To test a specific RC version:
 
@@ -54,105 +45,6 @@ NCREPO="https://download.nextcloud.com/server/prereleases"
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
 STABLEVERSION="nextcloud-$NCVERSION"
 ```
-
-## FAQ
-
-Keep asking questions so we can add them here.
-
-**Q: Where can I download VMware Player?**
-<br />
-**A:** Get the latest release [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0).
-
-**Q: Why are my apps disabled during an upgrade?**
-<br />
-**A:** To ensure compatibility with a newer system. (Read [further](https://github.com/nextcloud/server/issues/11102#issuecomment-427685621).)
-
-**Q: How do I update my Nextcloud VM?**
-<br />
-**A:** Use our script — `sudo bash /var/scripts/update.sh` — or, as root in the terminal — `run_update_nextcloud`
-
-
-**Q: How do I run the occ command?**
-<br />
-**A:** We’ve added an alias for that as well. As root, just run `nextcloud_occ`
-
-**Q: The Mcrypt module is missing in the VM. Why?**
-<br />
-**A:** It’s deprecated[¹](https://wiki.php.net/rfc/mcrypt-viking-funeral) abandonware[²](http://php.net/manual/en/migration71.deprecated.php). (More [here](https://github.com/nextcloud/vm/issues/629).)
-
-**Q: Where do I tweak PHP-FPM settings?**
-<br />
-**A:** You can change them in `/etc/php/7.2/fpm/pool.d/nextcloud.conf` but **BE AWARE**: Only alter them if you know what you’re doing!
-
-**Q: Some apps like _issuetemplate_ aren’t installed by the setup script.**
-<br />
-**A:** We’ve seen this temporary [network irregularity](https://github.com/nextcloud/vm/issues/639#issuecomment-416472543) before. Try again. It’ll work!
-
-**Q: The downloaded file is just a few kilobytes, or corrupted.**
-<br />
-**A:** That’s due to heavy server load. Wait a few minutes and try again.
-
-**Q: The script says: “WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts.”**
-<br />
-**A:** Read [here](http://askubuntu.com/a/463966).
-
-**Q: How do I fix a “NETWORK NOT OK” error when booting the VM?**
-<br />
-**A:** Check the most likely culprits: your network and firewall settings.
-<br />
-- Open VMware / Virtualbox Settings. Remove your VM’s network adapter (aka Network Interface Card or NIC). Add a new NIC.<br>
-![alt_tag](https://goo.gl/gWg9JN)
-- Set the NIC to **Bridged**, not **Shared** mode.
-- Ensure your firewall isn't blocking the VM’s IP address.
-- Ensure either:
-  - (a) your router has DHCP enabled so it *automatically* assigns the VM a unique IP address or
-  - (b) you *manually* assign your VM a unique static IP (preferably locked to its MAC address)
-
-**Q: I get a message that I'm not root, but I am.**
-<br />
-**A:** Is your net connection solid? See more [here](https://github.com/nextcloud/vm/issues/200)
-
-**Q: Which Hyper-V generation should we chose when creating a machine to load this image?**
-<br />
-**A:** Currently, use a first generation machine.
-
-**Q: Do you have a pre-configured Hyper-V VM?**
-<br />
-**A:** Yep! Download it [here.](https://shop.hanssonit.se/product/nextcloud-vm-microsoft-hyper-v-vhd/)
-
-**Q: I want a bigger version of this VM. Where can I find that?**
-<br />
-**A:** Download 500GB, 1T, 2T, and order custom sizes [here.](https://shop.hanssonit.se/product-category/virtual-machine/nextcloud-vm/)
-
-**Q: I found a bug! How do I report it?**
-<br />
-**A:** Submit bug sightings [here.](https://github.com/nextcloud/vm/issues/new)
-
-**Q: How do I install apps that weren’t selected during the first install?**
-<br />
-
-**A:** Easy! All app installer scripts are [in our repo](https://github.com/nextcloud/vm/tree/master/apps). Just download and execute the script(s) for your desired app(s). For example, to install Nextcloud Talk run:
-`curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/talk.sh && sudo bash talk.sh`
-
-**Q: I typed in the wrong \[domain name | password | etc]! Can I abort and resume?**
-<br />
-**A:** Sorry, *no.* Extract the VM again and start over. The script can *not* be run twice in a row.
-
-**Q: Does automatic update affect both Ubuntu and Nextcloud?**
-<br />
-**A:** If you want to auto update Ubuntu *and* Nextcloud check [this blog post](https://www.techandme.se/nextcloud-update-is-now-fully-automated/). 
-
-**Q: Can I enable / disable auto updates of my OS / Nextcloud?**
-<br />
-**A:** Yes. It’s controlled by a cronjob. Disable the cronjob to disable auto updates.
-
-**Q: How do I backup?**
-<br />
-**A:** There are several ways. We recommend [Rsync](https://rsync.samba.org/) to a NAS or similar. You can find a script [here](https://www.techandme.se/rsync-backup-script/).
-
-**Q: How do I route ports 443, 10000, and 22 to my VM? Can you help me with NAT loopback?**
-<br />
-**A:** Sure can. Check [this](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online) out.
 
 ## First look
 ![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
