@@ -28,7 +28,7 @@ Server installation. Simplified. :cloud:
 * [FAQ](https://docs.hanssonit.se/s/bj101nihv0jgrmfm09f0/faq/d/bj101pihv0jgrmfm0a10/nextcloud-vm?currentPageId=bj101sqhv0jgrmfm0a1g)
 * [Machine configuration of the released version](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm).
 
-## I want to test a Release Candidate (RC)!
+## I want to test a Release Candidate (RC), or Beta!
 No problem, brave explorer! We made it simple. Run `update.sh` but abort it before it starts so that you have the latest `nextcloud_update.sh`. Then put this in your `nextcloud_update.sh` below the curl command (lib.sh) but before the check for major versions and run it.
 
 To test a specific RC version:
@@ -39,7 +39,7 @@ NCVERSION=12.0.1RC5
 STABLEVERSION="nextcloud-$NCVERSION"
 ```
 
-Or the latest RC:
+Or the latest Beta:
 ```
 NCREPO="https://download.nextcloud.com/server/prereleases"
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
