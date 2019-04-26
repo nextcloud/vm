@@ -46,11 +46,10 @@ fi
 }
 
 site_200() {
-print_text_in_color "$ICyan" "Checking for a '200' status on ${1} with curl..."
+print_text_in_color "$ICyan" "Checking connection..."
         CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
         if [[ "$CURL_STATUS" = "200" ]]
         then
-            print_text_in_color "$IGreen" "curl produced a 200 status, everything seems OK!"
             return 0
         else
             print_text_in_color "$IRed" "curl didn't produce a 200 status, is the site reachable?"
