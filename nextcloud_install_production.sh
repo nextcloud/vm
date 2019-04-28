@@ -565,6 +565,18 @@ linux-cloud-tools-virtual \
 linux-image-virtual \
 linux-image-extra-virtual
 
+# Add aliases
+if [ -f /root/.bash_aliases ]
+then
+    if ! grep -q "nextcloud" /root/.bash_aliases
+then
+{
+echo "alias nextcloud_occ='sudo -u www-data php /var/www/nextcloud/occ'"
+echo "alias run_update_nextcloud='bash /var/scripts/update.sh'"
+} > /root/.bash_aliases
+    fi
+fi
+
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
 
