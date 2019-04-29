@@ -707,6 +707,7 @@ fi
 }
 
 download_verify_nextcloud_stable() {
+install_if_not gpg
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2" "$HTML"
 mkdir -p "$GPGDIR"
