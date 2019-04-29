@@ -327,7 +327,7 @@ occ_command config:system:set log_rotate_size --value="10485760"
 # Set trashbin retention obligation (save it in trahbin for 6 months or delete when space is needed)
 occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
 
-# # Set versions retention obligation (save versions for 12 months or delete when space is needed)
+# Set versions retention obligation (save versions for 12 months or delete when space is needed)
 occ_command config:system:set versions_retention_obligation --value="auto, 365"
 
 # Change simple signup
