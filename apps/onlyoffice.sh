@@ -173,6 +173,7 @@ then
     restart_webserver
 # Install Onlyoffice App
     cd "$NC_APPS_PATH"
+    install_if_not git
     check_command git clone https://github.com/ONLYOFFICE/onlyoffice-nextcloud.git onlyoffice
 else
 	print_text_in_color "$Red" "It seems like no certs were generated, please report this issue here: $ISSUES"
