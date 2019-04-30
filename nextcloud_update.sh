@@ -70,7 +70,11 @@ then
     if dpkg -l | grep php7.2 > /dev/null 2>&1
     then
         install_if_not php7.2-dev
-    else
+    elif dpkg -l | grep php7.3 > /dev/null 2>&1
+    then
+        install_if_not php7.3-dev
+    elif dpkg -l | grep php7.0 > /dev/null 2>&1
+    then
         install_if_not php7.0-dev
     fi
     apt purge php-redis -y
@@ -98,7 +102,11 @@ then
     if dpkg -l | grep php7.2 > /dev/null 2>&1
     then
         install_if_not php7.2-dev
-    else
+    elif dpkg -l | grep php7.3 > /dev/null 2>&1
+    then
+        install_if_not php7.3-dev
+    elif dpkg -l | grep php7.0 > /dev/null 2>&1
+    then
         install_if_not php7.0-dev
     fi
     pecl channel-update pecl.php.net
