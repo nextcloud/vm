@@ -233,12 +233,11 @@ listen = /run/php/php7.2-fpm.nextcloud.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
-;; max_children is set dynamically with caulculate_php_fpm()
+; max_children is set dynamically with caulculate_php_fpm()
 pm.max_children = 8
 pm.start_servers = 3
 pm.min_spare_servers = 2
 pm.max_spare_servers = 3
-pm.max_requests = 2000
 env[HOSTNAME] = $(hostname -f)
 env[PATH] = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 env[TMP] = /tmp
@@ -246,6 +245,9 @@ env[TMPDIR] = /tmp
 env[TEMP] = /tmp
 security.limit_extensions = .php
 php_admin_value [cgi.fix_pathinfo] = 1
+
+; Optional
+; pm.max_requests = 2000
 POOL_CONF
 
 # Disable the idling example pool.
