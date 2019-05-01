@@ -14,6 +14,13 @@ true
 is_process_running apt
 is_process_running dpkg
 
+# Set defaults
+dns_resolver_router="192.168.1.1 8.8.8.8"
+dns_resolver_cloudflare="1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001"
+dns_resolver_google="8.8.8.8 8.8.4.4 2001:4860:4860::8888 2001:4860:4860::8844"
+dns_resolver_quadnine="9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9"
+default_dns_resolver=1
+
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
@@ -117,9 +124,34 @@ else
 	run_static_script format-chosen
 fi
 
+# Set DNS resolver
+clear
+echo "HELLO, "$USER". Which DNS provider should this nextcoud box use?"
+echo "Enter the action to perform: "
+echo ""
+echo "1) Use the DNS server set on your router (192.168.1.1)"
+echo "2) Cloudflare's new privacy-first fastest dns service - they don't keep any logs"
+echo "3) Google's dns server - 3x slower than cloudflare"
+echo "4) Quadnine's dns server"
+echo ""
+read -p "Select the DNS resolver you want to use [$default_dns_resolver]: " dns_resolver
+dns_resolver=${dns_resolver:-$default_dns_resolver}
+case "$dns_resolver" in
+1)
+    dns_resolver=dns_resolver_router
+    ;;
+2)
+    dns_resolver=dns_resolver_cloudflare
+    ;;
+3)
+    dns_resolver=dns_resolver_google
+    ;;
+4)
+    dns_resolver=dns_resolver_quadnine
+    ;;
+esac
 # Change DNS system wide
-sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
-sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
+sed -i "s|#FallbackDNS=.*|FallbackDNS=$dns_resolver|g" /etc/systemd/resolved.conf
 check_command systemctl restart network-manager.service
 network_ok
 
