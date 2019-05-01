@@ -99,6 +99,9 @@ then
     mkdir -p "$SCRIPTS"
 fi
 
+# Set NCDATA path
+export NCDATA=/mnt/ncdata
+
 # Install needed network
 install_if_not netplan.io
 install_if_not network-manager
