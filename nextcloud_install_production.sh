@@ -19,7 +19,24 @@ dns_resolver_router="192.168.1.1 8.8.8.8"
 dns_resolver_cloudflare="1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001"
 dns_resolver_google="8.8.8.8 8.8.4.4 2001:4860:4860::8888 2001:4860:4860::8844"
 dns_resolver_quadnine="9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9"
-default_dns_resolver=1
+default_dns_resolver=1 # 1router | 2cloudflare | 3google | 4quadnine
+default_drive_setup=1 # 1singledrive | 2dualdrives
+
+# Set dual or single drive setup
+clear
+echo "HELLO, "$USER". This VM is designed to run with two disks, one for OS and one for DATA."
+echo "Choose the desired setup: "
+echo ""
+echo "1) Use single drive"
+echo "2) Use this script with two disks (Recommended!)"
+echo ""
+read -p "Select the drive setup you want to use [$default_drive_setup]: " drive_setup
+drive_setup=${drive_setup:-$default_drive_setup}
+
+# Set NCDATA path if single drive chosen
+if [[ drive_setup -eq 1 ]]; then # if single disk setup was chosen
+    export NCDATA=/mnt/ncdata
+fi
 
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
@@ -106,31 +123,30 @@ then
     mkdir -p "$SCRIPTS"
 fi
 
-# Set NCDATA path
-export NCDATA=/mnt/ncdata
-
 # Install needed network
 install_if_not netplan.io
 install_if_not network-manager
 
-# Format the second disk
-msg_box "This VM is designed to run with two disks, one for OS and one for DATA.
-
-You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
-if [[ "no" == $(ask_yes_or_no "Do you want to choose disk by yourself?") ]]
-then
-	run_static_script format-sdb
-else
-	run_static_script format-chosen
+# Format the second disk (if dual drive setup is chosen)
+if [[ drive_setup -eq 2 ]]; then # if dual disk setup was chosen
+    msg_box "This VM is designed to run with two disks, one for OS and one for DATA.
+    
+    You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
+    if [[ "no" == $(ask_yes_or_no "Do you want to choose disk by yourself?") ]]
+    then
+        run_static_script format-sdb
+    else
+        run_static_script format-chosen
+    fi
 fi
 
 # Set DNS resolver
 clear
 echo "HELLO, "$USER". Which DNS provider should this nextcoud box use?"
-echo "Enter the action to perform: "
+echo "Select the provider: "
 echo ""
 echo "1) Use the DNS server set on your router (192.168.1.1)"
-echo "2) Cloudflare's new privacy-first fastest dns service - they don't keep any logs"
+echo "2) Cloudflare's new privacy-oriented, fast dns service - no logs with your IP"
 echo "3) Google's dns server - 3x slower than cloudflare"
 echo "4) Quadnine's dns server"
 echo ""
