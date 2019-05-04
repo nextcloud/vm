@@ -114,8 +114,7 @@ whiptail --title "Choose disk format" --radiolist --separate-output "How would y
 "2 Disks Manual" "(Choose by yourself)            " off \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)              " off 2>results
 
-while read -r -u 9 choice
-do
+choice=$(< results)
     case "$choice" in
         "2 Disks Auto")
             run_static_script format-sdb
@@ -130,8 +129,6 @@ do
         *)
         ;;
     esac
-done 9< results
-rm -f results
 
 # Set DNS resolver
 whiptail --title "Set DNS Resolver" --radiolist --separate-output "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
@@ -139,8 +136,7 @@ whiptail --title "Set DNS Resolver" --radiolist --separate-output "Which DNS pro
 "Cloudflare" "(https://www.cloudflare.com/dns/)            " off \
 "Local" "(192.168.1.1 + 149.112.112.112)              " off 2>results
 
-while read -r -u 9 choice
-do
+choice=$(< results)
     case "$choice" in
         Quad9)
             sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
@@ -157,8 +153,6 @@ do
         *)
         ;;
     esac
-done 9< results
-rm -f results
 check_command systemctl restart network-manager.service
 network_ok
 
