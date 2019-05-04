@@ -104,15 +104,14 @@ install_if_not netplan.io
 install_if_not network-manager
 
 # Set dual or single drive setup
-clear
 msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
-You could still choose to only run on one disk though, which is not recommended,, but maybe your only option depending on which hypervisor you are running.
+You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
 
-whiptail --title "Choose disk format" --radiolist --separate-output "How would you like to configure your disks?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+whiptail --title "Choose disk format" --radiolist --separate-output "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)            " on \
-"2 Disks Manual" "Choose by yourself)            " off \
+"2 Disks Manual" "(Choose by yourself)            " off \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)              " off 2>results
 
 while read -r -u 9 choice
@@ -126,6 +125,7 @@ do
         ;;
         "1 Disk")
             print_text_in_color "$IRed" "1 Disk setup chosen."
+	    sleep 2
         ;;
         *)
         ;;
@@ -134,9 +134,9 @@ done 9< results
 rm -f results
 
 # Set DNS resolver
-whiptail --title "Set DNS Resolver" --radiolist --separate-output "Which DNS provider should this Nextcloud box use?n\Select or Deselect by pressing the spacebarn\ You should only choose ONE!" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+whiptail --title "Set DNS Resolver" --radiolist --separate-output "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Quad9" "(https://www.quad9.net/)            " on \
-"Cloudflare" "https://www.cloudflare.com/dns/)            " off \
+"Cloudflare" "(https://www.cloudflare.com/dns/)            " off \
 "Local" "(192.168.1.1 + 149.112.112.112)              " off 2>results
 
 while read -r -u 9 choice
