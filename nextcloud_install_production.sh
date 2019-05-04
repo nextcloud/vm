@@ -14,30 +14,6 @@ true
 is_process_running apt
 is_process_running dpkg
 
-# Set defaults
-dns_resolver_router="192.168.1.1 8.8.8.8"
-dns_resolver_cloudflare="1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001"
-dns_resolver_google="8.8.8.8 8.8.4.4 2001:4860:4860::8888 2001:4860:4860::8844"
-dns_resolver_quadnine="9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9"
-default_dns_resolver=1 # 1router | 2cloudflare | 3google | 4quadnine
-default_drive_setup=1 # 1singledrive | 2dualdrives
-
-# Set dual or single drive setup
-clear
-echo "HELLO, "$USER". This VM is designed to run with two disks, one for OS and one for DATA."
-echo "Choose the desired setup: "
-echo ""
-echo "1) Use single drive"
-echo "2) Use this script with two disks (Recommended!)"
-echo ""
-read -p "Select the drive setup you want to use [$default_drive_setup]: " drive_setup
-drive_setup=${drive_setup:-$default_drive_setup}
-
-# Set NCDATA path if single drive chosen
-if [[ drive_setup -eq 1 ]]; then # if single disk setup was chosen
-    export NCDATA=/mnt/ncdata
-fi
-
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
@@ -127,47 +103,62 @@ fi
 install_if_not netplan.io
 install_if_not network-manager
 
-# Format the second disk (if dual drive setup is chosen)
-if [[ drive_setup -eq 2 ]]; then # if dual disk setup was chosen
-    msg_box "This VM is designed to run with two disks, one for OS and one for DATA.
-    
-    You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
-    if [[ "no" == $(ask_yes_or_no "Do you want to choose disk by yourself?") ]]
-    then
-        run_static_script format-sdb
-    else
-        run_static_script format-chosen
-    fi
-fi
+# Set dual or single drive setup
+clear
+msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
+You could still choose to only run on one disk though, which is not recommended,, but maybe your only option depending on which hypervisor you are running.
+
+You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
+
+whiptail --title "Choose disk format" --radiolist --separate-output "How would you like to configure your disks?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"2 Disks Auto" "(Automatically configured)            " on \
+"2 Disks Manual" "Choose by yourself)            " off \
+"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)              " off 2>results
+
+while read -r -u 9 choice
+do
+    case "$choice" in
+        2 Disks Auto)
+            run_static_script format-sdb
+        ;;
+        2 Disks Manual)
+            run_static_script format-chosen
+        ;;
+        1 Disk)
+            exit 1
+        ;;
+        *)
+        ;;
+    esac
+done 9< results
+rm -f results
 
 # Set DNS resolver
-clear
-echo "HELLO, "$USER". Which DNS provider should this nextcoud box use?"
-echo "Select the provider: "
-echo ""
-echo "1) Use the DNS server set on your router (192.168.1.1)"
-echo "2) Cloudflare's new privacy-oriented, fast dns service - no logs with your IP"
-echo "3) Google's dns server - 3x slower than cloudflare"
-echo "4) Quadnine's dns server"
-echo ""
-read -p "Select the DNS resolver you want to use [$default_dns_resolver]: " dns_resolver
-dns_resolver=${dns_resolver:-$default_dns_resolver}
-case "$dns_resolver" in
-1)
-    dns_resolver=dns_resolver_router
-    ;;
-2)
-    dns_resolver=dns_resolver_cloudflare
-    ;;
-3)
-    dns_resolver=dns_resolver_google
-    ;;
-4)
-    dns_resolver=dns_resolver_quadnine
-    ;;
-esac
-# Change DNS system wide
-sed -i "s|#FallbackDNS=.*|FallbackDNS=$dns_resolver|g" /etc/systemd/resolved.conf
+whiptail --title "Set DNS Resolver" --radiolist --separate-output "Which DNS provider should this Nextcloud box use?n\Select or Deselect by pressing the spacebarn\ You should only choose ONE!" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Quad9" "(https://www.quad9.net/)            " on \
+"Cloudflare" "https://www.cloudflare.com/dns/)            " off \
+"Local" "(192.168.1.1 + 149.112.112.112)              " off 2>results
+
+while read -r -u 9 choice
+do
+    case "$choice" in
+        Quad9)
+            sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
+            sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
+        ;;
+        Cloudflare)
+            sed -i "s|#DNS=.*|DNS=1.1.1.1 2606:4700:4700::1111|g" /etc/systemd/resolved.conf
+            sed -i "s|#FallbackDNS=.*|FallbackDNS=1.0.0.1 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
+        ;;
+        Local)
+            sed -i "s|#DNS=.*|DNS=192.168.1.1|g" /etc/systemd/resolved.conf
+            sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
+        ;;
+        *)
+        ;;
+    esac
+done 9< results
+rm -f results
 check_command systemctl restart network-manager.service
 network_ok
 
