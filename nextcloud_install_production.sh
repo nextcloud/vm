@@ -103,20 +103,56 @@ fi
 install_if_not netplan.io
 install_if_not network-manager
 
-# Format the second disk
-msg_box "This VM is designed to run with two disks, one for OS and one for DATA.
+# Set dual or single drive setup
+msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
+You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
-if [[ "no" == $(ask_yes_or_no "Do you want to choose disk by yourself?") ]]
-then
-	run_static_script format-sdb
-else
-	run_static_script format-chosen
-fi
 
-# Change DNS system wide
-sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
-sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
+whiptail --title "Choose disk format" --radiolist --separate-output "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"2 Disks Auto" "(Automatically configured)            " on \
+"2 Disks Manual" "(Choose by yourself)            " off \
+"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)              " off 2>results
+
+choice=$(< results)
+    case "$choice" in
+        "2 Disks Auto")
+            run_static_script format-sdb
+        ;;
+        "2 Disks Manual")
+            run_static_script format-chosen
+        ;;
+        "1 Disk")
+            print_text_in_color "$IRed" "1 Disk setup chosen."
+	    sleep 2
+        ;;
+        *)
+        ;;
+    esac
+
+# Set DNS resolver
+whiptail --title "Set DNS Resolver" --radiolist --separate-output "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Quad9" "(https://www.quad9.net/)            " on \
+"Cloudflare" "(https://www.cloudflare.com/dns/)            " off \
+"Local" "(192.168.1.1 + 149.112.112.112)              " off 2>results
+
+choice=$(< results)
+    case "$choice" in
+        Quad9)
+            sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
+            sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
+        ;;
+        Cloudflare)
+            sed -i "s|#DNS=.*|DNS=1.1.1.1 2606:4700:4700::1111|g" /etc/systemd/resolved.conf
+            sed -i "s|#FallbackDNS=.*|FallbackDNS=1.0.0.1 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
+        ;;
+        Local)
+            sed -i "s|#DNS=.*|DNS=192.168.1.1|g" /etc/systemd/resolved.conf
+            sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
+        ;;
+        *)
+        ;;
+    esac
 check_command systemctl restart network-manager.service
 network_ok
 
