@@ -134,7 +134,7 @@ choice=$(< results)
 whiptail --title "Set DNS Resolver" --radiolist --separate-output "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Quad9" "(https://www.quad9.net/)            " on \
 "Cloudflare" "(https://www.cloudflare.com/dns/)            " off \
-"Local" "(192.168.1.1 + 149.112.112.112)              " off 2>results
+"Local" "($GATEWAY + 149.112.112.112)              " off 2>results
 
 choice=$(< results)
     case "$choice" in
@@ -147,7 +147,7 @@ choice=$(< results)
             sed -i "s|#FallbackDNS=.*|FallbackDNS=1.0.0.1 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
         ;;
         Local)
-            sed -i "s|#DNS=.*|DNS=192.168.1.1|g" /etc/systemd/resolved.conf
+            sed -i "s|#DNS=.*|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
             sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
         ;;
         *)
