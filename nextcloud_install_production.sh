@@ -118,14 +118,14 @@ whiptail --title "Choose disk format" --radiolist --separate-output "How would y
 while read -r -u 9 choice
 do
     case "$choice" in
-        2 Disks Auto)
+        "2 Disks Auto")
             run_static_script format-sdb
         ;;
-        2 Disks Manual)
+        "2 Disks Manual")
             run_static_script format-chosen
         ;;
-        1 Disk)
-            exit 1
+        "1 Disk")
+            print_text_in_color "$IRed" "1 Disk setup chosen."
         ;;
         *)
         ;;
