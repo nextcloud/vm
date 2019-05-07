@@ -23,6 +23,19 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
+# Check if /boot is filled more than 90% and exit the script if that's the case since we don't want to end up with a broken system
+if [ -d /boot ]
+then
+    if [ $(df -h | grep /boot | awk '{print $5}' | cut -d "%" -f1) -gt 90 ]
+    then
+msg_box "It seems like your boot drive is filled more than 90%. You can't proceed to upgrade since it probably will break your system
+
+To be able to proceed with the update you need to delete some old Linux kernels. If you need support, please visit:
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+    fi
+fi
+
+
 # System Upgrade
 if which mysql > /dev/null
 then
