@@ -26,7 +26,7 @@ is_process_running dpkg
 # Check if /boot is filled more than 90% and exit the script if that's the case since we don't want to end up with a broken system
 if [ -d /boot ]
 then
-    if [ $(df -h | grep /boot | awk '{print $5}' | cut -d "%" -f1) -gt 90 ]
+    if [ "$(df -h | grep /boot | awk '{print $5}' | cut -d "%" -f1)" -gt 90 ]
     then
 msg_box "It seems like your boot drive is filled more than 90%. You can't proceed to upgrade since it probably will break your system
 
