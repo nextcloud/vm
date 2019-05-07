@@ -32,6 +32,7 @@ msg_box "It seems like your boot drive is filled more than 90%. You can't procee
 
 To be able to proceed with the update you need to delete some old Linux kernels. If you need support, please visit:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+        exit
     fi
 fi
 
