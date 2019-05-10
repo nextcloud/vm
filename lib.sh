@@ -214,16 +214,18 @@ domain_check_200() {
     print_text_in_color "$ICyan" "Checking DNS for ${1} with nslookup..."
     if nslookup "${1}" $DNS1 >/dev/null 2>&1
     then
-        if [[ "$(dig +short $1 @resolver1.opendns.com)" = "$WANIP4" ]]
+        if [[ "$(dig +short "${1}" @resolver1.opendns.com)" = "$WANIP4" ]]
         then
             print_text_in_color "$IGreen" "DNS seems correct!"
+        else
+            print_text_in_color "$IRed" "DNS lookup failed. Please check your DNS settings! Maybe the domain isn't propagated?"
+            return 1
         fi
     else
         print_text_in_color "$IRed" "DNS lookup failed. Please check your DNS settings! Maybe the domain isn't propagated?"
         return 1
     fi
 }
-
 
 # A function to fetch a file with curl to a directory
 # 1 = https://example.com
