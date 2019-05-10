@@ -219,7 +219,7 @@ domain_check_200() {
             print_text_in_color "$IGreen" "DNS seems correct!"
         fi
     else
-        print_text_in_color "$IRed" "DNS lookup failed. Please check your DNS settings! Maybe the domain isn't propagated$
+        print_text_in_color "$IRed" "DNS lookup failed. Please check your DNS settings! Maybe the domain isn't propagated?"
         return 1
     fi
 }
