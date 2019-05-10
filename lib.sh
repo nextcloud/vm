@@ -211,18 +211,18 @@ print_text_in_color "$ICyan" "Checking connection..."
 
 # Do the same thing as in site_200 but with nslookup as well.
 domain_check_200() {
-    print_text_in_color "$ICyan" "Checking DNS for ${1} with nslookup..."
+    print_text_in_color "$ICyan" "Doing a DNS lookup for ${1}..."
     if nslookup "${1}" $DNS1 >/dev/null 2>&1
     then
         if [[ "$(dig +short "${1}" @resolver1.opendns.com)" = "$WANIP4" ]]
         then
             print_text_in_color "$IGreen" "DNS seems correct!"
         else
-            print_text_in_color "$IRed" "DNS lookup failed. Please check your DNS settings! Maybe the domain isn't propagated?"
+            print_text_in_color "$IRed" "DNS lookup with 'dig' failed. Please check your DNS settings! Maybe the domain isn't propagated?"
             return 1
         fi
     else
-        print_text_in_color "$IRed" "DNS lookup failed. Please check your DNS settings! Maybe the domain isn't propagated?"
+        print_text_in_color "$IRed" "DNS lookup with 'nslookup' failed. Please check your DNS settings! Maybe the domain isn't propagated?"
         return 1
     fi
 }
