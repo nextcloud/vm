@@ -213,24 +213,25 @@ print_text_in_color "$ICyan" "Checking connection..."
 domain_check_200() {
     print_text_in_color "$ICyan" "Doing a DNS lookup for ${1}..."
     install_if_not dnsutils
-    
+
     # Try to resolve the domain with nslookup using $DNS as resolver
     if nslookup "${1}" $DNS1 >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with nslookup!"
     else
-        print_text_in_color "$IRed" "DNS lookup failed with nslookup. nslookup can't resolve "${1}"."
-	print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
+        print_text_in_color "$IRed" "DNS lookup failed with nslookup."
+        print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
+        nslookup "${1}" $DNS1
         return 1
     fi
-    
+
     # Is the DNS record same as the external IP address of the server?
     if [[ "$(dig +short "${1}" @resolver1.opendns.com)" = "$WANIP4" ]]
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
     else
-        print_text_in_color "$IRed" "DNS lookup failed with dig. The external IP address of this server is not the same as the A-record."
-	print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
+        print_text_in_color "$IRed" "DNS lookup failed with dig. The external IP ($WANIP4) address of this server is not the same as the A-record."
+        print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
         return 1
     fi
 }
