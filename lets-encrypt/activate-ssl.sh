@@ -143,7 +143,7 @@ then
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
-        SetHandler "proxy:unix:/run/php/php"$PHPVER"-fpm.nextcloud.sock|fcgi://localhost"
+        SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
     DocumentRoot $NCPATH
