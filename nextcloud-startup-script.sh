@@ -274,7 +274,7 @@ sed -i "s|DocumentRoot /var/www/html|DocumentRoot $HTML|g" /etc/apache2/sites-av
  sed -i '14i\    # http://lost.l-w.ca/0x05/apache-mod_proxy_fcgi-and-php-fpm/' /etc/apache2/sites-available/000-default.conf
  sed -i '15i\   <FilesMatch "\.php$">' /etc/apache2/sites-available/000-default.conf
  sed -i '16i\    <If "-f %{SCRIPT_FILENAME}">' /etc/apache2/sites-available/000-default.conf
- sed -i '17i\      SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"' /etc/apache2/sites-available/000-default.conf
+ sed -i '17i\      SetHandler "proxy:unix:/run/php/php"$PHPVER"-fpm.nextcloud.sock|fcgi://localhost"' /etc/apache2/sites-available/000-default.conf
  sed -i '18i\   </If>' /etc/apache2/sites-available/000-default.conf
  sed -i '19i\   </FilesMatch>' /etc/apache2/sites-available/000-default.conf
  sed -i '20i\    ' /etc/apache2/sites-available/000-default.conf

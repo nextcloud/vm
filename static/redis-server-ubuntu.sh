@@ -25,7 +25,7 @@ then
 fi
 
 # Install Redis
-install_if_not php7.2-dev
+install_if_not php"$PHPVER"-dev
 pecl channel-update pecl.php.net
 if ! yes no | pecl install -Z redis
 then
