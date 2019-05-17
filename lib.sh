@@ -83,8 +83,9 @@ DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # PHP-FPM
-PHP_INI=/etc/php/7.2/fpm/php.ini
-PHP_POOL_DIR=/etc/php/7.2/fpm/pool.d
+PHPVER=7.2
+PHP_INI=/etc/php/$PHPVER/fpm/php.ini
+PHP_POOL_DIR=/etc/php/$PHPVER/fpm/pool.d
 # Adminer
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
@@ -467,9 +468,9 @@ fi
 
 restart_webserver() {
 check_command systemctl restart apache2
-if which php7.2-fpm > /dev/null
+if which php"$PHPVER"-fpm > /dev/null
 then
-    check_command systemctl restart php7.2-fpm.service
+    check_command systemctl restart php"$PHPVER"-fpm.service
 fi
 
 }

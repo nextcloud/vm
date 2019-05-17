@@ -143,7 +143,7 @@ then
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
-        SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"
+        SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
     DocumentRoot $NCPATH
@@ -192,7 +192,7 @@ then
     sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$ssl_conf"
     sed -i "s|SetHandler.*|#|g" "$ssl_conf"
     sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
-elif ! dpkg -s php7.2-fpm | grep "Status: install ok installed" >/dev/null 2>&1
+elif ! dpkg -s php"$PHPVER"-fpm | grep "Status: install ok installed" >/dev/null 2>&1
 then
     sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
     sed -i "s|SetHandler.*|#|g" "$ssl_conf"

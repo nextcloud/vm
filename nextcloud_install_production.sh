@@ -87,7 +87,7 @@ is_this_installed postgresql
 is_this_installed apache2
 is_this_installed php
 is_this_installed php-fpm
-is_this_installed php7.2-fpm
+is_this_installed php"$PHPVER"-fpm
 is_this_installed php7.1-fpm
 is_this_installed php7.0-fpm
 is_this_installed mysql-common
@@ -223,30 +223,30 @@ a2enmod rewrite \
 # We don't use Apache PHP (just to be sure)
 a2dismod mpm_prefork
         
-# Install PHP 7.2
+# Install PHP "$PHPVER"
 apt update -q4 & spinner_loading
 check_command apt install -y \
-    php7.2-fpm \
-    php7.2-intl \
-    php7.2-ldap \
-    php7.2-imap \
-    php7.2-gd \
-    php7.2-pgsql \
-    php7.2-curl \
-    php7.2-xml \
-    php7.2-zip \
-    php7.2-mbstring \
-    php7.2-soap \
-    php7.2-smbclient \
-    php7.2-json \
-    php7.2-gmp \
-    php7.2-bz2 \
+    php"$PHPVER"-fpm \
+    php"$PHPVER"-intl \
+    php"$PHPVER"-ldap \
+    php"$PHPVER"-imap \
+    php"$PHPVER"-gd \
+    php"$PHPVER"-pgsql \
+    php"$PHPVER"-curl \
+    php"$PHPVER"-xml \
+    php"$PHPVER"-zip \
+    php"$PHPVER"-mbstring \
+    php"$PHPVER"-soap \
+    php"$PHPVER"-smbclient \
+    php"$PHPVER"-json \
+    php"$PHPVER"-gmp \
+    php"$PHPVER"-bz2 \
     php-pear
-    # php7.2-imagick \
+    # php"$PHPVER"-imagick \
     # libmagickcore-6.q16-3-extra
     
 # Enable php-fpm
-a2enconf php7.2-fpm
+a2enconf php"$PHPVER"-fpm
 
 # Enable HTTP/2 server wide
 print_text_in_color "$ICyan" "Enabling HTTP/2 server wide..."
@@ -265,7 +265,7 @@ cat << POOL_CONF > "$PHP_POOL_DIR/nextcloud.conf"
 [Nextcloud]
 user = www-data
 group = www-data
-listen = /run/php/php7.2-fpm.nextcloud.sock
+listen = /run/php/php"$PHPVER"-fpm.nextcloud.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
@@ -296,8 +296,8 @@ restart_webserver
 calculate_php_fpm
 
 # Enable SMB client # already loaded with php-smbclient
-# echo '# This enables php-smbclient' >> /etc/php/7.2/apache2/php.ini
-# echo 'extension="smbclient.so"' >> /etc/php/7.2/apache2/php.ini
+# echo '# This enables php-smbclient' >> /etc/php/"$PHPVER"/apache2/php.ini
+# echo 'extension="smbclient.so"' >> /etc/php/"$PHPVER"/apache2/php.ini
 
 # Install VM-tools
 install_if_not open-vm-tools
@@ -415,7 +415,7 @@ then
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
-        SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"
+        SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
     DocumentRoot $NCPATH
@@ -475,7 +475,7 @@ then
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
-        SetHandler "proxy:unix:/run/php/php7.2-fpm.nextcloud.sock|fcgi://localhost"
+        SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
     DocumentRoot $NCPATH
