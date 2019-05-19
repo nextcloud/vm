@@ -222,7 +222,19 @@ a2enmod rewrite \
 
 # We don't use Apache PHP (just to be sure)
 a2dismod mpm_prefork
-        
+
+# Disable server tokens in Apache
+if [[ -z "$(grep 'ServerSignature' /etc/apache2/apache2.conf)" ]]
+then
+{
+echo "# Turn off ServerTokens for both Apache and PHP"
+echo "ServerSignature Off"
+echo "ServerTokens Prod"
+} >> /etc/apache2/apache2.conf
+
+    check_command systemctl restart apache2.service
+fi
+
 # Install PHP "$PHPVER"
 apt update -q4 & spinner_loading
 check_command apt install -y \
