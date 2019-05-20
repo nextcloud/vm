@@ -16,7 +16,7 @@ is_process_running dpkg
 
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
-thengr
+then
     print_text_in_color "$IGreen" "curl OK"
 else
     apt update -q4 & spinner_loading
