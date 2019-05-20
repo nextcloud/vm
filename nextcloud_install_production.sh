@@ -224,7 +224,7 @@ a2enmod rewrite \
 a2dismod mpm_prefork
 
 # Disable server tokens in Apache
-if ! [ "$(grep -q 'ServerSignature' /etc/apache2/apache2.conf)" ]
+if ! grep -q 'ServerSignature' /etc/apache2/apache2.conf
 then
 {
 echo "# Turn off ServerTokens for both Apache and PHP"
