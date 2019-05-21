@@ -443,14 +443,14 @@ then
         if [ "$(dpkg-query -W -f='${Status}' "apache2" 2>/dev/null | grep -c "ok installed")" == "1" ]
         then
             if [ -d /root/bwdata ]
-                then
-                    if [ -f /root/bitwarden.sh ]
-                        then
-                            print_text_in_color "$IGreen" "Upgrading Bitwarden..."
-                            sleep 2
-                            bash /root/bitwarden.sh updateself
-                            bash /root/bitwarden.sh update
-                    fi
+            then
+                if [ -f /root/bitwarden.sh ]
+                    then
+                        print_text_in_color "$IGreen" "Upgrading Bitwarden..."
+                        sleep 2
+                        bash /root/bitwarden.sh updateself
+                        bash /root/bitwarden.sh update
+                fi
             fi
         fi
     fi
