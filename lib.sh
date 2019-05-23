@@ -719,8 +719,8 @@ fi
 download_verify_nextcloud_stable() {
 install_if_not gnupg
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
-check_command cd $HTML
-check_command curl -fSLO --retry 3 "$NCREPO/$STABLEVERSION.tar.bz2"
+cd $HTML
+curl -fSLO --retry 3 "$NCREPO/$STABLEVERSION.tar.bz2"
 mkdir -p "$GPGDIR"
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
 chmod -R 600 "$GPGDIR"
