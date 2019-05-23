@@ -235,7 +235,7 @@ and major releases without skipping any of them, as skipping releases increases 
 errors. Major releases are 13, 14, 15 and 16. Point releases are intermediate releases for each
 major release. For example, 14.0.52 and 15.0.2 are point releases.
 
-Please contact T\&M Hansson IT AB to help you with upgrading between major versions.
+Please contact T&M Hansson IT AB to help you with upgrading between major versions.
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
     exit 1
 fi
