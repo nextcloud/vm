@@ -389,7 +389,7 @@ fi
 
 # Download and validate Nextcloud package
 print_text_in_color "$ICyan" "Downloading $STABLEVERSION.tar.bz2 to $HTML ..."
-check_command download_verify_nextcloud_stable & spinner_loading
+check_command download_verify_nextcloud_stable
 
 if [ -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
