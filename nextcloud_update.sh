@@ -266,14 +266,10 @@ If you need support, please visit https://shop.hanssonit.se/product/premium-supp
 fi
 
 # Upgrade Nextcloud
-print_text_in_color "$ICyan" "Checking latest released version on the Nextcloud download server and if it's possible to download..."
-if ! curl -fSLO --retry 3 "$NCREPO/$STABLEVERSION.tar.bz2"
+if ! site_200 $NCREPO
 then
-msg_box "Nextcloud does not exist. You were looking for: $NCVERSION
-Please check available versions here: $NCREPO"
+msg_box "$NCREPO seems to be down, or temporarily not reachable. Please try again in a few minutes."
     exit 1
-else
-    rm -f "$STABLEVERSION.tar.bz2"
 fi
 
 countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort." "10"
