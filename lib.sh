@@ -61,10 +61,10 @@ SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Nextcloud version
 [ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
-STABLEVERSION="nextcloud-$NCVERSION"
-NCMAJOR="${NCVERSION%%.*}"
-NCBAD=$((NCMAJOR-2))
+[ ! -z "$NC_UPDATE" ] && NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+[ ! -z "$NC_UPDATE" ] && STABLEVERSION="nextcloud-$NCVERSION"
+[ ! -z "$NC_UPDATE" ] && NCMAJOR="${NCVERSION%%.*}"
+[ ! -z "$NC_UPDATE" ] && NCBAD=$((NCMAJOR-2))
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # OnlyOffice URL
@@ -719,7 +719,8 @@ fi
 download_verify_nextcloud_stable() {
 install_if_not gnupg
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
-curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2" "$HTML"
+cd $HTML
+curl -fSLO --retry 3 "$NCREPO/$STABLEVERSION.tar.bz2"
 mkdir -p "$GPGDIR"
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
 chmod -R 600 "$GPGDIR"
