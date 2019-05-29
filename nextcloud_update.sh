@@ -77,12 +77,12 @@ then
     elif [ -f /usr/libexec/netdata-updater.sh ]
     then
         bash /usr/libexec/netdata-updater.sh
-    elif [ -f /usr/src/netdata.git/netdata-updater.sh ]
-    then
-        if ! bash /usr/src/netdata.git/netdata-updater.sh
-	then
-	run_app_script netdata
-	fi
+#    elif [ -f /usr/src/netdata.git/netdata-updater.sh ]
+#    then
+#       if ! bash /usr/src/netdata.git/netdata-updater.sh
+#	then
+#	    run_app_script netdata
+#	fi
     fi
 fi
 
