@@ -55,8 +55,9 @@ occ_command config:system:set logtimezone  --value="$(cat /etc/timezone)"
 # Create nextcloud.conf file
 cat << NCONF > /etc/fail2ban/filter.d/nextcloud.conf
 [Definition]
-failregex = ^.*Login failed: '.*' \(Remote IP: '<HOST>'.*$
-ignoreregex =
+failregex=^{"reqId":".*","remoteAddr":".*","app":"core","message":"Login failed: '.*' \(Remote IP: '<HOST>'\)","level":2,"time":".*"}$
+            ^{"reqId":".*","level":2,"time":".*","remoteAddr":".*","app":"core".*","message":"Login failed: '.*' \(Remote IP: '<HOST>'\)".*}$
+            ^.*\"remoteAddr\":\"<HOST>\".*Trusted domain error.*\$
 NCONF
 
 # Disable default Debian sshd chain
