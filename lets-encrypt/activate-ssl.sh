@@ -174,6 +174,11 @@ then
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} ^TRACK
     RewriteRule .* - [R=405,L]
+    
+    # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
+    <IfModule mod_reqtimeout.c>
+    RequestReadTimeout body=0
+    </IfModule>
 
 ### LOCATION OF CERT FILES ###
 

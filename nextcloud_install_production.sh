@@ -465,7 +465,12 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-
+    
+    # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
+    <IfModule mod_reqtimeout.c>
+    RequestReadTimeout body=0
+    </IfModule>
+    
 </VirtualHost>
 HTTP_CREATE
     print_text_in_color "$IGreen" "$HTTP_CONF was successfully created."
@@ -525,6 +530,11 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
+    
+    # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
+    <IfModule mod_reqtimeout.c>
+    RequestReadTimeout body=0
+    </IfModule>
 
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
