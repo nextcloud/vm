@@ -467,7 +467,7 @@ then
     SetEnv HTTP_HOME $NCPATH
     
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
-    <IfModule reqtimeout_module>
+    <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
     
@@ -532,7 +532,7 @@ then
     SetEnv HTTP_HOME $NCPATH
     
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
-    <IfModule reqtimeout_module>
+    <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
 
