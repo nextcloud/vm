@@ -173,7 +173,7 @@ then
         then
             $SCRIPTS/dockerprune.sh
         else
-            docker system prune -f
+            docker system prune -af
         fi
     fi
 fi
