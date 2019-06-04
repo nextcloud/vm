@@ -161,13 +161,30 @@ then
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
-# Update ALL Docker images automatically with watchtower:
+# Remove old watchtower if existing
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+then
+    cont_name=watchtower
+    if docker ps -a --format '{{.Names}}' | grep -Eq "^${cont_name}\$";
+    then
+        docker stop watchtower
+        docker rm watchtower
+        if [ -f $SCRIPTS/dockerprune.sh ]
+        then
+            $SCRIPTS/dockerprune.sh
+        else
+            docker system prune -f
+        fi
+    fi
+fi
+
+# Update ALL Docker images automatically with watchtower
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
     cont_name=watchtower
     if ! docker ps -a --format '{{.Names}}' | grep -Eq "^${cont_name}\$";
     then
-        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock v2tec/watchtower --cleanup --interval 3600
+        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --interval 3600
     fi
 fi
 
