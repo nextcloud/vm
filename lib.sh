@@ -970,14 +970,12 @@ systemctl restart docker
 does_this_docker_exist() {
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
-    if [ "$(docker images "$1" | awk '{print $1}' | tail -1)" == "$1" ]
-    then
-        return 0
-    else
-        return 1
-    fi
+    [[ "$(docker images "$1" | awk '{print $1}' | tail -1)" == "$1" ]] && return
 fi
+# If either of above statments are false return:
+false
 }
+
 
 # Remove all dockers excluding one
 # docker_prune_except_this fts_esror 'Full Text Search'
