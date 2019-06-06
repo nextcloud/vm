@@ -193,7 +193,7 @@ if ! does_this_docker_exist containrrr/watchtower
 then
     if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
     then
-    docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.soc$
+        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --interval 3600
     fi
 fi
 
