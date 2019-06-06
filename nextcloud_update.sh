@@ -175,16 +175,12 @@ then
     # Check if env.list is empty and run the docker accordingly
     if [ -s env.list ]
     then
-        docker stop watchtower
-        docker rm watchtower
-        docker system prune -af
-        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock --env-file ./env.list containrrr/watchtower $CmdDocker
+        docker_prune_this v2tec/watchtower
+        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock --env-file ./env.list containrrr/watchtower "$CmdDocker"
         rm -f env.list
     else
-	docker stop watchtower
-	docker rm watchtower
-	docker system prune -af
-        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower $CmdDocker
+        docker_prune_this v2tec/watchtower
+        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower "$CmdDocker"
     fi
 fi
 
