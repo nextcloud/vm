@@ -965,10 +965,11 @@ systemctl restart docker
 }
 
 # Check if old docker exists
+# FULL NAME e.g. ark74/nc_fts or containrrr/watchtower or collabora/code
 does_this_docker_exist() {
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
-    if docker ps -a --format '{{.Names}}' | grep -Eq "^${$1}\$";
+    if [ $(docker images "$1" | awk '{print $1}' | tail -1) == "$1" ]
     then
         return 0
     else
