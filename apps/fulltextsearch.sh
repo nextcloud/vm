@@ -52,7 +52,7 @@ fi
 if [ -d $NC_APPS_PATH/fulltextsearch ]
 then
     print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-    occ_command fulltextsearch:reset
+    sudo -u www-data php $NCPATH/occ fulltextsearch:reset
     occ_command app:disable fulltextsearch
     rm -rf $NC_APPS_PATH/fulltextsearch
 fi
