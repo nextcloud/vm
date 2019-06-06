@@ -36,7 +36,6 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     fi
 fi
 
-
 # System Upgrade
 if which mysql > /dev/null
 then
@@ -162,45 +161,37 @@ then
 fi
 
 # Remove old watchtower if existing
-if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+if does_this_docker_exist watchtower
 then
-    cont_name=watchtower
-    if docker ps -a --format '{{.Names}}' | grep -Eq "^${cont_name}\$";
+    # Get Env values
+    docker inspect -f '{{range $index, $value := .Config.Env}}-e {{$value}}{{println}}{{end}}' watchtower > env.list
+
+    # Remove empty lines
+    sed -i '/^[[:space:]]*$/d' env.list
+
+    # Get Cmd values
+    CmdDocker=$(docker inspect --format='{{.Config.Cmd}}' watchtower | cut -d "]" -f 1 | cut -d "[" -f 2;)
+
+    # Check if env.list is empty and run the docker accordingly
+    if [ -s env.list ]
     then
-        # Get Env values
-        docker inspect -f '{{range $index, $value := .Config.Env}}-e {{$value}}{{println}}{{end}}' watchtower > env.list
-
-        # Remove empty lines
-        sed -i '/^[[:space:]]*$/d' env.list
-
-        # Get Cmd values
-        CmdDocker=$(docker inspect --format='{{.Config.Cmd}}' watchtower | cut -d "]" -f 1 | cut -d "[" -f 2;)
-
-        # Check if env.list is empty and run the docker accordingly
-        if [ -s env.list ]
-        then
-	    docker stop watchtower
-	    docker rm watchtower
-	    docker system prune -af
-            docker run -d --restart always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock --env-file ./env.list containrrr/watchtower $CmdDocker
-	    rm -f env.list
-        else
-	    docker stop watchtower
-	    docker rm watchtower
-	    docker system prune -af
-            docker run -d --restart always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower $CmdDocker
-        fi
+        docker stop watchtower
+        docker rm watchtower
+        docker system prune -af
+        docker run -d --restart always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock --env-file ./env.list containrrr/watchtower $CmdDocker
+        rm -f env.list
+    else
+	docker stop watchtower
+	docker rm watchtower
+	docker system prune -af
+        docker run -d --restart always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower $CmdDocker
     fi
 fi
 
 # Update ALL Docker images automatically with watchtower
-if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+if ! does_this_docker_exist watchtower
 then
-    cont_name=watchtower
-    if ! docker ps -a --format '{{.Names}}' | grep -Eq "^${cont_name}\$";
-    then
-        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --interval 3600
-    fi
+    docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --interval 3600
 fi
 
 # Cleanup un-used packages
