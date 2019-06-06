@@ -163,9 +163,13 @@ fi
 # Remove old watchtower if existing
 if does_this_docker_exist v2tec/watchtower
 then
-    # Get Env values
+    # Get Env values (https://github.com/koalaman/shellcheck/issues/1601)
+    get_env_values() {
+    # shellcheck disable=SC2059
     docker inspect -f '{{range $index, $value := .Config.Env}}{{$value}}{{println}}{{end}}' watchtower > env.list
-
+    }
+    get_env_values
+    
     # Remove empty lines
     sed -i '/^[[:space:]]*$/d' env.list
 
