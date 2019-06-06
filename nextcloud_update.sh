@@ -194,6 +194,9 @@ then
     docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --interval 3600
 fi
 
+# Test travis
+docker inspect -f '{{range $index, $value := .Config.Env}}{{$value}}{{println}}{{end}}' watchtower > env.list
+
 # Cleanup un-used packages
 apt autoremove -y
 apt autoclean
