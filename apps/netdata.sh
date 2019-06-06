@@ -21,7 +21,19 @@ then
 msg_box "Netdata seems to be installed.
 We will now remove Netdata and reinstall it with the latest master."
     # Uninstall
-    echo yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+    OLD=$(find /usr/src/netdata.git -name netdata-uninstaller.sh)
+    NEW=$(find /usr/libexec -name netdata-uninstaller.sh)
+    if [ ! -z $OLD ]
+    then
+        if ! yes | bash $OLD --force
+        then
+            rm -Rf /usr/src/netdata.git
+            yes | bash $NEW --yes
+        fi
+    elif [ -z $OLD ]
+    then
+        yes | bash $NEW --yes
+    fi
     userdel netdata
     groupdel netdata
     gpasswd -d netdata adm
