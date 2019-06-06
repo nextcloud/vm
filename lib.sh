@@ -1002,7 +1002,6 @@ fi
 # Remove selected Docker image
 # docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts'
 docker_prune_this() {
-# Collabora
 if [ "$(docker images "$1" | awk '{print $1}' | tail -1)" == "$1" ]
 then
 msg_box "Removing old Docker image: $1
