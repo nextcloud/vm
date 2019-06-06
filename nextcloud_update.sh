@@ -165,13 +165,10 @@ if does_this_docker_exist v2tec/watchtower
 then
     # Get Env values (https://github.com/koalaman/shellcheck/issues/1601)
     get_env_values() {
-      # shellcheck disable=SC2046
-      docker inspect -f "$1" watchtower > env.list
+    # shellcheck disable=SC2016
+    docker inspect -f '{{range $index, $value := .Config.Env}}{{$value}}{{println}}{{end}}' watchtower > env.list
     }
-    while read line
-    do
-        sleep 0.1
-    done <  <(get_env_values '{{range $index, $value := .Config.Env}}{{$value}}{{println}}{{end}}')
+    get_env_values
     
     # Remove empty lines
     sed -i '/^[[:space:]]*$/d' env.list
