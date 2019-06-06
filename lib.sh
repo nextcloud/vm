@@ -964,6 +964,18 @@ systemctl daemon-reload
 systemctl restart docker
 }
 
+# Check if old docker exists
+does_this_docker_exist() {
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+then
+    if docker ps -a --format '{{.Names}}' | grep -Eq "^${$1}\$";
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Remove all dockers excluding one
 # docker_prune_except_this fts_esror 'Full Text Search'
 docker_prune_except_this() {
