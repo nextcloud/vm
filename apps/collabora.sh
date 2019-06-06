@@ -69,7 +69,8 @@ install_docker
 
 # Check if OnlyOffice or Collabora is previously installed
 # If yes, then stop and prune the docker container
-docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
+docker_prune_this 'collabora/code'
+docker_prune_this 'onlyoffice/documentserver'
 
 # Disable RichDocuments (Collabora App) if activated
 if [ -d "$NC_APPS_PATH"/richdocuments ]

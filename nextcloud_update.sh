@@ -36,7 +36,6 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     fi
 fi
 
-
 # System Upgrade
 if which mysql > /dev/null
 then
@@ -161,14 +160,38 @@ then
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
-# Update ALL Docker images automatically with watchtower:
-if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+# Remove old watchtower if existing
+if does_this_docker_exist v2tec/watchtower
 then
-    cont_name=watchtower
-    if ! docker ps -a --format '{{.Names}}' | grep -Eq "^${cont_name}\$";
+    # Get Env values (https://github.com/koalaman/shellcheck/issues/1601)
+    get_env_values() {
+    # shellcheck disable=SC2016
+    docker inspect -f '{{range $index, $value := .Config.Env}}{{$value}}{{println}}{{end}}' watchtower > env.list
+    }
+    get_env_values
+
+    # Remove empty lines
+    sed -i '/^[[:space:]]*$/d' env.list
+
+    # Get Cmd values
+    CmdDocker=$(docker inspect --format='{{.Config.Cmd}}' watchtower | cut -d "]" -f 1 | cut -d "[" -f 2;)
+
+    # Check if env.list is empty and run the docker accordingly
+    if [ -s env.list ]
     then
-        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock v2tec/watchtower --cleanup --interval 3600
+        docker_prune_this v2tec/watchtower
+        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock --env-file ./env.list containrrr/watchtower "$CmdDocker"
+        rm -f env.list
+    else
+        docker_prune_this v2tec/watchtower
+        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower "$CmdDocker"
     fi
+fi
+
+# Update ALL Docker images automatically with watchtower
+if ! does_this_docker_exist containrrr/watchtower
+then
+    docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --interval 3600
 fi
 
 # Cleanup un-used packages

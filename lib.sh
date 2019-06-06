@@ -951,6 +951,7 @@ install_docker() {
 if ! docker -v &> /dev/null
 then
     print_text_in_color "$ICyan" "Installing Docker CE..."
+    apt update -q4 & spinner_loading
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi
@@ -962,6 +963,20 @@ cat << OVERLAY2 > /etc/docker/daemon.json
 OVERLAY2
 systemctl daemon-reload
 systemctl restart docker
+}
+
+# Check if old docker exists
+# FULL NAME e.g. ark74/nc_fts or containrrr/watchtower or collabora/code
+does_this_docker_exist() {
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+then
+    if [ "$(docker images "$1" | awk '{print $1}' | tail -1)" == "$1" ]
+    then
+        return 0
+    else
+        return 1
+    fi
+fi
 }
 
 # Remove all dockers excluding one
@@ -985,31 +1000,14 @@ fi
 }
 
 # Remove selected Docker image
-# docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
+# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts'
 docker_prune_this() {
-# Collabora
-DOCKERIMG="$(docker images "$1" | awk '{print $1}' | tail -1)"
-if [ "$DOCKERIMG" = "collabora/code" ]
+if [ "$(docker images "$1" | awk '{print $1}' | tail -1)" == "$1" ]
 then
-msg_box "Removing old Docker image: $DOCKERIMG
-
+msg_box "Removing old Docker image: $1
 You will be given the option to abort when you hit OK."
     any_key "Press any key to continue. Press CTRL+C to abort"
     docker stop "$(docker container ls | grep "$1" | awk '{print $1}' | tail -1)"
-    docker container prune -f
-    docker image prune -a -f
-    docker volume prune -f
-fi
-
-# OnlyOffice
-DOCKERIMG="$(docker images "$2" | awk '{print $1}' | tail -1)"
-if [ "$DOCKERIMG" = "onlyoffice/documentserver" ]
-then
-msg_box "Removing old Docker image: $DOCKERIMG
-
-You will be given the option to abort when you hit OK."
-    any_key "Press any key to continue. Press CTRL+C to abort"
-    docker stop "$(docker container ls | grep "$2" | awk '{print $1}' | tail -1)"
     docker container prune -f
     docker image prune -a -f
     docker volume prune -f

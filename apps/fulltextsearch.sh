@@ -52,7 +52,7 @@ fi
 if [ -d $NC_APPS_PATH/fulltextsearch ]
 then
     print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-    occ_command fulltextsearch:reset
+    sudo -u www-data php $NCPATH/occ fulltextsearch:reset
     occ_command app:disable fulltextsearch
     rm -rf $NC_APPS_PATH/fulltextsearch
 fi
@@ -68,13 +68,12 @@ then
 fi
 
 # Check & install docker
-apt update -q4 & spinner_loading
 install_docker
 set_max_count
 mkdir -p "$RORDIR"
-if docker ps -a | grep "$fts_es_name"
+if does_this_docker_exist "$nc_fts"
 then
-    docker stop "$fts_es_name" && docker rm "$fts_es_name" && docker pull "$nc_fts"
+    docker_prune_this "$nc_fts"
 else
     docker pull "$nc_fts"
 fi
