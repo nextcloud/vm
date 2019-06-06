@@ -161,7 +161,7 @@ then
 fi
 
 # Remove old watchtower if existing
-if does_this_docker_exist watchtower
+if does_this_docker_exist v2tec/watchtower
 then
     # Get Env values
     docker inspect -f '{{range $index, $value := .Config.Env}}-e {{$value}}{{println}}{{end}}' watchtower > env.list
@@ -178,18 +178,18 @@ then
         docker stop watchtower
         docker rm watchtower
         docker system prune -af
-        docker run -d --restart always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock --env-file ./env.list containrrr/watchtower $CmdDocker
+        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock --env-file ./env.list containrrr/watchtower $CmdDocker
         rm -f env.list
     else
 	docker stop watchtower
 	docker rm watchtower
 	docker system prune -af
-        docker run -d --restart always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower $CmdDocker
+        docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower $CmdDocker
     fi
 fi
 
 # Update ALL Docker images automatically with watchtower
-if ! does_this_docker_exist watchtower
+if ! does_this_docker_exist containrrr/watchtower
 then
     docker run -d --restart=unless-stopped --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --interval 3600
 fi
