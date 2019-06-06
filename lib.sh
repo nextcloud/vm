@@ -974,6 +974,7 @@ then
     else
         return 1
     fi
+fi
 }
 
 # Remove all dockers excluding one
