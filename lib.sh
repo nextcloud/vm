@@ -965,6 +965,40 @@ systemctl daemon-reload
 systemctl restart docker
 }
 
+# Check if old docker exists
+# FULL NAME e.g. ark74/nc_fts or containrrr/watchtower or collabora/code
+does_this_docker_exist() {
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+then
+    if [ "$(docker images "$1" | awk '{print $1}' | tail -1)" == "$1" ]
+    then
+        return 0
+    else
+        return 1
+    fi
+fi
+}
+
+# Remove all dockers excluding one
+# docker_prune_except_this fts_esror 'Full Text Search'
+docker_prune_except_this() {
+print_text_in_color "$ICyan" "Checking if there are any old images and removing them..."
+DOCKERPS=$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')
+if [ "$DOCKERPS" != "" ]
+then
+msg_box "Removing old Docker instance(s)... ($DOCKERPS)
+
+Please note that we will not remove $1 ($2).
+
+You will be given the option to abort when you hit OK."
+    any_key "Press any key to continue. Press CTRL+C to abort"
+    docker stop "$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')"
+    docker container prune -f
+    docker image prune -a -f
+    docker volume prune -f
+fi
+}
+
 # Remove selected Docker image
 # docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts'
 docker_prune_this() {
