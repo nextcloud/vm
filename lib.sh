@@ -964,52 +964,16 @@ systemctl daemon-reload
 systemctl restart docker
 }
 
-# Remove all dockers excluding one
-# docker_prune_except_this fts_esror 'Full Text Search'
-docker_prune_except_this() {
-print_text_in_color "$ICyan" "Checking if there are any old images and removing them..."
-DOCKERPS=$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')
-if [ "$DOCKERPS" != "" ]
-then
-msg_box "Removing old Docker instance(s)... ($DOCKERPS)
-
-Please note that we will not remove $1 ($2).
-
-You will be given the option to abort when you hit OK."
-    any_key "Press any key to continue. Press CTRL+C to abort"
-    docker stop "$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')"
-    docker container prune -f
-    docker image prune -a -f
-    docker volume prune -f
-fi
-}
-
 # Remove selected Docker image
-# docker_prune_this 'collabora/code' 'onlyoffice/documentserver'
+# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts'
 docker_prune_this() {
 # Collabora
-DOCKERIMG="$(docker images "$1" | awk '{print $1}' | tail -1)"
-if [ "$DOCKERIMG" = "collabora/code" ]
+if [ $(docker images "$1" | awk '{print $1}' | tail -1) == "$1" ]
 then
-msg_box "Removing old Docker image: $DOCKERIMG
-
+msg_box "Removing old Docker image: $1
 You will be given the option to abort when you hit OK."
     any_key "Press any key to continue. Press CTRL+C to abort"
     docker stop "$(docker container ls | grep "$1" | awk '{print $1}' | tail -1)"
-    docker container prune -f
-    docker image prune -a -f
-    docker volume prune -f
-fi
-
-# OnlyOffice
-DOCKERIMG="$(docker images "$2" | awk '{print $1}' | tail -1)"
-if [ "$DOCKERIMG" = "onlyoffice/documentserver" ]
-then
-msg_box "Removing old Docker image: $DOCKERIMG
-
-You will be given the option to abort when you hit OK."
-    any_key "Press any key to continue. Press CTRL+C to abort"
-    docker stop "$(docker container ls | grep "$2" | awk '{print $1}' | tail -1)"
     docker container prune -f
     docker image prune -a -f
     docker volume prune -f
