@@ -951,6 +951,7 @@ install_docker() {
 if ! docker -v &> /dev/null
 then
     print_text_in_color "$ICyan" "Installing Docker CE..."
+    apt update -q4 & spinner_loading
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi
