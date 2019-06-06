@@ -164,7 +164,7 @@ fi
 if does_this_docker_exist v2tec/watchtower
 then
     # Get Env values
-    docker inspect -f '{{range $index, $value := .Config.Env}}-e {{$value}}{{println}}{{end}}' watchtower > env.list
+    docker inspect -f '{{range $index, $value := .Config.Env}}{{$value}}{{println}}{{end}}' watchtower > env.list
 
     # Remove empty lines
     sed -i '/^[[:space:]]*$/d' env.list
