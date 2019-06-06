@@ -167,13 +167,28 @@ then
     cont_name=watchtower
     if docker ps -a --format '{{.Names}}' | grep -Eq "^${cont_name}\$";
     then
-        docker stop watchtower
-        docker rm watchtower
-        if [ -f $SCRIPTS/dockerprune.sh ]
+        # Get Env values
+        docker inspect -f '{{range $index, $value := .Config.Env}}-e {{$value}}{{println}}{{end}}' watchtower > env.list
+
+        # Remove empty lines
+        sed -i '/^[[:space:]]*$/d' env.list
+
+        # Get Cmd values
+        CmdDocker=$(docker inspect --format='{{.Config.Cmd}}' watchtower | cut -d "]" -f 1 | cut -d "[" -f 2;)
+
+        # Check if env.list is empty and run the docker accordingly
+        if [ -s env.list ]
         then
-            $SCRIPTS/dockerprune.sh
+	    docker stop watchtower
+	    docker rm watchtower
+	    docker system prune -af
+            docker run -d --restart always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock --env-file ./env.list containrrr/watchtower $CmdDocker
+	    rm -f env.list
         else
-            docker system prune -af
+	    docker stop watchtower
+	    docker rm watchtower
+	    docker system prune -af
+            docker run -d --restart always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower $CmdDocker
         fi
     fi
 fi
