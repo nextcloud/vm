@@ -948,8 +948,24 @@ else
 fi
 }
 
+# Check if docker is installed
+is_docker_running() {
+    docker ps -a > /dev/null 2>&1
+}
+
+# Check if specific docker image is present
+is_image_present() {
+    [[ $(docker images -q "$1") ]]
+}
+
+# Check if old docker exists
+# FULL NAME e.g. ark74/nc_fts or containrrr/watchtower or collabora/code
+does_this_docker_exist() {
+is_docker_running && is_image_present "$1";
+}
+
 install_docker() {
-if ! docker -v &> /dev/null
+if ! is_docker_running
 then
     print_text_in_color "$ICyan" "Installing Docker CE..."
     apt update -q4 & spinner_loading
@@ -965,18 +981,6 @@ OVERLAY2
 systemctl daemon-reload
 systemctl restart docker
 }
-
-# Check if old docker exists
-# FULL NAME e.g. ark74/nc_fts or containrrr/watchtower or collabora/code
-does_this_docker_exist() {
-if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
-then
-    [[ "$(docker images "$1" | awk '{print $1}' | tail -1)" == "$1" ]] && return
-fi
-# If either of above statments are false return:
-false
-}
-
 
 # Remove all dockers excluding one
 # docker_prune_except_this fts_esror 'Full Text Search'
@@ -1001,7 +1005,7 @@ fi
 # Remove selected Docker image
 # docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts'
 docker_prune_this() {
-if [ "$(docker images "$1" | awk '{print $1}' | tail -1)" == "$1" ]
+if does_this_docker_exist "$1"
 then
 msg_box "Removing old Docker image: $1
 You will be given the option to abort when you hit OK."
