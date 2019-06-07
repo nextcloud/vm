@@ -19,7 +19,7 @@ debug_mode
 if [ -d /etc/netdata ]
 then
 msg_box "Netdata seems to be installed.
-We will now remove Netdata and reinstall the lateststable version"
+We will now remove Netdata and reinstall the latest stable version"
     # Uninstall
     if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
     then
