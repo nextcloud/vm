@@ -1005,7 +1005,7 @@ fi
 # Remove selected Docker image
 # docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts'
 docker_prune_this() {
-if does_this_docker_exist $1
+if does_this_docker_exist "$1"
 then
 msg_box "Removing old Docker image: $1
 You will be given the option to abort when you hit OK."
