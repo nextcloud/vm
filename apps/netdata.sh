@@ -19,9 +19,18 @@ debug_mode
 if [ -d /etc/netdata ]
 then
 msg_box "Netdata seems to be installed.
-We will now remove Netdata and reinstall it with the latest master."
+We will now remove Netdata and reinstall the latest stable version"
     # Uninstall
-    echo yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+    if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
+    then
+        if ! yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+        then
+            rm -Rf /usr/src/netdata.git
+        fi
+    elif [ -f /usr/libexec/netdata-uninstaller.sh ]
+    then
+        yes | bash /usr/libexec/netdata-uninstaller.sh --yes
+    fi
     userdel netdata
     groupdel netdata
     gpasswd -d netdata adm
@@ -30,13 +39,17 @@ We will now remove Netdata and reinstall it with the latest master."
     is_process_running dpkg
     is_process_running apt
     apt update -q4 & spinner_loading
-    sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait --stable-channel)"
+    curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
+    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --dont-wait --stable-channel --non-interactive --no-updates
+    rm -f $SCRIPTS/kickstart.sh
 else
     # Install
     is_process_running dpkg
     is_process_running apt
     apt update -q4 & spinner_loading
-    sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait --stable-channel)"
+    curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
+    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --dont-wait --stable-channel --non-interactive --no-updates
+    rm -f $SCRIPTS/kickstart.sh
 fi
 
 # Check Netdata instructions after script is done
@@ -58,7 +71,7 @@ After you have opened the correct port, then you can visit Netdata from your dom
 http://$(hostname -f):19999 and or http://yourdomanin.com:19999
 
 You can find more configuration options in their WIKI:
-https://github.com/firehol/netdata/wiki/Configuration"
+https://docs.netdata.cloud/daemon/config#configuration-guide"
 
 # Cleanup
 rm -rf /tmp/netdata*
