@@ -39,13 +39,17 @@ We will now remove Netdata and reinstall it with the latest master."
     is_process_running dpkg
     is_process_running apt
     apt update -q4 & spinner_loading
-    sudo -u "$UNIXUSER" bash -c "$(wget -q -O - https://my-netdata.io/kickstart.sh)" all --dont-wait --stable-channel)"
+    curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
+    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --dont-wait --stable-channel --non-interactive --no-updates
+    rm -f $SCRIPTS/kickstart.sh
 else
     # Install
     is_process_running dpkg
     is_process_running apt
     apt update -q4 & spinner_loading
-    sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait --stable-channel)"
+    curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
+    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --dont-wait --stable-channel --non-interactive --no-updates
+    rm -f $SCRIPTS/kickstart.sh
 fi
 
 # Check Netdata instructions after script is done
