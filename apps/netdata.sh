@@ -21,18 +21,15 @@ then
 msg_box "Netdata seems to be installed.
 We will now remove Netdata and reinstall it with the latest master."
     # Uninstall
-    OLD=$(find /usr/src/netdata.git -name netdata-uninstaller.sh)
-    NEW=$(find /usr/libexec -name netdata-uninstaller.sh)
-    if [ ! -z $OLD ]
+    if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
     then
-        if ! yes | bash $OLD --force
+        if ! yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
         then
             rm -Rf /usr/src/netdata.git
-            yes | bash $NEW --yes
         fi
-    elif [ -z $OLD ]
+    elif [ -f /usr/libexec/netdata-uninstaller.sh ]
     then
-        yes | bash $NEW --yes
+        yes | bash /usr/libexec/netdata-uninstaller.sh --yes
     fi
     userdel netdata
     groupdel netdata
@@ -42,7 +39,7 @@ We will now remove Netdata and reinstall it with the latest master."
     is_process_running dpkg
     is_process_running apt
     apt update -q4 & spinner_loading
-    sudo -u "$UNIXUSER" "$(bash <(curl -Ss https://my-netdata.io/kickstart.sh) all --dont-wait --stable-channel)"
+    sudo -u "$UNIXUSER" bash -c "$(wget -q -O - https://my-netdata.io/kickstart.sh)" all --dont-wait --stable-channel)"
 else
     # Install
     is_process_running dpkg
