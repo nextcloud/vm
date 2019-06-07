@@ -19,7 +19,7 @@ debug_mode
 if [ -d /etc/netdata ]
 then
 msg_box "Netdata seems to be installed.
-We will now remove Netdata and reinstall it with the latest master."
+We will now remove Netdata and reinstall the lateststable version"
     # Uninstall
     if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
     then
@@ -71,7 +71,7 @@ After you have opened the correct port, then you can visit Netdata from your dom
 http://$(hostname -f):19999 and or http://yourdomanin.com:19999
 
 You can find more configuration options in their WIKI:
-https://github.com/firehol/netdata/wiki/Configuration"
+https://docs.netdata.cloud/daemon/config#configuration-guide"
 
 # Cleanup
 rm -rf /tmp/netdata*
