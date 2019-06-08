@@ -40,7 +40,7 @@ We will now remove Netdata and reinstall the latest stable version"
     is_process_running apt
     apt update -q4 & spinner_loading
     curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
-    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --dont-wait --stable-channel --non-interactive --no-updates
+    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh all --dont-wait --no-updates --stable-channel
     rm -f $SCRIPTS/kickstart.sh
 else
     # Install
@@ -48,7 +48,7 @@ else
     is_process_running apt
     apt update -q4 & spinner_loading
     curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
-    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --dont-wait --stable-channel --non-interactive --no-updates
+    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh all --dont-wait --no-updates --stable-channel
     rm -f $SCRIPTS/kickstart.sh
 fi
 
