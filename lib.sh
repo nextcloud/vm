@@ -222,6 +222,7 @@ domain_check_200() {
     else
         print_text_in_color "$IRed" "DNS lookup failed with nslookup."
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
+	print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
         nslookup "${1}" $DNS1
         return 1
     fi
@@ -233,6 +234,7 @@ domain_check_200() {
     else
         print_text_in_color "$IRed" "DNS lookup failed with dig. The external IP ($WANIP4) address of this server is not the same as the A-record."
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
+	print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
         return 1
     fi
 }
