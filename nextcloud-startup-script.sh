@@ -634,6 +634,15 @@ bash $SCRIPTS/update.sh
 apt autoremove -y
 apt autoclean
 
+# Set trusted domain in config.php
+if [ -f "$SCRIPTS"/trusted.sh ] 
+then
+    bash "$SCRIPTS"/trusted.sh
+    rm -f "$SCRIPTS"/trusted.sh
+else
+    run_static_script trusted
+fi
+
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
 
@@ -663,13 +672,6 @@ TIPS & TRICKS:
    https://yourcloud.xyz/settings/admin
 
  ######################### T&M Hansson IT - $(date +"%Y") #########################  "
-
-# Set trusted domain in config.php
-if [ -f "$SCRIPTS"/trusted.sh ] 
-then
-    bash "$SCRIPTS"/trusted.sh
-    rm -f "$SCRIPTS"/trusted.sh
-fi
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
