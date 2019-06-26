@@ -32,6 +32,16 @@ then
     check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
 fi
 
+msg_box "Please note that if the IP address changes during an (remote) SSH connection (via Putty, or terminal for example), the connection will break and the IP will reset to DHCP or the IP you had before you started this script.
+
+To avoid issues with lost connectivity, please use the VM Console directly, and not SSH."
+if [[ "yes" == $(ask_yes_or_no "Are you connected via SSH?") ]]
+then
+    print_text_in_color "$IRed" "Please use the VM Console instead."
+    sleep 1
+    exit
+fi
+
 echo
 while true
 do
