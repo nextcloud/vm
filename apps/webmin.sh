@@ -19,14 +19,22 @@ debug_mode
 root_check
 
 # Install packages for Webmin
-apt install -y zip perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python
+install_if_not apt-transport-https
+install_if_not perl
+install_if_not libnet-ssleay-perl
+install_if_not openssl
+install_if_not libauthen-pam-perl
+install_if_not libpam-runtime
+install_if_not libio-pty-perl
+install_if_not apt-show-versions
+install_if_not python
 
 # Install Webmin
-sed -i '$a deb http://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
 if curl -fsSL http://www.webmin.com/jcameron-key.asc | sudo apt-key add -
 then
+    echo "deb https://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list
     apt update -q4 & spinner_loading
-    apt install webmin -y
+    install_if_not webmin
 fi
 
 exit
