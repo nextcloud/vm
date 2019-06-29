@@ -23,8 +23,8 @@ root_check
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
-# Test RAM size (4GB min) + CPUs (min 2)
-ram_check 4 OnlyOffice
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
 
 # Notification
