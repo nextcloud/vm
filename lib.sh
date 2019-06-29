@@ -723,7 +723,7 @@ download_verify_nextcloud_stable() {
 install_if_not gnupg
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
 cd $HTML
-print_text_in_color "$Cyan" "Downloading Nextcloud $STABLEVERSION..."
+print_text_in_color "$Cyan" "Downloading $STABLEVERSION..."
 curl -fSLO --retry 3 "$NCREPO/$STABLEVERSION.tar.bz2"
 mkdir -p "$GPGDIR"
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
