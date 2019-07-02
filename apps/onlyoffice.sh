@@ -172,21 +172,17 @@ then
     printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
-# Install Onlyoffice App
-    cd "$NC_APPS_PATH"
-    install_if_not git
-    check_command git clone https://github.com/ONLYOFFICE/onlyoffice-nextcloud.git onlyoffice
+    # Install OnlyOffice
+    occ_command app:install onlyoffice
 else
 	print_text_in_color "$Red" "It seems like no certs were generated, please report this issue here: $ISSUES"
     any_key "Press any key to continue... "
     restart_webserver
 fi
 
-# Enable Onlyoffice
+# Set config for OnlyOffice
 if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
-# Enable OnlyOffice
-    occ_command app:enable onlyoffice
     occ_command config:app:set onlyoffice DocumentServerUrl --value=https://"$SUBDOMAIN/"
     chown -R www-data:www-data "$NC_APPS_PATH"
     occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
