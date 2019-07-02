@@ -183,7 +183,7 @@ then
     printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
-# Install Collabora App
+    # Install Collabora App
     occ_command app:install richdocuments
 else
 	print_text_in_color "$Red" "It seems like no certs were generated, please report this issue here: $ISSUES"
@@ -191,15 +191,13 @@ else
     restart_webserver
 fi
 
-# Enable RichDocuments (Collabora App)
+# Set config for RichDocuments (Collabora App)
 if [ -d "$NC_APPS_PATH"/richdocuments ]
 then
-# Enable Collabora
-    occ_command app:enable richdocuments
     occ_command config:app:set richdocuments wopi_url --value=https://"$SUBDOMAIN"
     chown -R www-data:www-data "$NC_APPS_PATH"
     occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
-# Add prune command
+    # Add prune command
     {
     echo "#!/bin/bash"
     echo "docker system prune -a --force"
