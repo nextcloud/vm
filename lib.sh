@@ -720,6 +720,13 @@ fi
 }
 
 download_verify_nextcloud_stable() {
+while [ -z "$NCVERSION" ]
+do
+    echo "The variable 'NCVERSION' is empty, fetching it again..."
+    # shellcheck source=lib.sh
+    NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+    unset NC_UPDATE
+done
 install_if_not gnupg
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
 cd $HTML
