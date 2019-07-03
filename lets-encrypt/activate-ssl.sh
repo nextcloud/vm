@@ -209,7 +209,7 @@ default_le="--rsa-key-size 4096 --hsts --renew-by-default --agree-tos -d $domain
 
 webroot() {
 # Generate certs
-if eval "certbot certonly --webroot -w $NCPATH --hsts --agree-tos -m $EMAIL -d $default_le"
+if eval "certbot certonly --webroot -w $NCPATH $default_le"
 then
     echo "success" > /tmp/le_test
 else
