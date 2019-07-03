@@ -723,9 +723,8 @@ download_verify_nextcloud_stable() {
 while [ -z "$NCVERSION" ]
 do
     print_text_in_color "$Cyan" "The variable 'NCVERSION' is empty, fetching it again..."
-    # shellcheck source=lib.sh
-    NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-    unset NC_UPDATE
+    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+    STABLEVERSION="nextcloud-$NCVERSION"
 done
 install_if_not gnupg
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
