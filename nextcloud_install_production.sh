@@ -48,9 +48,6 @@ FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 
-NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
-STABLEVERSION="nextcloud-$NCVERSION"
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
