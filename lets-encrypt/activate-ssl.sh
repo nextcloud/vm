@@ -205,8 +205,17 @@ then
 fi
 
 # Methods
-default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
+default_le="--rsa-key-size 4096 --hsts --renew-by-default --agree-tos -d $domain"
 
+webroot() {
+# Generate certs
+if eval "certbot certonly --webroot -w $NCPATH $default_le"
+then
+    echo "success" > /tmp/le_test
+else
+    echo "fail" > /tmp/le_test
+fi
+}
 standalone() {
 # Generate certs
 if eval "certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
@@ -233,7 +242,7 @@ else
 fi
 }
 
-methods=(standalone dns)
+methods=(webroot standalone dns)
 
 create_config() {
 # $1 = method
@@ -254,13 +263,17 @@ fi
 
 attempts_left() {
 local method="$1"
-if [ "$method" == "standalone" ]
+if [ "$method" == "webroot" ]
 then
     printf "%b" "${ICyan}It seems like no certs were generated, we will do 2 more tries.\n${Color_Off}"
     any_key "Press any key to continue..."
+elif [ "$method" == "standalone" ]
+then
+    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more try.\n${Color_Off}"
+    any_key "Press any key to continue..."
 #elif [ "$method" == "tls-alpn-01" ]
 #then
-#    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
+#    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more try.\n${Color_Off}"
 #    any_key "Press any key to continue..."
 elif [ "$method" == "dns" ]
 then
