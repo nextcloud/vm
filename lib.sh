@@ -722,7 +722,7 @@ fi
 download_verify_nextcloud_stable() {
 while [ -z "$NCVERSION" ]
 do
-    echo "Getting Nextcloud version again..."
+    echo "The variable 'NCVERSION' is empty, fetching it again..."
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 done
