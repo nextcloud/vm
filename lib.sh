@@ -233,10 +233,10 @@ domain_check_200() {
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
     elif [[ "$(dig +short "${1}" @resolver1.opendns.com)" != "$WANIP4" ]]
     then
-        print_text_in_color "$IRed" "DNS lookup failed with dig. The external IP ($WANIP4) address of this server is not the same as the A-record."
-        print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
-	print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
-	any_key "Please check information above and press any key to continue..."
+msg_box "DNS lookup failed with dig. The external IP ($WANIP4) address of this server is not the same as the A-record.
+Please check your DNS settings! Maybe the domain isn't propagated?
+Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
+
 msg_box "As you noticed your external IP ($WANIP4) didn't match your DNS A-record. This can happen when using DDNS for example.
 
 If you feel brave, or are sure that everything is setup correctly, then you can choose to skip this test in the next step.
@@ -246,6 +246,7 @@ You can always contact us for further support if you wish: https://shop.hanssoni
         then
 	    exit
 	fi
+    fi
 }
 
 # A function to fetch a file with curl to a directory
