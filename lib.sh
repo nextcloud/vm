@@ -228,17 +228,17 @@ domain_check_200() {
     fi
 
     # Is the DNS record same as the external IP address of the server?
-    if [[ "$(dig +short "${1}" @resolver1.opendns.com)" = "$WANIP4" ]]
+    DIG="$(dig +short "${1}" @resolver1.opendns.com)"
+    if [[ "$DIG" = "$WANIP4" ]]
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
-    elif [[ "$(dig +short "${1}" @resolver1.opendns.com)" != "$WANIP4" ]]
+    elif [[ "$DIG" != "$WANIP4" ]]
     then
-msg_box "DNS lookup failed with dig. The external IP ($WANIP4) address of this server is not the same as the A-record.
+msg_box "DNS lookup failed with dig. The external IP ($WANIP4) address of this server is not the same as the A-record ($DIG).
 Please check your DNS settings! Maybe the domain isn't propagated?
 Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
 
-msg_box "As you noticed your external IP ($WANIP4) didn't match your DNS A-record. This can happen when using DDNS for example.
-
+msg_box "As you noticed your WAN IP and DNS record doesn't match. This can happen when using DDNS for example, or in some edge cases.
 If you feel brave, or are sure that everything is setup correctly, then you can choose to skip this test in the next step.
 
 You can always contact us for further support if you wish: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
