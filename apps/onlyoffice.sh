@@ -50,14 +50,7 @@ fi
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
-if domain_check_200 "$SUBDOMAIN"
-then
-   sleep 0.1
-else
-msg_box "Nope, it's not there. You have to create $SUBDOMAIN and point
-it to this server before you can run this script."
-   exit 1
-fi
+domain_check_200 "$SUBDOMAIN"
 
 # Check open ports with NMAP
 check_open_port 80 "$SUBDOMAIN"
