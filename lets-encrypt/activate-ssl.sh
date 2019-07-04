@@ -205,7 +205,7 @@ then
 fi
 
 # Methods
-default_le="--rsa-key-size 4096 --hsts --renew-by-default --agree-tos -d $domain"
+default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
 
 webroot() {
 # Generate certs
