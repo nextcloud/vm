@@ -235,6 +235,9 @@ fi
 # Replace the permissions script
 run_static_script setup_secure_permissions_nextcloud
 
+###### TEMPORARY 2019-07-06 ###########
+git_apply_patch 15992 server ## 16.0.2
+
 # Set secure permissions
 if [ ! -f "$SECURE" ]
 then
