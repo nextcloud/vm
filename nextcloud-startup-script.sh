@@ -677,6 +677,6 @@ TIPS & TRICKS:
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
 # Reboot
-any_key "Installation finished, press any key to reboot system..."
+print_text_in_color "$IGreen" "Installation done, system will now reboot..."
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 reboot
