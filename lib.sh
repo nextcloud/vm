@@ -1062,7 +1062,7 @@ install_if_not git
 cd "$NCPATH"
 if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
 then
-    print_text_in_color "IGreen" "Applying patch ${1} from the ${2} repository..."
+    print_text_in_color "$IGreen" "Applying patch ${1} from the ${2} repository..."
     git apply /tmp/"${1}".patch
 fi
 }
