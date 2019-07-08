@@ -1058,7 +1058,7 @@ print_text_in_color() {
 # 2 = repository
 # Nextcloud version
 git_apply_patch() {
-if [[ "$CURRENTVERSION" = $3 ]]
+if [[ "$CURRENTVERSION" = "$3" ]]
 then
     curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
     install_if_not git
