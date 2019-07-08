@@ -1052,18 +1052,22 @@ print_text_in_color() {
 	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
-# Patch upload bug
-# git_apply_patch 15992 server
+# Apply patch
+# git_apply_patch 15992 server 16.0.2
 # 1 = pull
 # 2 = repository
+# Nextcloud version
 git_apply_patch() {
-curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
-install_if_not git
-cd "$NCPATH"
-if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
+if [[ "$CURRENTVERSION" = "$3" ]]
 then
-    print_text_in_color "$IGreen" "Applying patch ${1} from the ${2} repository..."
-    git apply /tmp/"${1}".patch
+    curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
+    install_if_not git
+    cd "$NCPATH"
+    if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
+    then
+        print_text_in_color "$IGreen" "Applying patch https://github.com/nextcloud/${2}/pull/${1} ..."
+	git apply /tmp/"${1}".patch
+    fi
 fi
 }
 

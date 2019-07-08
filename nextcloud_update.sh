@@ -236,7 +236,7 @@ fi
 run_static_script setup_secure_permissions_nextcloud
 
 ###### TEMPORARY 2019-07-06 ###########
-git_apply_patch 15992 server ## 16.0.2
+git_apply_patch 15992 server 16.0.2
 
 # Set secure permissions
 if [ ! -f "$SECURE" ]
@@ -469,6 +469,9 @@ msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if the folders exist."
     exit 1
 fi
+
+# Specific for 16.0.2
+git_apply_patch 15992 server 16.0.2
 
 # Update Bitwarden
 if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
