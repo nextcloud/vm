@@ -1052,7 +1052,7 @@ print_text_in_color() {
 	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
-# Patch upload bug
+# Apply patch
 # git_apply_patch 15992 server 16.0.2
 # 1 = pull
 # 2 = repository
