@@ -81,7 +81,7 @@ fi
 
 # Update Redis PHP extension
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
-if version 18.04 "$DISTRO" 18.04.4; then
+if version 18.04 "$DISTRO" 18.04.10; then
     if ! pecl list | grep redis >/dev/null 2>&1
     then
         if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
@@ -146,7 +146,7 @@ if version 18.04 "$DISTRO" 18.04.4; then
         restart_webserver
     fi
 else
-    msg_box "Ubuntu version $DISTRO must be at least 18.0.4 to upgrade Redis."
+    msg_box "Ubuntu version $DISTRO must be at least 18.04 to upgrade Redis."
 fi
 
 # Update adminer
