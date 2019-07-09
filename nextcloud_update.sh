@@ -72,83 +72,81 @@ if [ -d /etc/netdata ]
 then
     if [ -f /usr/src/netdata.git/netdata-updater.sh ]
     then
-        bash /usr/src/netdata.git/netdata-updater.sh
+        run_app_script netdata
     elif [ -f /usr/libexec/netdata-updater.sh ]
     then
         bash /usr/libexec/netdata-updater.sh
-#    elif [ -f /usr/src/netdata.git/netdata-updater.sh ]
-#    then
-#       if ! bash /usr/src/netdata.git/netdata-updater.sh
-#	then
-#	    run_app_script netdata
-#	fi
     fi
 fi
 
 # Update Redis PHP extension
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
-if ! pecl list | grep redis >/dev/null 2>&1
-then
-    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+if version 18.04 "$DISTRO" 18.04.4; then
+    if ! pecl list | grep redis >/dev/null 2>&1
     then
-        install_if_not php"$PHPVER"-dev
-    elif dpkg -l | grep php7.3 > /dev/null 2>&1
+        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+        then
+            install_if_not php"$PHPVER"-dev
+        elif dpkg -l | grep php7.3 > /dev/null 2>&1
+        then
+            install_if_not php7.3-dev
+        elif dpkg -l | grep php7.0 > /dev/null 2>&1
+        then
+            install_if_not php7.0-dev
+        fi
+        apt purge php-redis -y
+        apt autoremove -y
+        pecl channel-update pecl.php.net
+        yes no | pecl install redis
+        service redis-server restart
+        # Check if redis.so is enabled
+        # PHP 7.0 apache
+        if [ -f /etc/php/7.0/apache2/php.ini ]
+        then
+            ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
+        # PHP "$PHPVER" apache
+        elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
+        then
+            ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
+        # PHP "$PHPVER" fpm
+        elif [ -f "$PHP_INI" ]
+        then
+            ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
+        fi
+        restart_webserver
+    elif pecl list | grep redis >/dev/null 2>&1
     then
-        install_if_not php7.3-dev
-    elif dpkg -l | grep php7.0 > /dev/null 2>&1
-    then
-        install_if_not php7.0-dev
+        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+        then
+            install_if_not php"$PHPVER"-dev
+        elif dpkg -l | grep php7.3 > /dev/null 2>&1
+        then
+            install_if_not php7.3-dev
+        elif dpkg -l | grep php7.0 > /dev/null 2>&1
+        then
+            install_if_not php7.0-dev
+        fi
+        pecl channel-update pecl.php.net
+        yes no | pecl upgrade redis
+        service redis-server restart
+        # Check if redis.so is enabled
+        # PHP 7.0 apache
+        if [ -f /etc/php/7.0/apache2/php.ini ]
+        then
+            ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
+        # PHP "$PHPVER" apache
+        elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
+        then
+            ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
+        # PHP "$PHPVER" fpm
+        elif [ -f "$PHP_INI" ]
+        then
+            ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
+        fi
+        restart_webserver
     fi
-    apt purge php-redis -y
-    apt autoremove -y
-    pecl channel-update pecl.php.net
-    yes no | pecl install redis
-    service redis-server restart
-    # Check if redis.so is enabled
-    # PHP 7.0 apache
-    if [ -f /etc/php/7.0/apache2/php.ini ]
-    then
-        ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
-    # PHP "$PHPVER" apache
-    elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
-    then
-        ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
-    # PHP "$PHPVER" fpm
-    elif [ -f "$PHP_INI" ]
-    then
-        ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
-    fi
-    restart_webserver
-elif pecl list | grep redis >/dev/null 2>&1
-then
-    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
-    then
-        install_if_not php"$PHPVER"-dev
-    elif dpkg -l | grep php7.3 > /dev/null 2>&1
-    then
-        install_if_not php7.3-dev
-    elif dpkg -l | grep php7.0 > /dev/null 2>&1
-    then
-        install_if_not php7.0-dev
-    fi
-    pecl channel-update pecl.php.net
-    yes no | pecl upgrade redis
-    service redis-server restart
-    # Check if redis.so is enabled
-    # PHP 7.0 apache
-    if [ -f /etc/php/7.0/apache2/php.ini ]
-    then
-        ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
-    # PHP "$PHPVER" apache
-    elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
-    then
-        ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
-    # PHP "$PHPVER" fpm
-    elif [ -f "$PHP_INI" ]
-    then
-        ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
-    fi
-    restart_webserver
+else
+    msg_box "Ubuntu version $DISTRO must be at least 18.0.4 to upgrade Redis."
 fi
 
 # Update adminer
