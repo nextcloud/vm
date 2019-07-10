@@ -113,7 +113,6 @@ then
         ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
     fi
     restart_webserver
-    REDISUPGRADE=updated_redis
 elif pecl list | grep redis >/dev/null 2>&1
 then
     if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
@@ -144,6 +143,11 @@ then
         ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
     fi
     restart_webserver
+fi
+
+# Check if Redis needs to be rebooted
+if pecl list | grep 5
+then
     REDISUPGRADE=updated_redis
 fi
 
