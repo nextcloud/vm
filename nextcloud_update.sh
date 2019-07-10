@@ -542,6 +542,12 @@ Thank you for using T&M Hansson IT's updater!"
     occ_command status
     occ_command maintenance:mode --off
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log
+    # Reboot server to make sure Redis update is applied
+    if [[ "$REDISUPGRADE" = "updated_redis" ]]
+    then
+        countdown 'The server will reboot in 120 seconds due to Redis being upgraded. PRESS CTRL+C to abort.' 120
+        reboot
+    fi
     exit 0
 else
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
@@ -553,12 +559,10 @@ Please report this issue to $ISSUES
 
 Maintenance mode is kept on."
 occ_command status
+    if [[ "$REDISUPGRADE" = "updated_redis" ]]
+    then
+        countdown 'The server will reboot in 120 seconds due to Redis being upgraded. PRESS CTRL+C to abort.' 120
+        reboot
+    fi
     exit 1
-fi
-
-# Reboot server to make sure Redis update is applied
-if [[ "$REDISUPGRADE" = "updated_redis" ]]
-then
-    countdown 'The server will reboot in 120 seconds due to Redis being upgraded. PRESS CTRL+C to abort.' 120
-    reboot
 fi
