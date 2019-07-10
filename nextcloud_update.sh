@@ -81,72 +81,70 @@ fi
 
 # Update Redis PHP extension
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
-if version 18.04 "$DISTRO" 18.04.10; then
-    if ! pecl list | grep redis >/dev/null 2>&1
+if ! pecl list | grep redis >/dev/null 2>&1
+then
+    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
     then
-        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
-        then
-            install_if_not php"$PHPVER"-dev
-        elif dpkg -l | grep php7.3 > /dev/null 2>&1
-        then
-            install_if_not php7.3-dev
-        elif dpkg -l | grep php7.0 > /dev/null 2>&1
-        then
-            install_if_not php7.0-dev
-        fi
-        apt purge php-redis -y
-        apt autoremove -y
-        pecl channel-update pecl.php.net
-        yes no | pecl install redis
-        service redis-server restart
-        # Check if redis.so is enabled
-        # PHP 7.0 apache
-        if [ -f /etc/php/7.0/apache2/php.ini ]
-        then
-            ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
-        # PHP "$PHPVER" apache
-        elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
-        then
-            ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
-        # PHP "$PHPVER" fpm
-        elif [ -f "$PHP_INI" ]
-        then
-            ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
-        fi
-        restart_webserver
-    elif pecl list | grep redis >/dev/null 2>&1
+        install_if_not php"$PHPVER"-dev
+    elif dpkg -l | grep php7.3 > /dev/null 2>&1
     then
-        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
-        then
-            install_if_not php"$PHPVER"-dev
-        elif dpkg -l | grep php7.3 > /dev/null 2>&1
-        then
-            install_if_not php7.3-dev
-        elif dpkg -l | grep php7.0 > /dev/null 2>&1
-        then
-            install_if_not php7.0-dev
-        fi
-        pecl channel-update pecl.php.net
-        yes no | pecl upgrade redis
-        service redis-server restart
-        # Check if redis.so is enabled
-        # PHP 7.0 apache
-        if [ -f /etc/php/7.0/apache2/php.ini ]
-        then
-            ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
-        # PHP "$PHPVER" apache
-        elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
-        then
-            ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
-        # PHP "$PHPVER" fpm
-        elif [ -f "$PHP_INI" ]
-        then
-            ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
-        fi
-        restart_webserver
+        install_if_not php7.3-dev
+    elif dpkg -l | grep php7.0 > /dev/null 2>&1
+    then
+        install_if_not php7.0-dev
     fi
-else
-    msg_box "Ubuntu version $DISTRO must be at least 18.04 to upgrade Redis."
+    apt purge php-redis -y
+    apt autoremove -y
+    pecl channel-update pecl.php.net
+    yes no | pecl install redis
+    service redis-server restart
+    # Check if redis.so is enabled
+    # PHP 7.0 apache
+    if [ -f /etc/php/7.0/apache2/php.ini ]
+    then
+        ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
+    # PHP "$PHPVER" apache
+    elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
+    then
+        ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
+    # PHP "$PHPVER" fpm
+    elif [ -f "$PHP_INI" ]
+    then
+        ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
+    fi
+    restart_webserver
+    REDISUPGRADE=updated_redis
+elif pecl list | grep redis >/dev/null 2>&1
+then
+    if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+    then
+        install_if_not php"$PHPVER"-dev
+    elif dpkg -l | grep php7.3 > /dev/null 2>&1
+    then
+        install_if_not php7.3-dev
+    elif dpkg -l | grep php7.0 > /dev/null 2>&1
+    then
+        install_if_not php7.0-dev
+    fi
+    pecl channel-update pecl.php.net
+    yes no | pecl upgrade redis
+    service redis-server restart
+    # Check if redis.so is enabled
+    # PHP 7.0 apache
+    if [ -f /etc/php/7.0/apache2/php.ini ]
+    then
+        ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
+    # PHP "$PHPVER" apache
+    elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
+    then
+        ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
+    # PHP "$PHPVER" fpm
+    elif [ -f "$PHP_INI" ]
+    then
+        ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
+    fi
+    restart_webserver
+    REDISUPGRADE=updated_redis
 fi
 
 # Update adminer
@@ -556,4 +554,11 @@ Please report this issue to $ISSUES
 Maintenance mode is kept on."
 occ_command status
     exit 1
+fi
+
+# Reboot server to make sure Redis update is applied
+if [[ "$REDISUPGRADE" = "updated_redis" ]]
+then
+    countdown 'Server will reboot in 120 seconds. PRESS CTRL+C to abort.' 120
+    reboot
 fi
