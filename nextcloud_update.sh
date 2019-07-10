@@ -559,6 +559,6 @@ fi
 # Reboot server to make sure Redis update is applied
 if [[ "$REDISUPGRADE" = "updated_redis" ]]
 then
-    countdown 'Server will reboot in 120 seconds. PRESS CTRL+C to abort.' 120
+    countdown 'The server will reboot in 120 seconds due to Redis being upgraded. PRESS CTRL+C to abort.' 120
     reboot
 fi
