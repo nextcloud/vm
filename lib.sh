@@ -10,7 +10,6 @@ SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
 NCDATA=/mnt/ncdata
-SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
