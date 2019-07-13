@@ -488,12 +488,6 @@ start_if_stopped apache2
 # Recover apps that exists in the backed up apps folder
 run_static_script recover_apps
 
-# Enable Apps
-if [ -d "$SNAPDIR" ]
-then
-    run_app_script spreedme
-fi
-
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
 then
