@@ -70,7 +70,7 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # OnlyOffice URL
 [ ! -z "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain
-[ ! -z "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "Nextcloud url, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+[ ! -z "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Collabora Docker URL
 [ ! -z "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain
