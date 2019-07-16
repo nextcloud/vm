@@ -306,11 +306,6 @@ chown root:root -R $SCRIPTS
 # Allow $UNIXUSER to run figlet script
 chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
 
-msg_box() {
-local PROMPT="$1"
-    whiptail --title "Nextcloud VM - T&M Hansson IT - $(date +"%Y")" --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
-}
-
 msg_box "This script will configure your Nextcloud and activate SSL.
 It will also do the following:
 
