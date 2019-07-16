@@ -306,6 +306,11 @@ chown root:root -R $SCRIPTS
 # Allow $UNIXUSER to run figlet script
 chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
 
+msg_box() {
+local PROMPT="$1"
+    whiptail --title "Nextcloud VM - T&M Hansson IT - $(date +"%Y")" --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+}
+
 msg_box "This script will configure your Nextcloud and activate SSL.
 It will also do the following:
 
@@ -314,20 +319,30 @@ It will also do the following:
 - Install selected apps and automatically configure them
 - Detect and set hostname
 - Detect and set trusted domains
+- Detect the best Ubuntu mirrors depending on your location
 - Upgrade your system and Nextcloud to latest version
 - Set secure permissions to Nextcloud
 - Set new passwords to Linux and Nextcloud
 - Change timezone
-- Change mirrors depending on your location
 - Set correct Rewriterules for Nextcloud
 - Copy content from .htaccess to .user.ini (because we use php-fpm)
 - Add additional options if you choose them
+- And more..."
 
-  The script will take about 10 minutes to finish, depending on your internet connection.
-  
-  Please note that all the .sh|.html|.tar|.zip files in /root and /home/$UNIXUSER will be deleted.
+msg_box "Please note:
 
- ###################### T&M Hansson IT - $(date +"%Y") ######################"
+[#] The script will take about 10 minutes to finish, depending on your internet connection.
+
+[#] When complete it will delete all the *.sh, *.html, *.tar, *.zip inside:
+    /root
+    /home/$UNIXUSER
+
+[#] Please consider donating if you like the product:
+    https://shop.hanssonit.se/product-category/donate/
+
+[#] You can also ask for help here:
+    https://help.nextcloud.com/c/support/appliances-docker-snappy-vm
+    https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 clear
 
 # Change Timezone
@@ -678,9 +693,7 @@ TIPS & TRICKS:
 4. Change IP to something outside DHCP: sudo nano /etc/netplan/01-netcfg.yaml
 
 5. For a better experiance it's a good idea to setup an email account here:
-   https://yourcloud.xyz/settings/admin
-
- ######################### T&M Hansson IT - $(date +"%Y") #########################  "
+   https://yourcloud.xyz/settings/admin"
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
