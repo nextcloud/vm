@@ -57,9 +57,31 @@ debug_mode
 # Check if root
 root_check
 
+# Set keyboard layout
+print_text_in_color "$ICyan" "Current keyboard layout is $KEYBOARD_LAYOUT"
+if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
+then
+    print_text_in_color "$ICyan" "Not changing keyboard layout..."
+    sleep 1
+    clear
+else
+    dpkg-reconfigure keyboard-configuration
+    clear
+fi
+
 # Set locales
+KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 install_if_not language-pack-en-base
-sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+if [ $KEYBOARD_LAYOUT = "se" ]
+then
+    sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+elif [ $KEYBOARD_LAYOUT = "en" ]
+then 
+    sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+elif [ $KEYBOARD_LAYOUT = "de" ]
+then 
+    sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+fi
 
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
@@ -178,18 +200,6 @@ else
     fi
 fi
 clear
-
-# Set keyboard layout
-print_text_in_color "$ICyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
-if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
-then
-    print_text_in_color "$ICyan" "Not changing keyboard layout..."
-    sleep 1
-    clear
-else
-    dpkg-reconfigure keyboard-configuration
-    clear
-fi
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
