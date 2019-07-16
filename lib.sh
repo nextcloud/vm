@@ -178,7 +178,7 @@ ask_yes_or_no() {
 
 msg_box() {
 local PROMPT="$1"
-    whiptail --title "Nextcloud VM - T&M Hansson IT $(date +"%Y")" --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+    whiptail --title "Nextcloud VM - T&M Hansson IT - $(date +"%Y")" --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
 # Check if process is runnnig: is_process_running dpkg
