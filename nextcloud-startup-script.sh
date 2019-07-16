@@ -214,10 +214,11 @@ then
     exit 1
 fi
 
-# Set keyboard layout
-if [ "$KEYBOARD_LAYOUT" != "se" ]
+# Set keyboard layout, important when changing passwords and such
+if [ "$KEYBOARD_LAYOUT" = "se" ]
 then
-    print_text_in_color "$ICyan" "Current keyboard layout is $KEYBOARD_LAYOUT"
+    clear
+    print_text_in_color "$ICyan" "Current keyboard layout is Swedish."
     if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
     then
         print_text_in_color "$ICyan" "Not changing keyboard layout..."
@@ -225,8 +226,11 @@ then
         clear
     else
         dpkg-reconfigure keyboard-configuration
-        msg_box "The server will now be rebooted to apply the new keyboard settings. Please run this script again once rebooted."
-	reboot
+        msg_box "We will now try to set the new keyboard layout directly in this session. If that fails, the server will be rebooted to apply the new keyboard settings.\n\nIf the server are rebooted, please login as usual and run this script again."
+	if ! setupcon
+        then
+            reboot 
+        fi
     fi
 fi
 
@@ -313,7 +317,6 @@ It will also do the following:
 - Upgrade your system and Nextcloud to latest version
 - Set secure permissions to Nextcloud
 - Set new passwords to Linux and Nextcloud
-- Set new keyboard layout
 - Change timezone
 - Change mirrors depending on your location
 - Set correct Rewriterules for Nextcloud
