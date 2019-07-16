@@ -58,29 +58,32 @@ debug_mode
 root_check
 
 # Set keyboard layout
-print_text_in_color "$ICyan" "Current keyboard layout is $KEYBOARD_LAYOUT"
-if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
+if [ "$KEYBOARD_LAYOUT" != "se" ]
 then
-    print_text_in_color "$ICyan" "Not changing keyboard layout..."
-    sleep 1
-    clear
-else
-    dpkg-reconfigure keyboard-configuration
-    clear
+    print_text_in_color "$ICyan" "Current keyboard layout is $KEYBOARD_LAYOUT"
+    if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
+    then
+        print_text_in_color "$ICyan" "Not changing keyboard layout..."
+        sleep 1
+        clear
+    else
+        dpkg-reconfigure keyboard-configuration
+        msg_box "The server will now be rebooted to apply the new keyboard settings. Please run this script again once rebooted."
+	reboot
+    fi
 fi
 
 # Set locales
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 install_if_not language-pack-en-base
-if [ $KEYBOARD_LAYOUT = "se" ]
+if [ "$KEYBOARD_LAYOUT" = "se" ]
 then
     sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-elif [ $KEYBOARD_LAYOUT = "en" ]
-then 
-    sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-elif [ $KEYBOARD_LAYOUT = "de" ]
+elif [ "$KEYBOARD_LAYOUT" = "de" ]
 then 
     sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+else
+    sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 fi
 
 # Test RAM size (2GB min) + CPUs (min 1)
