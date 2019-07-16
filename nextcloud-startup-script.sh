@@ -215,7 +215,6 @@ then
 fi
 
 # Set keyboard layout
-KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 if [ "$KEYBOARD_LAYOUT" != "se" ]
 then
     print_text_in_color "$ICyan" "Current keyboard layout is $KEYBOARD_LAYOUT"
