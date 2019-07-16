@@ -568,6 +568,7 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "IssueTemplate" "       " on \
 "PDFViewer" "           " on \
 "Extract" "             " on \
+"Text" "                " on \
 "Webmin" "              " on 2>results
 
 while read -r -u 9 choice
@@ -591,6 +592,9 @@ do
 	    install_if_not unrar
 	    install_if_not unzip
 	fi
+	;;
+	Text)
+        install_and_enable_app text
         ;;
         Webmin)
             run_app_script webmin
