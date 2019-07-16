@@ -18,6 +18,7 @@ NC_APPS_PATH=$NCPATH/apps
 
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
+KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Network
 [ ! -z "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)

@@ -214,6 +214,22 @@ then
     exit 1
 fi
 
+# Set keyboard layout
+if [ "$KEYBOARD_LAYOUT" != "se" ]
+then
+    print_text_in_color "$ICyan" "Current keyboard layout is $KEYBOARD_LAYOUT"
+    if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
+    then
+        print_text_in_color "$ICyan" "Not changing keyboard layout..."
+        sleep 1
+        clear
+    else
+        dpkg-reconfigure keyboard-configuration
+        msg_box "The server will now be rebooted to apply the new keyboard settings. Please run this script again once rebooted."
+	reboot
+    fi
+fi
+
 # Is this run as a pure root user?
 if is_root
 then
@@ -310,18 +326,6 @@ It will also do the following:
 
  ###################### T&M Hansson IT - $(date +"%Y") ######################"
 clear
-
-# Set keyboard layout
-print_text_in_color "$ICyan" "Current keyboard layout is $(localectl status | grep "Layout" | awk '{print $3}')"
-if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
-then
-    print_text_in_color "$ICyan" "Not changing keyboard layout..."
-    sleep 1
-    clear
-else
-    dpkg-reconfigure keyboard-configuration
-    clear
-fi
 
 # Change Timezone
 print_text_in_color "$ICyan" "Current timezone is $(cat /etc/timezone)"
