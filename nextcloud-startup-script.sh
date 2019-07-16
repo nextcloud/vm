@@ -293,6 +293,7 @@ It will also do the following:
 - Generate new PostgreSQL password
 - Install selected apps and automatically configure them
 - Detect and set hostname
+- Detect and set trusted domains
 - Upgrade your system and Nextcloud to latest version
 - Set secure permissions to Nextcloud
 - Set new passwords to Linux and Nextcloud
@@ -303,8 +304,9 @@ It will also do the following:
 - Copy content from .htaccess to .user.ini (because we use php-fpm)
 - Add additional options if you choose them
 
-  The script will take about 10 minutes to finish,
-  depending on your internet connection.
+  The script will take about 10 minutes to finish, depending on your internet connection.
+  
+  Please note that all the .sh|.html|.tar|.zip files in /root and /home/$UNIXUSER will be deleted.
 
  ###################### T&M Hansson IT - $(date +"%Y") ######################"
 clear
