@@ -545,7 +545,7 @@ Thank you for using T&M Hansson IT's updater!"
     occ_command maintenance:mode --off
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> /var/log/cronjobs_success.log
     notify_user_gui "Nextcloud is now updated!" \
-    "Your Nextcloud is updated to $CURRENTVERSION_after with the script from T&M Hansson IT"
+    "Your Nextcloud is updated to $CURRENTVERSION_after with the script from the Nextcloud VM"
     exit 0
 else
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
