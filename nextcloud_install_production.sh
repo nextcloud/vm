@@ -124,6 +124,12 @@ then
     mkdir -p "$SCRIPTS"
 fi
 
+# Create $VMLOGS dir
+if [ ! -d "$VMLOGS" ]
+then
+    mkdir -p "$VMLOGS"
+fi
+
 # Install needed network
 install_if_not netplan.io
 install_if_not network-manager
