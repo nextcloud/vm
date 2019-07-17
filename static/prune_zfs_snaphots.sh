@@ -18,15 +18,19 @@ root_check
 
 if [ -d /dev/mapper/ ]
 then
-    if [ $(df -h /dev/mapper/*--vg-root | awk '{print $5}' | tail -1 | cut -d "%" -f1) -gt 90 ]
+    if [ "$(df -h /dev/mapper/*--vg-root | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 90 ]
     then
-        notify_user_gui "Disk space almost full!" "The disk space for /dev/mapper/*--vg-root is almost full. We have delete snaphots older than 1 week to free up space"
+        # Notify user
+        notify_user_gui "Disk space almost full!" "The disk space for /dev/mapper/*--vg-root is almost full. We have automatically deleted ZFS snapshots older than 8 weeks to free up some$
+
+        msg_box "Your disk space is almost full (more than 90%).\n\nTo solve that, we will now delete ZFS snapshots older than 8 weeks to free up some space."
+        countdown "To abort, please press CTRL+C within 10 seconds." 10
+        # Get the latest prune script
         check_command curl_to_dir "https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/" "zfs-prune-snapshots" "$SCRIPTS"
         chmod +x "$SCRIPTS"/zfs-prune-snapshots
-
-        print_text_in_color "$ICyan" "Delete snapshots older than X weeks:"
-        read -r weeks
+        # Prune!
         cd "$SCRIPTS"
-        ./zfs-prune-snapshots "$weeks"w ncdata
+        ./zfs-prune-snapshots 8w ncdata > $SCRIPTS/zfs_prune_log
     fi
 fi
+
