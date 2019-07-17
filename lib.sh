@@ -1072,6 +1072,16 @@ then
 fi
 }
 
+# Set notifications for user
+# EXAMPLE
+# notify_user_gui \
+# "Headline" \
+# "Message"
+notify_user_gui() {
+NCADMIN=$(occ_command user:list | awk '{print $3}';)
+occ_command notification:generate -l "$2" "$NCADMIN" "$1"
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
