@@ -20,6 +20,7 @@ if [ -d /dev/mapper/ ]
 then
     if [ $(df -h /dev/mapper/*--vg-root | awk '{print $5}' | tail -1 | cut -d "%" -f1) -gt 90 ]
     then
+        notify_user_gui "Disk space almost full!" "The disk space for /dev/mapper/*--vg-root is almost full. We have delete snaphots older than 1 week to free up space"
         check_command curl_to_dir "https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/" "zfs-prune-snapshots" "$SCRIPTS"
         chmod +x "$SCRIPTS"/zfs-prune-snapshots
 
