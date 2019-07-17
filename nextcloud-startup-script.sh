@@ -523,7 +523,7 @@ notify_user_gui \
 
 notify_user_gui \
 "Do you need support?" \
-"If you need support, please visit the shop: https://shop.hanssonit.se"
+"If you need support, please visit the shop: https://shop.hanssonit.se, or the forum: https://help.nextcloud.com."
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
