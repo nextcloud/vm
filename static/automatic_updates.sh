@@ -32,7 +32,8 @@ In the next step you will be able to choose to proceed or exit."
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable automatic updates?") ]]
 then
-    crontab -u root -l | { cat; echo "0 18 * * 6 $SCRIPTS/update.sh > /var/scripts/update_log"; } | crontab -u root -
+    touch $VMLOGS/update.log
+    crontab -u root -l | { cat; echo "0 18 * * 6 $SCRIPTS/update.sh >> $VMLOGS/update.log"; } | crontab -u root -
     if [[ "yes" == $(ask_yes_or_no "Do you want to reboot your server after every update?") ]]
     then
         sed -i "s|exit|shutdown -r +1|g" "$SCRIPTS"/update.sh
