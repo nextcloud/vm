@@ -535,7 +535,6 @@ else
 fi
 }
 
-
 check_distro_version() {
 # Check Ubuntu version
 print_text_in_color "$ICyan" "Checking server OS and version..."
