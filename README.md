@@ -58,9 +58,10 @@ STABLEVERSION="nextcloud-$NCVERSION"
 **Downloads from Github (not the main downloads location):**
 <br>
 ![Downloads](https://img.shields.io/github/downloads/nextcloud/vm/total.svg)
+<br>
 **Downloads from main server**
 <br>
-Downloads: ~100 per day since 2016
+~100 per day since 2016
 <br>
 **Build Status:**
 <br>
