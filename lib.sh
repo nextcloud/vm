@@ -531,6 +531,7 @@ then
 else
       msg_box "Port $1 is not open on either $WANIP4 or $2.\n\nPlease follow this guide to open ports in your router or firewall: https://www.techandme.se/open-port-80-443/"
       any_key "Press any key to exit..."
+      exit 1
 fi
 }
 
