@@ -518,52 +518,20 @@ certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "ser
 
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
-# Check to see if user already has nmap installed on their system
-if [ "$(dpkg-query -s nmap 2> /dev/null | grep -c "ok installed")" == "1" ]
+print_text_in_color "${ICyan}" "Checking if port ${1} is open with https://ports.yougetsignal.com..."
+install_if_not curl
+# WAN Adress
+if check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${WANIP4}&portNumber=${1}" | grep -q "is open on"
 then
-    NMAPSTATUS=preinstalled
-fi
-
-apt update -q4 & spinner_loading
-if [ "$NMAPSTATUS" = "preinstalled" ]
+    print_text_in_color "${IGreen}" "Port ${1} is open on ${WANIP4}!"
+# Domain name
+elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${2}&portNumber=${1}" | grep -q "is open on"
 then
-      print_text_in_color "$ICyan" "nmap is already installed..."
+    print_text_in_color "${IGreen}" "Port ${1} is open on ${2}!"
 else
-    apt install nmap -y
-fi
-
-# Check if $1 is open using nmap, if not notify the user
-if [ "$(nmap -sS -p "$1" "$WANIP4" | grep -c "open")" == "1" ]
-then
-  print_text_in_color "${IGreen}" "Port $1 is open on $WANIP4!"
-  if [ "$NMAPSTATUS" = "preinstalled" ]
-  then
-    print_text_in_color "$ICyan" "nmap was previously installed, not removing."
-  else
-    apt remove --purge nmap -y
-  fi
-else
-  whiptail --msgbox "Port $1 is not open on $WANIP4. We will do a second try on $2 instead." "$WT_HEIGHT" "$WT_WIDTH"
-  if [[ "$(nmap -sS -PN -p "$1" "$2" | grep -m 1 "open" | awk '{print $2}')" = "open" ]]
-  then
-      print_text_in_color "${IGreen}" "Port $1 is open on $2!"
-      if [ "$NMAPSTATUS" = "preinstalled" ]
-      then
-        print_text_in_color "$ICyan" "nmap was previously installed, not removing."
-      else
-        apt remove --purge nmap -y
-      fi
-  else
-      whiptail --msgbox "Port $1 is not open on $2. Please follow this guide to open ports in your router: https://www.techandme.se/open-port-80-443/" "$WT_HEIGHT" "$WT_WIDTH"
-      any_key "Press any key to exit... "
-      if [ "$NMAPSTATUS" = "preinstalled" ]
-      then
-        print_text_in_color "$ICyan" "nmap was previously installed, not removing."
-      else
-        apt remove --purge nmap -y
-      fi
-      exit 1
-  fi
+    msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
+    any_key "Press any key to exit..."
+    exit 1
 fi
 }
 
