@@ -227,7 +227,7 @@ then
     else
         dpkg-reconfigure keyboard-configuration
         msg_box "We will now try to set the new keyboard layout directly in this session. If that fails, the server will be rebooted to apply the new keyboard settings.\n\nIf the server are rebooted, please login as usual and run this script again."
-	if ! setupcon
+	if ! setupcon --force
         then
             reboot 
         fi
