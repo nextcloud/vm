@@ -29,7 +29,7 @@ cat << INST2
 | You can schedule the Nextcloud update process using a cron job.       |
 | This is done using a script built into this VM that automatically     |
 | updates Nextcloud, sets secure permissions, and logs the successful   |
-| update to /var/log/cronjobs_success.log                               |
+| update to $VMLOGS/update_run.log                              |
 | Just choose to configure it when asked to do so later in this script. |
 |                                                                       |
 |  ##################### T&M Hansson IT - $(date +"%Y") #######################  |
