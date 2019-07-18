@@ -13,4 +13,10 @@ true
 DEBUG=0
 debug_mode
 
+# Create $VMLOGS dir
+if [ ! -d "$VMLOGS" ]
+then
+    mkdir -p "$VMLOGS"
+fi
+
 exit
