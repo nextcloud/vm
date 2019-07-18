@@ -530,6 +530,12 @@ fi
 # Repair
 occ_command maintenance:repair
 
+# Create $VMLOGS dir
+if [ ! -d "$VMLOGS" ]
+then
+    mkdir -p "$VMLOGS"
+fi
+
 CURRENTVERSION_after=$(occ_command status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
 then
