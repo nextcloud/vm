@@ -29,13 +29,18 @@ Server installation. Simplified. :cloud:
 * [Machine configuration](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm) (of the released version)
 
 ## I want to test a Release Candidate (RC), or Beta!
-No problem, brave explorer! We made it simple. Run `update.sh` but abort it before it starts so that you have the latest `nextcloud_update.sh`. Then put this in your `nextcloud_update.sh` below the curl command (lib.sh) but before the check for major versions and run it.
+No problem, brave explorer! We made it simple. 
+
+In some cases we do pre-releases of the VM as well. Those can be found in the TESTING folder on the download server. If you want to try the latest version yourself, just follow the steps below:
+1. Download the latest [nextcloud_update.sh](https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_update.sh) to your server.
+2. Put the below variables right above line 256 **(# Major versions unsupported)**
+3. Run nextcloud_update.sh
 
 To test a specific RC version:
 
 ```
 NCREPO="https://download.nextcloud.com/server/prereleases"
-NCVERSION=12.0.1RC5
+NCVERSION=16.0.0RC1
 STABLEVERSION="nextcloud-$NCVERSION"
 ```
 
@@ -50,9 +55,12 @@ STABLEVERSION="nextcloud-$NCVERSION"
 ![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
 
 ## The usual tags
-**Downloads from Github:**
+**Downloads from Github (not the main downloads location):**
 <br>
 ![Downloads](https://img.shields.io/github/downloads/nextcloud/vm/total.svg)
+**Downloads from main server**
+<br>
+Downloads: ~100 per day since 2016
 <br>
 **Build Status:**
 <br>
