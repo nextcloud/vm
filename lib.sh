@@ -529,7 +529,7 @@ elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsig
 then
     print_text_in_color "${IGreen}" "Port ${1} is open on ${2}!"
 else
-    msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall: https://www.techandme.se/open-port-80-443/"
+    msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
     any_key "Press any key to exit..."
     exit 1
 fi
