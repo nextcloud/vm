@@ -31,7 +31,7 @@ then
         # Prune!
         cd "$SCRIPTS"
         touch VMLOGS/zfs_prune.log
-        ./zfs-prune-snapshots 8w ncdata > VMLOGS/zfs_prune.log
+        ./zfs-prune-snapshots 8w ncdata >> VMLOGS/zfs_prune.log
     fi
 fi
 
