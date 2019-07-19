@@ -470,13 +470,13 @@ then
         then
             if [ -d /root/bwdata ]
             then
-                curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "$SCRIPTS"
-                if [ -f "$SCRIPTS"/bitwarden.sh ]
+                curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "/root"
+                if [ -f /root/bitwarden.sh ]
                     then
                         print_text_in_color "$IGreen" "Upgrading Bitwarden..."
                         sleep 2
-                        bash "$SCRIPTS"/bitwarden.sh updateself
-                        bash "$SCRIPTS"/bitwarden.sh update
+                        bash /root/bitwarden.sh updateself
+                        bash /root/bitwarden.sh update
                 fi
             fi
         fi
