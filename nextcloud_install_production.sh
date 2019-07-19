@@ -596,7 +596,8 @@ do
         if install_and_enable_app extract
 	then
 	    install_if_not unrar
-	    install_if_not unzip
+	    install_if_not p7zip
+	    install_if_not p7zip-full
 	fi
 	;;
 	Text)
