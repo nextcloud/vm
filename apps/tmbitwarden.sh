@@ -32,7 +32,7 @@ Please also report any issues regarding this script setup to $ISSUES"
 msg_box "The necessary preparations to run expose Bitwarden to the internet are:
 1. The HTTP proxy and HTTPS ports for Bitwarden are 8080 and 8443, please open those ports before running this script.
 2. Please create a DNS record and point that to this server.
-3. Raise the of this server RAM to at least 3 GB."
+3. Raise amount of RAM to this server to at least 3 GB."
 
 if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
 then
