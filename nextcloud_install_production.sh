@@ -65,7 +65,6 @@ then
     then
         print_text_in_color "$ICyan" "Not changing keyboard layout..."
         sleep 1
-        clear
     else
         dpkg-reconfigure keyboard-configuration
         msg_box "The server will now be rebooted to apply the new keyboard settings. Please run this script again once rebooted."
@@ -208,7 +207,6 @@ else
         sudo mv sources.list /etc/apt/
     fi
 fi
-clear
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
@@ -596,7 +594,8 @@ do
         if install_and_enable_app extract
 	then
 	    install_if_not unrar
-	    install_if_not unzip
+	    install_if_not p7zip
+	    install_if_not p7zip-full
 	fi
 	;;
 	Text)
