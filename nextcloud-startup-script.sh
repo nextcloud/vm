@@ -140,8 +140,8 @@ msg_box "Copying old netplan.io config files file to:
         check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
     fi
 
-while true
-do
+  while true
+  do
     # Ask for IP address
 cat << ENTERIP
 +----------------------------------------------------------+
@@ -153,32 +153,32 @@ ENTERIP
     read -r LANIP
     echo
 
-if [[ $LANIP == *"/"* ]]
-then
-    break
-else
-    print_text_in_color "$IRed" "Did you forget the /subnet?"
-fi
-done
+    if [[ $LANIP == *"/"* ]]
+    then
+  break
+    else
+        print_text_in_color "$IRed" "Did you forget the /subnet?"
+    fi
+  done
 
-echo
-while true
-do
-# Ask static IP
+    echo
+   while true
+   do
+    # Ask gateway IP
 cat << ENTERGATEWAY
 +-------------------------------------------------------+
 |    Please enter the gateway address you want to set,  |
 |    Example: 192.168.1.1       			|
 +-------------------------------------------------------+
 ENTERGATEWAY
-echo
-read -r GATEWAYIP
-echo
-if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
-then
-    break
-fi
-done
+    echo
+    read -r GATEWAYIP
+    echo
+    if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
+    then
+        break
+    fi
+   done
 
     # Create the Static IP file
 cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
