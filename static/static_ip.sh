@@ -45,19 +45,22 @@ fi
 echo
 while true
 do
-# Ask for domain name
+    # Ask for IP address
 cat << ENTERIP
-+-------------------------------------------------------------+
-|    Please enter the static IP address you want to set,      |
-|    including the subnet. Like this: 192.168.1.100/24        |
-+-------------------------------------------------------------+
++----------------------------------------------------------+
+|    Please enter the static IP address you want to set,   |
+|    including the subnet. Example: 192.168.1.100/24       |
++----------------------------------------------------------+
 ENTERIP
-echo
-read -r LANIP
-echo
-if [[ "yes" == $(ask_yes_or_no "Is this correct? $LANIP") ]]
+    echo
+    read -r LANIP
+    echo
+
+if [[ $LANIP == *"/"* ]]
 then
     break
+else
+    print_text_in_color "$IRed" "Did you forget the /subnet?"
 fi
 done
 
