@@ -26,7 +26,7 @@ clear
 msg_box "Copying old netplan.io config files file to:
 
 /tmp/netplan_io_backup/"
-if [ -d /etc/netplan/ ] 
+if [ -d /etc/netplan/ ]
 then
     mkdir -p /tmp/netplan_io_backup
     check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
@@ -46,7 +46,7 @@ echo
 while true
 do
     # Ask for IP address
-cat << ENTERIP
+    cat << ENTERIP
 +----------------------------------------------------------+
 |    Please enter the static IP address you want to set,   |
 |    including the subnet. Example: 192.168.1.100/24       |
@@ -56,37 +56,37 @@ ENTERIP
     read -r LANIP
     echo
 
-if [[ $LANIP == *"/"* ]]
-then
-    break
-else
-    print_text_in_color "$IRed" "Did you forget the /subnet?"
-fi
+    if [[ $LANIP == *"/"* ]]
+    then
+        break
+    else
+        print_text_in_color "$IRed" "Did you forget the /subnet?"
+    fi
 done
 
 echo
 while true
 do
-# Ask for domain name
-cat << ENTERGATEWAY
+    # Ask for domain name
+    cat << ENTERGATEWAY
 +-------------------------------------------------------+
 |    Please enter the gateway address you want to set,  |
 |    Your current gateway is: $GATEWAY               |
 +-------------------------------------------------------+
 ENTERGATEWAY
-echo
-read -r GATEWAYIP
-echo
-if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
-then
-    break
-fi
+    echo
+    read -r GATEWAYIP
+    echo
+    if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
+    then
+        break
+    fi
 done
 
 # Check if IFACE is empty, if yes, try another method:
 if ! [ -z "$IFACE" ]
 then
-cat <<-IPCONFIG > "$INTERFACES"
+    cat <<-IPCONFIG > "$INTERFACES"
 network:
    version: 2
    renderer: networkd
@@ -105,7 +105,7 @@ msg_box "These are your settings, please make sure they are correct:
 $(cat /etc/netplan/01-netcfg.yaml)"
     netplan try
 else
-cat <<-IPCONFIGnonvmware > "$INTERFACES"
+    cat <<-IPCONFIGnonvmware > "$INTERFACES"
 network:
    version: 2
    renderer: networkd
