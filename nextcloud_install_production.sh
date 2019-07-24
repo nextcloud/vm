@@ -379,9 +379,6 @@ sed -i "s|post_max_size =.*|post_max_size = 1100M|g" $PHP_INI
 # upload_max
 sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" $PHP_INI
 
-# Set max upload in Nextcloud .user.ini
-configure_max_upload
-
 # Set SMTP mail
 occ_command config:system:set mail_smtpmode --value="smtp"
 
