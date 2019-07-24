@@ -515,9 +515,6 @@ occ_command config:system:set htaccess.RewriteBase --value="/"
 occ_command maintenance:update:htaccess
 bash "$SECURE"
 
-# Set max upload in Nextcloud .htaccess
-configure_max_upload
-
 # Repair
 occ_command maintenance:repair
 
