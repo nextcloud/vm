@@ -140,6 +140,8 @@ msg_box "Copying old netplan.io config files file to:
         check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
     fi
 
+while true
+do
     # Ask for IP address
 cat << ENTERIP
 +----------------------------------------------------------+
@@ -150,6 +152,14 @@ ENTERIP
     echo
     read -r LANIP
     echo
+
+if [[ $LANIP == *"/"* ]]
+then
+    break
+else
+    print_text_in_color "$IRed" "Did you forget the /subnet?"
+fi
+done
 
     # Ask for gateway address
 cat << ENTERGATEWAY
