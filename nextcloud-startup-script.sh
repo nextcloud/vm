@@ -161,16 +161,24 @@ else
 fi
 done
 
-    # Ask for gateway address
+echo
+while true
+do
+# Ask static IP
 cat << ENTERGATEWAY
-+----------------------------------------------------------+
-|    Please enter the gateway address you want to set,     |
-|    Example: 192.168.1.1                                  |
-+----------------------------------------------------------+
++-------------------------------------------------------+
+|    Please enter the gateway address you want to set,  |
+|    Example: 192.168.1.1       			|
++-------------------------------------------------------+
 ENTERGATEWAY
-    echo
-    read -r GATEWAYIP
-    echo
+echo
+read -r GATEWAYIP
+echo
+if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
+then
+    break
+fi
+done
 
     # Create the Static IP file
 cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
