@@ -106,7 +106,7 @@ else
     print_text_in_color "$ICyan" "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
-cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
+    cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
 network:
   version: 2
   renderer: networkd
@@ -131,39 +131,57 @@ You must have a working network connection to run this script.
 
 You will now be provided with the option to set a static IP manually instead."
 
-    # Copy old interfaces files
+        # Copy old interfaces files
 msg_box "Copying old netplan.io config files file to:
 /tmp/netplan_io_backup/"
-    if [ -d /etc/netplan/ ]
-    then
-        mkdir -p /tmp/netplan_io_backup
-        check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
-    fi
+        if [ -d /etc/netplan/ ]
+        then
+            mkdir -p /tmp/netplan_io_backup
+            check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
+        fi
 
-    # Ask for IP address
-cat << ENTERIP
+        while true
+        do
+            # Ask for IP address
+            cat << ENTERIP
 +----------------------------------------------------------+
 |    Please enter the static IP address you want to set,   |
 |    including the subnet. Example: 192.168.1.100/24       |
 +----------------------------------------------------------+
 ENTERIP
-    echo
-    read -r LANIP
-    echo
+            echo
+            read -r LANIP
+            echo
 
-    # Ask for gateway address
-cat << ENTERGATEWAY
-+----------------------------------------------------------+
-|    Please enter the gateway address you want to set,     |
-|    Example: 192.168.1.1                                  |
-+----------------------------------------------------------+
+            if [[ $LANIP == *"/"* ]]
+            then
+                break
+            else
+                print_text_in_color "$IRed" "Did you forget the /subnet?"
+            fi
+        done
+
+        echo
+        while true
+        do
+            # Ask gateway IP
+            cat << ENTERGATEWAY
++-------------------------------------------------------+
+|    Please enter the gateway address you want to set,  |
+|    Example: 192.168.1.1       			|
++-------------------------------------------------------+
 ENTERGATEWAY
-    echo
-    read -r GATEWAYIP
-    echo
+            echo
+            read -r GATEWAYIP
+            echo
+            if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
+            then
+                break
+            fi
+        done
 
-    # Create the Static IP file
-cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
+        # Create the Static IP file
+        cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
 network:
    version: 2
    renderer: networkd
@@ -180,7 +198,7 @@ IPCONFIG
 msg_box "These are your settings, please make sure they are correct:
 
 $(cat /etc/netplan/01-netcfg.yaml)"
-    netplan try
+        netplan try
     fi
 fi
 
