@@ -69,10 +69,11 @@ while true
 do
 # Ask for domain name
 cat << ENTERGATEWAY
-+-------------------------------------------------------------+
-|    Please enter the gateway address you want to set,        |
-|    Like this: 192.168.1.1                                   |
-+-------------------------------------------------------------+
++-------------------------------------------------------+
+|    Please enter the gateway address you want to set,  |
+|    Example: 192.168.1.1                               |
+|    This is your current gateway: $GATEWAY             |
++-------------------------------------------------------+
 ENTERGATEWAY
 echo
 read -r GATEWAYIP
