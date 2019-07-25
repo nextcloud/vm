@@ -251,7 +251,7 @@ then
         clear
     else
         dpkg-reconfigure keyboard-configuration
-        msg_box "The server will now be rebooted to apply the new keyboard settings.\n\nlease login as usual and run this script again."
+        msg_box "The server will now be rebooted to apply the new keyboard settings.\n\nOnce rebooted, please login as usual and run this script again."
 	reboot
     fi
 fi
