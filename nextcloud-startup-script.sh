@@ -457,6 +457,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Bitwarden" "(External password manager)   " OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
+"LDAP" "(Windows Active directory)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF 2>results
 
 while read -r -u 9 choice
@@ -500,6 +501,12 @@ do
         PreviewGenerator)
             clear
            run_app_script previewgenerator
+        ;;
+	
+        LDAP)
+            clear
+	    print_text_in_color "$ICyan" "Installing LDAP..."
+            install_and_enable_app user_ldap
         ;;   
 
         Talk)
