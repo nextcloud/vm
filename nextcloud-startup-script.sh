@@ -228,8 +228,8 @@ unset NCDB
 DEBUG=0
 debug_mode
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
+# Nextcloud 16 is required.
+lowest_compatible_nc 16
 
 # Check that this run on the PostgreSQL VM
 if ! which psql > /dev/null
@@ -251,11 +251,8 @@ then
         clear
     else
         dpkg-reconfigure keyboard-configuration
-        msg_box "We will now try to set the new keyboard layout directly in this session. If that fails, the server will be rebooted to apply the new keyboard settings.\n\nIf the server are rebooted, please login as usual and run this script again."
-	if ! setupcon --force
-        then
-            reboot 
-        fi
+        msg_box "The server will now be rebooted to apply the new keyboard settings.\n\nlease login as usual and run this script again."
+	reboot
     fi
 fi
 
