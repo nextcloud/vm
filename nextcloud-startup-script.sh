@@ -353,6 +353,8 @@ msg_box "Please note:
 
 [#] The script will take about 10 minutes to finish, depending on your internet connection.
 
+[#] Please read the on-screen insructions carefully, they will guide you through the setup.
+
 [#] When complete it will delete all the *.sh, *.html, *.tar, *.zip inside:
     /root
     /home/$UNIXUSER
@@ -453,7 +455,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Adminer" "(PostgreSQL GUI)       " OFF \
 "Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing [2GB RAM])   " OFF \
-"OnlyOffice" "(Online editing [4GB RAM])   " OFF \
+"OnlyOffice" "(Online editing [2GB RAM])   " OFF \
 "Bitwarden" "(External password manager)   " OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
