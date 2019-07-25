@@ -509,6 +509,8 @@ do
             clear
 	    print_text_in_color "$ICyan" "Installing LDAP..."
             install_and_enable_app user_ldap
+	    print_text_in_color "$ICyan" "Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
+	    any_key "Press any key to continue"
         ;;   
 
         Talk)
