@@ -251,9 +251,25 @@ then
         clear
     else
         dpkg-reconfigure keyboard-configuration
-        msg_box "The server will now be rebooted to apply the new keyboard settings.\n\nOnce rebooted, please login as usual and run this script again."
-	reboot
+        msg_box "We will now try to set the new keyboard layout directly in this session. If that fails, the server will be rebooted to apply the new keyboard settings.\n\nIf the server are rebooted, please login as usual and run this script again."
+	if ! setupcon --force
+        then
+            reboot 
+        fi
     fi
+fi
+
+# Set locales
+print_text_in_color "$ICyan" "Setting locales..."
+KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
+if [ "$KEYBOARD_LAYOUT" = "se" ]
+then
+    sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+elif [ "$KEYBOARD_LAYOUT" = "de" ]
+then 
+    sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+elif [ "$KEYBOARD_LAYOUT" = "us" ]
+    sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 fi
 
 # Is this run as a pure root user?
