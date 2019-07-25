@@ -567,18 +567,6 @@ msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
 fi
 }
 
-configure_max_upload() {
-# Increase max filesize (expects that changes are made in $PHP_INI)
-# Here is a guide: https://www.techandme.se/increase-max-file-size/
-print_text_in_color "$ICyan" "Setting max_upload size in PHP..."
-# Copy settings from .htaccess to user.ini. beacuse we run php-fpm. Documented here: https://docs.nextcloud.com/server/13/admin_manual/installation/source_installation.html#php-fpm-configuration-notes
-cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
-# Do the acutal change
-sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.user.ini
-sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.user.ini
-sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.user.ini
-}
-
 # Check if program is installed (is_this_installed apache2)
 is_this_installed() {
 if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
