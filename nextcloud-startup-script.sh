@@ -228,8 +228,8 @@ unset NCDB
 DEBUG=0
 debug_mode
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
+# Nextcloud 16 is required.
+lowest_compatible_nc 16
 
 # Check that this run on the PostgreSQL VM
 if ! which psql > /dev/null
@@ -257,6 +257,20 @@ then
             reboot 
         fi
     fi
+fi
+
+# Set locales
+print_text_in_color "$ICyan" "Setting locales..."
+KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
+if [ "$KEYBOARD_LAYOUT" = "se" ]
+then
+    print_text_in_color "$ICyan" "Svensk locale är redan konfigurerad."
+elif [ "$KEYBOARD_LAYOUT" = "de" ]
+then 
+    sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+elif [ "$KEYBOARD_LAYOUT" = "us" ]
+then
+    sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 fi
 
 # Is this run as a pure root user?
@@ -352,6 +366,8 @@ It will also do the following:
 msg_box "Please note:
 
 [#] The script will take about 10 minutes to finish, depending on your internet connection.
+
+[#] Please read the on-screen insructions carefully, they will guide you through the setup.
 
 [#] When complete it will delete all the *.sh, *.html, *.tar, *.zip inside:
     /root
@@ -453,7 +469,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Adminer" "(PostgreSQL GUI)       " OFF \
 "Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing [2GB RAM])   " OFF \
-"OnlyOffice" "(Online editing [4GB RAM])   " OFF \
+"OnlyOffice" "(Online editing [2GB RAM])   " OFF \
 "Bitwarden" "(External password manager)   " OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
@@ -507,6 +523,7 @@ do
             clear
 	    print_text_in_color "$ICyan" "Installing LDAP..."
             install_and_enable_app user_ldap
+	    msg_box "Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
         ;;   
 
         Talk)
