@@ -264,11 +264,12 @@ print_text_in_color "$ICyan" "Setting locales..."
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 if [ "$KEYBOARD_LAYOUT" = "se" ]
 then
-    sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+    print_text_in_color "$ICyan" "Svensk locale är redan konfigurerad."
 elif [ "$KEYBOARD_LAYOUT" = "de" ]
 then 
     sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 elif [ "$KEYBOARD_LAYOUT" = "us" ]
+then
     sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 fi
 
@@ -522,8 +523,7 @@ do
             clear
 	    print_text_in_color "$ICyan" "Installing LDAP..."
             install_and_enable_app user_ldap
-	    print_text_in_color "$ICyan" "Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
-	    any_key "Press any key to continue"
+	    msg_box "Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
         ;;   
 
         Talk)
