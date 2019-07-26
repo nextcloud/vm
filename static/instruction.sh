@@ -27,7 +27,7 @@ cat << INST2
 | installation instructions here: https://bit.ly/2S8eGfS                |
 |                                                                       |
 | To be 100% sure that all the keystrokes work correctly (like @),      |
-| please download Putty and login via SSH. You can download it here:    |
+| please use an SSH terminal like Putty. You can download it here:      |
 | https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html        |
 | Connect like this: ncadmin@local.IP.of.this.server                    |
 |                                                                       |
