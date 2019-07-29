@@ -481,7 +481,7 @@ if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
-        if [ "$(dpkg-query -W -f='${Status}' "apache2" 2>/dev/null | grep -c "ok installed")" == "1" ]
+        if is_this_installed apache2
         then
             if [ -d /root/bwdata ]
             then
