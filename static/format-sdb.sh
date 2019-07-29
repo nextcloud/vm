@@ -153,7 +153,7 @@ fi
 format
 
 # Do a backup of the ZFS mount
-if dpkg -l | grep libzfs2linux
+if is_this_installed libzfs2linux
 then
     if grep -r $LABEL_ /etc/mtab
     then

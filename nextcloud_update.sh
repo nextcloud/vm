@@ -37,7 +37,7 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 fi
 
 # System Upgrade
-if which mysql > /dev/null
+if is_this_installed mysql
 then
     apt-mark hold mariadb*
 fi
@@ -59,7 +59,7 @@ fi
 
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-if which mysql > /dev/null
+if is_this_installed mysql
 then
     apt-mark unhold mariadb*
 echo
@@ -84,15 +84,18 @@ print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 if version 18.04 "$DISTRO" 18.04.10; then
     if ! pecl list | grep redis >/dev/null 2>&1
     then
-        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+        if is_this_installed php"$PHPVER"-common
         then
             install_if_not php"$PHPVER"-dev
-        elif dpkg -l | grep php7.3 > /dev/null 2>&1
-        then
-            install_if_not php7.3-dev
-        elif dpkg -l | grep php7.0 > /dev/null 2>&1
+        elif is_this_installed php7.0-common
         then
             install_if_not php7.0-dev
+        elif is_this_installed php7.1-common
+        then
+            install_if_not php7.1-dev
+        elif is_this_installed php7.3-common
+        then
+            install_if_not php7.3-dev
         fi
         apt purge php-redis -y
         apt autoremove -y
@@ -116,15 +119,18 @@ if version 18.04 "$DISTRO" 18.04.10; then
         restart_webserver
     elif pecl list | grep redis >/dev/null 2>&1
     then
-        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+        if is_this_installed php"$PHPVER"-common
         then
             install_if_not php"$PHPVER"-dev
-        elif dpkg -l | grep php7.3 > /dev/null 2>&1
-        then
-            install_if_not php7.3-dev
-        elif dpkg -l | grep php7.0 > /dev/null 2>&1
+        elif is_this_installed php7.0-common
         then
             install_if_not php7.0-dev
+        elif is_this_installed php7.1-common
+        then
+            install_if_not php7.1-dev
+        elif is_this_installed php7.3-common
+        then
+            install_if_not php7.3-dev
         fi
         pecl channel-update pecl.php.net
         yes no | pecl upgrade redis
@@ -207,7 +213,7 @@ update-grub
 rm /var/lib/apt/lists/* -r
 
 # Free some space (ZFS snapshots)
-if dpkg -l | grep -q libzfs2linux
+if is_this_installed libzfs2linux
 then
     if grep -rq ncdata /etc/mtab
     then
@@ -324,7 +330,7 @@ then
 fi
 
 # Backup PostgreSQL
-if which psql > /dev/null
+if is_this_installed psql
 then
     cd /tmp
     if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
@@ -379,7 +385,7 @@ fi
 }
 
 # Do the actual backup
-if which mysql > /dev/null
+if is_this_installed mysql
 then
     mariadb_backup
 fi
@@ -396,7 +402,7 @@ then
 fi
 
 # Do a backup of the ZFS mount
-if dpkg -l | grep -q libzfs2linux
+if is_this_installed libzfs2linux
 then
     if grep -rq ncdata /etc/mtab
     then
@@ -475,7 +481,7 @@ if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
-        if [ "$(dpkg-query -W -f='${Status}' "apache2" 2>/dev/null | grep -c "ok installed")" == "1" ]
+        if is_this_installed apache2
         then
             if [ -d /root/bwdata ]
             then

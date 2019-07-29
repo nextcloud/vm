@@ -103,7 +103,6 @@ APACHE2=/etc/apache2/apache2.conf
 # Full text Search
 [ -n "$ES_INSTALL" ] && INDEX_USER=$(tr -dc '[:lower:]' < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ -n "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ -n "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
 [ -n "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
 [ -n "$ES_INSTALL" ] && fts_es_name="fts_esror"
 # Talk
@@ -483,7 +482,7 @@ fi
 
 restart_webserver() {
 check_command systemctl restart apache2
-if dpkg -l | grep "php$PHPVER-fpm" > /dev/null
+if is_this_installed php"$PHPVER"-fpm
 then
     check_command systemctl restart php"$PHPVER"-fpm.service
 fi
@@ -567,12 +566,25 @@ msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
 fi
 }
 
-# Check if program is installed (is_this_installed apache2)
-is_this_installed() {
+# Check if program is installed (stop_if_installed apache2)
+stop_if_installed() {
 if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    print_text_in_color "$Red" "${1} is installed, it must be a clean server."
+    print_text_in_color "$IRed" "${1} is installed, it must be a clean server."
     exit 1
+fi
+}
+
+# Check if program is installed (is_this_installed apache2)
+is_this_installed() {
+print_text_in_color "$ICyan" "Checking if ${1} is installed..."
+if dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
+then
+    print_text_in_color "$IGreen" "${1} is installed."
+    return 0
+else
+    print_text_in_color "$IRed" "${1} is not installed."
+    return 1
 fi
 }
 
