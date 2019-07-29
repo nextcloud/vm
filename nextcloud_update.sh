@@ -84,7 +84,7 @@ print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 if version 18.04 "$DISTRO" 18.04.10; then
     if ! pecl list | grep redis >/dev/null 2>&1
     then
-        if is_this_installed php"$PHPVER-common"
+        if is_this_installed php"$PHPVER"-common
         then
             install_if_not php"$PHPVER"-dev
         elif is_this_installed php7.0-common
@@ -119,7 +119,7 @@ if version 18.04 "$DISTRO" 18.04.10; then
         restart_webserver
     elif pecl list | grep redis >/dev/null 2>&1
     then
-        if is_this_installed php"$PHPVER-common"
+        if is_this_installed php"$PHPVER"-common
         then
             install_if_not php"$PHPVER"-dev
         elif is_this_installed php7.0-common
