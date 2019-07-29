@@ -26,7 +26,7 @@ then
         msg_box "Your disk space is almost full (more than 90%).\n\nTo solve that, we will now delete ZFS snapshots older than 8 weeks to free up some space."
         countdown "To abort, please press CTRL+C within 10 seconds." 10
         # Get the latest prune script
-        if [ -f $SCRIPTS/zfs-prune-snapshots ]
+        if [ ! -f $SCRIPTS/zfs-prune-snapshots ]
         then
             check_command curl_to_dir "https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/" "zfs-prune-snapshots" "$SCRIPTS"
             chmod +x "$SCRIPTS"/zfs-prune-snapshots
