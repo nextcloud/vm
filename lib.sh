@@ -483,7 +483,7 @@ fi
 
 restart_webserver() {
 check_command systemctl restart apache2
-if php"$PHPVER"-fpm -v > /dev/null
+if dpkg -l | grep "php$PHPVER-fpm" > /dev/null
 then
     check_command systemctl restart php"$PHPVER"-fpm.service
 fi
