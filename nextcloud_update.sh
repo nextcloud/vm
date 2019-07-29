@@ -206,6 +206,15 @@ update-grub
 # Remove update lists
 rm /var/lib/apt/lists/* -r
 
+# Free some space (ZFS snapshots)
+if dpkg -l | grep -q libzfs2linux
+then
+    if grep -rq ncdata /etc/mtab
+    then
+        run_static_script prune_zfs_snaphots
+    fi
+fi
+
 # Fix bug in nextcloud.sh
 CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
 if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh &>/dev/null
@@ -387,9 +396,9 @@ then
 fi
 
 # Do a backup of the ZFS mount
-if dpkg -l | grep libzfs2linux
+if dpkg -l | grep -q libzfs2linux
 then
-    if grep -r ncdata /etc/mtab
+    if grep -rq ncdata /etc/mtab
     then
         check_multiverse
         install_if_not zfs-auto-snapshot
