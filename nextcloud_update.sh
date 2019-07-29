@@ -84,15 +84,18 @@ print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 if version 18.04 "$DISTRO" 18.04.10; then
     if ! pecl list | grep redis >/dev/null 2>&1
     then
-        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+        if is_this_installed php"$PHPVER-common"
         then
             install_if_not php"$PHPVER"-dev
-        elif dpkg -l | grep php7.3 > /dev/null 2>&1
-        then
-            install_if_not php7.3-dev
-        elif dpkg -l | grep php7.0 > /dev/null 2>&1
+        elif is_this_installed php7.0-common
         then
             install_if_not php7.0-dev
+        elif is_this_installed php7.1-common
+        then
+            install_if_not php7.1-dev
+        elif is_this_installed php7.3-common
+        then
+            install_if_not php7.3-dev
         fi
         apt purge php-redis -y
         apt autoremove -y
@@ -116,15 +119,18 @@ if version 18.04 "$DISTRO" 18.04.10; then
         restart_webserver
     elif pecl list | grep redis >/dev/null 2>&1
     then
-        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+        if is_this_installed php"$PHPVER-common"
         then
             install_if_not php"$PHPVER"-dev
-        elif dpkg -l | grep php7.3 > /dev/null 2>&1
-        then
-            install_if_not php7.3-dev
-        elif dpkg -l | grep php7.0 > /dev/null 2>&1
+        elif is_this_installed php7.0-common
         then
             install_if_not php7.0-dev
+        elif is_this_installed php7.1-common
+        then
+            install_if_not php7.1-dev
+        elif is_this_installed php7.3-common
+        then
+            install_if_not php7.3-dev
         fi
         pecl channel-update pecl.php.net
         yes no | pecl upgrade redis
@@ -207,7 +213,7 @@ update-grub
 rm /var/lib/apt/lists/* -r
 
 # Free some space (ZFS snapshots)
-if dpkg -l | grep -q libzfs2linux
+if is_this_installed libzfs2linux
 then
     if grep -rq ncdata /etc/mtab
     then
@@ -396,7 +402,7 @@ then
 fi
 
 # Do a backup of the ZFS mount
-if dpkg -l | grep -q libzfs2linux
+if is_this_installed libzfs2linux
 then
     if grep -rq ncdata /etc/mtab
     then
