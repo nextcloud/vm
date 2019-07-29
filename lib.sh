@@ -567,12 +567,24 @@ msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
 fi
 }
 
-# Check if program is installed (is_this_installed apache2)
-is_this_installed() {
+# Check if program is installed (stop_if_installed apache2)
+stop_if_installed() {
 if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    print_text_in_color "$Red" "${1} is installed, it must be a clean server."
+    print_text_in_color "$IRed" "${1} is installed, it must be a clean server."
     exit 1
+fi
+}
+
+# Check if program is installed (is_this_installed apache2)
+is_this_installed() {
+if dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
+then
+    return 0
+else
+    print_text_in_color "$IRed" "${1} is not installed, this script will exit."
+    print_text_in_color "$IRed" "Please report this to: $ISSUES"
+    return 1
 fi
 }
 
