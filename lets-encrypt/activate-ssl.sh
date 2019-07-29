@@ -185,12 +185,12 @@ SSL_CREATE
 fi
 
 # Check if PHP-FPM is installed and if not, then remove PHP-FPM related lines from config
-if [ ! -f  "$PHP_POOL_DIR"/nextcloud.conf ]
+if [ ! -f "$PHP_POOL_DIR"/nextcloud.conf ]
 then
     sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$ssl_conf"
     sed -i "s|SetHandler.*|#|g" "$ssl_conf"
     sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
-elif ! dpkg -s php"$PHPVER"-fpm | grep "Status: install ok installed" >/dev/null 2>&1
+elif ! is_this_installed php"$PHPVER"-fpm
 then
     sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
     sed -i "s|SetHandler.*|#|g" "$ssl_conf"
