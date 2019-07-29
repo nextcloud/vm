@@ -110,10 +110,11 @@ fi
 stop_if_installed postgresql
 stop_if_installed apache2
 stop_if_installed php
-stop_if_installedphp-fpm
+stop_if_installed php-fpm
 stop_if_installed php"$PHPVER"-fpm
-stop_if_installed php7.1-fpm
 stop_if_installed php7.0-fpm
+stop_if_installed php7.1-fpm
+stop_if_installed php7.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
