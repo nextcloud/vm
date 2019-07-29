@@ -30,7 +30,7 @@ then
         then
             check_command curl_to_dir "https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/" "zfs-prune-snapshots" "$SCRIPTS"
         fi
-        chmod +x "$SCRIPTS"/zfs-prune-snapshots
+        check_command chmod +x "$SCRIPTS"/zfs-prune-snapshots
         # Prune!
         cd "$SCRIPTS"
         touch VMLOGS/zfs_prune.log
