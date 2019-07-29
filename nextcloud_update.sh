@@ -206,6 +206,9 @@ update-grub
 # Remove update lists
 rm /var/lib/apt/lists/* -r
 
+# Free some space (ZFS snapshots)
+run_static_script prune_zfs_snaphots
+
 # Fix bug in nextcloud.sh
 CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
 if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh &>/dev/null
