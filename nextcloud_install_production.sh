@@ -107,15 +107,15 @@ msg_box "Nextcloud repo is not available, exiting..."
 fi
 
 # Check if it's a clean server
-is_this_installed postgresql
-is_this_installed apache2
-is_this_installed php
-is_this_installed php-fpm
-is_this_installed php"$PHPVER"-fpm
-is_this_installed php7.1-fpm
-is_this_installed php7.0-fpm
-is_this_installed mysql-common
-is_this_installed mariadb-server
+stop_if_installed postgresql
+stop_if_installed apache2
+stop_if_installed php
+stop_if_installedphp-fpm
+stop_if_installed php"$PHPVER"-fpm
+stop_if_installed php7.1-fpm
+stop_if_installed php7.0-fpm
+stop_if_installed mysql-common
+stop_if_installed mariadb-server
 
 # Create $SCRIPTS dir
 if [ ! -d "$SCRIPTS" ]
