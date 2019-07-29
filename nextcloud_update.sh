@@ -37,7 +37,7 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 fi
 
 # System Upgrade
-if which mysql > /dev/null
+if is_this_installed mysql
 then
     apt-mark hold mariadb*
 fi
@@ -59,7 +59,7 @@ fi
 
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-if which mysql > /dev/null
+if is_this_installed mysql
 then
     apt-mark unhold mariadb*
 echo
@@ -324,7 +324,7 @@ then
 fi
 
 # Backup PostgreSQL
-if which psql > /dev/null
+if is_this_installed psql
 then
     cd /tmp
     if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
@@ -379,7 +379,7 @@ fi
 }
 
 # Do the actual backup
-if which mysql > /dev/null
+if is_this_installed mysql
 then
     mariadb_backup
 fi
