@@ -29,8 +29,8 @@ then
         if [ ! -f $SCRIPTS/zfs-prune-snapshots ]
         then
             check_command curl_to_dir "https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/" "zfs-prune-snapshots" "$SCRIPTS"
-            chmod +x "$SCRIPTS"/zfs-prune-snapshots
         fi
+        chmod +x "$SCRIPTS"/zfs-prune-snapshots
         # Prune!
         cd "$SCRIPTS"
         touch VMLOGS/zfs_prune.log
