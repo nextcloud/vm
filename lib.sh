@@ -578,12 +578,13 @@ fi
 
 # Check if program is installed (is_this_installed apache2)
 is_this_installed() {
+print_text_in_color "$ICyan" "Checking if ${1} is installed..."
 if dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
+    print_text_in_color "$IGreen" "${1} is installed."
     return 0
 else
-    print_text_in_color "$IRed" "${1} is not installed, this script will exit."
-    print_text_in_color "$IRed" "Please report this to: $ISSUES"
+    print_text_in_color "$IRed" "${1} is not installed."
     return 1
 fi
 }
