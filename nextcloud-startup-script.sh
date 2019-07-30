@@ -232,7 +232,7 @@ debug_mode
 lowest_compatible_nc 16
 
 # Check that this run on the PostgreSQL VM
-if ! is_this_installed psql
+if ! is_this_installed postgresql-10
 then
     print_text_in_color "$Red" "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
     print_text_in_color "$Red" "Aborting..."
