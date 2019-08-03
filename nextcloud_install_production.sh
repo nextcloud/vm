@@ -65,7 +65,6 @@ then
     then
         print_text_in_color "$ICyan" "Not changing keyboard layout..."
         sleep 1
-        clear
     else
         dpkg-reconfigure keyboard-configuration
         msg_box "The server will now be rebooted to apply the new keyboard settings. Please run this script again once rebooted."
@@ -108,15 +107,16 @@ msg_box "Nextcloud repo is not available, exiting..."
 fi
 
 # Check if it's a clean server
-is_this_installed postgresql
-is_this_installed apache2
-is_this_installed php
-is_this_installed php-fpm
-is_this_installed php"$PHPVER"-fpm
-is_this_installed php7.1-fpm
-is_this_installed php7.0-fpm
-is_this_installed mysql-common
-is_this_installed mariadb-server
+stop_if_installed postgresql
+stop_if_installed apache2
+stop_if_installed php
+stop_if_installed php-fpm
+stop_if_installed php"$PHPVER"-fpm
+stop_if_installed php7.0-fpm
+stop_if_installed php7.1-fpm
+stop_if_installed php7.3-fpm
+stop_if_installed mysql-common
+stop_if_installed mariadb-server
 
 # Create $SCRIPTS dir
 if [ ! -d "$SCRIPTS" ]
@@ -208,7 +208,6 @@ else
         sudo mv sources.list /etc/apt/
     fi
 fi
-clear
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
@@ -380,9 +379,6 @@ sed -i "s|memory_limit =.*|memory_limit = 512M|g" $PHP_INI
 sed -i "s|post_max_size =.*|post_max_size = 1100M|g" $PHP_INI
 # upload_max
 sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" $PHP_INI
-
-# Set max upload in Nextcloud .user.ini
-configure_max_upload
 
 # Set SMTP mail
 occ_command config:system:set mail_smtpmode --value="smtp"
@@ -593,14 +589,15 @@ do
             install_and_enable_app files_pdfviewer
         ;;
 	Extract)
-        if install_and_enable_app extract
-	then
-	    install_if_not unrar
-	    install_if_not unzip
-	fi
+            if install_and_enable_app extract
+	    then
+	        install_if_not unrar
+	        install_if_not p7zip
+	        install_if_not p7zip-full
+	    fi
 	;;
 	Text)
-        install_and_enable_app text
+            install_and_enable_app text
         ;;
         Webmin)
             run_app_script webmin

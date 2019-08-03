@@ -21,13 +21,13 @@ VMLOGS=/var/log/ncvm
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Network
-[ ! -z "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+[ -n "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
-[ ! -z "$CHECK_CURRENT_REPO" ] && REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
+[ -n "$CHECK_CURRENT_REPO" ] && REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
 WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
-[ ! -z "$LOAD_IP6" ] && WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
+[ -n "$LOAD_IP6" ] && WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
 INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 DNS1="9.9.9.9"
@@ -49,34 +49,34 @@ ROOT_PROFILE="/root/.bash_profile"
 SHUF=$(shuf -i 25-29 -n 1)
 MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ ! -z "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+[ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 ETCMYCNF=/etc/mysql/my.cnf
 MYCNF=/root/.my.cnf
-[ ! -z "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
+[ -n "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
 PGDB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ ! -z "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-[ ! -z "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+[ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+[ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
 HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 # Nextcloud version
-[ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-[ ! -z "$NC_UPDATE" ] && NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
-[ ! -z "$NC_UPDATE" ] && STABLEVERSION="nextcloud-$NCVERSION"
-[ ! -z "$NC_UPDATE" ] && NCMAJOR="${NCVERSION%%.*}"
-[ ! -z "$NC_UPDATE" ] && NCBAD=$((NCMAJOR-2))
+[ -n "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+[ -n "$NC_UPDATE" ] && NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+[ -n "$NC_UPDATE" ] && STABLEVERSION="nextcloud-$NCVERSION"
+[ -n "$NC_UPDATE" ] && NCMAJOR="${NCVERSION%%.*}"
+[ -n "$NC_UPDATE" ] && NCBAD=$((NCMAJOR-2))
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # OnlyOffice URL
-[ ! -z "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+[ -n "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain
-[ ! -z "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+[ -n "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Collabora Docker URL
-[ ! -z "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+[ -n "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain
-[ ! -z "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+[ -n "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Letsencrypt
 LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
@@ -101,19 +101,18 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-[ ! -z "$ES_INSTALL" ] && INDEX_USER=$(tr -dc '[:lower:]' < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ ! -z "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
-[ ! -z "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
-[ ! -z "$ES_INSTALL" ] && fts_es_name="fts_esror"
+[ -n "$ES_INSTALL" ] && INDEX_USER=$(tr -dc '[:lower:]' < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ -n "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ -n "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
+[ -n "$ES_INSTALL" ] && fts_es_name="fts_esror"
 # Talk
-[ ! -z "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
-[ ! -z "$TURN_INSTALL" ] && TURN_PORT=5349
-[ ! -z "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
-[ ! -z "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ ! -z "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
+[ -n "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
+[ -n "$TURN_INSTALL" ] && TURN_PORT=5349
+[ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
+[ -n "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 # Migrate Docker to overlay2
-[ ! -z "$DOCKEROVERLAY2" ] && DOCKERBACKUP=$(grep "datadir" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")/DOCKERBACKUP
+[ -n "$DOCKEROVERLAY2" ] && DOCKERBACKUP=$(grep "datadir" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")/DOCKERBACKUP
 
 ## functions
 
@@ -483,7 +482,7 @@ fi
 
 restart_webserver() {
 check_command systemctl restart apache2
-if which php"$PHPVER"-fpm > /dev/null
+if is_this_installed php"$PHPVER"-fpm
 then
     check_command systemctl restart php"$PHPVER"-fpm.service
 fi
@@ -567,24 +566,25 @@ msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
 fi
 }
 
-configure_max_upload() {
-# Increase max filesize (expects that changes are made in $PHP_INI)
-# Here is a guide: https://www.techandme.se/increase-max-file-size/
-print_text_in_color "$ICyan" "Setting max_upload size in PHP..."
-# Copy settings from .htaccess to user.ini. beacuse we run php-fpm. Documented here: https://docs.nextcloud.com/server/13/admin_manual/installation/source_installation.html#php-fpm-configuration-notes
-cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
-# Do the acutal change
-sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.user.ini
-sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.user.ini
-sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.user.ini
+# Check if program is installed (stop_if_installed apache2)
+stop_if_installed() {
+if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    print_text_in_color "$IRed" "${1} is installed, it must be a clean server."
+    exit 1
+fi
 }
 
 # Check if program is installed (is_this_installed apache2)
 is_this_installed() {
-if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
+print_text_in_color "$ICyan" "Checking if ${1} is installed..."
+if dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
-    print_text_in_color "$Red" "${1} is installed, it must be a clean server."
-    exit 1
+    print_text_in_color "$IGreen" "${1} is installed."
+    return 0
+else
+    print_text_in_color "$IRed" "${1} is not installed."
+    return 1
 fi
 }
 

@@ -37,7 +37,7 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 fi
 
 # System Upgrade
-if which mysql > /dev/null
+if is_this_installed mysql
 then
     apt-mark hold mariadb*
 fi
@@ -59,7 +59,7 @@ fi
 
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-if which mysql > /dev/null
+if is_this_installed mysql
 then
     apt-mark unhold mariadb*
 echo
@@ -84,15 +84,18 @@ print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 if version 18.04 "$DISTRO" 18.04.10; then
     if ! pecl list | grep redis >/dev/null 2>&1
     then
-        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+        if is_this_installed php"$PHPVER"-common
         then
             install_if_not php"$PHPVER"-dev
-        elif dpkg -l | grep php7.3 > /dev/null 2>&1
-        then
-            install_if_not php7.3-dev
-        elif dpkg -l | grep php7.0 > /dev/null 2>&1
+        elif is_this_installed php7.0-common
         then
             install_if_not php7.0-dev
+        elif is_this_installed php7.1-common
+        then
+            install_if_not php7.1-dev
+        elif is_this_installed php7.3-common
+        then
+            install_if_not php7.3-dev
         fi
         apt purge php-redis -y
         apt autoremove -y
@@ -116,15 +119,18 @@ if version 18.04 "$DISTRO" 18.04.10; then
         restart_webserver
     elif pecl list | grep redis >/dev/null 2>&1
     then
-        if dpkg -l | grep php"$PHPVER" > /dev/null 2>&1
+        if is_this_installed php"$PHPVER"-common
         then
             install_if_not php"$PHPVER"-dev
-        elif dpkg -l | grep php7.3 > /dev/null 2>&1
-        then
-            install_if_not php7.3-dev
-        elif dpkg -l | grep php7.0 > /dev/null 2>&1
+        elif is_this_installed php7.0-common
         then
             install_if_not php7.0-dev
+        elif is_this_installed php7.1-common
+        then
+            install_if_not php7.1-dev
+        elif is_this_installed php7.3-common
+        then
+            install_if_not php7.3-dev
         fi
         pecl channel-update pecl.php.net
         yes no | pecl upgrade redis
@@ -205,6 +211,15 @@ update-grub
 
 # Remove update lists
 rm /var/lib/apt/lists/* -r
+
+# Free some space (ZFS snapshots)
+if is_this_installed libzfs2linux
+then
+    if grep -rq ncdata /etc/mtab
+    then
+        run_static_script prune_zfs_snaphots
+    fi
+fi
 
 # Fix bug in nextcloud.sh
 CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
@@ -315,7 +330,7 @@ then
 fi
 
 # Backup PostgreSQL
-if which psql > /dev/null
+if is_this_installed psql
 then
     cd /tmp
     if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
@@ -370,7 +385,7 @@ fi
 }
 
 # Do the actual backup
-if which mysql > /dev/null
+if is_this_installed mysql
 then
     mariadb_backup
 fi
@@ -387,9 +402,9 @@ then
 fi
 
 # Do a backup of the ZFS mount
-if dpkg -l | grep libzfs2linux
+if is_this_installed libzfs2linux
 then
-    if grep -r ncdata /etc/mtab
+    if grep -rq ncdata /etc/mtab
     then
         check_multiverse
         install_if_not zfs-auto-snapshot
@@ -466,10 +481,11 @@ if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
-        if [ "$(dpkg-query -W -f='${Status}' "apache2" 2>/dev/null | grep -c "ok installed")" == "1" ]
+        if is_this_installed apache2
         then
             if [ -d /root/bwdata ]
             then
+                curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "/root"
                 if [ -f /root/bitwarden.sh ]
                     then
                         print_text_in_color "$IGreen" "Upgrading Bitwarden..."
@@ -513,19 +529,6 @@ chown -R www-data:www-data "$NCPATH"
 occ_command config:system:set htaccess.RewriteBase --value="/"
 occ_command maintenance:update:htaccess
 bash "$SECURE"
-
-# Set max upload in Nextcloud .htaccess
-configure_max_upload
-
-# Update .user.ini in case stuff was added to .htaccess
-if [ "$NCPATH/.htaccess" -nt "$NCPATH/.user.ini" ]
-then
-    cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
-    sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.user.ini
-    sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.user.ini
-    sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.user.ini
-    restart_webserver
-fi
 
 # Repair
 occ_command maintenance:repair

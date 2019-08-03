@@ -76,6 +76,13 @@ check_command() {
   fi
 }
 
+install_if_not() {
+if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
+then
+    apt update -q4 & spinner_loading && apt install "${1}" -y
+fi
+}
+
 # Colors
 Color_Off='\e[0m'
 IRed='\e[0;91m'
@@ -99,7 +106,7 @@ else
     print_text_in_color "$ICyan" "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
     # Set correct interface
-cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
+    cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
 network:
   version: 2
   renderer: networkd
@@ -124,39 +131,57 @@ You must have a working network connection to run this script.
 
 You will now be provided with the option to set a static IP manually instead."
 
-    # Copy old interfaces files
+        # Copy old interfaces files
 msg_box "Copying old netplan.io config files file to:
 /tmp/netplan_io_backup/"
-    if [ -d /etc/netplan/ ]
-    then
-        mkdir -p /tmp/netplan_io_backup
-        check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
-    fi
+        if [ -d /etc/netplan/ ]
+        then
+            mkdir -p /tmp/netplan_io_backup
+            check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
+        fi
 
-    # Ask for IP address
-cat << ENTERIP
+        while true
+        do
+            # Ask for IP address
+            cat << ENTERIP
 +----------------------------------------------------------+
 |    Please enter the static IP address you want to set,   |
 |    including the subnet. Example: 192.168.1.100/24       |
 +----------------------------------------------------------+
 ENTERIP
-    echo
-    read -r LANIP
-    echo
+            echo
+            read -r LANIP
+            echo
 
-    # Ask for gateway address
-cat << ENTERGATEWAY
-+----------------------------------------------------------+
-|    Please enter the gateway address you want to set,     |
-|    Example: 192.168.1.1                                  |
-+----------------------------------------------------------+
+            if [[ $LANIP == *"/"* ]]
+            then
+                break
+            else
+                print_text_in_color "$IRed" "Did you forget the /subnet?"
+            fi
+        done
+
+        echo
+        while true
+        do
+            # Ask gateway IP
+            cat << ENTERGATEWAY
++-------------------------------------------------------+
+|    Please enter the gateway address you want to set,  |
+|    Example: 192.168.1.1       			|
++-------------------------------------------------------+
 ENTERGATEWAY
-    echo
-    read -r GATEWAYIP
-    echo
+            echo
+            read -r GATEWAYIP
+            echo
+            if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
+            then
+                break
+            fi
+        done
 
-    # Create the Static IP file
-cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
+        # Create the Static IP file
+        cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
 network:
    version: 2
    renderer: networkd
@@ -173,7 +198,7 @@ IPCONFIG
 msg_box "These are your settings, please make sure they are correct:
 
 $(cat /etc/netplan/01-netcfg.yaml)"
-    netplan try
+        netplan try
     fi
 fi
 
@@ -203,11 +228,11 @@ unset NCDB
 DEBUG=0
 debug_mode
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
+# Nextcloud 16 is required.
+lowest_compatible_nc 16
 
 # Check that this run on the PostgreSQL VM
-if ! which psql > /dev/null
+if ! is_this_installed postgresql-10
 then
     print_text_in_color "$Red" "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
     print_text_in_color "$Red" "Aborting..."
@@ -232,6 +257,20 @@ then
             reboot 
         fi
     fi
+fi
+
+# Set locales
+print_text_in_color "$ICyan" "Setting locales..."
+KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
+if [ "$KEYBOARD_LAYOUT" = "se" ]
+then
+    print_text_in_color "$ICyan" "Svensk locale är redan konfigurerad."
+elif [ "$KEYBOARD_LAYOUT" = "de" ]
+then 
+    sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+elif [ "$KEYBOARD_LAYOUT" = "us" ]
+then
+    sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 fi
 
 # Is this run as a pure root user?
@@ -328,6 +367,8 @@ msg_box "Please note:
 
 [#] The script will take about 10 minutes to finish, depending on your internet connection.
 
+[#] Please read the on-screen insructions carefully, they will guide you through the setup.
+
 [#] When complete it will delete all the *.sh, *.html, *.tar, *.zip inside:
     /root
     /home/$UNIXUSER
@@ -351,6 +392,9 @@ else
     dpkg-reconfigure tzdata
     clear
 fi
+
+# Change timezone in PHP
+sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 
 # Check where the best mirrors are and update
 msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
@@ -425,10 +469,11 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Adminer" "(PostgreSQL GUI)       " OFF \
 "Netdata" "(Real-time server monitoring)       " OFF \
 "Collabora" "(Online editing [2GB RAM])   " OFF \
-"OnlyOffice" "(Online editing [4GB RAM])   " OFF \
+"OnlyOffice" "(Online editing [2GB RAM])   " OFF \
 "Bitwarden" "(External password manager)   " OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
+"LDAP" "(Windows Active directory)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF 2>results
 
 while read -r -u 9 choice
@@ -472,6 +517,13 @@ do
         PreviewGenerator)
             clear
            run_app_script previewgenerator
+        ;;
+	
+        LDAP)
+            clear
+	    print_text_in_color "$ICyan" "Installing LDAP..."
+            install_and_enable_app user_ldap
+	    msg_box "Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
         ;;   
 
         Talk)
