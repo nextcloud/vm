@@ -583,7 +583,7 @@ then
     print_text_in_color "$IGreen" "${1} is installed."
     return 0
 else
-    print_text_in_color "$IRed" "${1} is not installed."
+    print_text_in_color "$ICyan" "${1} is not installed."
     return 1
 fi
 }
