@@ -71,7 +71,7 @@ check_command() {
   if ! "$@";
   then
      print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
-	 print_text_in_color "$Red" "$* failed"
+	 print_text_in_color "$IRed" "$* failed"
     exit 1
   fi
 }
@@ -234,8 +234,8 @@ lowest_compatible_nc 16
 # Check that this run on the PostgreSQL VM
 if ! is_this_installed postgresql-10
 then
-    print_text_in_color "$Red" "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
-    print_text_in_color "$Red" "Aborting..."
+    print_text_in_color "$IRed" "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
+    print_text_in_color "$IRed" "Aborting..."
     exit 1
 fi
 

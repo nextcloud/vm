@@ -112,8 +112,8 @@ if [ -f "$TURN_CONF" ];
 then
     print_text_in_color "$IGreen" "$TURN_CONF was successfully created."
 else
-    print_text_in_color "$Red" "Unable to create $TURN_CONF, exiting..."
-    print_text_in_color "$Red" "Please report this issue here $ISSUES"
+    print_text_in_color "$IRed" "Unable to create $TURN_CONF, exiting..."
+    print_text_in_color "$IRed" "Please report this issue here $ISSUES"
     exit 1
 fi
 
