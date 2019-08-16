@@ -64,14 +64,14 @@ fi
 
 msg_box "You will now see a list with available devices. Choose the device where you want to put your nextcloud data. 
 Attention, the selected device will be formatted!"
-AvailableDEVICES=$(lsblk | grep "disk" | awk '{print $1}')
+AvailableDEVICES="$(lsblk | grep 'disk' | awk '{print $1}')"
 
 # Save current IFS
 SAVEIFS=$IFS
 # Change IFS to new line. 
 IFS=$'\n'
 # Create Array
-AvailableDEVICES=($AvailableDEVICES)
+AvailableDEVICES="($AvailableDEVICES)"
 # Restore IFS
 IFS=$SAVEIFS
 
