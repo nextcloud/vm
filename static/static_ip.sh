@@ -84,7 +84,7 @@ ENTERGATEWAY
 done
 
 # Check if IFACE is empty, if yes, try another method:
-if ! [ -z "$IFACE" ]
+if [ -n "$IFACE" ]
 then
     cat <<-IPCONFIG > "$INTERFACES"
 network:
