@@ -32,7 +32,7 @@ If you need to edit the crontab please type: crontab -u root -e
 If you need to edit the script itself, please check: $SCRIPTS/letsencryptrenew.sh
 
 Feel free to contribute to this project: https://goo.gl/3fQD65"
-    crontab -u root -l | { cat; echo "@daily $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "3 */12 * * * $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
 if [ "$(hostname)" != "$FQDOMAIN" ]
