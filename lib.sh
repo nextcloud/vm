@@ -123,7 +123,7 @@ APACHE2=/etc/apache2/apache2.conf
 # then
 #     # do stuff
 # else
-#     print_text_in_color "$Red" "You are not root..."
+#     print_text_in_color "$IRed" "You are not root..."
 #     exit 1
 # fi
 #
@@ -517,16 +517,16 @@ certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "ser
 
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
-print_text_in_color "${ICyan}" "Checking if port ${1} is open with https://ports.yougetsignal.com..."
+print_text_in_color "$ICyan" "Checking if port ${1} is open with https://ports.yougetsignal.com..."
 install_if_not curl
 # WAN Adress
 if check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${WANIP4}&portNumber=${1}" | grep -q "is open on"
 then
-    print_text_in_color "${IGreen}" "Port ${1} is open on ${WANIP4}!"
+    print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
 # Domain name
 elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${2}&portNumber=${1}" | grep -q "is open on"
 then
-    print_text_in_color "${IGreen}" "Port ${1} is open on ${2}!"
+    print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
     msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
     any_key "Press any key to exit..."
@@ -603,8 +603,8 @@ ram_check() {
 mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
 if [ "${mem_available}" -lt "$((${1}*1002400))" ]
 then
-    print_text_in_color "${Red}" "Error: ${1} GB RAM required to install ${2}!" >&2
-    print_text_in_color "${Red}" "Current RAM is: ("$((mem_available/1002400))" GB)" >&2
+    print_text_in_color "$IRed" "Error: ${1} GB RAM required to install ${2}!" >&2
+    print_text_in_color "$IRed" "Current RAM is: ("$((mem_available/1002400))" GB)" >&2
     sleep 3
     msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
 
@@ -613,7 +613,7 @@ then
     Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
 else
-    print_text_in_color "${IGreen}" "RAM for ${2} OK! ($((mem_available/1002400)) GB)"
+    print_text_in_color "$IGreen" "RAM for ${2} OK! ($((mem_available/1002400)) GB)"
 fi
 }
 
@@ -624,12 +624,12 @@ cpu_check() {
 nr_cpu="$(nproc)"
 if [ "${nr_cpu}" -lt "${1}" ]
 then
-    print_text_in_color "${Red}" "Error: ${1} CPU required to install ${2}!" >&2
-    print_text_in_color "${Red}" "Current CPU: ($((nr_cpu)))" >&2
+    print_text_in_color "$IRed" "Error: ${1} CPU required to install ${2}!" >&2
+    print_text_in_color "$IRed" "Current CPU: ($((nr_cpu)))" >&2
     sleep 3
     exit 1
 else
-    print_text_in_color "${IGreen}" "CPU for ${2} OK! ($((nr_cpu)))"
+    print_text_in_color "$IGreen" "CPU for ${2} OK! ($((nr_cpu)))"
 fi
 }
 
@@ -637,7 +637,7 @@ check_command() {
   if ! "$@";
   then
      print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
-	 print_text_in_color "$Red" "$* failed"
+	 print_text_in_color "$IRed" "$* failed"
     exit 1
   fi
 }
@@ -728,7 +728,7 @@ download_static_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if ! { curl_to_dir "${STATIC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.py" "$SCRIPTS"; }
     then
-        print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
+        print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
         print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
         print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
@@ -742,7 +742,7 @@ download_le_script() {
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if ! { curl_to_dir "${LETS_ENC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.py" "$SCRIPTS"; }
     then
-        print_text_in_color "$Red" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
+        print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
         print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
         print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
@@ -766,7 +766,7 @@ run_main_script() {
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
-        print_text_in_color "$Red" "Downloading ${1} failed"
+        print_text_in_color "$IRed" "Downloading ${1} failed"
         print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${GITHUB_REPO}/${1}.sh|php|py' again."
         exit 1
     fi
@@ -790,7 +790,7 @@ run_static_script() {
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
-        print_text_in_color "$Red" "Downloading ${1} failed"
+        print_text_in_color "$IRed" "Downloading ${1} failed"
         print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|php|py' again."
         exit 1
     fi
@@ -813,7 +813,7 @@ run_app_script() {
         python "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
-        print_text_in_color "$Red" "Downloading ${1} failed"
+        print_text_in_color "$IRed" "Downloading ${1} failed"
         print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${APP}/${1}.sh|php|py' again."
         exit
     fi

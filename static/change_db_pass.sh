@@ -21,8 +21,8 @@ if [ "$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'"
 then
     sleep 1
 else
-    print_text_in_color "$Red" "Changing PostgreSQL Nextcloud password failed."
+    print_text_in_color "$IRed" "Changing PostgreSQL Nextcloud password failed."
     sed -i "s|  'dbpassword' =>.*|  'dbpassword' => '$NCCONFIGDBPASS',|g" /var/www/nextcloud/config/config.php
-    print_text_in_color "$Red" "Nothing is changed. Your old password is: $NCCONFIGDBPASS"
+    print_text_in_color "$IRed" "Nothing is changed. Your old password is: $NCCONFIGDBPASS"
     exit 1
 fi

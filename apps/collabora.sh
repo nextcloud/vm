@@ -156,8 +156,8 @@ HTTPS_CREATE
         print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
         sleep 1
     else
-        print_text_in_color "$Red" "Unable to create vhost, exiting..."
-        print_text_in_color "$Red" "Please report this issue here $ISSUES"
+        print_text_in_color "$IRed" "Unable to create vhost, exiting..."
+        print_text_in_color "$IRed" "Please report this issue here $ISSUES"
         exit 1
     fi
 fi
@@ -179,7 +179,7 @@ then
     # Install Collabora App
     occ_command app:install richdocuments
 else
-	print_text_in_color "$Red" "It seems like no certs were generated, please report this issue here: $ISSUES"
+	print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
     any_key "Press any key to continue... "
     restart_webserver
 fi
