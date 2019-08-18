@@ -57,7 +57,7 @@ check_command systemctl stop apache2.service
 # Install Bitwarden 
 install_if_not curl
 cd /root
-curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh "/root"
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
 chmod +x /root/bitwarden.sh
 check_command ./bitwarden.sh install
 sed -i "s|http_port.*|http_port: 8080|g" /root/bwdata/config.yml
