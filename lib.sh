@@ -47,14 +47,14 @@ UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
-MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+MARIADB_PASS=$(head -c 1000 /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w "$SHUF" | head -n 1)
+NEWMARIADBPASS=$(head -c 1000 /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w "$SHUF" | head -n 1)
 [ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 ETCMYCNF=/etc/mysql/my.cnf
 MYCNF=/root/.my.cnf
 [ -n "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
-PGDB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+PGDB_PASS=$(head -c 1000 /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w "$SHUF" | head -n 1)
+NEWPGPASS=$(head -c 1000 /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w "$SHUF" | head -n 1)
 [ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 [ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
@@ -95,21 +95,21 @@ ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
 RSHUF=$(shuf -i 30-35 -n 1)
-REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
+REDIS_PASS=$(head -c 1000 /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w "$RSHUF" | head -n 1)
 # Extra security
 SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-[ -n "$ES_INSTALL" ] && INDEX_USER=$(tr -dc '[:lower:]' < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ -n "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ -n "$ES_INSTALL" ] && INDEX_USER=$(head -c 1000 /dev/urandom | tr -dc '[:lower:]' | fold -w "$SHUF" | head -n 1)
+[ -n "$ES_INSTALL" ] && ROREST=$(head -c 1000 /dev/urandom | tr -dc "A-Za-z0-9" | fold -w "$SHUF" | head -n 1)
 [ -n "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
 [ -n "$ES_INSTALL" ] && fts_es_name="fts_esror"
 # Talk
 [ -n "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
 [ -n "$TURN_INSTALL" ] && TURN_PORT=5349
 [ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
-[ -n "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ -n "$TURN_INSTALL" ] && TURN_SECRET=$(head -c 1000 /dev/urandom | tr -dc "a-zA-Z0-9@#*=" | fold -w "$SHUF" | head -n 1)
 [ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 # Migrate Docker to overlay2
 [ -n "$DOCKEROVERLAY2" ] && DOCKERBACKUP=$(grep "datadir" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")/DOCKERBACKUP
