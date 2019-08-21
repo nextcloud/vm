@@ -151,7 +151,7 @@ choice=$(< results)
         "2 Disks Auto")
             run_static_script format-sdb
         ;;
-        "2 Disk Auto NUC Server")
+        "2 Disks Auto NUC Server")
             run_static_script format-sda-nuc-server
         ;;		
         "2 Disks Manual")
