@@ -576,6 +576,7 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "PDFViewer" "           " on \
 "Extract" "             " on \
 "Text" "                " on \
+"Mail" "                " on \
 "Webmin" "              " on 2>results
 
 while read -r -u 9 choice
@@ -603,6 +604,9 @@ do
 	;;
 	Text)
             install_and_enable_app text
+        ;;
+	Mail)
+            install_and_enable_app mail
         ;;
         Webmin)
             run_app_script webmin
