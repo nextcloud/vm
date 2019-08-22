@@ -354,6 +354,7 @@ download_static_script setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
 # Install Nextcloud
+print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
 occ_command maintenance:install \
 --data-dir="$NCDATA" \
