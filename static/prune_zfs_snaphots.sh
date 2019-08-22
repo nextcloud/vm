@@ -18,7 +18,7 @@ root_check
 
 if [ -d $NCDATA ]
 then
-    if [ "$(df -h ncdata | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 90 ]
+    if [ "$(df -h $NCDATA | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 90 ]
     then
         # Notify user
         # notify_user_gui "Disk space almost full!" "The disk space for ncdata is almost full. We have automatically deleted ZFS snapshots older than 8 weeks to free up some space. Please check $VMLOGS/zfs_prune.log for the results."
