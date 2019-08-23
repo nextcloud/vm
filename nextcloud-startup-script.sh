@@ -522,8 +522,11 @@ do
         LDAP)
             clear
 	    print_text_in_color "$ICyan" "Installing LDAP..."
-            install_and_enable_app user_ldap
-	    msg_box "Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
+            if install_and_enable_app user_ldap
+	    then
+	        msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
+	    else msg_box "LDAP installation failed."
+	    fi	
         ;;   
 
         Talk)
@@ -635,7 +638,8 @@ rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
-find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
+find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
+find "$NCPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
 sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
 
 truncate -s 0 \

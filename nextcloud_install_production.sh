@@ -142,6 +142,7 @@ You will now get the option to decide which disk you want to use for DATA, or ru
 
 whiptail --title "Choose disk format" --radiolist --separate-output "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)            " on \
+"2 Disks Auto NUC Server" "(Nextcloud Home/SME Server, /dev/sda)            " off \
 "2 Disks Manual" "(Choose by yourself)            " off \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)              " off 2>results
 
@@ -150,6 +151,9 @@ choice=$(< results)
         "2 Disks Auto")
             run_static_script format-sdb
         ;;
+        "2 Disks Auto NUC Server")
+            run_static_script format-sda-nuc-server
+        ;;		
         "2 Disks Manual")
             run_static_script format-chosen
         ;;
@@ -350,6 +354,7 @@ download_static_script setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
 # Install Nextcloud
+print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
 occ_command maintenance:install \
 --data-dir="$NCDATA" \
@@ -571,6 +576,7 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "PDFViewer" "           " on \
 "Extract" "             " on \
 "Text" "                " on \
+"Mail" "                " on \
 "Webmin" "              " on 2>results
 
 while read -r -u 9 choice
@@ -598,6 +604,9 @@ do
 	;;
 	Text)
             install_and_enable_app text
+        ;;
+	Mail)
+            install_and_enable_app mail
         ;;
         Webmin)
             run_app_script webmin

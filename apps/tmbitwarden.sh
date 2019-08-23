@@ -56,20 +56,20 @@ check_command systemctl stop apache2.service
 
 # Install Bitwarden 
 install_if_not curl
-curl -s -o bitwarden.sh \
-    https://raw.githubusercontent.com/bitwarden/core/master/scripts/bitwarden.sh \
-    && chmod +x bitwarden.sh
+cd /root
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
+chmod +x /root/bitwarden.sh
 check_command ./bitwarden.sh install
-sed -i "s|http_port.*|http_port: 8080|g" "$HOME"/bwdata/config.yml
-sed -i "s|https_port.*|https_port: 8443|g" "$HOME"/bwdata/config.yml
+sed -i "s|http_port.*|http_port: 8080|g" /root/bwdata/config.yml
+sed -i "s|https_port.*|https_port: 8443|g" /root/bwdata/config.yml
 check_command ./bitwarden.sh rebuild
 check_command ./bitwarden.sh start
 if check_command ./bitwarden.sh updatedb
 then
-msg_box "Bitwarden was sucessfully installed! Please visit $(grep 'url:' "$HOME"/bwdata/config.yml | awk '{print$2}'):8443 to setup your account."
+msg_box "Bitwarden was sucessfully installed! Please visit $(grep 'url:' /root/bwdata/config.yml | awk '{print$2}'):8443 to setup your account."
 else
 msg_box "Bitwarden installation failed! We will now remove necessary configs to be able to run this script again"
-    rm -rf "$HOME"/bwdata/
+    rm -rf /root/bwdata/
 fi
 
 # Start Apache2

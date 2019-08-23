@@ -16,12 +16,12 @@ debug_mode
 # Must be root
 root_check
 
-if [ -d /dev/mapper/ ]
+if [ -d $NCDATA ]
 then
-    if [ "$(df -h /dev/mapper/*--vg-root | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 90 ]
+    if [ "$(df -h $NCDATA | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 90 ]
     then
         # Notify user
-        # notify_user_gui "Disk space almost full!" "The disk space for /dev/mapper/*--vg-root is almost full. We have automatically deleted ZFS snapshots older than 8 weeks to free up some space. Please check VMLOGS/zfs_prune.log for the results."
+        # notify_user_gui "Disk space almost full!" "The disk space for ncdata is almost full. We have automatically deleted ZFS snapshots older than 8 weeks to free up some space. Please check $VMLOGS/zfs_prune.log for the results."
         # On screen information
         msg_box "Your disk space is almost full (more than 90%).\n\nTo solve that, we will now delete ZFS snapshots older than 8 weeks to free up some space."
         countdown "To abort, please press CTRL+C within 10 seconds." 10
@@ -33,7 +33,7 @@ then
         check_command chmod +x "$SCRIPTS"/zfs-prune-snapshots
         # Prune!
         cd "$SCRIPTS"
-        touch VMLOGS/zfs_prune.log
-        ./zfs-prune-snapshots 8w ncdata >> VMLOGS/zfs_prune.log
+        touch $VMLOGS/zfs_prune.log
+        ./zfs-prune-snapshots 8w ncdata >> $VMLOGS/zfs_prune.log
     fi
 fi
