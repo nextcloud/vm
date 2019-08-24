@@ -56,7 +56,7 @@ echo "apc.gc_ttl=3600"
 echo "apc.entries_hint=4096"
 echo "apc.slam_defense=1"
 echo "apc.serializer=igbinary"
-} >> /etc/php/7.2/mods-available/apcu.ini
+} >> /etc/php/"PHPVER"/mods-available/apcu.ini
 restart_webserver
 
 # Prepare for adding redis configuration
