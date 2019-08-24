@@ -41,8 +41,22 @@ install_if_not redis-server
 # echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
 # phpenmod redis
 # Setting direct to apache2 works
+# Redis
 print_text_in_color "ICyan" "Adding extension=redis.so to $PHP_INI..."
 echo 'extension=redis.so' >> $PHP_INI
+
+# APCu
+install_if_not php-apcu
+{
+echo "apc.enabled=1"
+echo "apc.shm_size=256M"
+echo "apc.ttl=7200"
+echo "apc.enable_cli=1"
+echo "apc.gc_ttl=3600"
+echo "apc.entries_hint=4096"
+echo "apc.slam_defense=1"
+echo "apc.serializer=igbinary"
+} >> /etc/php/7.2/mods-available/apcu.ini
 restart_webserver
 
 # Prepare for adding redis configuration
@@ -50,7 +64,7 @@ sed -i "s|);||g" $NCPATH/config/config.php
 
 # Add the needed config to Nextclouds config.php
 cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
-  'memcache.local' => '\\OC\\Memcache\\Redis',
+  'memcache.local' => '\\OC\\Memcache\\APCu',
   'filelocking.enabled' => true,
   'memcache.distributed' => '\\OC\\Memcache\\Redis',
   'memcache.locking' => '\\OC\\Memcache\\Redis',
