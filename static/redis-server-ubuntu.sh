@@ -41,6 +41,7 @@ install_if_not redis-server
 # echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
 # phpenmod redis
 # Setting direct to apache2 works
+print_text_in_color "ICyan" "Adding extension=redis.so to $PHP_INI..."
 echo 'extension=redis.so' >> $PHP_INI
 restart_webserver
 
