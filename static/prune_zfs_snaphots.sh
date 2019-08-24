@@ -18,22 +18,25 @@ root_check
 
 if [ -d $NCDATA ]
 then
-    if [ "$(df -h $NCDATA | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 90 ]
+    if is_this_installed zfs-auto-snapshot
     then
-        # Notify user
-        # notify_user_gui "Disk space almost full!" "The disk space for ncdata is almost full. We have automatically deleted ZFS snapshots older than 8 weeks to free up some space. Please check $VMLOGS/zfs_prune.log for the results."
-        # On screen information
-        msg_box "Your disk space is almost full (more than 90%).\n\nTo solve that, we will now delete ZFS snapshots older than 8 weeks to free up some space."
-        countdown "To abort, please press CTRL+C within 10 seconds." 10
-        # Get the latest prune script
-        if [ ! -f $SCRIPTS/zfs-prune-snapshots ]
+        if [ "$(df -h $NCDATA | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 90 ]
         then
-            check_command curl_to_dir "https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/" "zfs-prune-snapshots" "$SCRIPTS"
+            # Notify user
+            # notify_user_gui "Disk space almost full!" "The disk space for ncdata is almost full. We have automatically deleted ZFS snapshots older than 8 weeks to free up some space. Please check $VMLOGS/zfs_prune.log for the results."
+            # On screen information
+            msg_box "Your disk space is almost full (more than 90%).\n\nTo solve that, we will now delete ZFS snapshots older than 8 weeks to free up some space."
+            countdown "To abort, please press CTRL+C within 10 seconds." 10
+            # Get the latest prune script
+            if [ ! -f $SCRIPTS/zfs-prune-snapshots ]
+            then
+                check_command curl_to_dir "https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/" "zfs-prune-snapshots" "$SCRIPTS"
+            fi
+            check_command chmod +x "$SCRIPTS"/zfs-prune-snapshots
+            # Prune!
+            cd "$SCRIPTS"
+            touch $VMLOGS/zfs_prune.log
+            ./zfs-prune-snapshots 8w ncdata >> $VMLOGS/zfs_prune.log
         fi
-        check_command chmod +x "$SCRIPTS"/zfs-prune-snapshots
-        # Prune!
-        cd "$SCRIPTS"
-        touch $VMLOGS/zfs_prune.log
-        ./zfs-prune-snapshots 8w ncdata >> $VMLOGS/zfs_prune.log
     fi
 fi
