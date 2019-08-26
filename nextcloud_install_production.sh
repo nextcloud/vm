@@ -434,7 +434,7 @@ run_static_script redis-server-ubuntu
 
 # Enable igbinary for PHP 
 # https://github.com/igbinary/igbinary
-if is_this_installed pecl
+if is_this_installed "$PHPVER"-dev
 then
     if ! yes no | pecl install -Z igbinary
     then
@@ -453,7 +453,7 @@ restart_webserver
 fi
 
 # APCu (local cache)
-if is_this_installed pecl
+if is_this_installed "$PHPVER"-dev
 then
     if ! yes no | pecl install -Z apcu
     then
