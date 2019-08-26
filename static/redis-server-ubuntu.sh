@@ -36,12 +36,7 @@ else
 fi
 install_if_not redis-server
 
-# Set globally doesn't work for some reason
-# touch /etc/php/7.0/mods-available/redis.ini
-# echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
-# phpenmod redis
-# Setting direct to PHP-FPM works
-# Redis
+# Setting direct to PHP-FPM as it's installed with PECL (globally doesn't work)
 print_text_in_color "ICyan" "Adding extension=redis.so to $PHP_INI..."
 echo 'extension=redis.so' >> $PHP_INI
 
