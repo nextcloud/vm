@@ -424,9 +424,9 @@ echo "opcache.validate_timestamps=1"
 
 # PHP-FPM optimization
 # https://geekflare.com/php-fpm-optimization/
-sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
-sed -i "s|;emergency_restart_interval.*|emergency_restart_interval 1m|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
-sed -i "s|;process_control_timeout.*|process_control_timeout 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
