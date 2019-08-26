@@ -36,21 +36,16 @@ else
 fi
 install_if_not redis-server
 
-# Set globally doesn't work for some reason
-# touch /etc/php/7.0/mods-available/redis.ini
-# echo 'extension=redis.so' > /etc/php/7.0/mods-available/redis.ini
-# phpenmod redis
-# Setting direct to apache2 works
-print_text_in_color "ICyan" "Adding extension=redis.so to $PHP_INI..."
+# Setting direct to PHP-FPM as it's installed with PECL (globally doesn't work)
+print_text_in_color "$ICyan" "Adding extension=redis.so to $PHP_INI..."
 echo 'extension=redis.so' >> $PHP_INI
-restart_webserver
 
 # Prepare for adding redis configuration
 sed -i "s|);||g" $NCPATH/config/config.php
 
 # Add the needed config to Nextclouds config.php
 cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
-  'memcache.local' => '\\OC\\Memcache\\Redis',
+  'memcache.local' => '\\OC\\Memcache\\APCu',
   'filelocking.enabled' => true,
   'memcache.distributed' => '\\OC\\Memcache\\Redis',
   'memcache.locking' => '\\OC\\Memcache\\Redis',
