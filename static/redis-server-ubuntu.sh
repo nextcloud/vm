@@ -45,25 +45,6 @@ install_if_not redis-server
 print_text_in_color "ICyan" "Adding extension=redis.so to $PHP_INI..."
 echo 'extension=redis.so' >> $PHP_INI
 
-# APCu
-install_if_not php-apcu
-{
-echo "apc.enabled=1"
-echo "apc.shm_segments=1"
-echo "apc.shm_size=32M"
-echo "apc.entries_hint=4096"
-echo "apc.ttl=0"
-echo "apc.gc_ttl=3600"
-echo "apc.mmap_file_mask=NULL"
-echo "apc.slam_defense=1"
-echo "apc.enable_cli=1"
-echo "apc.use_request_time=1"
-echo "apc.serializer=igbinary"
-echo "apc.coredump_unmap=0"
-echo "apc.preload_path"
-} >> /etc/php/"$PHPVER"/mods-available/apcu.ini
-restart_webserver
-
 # Prepare for adding redis configuration
 sed -i "s|);||g" $NCPATH/config/config.php
 
