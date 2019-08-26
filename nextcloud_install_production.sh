@@ -443,7 +443,6 @@ then
     else
         print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
     fi
-fi
 {
 echo "# igbinary for PHP"
 echo "extension=igbinary.so"
@@ -463,7 +462,6 @@ then
     else 
         print_text_in_color "$IGreen" "APCu PHP module installation OK!"
     fi
-fi
 {
 echo "# APCu settings for Nextcloud"
 echo "extension=apcu.so"
@@ -482,6 +480,7 @@ echo "apc.coredump_unmap=0"
 echo "apc.preload_path"
 } >> PHP_INI
 restart_webserver
+fi
 
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
