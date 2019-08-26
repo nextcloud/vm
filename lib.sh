@@ -675,24 +675,27 @@ if [ ! -d "$NC_APPS_PATH/$1" ]
 then
     print_text_in_color "$ICyan" "Installing $1..."
     # occ_command not possible here because it uses check_command and will exit if occ_command fails
-    result=$(sudo -u www-data php ${NCPATH}/occ app:install "$1")
-    if [ "$result" = "Error: Could not download app $1" ]
+    installcmd="$(sudo -u www-data php ${NCPATH}/occ app:install "$1")"
+    if grep 'not compatible' <<< "$installcmd"
     then
 msg_box "The $1 app could not be installed.
-Probably it's not compatible with $(occ_command -V).
+It's probably not compatible with $(occ_command -V).
 
 You can try to install the app manually after the script has finished,
 or when a new version of the app is released with the following command:
 
 'sudo -u www-data php ${NCPATH}/occ app:install $1'"
+    rm -Rf "$NCPATH/apps/$1"
+    else
+        # Enable $1
+        if [ -d "$NC_APPS_PATH/$1" ]
+        then
+            occ_command app:enable "$1"
+            chown -R www-data:www-data "$NC_APPS_PATH"
+        fi
     fi
-fi
-
-# Enable $1
-if [ -d "$NC_APPS_PATH/$1" ]
-then
-    occ_command app:enable "$1"
-    chown -R www-data:www-data "$NC_APPS_PATH"
+else
+    print_text_in_color "$IGreen" "It seems like $1 is installed already"
 fi
 }
 
