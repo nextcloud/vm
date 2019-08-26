@@ -61,7 +61,7 @@ echo "apc.use_request_time=1"
 echo "apc.serializer=default"
 echo "apc.coredump_unmap=0"
 echo "apc.preload_path"
-} >> /etc/php/"PHPVER"/mods-available/apcu.ini
+} >> /etc/php/"$PHPVER"/mods-available/apcu.ini
 restart_webserver
 
 # Prepare for adding redis configuration
