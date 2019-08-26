@@ -431,11 +431,9 @@ sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$
 # Enable igbinary for PHP 
 # https://github.com/igbinary/igbinary
 install_if_not php-igbinary
-{
-echo "extension=igbinary.so"
-echo "session.serialize_handler=igbinary"
-echo "igbinary.compact_strings=On"
-} >> $PHP_INI
+restart_webserver
+sed -i "s|;session.serialize_handler=igbinary|session.serialize_handler=igbinary|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+sed -i "s|;igbinary.compact_strings=On|igbinary.compact_strings=On|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
