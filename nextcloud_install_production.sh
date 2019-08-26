@@ -432,7 +432,7 @@ sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$
 # Install Redis (distrubuted cache)
 run_static_script redis-server-ubuntu
 
-# Enable igbinary for PHP 
+# Enable igbinary for PHP
 # https://github.com/igbinary/igbinary
 if is_this_installed "php$PHPVER"-dev
 then
@@ -459,7 +459,7 @@ then
     then
         msg_box "APCu PHP module installation failed"
         exit
-    else 
+    else
         print_text_in_color "$IGreen" "APCu PHP module installation OK!"
     fi
 {
