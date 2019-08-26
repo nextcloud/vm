@@ -441,8 +441,9 @@ then
         msg_box "igbinary PHP module installation failed"
         exit
     else
-        print_text_in_color "$IGreen "igbinary PHP module installation OK!"
+        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
     fi
+fi
 {
 echo "# igbinary for PHP"
 echo "extension=igbinary.so"
@@ -460,8 +461,9 @@ then
         msg_box "APCu PHP module installation failed"
         exit
     else 
-        print_text_in_color "$IGreen "APCu PHP module installation OK!"
+        print_text_in_color "$IGreen" "APCu PHP module installation OK!"
     fi
+fi
 {
 echo "# APCu settings for Nextcloud"
 echo "extension=apcu.so"
