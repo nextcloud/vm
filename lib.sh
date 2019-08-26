@@ -694,6 +694,8 @@ or when a new version of the app is released with the following command:
             chown -R www-data:www-data "$NC_APPS_PATH"
         fi
     fi
+else
+    print_text_in_color "$IGreen" "It seems like $1 is installed already"
 fi
 }
 
