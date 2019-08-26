@@ -428,6 +428,60 @@ sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /et
 sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 
+
+# Install Redis (distrubuted cache)
+run_static_script redis-server-ubuntu
+
+# Enable igbinary for PHP 
+# https://github.com/igbinary/igbinary
+if is_this_installed "php$PHPVER"-dev
+then
+    if ! yes no | pecl install -Z igbinary
+    then
+        msg_box "igbinary PHP module installation failed"
+        exit
+    else
+        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
+    fi
+{
+echo "# igbinary for PHP"
+echo "extension=igbinary.so"
+echo "session.serialize_handler=igbinary"
+echo "igbinary.compact_strings=On"
+} >> $PHP_INI
+restart_webserver
+fi
+
+# APCu (local cache)
+if is_this_installed "php$PHPVER"-dev
+then
+    if ! yes no | pecl install -Z apcu
+    then
+        msg_box "APCu PHP module installation failed"
+        exit
+    else 
+        print_text_in_color "$IGreen" "APCu PHP module installation OK!"
+    fi
+{
+echo "# APCu settings for Nextcloud"
+echo "extension=apcu.so"
+echo "apc.enabled=1"
+echo "apc.shm_segments=1"
+echo "apc.shm_size=32M"
+echo "apc.entries_hint=4096"
+echo "apc.ttl=0"
+echo "apc.gc_ttl=3600"
+echo "apc.mmap_file_mask=NULL"
+echo "apc.slam_defense=1"
+echo "apc.enable_cli=1"
+echo "apc.use_request_time=1"
+echo "apc.serializer=igbinary"
+echo "apc.coredump_unmap=0"
+echo "apc.preload_path"
+} >> $PHP_INI
+restart_webserver
+fi
+
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
 yes | occ_command db:convert-filecache-bigint
@@ -638,9 +692,6 @@ chown root:root -R "$SCRIPTS"
 # Prepare first bootup
 check_command run_static_script change-ncadmin-profile
 check_command run_static_script change-root-profile
-
-# Install Redis
-run_static_script redis-server-ubuntu
 
 # Upgrade
 apt update -q4 & spinner_loading
