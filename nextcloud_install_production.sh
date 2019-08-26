@@ -478,7 +478,7 @@ echo "apc.use_request_time=1"
 echo "apc.serializer=igbinary"
 echo "apc.coredump_unmap=0"
 echo "apc.preload_path"
-} >> PHP_INI
+} >> $PHP_INI
 restart_webserver
 fi
 
