@@ -428,6 +428,15 @@ sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /et
 sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 
+# Enable igbinary for PHP 
+# https://github.com/igbinary/igbinary
+install_if_not php-igbinary
+{
+echo "extension=igbinary.so"
+echo "session.serialize_handler=igbinary"
+echo "igbinary.compact_strings=On"
+} >> $PHP_INI
+
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
 yes | occ_command db:convert-filecache-bigint
