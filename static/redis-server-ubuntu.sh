@@ -58,7 +58,7 @@ echo "apc.mmap_file_mask=NULL"
 echo "apc.slam_defense=1"
 echo "apc.enable_cli=1"
 echo "apc.use_request_time=1"
-echo "apc.serializer=default"
+echo "apc.serializer=igbinary"
 echo "apc.coredump_unmap=0"
 echo "apc.preload_path"
 } >> /etc/php/"$PHPVER"/mods-available/apcu.ini
