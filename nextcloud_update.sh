@@ -155,6 +155,33 @@ else
     msg_box "Ubuntu version $DISTRO must be at least 18.04 to upgrade Redis."
 fi
 
+# Upgrade APCu and igbinary
+if [ "${CURRENTVERSION%%.*}" -ge "17" ]
+then
+    if [ -f "$PHP_INI" ]
+    then
+        print_text_in_color "$ICyan" "Trying to upgrade igbinary and APCu..."
+        if pecl list | grep igbinary >/dev/null 2>&1
+        then
+            yes no | pecl upgrade igbinary
+            # Check if igbinary.so is enabled
+            if ! grep -qFx extension=igbinary.so "$PHP_INI"
+            then
+                echo "extension=igbinary.so" >> "$PHP_INI"
+            fi
+        fi
+        if pecl list | grep apcu >/dev/null 2>&1
+        then
+            yes no | pecl upgrade apcu
+            # Check if apcu.so is enabled
+            if ! grep -qFx extension=apcu.so "$PHP_INI"
+            then
+                echo "extension=apcu.so" >> "$PHP_INI"
+            fi
+        fi
+    fi
+fi
+
 # Update adminer
 if [ -d $ADMINERDIR ]
 then
@@ -393,12 +420,13 @@ fi
 # Check if backup exists and move to old
 print_text_in_color "$ICyan" "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
-if [ -d $BACKUP ]
+if [ -d "$BACKUP" ]
 then
-    mkdir -p "$BACKUP-OLD/$DATE"
-    mv $BACKUP/* "$BACKUP-OLD/$DATE"
-    rm -R $BACKUP
-    mkdir -p $BACKUP
+    mkdir -p "$BACKUP"-OLD/"$(DATE)"
+    install_if_not rsync
+    rsync -avz --progress "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
+    rm -R "$BACKUP"
+    mkdir -p "$BACKUP"
 fi
 
 # Do a backup of the ZFS mount

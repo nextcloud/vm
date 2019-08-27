@@ -29,15 +29,15 @@ SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 if [ "$SYSVENDOR" == "VMware, Inc." ];
 then
     SYSNAME="VMware"
-    DEVTYPE=sdb
+    DEVTYPE=sda
 elif [ "$SYSVENDOR" == "Microsoft Corporation" ];
 then
     SYSNAME="Hyper-V"
-    DEVTYPE=sdb
+    DEVTYPE=sda
 elif [ "$SYSVENDOR" == "innotek GmbH" ];
 then
     SYSNAME="VirtualBox"
-    DEVTYPE=sdb
+    DEVTYPE=sda
 elif [ "$SYSVENDOR" == "Xen" ];
 then
     SYSNAME="Xen/XCP-NG"
@@ -50,10 +50,10 @@ elif [ "$SYSVENDOR" == "DigitalOcean" ];
 then
     SYSNAME="DigitalOcean"
     DEVTYPE=sda
-elif partprobe /dev/sdb &>/dev/null;
+elif partprobe /dev/sda &>/dev/null;
 then
     SYSNAME="machines"
-    DEVTYPE=sdb
+    DEVTYPE=sda
 else
 msg_box "It seems like you didn't mount a second disk. 
 To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
@@ -62,29 +62,8 @@ This script will now exit. Please mount a second disk and start over."
 exit 1
 fi
 
-msg_box "You will now see a list with available devices. Choose the device where you want to put your nextcloud data.
-Attention, the selected device will be formatted!"
-AVAILABLEDEVICES="$(lsblk | grep 'disk' | awk '{print $1}')"
-# https://github.com/koalaman/shellcheck/wiki/SC2206
-mapfile -t AVAILABLEDEVICES <<< "$AVAILABLEDEVICES"
-
-# Ask for user input
-while
-    lsblk
-    read -r -e -p "Enter the drive for the nextcloud data:" -i "$DEVTYPE" userinput
-    userinput=$(echo "$userinput" | awk '{print $1}')
-        for disk in "${AVAILABLEDEVICES[@]}";
-        do
-            [[ "$userinput" == "$disk" ]] && devtype_present=1 && DEVTYPE="$userinput"
-        done
-    [[ -z "${devtype_present+x}" ]]
-do
-    printf "${BRed}$DEVTYPE is not a valid disk. Please try again.${Color_Off}\n"
-    :
-done
-
 # Get the name of the drive
-DISKTYPE=$(fdisk -l | grep "$DEVTYPE" | awk '{print $2}' | cut -d ":" -f1 | head -1)
+DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
 if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
 then
 msg_box "It seems like your $SYSNAME secondary volume (/dev/$DEVTYPE) does not exist.
