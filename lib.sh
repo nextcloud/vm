@@ -695,7 +695,10 @@ or when a new version of the app is released with the following command:
         fi
     fi
 else
-    print_text_in_color "$IGreen" "It seems like $1 is installed already"
+    print_text_in_color "$ICyan" "It seems like $1 is installed already, trying to enable it..."
+    # occ_command not possible here because it uses check_command and will exit if occ_command fails
+    sudo -u www-data php ${NCPATH}/occ app:enable "$1"
+    chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 }
 
