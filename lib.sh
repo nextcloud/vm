@@ -290,7 +290,7 @@ then
 fi
 }
 
-caulculate_php_fpm() {
+calculate_php_fpm() {
 # Minimum amount of max children (lower than this won't work with 2 GB RAM)
 min_max_children=8
 # If start servers are lower than this then it's likely that there are room for max_spare_servers
