@@ -152,12 +152,14 @@ ask_yes_or_no() {
 # If we have internet, then use the latest variables from the lib file
 if test_connection
 then
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
 FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 fi
 
-
-################################################################################
+##### Actual script starts here #####
 
 # Must be root
 root_check
