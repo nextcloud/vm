@@ -542,32 +542,43 @@ rm -f results
 clear
 
 # Change passwords
-# CLI USER
-print_text_in_color "$ICyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
-any_key "Press any key to change password for system user..."
-while true
-do
-    sudo passwd "$(getent group sudo | cut -d: -f4 | cut -d, -f1)" && break
-done
-echo
-clear
-# NEXTCLOUD USER
-NCADMIN=$(occ_command user:list | awk '{print $3}')
-print_text_in_color "$ICyan" "The current admin user in Nextcloud GUI is [$NCADMIN]"
-print_text_in_color "$ICyan" "We will now replace this user with your own."
-any_key "Press any key to replace the current admin user for Nextcloud..."
-# Create new user
-while true
-do
-    print_text_in_color "$ICyan" "Please enter the username for your new user:"
-    read -r NEWUSER
-    sudo -u www-data $NCPATH/occ user:add "$NEWUSER" -g admin && break
-done
-# Delete old user
-if [[ "$NCADMIN" ]]
+msg_box "In the next step you will be asked to change passwords for both the Linux (Ubuntu) user, and for the Nextcloud user.
+
+If you run this from the VM console or a direct attached terminal console, the keystrokes aren't translated into your language even if you changed the keyboard setting earlier. The actual change doesn't happen until you reboot the server.
+To be able to use all keys according to your language, you need to run via SSH (Putty or similar).
+
+To avoid issues with faulty passwords, please use choose a *simple* password without any special signs. You can also choose to skip this step and connect again to change passwords once the server is rebooted."
+if [[ "yes" == $(ask_yes_or_no "Do you want to change passwords now?") ]]
 then
-    print_text_in_color "$ICyan" "Deleting $NCADMIN..."
-    occ_command user:delete "$NCADMIN"
+    # CLI USER
+    print_text_in_color "$ICyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
+    any_key "Press any key to change password for system user..."
+    while true
+    do
+        sudo passwd "$(getent group sudo | cut -d: -f4 | cut -d, -f1)" && break
+    done
+    echo
+    clear
+    # NEXTCLOUD USER
+    NCADMIN=$(occ_command user:list | awk '{print $3}')
+    print_text_in_color "$ICyan" "The current admin user in Nextcloud GUI is [$NCADMIN]"
+    print_text_in_color "$ICyan" "We will now replace this user with your own."
+    any_key "Press any key to replace the current admin user for Nextcloud..."
+    # Create new user
+    while true
+    do
+        print_text_in_color "$ICyan" "Please enter the username for your new user:"
+        read -r NEWUSER
+        sudo -u www-data $NCPATH/occ user:add "$NEWUSER" -g admin && break
+    done
+    # Delete old user
+    if [[ "$NCADMIN" ]]
+    then
+        print_text_in_color "$ICyan" "Deleting $NCADMIN..."
+        occ_command user:delete "$NCADMIN"
+    fi
+else
+    msg_box "To change passwords later just follow these instructions: https://bit.ly/2MOhlNb"
 fi
 clear
 
