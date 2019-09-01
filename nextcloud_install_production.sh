@@ -303,7 +303,7 @@ listen = /run/php/php"$PHPVER"-fpm.nextcloud.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
-; max_children is set dynamically with caulculate_php_fpm()
+; max_children is set dynamically with calculate_php_fpm()
 pm.max_children = 8
 pm.start_servers = 3
 pm.min_spare_servers = 2
