@@ -607,6 +607,7 @@ do
         "Static IP")
             clear
             run_static_script static_ip
+	    rm -f $SCRIPTS/lib.sh
         ;;
         
 	"Automatic updates")
