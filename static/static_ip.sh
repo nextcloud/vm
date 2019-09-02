@@ -29,6 +29,12 @@ else
     print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues/"
 fi
 
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
 # Must be root
 root_check
 
