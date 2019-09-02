@@ -78,7 +78,7 @@ do
     cat << ENTERGATEWAY
 +-------------------------------------------------------+
 |    Please enter the gateway address you want to set,  |
-|    Your current gateway is: $GATEWAY              |
+|    Your current gateway is: $GATEWAY             |
 +-------------------------------------------------------+
 ENTERGATEWAY
     echo
