@@ -306,8 +306,6 @@ please abort this script and report this issue to $ISSUES."
 fi
 
 ######## The first setup is OK to run to this point several times, but not any further ########
-touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
-
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
 then
 msg_box "The Nextcloud startup script that handles the first setup (this one) is desinged to be run once, not several times in a row.
@@ -323,7 +321,10 @@ github@hanssonit.se with the subject 'Issues with first setup', and we'll take i
 
 Full documentation can be found here: https://docs.hanssonit.se
 Please report any bugs you find here: $ISSUES"
+    exit 1
 fi
+
+touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 
 # Check if dpkg or apt is running
 is_process_running apt
