@@ -2,6 +2,12 @@
 
 # T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
+IRed='\e[0;91m'         # Red
+ICyan='\e[0;96m'        # Cyan
+print_text_in_color() {
+	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
+}
+
 # Use local lib file in case there is no internet connection
 if [ -f /var/scripts/lib.sh ]
 then
@@ -11,7 +17,7 @@ true
 FIRST_IFACE=1 source /var/scripts/lib.sh
 unset FIRST_IFACE
  # If we have internet, then use the latest variables from the lib remote file
-elif echo "Testing internet connection..." && ping github.com -c 2
+elif print_text_in_color "$ICyan" "Testing internet connection..." && ping github.com -c 2
 then
 # shellcheck disable=2034,2059
 true
@@ -19,8 +25,8 @@ true
 FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 else
-    echo "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
-    echo "Please report this to https://github.com/nextcloud/vm/issues/"
+    print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
+    print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues/"
 fi
 
 # Must be root
