@@ -4,6 +4,7 @@
 
 IRed='\e[0;91m'         # Red
 ICyan='\e[0;96m'        # Cyan
+Color_Off='\e[0m'       # Text Reset
 print_text_in_color() {
 	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
