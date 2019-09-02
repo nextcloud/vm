@@ -27,6 +27,7 @@ unset FIRST_IFACE
 else
     print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
     print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues/"
+    exit 1
 fi
 
 # Check for errors + debug code and abort if something isn't right
