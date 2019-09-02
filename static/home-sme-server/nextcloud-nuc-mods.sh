@@ -17,10 +17,10 @@ debug_mode
 root_check
 
 # Channge PHP-FPM (16 GB RAM)
-pm.max_children = 307
-pm.start_servers = 20
-pm.min_spare_servers = 10
-pm.max_spare_servers = 277
+check_command sed -i "s|pm.max_children.*|pm.max_children = 307|g" $PHP_POOL_DIR/nextcloud.conf
+check_command sed -i "s|pm.start_servers.*|pm.start_servers = 20|g" $PHP_POOL_DIR/nextcloud.conf
+check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 30|g" $PHP_POOL_DIR/nextcloud.conf
+check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 257|g" $PHP_POOL_DIR/nextcloud.conf
 
 # Change instructions.sh
 
