@@ -719,6 +719,12 @@ else
     run_static_script trusted
 fi
 
+# If Nextcloud Home/SME Server then
+if something
+then
+    run_static_script nextcloud-home-sme-server-mods
+fi
+
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
 
