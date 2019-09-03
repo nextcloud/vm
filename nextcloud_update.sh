@@ -422,7 +422,7 @@ print_text_in_color "$ICyan" "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
 if [ -d "$BACKUP" ]
 then
-    mkdir -p "$BACKUP"-OLD/"$(DATE)"
+    mkdir -p "$BACKUP"-OLD/"$DATE"
     install_if_not rsync
     rsync -avz --progress "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
     rm -R "$BACKUP"
