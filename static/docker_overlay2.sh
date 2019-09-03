@@ -2,8 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-DOCKEROVERLAY2=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset DOCKEROVERLAY2
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
@@ -19,6 +18,14 @@ root_check
 ### Migrating Docker images to overlay2 ###
 # https://www.techandme.se/changes-to-docker-ce-in-the-nextcloud-vm/
 # Credits to: https://gist.github.com/hydra1983/22b2bed38b4f5f56caa87c830c96378d
+
+# Make sure DOCKERBACKUP is created
+if [ -f "$NCPATH"/config/config.php ]
+then
+    NCDATA="$(grep 'datadir' "$NCPATH"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
+fi
+DOCKERBACKUP="$NCDATA/DOCKERBACKUP"
+mkdir -p $DOCKERBACKUP
 
 # Check if aufs and don't run
 if grep -q "aufs" /etc/default/docker
