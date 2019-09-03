@@ -967,6 +967,33 @@ then
 fi
 }
 
+# Check if it's the Home/SME Server
+
+#if home_sme_server
+#then
+#    do something
+#fi
+
+home_sme_server() {
+if lshw -c system | grep -q NUC8i3BEH
+then
+    if lshw -c memory | grep -q BLS16G4S240FSD.16FBD
+    then
+        if lshw -c disk | grep -q ST2000LM015-2E81
+        then
+            NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
+        fi
+    fi
+fi
+
+if [ -n $NEXTCLOUDHOMESME ]
+then
+    return 0
+else
+    return 1
+fi
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
