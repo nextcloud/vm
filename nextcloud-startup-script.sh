@@ -251,7 +251,6 @@ Please delete this VM from your host and reimport it once again, then run this s
 
 [For the Nextcloud Home/SME Server:]
 It's a bit more tricky since you can't revert in the same way as with a VM. The best thing you can do now is to save all the output from the session you ran before this one + write down all the steps you took and send and email to:
-
 github@hanssonit.se with the subject 'Issues with first setup', and we'll take it from there.
 
 Full documentation can be found here: https://docs.hanssonit.se
@@ -677,12 +676,6 @@ then
     rm -f "$SCRIPTS"/trusted.sh
 else
     run_static_script trusted
-fi
-
-# If Nextcloud Home/SME Server then
-if something
-then
-    run_static_script nextcloud-home-sme-server-mods
 fi
 
 # Success!
