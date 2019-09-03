@@ -313,7 +313,7 @@ msg_box "The Nextcloud startup script that handles the first setup (this one) is
 If you feel uncertain about adding some extra features during this setup, then it's best to wait until after the first setup is done. You can always add all the extra features later.
 
 [For the Nextcloud VM:]
-Please delete this VM from your host and import it, and then run this setup again like you did the first time.
+Please delete this VM from your host and reimport it once again, then run this setup like you did the first time.
 
 [For the Nextcloud Home/SME Server:]
 It's a bit more tricky since you can't revert in the same way as with a VM. The best thing you can do now is to save all the output from the session you ran before this one + write down all the steps you took and send and email to:
