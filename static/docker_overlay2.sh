@@ -25,7 +25,7 @@ then
     NCDATA="$(grep 'datadir' "$NCPATH"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
 fi
 DOCKERBACKUP="$NCDATA/DOCKERBACKUP"
-mkdir -p $DOCKERBACKUP
+mkdir -p "$DOCKERBACKUP"
 
 # Check if aufs and don't run
 if grep -q "aufs" /etc/default/docker
