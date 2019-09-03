@@ -251,6 +251,7 @@ Please delete this VM from your host and reimport it once again, then run this s
 
 [For the Nextcloud Home/SME Server:]
 It's a bit more tricky since you can't revert in the same way as with a VM. The best thing you can do now is to save all the output from the session you ran before this one + write down all the steps you took and send and email to:
+
 github@hanssonit.se with the subject 'Issues with first setup', and we'll take it from there.
 
 Full documentation can be found here: https://docs.hanssonit.se
@@ -571,7 +572,7 @@ do
         "Static IP")
             clear
             run_static_script static_ip
-	    rm -f "$SCRIPTS"/lib.sh
+            rm -f "$SCRIPTS"/lib.sh
         ;;
 
 	"Automatic updates")
@@ -719,4 +720,5 @@ sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/g
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
 rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
+rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 reboot
