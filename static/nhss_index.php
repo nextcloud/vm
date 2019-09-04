@@ -75,7 +75,7 @@
         <br>
         <div class="logo"></div>
         <div class="logotext">
-            <h2><a href="https://github.com/nextcloud/vm" target="_blank">Nextcloud Home/SME Server</a> - by <a href="https://shop.hanssonit.se/product-category/nextcloud/home-sme-server/" target="_blank">T&M Hansson IT AB</a></h2>
+            <h2><a href="https://shop.hanssonit.se/product-category/nextcloud/home-sme-server/" target="_blank">Nextcloud Home/SME Server</a> - by <a href="https://www.hanssonit.se" target="_blank">T&M Hansson IT AB</a></h2>
         </div>
         <br>
         <div class="information">
