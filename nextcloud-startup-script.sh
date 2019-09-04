@@ -10,6 +10,8 @@ print_text_in_color() {
 	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
+print_text_in_color "$ICyan" "Fetching all the variables from lib.sh..."
+
 # Use local lib file in case there is no internet connection
 if [ -f /var/scripts/lib.sh ]
 then
@@ -18,7 +20,7 @@ true
 # shellcheck source=lib.sh
 NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 source /var/scripts/lib.sh
 unset NCDB
-unset FIRST_IFACE=1
+unset FIRST_IFACE
 unset  CHECK_CURRENT_REPO
  # If we have internet, then use the latest variables from the lib remote file
 elif print_text_in_color "$ICyan" "Testing internet connection..." && ping github.com -c 2
