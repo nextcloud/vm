@@ -33,6 +33,16 @@ mkdir -p "$NCPATH"/updater
 mkdir -p "$VMLOGS"
 mkdir -p "$NCDATA"
 
+if ! [ -f "$VMLOGS/nextcloud.log" ]
+then
+    touch "$VMLOGS/nextcloud.log"
+fi
+
+if ! [ -f "$VMLOGS/audit.log" ]
+then
+    touch "$VMLOGS/audit.log"
+fi
+
 print_text_in_color "$ICyan" "chmod Files and Directories"
 find "${NCPATH}"/ -type f -print0 | xargs -0 chmod 0640
 find "${VMLOGS}"/nextcloud.log -type f -print0 | xargs -0 chmod 0640

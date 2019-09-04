@@ -527,8 +527,8 @@ if home_sme_server
 then
     # Add specific values to PHP-FPM based on 16 GB RAM
     check_command sed -i "s|pm.max_children.*|pm.max_children = 307|g" $PHP_POOL_DIR/nextcloud.conf
-    check_command sed -i "s|pm.start_servers.*|pm.start_servers = 20|g" $PHP_POOL_DIR/nextcloud.conf
-    check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 30|g" $PHP_POOL_DIR/nextcloud.conf
+    check_command sed -i "s|pm.start_servers.*|pm.start_servers = 30|g" $PHP_POOL_DIR/nextcloud.conf
+    check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 20|g" $PHP_POOL_DIR/nextcloud.conf
     check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 257|g" $PHP_POOL_DIR/nextcloud.conf
     restart_webserver
 else
