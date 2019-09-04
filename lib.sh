@@ -15,7 +15,7 @@ GPGDIR=/tmp/gpg
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
 NC_APPS_PATH=$NCPATH/apps
-VMLOGS=/var/log/ncvm
+VMLOGS=/var/log/nextcloud
 
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
