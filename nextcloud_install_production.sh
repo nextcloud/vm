@@ -386,8 +386,8 @@ sed -i "s|post_max_size =.*|post_max_size = 1100M|g" $PHP_INI
 sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" $PHP_INI
 
 # Set loggging
--occ_command config:system:set log_type --value=file
--occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
+occ_command config:system:set log_type --value=file
+occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
 touch "$VMLOGS/nextcloud.log"
 rm -f "$NCDATA/nextcloud.log"
 occ_command config:system:set loglevel --value=2
