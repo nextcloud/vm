@@ -986,7 +986,7 @@ then
     fi
 fi
 
-if [ -n $NEXTCLOUDHOMESME ]
+if [ -n "$NEXTCLOUDHOMESME" ]
 then
     return 0
 else
