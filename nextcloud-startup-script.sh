@@ -3,6 +3,7 @@
 # T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
 IRed='\e[0;91m'         # Red
+IGreen='\e[0;92m'       # Green
 ICyan='\e[0;96m'        # Cyan
 Color_Off='\e[0m'       # Text Reset
 print_text_in_color() {
@@ -28,7 +29,6 @@ NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubu
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 unset NCDB
-
 else
     print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
     print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues/"
@@ -41,7 +41,7 @@ root_check
 # Check network
 if network_ok
 then
-    printf "${IGreen}Online!${Color_Off}\n"
+    print_text_in_color "$IGreen" "Online!"
 else
     print_text_in_color "$ICyan" "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
@@ -79,7 +79,7 @@ fi
 # Check network again
 if network_ok
 then
-    printf "${IGreen}Online!${Color_Off}\n"
+    print_text_in_color "$IGreen" "Online!"
 else
 msg_box "Network NOT OK. You must have a working network connection to run this script.
 
