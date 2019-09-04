@@ -79,28 +79,9 @@
         </div>
         <br>
         <div class="information">
-            <p>Thank you for downloading the pre-configured Nextcloud VM! If you see this page, you have successfully mounted the Nextcloud VM on the computer that will act as host for Nextcloud.</p>
+            <p>Thank you for downloading the Nextcloud VM, you made a good choice! If you see this page, you have run the first setup, and you are now ready to start using Nextcloud on your new server. Congratulations! :)</p>
             <p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.</p>
-            <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels. You can also check the <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm" target="_blank">complete install instructions</a>.</p>
-        </div>
-
-        <h2><a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm?currentPageId=W6yo9OPiqQz3_Mpy" target="_blank">Login</a> to Nextcloud</h2>
-
-        <div class="information">
-            <p>Default User:</p>
-            <h3>ncadmin</h3>
-            <p>Default Password:</p>
-            <h3>nextcloud</h3>
-            <p>Note: The setup script will ask you to change the default password to your own. It's also recommended to change the default user. Do this by adding another admin user, log out from ncadmin, and login with your new user, then delete ncadmin.</p>
-            <br>
-            <center>
-                <h3> How to mount the VM and and login:</h3>
-            </center>
-            <p>Before you can use Nextcloud you have to run the setup script to complete the installation. This is easily done by just typing 'nextcloud' when you log in to the terminal for the first time.</p>
-            <p>The full path to the setup script is: /var/scripts/nextcloud-startup-script.sh. When the script is finnished it will be deleted, as it's only used the first time you boot the machine.</p>
-            <center>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/-3fKEu2HhJo" frameborder="0" allowfullscreen></iframe>
-            </center>
+            <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels, or <a href="https://shop.hanssonit.se/product/premium-support-per-30-minutes/" target="_blank">buy hands on support</a> from T&M Hansson IT AB. You can also check the <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration" target="_blank">documentation</a>.</p>
         </div>
 
         <h2>Access Nextcloud</h2>
@@ -113,10 +94,13 @@
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
-             It's recomended to <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a></p>
-            <p>The easiest way to get a real SSL certificate though is to run the Lets' Encrypt script included in this VM.<br>
+
+            <p>It's recomended to <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a>
+            The easiest way to get a real SSL certificate is to run the Lets' Encrypt script included on this server.<br>
             Just run 'sudo bash /var/scripts/activate-ssl.sh' from your terminal and follow the instructions.
-            <p>Note: Before you can login you have to run the setup script, as descirbed in the video above.</p>
+            <h3>
+                <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6yn7ePiqQz3_Mpi" target="_blank">Login details</a>
+            </h3>
         </div>
 
         <h2>Access Webmin</h2>
@@ -127,12 +111,12 @@
                 <ul>
                     <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:10000">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)</li>
                 </ul>
-            </h3>
-            <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
+	    </h3>
+	    <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
             <h3>
-                <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm?currentPageId=W6yo9OPiqQz3_Mpy" target="_blank">Login details</a>
+	        <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6yn_ePiqQz3_Mpk" target="_blank">Login details</a>
             </h3>
-            <p>Note: Webmin is installed when you run the setup script. To access Webmin externally you have to open port 10000 in your router.</p>
+            <p>Note: To access Webmin externally you have to open port 10000 in your router, it's not recomended though due to security concerns.</p>
         </div>
 
         <h2>Access Adminer</h2>
@@ -147,9 +131,18 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
-                <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm?currentPageId=W6yo9OPiqQz3_Mpy" target="_blank">Login details</a>
+                <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6ypBePiqQz3_Mp0" target="_blank">Login details</a>
             </h3>
             <p>Note: Your LAN IP is set as approved in /etc/apache2/conf-available/adminer.conf, all other access is forbidden.</p>
         </div>
+
+        <h2>Follow us on Social Media</h2>
+
+        <div class="information">
+            <p>If you want to get the latest news and updates, please consider following us! We are very active on Twitter, and post some videos from time to time on Youtube. It might be worth checking out. ;)</p>
+        </div>
+            <p><b><a href="https://twitter.com/tmhanssonit" class="twitter-follow-button" data-show-count="false" target="_blank">Follow @tmhanssonit</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></b></p>
+            <script src="https://apis.google.com/js/platform.js"></script>
+            <div class="g-ytsubscribe" data-channelid="UCLXe8RpVdOsoapYM9_GcrfA" data-layout="full" data-count="default"></div>
     </body>
 </html>

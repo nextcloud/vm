@@ -84,8 +84,6 @@
             <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels, or <a href="https://shop.hanssonit.se/product/premium-support-per-30-minutes/" target="_blank">buy hands on support</a> from T&M Hansson IT AB. You can also check the <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server" target="_blank">documentation</a>.</p>
         </div>
 
-        <h2><a href="docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpid9g" target="_blank">Login</a> to Nextcloud</h2>
-
         <h2>Access Nextcloud</h2>
 
         <div class="information">
@@ -96,9 +94,13 @@
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
-             It's recomended to <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpidm0/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a></p>
-            <p>The easiest way to get a real SSL certificate though, is to run the Lets' Encrypt script included on this server.<br>
-            Just run 'sudo bash /var/scripts/activate-ssl.sh' from your terminal and follow the instructions.</p>
+
+            <p>It's recomended to <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpidm0/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a>
+            The easiest way to get a real SSL certificate is to run the Lets' Encrypt script included on this server.<br>
+            Just run 'sudo bash /var/scripts/activate-ssl.sh' from your terminal and follow the instructions.
+            <h3>
+                <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidb0" target="_blank">Login details</a>
+            </h3>
         </div>
 
         <h2>Access Webmin</h2>
@@ -109,10 +111,10 @@
                 <ul>
                     <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:10000">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)</li>
                 </ul>
-            </h3>
-            <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
+	    </h3>
+	    <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
             <h3>
-                <a href="docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidc0" target="_blank">Login details</a>
+	        <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidc0" target="_blank">Login details</a>
             </h3>
             <p>Note: To access Webmin externally you have to open port 10000 in your router, it's not recomended though due to security concerns.</p>
         </div>
@@ -129,9 +131,18 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
-                <a href="docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidcg" target="_blank">Login details</a>
+                <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidcg" target="_blank">Login details</a>
             </h3>
             <p>Note: Your LAN IP is set as approved in /etc/apache2/conf-available/adminer.conf, all other access is forbidden.</p>
         </div>
+
+        <h2>Follow us on Social Media</h2>
+
+        <div class="information">
+            <p>If you want to get the latest news and updates, please consider following us! We are very active on Twitter, and post some videos from time to time on Youtube. It might be worth checking out. ;)</p>
+        </div>
+            <p><b><a href="https://twitter.com/tmhanssonit" class="twitter-follow-button" data-show-count="false" target="_blank">Follow @tmhanssonit</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></b></p>
+            <script src="https://apis.google.com/js/platform.js"></script>
+            <div class="g-ytsubscribe" data-channelid="UCLXe8RpVdOsoapYM9_GcrfA" data-layout="full" data-count="default"></div>
     </body>
 </html>
