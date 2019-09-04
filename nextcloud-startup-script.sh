@@ -1,5 +1,27 @@
 #!/bin/bash
+
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+
+IRed='\e[0;91m'         # Red
+ICyan='\e[0;96m'        # Cyan
+Color_Off='\e[0m'       # Text Reset
+print_text_in_color() {
+	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
+}
+
+# Use local lib file in case there is no internet connection
+if [ -f /var/scripts/lib.sh ]
+then
 # shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 source /var/scripts/lib.sh
+unset NCDB
+unset FIRST_IFACE=1
+unset  CHECK_CURRENT_REPO
+ # If we have internet, then use the latest variables from the lib remote file
+elif print_text_in_color "$ICyan" "Testing internet connection..." && ping github.com -c 2
+then
 true
 # shellcheck source=lib.sh
 NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -7,93 +29,11 @@ unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 unset NCDB
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
-
-## If you want debug mode, please activate it further down in the code at line ~60
-
-# FUNCTIONS #
-
-msg_box() {
-local PROMPT="$1"
-    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
-}
-
-is_root() {
-    if [[ "$EUID" -ne 0 ]]
-    then
-        return 1
-    else
-        return 0
-    fi
-}
-
-root_check() {
-if ! is_root
-then
-msg_box "Sorry, you are not root. You now have two options:
-
-1. With SUDO directly:
-   a) :~$ sudo bash $SCRIPTS/name-of-script.sh
-2. Become ROOT and then type your command:
-   a) :~$ sudo -i
-   b) :~# $SCRIPTS/name-of-script.sh
-
-In both cases above you can leave out $SCRIPTS/ if the script
-is directly in your PATH.
-More information can be found here: https://unix.stackexchange.com/a/3064"
+else
+    print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
+    print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues/"
     exit 1
 fi
-}
-
-site_200() {
-print_text_in_color "$ICyan" "Checking connection..."
-        CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
-        if [[ "$CURL_STATUS" = "200" ]]
-        then
-            return 0
-        else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is the site reachable?"
-            return 1
-        fi
-}
-
-network_ok() {
-    print_text_in_color "$ICyan" "Testing if network is OK..."
-    install_if_not network-manager
-    if ! service network-manager restart > /dev/null
-    then
-        service networking restart > /dev/null
-    fi
-    sleep 5 && site_200 github.com
-}
-
-check_command() {
-  if ! "$@";
-  then
-     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
-	 print_text_in_color "$IRed" "$* failed"
-    exit 1
-  fi
-}
-
-install_if_not() {
-if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
-then
-    apt update -q4 & spinner_loading && apt install "${1}" -y
-fi
-}
-
-# Colors
-Color_Off='\e[0m'
-IRed='\e[0;91m'
-IGreen='\e[0;92m'
-ICyan='\e[0;96m'
-
-print_text_in_color() {
-	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
-}
-
-# END OF FUNCTIONS #
 
 # Check if root
 root_check
