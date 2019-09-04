@@ -486,10 +486,6 @@ occ_command notification:generate -l "If you need support, please visit the shop
 a2dismod status
 restart_webserver
 
-# Increase max filesize (expects that changes are made in $PHP_INI)
-# Here is a guide: https://www.techandme.se/increase-max-file-size/
-configure_max_upload
-
 # Extra configurations
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
