@@ -293,7 +293,6 @@ then
     clear
 else
     dpkg-reconfigure tzdata
-    clear
 fi
 
 # Change timezone in PHP
@@ -301,6 +300,7 @@ sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 
 # Change timezone for logging
 occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+clear
 
 # Check where the best mirrors are and update
 msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.

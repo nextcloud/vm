@@ -30,14 +30,19 @@ print_text_in_color "$IGreen" "Setting secure permissions..."
 print_text_in_color "$ICyan" "Creating possible missing Directories"
 mkdir -p "$NCPATH"/data
 mkdir -p "$NCPATH"/updater
+mkdir -p "$VMLOGS"
 mkdir -p "$NCDATA"
 
 print_text_in_color "$ICyan" "chmod Files and Directories"
 find "${NCPATH}"/ -type f -print0 | xargs -0 chmod 0640
+find "${VMLOGS}"/nextcloud.log -type f -print0 | xargs -0 chmod 0640
+find "${VMLOGS}"/audit.log -type f -print0 | xargs -0 chmod 0640
 find "${NCPATH}"/ -type d -print0 | xargs -0 chmod 0750
 
 print_text_in_color "$ICyan" "chown Directories"
 chown -R "${rootuser}":"${htgroup}" "${NCPATH}"/
+chown -R "${htuser}":"${htgroup}" "${VMLOGS}"/nextcloud.log
+chown -R "${htuser}":"${htgroup}" "${VMLOGS}"/audit.log
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/apps/
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/config/
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/themes/
