@@ -17,8 +17,9 @@ echo -e "|"  "${IGreen}To run the startup script type the sudoer password, then 
 echo -e "|"  "${IGreen}The default sudoer password is: ${BIGreen}nextcloud${IGreen}${Color_Off}                             |"
 cat << INST2
 |                                                                       |
-| If you have never done this before you can follow the complete        |
-| installation instructions here: https://bit.ly/2luR9eg                |
+| You can find the complete install instructions here:                  |
+| Nextcloud VM              = https://bit.ly/2S8eGfS                    |
+| Nextcloud Home/SME Server = https://bit.ly/2k2TNaM                    |
 |                                                                       |
 | To be 100% sure that all the keystrokes work correctly (like @),      |
 | please use an SSH terminal like Putty. You can download it here:      |
@@ -31,7 +32,7 @@ cat << INST2
 | update to $VMLOGS/update_run.log                           |
 | Just choose to configure it when asked to do so later in this script. |
 |                                                                       |
-|  ##################### T&M Hansson IT - $(date +"%Y") #######################  |
+|  ###################### T&M Hansson IT - $(date +"%Y") ######################  |
 +-----------------------------------------------------------------------+
 INST2
 
