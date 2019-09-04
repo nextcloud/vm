@@ -79,7 +79,7 @@ if [ "$KEYBOARD_LAYOUT" = "se" ]
 then
     sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 elif [ "$KEYBOARD_LAYOUT" = "de" ]
-then 
+then
     sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 else
     sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
@@ -153,7 +153,7 @@ choice=$(< results)
         ;;
         "2 Disks Auto NUC Server")
             run_static_script format-sda-nuc-server
-        ;;		
+        ;;
         "2 Disks Manual")
             run_static_script format-chosen
         ;;
@@ -229,7 +229,7 @@ print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
 service postgresql restart
 
 # Install Apache
-check_command apt install apache2 -y 
+check_command apt install apache2 -y
 a2enmod rewrite \
         headers \
         proxy \
@@ -278,7 +278,7 @@ check_command apt install -y \
     php-pear
     # php"$PHPVER"-imagick \
     # libmagickcore-6.q16-3-extra
-    
+
 # Enable php-fpm
 a2enconf php"$PHPVER"-fpm
 
@@ -384,6 +384,12 @@ sed -i "s|memory_limit =.*|memory_limit = 512M|g" $PHP_INI
 sed -i "s|post_max_size =.*|post_max_size = 1100M|g" $PHP_INI
 # upload_max
 sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" $PHP_INI
+
+# Set loggging
+occ_command config:system:set loglevel --value=3
+occ_command config:system:set log_type --value=file
+occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
+occ_command config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
 
 # Set SMTP mail
 occ_command config:system:set mail_smtpmode --value="smtp"
@@ -682,6 +688,13 @@ check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
 check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
 download_static_script instruction
 download_static_script history
+download_static_script static_ip
+
+if home_sme_server
+then
+    # Change nextcloud-startup-script.sh
+    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
+fi
 
 # Make $SCRIPTS excutable
 chmod +x -R "$SCRIPTS"

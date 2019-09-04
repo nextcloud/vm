@@ -42,6 +42,13 @@ then
     apt-mark hold mariadb*
 fi
 
+# Move all logs to new dir (2019-09-04)
+if [ -d /var/log/ncvm ]
+then
+    rsync -az /var/log/ncvm/* $VMLOGS
+    rm -Rf /var/log/ncvm/
+fi
+
 # Update docker-ce to overlay2 since devicemapper is deprecated
 if [ -f /etc/systemd/system/docker.service ]
 then

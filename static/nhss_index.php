@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
     <head>
-        <title>Nextcloud VM</title>
+        <title>Nextcloud Home/SME Server</title>
         <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
         <style type="text/css">
             body {
@@ -75,13 +75,13 @@
         <br>
         <div class="logo"></div>
         <div class="logotext">
-            <h2><a href="https://github.com/nextcloud/vm" target="_blank">Nextcloud VM</a> - by <a href="https://www.hanssonit.se/nextcloud-vm/" target="_blank">T&M Hansson IT AB</a></h2>
+            <h2><a href="https://github.com/nextcloud/vm" target="_blank">Nextcloud Home/SME Server</a> - by <a href="https://shop.hanssonit.se/product-category/nextcloud/home-sme-server/" target="_blank">T&M Hansson IT AB</a></h2>
         </div>
         <br>
         <div class="information">
-            <p>Thank you for downloading the Nextcloud VM, you made a good choice! If you see this page, you have run the first setup, and you are now ready to start using Nextcloud on your new server. Congratulations! :)</p>
+            <p>Thank you for purchasing the Nextcloud Home/SME Server, you made a good choice! If you see this page, you have run the first setup, and you are now ready to start using Nextcloud on your new server. Congratulations! :)</p>
             <p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.</p>
-            <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels, or <a href="https://shop.hanssonit.se/product/premium-support-per-30-minutes/" target="_blank">buy hands on support</a> from T&M Hansson IT AB. You can also check the <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration" target="_blank">documentation</a>.</p>
+            <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels, or <a href="https://shop.hanssonit.se/product/premium-support-per-30-minutes/" target="_blank">buy hands on support</a> from T&M Hansson IT AB. You can also check the <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server" target="_blank">documentation</a>.</p>
         </div>
 
         <h2>Access Nextcloud</h2>
@@ -95,11 +95,11 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
 
-            <p>It's recomended to <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a>
+            <p>It's recomended to <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpidm0/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a>
             The easiest way to get a real SSL certificate is to run the Lets' Encrypt script included on this server.<br>
             Just run 'sudo bash /var/scripts/activate-ssl.sh' from your terminal and follow the instructions.
             <h3>
-                <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6yn7ePiqQz3_Mpi" target="_blank">Login details</a>
+                <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidb0" target="_blank">Login details</a>
             </h3>
         </div>
 
@@ -114,7 +114,7 @@
 	    </h3>
 	    <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
             <h3>
-	        <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6yn_ePiqQz3_Mpk" target="_blank">Login details</a>
+	        <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidc0" target="_blank">Login details</a>
             </h3>
             <p>Note: To access Webmin externally you have to open port 10000 in your router, it's not recomended though due to security concerns.</p>
         </div>
@@ -131,7 +131,7 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
-                <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6ypBePiqQz3_Mp0" target="_blank">Login details</a>
+                <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidcg" target="_blank">Login details</a>
             </h3>
             <p>Note: Your LAN IP is set as approved in /etc/apache2/conf-available/adminer.conf, all other access is forbidden.</p>
         </div>

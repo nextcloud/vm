@@ -1,99 +1,41 @@
 #!/bin/bash
+
+# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+
+IRed='\e[0;91m'         # Red
+IGreen='\e[0;92m'       # Green
+ICyan='\e[0;96m'        # Cyan
+Color_Off='\e[0m'       # Text Reset
+print_text_in_color() {
+	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
+}
+
+print_text_in_color "$ICyan" "Fetching all the variables from lib.sh..."
+
+# Use local lib file in case there is no internet connection
+if [ -f /var/scripts/lib.sh ]
+then
 # shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 source /var/scripts/lib.sh
+unset NCDB
+unset FIRST_IFACE
+unset  CHECK_CURRENT_REPO
+ # If we have internet, then use the latest variables from the lib remote file
+elif print_text_in_color "$ICyan" "Testing internet connection..." && ping github.com -c 2
+then
 true
 # shellcheck source=lib.sh
 NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
 unset NCDB
-
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
-
-## If you want debug mode, please activate it further down in the code at line ~60
-
-# FUNCTIONS #
-
-msg_box() {
-local PROMPT="$1"
-    whiptail --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
-}
-
-is_root() {
-    if [[ "$EUID" -ne 0 ]]
-    then
-        return 1
-    else
-        return 0
-    fi
-}
-
-root_check() {
-if ! is_root
-then
-msg_box "Sorry, you are not root. You now have two options:
-
-1. With SUDO directly:
-   a) :~$ sudo bash $SCRIPTS/name-of-script.sh
-2. Become ROOT and then type your command:
-   a) :~$ sudo -i
-   b) :~# $SCRIPTS/name-of-script.sh
-
-In both cases above you can leave out $SCRIPTS/ if the script
-is directly in your PATH.
-More information can be found here: https://unix.stackexchange.com/a/3064"
+else
+    print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
+    print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues/"
     exit 1
 fi
-}
-
-site_200() {
-print_text_in_color "$ICyan" "Checking connection..."
-        CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
-        if [[ "$CURL_STATUS" = "200" ]]
-        then
-            return 0
-        else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is the site reachable?"
-            return 1
-        fi
-}
-
-network_ok() {
-    print_text_in_color "$ICyan" "Testing if network is OK..."
-    install_if_not network-manager
-    if ! service network-manager restart > /dev/null
-    then
-        service networking restart > /dev/null
-    fi
-    sleep 5 && site_200 github.com
-}
-
-check_command() {
-  if ! "$@";
-  then
-     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
-	 print_text_in_color "$IRed" "$* failed"
-    exit 1
-  fi
-}
-
-install_if_not() {
-if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
-then
-    apt update -q4 & spinner_loading && apt install "${1}" -y
-fi
-}
-
-# Colors
-Color_Off='\e[0m'
-IRed='\e[0;91m'
-IGreen='\e[0;92m'
-ICyan='\e[0;96m'
-
-print_text_in_color() {
-	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
-}
-
-# END OF FUNCTIONS #
 
 # Check if root
 root_check
@@ -101,7 +43,7 @@ root_check
 # Check network
 if network_ok
 then
-    printf "${IGreen}Online!${Color_Off}\n"
+    print_text_in_color "$IGreen" "Online!"
 else
     print_text_in_color "$ICyan" "Setting correct interface..."
     [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
@@ -131,81 +73,15 @@ You must have a working network connection to run this script.
 
 You will now be provided with the option to set a static IP manually instead."
 
-        # Copy old interfaces files
-msg_box "Copying old netplan.io config files file to:
-/tmp/netplan_io_backup/"
-        if [ -d /etc/netplan/ ]
-        then
-            mkdir -p /tmp/netplan_io_backup
-            check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
-        fi
-
-        while true
-        do
-            # Ask for IP address
-            cat << ENTERIP
-+----------------------------------------------------------+
-|    Please enter the static IP address you want to set,   |
-|    including the subnet. Example: 192.168.1.100/24       |
-+----------------------------------------------------------+
-ENTERIP
-            echo
-            read -r LANIP
-            echo
-
-            if [[ $LANIP == *"/"* ]]
-            then
-                break
-            else
-                print_text_in_color "$IRed" "Did you forget the /subnet?"
-            fi
-        done
-
-        echo
-        while true
-        do
-            # Ask gateway IP
-            cat << ENTERGATEWAY
-+-------------------------------------------------------+
-|    Please enter the gateway address you want to set,  |
-|    Example: 192.168.1.1       			|
-+-------------------------------------------------------+
-ENTERGATEWAY
-            echo
-            read -r GATEWAYIP
-            echo
-            if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
-            then
-                break
-            fi
-        done
-
-        # Create the Static IP file
-        cat <<-IPCONFIG > /etc/netplan/01-netcfg.yaml
-network:
-   version: 2
-   renderer: networkd
-   ethernets:
-       $IFACE: #object name
-         dhcp4: no # dhcp v4 disable
-         dhcp6: no # dhcp v6 disable
-         addresses: [$LANIP] # client IP address
-         gateway4: $GATEWAYIP # gateway address
-         nameservers:
-           addresses: [9.9.9.9,149.112.112.112] #name servers
-IPCONFIG
-
-msg_box "These are your settings, please make sure they are correct:
-
-$(cat /etc/netplan/01-netcfg.yaml)"
-        netplan try
+        # Run static_ip script
+	bash /var/scripts/static_ip.sh
     fi
 fi
 
 # Check network again
 if network_ok
 then
-    printf "${IGreen}Online!${Color_Off}\n"
+    print_text_in_color "$IGreen" "Online!"
 else
 msg_box "Network NOT OK. You must have a working network connection to run this script.
 
@@ -254,7 +130,7 @@ then
         msg_box "We will now try to set the new keyboard layout directly in this session. If that fails, the server will be rebooted to apply the new keyboard settings.\n\nIf the server are rebooted, please login as usual and run this script again."
 	if ! setupcon --force
         then
-            reboot 
+            reboot
         fi
     fi
 fi
@@ -317,7 +193,7 @@ Please delete this VM from your host and reimport it once again, then run this s
 
 [For the Nextcloud Home/SME Server:]
 It's a bit more tricky since you can't revert in the same way as with a VM. The best thing you can do now is to save all the output from the session you ran before this one + write down all the steps you took and send and email to:
-github@hanssonit.se with the subject 'Issues with first setup', and we'll take it from there. 
+github@hanssonit.se with the subject 'Issues with first setup', and we'll take it from there.
 
 Full documentation can be found here: https://docs.hanssonit.se
 Please report any bugs you find here: $ISSUES"
@@ -341,11 +217,17 @@ download_static_script setup_secure_permissions_nextcloud
 download_static_script change_db_pass
 download_static_script nextcloud
 download_static_script update-config
-download_static_script index
 download_le_script activate-ssl
-
-mv $SCRIPTS/index.php $HTML/index.php && rm -f $HTML/html/index.html
-chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
+if home_sme_server
+then
+    download_static_script nhss_index
+    mv $SCRIPTS/nhss_index.php $HTML/index.php && rm -f $HTML/html/index.html
+    chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
+else
+    download_static_script index
+    mv $SCRIPTS/index.php $HTML/index.php && rm -f $HTML/html/index.html
+    chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
+fi
 
 # Change 000-default to $WEB_ROOT
 sed -i "s|DocumentRoot /var/www/html|DocumentRoot $HTML|g" /etc/apache2/sites-available/000-default.conf
@@ -416,6 +298,9 @@ fi
 
 # Change timezone in PHP
 sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
+
+# Change timezone for logging
+occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
 
 # Check where the best mirrors are and update
 msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
@@ -504,22 +389,22 @@ do
             clear
             run_app_script fail2ban
         ;;
-        
+
         Adminer)
             clear
             run_app_script adminer
         ;;
-        
+
         Netdata)
             clear
             run_app_script netdata
         ;;
-        
+
         OnlyOffice)
             clear
             run_app_script onlyoffice
         ;;
-        
+
         Collabora)
             clear
             run_app_script collabora
@@ -529,17 +414,17 @@ do
             clear
             run_app_script tmbitwarden
         ;;
-        
+
         FullTextSearch)
             clear
            run_app_script fulltextsearch
-        ;;             
-        
+        ;;
+
         PreviewGenerator)
             clear
            run_app_script previewgenerator
         ;;
-	
+
         LDAP)
             clear
 	    print_text_in_color "$ICyan" "Installing LDAP..."
@@ -547,8 +432,8 @@ do
 	    then
 	        msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
 	    else msg_box "LDAP installation failed."
-	    fi	
-        ;;   
+	    fi
+        ;;
 
         Talk)
             clear
@@ -601,10 +486,6 @@ occ_command notification:generate -l "If you need support, please visit the shop
 a2dismod status
 restart_webserver
 
-# Increase max filesize (expects that changes are made in $PHP_INI)
-# Here is a guide: https://www.techandme.se/increase-max-file-size/
-configure_max_upload
-
 # Extra configurations
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
@@ -619,7 +500,7 @@ do
             clear
             run_static_script security
         ;;
-        
+
         "ModSecurity")
             clear
             run_static_script modsecurity
@@ -628,13 +509,13 @@ do
         "Static IP")
             clear
             run_static_script static_ip
-	    rm -f $SCRIPTS/lib.sh
+            rm -f "$SCRIPTS"/lib.sh
         ;;
-        
+
 	"Automatic updates")
             clear
             run_static_script automatic_updates
-        ;;	
+        ;;
 
         *)
         ;;
@@ -642,14 +523,24 @@ do
 done 9< results
 rm -f results
 
-# Calculate the values of PHP-FPM based on the amount of RAM available (minimum 2 GB or 8 children)
-calculate_php_fpm
+if home_sme_server
+then
+    # Add specific values to PHP-FPM based on 16 GB RAM
+    check_command sed -i "s|pm.max_children.*|pm.max_children = 307|g" $PHP_POOL_DIR/nextcloud.conf
+    check_command sed -i "s|pm.start_servers.*|pm.start_servers = 20|g" $PHP_POOL_DIR/nextcloud.conf
+    check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 30|g" $PHP_POOL_DIR/nextcloud.conf
+    check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 257|g" $PHP_POOL_DIR/nextcloud.conf
+    restart_webserver
+else
+    # Calculate the values of PHP-FPM based on the amount of RAM available (minimum 2 GB or 8 children)
+    calculate_php_fpm
 
-# Run again if values are reset on last run
-calculate_php_fpm
+    # Run again if values are reset on last run
+    calculate_php_fpm
+fi
 
 # Add temporary fix if needed
-bash $SCRIPTS/temporary-fix.sh
+bash "$SCRIPTS"/temporary-fix.sh
 rm "$SCRIPTS"/temporary-fix.sh
 
 # Cleanup 1
@@ -658,8 +549,10 @@ rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/change_db_pass.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
-rm -f "$NCDATA/nextcloud.log"
+rm -f "$VMLOGS/nextcloud.log"
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
+rm -f "$SCRIPTS/static_ip.sh"
+
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
 find "$NCPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
 sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
@@ -674,23 +567,6 @@ truncate -s 0 \
     /var/log/cronjobs_success.log
 
 sed -i "s|sudo -i||g" "/home/$UNIXUSER/.bash_profile"
-cat << RCLOCAL > "/etc/rc.local"
-#!/bin/sh -e
-#
-# rc.local
-#
-# This script is executed at the end of each multiuser runlevel.
-# Make sure that the script will "exit 0" on success or any other
-# value on error.
-#
-# In order to enable or disable this script just change the execution
-# bits.
-#
-# By default this script does nothing.
-
-exit 0
-
-RCLOCAL
 
 cat << ROOTNEWPROFILE > "/root/.bash_profile"
 # ~/.profile: executed by Bourne-compatible login shells.
@@ -732,7 +608,7 @@ apt autoremove -y
 apt autoclean
 
 # Set trusted domain in config.php
-if [ -f "$SCRIPTS"/trusted.sh ] 
+if [ -f "$SCRIPTS"/trusted.sh ]
 then
     bash "$SCRIPTS"/trusted.sh
     rm -f "$SCRIPTS"/trusted.sh
@@ -773,6 +649,7 @@ sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/g
 
 # Reboot
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
+rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 reboot
