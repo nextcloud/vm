@@ -549,7 +549,7 @@ rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/change_db_pass.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
-rm -f "$VMLOGS/nextcloud.log"
+rm -f "$NCDATA/nextcloud.log"
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 rm -f "$SCRIPTS/static_ip.sh"
 
