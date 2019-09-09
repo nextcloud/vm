@@ -190,7 +190,7 @@ do
     if [ "${RESULT:-null}" = null ]; then
             break
     else
-            print_text_in_color "$ICyan" "${PROCESS} is running. Waiting for it to stop..."
+            print_text_in_color "$ICyan" "${PROCESS} is running, waiting for it to stop..."
             sleep 10
     fi
 done
