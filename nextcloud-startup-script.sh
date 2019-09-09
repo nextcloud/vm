@@ -2,6 +2,8 @@
 
 # T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
+#########
+
 IRed='\e[0;91m'         # Red
 IGreen='\e[0;92m'       # Green
 ICyan='\e[0;96m'        # Cyan
@@ -11,6 +13,28 @@ print_text_in_color() {
 }
 
 print_text_in_color "$ICyan" "Fetching all the variables from lib.sh..."
+
+is_process_running() {
+PROCESS="$1"
+
+while :
+do
+    RESULT=$(pgrep "${PROCESS}")
+
+    if [ "${RESULT:-null}" = null ]; then
+            break
+    else
+            print_text_in_color "$ICyan" "${PROCESS} is running, waiting for it to stop..."
+            sleep 10
+    fi
+done
+}
+
+#########
+
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
 
 # Use local lib file in case there is no internet connection
 if [ -f /var/scripts/lib.sh ]
@@ -201,10 +225,6 @@ Please report any bugs you find here: $ISSUES"
 fi
 
 touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
-
-# Check if dpkg or apt is running
-is_process_running apt
-is_process_running dpkg
 
 echo
 print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
