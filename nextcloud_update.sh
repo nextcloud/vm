@@ -72,14 +72,13 @@ export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="
 if is_this_installed mysql-common
 then
     apt-mark unhold mysql*
+    print_text_in_color "$ICyan" "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
+    sleep 2
 elif is_this_installed mariadb-common
 then
     apt-mark unhold mariadb*
-fi
-
-echo
-print_text_in_color "$ICyan" "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
-sleep 2
+    print_text_in_color "$ICyan" "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
+    sleep 2
 fi
 
 # Update Netdata
