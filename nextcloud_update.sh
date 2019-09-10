@@ -432,6 +432,7 @@ if is_this_installed mysql-common
 then
     mariadb_backup
 elif is_this_installed mariadb-common
+then
     mariadb_backup
 fi
 
