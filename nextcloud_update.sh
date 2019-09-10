@@ -37,7 +37,10 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 fi
 
 # System Upgrade
-if is_this_installed mysql
+if is_this_installed mysql-common
+then
+    apt-mark hold mysql*
+elif is_this_installed mariadb-common
 then
     apt-mark hold mariadb*
 fi
@@ -66,12 +69,16 @@ fi
 
 apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-if is_this_installed mysql
+if is_this_installed mysql-common
+then
+    apt-mark unhold mysql*
+    print_text_in_color "$ICyan" "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
+    sleep 2
+elif is_this_installed mariadb-common
 then
     apt-mark unhold mariadb*
-echo
-print_text_in_color "$ICyan" "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
-sleep 2
+    print_text_in_color "$ICyan" "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
+    sleep 2
 fi
 
 # Update Netdata
@@ -395,7 +402,7 @@ LOGIN
     chmod 0600 $MYCNF
     chown root:root $MYCNF
     msg_box "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1    
+    exit 1
 elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
 then
     regressionpw=$(cat /var/mysql_password.txt)
@@ -404,7 +411,7 @@ then
     echo "password='$regressionpw'"
     } >> "$MYCNF"
     msg_box "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1    
+    exit 1
 fi
 
 # Backup MariaDB
@@ -419,7 +426,10 @@ fi
 }
 
 # Do the actual backup
-if is_this_installed mysql
+if is_this_installed mysql-common
+then
+    mariadb_backup
+elif is_this_installed mariadb-common
 then
     mariadb_backup
 fi
