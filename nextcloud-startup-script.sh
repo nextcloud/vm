@@ -570,7 +570,7 @@ rm -f "$SCRIPTS/change_db_pass.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
-rm -f "$SCRIPTS/nextcloud-startup-script.sh"
+rm -f "$VMLOGS/nextcloud.log"
 rm -f "$SCRIPTS/static_ip.sh"
 
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
@@ -671,5 +671,4 @@ sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/g
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
 rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 rm -f "$SCRIPTS/nextcloud-startup-script.sh"
-rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 reboot
