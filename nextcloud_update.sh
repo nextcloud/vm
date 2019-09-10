@@ -43,9 +43,9 @@ then
 fi
 
 # Move all logs to new dir (2019-09-04)
-if [ -d /var/log/ncvm ]
+if [ -d /var/log/ncvm/ ]
 then
-    rsync -az /var/log/ncvm/* $VMLOGS
+    rsync -az /var/log/ncvm/ $VMLOGS
     rm -Rf /var/log/ncvm/
 fi
 
