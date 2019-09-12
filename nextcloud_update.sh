@@ -421,10 +421,10 @@ fi
 }
 
 # Do the actual backup
-if is_this_installed mysql-common
+if is_this_installed mysql-common && ! is_this_installed postgresql-common
 then
     mariadb_backup
-elif is_this_installed mariadb-common
+elif is_this_installed mariadb-common && ! is_this_installed postgresql-common
 then
     mariadb_backup
 fi
