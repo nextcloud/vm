@@ -408,6 +408,9 @@ occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
 # Set versions retention obligation (save versions for 12 months or delete when space is needed)
 occ_command config:system:set versions_retention_obligation --value="auto, 365"
 
+# Remove simple signup
+occ_command config:system:set simpleSignUpLink.shown --value="false" 
+
 # Enable OPCache for PHP 
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 phpenmod opcache
