@@ -304,13 +304,6 @@ fi
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
-# Change simple signup
-if grep -rq "free account" "$NCPATH"/core/templates/layout.public.php
-then
-    sed -i "s|https://nextcloud.com/signup/|https://www.hanssonit.se/nextcloud-vm/|g" "$NCPATH"/core/templates/layout.public.php
-    sed -i "s|Get your own free account|Get your own free Nextcloud VM|g" "$NCPATH"/core/templates/layout.public.php
-fi
-
 # Major versions unsupported
 if [ "${CURRENTVERSION%%.*}" == "$NCBAD" ]
 then

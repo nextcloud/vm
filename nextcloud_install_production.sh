@@ -408,12 +408,8 @@ occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
 # Set versions retention obligation (save versions for 12 months or delete when space is needed)
 occ_command config:system:set versions_retention_obligation --value="auto, 365"
 
-# Change simple signup
-if grep -rq "free account" "$NCPATH"/core/templates/layout.public.php
-then
-    sed -i "s|https://nextcloud.com/signup/|https://www.hanssonit.se/nextcloud-vm/|g" "$NCPATH"/core/templates/layout.public.php
-    sed -i "s|Get your own free account|Get your own free Nextcloud VM|g" "$NCPATH"/core/templates/layout.public.php
-fi
+# Remove simple signup
+occ_command config:system:set simpleSignUpLink.shown --value="false" 
 
 # Enable OPCache for PHP 
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
