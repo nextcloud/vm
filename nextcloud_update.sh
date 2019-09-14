@@ -1,4 +1,9 @@
 #!/bin/bash
+
+#################################################################################################################
+# DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
+#################################################################################################################
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
