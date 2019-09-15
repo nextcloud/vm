@@ -570,7 +570,6 @@ rm -f "$SCRIPTS/change_db_pass.sh"
 rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
-rm -f "$VMLOGS/nextcloud.log"
 rm -f "$SCRIPTS/static_ip.sh"
 
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
@@ -584,7 +583,8 @@ truncate -s 0 \
     "/var/spool/mail/$UNIXUSER" \
     /var/log/apache2/access.log \
     /var/log/apache2/error.log \
-    /var/log/cronjobs_success.log
+    /var/log/cronjobs_success.log \
+    "$VMLOGS/nextcloud.log
 
 sed -i "s|sudo -i||g" "/home/$UNIXUSER/.bash_profile"
 
