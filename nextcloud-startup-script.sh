@@ -661,7 +661,7 @@ TIPS & TRICKS:
 
 4. Change IP to something outside DHCP: sudo nano /etc/netplan/01-netcfg.yaml
 
-5. For a better experiance it's a good idea to setup an email account here:
+5. For a better experience it's a good idea to setup an email account here:
    https://yourcloud.xyz/settings/admin"
 
 # Prefer IPv6
