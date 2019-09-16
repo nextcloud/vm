@@ -407,7 +407,7 @@ restart_webserver() {
 check_command systemctl restart apache2
 if is_this_installed php"$PHPVER"-fpm
 then
-    check_command systemctl restart php"$PHPVER"-fpm.service
+    systemctl restart php"$PHPVER"-fpm.service
 fi
 
 }
