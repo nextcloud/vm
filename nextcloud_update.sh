@@ -54,7 +54,7 @@ fi
 # Move all logs to new dir (2019-09-04)
 if [ -d /var/log/ncvm/ ]
 then
-    rsync -az /var/log/ncvm/ $VMLOGS
+    rsync -Aaxz /var/log/ncvm/ $VMLOGS
     rm -Rf /var/log/ncvm/
 fi
 
@@ -441,7 +441,7 @@ if [ -d "$BACKUP" ]
 then
     mkdir -p "$BACKUP"-OLD/"$DATE"
     install_if_not rsync
-    rsync -avz --progress "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
+    rsync -Aaxz --progress "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
     rm -R "$BACKUP"
     mkdir -p "$BACKUP"
 fi
@@ -461,7 +461,7 @@ fi
 # Backup data
 for folders in config apps
 do
-    if [[ "$(rsync -Aax $NCPATH/$folders $BACKUP)" -eq 0 ]]
+    if [[ "$(rsync -Aaxz $NCPATH/$folders $BACKUP)" -eq 0 ]]
     then
         BACKUP_OK=1
     else
