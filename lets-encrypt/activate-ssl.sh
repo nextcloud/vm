@@ -117,7 +117,7 @@ then
     cat << SSL_CREATE > "$ssl_conf"
 <VirtualHost *:80>
     ServerName $domain
-    Redirect / https://$domain
+    Redirect / https://$domain/
 </VirtualHost>
 
 <VirtualHost *:443>
