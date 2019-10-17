@@ -346,7 +346,7 @@ then
     then
 msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
 
-If you need support, please visit https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
         exit
     fi
 fi
