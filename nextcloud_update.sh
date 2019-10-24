@@ -309,6 +309,14 @@ fi
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
+if [ -f /tmp/minor.version ]
+then
+    NCBAD=$(cat minor.version)
+    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
+    export NCVERSION
+    rm -f /tmp/minor.version
+fi
+
 # Major versions unsupported
 if [[ "${CURRENTVERSION%%.*}" -le "$NCBAD" ]]
 then
