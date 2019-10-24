@@ -18,6 +18,11 @@ root_check
 
 mkdir -p "$SCRIPTS"
 
+if [ "${1}" = "minor" ]
+then
+    echo "$((NCMAJOR-1))" > /tmp/minor.version
+fi
+
 # Delete, download, run
 run_main_script nextcloud_update
 
