@@ -312,6 +312,7 @@ lowest_compatible_nc 13
 if [ -f /tmp/minor.version ]
 then
     NCBAD=$(cat minor.version)
+    export NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
     rm -f /tmp/minor.version
 fi
 
