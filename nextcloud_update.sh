@@ -309,6 +309,12 @@ fi
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
+if [ -f /tmp/minor.version ]
+then
+    NCBAD=$(cat minor.version)
+    rm -f /tmp/minor.version
+fi
+
 # Major versions unsupported
 if [[ "${CURRENTVERSION%%.*}" -le "$NCBAD" ]]
 then
