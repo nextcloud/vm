@@ -310,7 +310,7 @@ fi
 lowest_compatible_nc 13
 
 # Major versions unsupported
-if [ "${CURRENTVERSION%%.*}" == "$NCBAD" ]
+if [[ "${CURRENTVERSION%%.*}" -le "$NCBAD" ]]
 then
 msg_box "Please note that updates between multiple major versions are unsupported! Your situation is:
 Current version: $CURRENTVERSION
