@@ -314,6 +314,7 @@ then
     NCBAD=$(cat minor.version)
     NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
     export NCVERSION
+    export STABLEVERSION="nextcloud-$NCVERSION"
     rm -f /tmp/minor.version
 fi
 
