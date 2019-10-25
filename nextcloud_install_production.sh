@@ -68,7 +68,7 @@ then
     else
         dpkg-reconfigure keyboard-configuration
         msg_box "The server will now be rebooted to apply the new keyboard settings. Please run this script again once rebooted."
-	reboot
+        reboot
     fi
 fi
 
@@ -94,7 +94,7 @@ download_static_script adduser
 bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
 rm -f $SCRIPTS/adduser.sh
 
-# Check distrobution and version
+# Check distribution and version
 check_distro_version
 check_universe
 check_multiverse
@@ -159,7 +159,7 @@ choice=$(< results)
         ;;
         "1 Disk")
             print_text_in_color "$IRed" "1 Disk setup chosen."
-	    sleep 2
+            sleep 2
         ;;
         *)
         ;;
@@ -658,18 +658,18 @@ do
         PDFViewer)
             install_and_enable_app files_pdfviewer
         ;;
-	Extract)
+        Extract)
             if install_and_enable_app extract
-	    then
-	        install_if_not unrar
-	        install_if_not p7zip
-	        install_if_not p7zip-full
-	    fi
-	;;
-	Text)
+            then
+                install_if_not unrar
+                install_if_not p7zip
+                install_if_not p7zip-full
+            fi
+        ;;
+        Text)
             install_and_enable_app text
         ;;
-	Mail)
+        Mail)
             install_and_enable_app mail
         ;;
         Webmin)
