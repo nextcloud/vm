@@ -375,6 +375,37 @@ Please open port 80 and 443 to this servers IP before you continue.
 More information can be found here:
 https://www.techandme.se/open-port-80-443/"
 
+# Extra configurations
+whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
+"Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 2>results
+
+while read -r -u 9 choice
+do
+    case $choice in
+        "Security")
+            clear
+            run_static_script security
+        ;;
+	
+        "Static IP")
+            clear
+            run_static_script static_ip
+            rm -f "$SCRIPTS"/lib.sh
+        ;;
+
+	"Automatic updates")
+            clear
+            run_static_script automatic_updates
+        ;;
+
+        *)
+        ;;
+    esac
+done 9< results
+rm -f results
+
 # Let's Encrypt
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
@@ -502,37 +533,6 @@ occ_command notification:generate -l "If you need support, please visit the shop
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
 restart_webserver
-
-# Extra configurations
-whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
-"Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
-"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 2>results
-
-while read -r -u 9 choice
-do
-    case $choice in
-        "Security")
-            clear
-            run_static_script security
-        ;;
-	
-        "Static IP")
-            clear
-            run_static_script static_ip
-            rm -f "$SCRIPTS"/lib.sh
-        ;;
-
-	"Automatic updates")
-            clear
-            run_static_script automatic_updates
-        ;;
-
-        *)
-        ;;
-    esac
-done 9< results
-rm -f results
 
 if home_sme_server
 then
