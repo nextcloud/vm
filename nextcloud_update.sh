@@ -311,7 +311,7 @@ lowest_compatible_nc 13
 
 if [ -f /tmp/minor.version ]
 then
-    NCBAD=$(cat minor.version)
+    NCBAD=$(cat /tmp/minor.version)
     NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
     export NCVERSION
     export STABLEVERSION="nextcloud-$NCVERSION"
@@ -541,11 +541,11 @@ then
             then
                 curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "/root"
                 if [ -f /root/bitwarden.sh ]
-                    then
-                        print_text_in_color "$IGreen" "Upgrading Bitwarden..."
-                        sleep 2
-                        bash /root/bitwarden.sh updateself
-                        bash /root/bitwarden.sh update
+                then
+                    print_text_in_color "$IGreen" "Upgrading Bitwarden..."
+                    sleep 2
+                    bash /root/bitwarden.sh updateself
+                    bash /root/bitwarden.sh update
                 fi
             fi
         fi
