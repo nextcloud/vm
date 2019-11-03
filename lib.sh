@@ -86,8 +86,9 @@ HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # PHP-FPM
 PHPVER=7.2
-PHP_INI=/etc/php/$PHPVER/fpm/php.ini
-PHP_POOL_DIR=/etc/php/$PHPVER/fpm/pool.d
+PHP_FPM_DIR=/etc/php/$PHPVER/fpm
+PHP_INI=$PHP_FPM/php.ini
+PHP_POOL_DIR=$PHP_FPM/pool.d
 # Adminer
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
