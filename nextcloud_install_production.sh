@@ -432,6 +432,17 @@ sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /et
 sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
 
+# PostgreSQL values for PHP (https://docs.nextcloud.com/server/latest/admin_manual/configuration_database/linux_database_configuration.html#postgresql-database)
+{
+echo ""
+echo "[PostgresSQL]"
+echo "pgsql.allow_persistent = On"
+echo "pgsql.auto_reset_persistent = Off"
+echo "pgsql.max_persistent = -1"
+echo "pgsql.max_links = -1"
+echo "pgsql.ignore_notice = 0"
+echo "pgsql.log_notice = 0"
+} >> /etc/php/$PHPVER/fpm/conf.d/20-pdo_pgsql.ini
 
 # Install Redis (distrubuted cache)
 run_static_script redis-server-ubuntu
