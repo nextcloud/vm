@@ -442,7 +442,7 @@ echo "pgsql.max_persistent = -1"
 echo "pgsql.max_links = -1"
 echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
-} >> /etc/php/$PHPVER/fpm/conf.d/20-pdo_pgsql.ini
+} >> $PHP_FPM_DIR/conf.d/20-pdo_pgsql.ini
 
 # Install Redis (distrubuted cache)
 run_static_script redis-server-ubuntu
