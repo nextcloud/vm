@@ -687,7 +687,8 @@ run_main_script() {
         rm -f "${SCRIPTS}/${1}.php"
     elif curl_to_dir "${GITHUB_REPO}" "${1}.py" "$SCRIPTS"
     then
-        python3.6 "${SCRIPTS}/${1}.py"
+        install_if_not python3
+        python3 "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$IRed" "Downloading ${1} failed"
@@ -711,7 +712,8 @@ run_static_script() {
         rm -f "${SCRIPTS}/${1}.php"
     elif curl_to_dir "${STATIC}" "${1}.py" "$SCRIPTS"
     then
-        python3.6 "${SCRIPTS}/${1}.py"
+        install_if_not python3
+        python3 "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$IRed" "Downloading ${1} failed"
@@ -734,7 +736,8 @@ run_app_script() {
         rm -f "${SCRIPTS}/${1}.php"
     elif curl_to_dir "${APP}" "${1}.py" "$SCRIPTS"
     then
-        python3.6 "${SCRIPTS}/${1}.py"
+        install_if_not python3
+        python3 "${SCRIPTS}/${1}.py"
         rm -f "${SCRIPTS}/${1}.py"
     else
         print_text_in_color "$IRed" "Downloading ${1} failed"

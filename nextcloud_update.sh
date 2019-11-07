@@ -558,7 +558,6 @@ fi
 start_if_stopped apache2
 
 # Recover apps that exists in the backed up apps folder
-install_if_not python3.6
 run_static_script recover_apps
 
 # Enable Apps
