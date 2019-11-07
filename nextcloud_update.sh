@@ -450,7 +450,7 @@ if [ -d "$BACKUP" ]
 then
     mkdir -p "$BACKUP"-OLD/"$DATE"
     install_if_not rsync
-    rsync -Aaxz --progress "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
+    rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
     rm -R "$BACKUP"
     mkdir -p "$BACKUP"
 fi
@@ -510,13 +510,15 @@ if [ -d $BACKUP/apps/ ]
 then
     print_text_in_color "$ICyan" "$BACKUP/apps/ exists"
     echo 
-    printf "${IGreen}All files are backed up.${Color_Off}\n"
+    print_text_in_color "$IGreen" "All files are backed up."
     occ_command maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
+    print_text_in_color "$ICyan" "Extracting new package...."
     tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
     rm "$HTML/$STABLEVERSION.tar.bz2"
-    cp -R $BACKUP/config "$NCPATH"/
+    print_text_in_color "$ICyan" "Restoring config to Nextcloud..."
+    rsync -Aaxz $BACKUP/config "$NCPATH"/
     bash $SECURE & spinner_loading
     occ_command maintenance:mode --off
     occ_command upgrade
