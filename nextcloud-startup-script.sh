@@ -287,7 +287,7 @@ msg_box "Please note:
 
 [#] The script will take about 10 minutes to finish, depending on your internet connection.
 
-[#] Please read the on-screen insructions carefully, they will guide you through the setup.
+[#] Please read the on-screen instructions carefully, they will guide you through the setup.
 
 [#] When complete it will delete all the *.sh, *.html, *.tar, *.zip inside:
     /root
