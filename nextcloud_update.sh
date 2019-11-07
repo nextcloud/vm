@@ -514,10 +514,10 @@ then
     occ_command maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
-    print_text_in_color "$ICyan" "Extracting new package...."
+    print_text_in_color "$IGreen" "Extracting new package...."
     tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
     rm "$HTML/$STABLEVERSION.tar.bz2"
-    print_text_in_color "$ICyan" "Restoring config to Nextcloud..."
+    print_text_in_color "$IGreen" "Restoring config to Nextcloud..."
     rsync -Aaxz $BACKUP/config "$NCPATH"/
     bash $SECURE & spinner_loading
     occ_command maintenance:mode --off
@@ -558,6 +558,7 @@ fi
 start_if_stopped apache2
 
 # Recover apps that exists in the backed up apps folder
+install_if_not python3.6
 run_static_script recover_apps
 
 # Enable Apps
