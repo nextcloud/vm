@@ -298,9 +298,9 @@ min_start_servers=20
 min_max_spare_servers=35
 
 # Calculate the sum of the current values
-CURRENT_START="$(grep pm.start_servers "$PHP_POOL_DIR"/nextcloud.conf | awk '{ print $3}')"
-CURRENT_MAX="$(grep pm.max_spare_servers "$PHP_POOL_DIR"/nextcloud.conf | awk '{ print $3}')"
-CURRENT_MIN="$(grep pm.min_spare_servers "$PHP_POOL_DIR"/nextcloud.conf | awk '{ print $3}')"
+CURRENT_START="$(grep pm.start_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')"
+CURRENT_MAX="$(grep pm.max_spare_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')"
+CURRENT_MIN="$(grep pm.min_spare_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')"
 CURRENT_SUM="$((CURRENT_START + CURRENT_MAX + CURRENT_MIN))"
 
 # Calculate max_children depending on RAM
@@ -332,7 +332,7 @@ The installation was not successful, sorry for the inconvenience.
 If you think this is a bug, please report it to $ISSUES"
 exit 1
 else
-    check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" "$PHP_POOL_DIR"/nextcloud.conf
+    check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" $PHP_POOL_DIR/nextcloud.conf
     print_text_in_color "$IGreen" "pm.max_children was set to $PHP_FPM_MAX_CHILDREN"
     # Check if the sum of all the current values are more than $PHP_FPM_MAX_CHILDREN and only continue it is
     if [ $PHP_FPM_MAX_CHILDREN -gt $CURRENT_SUM ]
@@ -340,9 +340,9 @@ else
         # Set pm.max_spare_servers
         if [ $PHP_FPM_MAX_CHILDREN -ge $min_max_spare_servers ]
         then
-            if [ "$(grep pm.start_servers "$PHP_POOL_DIR"/nextcloud.conf | awk '{ print $3}')" -lt $min_start_servers ]
+            if [ "$(grep pm.start_servers $PHP_POOL_DIR/nextcloud.conf | awk '{ print $3}')" -lt $min_start_servers ]
             then
-                check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = $((PHP_FPM_MAX_CHILDREN - 30))|g" "$PHP_POOL_DIR"/nextcloud.conf
+                check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = $((PHP_FPM_MAX_CHILDREN - 30))|g" $PHP_POOL_DIR/nextcloud.conf
                 print_text_in_color "$IGreen" "pm.max_spare_servers was set to $((PHP_FPM_MAX_CHILDREN - 30))"
             fi
         fi
@@ -352,10 +352,10 @@ fi
 # If $PHP_FPM_MAX_CHILDREN is lower than the current sum of all values, revert to default settings
 if [ $PHP_FPM_MAX_CHILDREN -lt $CURRENT_SUM ]
 then
-    check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" "$PHP_POOL_DIR"/nextcloud.conf
-    check_command sed -i "s|pm.start_servers.*|pm.start_servers = 3|g" "$PHP_POOL_DIR"/nextcloud.conf
-    check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 2|g" "$PHP_POOL_DIR"/nextcloud.conf
-    check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 3|g" "$PHP_POOL_DIR"/nextcloud.conf
+    check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" $PHP_POOL_DIR/nextcloud.conf
+    check_command sed -i "s|pm.start_servers.*|pm.start_servers = 3|g" $PHP_POOL_DIR/nextcloud.conf
+    check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 2|g" $PHP_POOL_DIR/nextcloud.conf
+    check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 3|g" $PHP_POOL_DIR/nextcloud.conf
     print_text_in_color "$ICyan" "All PHP-INI values were set back to default values as the value for pm.max_children ($PHP_FPM_MAX_CHILDREN) was lower than the sum of all the current values ($CURRENT_SUM)"
     print_text_in_color "$ICyan" "Please run this again to set optimal values"
 fi
