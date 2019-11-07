@@ -295,7 +295,7 @@ a2enmod http2
 restart_webserver
 
 # Set up a php-fpm pool with a unixsocket
-cat << POOL_CONF > "$PHP_POOL_DIR/nextcloud.conf"
+cat << POOL_CONF > "$PHP_POOL_DIR"/nextcloud.conf
 [Nextcloud]
 user = www-data
 group = www-data
@@ -321,7 +321,7 @@ php_admin_value [cgi.fix_pathinfo] = 1
 POOL_CONF
 
 # Disable the idling example pool.
-mv $PHP_POOL_DIR/www.conf $PHP_POOL_DIR/www.conf.backup
+mv "$PHP_POOL_DIR"/www.conf "$PHP_POOL_DIR"/www.conf.backup
 
 # Enable the new php-fpm config
 restart_webserver
@@ -375,15 +375,15 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
-sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" $PHP_INI
+sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" "$PHP_INI"
 # max_input_time
-sed -i "s|max_input_time =.*|max_input_time = 3600|g" $PHP_INI
+sed -i "s|max_input_time =.*|max_input_time = 3600|g" "$PHP_INI"
 # memory_limit
-sed -i "s|memory_limit =.*|memory_limit = 512M|g" $PHP_INI
+sed -i "s|memory_limit =.*|memory_limit = 512M|g" "$PHP_INI"
 # post_max
-sed -i "s|post_max_size =.*|post_max_size = 1100M|g" $PHP_INI
+sed -i "s|post_max_size =.*|post_max_size = 1100M|g" "$PHP_INI"
 # upload_max
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" $PHP_INI
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" "$PHP_INI"
 
 # Set loggging
 occ_command config:system:set log_type --value=file
@@ -424,7 +424,7 @@ echo "opcache.memory_consumption=256"
 echo "opcache.save_comments=1"
 echo "opcache.revalidate_freq=1"
 echo "opcache.validate_timestamps=1"
-} >> $PHP_INI
+} >> "$PHP_INI"
 
 # PHP-FPM optimization
 # https://geekflare.com/php-fpm-optimization/
@@ -442,7 +442,7 @@ echo "pgsql.max_persistent = -1"
 echo "pgsql.max_links = -1"
 echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
-} >> /etc/php/$PHPVER/fpm/conf.d/20-pdo_pgsql.ini
+} >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
 # Install Redis (distrubuted cache)
 run_static_script redis-server-ubuntu
@@ -463,7 +463,7 @@ echo "# igbinary for PHP"
 echo "extension=igbinary.so"
 echo "session.serialize_handler=igbinary"
 echo "igbinary.compact_strings=On"
-} >> $PHP_INI
+} >> "$PHP_INI"
 restart_webserver
 fi
 
@@ -494,7 +494,7 @@ echo "apc.use_request_time=1"
 echo "apc.serializer=igbinary"
 echo "apc.coredump_unmap=0"
 echo "apc.preload_path"
-} >> $PHP_INI
+} >> "$PHP_INI"
 restart_webserver
 fi
 
