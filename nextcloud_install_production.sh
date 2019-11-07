@@ -295,7 +295,7 @@ a2enmod http2
 restart_webserver
 
 # Set up a php-fpm pool with a unixsocket
-cat << POOL_CONF > "$PHP_POOL_DIR"/nextcloud.conf"
+cat << POOL_CONF > "$PHP_POOL_DIR"/nextcloud.conf
 [Nextcloud]
 user = www-data
 group = www-data
