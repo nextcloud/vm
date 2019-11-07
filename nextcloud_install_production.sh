@@ -295,7 +295,7 @@ a2enmod http2
 restart_webserver
 
 # Set up a php-fpm pool with a unixsocket
-cat << POOL_CONF > ""$PHP_POOL_DIR"/nextcloud.conf"
+cat << POOL_CONF > "$PHP_POOL_DIR"/nextcloud.conf"
 [Nextcloud]
 user = www-data
 group = www-data
@@ -442,7 +442,7 @@ echo "pgsql.max_persistent = -1"
 echo "pgsql.max_links = -1"
 echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
-} >> $PHP_FPM_DIR/conf.d/20-pdo_pgsql.ini
+} >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
 # Install Redis (distrubuted cache)
 run_static_script redis-server-ubuntu

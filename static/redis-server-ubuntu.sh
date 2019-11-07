@@ -37,7 +37,7 @@ fi
 install_if_not redis-server
 
 # Setting direct to PHP-FPM as it's installed with PECL (globally doesn't work)
-print_text_in_color "$ICyan" "Adding extension=redis.so to "$PHP_INI"..."
+print_text_in_color "$ICyan" "Adding extension=redis.so to $PHP_INI..."
 echo 'extension=redis.so' >> "$PHP_INI"
 
 # Prepare for adding redis configuration
