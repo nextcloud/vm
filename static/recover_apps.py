@@ -1,10 +1,10 @@
-import glob, json, os, subprocess, urllib.request
+import glob, json, os, subprocess, requests
 
 nc_path      = '/var/www/nextcloud/apps/'
 backup_path  = '/var/NCBACKUP/apps/'
 shipped_url  = 'http://raw.githubusercontent.com/nextcloud/server/master/core/shipped.json'
 
-json_data    = json.load(urllib.request.urlopen(shipped_url))
+json_data    = requests.get(shipped_url, timeout=5).json()
 shipped_apps = json_data['shippedApps'] + json_data['alwaysEnabled']
 
 installed_dirs = set(os.path.basename(path) for path in glob.glob(backup_path + '*'))
