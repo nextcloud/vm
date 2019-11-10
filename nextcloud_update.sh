@@ -380,7 +380,7 @@ then
 fi
 
 # Backup PostgreSQL
-if is_this_installed psql
+if is_this_installed postgresql-common
 then
     cd /tmp
     if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
