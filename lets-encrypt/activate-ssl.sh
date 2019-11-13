@@ -129,8 +129,6 @@ then
     SSLHonorCipherOrder on
     SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
     SSLSessionTickets off
-    SSLUseStapling On
-    SSLStaplingCache "shmcb:logs/ssl_stapling(32768)"
     
 ### YOUR SERVER ADDRESS ###
 
@@ -184,6 +182,10 @@ then
     SSLOpenSSLConfCmd DHParameters $DHPARAMS
 
 </VirtualHost>
+
+### EXTRAS ###
+    SSLUseStapling On
+    SSLStaplingCache "shmcb:logs/ssl_stapling(32768)"
 SSL_CREATE
 fi
 
