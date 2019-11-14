@@ -557,6 +557,16 @@ fi
 # Start Apache2
 start_if_stopped apache2
 
+# Just double check if the DB is started as well
+if is_this_installed postgresql-common
+then
+    if ! pgrep postgres >/dev/null 2>&1
+    then
+        print_text_in_color "$ICyan" "Starting PostgreSQL..."
+        check_command service postgresql start
+    fi
+fi
+
 # Recover apps that exists in the backed up apps folder
 run_static_script recover_apps
 
