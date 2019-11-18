@@ -563,6 +563,7 @@ check_command() {
 
 # Example: occ_command 'maintenance:mode --on'
 occ_command() {
+update-alternatives --set php /usr/bin/php"$PHPVER"
 check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
