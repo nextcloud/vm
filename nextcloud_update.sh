@@ -382,15 +382,22 @@ fi
 # Backup PostgreSQL
 if is_this_installed postgresql-common
 then
-    cd /tmp
-    if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
+    if pgrep postgres >/dev/null 2>&1
     then
-        print_text_in_color "$ICyan" "Doing pgdump of $NCCONFIGDB..."
-        check_command sudo -u postgres pg_dump "$NCCONFIGDB"  > "$BACKUP"/nextclouddb.sql
-    else
-        print_text_in_color "$ICyan" "Doing pgdump of all databases..."
-        check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.sql
+        print_text_in_color "$ICyan" "Stopping PostgreSQL..."
+        check_command service postgresql stop
     fi
+        cd /tmp
+        if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep "1 row" > /dev/null
+        then
+            print_text_in_color "$ICyan" "Doing pgdump of $NCCONFIGDB..."
+            check_command sudo -u postgres pg_dump "$NCCONFIGDB"  > "$BACKUP"/nextclouddb.sql
+        else
+            print_text_in_color "$ICyan" "Doing pgdump of all databases..."
+            check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.sql
+        fi
+    print_text_in_color "$ICyan" "Starting PostgreSQL..."
+    check_command service postgresql start
 fi
 
 # If MariaDB then:
