@@ -5,6 +5,15 @@
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
+# Install curl if not existing
+if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "curl OK"
+else
+    apt update -q4
+    apt install curl -y
+fi
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -13,15 +22,6 @@ true
 # Check if dpkg or apt is running
 is_process_running apt
 is_process_running dpkg
-
-# Install curl if not existing
-if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    print_text_in_color "$IGreen" "curl OK"
-else
-    apt update -q4 & spinner_loading
-    apt install curl -y
-fi
 
 # Install lshw if not existing
 if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
