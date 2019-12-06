@@ -134,7 +134,7 @@ lowest_compatible_nc 16
 # Check that this run on the PostgreSQL VM
 if ! is_this_installed postgresql-10
 then
-    print_text_in_color "$IRed" "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
+    print_text_in_color "$IRed" "This script is intended to be run using a PostgreSQL database, but PostgreSQL is not installed."
     print_text_in_color "$IRed" "Aborting..."
     exit 1
 fi
