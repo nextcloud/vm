@@ -369,15 +369,6 @@ check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 clear
 
-msg_box "The following script will install a trusted
-SSL certificate through Let's Encrypt.
-
-It's recommended to use SSL together with Nextcloud.
-Please open port 80 and 443 to this servers IP before you continue.
-
-More information can be found here:
-https://www.techandme.se/open-port-80-443/"
-
 # Extra configurations
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
@@ -410,6 +401,15 @@ done 9< results
 rm -f results
 
 # Let's Encrypt
+msg_box "The following script will install a trusted
+SSL certificate through Let's Encrypt.
+
+It's recommended to use SSL together with Nextcloud.
+Please open port 80 and 443 to this servers IP before you continue.
+
+More information can be found here:
+https://www.techandme.se/open-port-80-443/"
+
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
     bash $SCRIPTS/activate-ssl.sh
