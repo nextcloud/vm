@@ -171,6 +171,9 @@ then
 elif [ "$KEYBOARD_LAYOUT" = "fr" ]
 then
     sudo locale-gen "fr_FR.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+elif [ "$KEYBOARD_LAYOUT" = "ch" ]
+then
+    sudo locale-gen "de_CH.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 fi
 
 # Is this run as a pure root user?
