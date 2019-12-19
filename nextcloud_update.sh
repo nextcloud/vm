@@ -51,6 +51,12 @@ then
     fi
 fi
 
+# Hold PHP due to max supported version in Nextcloud
+if is_this_installed php7.3-common
+then
+    apt-mark hold php*
+fi
+
 # Move all logs to new dir (2019-09-04)
 if [ -d /var/log/ncvm/ ]
 then
