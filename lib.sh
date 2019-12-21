@@ -979,7 +979,7 @@ fi
 home_sme_server() {
 if lshw -c system | grep -q NUC8i3BEH
 then
-    if lshw -c memory | grep -q BLS16G4S240FSD.16FBD
+    if lshw -c memory | grep -q BLS16G4
     then
         if lshw -c disk | grep -q ST2000LM015-2E81
         then

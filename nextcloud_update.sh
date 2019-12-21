@@ -51,6 +51,12 @@ then
     fi
 fi
 
+# Hold PHP due to max supported version in Nextcloud
+if is_this_installed php7.3-common
+then
+    apt-mark hold php*
+fi
+
 # Move all logs to new dir (2019-09-04)
 if [ -d /var/log/ncvm/ ]
 then
@@ -329,6 +335,8 @@ It is best to keep your Nextcloud server upgraded regularly, and to install all 
 and major releases without skipping any of them, as skipping releases increases the risk of
 errors. Major releases are 13, 14, 15 and 16. Point releases are intermediate releases for each
 major release. For example, 14.0.52 and 15.0.2 are point releases.
+
+You can read more about Nextcloud releases here: https://github.com/nextcloud/server/wiki/Maintenance-and-Release-Schedule
 
 Please contact T&M Hansson IT AB to help you with upgrading between major versions.
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"

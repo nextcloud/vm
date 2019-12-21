@@ -134,7 +134,7 @@ lowest_compatible_nc 16
 # Check that this run on the PostgreSQL VM
 if ! is_this_installed postgresql-10
 then
-    print_text_in_color "$IRed" "This script is intended to be run on then PostgreSQL VM but PostgreSQL is not installed."
+    print_text_in_color "$IRed" "This script is intended to be run using a PostgreSQL database, but PostgreSQL is not installed."
     print_text_in_color "$IRed" "Aborting..."
     exit 1
 fi
@@ -168,6 +168,12 @@ then
 elif [ "$KEYBOARD_LAYOUT" = "us" ]
 then
     sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+elif [ "$KEYBOARD_LAYOUT" = "fr" ]
+then
+    sudo locale-gen "fr_FR.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+elif [ "$KEYBOARD_LAYOUT" = "ch" ]
+then
+    sudo locale-gen "de_CH.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 fi
 
 # Is this run as a pure root user?
@@ -366,15 +372,6 @@ check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 clear
 
-msg_box "The following script will install a trusted
-SSL certificate through Let's Encrypt.
-
-It's recommended to use SSL together with Nextcloud.
-Please open port 80 and 443 to this servers IP before you continue.
-
-More information can be found here:
-https://www.techandme.se/open-port-80-443/"
-
 # Extra configurations
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
@@ -407,6 +404,15 @@ done 9< results
 rm -f results
 
 # Let's Encrypt
+msg_box "The following script will install a trusted
+SSL certificate through Let's Encrypt.
+
+It's recommended to use SSL together with Nextcloud.
+Please open port 80 and 443 to this servers IP before you continue.
+
+More information can be found here:
+https://www.techandme.se/open-port-80-443/"
+
 if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
 then
     bash $SCRIPTS/activate-ssl.sh

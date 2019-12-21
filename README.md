@@ -51,6 +51,29 @@ NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+
 STABLEVERSION="nextcloud-$NCVERSION"
 ```
 
+## Vagrant example (Alpha)
+Apperantly the install script is possible to run straight up via Vagrant. This is the file that a user posted:
+```
+vagrant init
+vim Vagrantfile
+# Change the box to `ubuntu/bionic64`
+  config.vm.box = "ubuntu/bionic64"
+# Add a public IP: you can either do this, a local IP, or port forward
+  config.vm.network "public_network", ip: "192.168.1.99", bridge: "en1"
+# Increase memory to 2 GB (this is for virtualbox, see documentation for other providers)
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+  end
+# start up the box
+vagrant up
+# SSH in, clone vm repo, and run script
+vagrant ssh
+git clone https://github.com/nextcloud/vm.git
+cd vm
+yes no | sudo bash nextcloud_install_production.sh
+```
+Though I (@enoch85) haven't tested this yet, so testing and reporting is welcome! What I think will happen without having tested it, is that the different questions will be skipped, but I'm not sure about which questions, and the outcome. So if someone could please try this and post the debug output that would be awesome!
+
 ## First look
 ![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
 

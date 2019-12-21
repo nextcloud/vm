@@ -37,7 +37,7 @@ Tell us what happens instead
 ################  Please use https://0bin.net for long error messages or logs. Thanks! ################
 -->
 
-#### Log file (/mnt/ncdata/nextcloud.log)
+#### Log file (/var/log/nextcloud/nextcloud.log)
 ```
 Insert your nextcloud.log file here
 ```
