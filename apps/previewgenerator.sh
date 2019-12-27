@@ -91,9 +91,16 @@ then
     crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
-        
-    # Pre generate everything
-    occ_command preview:generate-all
+    
+    msg_box "Do you want to install the previewgerator?"
+    if [[ "no" == $(ask_yes_or_no "Do you want to run the previewgenerator now? If you choose no: then you have to do it manually before the cronjob can continue.") ]]
+    then
+        exit
+    else
+        # Pre generate everything
+        occ_command preview:generate-all
+    fi
+
 fi
 
 exit
