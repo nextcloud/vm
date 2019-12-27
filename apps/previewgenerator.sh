@@ -16,14 +16,33 @@ debug_mode
 # Check if root
 root_check
 
-msg_box "Please note that this will put your server at risk as it will install a package called 'imagick' which is known to have several flaws.
+msg_box "Do you want to install the previewgerator?"
+if [[ "no" == $(ask_yes_or_no "Do you still want to continue?") ]]
+then
+    exit
+else
+    sleep 1
+fi
+
+msg_box "In the next step you can choose to install a package called "imagick" to speed up the generation of previews and get support for many filetypes. 
+
+Please note that this will put your server at risk as "imagick" is known to have several flaws.
 
 You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743
 
 You can choose to cancel installing this in the next step."
-if [[ "no" == $(ask_yes_or_no "Do you still want to continue?") ]]
+if [[ "no" == $(ask_yes_or_no "Do you want to install imagick?") ]]
 then
-    exit
+    if [[ "no" == $(ask_yes_or_no "Do you still want to continue?") ]]
+        then
+            exit
+        else
+            # Install needed dependencies
+            
+            install_if_not ffmpeg
+            install_if_not libreoffice
+            install_if_not php-imagick
+            install_if_not libmagickcore-6.q16-3-extra
 else
     sleep 1
 fi
@@ -72,13 +91,7 @@ then
     crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
-    
-    # Install needed dependencies
-    install_if_not ffmpeg
-    install_if_not libreoffice
-    install_if_not php-imagick
-    install_if_not libmagickcore-6.q16-3-extra
-    
+        
     # Pre generate everything
     occ_command preview:generate-all
 fi
