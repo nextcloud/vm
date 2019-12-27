@@ -92,8 +92,10 @@ then
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
     
-    msg_box "Do you want to install the previewgerator?"
-    if [[ "no" == $(ask_yes_or_no "Do you want to run the previewgenerator now? If you choose no: then you have to do it manually before the cronjob can continue.") ]]
+    msg_box "In the last step you can choose to run the previewgenerator now. 
+    
+    Please note: If you choose not to do so, then you have to do it manually before the cronjob can continue."
+    if [[ "no" == $(ask_yes_or_no "Do you want to run the previewgenerator now?") ]]
     then
         exit
     else
