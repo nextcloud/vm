@@ -60,9 +60,13 @@ then
 #    occ_command config:system:set enabledPreviewProviders 20 --value="OC\\Preview\\Font"
     
     # Set aspect ratio
-    occ_command config:app:set --value="32 64 1024"  previewgenerator squareSizes
-    occ_command config:app:set --value="64 128 1024" previewgenerator widthSizes
-    occ_command config:app:set --value="64 256 1024" previewgenerator heightSizes
+    occ_command config:app:set previewgenerator squareSizes --value="32 256"
+    occ_command config:app:set previewgenerator widthSizes  --value="256 384"
+    occ_command config:app:set previewgenerator heightSizes --value="256"
+    occ_command config:system:set preview_max_x --value="2048"
+    occ_command config:system:set preview_max_y --value="2048"
+    occ_command config:system:set jpeg_quality --value="60"
+    occ_command config:app:set preview jpeg_quality --value="60"
     
     # Add crotab
     crontab -u www-data -l | { cat; echo "@daily php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
