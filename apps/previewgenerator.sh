@@ -16,8 +16,8 @@ debug_mode
 # Check if root
 root_check
 
-msg_box "Do you want to install the previewgerator?"
-if [[ "no" == $(ask_yes_or_no "Do you still want to continue?") ]]
+msg_box "This script will install the previewgerator. It can speedup the "feel" of Nextcloud by a lot."
+if [[ "no" == $(ask_yes_or_no "So do you want to install the previewgenerator?") ]]
 then
     exit
 else
@@ -43,8 +43,8 @@ then
             install_if_not libreoffice
             install_if_not php-imagick
             install_if_not libmagickcore-6.q16-3-extra
-else
-    sleep 1
+    else
+        sleep 1
 fi
 
 # Install preview generator
