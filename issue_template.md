@@ -1,10 +1,11 @@
 <!--
 Thank you for reporting your issue to us!
 
-Please report only issues corresponding to the VM for Nextcloud 10 or later. If you found a bug that is related to the  server core, 
-you can file your report here: https://github.com/nextcloud/server
+Please report only issues corresponding to the VM for Nextcloud 10 or later. If you found a bug that is related to the  server core, you can file your report here: https://github.com/nextcloud/server
 
-If you are looking for help and not report any bugs, please use the Nextcloud forums: (https://help.nextcloud.com/c/support/appliances-docker-snappy-vm)  instead. You can also buy support here: https://shop.hanssonit.se
+A general note: 
+This is the **issue tracker of Nextcloud**, please do NOT use this to get answers to your questions or get help for fixing your installation. This is a place to report bugs to developers, after your server has been debugged.
+ You can find help debugging your system on our home user forums: (https://help.nextcloud.com/c/support/appliances-docker-snappy-vm)  instead. You can also buy support here: https://shop.hanssonit.se or check out the options at https://nextcloud.com/support/
 
 Thank you!
 -->
