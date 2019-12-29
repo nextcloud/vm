@@ -16,7 +16,7 @@ debug_mode
 # Check if root
 root_check
 
-msg_box "This script will install the previewgerator. It can speedup the "feel" of Nextcloud by a lot."
+msg_box "This script will install the previewgerator. It can speedup the feel of Nextcloud by a lot."
 if [[ "no" == $(ask_yes_or_no "So do you want to install the previewgenerator?") ]]
 then
     exit
@@ -24,26 +24,27 @@ else
     sleep 1
 fi
 
-msg_box "In the next step you can choose to install a package called "imagick" to speed up the generation of previews and get support for many filetypes. 
+msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and get support for many filetypes. 
 
-Please note that this will put your server at risk as "imagick" is known to have several flaws.
+Please note that this will put your server at risk as imagick is known to have several flaws.
 
 You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743
 
 You can choose to cancel installing this in the next step."
 if [[ "no" == $(ask_yes_or_no "Do you want to install imagick?") ]]
 then
-    if [[ "no" == $(ask_yes_or_no "Do you still want to continue?") ]]
-        then
-            exit
-        else
-            # Install needed dependencies
-            
-            install_if_not ffmpeg
-            install_if_not libreoffice
-            install_if_not php-imagick
-            install_if_not libmagickcore-6.q16-3-extra
+    if [[ "no" == $(ask_yes_or_no "Do you still want to install the prerviewgenerator?") ]]
+    then
+        exit
     else
+        # Install needed dependencies
+         
+        install_if_not ffmpeg
+        install_if_not libreoffice
+        install_if_not php-imagick
+        install_if_not libmagickcore-6.q16-3-extra
+    fi
+else
         sleep 1
 fi
 
