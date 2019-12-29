@@ -89,7 +89,9 @@ then
     
     msg_box "In the last step you can choose to run the previewgenerator now. 
     
-    Please note: If you choose not to do so, then you have to do it manually before the cronjob can continue."
+    Please note: If you choose to not doing it now, then you have to do it manually before the cronjob at the next day at 4 am can continue.
+    
+    You can find further instructons here: https://github.com/rullzer/PreviewGenerator#how-to-use-the-app"
     if [[ "no" == $(ask_yes_or_no "Do you want to run the previewgenerator now?") ]]
     then
         exit
