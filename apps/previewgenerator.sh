@@ -46,30 +46,148 @@ install_and_enable_app previewgenerator
 # Run the first preview generation and add crontab
 if [ -d "$NC_APPS_PATH/previewgenerator" ]
 then
+
     # Enable previews (remove the # to enable the specific preview)
     occ_command config:system:set enable_previews --value=true --type=boolean
     occ_command config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-#    occ_command config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
-#    occ_command config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
-#    occ_command config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
-#    occ_command config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
-#    occ_command config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\XBitmap"
-#    occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MarkDown"
-#    occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\MP3"
-#    occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\TXT"
-#    occ_command config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Illustrator"
-#    occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\Movie"
-#    occ_command config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\MSOffice2003"
-#    occ_command config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\MSOffice2007"
-#    occ_command config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\MSOfficeDoc"
-#    occ_command config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\OpenDocument"
-#    occ_command config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\PDF"
-#    occ_command config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\Photoshop"
-#    occ_command config:system:set enabledPreviewProviders 16 --value="OC\\Preview\\Postscript"
-#    occ_command config:system:set enabledPreviewProviders 17 --value="OC\\Preview\\StarOffice"
-#    occ_command config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\SVG"
-#    occ_command config:system:set enabledPreviewProviders 19 --value="OC\\Preview\\TIFF"
-#    occ_command config:system:set enabledPreviewProviders 20 --value="OC\\Preview\\Font"
+
+    # Choose file formats
+    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nPlease note: some formats may not work if you have chosen to not install imagick\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "PNG" ON \
+    "JPEG" ON \
+    "GIF" ON \
+    "BMP" ON \
+    "XBitmap" ON \
+    "MarkDown" ON \
+    "MP3" ON \
+    "TXT" ON \
+    "Illustrator" OFF \
+    "Movie" OFF \
+    "MSOffice2003" OFF \
+    "MSOffice2007" OFF \
+    "MSOfficeDoc" OFF \
+    "OpenDocument" OFF \
+    "PDF" OFF \
+    "Photoshop" OFF \
+    "Postscript" OFF \
+    "StarOffice" OFF \
+    "SVG" OFF \
+    "TIFF" OFF \
+    "FONT" OFF 2>results
+
+    while read -r -u 9 choice
+    do
+        case $choice in
+            PNG)
+                clear
+                occ_command config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
+            ;;
+
+            JPEG)
+                clear
+                occ_command config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
+            ;;
+
+            GIF)
+                clear
+                occ_command config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
+            ;;
+
+            BMP)
+                clear
+                occ_command config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
+            ;;
+
+            XBitmap)
+                clear
+                occ_command config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\XBitmap"
+            ;;
+
+            MarkDown)
+                clear
+                occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MarkDown"
+            ;;
+
+            MP3)
+                clear
+                occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\MP3"
+            ;;
+
+            TXT)
+                clear
+                occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\TXT"
+            ;;
+
+            Illustrator)
+                clear
+                occ_command config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Illustrator"
+            ;;
+
+            Movie)
+                clear
+                occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\Movie"
+            ;;
+
+            MSOffie2003)
+                clear
+                occ_command config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\MSOffice2003"
+            ;;
+
+            MSOffice2007)
+                clear
+                occ_command config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\MSOffice2007"
+            ;;
+
+            MSOfficeDoc)
+                clear
+                occ_command config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\MSOfficeDoc"
+            ;;
+
+            OpenDocument)
+                clear
+                occ_command config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\OpenDocument"
+            ;;
+
+            PDF)
+                clear
+                occ_command config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\PDF"
+            ;;
+
+            Photoshop)
+                clear
+                occ_command config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\Photoshop"
+            ;;
+
+            Postscript)
+                clear
+                occ_command config:system:set enabledPreviewProviders 16 --value="OC\\Preview\\Postscript"
+            ;;
+
+            StarOffice)
+                clear
+                occ_command config:system:set enabledPreviewProviders 17 --value="OC\\Preview\\StarOffice"
+            ;;
+
+            SVG)
+                clear
+                occ_command config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\SVG"
+            ;;
+
+            TIFF)
+                clear
+                occ_command config:system:set enabledPreviewProviders 19 --value="OC\\Preview\\TIFF"
+            ;;
+
+            Font)
+                clear
+                occ_command config:system:set enabledPreviewProviders 20 --value="OC\\Preview\\Font"
+            ;;
+            *)
+            ;;
+        esac
+    done 9< results
+    rm -f results
+    clear
     
     # Set aspect ratio
     occ_command config:app:set previewgenerator squareSizes --value="32 256"
