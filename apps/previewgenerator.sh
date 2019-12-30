@@ -82,23 +82,13 @@ then
     occ_command config:system:set jpeg_quality --value="60"
     occ_command config:app:set preview jpeg_quality --value="60"
     
-    # Add crotab
+    # Add crontab
     crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
-    
-    msg_box "In the last step you can choose to run the previewgenerator now. 
-    
-    Please note: If you choose to not doing it now, then you have to do it manually before the cronjob at the next day at 4 am can continue.
-    
-    You can find further instructons here: https://github.com/rullzer/PreviewGenerator#how-to-use-the-app"
-    if [[ "no" == $(ask_yes_or_no "Do you want to run the previewgenerator now?") ]]
-    then
-        exit
-    else
-        # Pre generate everything
-        occ_command preview:generate-all
-    fi
+
+    # Pre generate everything
+    occ_command preview:generate-all
 
 fi
 
