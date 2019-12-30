@@ -198,8 +198,33 @@ then
     occ_command config:system:set jpeg_quality --value="60"
     occ_command config:app:set preview jpeg_quality --value="60"
     
+    msg_box "In the last step you can define a nextcloud-user for which you want to run the preview-generation. "
+    if [[ "yes" == $(ask_yes_or_no "So do you want to choose a nextcloud-user?") ]]
+    then
+        echo
+        while true
+        do
+        # Ask for user name
+        cat << ENTERUSER
+        +---------------------------------------------------------------+
+        |    Please enter the user name for the previewgeneration.      |
+        |    Or just press enter, if you don't want to.                 |
+        +---------------------------------------------------------------+
+        ENTERUSER
+        echo
+        read -r user
+        echo
+        if [[ "yes" == $(ask_yes_or_no "Is this correct? $user") ]]
+        then
+            break
+        fi
+        done
+            else
+        sleep 1
+    fi
+    
     # Add crontab
-    crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
+    crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $user >> /var/log/previewgenerator.log"; } | crontab -u www-data -
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
 
@@ -208,7 +233,7 @@ then
     install_if_not libreoffice
     
     # Pre generate everything
-    occ_command preview:generate-all
+    occ_command preview:generate-all $user
 
 fi
 
