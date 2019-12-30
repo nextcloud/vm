@@ -33,9 +33,7 @@ Please note that this will put your server at risk as imagick is known to have s
 You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743"
 if [[ "yes" == $(ask_yes_or_no "Do you want to install imagick?") ]]
 then
-    # Install needed dependencies
-    install_if_not ffmpeg
-    install_if_not libreoffice
+    # Install imagick
     install_if_not php-imagick
     install_if_not libmagickcore-6.q16-3-extra
 else
@@ -87,6 +85,10 @@ then
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
 
+    # Install needed dependencies
+    install_if_not ffmpeg
+    install_if_not libreoffice
+    
     # Pre generate everything
     occ_command preview:generate-all
 
