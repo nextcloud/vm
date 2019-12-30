@@ -219,7 +219,7 @@ then
             break
         fi
         done
-            else
+    else
         sleep 1
     fi
     
