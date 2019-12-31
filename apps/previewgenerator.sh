@@ -219,7 +219,8 @@ then
     occ_command config:system:set jpeg_quality --value="60"
     occ_command config:app:set preview jpeg_quality --value="60"
     
-    msg_box "In the last step you can define a nextcloud-user for which you want to run the preview-generation. "
+    msg_box "In the last step you can define a nextcloud-user for which you want to run the preview-generation. 
+    If you not choose to, it will run in the default mode for all nextcloud-users."
     if [[ "yes" == $(ask_yes_or_no "So do you want to choose a nextcloud-user?") ]]
     then
         nextcloud_user=$(whiptail --inputbox "Enter the nextcloud-user for which you want to run the preview-generation" 10 30 3>&1 1>&2 2>&3)
@@ -236,7 +237,8 @@ then
             fi
         fi
     else
-        sleep 1
+        nextcloud_user=""
+        export nextcloud_user
     fi
     
     # Add crontab
