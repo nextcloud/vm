@@ -237,10 +237,6 @@ then
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
 
-    # Install needed dependencies
-    install_if_not ffmpeg
-    install_if_not libreoffice
-    
     # Pre generate everything
     occ_command preview:generate-all $user
 
