@@ -25,30 +25,41 @@ if [[ "no" == $(ask_yes_or_no "So do you want to install the previewgenerator?")
 then
     exit
 else
-    # Install preview generator and ffmpeg
-    echo "install the preview generator and ffmpeg"
+    # Install preview generator
+    echo "install the preview generator"
     install_and_enable_app previewgenerator
-    occ_command config:system:set enable_previews --value=true --type=boolean
-    install_if_not ffmpeg
     
-    # reset the preview formats
-    echo "resetting the preview formats"
-    sed -i 'OC\\Preview\\PNG' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\JPEG' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\GIF' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\BMP' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\MarkDown' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\MP3' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\TXT' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\Movie' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\Photoshop' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\SVG' /var/www/nextcloud/config/config.php
-    sed -i 'OC\\Preview\\TIFF' /var/www/nextcloud/config/config.php
+    # check if the previewgenerator is installed and enabled
+    if [ -d "$NC_APPS_PATH/previewgenerator" ]
+    then
+        
+        # enable previews
+        occ_command config:system:set enable_previews --value=true --type=boolean
+        
+        # install needed dependency for movies
+        install_if_not ffmpeg
     
-    # reset the cronjob
-    echo "resetting the cronjob for the preview-generation"
-    sed -i 'preview:pre-generate' /var/spool/cron/crontabs/www-data
+        # reset the preview formats
+        echo "resetting the preview formats"
+        sed -i 'OC\\Preview\\PNG' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\JPEG' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\GIF' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\BMP' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\MarkDown' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\MP3' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\TXT' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\Movie' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\Photoshop' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\SVG' /var/www/nextcloud/config/config.php
+        sed -i 'OC\\Preview\\TIFF' /var/www/nextcloud/config/config.php
     
+        # reset the cronjob
+        echo "resetting the cronjob for the preview-generation"
+        sed -i 'preview:pre-generate' /var/spool/cron/crontabs/www-data
+        
+    else
+        exit
+    fi
 fi
 
 msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and get support for more filetypes. 
@@ -207,48 +218,43 @@ fi
 #occ_command config:system:set enabledPreviewProviders 20 --value="OC\\Preview\\Font"
 #occ_command config:system:set enabledPreviewProviders 21 --value="OC\\Preview\\HEIC"
 
-# check if the previewgenerator is installed and enabled
-if [ -d "$NC_APPS_PATH/previewgenerator" ]
+# Set aspect ratio
+occ_command config:app:set previewgenerator squareSizes --value="32 256"
+occ_command config:app:set previewgenerator widthSizes  --value="256 384"
+occ_command config:app:set previewgenerator heightSizes --value="256"
+occ_command config:system:set preview_max_x --value="2048"
+occ_command config:system:set preview_max_y --value="2048"
+occ_command config:system:set jpeg_quality --value="60"
+occ_command config:app:set preview jpeg_quality --value="60"
+
+msg_box "In the last step you can define a nextcloud-user for which you want to run the preview-generation. 
+If you not choose to, it will run in the default mode for all nextcloud-users."
+if [[ "yes" == $(ask_yes_or_no "So do you want to choose a nextcloud-user?") ]]
 then
-    # Set aspect ratio
-    occ_command config:app:set previewgenerator squareSizes --value="32 256"
-    occ_command config:app:set previewgenerator widthSizes  --value="256 384"
-    occ_command config:app:set previewgenerator heightSizes --value="256"
-    occ_command config:system:set preview_max_x --value="2048"
-    occ_command config:system:set preview_max_y --value="2048"
-    occ_command config:system:set jpeg_quality --value="60"
-    occ_command config:app:set preview jpeg_quality --value="60"
-    
-    msg_box "In the last step you can define a nextcloud-user for which you want to run the preview-generation. 
-    If you not choose to, it will run in the default mode for all nextcloud-users."
-    if [[ "yes" == $(ask_yes_or_no "So do you want to choose a nextcloud-user?") ]]
+    nextcloud_user=$(whiptail --inputbox "Enter the nextcloud-user for which you want to run the preview-generation" 10 30 3>&1 1>&2 2>&3)
+    export nextcloud_user
+    if [[ "yes" == $(ask_yes_or_no "Is this correct? $nextcloud_user") ]]
     then
-        nextcloud_user=$(whiptail --inputbox "Enter the nextcloud-user for which you want to run the preview-generation" 10 30 3>&1 1>&2 2>&3)
-        export nextcloud_user
-        if [[ "yes" == $(ask_yes_or_no "Is this correct? $nextcloud_user") ]]
+        
+        if occ_command user:list | grep "$nextcloud_user"
         then
-            
-            if occ_command user:list | grep "$nextcloud_user"
-            then
-                sleep 1
-            else
-                unset nextcloud_user
-                echo "Could not find the Nextcloud-user. Running the preview-generation now for all Nextcloud-users."
-            fi
+            sleep 1
+        else
+            unset nextcloud_user
+            echo "Could not find the Nextcloud-user. Running the preview-generation now for all Nextcloud-users."
         fi
-    else
-        nextcloud_user=""
-        export nextcloud_user
     fi
-    
-    # Add crontab
-    crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $nextcloud_user >> /var/log/previewgenerator.log"; } | crontab -u www-data -
-    touch /var/log/previewgenerator.log
-    chown www-data:www-data /var/log/previewgenerator.log
-
-    # Pre generate everything
-    occ_command preview:generate-all "$nextcloud_user"
-
+else
+    nextcloud_user=""
+    export nextcloud_user
 fi
+
+# Add crontab
+crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $nextcloud_user >> /var/log/previewgenerator.log"; } | crontab -u www-data -
+touch /var/log/previewgenerator.log
+chown www-data:www-data /var/log/previewgenerator.log
+
+# Pre generate everything
+occ_command preview:generate-all "$nextcloud_user"
 
 exit
