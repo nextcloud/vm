@@ -184,6 +184,7 @@ fi
 
 # Enable additional previews (most likely not working; remove the # to enable the specific preview)
 #occ_command config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
+#occ_command config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\XBitmap"
 #occ_command config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Illustrator"
 #occ_command config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\MSOffice2003"
 #occ_command config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\MSOffice2007"
