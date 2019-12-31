@@ -211,35 +211,19 @@ then
     msg_box "In the last step you can define a nextcloud-user for which you want to run the preview-generation. "
     if [[ "yes" == $(ask_yes_or_no "So do you want to choose a nextcloud-user?") ]]
     then
-        echo
-        while true
-        do
-        # Ask for user name
-        cat << ENTERUSER
-        +---------------------------------------------------------------+
-        |    Please enter the user name for the previewgeneration.      |
-        |    Or just press enter, if you don't want to.                 |
-        +---------------------------------------------------------------+
-        ENTERUSER
-        echo
-        read -r user
-        echo
-        if [[ "yes" == $(ask_yes_or_no "Is this correct? $user") ]]
-        then
-            break
-        fi
-        done
+        nextcloud-user=$(whiptail --inputbox "Enter the nextcloud-user for which you want to run the preview-generation" 10 30 3>&1 1>&2 2>&3)
+        whiptail --ok-button Done --msgbox "Is this nextcloud-user correct? $nextcloud-user" 10 30
     else
         sleep 1
     fi
     
     # Add crontab
-    crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $user >> /var/log/previewgenerator.log"; } | crontab -u www-data -
+    crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $nextcloud-user >> /var/log/previewgenerator.log"; } | crontab -u www-data -
     touch /var/log/previewgenerator.log
     chown www-data:www-data /var/log/previewgenerator.log
 
     # Pre generate everything
-    occ_command preview:generate-all $user
+    occ_command preview:generate-all $nextcloud-user
 
 fi
 
