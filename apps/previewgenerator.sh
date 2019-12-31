@@ -63,52 +63,42 @@ then
             ;;
 
             JPEG)
-                clear
                 occ_command config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
             ;;
 
             GIF)
-                clear
                 occ_command config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
             ;;
 
             BMP)
-                clear
                 occ_command config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
             ;;
 
             MarkDown)
-                clear
                 occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MarkDown"
             ;;
 
             MP3)
-                clear
                 occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\MP3"
             ;;
 
             TXT)
-                clear
                 occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\TXT"
             ;;
 
             Movie)
-                clear
                 occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\Movie"
             ;;
 
             Photoshop)
-                clear
                 occ_command config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\Photoshop"
             ;;
 
             SVG)
-                clear
                 occ_command config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\SVG"
             ;;
 
             TIFF)
-                clear
                 occ_command config:system:set enabledPreviewProviders 19 --value="OC\\Preview\\TIFF"
             ;;
 
@@ -140,37 +130,30 @@ else
             ;;
 
             JPEG)
-                clear
                 occ_command config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
             ;;
 
             GIF)
-                clear
                 occ_command config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
             ;;
 
             BMP)
-                clear
                 occ_command config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
             ;;
 
             MarkDown)
-                clear
                 occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MarkDown"
             ;;
 
             MP3)
-                clear
                 occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\MP3"
             ;;
 
             TXT)
-                clear
                 occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\TXT"
             ;;
 
             Movie)
-                clear
                 occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\Movie"
             ;;
 
