@@ -76,6 +76,7 @@ then
     install_if_not libmagickcore-6.q16-3-extra
     
     # Choose file formats fo the case when imagick is installed.
+    # for additional previews please look at the nextcloud documentation. But these probably won't work.
     whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" ON \
     "JPEG" ON \
@@ -150,6 +151,7 @@ else
     apt purge libmagickcore-6.q16-3-extra -y
     
     # Choose file formats fo the case when imagick is not installed.
+    # for additional previews please look at the nextcloud documentation. But these probably won't work.
     whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" ON \
     "JPEG" ON \
@@ -203,20 +205,6 @@ else
     rm -f results
     clear
 fi
-
-# Enable additional previews (most likely not working; remove the # to enable the specific preview)
-#occ_command config:system:set preview_libreoffice_path --value="/usr/bin/libreoffice"
-#occ_command config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\XBitmap"
-#occ_command config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Illustrator"
-#occ_command config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\MSOffice2003"
-#occ_command config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\MSOffice2007"
-#occ_command config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\MSOfficeDoc"
-#occ_command config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\OpenDocument"
-#occ_command config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\PDF"
-#occ_command config:system:set enabledPreviewProviders 16 --value="OC\\Preview\\Postscript"
-#occ_command config:system:set enabledPreviewProviders 17 --value="OC\\Preview\\StarOffice"
-#occ_command config:system:set enabledPreviewProviders 20 --value="OC\\Preview\\Font"
-#occ_command config:system:set enabledPreviewProviders 21 --value="OC\\Preview\\HEIC"
 
 # Set aspect ratio
 occ_command config:app:set previewgenerator squareSizes --value="32 256"
