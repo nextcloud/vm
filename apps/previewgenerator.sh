@@ -24,9 +24,28 @@ then
     exit
 else
     # Install preview generator and ffmpeg
+    echo "install the preview generator and ffmpeg"
     install_and_enable_app previewgenerator
     occ_command config:system:set enable_previews --value=true --type=boolean
     install_if_not ffmpeg
+    
+    # reset the preview formats
+    echo "resetting the preview formats"
+    sed -i 'OC\\Preview\\PNG' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\JPEG' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\GIF' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\BMP' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\MarkDown' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\MP3' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\TXT' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\Movie' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\Photoshop' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\SVG' /var/www/nextcloud/config/config.php
+    sed -i 'OC\\Preview\\TIFF' /var/www/nextcloud/config/config.php
+    
+    echo "resetting the cronjob for the preview-generation"
+    sed -i 'preview:pre-generate /var/spool/cron/crontabs/www-data
+    
 fi
 
 msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and get support for more filetypes. 
