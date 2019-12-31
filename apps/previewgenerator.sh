@@ -212,7 +212,10 @@ then
     if [[ "yes" == $(ask_yes_or_no "So do you want to choose a nextcloud-user?") ]]
     then
         nextcloud-user=$(whiptail --inputbox "Enter the nextcloud-user for which you want to run the preview-generation" 10 30 3>&1 1>&2 2>&3)
-        whiptail --ok-button Done --msgbox "Is this nextcloud-user correct? $nextcloud-user" 10 30
+        if [[ "yes" == $(ask_yes_or_no "Is this correct? $nextcloud-user") ]]
+        then
+            break
+        fi
     else
         sleep 1
     fi
