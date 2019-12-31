@@ -227,7 +227,7 @@ then
     chown www-data:www-data /var/log/previewgenerator.log
 
     # Pre generate everything
-    occ_command preview:generate-all $nextcloud_user
+    occ_command preview:generate-all "$nextcloud_user"
 
 fi
 
