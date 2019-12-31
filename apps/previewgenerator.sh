@@ -18,7 +18,9 @@ root_check
 
 msg_box "This script will install the previewgerator. 
 
-It can speedup the feel of Nextcloud by a lot."
+It can speedup the feel of Nextcloud by a lot.
+
+Plese note: currently set preview formats and the preview-generator cronjob get resetted if you press yes."
 if [[ "no" == $(ask_yes_or_no "So do you want to install the previewgenerator?") ]]
 then
     exit
@@ -43,8 +45,9 @@ else
     sed -i 'OC\\Preview\\SVG' /var/www/nextcloud/config/config.php
     sed -i 'OC\\Preview\\TIFF' /var/www/nextcloud/config/config.php
     
+    # reset the cronjob
     echo "resetting the cronjob for the preview-generation"
-    sed -i 'preview:pre-generate /var/spool/cron/crontabs/www-data
+    sed -i 'preview:pre-generate' /var/spool/cron/crontabs/www-data
     
 fi
 
