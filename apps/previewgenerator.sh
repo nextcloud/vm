@@ -198,7 +198,14 @@ then
         export nextcloud_user
         if [[ "yes" == $(ask_yes_or_no "Is this correct? $nextcloud_user") ]]
         then
-            sleep 1
+            
+            if occ_command user:list | grep "$nextcloud_user"
+            then
+                sleep 1
+            else
+                unset nextcloud_user
+                echo "Could not find the Nextcloud-user. Running the preview-generation now for all Nextcloud-users."
+            fi
         fi
     else
         sleep 1
