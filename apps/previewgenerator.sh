@@ -33,7 +33,9 @@ msg_box "In the next step you can choose to install a package called imagick to 
 
 Please note that this will put your server at risk as imagick is known to have several flaws.
 
-You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743"
+You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743
+
+Note: if you choose not to install imagick, it will get removed now."
 if [[ "yes" == $(ask_yes_or_no "Do you want to install imagick?") ]]
 then
     # Install imagick
@@ -110,6 +112,10 @@ then
     clear      
 
 else
+    # remove imagick
+    apt purge php-imagick -y
+    apt purge libmagickcore-6.q16-3-extra -y
+    
     # Choose file formats fo the case when imagick is not installed.
     whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" ON \
