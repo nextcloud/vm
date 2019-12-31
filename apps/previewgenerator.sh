@@ -223,26 +223,31 @@ then
     export nextcloud_user
     if [[ "yes" == $(ask_yes_or_no "Is this correct? $nextcloud_user") ]]
     then
-        
         if occ_command user:list | grep "$nextcloud_user"
         then
-            sleep 1
+            # Add crontab
+            crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $nextcloud_user >> /var/log/previewgenerator.log"; } | crontab -u www-data -
+            touch /var/log/previewgenerator.log
+            chown www-data:www-data /var/log/previewgenerator.log
+
+            # Pre generate everything
+            occ_command preview:generate-all "$nextcloud_user"
+            
+            exit
+            
         else
-            unset nextcloud_user
             echo "Could not find the Nextcloud-user. Running the preview-generation now for all Nextcloud-users."
         fi
     fi
 else
-    nextcloud_user=""
-    export nextcloud_user
+    sleep 1
 fi
-
 # Add crontab
-crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $nextcloud_user >> /var/log/previewgenerator.log"; } | crontab -u www-data -
+crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate >> /var/log/previewgenerator.log"; } | crontab -u www-data -
 touch /var/log/previewgenerator.log
 chown www-data:www-data /var/log/previewgenerator.log
 
 # Pre generate everything
-occ_command preview:generate-all "$nextcloud_user"
+occ_command preview:generate-all
 
 exit
