@@ -104,7 +104,7 @@ Though I (@enoch85) haven't tested this yet, so testing and reporting is welcome
 * [Stefan Heitmüller](https://github.com/morph027) @ [morph027's Blog](https://morph027.gitlab.io/)
 * [Lorenzo Faleschini](https://github.com/penzoiders)
 * [Georg Großmann](https://github.com/ggeorgg)
-* [dbolton](https://github.com/dbolton)
+* [szaimen](https://github.com/szaimen)
 
 [Nextcloud Server]: https://bit.ly/2CHIUkA
 [app store]: https://bit.ly/2HUy4v9
