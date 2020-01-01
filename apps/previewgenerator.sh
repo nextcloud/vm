@@ -110,7 +110,7 @@ then
     "SVG" "" OFF \
     "TIFF" "" OFF 2>results
     
-    while read -r -u 9 choice
+    while read -r -u 11 choice
     do
         case $choice in
             "PNG")
@@ -160,7 +160,7 @@ then
             *)
             ;;
         esac
-    done 9< results
+    done 11< results
     rm -f results
     clear      
 else
@@ -186,7 +186,7 @@ else
     "TXT" "" ON \
     "Movie" "" OFF 2>results
 
-    while read -r -u 9 choice
+    while read -r -u 8 choice
     do
         case $choice in
             "PNG")
@@ -224,7 +224,7 @@ else
             *)
             ;;
         esac
-    done 9< results
+    done 8< results
     rm -f results
     clear
 fi
