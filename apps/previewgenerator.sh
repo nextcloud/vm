@@ -28,7 +28,7 @@ then
 fi
 
 # Encryption may not be enabled
-if [ -d "$NC_APPS_PATH/encryption" ]
+if occ_command app:list | grep encryption
 then
     msg_box "It seems like you have encryption enabled which is unsupported when using the preview generator"
     exit
