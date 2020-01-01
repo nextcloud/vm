@@ -16,15 +16,31 @@ debug_mode
 # Check if root
 root_check
 
+# PHP 7.x is needed
+if is_this_installed php5.6-common
+then
+    msg_box "At least PHP 7.X is supported, please upgrade your PHP version: https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+    exit
+elif is_this_installed php5.5-common
+then
+    msg_box "At least PHP 7.X is supported, please upgrade your PHP version: https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+    exit
+fi
+
+# Encryption may not be enabled
+if [ -d "$NC_APPS_PATH/encryption" ]
+then
+    msg_box "It seems like you have encryption enabled which is unsupported when using the preview generator"
+    exit
+fi
+
 msg_box "This script will install the previewgerator. 
 
 It can speedup the loading of previews in Nextcloud a lot.
 
 Please note: If you continue, all your current previewgenerator settings will be lost, if any."
-if [[ "no" == $(ask_yes_or_no "So do you want to install the previewgenerator?") ]]
+if [[ "yes" == $(ask_yes_or_no "Do you want to install the previewgenerator?") ]]
 then
-    exit
-else
     # Install preview generator
     echo "install the preview generator"
     install_and_enable_app previewgenerator
@@ -58,11 +74,28 @@ else
     else
         exit
     fi
+else
+    exit
 fi
 
-msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and get support for more filetypes. 
+msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and get support for more filetypes.
 
-Please note that this will put your server at risk as imagick is known to have several flaws.
+The currently supported filetypes are:
+* PNG
+* JPEG
+* GIF
+* BMP
+* MarkDown
+* MP3
+* TXT
+* Movie
+* Photoshop (needs imagick)
+* SVG (needs imagick)
+* TIFF (needs imagick)
+
+IMPORTANT NOTE!!
+
+Imagick will put your server at risk as it's is known to have several flaws.
 
 You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743
 
@@ -92,7 +125,6 @@ then
     do
         case $choice in
             PNG)
-                clear
                 occ_command config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
             ;;
 
@@ -109,31 +141,31 @@ then
             ;;
 
             MarkDown)
-                occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MarkDown"
+                occ_command config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\MarkDown"
             ;;
 
             MP3)
-                occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\MP3"
+                occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MP3"
             ;;
 
             TXT)
-                occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\TXT"
+                occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\TXT"
             ;;
 
             Movie)
-                occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\Movie"
+                occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\Movie"
             ;;
 
             Photoshop)
-                occ_command config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\Photoshop"
+                occ_command config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Photoshop"
             ;;
 
             SVG)
-                occ_command config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\SVG"
+                occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\SVG"
             ;;
 
             TIFF)
-                occ_command config:system:set enabledPreviewProviders 19 --value="OC\\Preview\\TIFF"
+                occ_command config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\TIFF"
             ;;
 
             *)
@@ -145,12 +177,12 @@ then
 
 else
     # check if imagick ist installed and remove it
-    if apt list -a imagick
+    if is_this_installed imagick
     then
         apt purge php-imagick -y
     fi
     # check if libmagickcore is installed and remove it
-    if apt list -a libmagickcore-6.q16-3-extra
+    if is_this_installed libmagickcore-6.q16-3-extra
     then
         apt purge libmagickcore-6.q16-3-extra -y
     fi    
@@ -170,36 +202,35 @@ else
     do
         case $choice in
             PNG)
-                clear
-                occ_command config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
+                occ_command config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\PNG"
             ;;
 
             JPEG)
-                occ_command config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
+                occ_command config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\JPEG"
             ;;
 
             GIF)
-                occ_command config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
+                occ_command config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\GIF"
             ;;
 
             BMP)
-                occ_command config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
+                occ_command config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\BMP"
             ;;
 
             MarkDown)
-                occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MarkDown"
+                occ_command config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\MarkDown"
             ;;
 
             MP3)
-                occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\MP3"
+                occ_command config:system:set enabledPreviewProviders 16 --value="OC\\Preview\\MP3"
             ;;
 
             TXT)
-                occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\TXT"
+                occ_command config:system:set enabledPreviewProviders 17 --value="OC\\Preview\\TXT"
             ;;
 
             Movie)
-                occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\Movie"
+                occ_command config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\Movie"
             ;;
 
             *)
