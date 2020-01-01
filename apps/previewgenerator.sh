@@ -261,11 +261,11 @@ else
             break
         fi
     done
-     # Add crontab for $PREVIEW_USER
-     crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $PREVIEW_USER >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
-     touch "$VMLOGS"/previewgenerator.log
-     chown www-data:www-data "$VMLOGS"/previewgenerator.log
+    # Add crontab for $PREVIEW_USER
+    crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $PREVIEW_USER >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
+    touch "$VMLOGS"/previewgenerator.log
+    chown www-data:www-data "$VMLOGS"/previewgenerator.log
 
-     # Pre generate everything
-     occ_command preview:generate-all "$PREVIEW_USER"
+    # Pre generate everything
+    occ_command preview:generate-all "$PREVIEW_USER"
 fi
