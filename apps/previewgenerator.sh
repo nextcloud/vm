@@ -97,18 +97,18 @@ then
     
     # Choose file formats fo the case when imagick is installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "PNG" ON \
-    "JPEG" ON \
-    "GIF" ON \
-    "BMP" ON \
-    "MarkDown" ON \
-    "MP3" ON \
-    "TXT" ON \
-    "Movie" OFF \
-    "Photoshop" OFF \
-    "SVG" OFF \
-    "TIFF" OFF 2>results
+whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"PNG" ON \
+"JPEG" ON \
+"GIF" ON \
+"BMP" ON \
+"MarkDown" ON \
+"MP3" ON \
+"TXT" ON \
+"Movie" OFF \
+"Photoshop" OFF \
+"SVG" OFF \
+"TIFF" OFF 2>results
     
     while read -r -u 9 choice
     do
@@ -177,15 +177,15 @@ else
     fi    
     # Choose file formats fo the case when imagick is not installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "PNG" ON \
-    "JPEG" ON \
-    "GIF" ON \
-    "BMP" ON \
-    "MarkDown" ON \
-    "MP3" ON \
-    "TXT" ON \
-    "Movie" OFF 2>results
+whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"PNG" ON \
+"JPEG" ON \
+"GIF" ON \
+"BMP" ON \
+"MarkDown" ON \
+"MP3" ON \
+"TXT" ON \
+"Movie" OFF 2>results
 
     while read -r -u 9 choice
     do
@@ -256,8 +256,8 @@ then
 else
     while true
     do
-    PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" 10 30 3>&1 1>&2 2>&3)
-    if ! $(occ_command user:list | grep "$PREVIEW_USER")
+    PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    if ! $(occ_command user:list | grep $PREVIEW_USER)
         then
             msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
         else
