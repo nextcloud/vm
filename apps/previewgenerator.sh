@@ -144,11 +144,16 @@ then
     clear      
 
 else
-    # remove imagick
-    #################### add check to see if it's exiisting first, apt does that but we like it clean
-    apt purge php-imagick -y
-    apt purge libmagickcore-6.q16-3-extra -y
-    
+    # check if imagick ist installed and remove it
+    if apt list -a imagick
+    then
+        apt purge php-imagick -y
+    fi
+    # check if libmagickcore is installed and remove it
+    if apt list -a libmagickcore-6.q16-3-extra
+    then
+        apt purge libmagickcore-6.q16-3-extra -y
+    fi    
     # Choose file formats fo the case when imagick is not installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
     whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
