@@ -104,11 +104,11 @@ then
     "BMP" "" ON \
     "MarkDown" "" ON \
     "MP3" "" ON \
-     "TXT" "" ON \
-    "Movie" "" OFF \
-    "Photoshop" "" OFF \
-    "SVG" "" OFF \
-    "TIFF" "" OFF 2>results
+    "TXT" "" ON \
+    "Movie" "" ON \
+    "Photoshop" "" ON \
+    "SVG" "" ON \
+    "TIFF" "" ON 2>results
     
     while read -r -u 11 choice
     do
@@ -162,7 +162,6 @@ then
         esac
     done 11< results
     rm -f results
-    clear      
 else
     # check if imagick ist installed and remove it
     if is_this_installed imagick
@@ -184,7 +183,7 @@ else
     "MarkDown" "" ON \
     "MP3" "" ON \
     "TXT" "" ON \
-    "Movie" "" OFF 2>results
+    "Movie" "" ON 2>results
 
     while read -r -u 8 choice
     do
@@ -226,7 +225,6 @@ else
         esac
     done 8< results
     rm -f results
-    clear
 fi
 
 # Set aspect ratio
