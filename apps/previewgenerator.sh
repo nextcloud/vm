@@ -255,14 +255,14 @@ then
 else
     while true
     do
-    PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if ! occ_command user:list | grep "$PREVIEW_USER" | awk '{print $3}'
+        PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" "$WT_HEIGHT"$
+        if [ -z $(occ_command user:list | grep "$PREVIEW_USER" | awk '{print $3}') ]
         then
             msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
         else
             break
         fi
-     done
+    done
      # Add crontab for $PREVIEW_USER
      crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $PREVIEW_USER >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
      touch "$VMLOGS"/previewgenerator.log
