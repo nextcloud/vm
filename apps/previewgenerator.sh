@@ -255,7 +255,7 @@ then
 else
     while true
     do
-    PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" $WT_HEIGHT $WT_WIDTH 3>&1 1>&2 2>&3)
+    PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if ! occ_command user:list | grep "$PREVIEW_USER" | awk '{print $3}'
         then
             msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
