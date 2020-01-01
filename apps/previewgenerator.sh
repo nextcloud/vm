@@ -91,9 +91,9 @@ The currently supported filetypes are:
 * Movie
 * Photoshop (needs imagick)
 * SVG (needs imagick)
-* TIFF (needs imagick)
+* TIFF (needs imagick)"
 
-IMPORTANT NOTE!!
+msg_box "IMPORTANT NOTE!!
 
 Imagick will put your server at risk as it's is known to have several flaws.
 
