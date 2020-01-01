@@ -42,7 +42,7 @@ Please note: If you continue, all your current previewgenerator settings will be
 if [[ "yes" == $(ask_yes_or_no "Do you want to install the previewgenerator?") ]]
 then
     # Install preview generator
-    echo "install the preview generator"
+     print_text_in_color "$ICyan" "Installing the Preview Generator..."
     install_and_enable_app previewgenerator
     
     # check if the previewgenerator is installed and enabled
@@ -59,7 +59,7 @@ then
         
         # reset the cronjob
         print_text_in_color "$ICyan" "Resetting the cronjob for the preview-generation"
-        crontab -u www-data -l | grep -v 'php -f $NCPATH/occ preview:pre-generate'  | crontab -u www-data -
+        crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
     else
         exit
     fi
