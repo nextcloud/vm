@@ -55,19 +55,8 @@ then
         install_if_not ffmpeg
         
         # reset the preview formats
-        echo "resetting the preview formats"
-        sed |'OC\\Preview\\PNG'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\JPEG'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\GIF'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\BMP'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\MarkDown'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\MP3'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\TXT'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\Movie'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\Photoshop'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\SVG'|d $NCPATH/config/config.php
-        sed |'OC\\Preview\\TIFF'|d $NCPATH/config/config.php
-    
+        occ_command config:system:delete "enabledPreviewProviders"
+        
         # reset the cronjob
         echo "resetting the cronjob for the preview-generation"
         sed -i 'preview:pre-generate' /var/spool/cron/crontabs/www-data
@@ -270,7 +259,7 @@ else
     PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" 10 30 3>&1 1>&2 2>&3)
     if ! $(occ_command user:list | grep "$PREVIEW_USER")
         then
-            print_text_in_color "IRed" "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
+            msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
         else
             break
         fi
