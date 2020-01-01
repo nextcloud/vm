@@ -59,7 +59,7 @@ then
         
         # reset the cronjob
         print_text_in_color "$ICyan" "Resetting the cronjob for the preview-generation"
-        sed /'preview:pre-generate'/d /var/spool/cron/crontabs/www-data
+        crontab -u www-data -l | grep -v 'preview:generate-all'  | crontab -u www-data -
     else
         exit
     fi
