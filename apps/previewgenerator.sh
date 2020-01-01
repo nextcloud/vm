@@ -27,12 +27,12 @@ then
     exit
 fi
 
-# Encryption may not be enabled
-if occ_command app:list | grep encryption
-then
-    msg_box "It seems like you have encryption enabled which is unsupported when using the preview generator"
-    exit
-fi
+# Encryption may not be enabled #### encryption will always list, check if it's enabled by grepping the version number
+#if occ_command app:list | grep encryption
+#then
+#    msg_box "It seems like you have encryption enabled which is unsupported when using the preview generator"
+#    exit
+#fi
 
 msg_box "This script will install the previewgerator. 
 
@@ -56,17 +56,17 @@ then
         
         # reset the preview formats
         echo "resetting the preview formats"
-        sed -i 'OC\\Preview\\PNG' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\JPEG' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\GIF' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\BMP' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\MarkDown' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\MP3' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\TXT' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\Movie' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\Photoshop' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\SVG' $NCPATH/config/config.php
-        sed -i 'OC\\Preview\\TIFF' $NCPATH/config/config.php
+        sed |'OC\\Preview\\PNG'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\JPEG'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\GIF'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\BMP'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\MarkDown'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\MP3'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\TXT'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\Movie'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\Photoshop'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\SVG'|d $NCPATH/config/config.php
+        sed |'OC\\Preview\\TIFF'|d $NCPATH/config/config.php
     
         # reset the cronjob
         echo "resetting the cronjob for the preview-generation"
@@ -268,7 +268,7 @@ else
     while true
     do
     PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" 10 30 3>&1 1>&2 2>&3)
-    if occ_command user:list | ! grep "$PREVIEW_USER"
+    if ! $(occ_command user:list | grep "$PREVIEW_USER")
         then
             print_text_in_color "IRed" "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
         else
