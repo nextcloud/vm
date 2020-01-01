@@ -70,7 +70,7 @@ fi
 msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and get support for more filetypes.
 
 The currently supported filetypes are:
--PNG
+- PNG
 - JPEG
 - GIF
 - BMP
@@ -256,7 +256,7 @@ then
 else
     while true
     do
-    PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" $WT_HEIGHT $WT_WIDTH 3>&1 1>&2 2>&3)
     if ! $(occ_command user:list | grep $PREVIEW_USER) | awk '{print $3}'
         then
             msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
