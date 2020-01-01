@@ -44,19 +44,19 @@ then
     # Install preview generator
      print_text_in_color "$ICyan" "Installing the Preview Generator..."
     install_and_enable_app previewgenerator
-    
+
     # check if the previewgenerator is installed and enabled
     if [ -d "$NC_APPS_PATH/previewgenerator" ]
     then
         # enable previews
         occ_command config:system:set enable_previews --value=true --type=boolean
-        
+
         # install needed dependency for movies
         install_if_not ffmpeg
-        
+
         # reset the preview formats
         occ_command config:system:delete "enabledPreviewProviders"
-        
+
         # reset the cronjob
         print_text_in_color "$ICyan" "Resetting the cronjob for the preview-generation"
         crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
@@ -94,7 +94,7 @@ then
     # Install imagick
     install_if_not php-imagick
     install_if_not libmagickcore-6.q16-3-extra
-    
+
     # Choose file formats fo the case when imagick is installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
     whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
@@ -109,7 +109,7 @@ then
     "Photoshop" "" ON \
     "SVG" "" ON \
     "TIFF" "" ON 2>results
-    
+
     while read -r -u 11 choice
     do
         case $choice in
@@ -172,7 +172,7 @@ else
     if is_this_installed libmagickcore-6.q16-3-extra
     then
         apt purge libmagickcore-6.q16-3-extra -y
-    fi    
+    fi
     # Choose file formats fo the case when imagick is not installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
     whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
@@ -247,7 +247,7 @@ then
     crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
     touch "$VMLOGS"/previewgenerator.log
     chown www-data:www-data "$VMLOGS"/previewgenerator.log
-    
+
     # Pre generate everything
     occ_command preview:generate-all
 else
@@ -265,7 +265,7 @@ else
      crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $PREVIEW_USER >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
      touch "$VMLOGS"/previewgenerator.log
      chown www-data:www-data "$VMLOGS"/previewgenerator.log
-     
+
      # Pre generate everything
      occ_command preview:generate-all "$PREVIEW_USER"
 fi
