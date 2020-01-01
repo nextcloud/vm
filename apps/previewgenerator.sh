@@ -58,7 +58,7 @@ then
         occ_command config:system:delete "enabledPreviewProviders"
         
         # reset the cronjob
-        print_text_in_color $ICyan" "Resetting the cronjob for the preview-generation"
+        print_text_in_color "$ICyan" "Resetting the cronjob for the preview-generation"
         sed /'preview:pre-generate'/d /var/spool/cron/crontabs/www-data
     else
         exit
@@ -70,17 +70,17 @@ fi
 msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and get support for more filetypes.
 
 The currently supported filetypes are:
-- PNG
-- JPEG
-- GIF
-- BMP
-- MarkDown
-- MP3
-- TXT
-- Movie
-- Photoshop (needs imagick)
-- SVG (needs imagick)
-- TIFF (needs imagick)"
+* PNG
+* JPEG
+* GIF
+* BMP
+* MarkDown
+* MP3
+* TXT
+* Movie
+* Photoshop (needs imagick)
+* SVG (needs imagick)
+* TIFF (needs imagick)"
 
 msg_box "IMPORTANT NOTE!!
 
