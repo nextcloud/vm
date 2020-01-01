@@ -164,7 +164,7 @@ then
     rm -f results
 else
     # check if imagick ist installed and remove it
-    if is_this_installed imagick
+    if is_this_installed php-imagick
     then
         apt purge php-imagick -y
     fi
