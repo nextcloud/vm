@@ -27,19 +27,19 @@ then
     exit
 fi
 
-# Encryption may not be enabled #### encryption will always list, check if it's enabled by grepping the version number
-#if occ_command app:list | grep encryption
-#then
-#    msg_box "It seems like you have encryption enabled which is unsupported when using the preview generator"
-#    exit
-#fi
+# Encryption may not be enabled
+if [ -n "$(occ_command app:list | grep encryption | awk '{print $3}')" ]
+then
+    msg_box "It seems like you have encryption enabled which is unsupported when using the Preview Generator"
+    exit
+fi
 
-msg_box "This script will install the previewgerator. 
+msg_box "This script will install the Preview Generator. 
 
 It can speedup the loading of previews in Nextcloud a lot.
 
-Please note: If you continue, all your current previewgenerator settings will be lost, if any."
-if [[ "yes" == $(ask_yes_or_no "Do you want to install the previewgenerator?") ]]
+Please note: If you continue, all your current Preview Generator settings will be lost, if any."
+if [[ "yes" == $(ask_yes_or_no "Do you want to install the Preview Generator?") ]]
 then
     # Install preview generator
      print_text_in_color "$ICyan" "Installing the Preview Generator..."
@@ -67,7 +67,7 @@ else
     exit
 fi
 
-msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and get support for more filetypes.
+msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and add support for more filetypes.
 
 The currently supported filetypes are:
 * PNG
@@ -85,7 +85,6 @@ The currently supported filetypes are:
 msg_box "IMPORTANT NOTE!!
 
 Imagick will put your server at risk as it's is known to have several flaws.
-
 You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743
 
 Please note: If you choose not to install imagick, it will get removed now."
@@ -97,7 +96,7 @@ then
 
     # Choose file formats fo the case when imagick is installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" "" ON \
     "JPEG" "" ON \
     "GIF" "" ON \
@@ -175,7 +174,7 @@ else
     fi
     # Choose file formats fo the case when imagick is not installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" "" ON \
     "JPEG" "" ON \
     "GIF" "" ON \
@@ -238,11 +237,12 @@ occ_command config:app:set preview jpeg_quality --value="60"
 
 msg_box "In the last step you can define a specific Nextcloud user for which will be the user that runs the preview-generation. 
 
-The default behavoiur (just hit [ENTER]) is to run with the system user 'www-data' which will generate previews for all users. 
+The default behaviour (just hit [ENTER]) is to run with the system user 'www-data' which will generate previews for all users. 
 
 If you on the other hand choose to use a specific user, previews will ONLY be generated for that specific user."
 if [[ "no" == $(ask_yes_or_no "Do you want to choose a specific Nextcloud user to generate previews?") ]]
 then
+    print_text_in_color "$ICyan" "Using www-data (all Nextcloud users) for generating previews..."
     # Add crontab for www-data
     crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
     touch "$VMLOGS"/previewgenerator.log
