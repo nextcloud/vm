@@ -97,18 +97,18 @@ then
     
     # Choose file formats fo the case when imagick is installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"PNG" ON \
-"JPEG" ON \
-"GIF" ON \
-"BMP" ON \
-"MarkDown" ON \
-"MP3" ON \
-"TXT" ON \
-"Movie" OFF \
-"Photoshop" OFF \
-"SVG" OFF \
-"TIFF" OFF 2>results
+    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "PNG" "" ON \
+    "JPEG" "" ON \
+    "GIF" "" ON \
+    "BMP" "" ON \
+    "MarkDown" "" ON \
+    "MP3" "" ON \
+     "TXT" "" ON \
+    "Movie" "" OFF \
+    "Photoshop" "" OFF \
+    "SVG" "" OFF \
+    "TIFF" OFF "" 2>results
     
     while read -r -u 9 choice
     do
@@ -163,7 +163,6 @@ whiptail --title "Choose file formats" --checklist --separate-output "Now you ca
     done 9< results
     rm -f results
     clear      
-
 else
     # check if imagick ist installed and remove it
     if is_this_installed imagick
@@ -177,15 +176,15 @@ else
     fi    
     # Choose file formats fo the case when imagick is not installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"PNG" ON \
-"JPEG" ON \
-"GIF" ON \
-"BMP" ON \
-"MarkDown" ON \
-"MP3" ON \
-"TXT" ON \
-"Movie" OFF 2>results
+    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "PNG" "" ON \
+    "JPEG" "" ON \
+    "GIF" "" ON \
+    "BMP" "" ON \
+    "MarkDown" "" ON \
+    "MP3" "" ON \
+    "TXT" "" ON \
+    "Movie" OFF "" 2>results
 
     while read -r -u 9 choice
     do
