@@ -108,7 +108,7 @@ then
     "Movie" "" OFF \
     "Photoshop" "" OFF \
     "SVG" "" OFF \
-    "TIFF" OFF "" 2>results
+    "TIFF" "" OFF 2>results
     
     while read -r -u 9 choice
     do
@@ -184,7 +184,7 @@ else
     "MarkDown" "" ON \
     "MP3" "" ON \
     "TXT" "" ON \
-    "Movie" OFF "" 2>results
+    "Movie" "" OFF 2>results
 
     while read -r -u 9 choice
     do
