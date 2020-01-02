@@ -396,7 +396,7 @@ do
             clear
             run_static_script automatic_updates
         ;;
-        
+
         *)
         ;;
     esac
@@ -435,7 +435,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "LDAP" "(Windows Active directory)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF  \
-"CookieLifetime" "Configure after what time every Nextcloud user gets logged out in the Browser" OFF 2>results
+"CookieLifetime" "(Configure after what time every Nextcloud user gets logged out in the Browser)" OFF 2>results
 
 while read -r -u 11 choice
 do
