@@ -403,7 +403,7 @@ do
             whiptail --radiolist "Configure after what time (in seconds) after every Login every Nextcloud user gets logged out in the Browser\nSelect with the [ARROW] Keys and choose by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             "1800s" "half an hour" ON \
             "7200s" "two hours" OFF \
-	    "43200s" "half a day" OFF \
+            "43200s" "half a day" OFF \
             "172800s" "two days" OFF \
             "604800s" "one week" OFF \
             "2419200s" "four weeks" OFF \
@@ -427,7 +427,7 @@ do
                     "172800s")
                         occ_command config:system:set remember_login_cookie_lifetime --value="172800"
                     ;;
-		    
+                    
                     "604800s")
                         occ_command config:system:set remember_login_cookie_lifetime --value="604800"
                     ;;
@@ -435,16 +435,17 @@ do
                     "2419200s")
                         occ_command config:system:set remember_login_cookie_lifetime --value="2419200"
                     ;;
-		    
+                    
                     "Custom")
                         while true
                         do
                             COOKIE_LIFETIME=$(whiptail --inputbox "Please enter the Cookie Lifetime in seconds, so e.g. 1800 for half an hour or 3600 for an hour" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
                             if [[ "no"== $(ask_yes_or_no "Is this correct? $COOKIE_LIFETIME seconds") ]]
                             then
-                                msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. So please try again."
+                                msg_box "It seems like you weren't satisfied with your choice of ($COOKIE_LIFETIME) seconds. So please try again."
                             else
                                 break
+				occ_command config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
                             fi
                         done
                     ;;
