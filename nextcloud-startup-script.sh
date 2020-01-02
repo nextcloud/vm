@@ -436,7 +436,7 @@ do
                     if [ "$COOKIE_LIFETIME" -lt "1800" ]
                     then
                         msg_box "It seems like you have chosen a value below half an hour, which is not recommended. So please try again."
-                    elif [[ "no" == $(ask_yes_or_no "Is this correct? "$COOKIE_LIFETIME" seconds")  ]]
+                    elif [[ "no" == $(ask_yes_or_no "Is this correct? $COOKIE_LIFETIME seconds")  ]]
                     then
                         msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. So please try again."
                     else
