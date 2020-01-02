@@ -425,7 +425,7 @@ do
                         while true
                         do
                             COOKIE_LIFETIME=$(whiptail --inputbox "Please enter the Cookie Lifetime in seconds, so e.g. 1800 for half an hour or 3600 for an hour" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-                            if [[ "no"== $(ask_yes_or_no "Is this correct? $COOKIE_LIFETIME) ]]
+                            if [[ "no"== $(ask_yes_or_no "Is this correct? $COOKIE_LIFETIME s") ]]
                             then
                                 msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. So please try again."
                             else
