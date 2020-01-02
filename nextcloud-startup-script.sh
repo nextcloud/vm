@@ -398,13 +398,13 @@ do
             run_static_script automatic_updates
         ;;
 
-	"Configure the Cookie Lifetime")
+        "Configure the Cookie Lifetime")
             clear
             whiptail --radiolist "Configure after what time (in seconds) after every Login every Nextcloud user gets logged out in the Browser\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-	    "1800s" "half an hour" ON \
-	    "86400s" "one day" OFF \
-	    "604800s" "one week" OFF \
-	    "Custom" "setup a custom time" OFF 2>result
+            "1800s" "half an hour" ON \
+            "86400s" "one day" OFF \
+            "604800s" "one week" OFF \
+            "Custom" "setup a custom time" OFF 2>result
 	    
 	    while read -r -u 4 choices
 	    do
