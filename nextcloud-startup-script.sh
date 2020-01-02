@@ -400,7 +400,7 @@ do
 
         "Configure the Cookie Lifetime")
             clear
-            whiptail --radiolist "Configure after what time (in seconds) after every Login every Nextcloud user gets logged out in the Browser\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+            whiptail --radiolist "Configure after what time (in seconds) after every Login every Nextcloud user gets logged out in the Browser\nSelect with the [ARROW] Keys and choose by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             "1800s" "half an hour" ON \
             "86400s" "one day" OFF \
             "604800s" "one week" OFF \
