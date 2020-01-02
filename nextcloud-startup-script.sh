@@ -376,7 +376,8 @@ clear
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
-"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 2>results
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
+"Configure the Cookie Lifetime" "Configure after what time every Nextcloud user gets logged out in the Browser" OFF 2>results
 
 while read -r -u 9 choice
 do
@@ -395,6 +396,49 @@ do
 	"Automatic updates")
             clear
             run_static_script automatic_updates
+        ;;
+
+	"Configure the Cookie Lifetime")
+            clear
+            whiptail --radiolist "Configure after what time (in seconds) after every Login every Nextcloud user gets logged out in the Browser\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+	    "1800s" "half an hour" ON \
+	    "86400s" "one day" OFF \
+	    "604800s" "one week" OFF \
+	    "Custom" "setup a custom time" OFF 2>result
+	    
+	    while read -r -u 4 choices
+	    do
+	    	case $choices in
+		    "1800s")
+		        occ_command config:system:set remember_login_cookie_lifetime --value="1800"
+		    ;;
+		    
+		    "86400s")
+		        occ_command config:system:set remember_login_cookie_lifetime --value="86400"
+		    ;;
+		    
+		    "604800s")
+		        occ_command config:system:set remember_login_cookie_lifetime --value="604800"
+		    ;;
+		    
+		    "Custom")
+		        while true
+    			do
+        		    COOKIE_LIFETIME=$(whiptail --inputbox "Please enter the Cookie Lifetime in seconds, so e.g. 1800 for half an hour or 3600 for an hour" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        		    if [[ "no"== $(ask_yes_or_no "Is this correct? $COOKIE_LIFETIME) ]]
+        		    then
+            			msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. So please try again."
+        		    else
+            			break
+        		    fi
+    			done
+		    ;;
+	    
+	    	    *)
+		    ;;
+		esac
+	    done 4< result
+	    rm -f result
         ;;
 
         *)
