@@ -376,8 +376,7 @@ clear
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
-"Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
-"Configure the Cookie Lifetime" "Configure after what time every Nextcloud user gets logged out in the Browser" OFF 2>results
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 2>results
 
 while read -r -u 9 choice
 do
@@ -396,55 +395,6 @@ do
 	"Automatic updates")
             clear
             run_static_script automatic_updates
-        ;;
-
-        "Configure the Cookie Lifetime")
-            clear
-            COOKIE_LIFETIME=$(whiptail --radiolist  "Configure after what time (in seconds) after every Login every Nextcloud user gets logged out in the Browser\nSelect one with the [ARROW] Keys and the [SPACE] key and confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-            "1800s" "half an hour" ON \
-            "7200s" "two hours" OFF \
-            "43200s" "half a day" OFF \
-            "172800s" "two days" OFF \
-            "604800s" "one week" OFF \
-            "2419200s" "four weeks" OFF \
-            "Custom" "setup a custom time" OFF 3>&1 1>&2 2>&3)
-            
-            if [ "$COOKIE_LIFETIME" == "1800s" ]
-            then 
-                occ_command config:system:set remember_login_cookie_lifetime --value="1800"
-            elif [ "$COOKIE_LIFETIME" == "7200s" ]
-            then 
-                occ_command config:system:set remember_login_cookie_lifetime --value="7200"
-            elif [ "$COOKIE_LIFETIME" == "43200s" ]
-            then 
-                occ_command config:system:set remember_login_cookie_lifetime --value="43200"
-            elif [ "$COOKIE_LIFETIME" == "172800s" ]
-            then 
-                occ_command config:system:set remember_login_cookie_lifetime --value="172800"
-            elif [ "$COOKIE_LIFETIME" == "604800s" ]
-            then 
-                occ_command config:system:set remember_login_cookie_lifetime --value="604800"
-            elif [ "$COOKIE_LIFETIME" == "2419200s" ]
-            then 
-                occ_command config:system:set remember_login_cookie_lifetime --value="2419200"
-            elif [ "$COOKIE_LIFETIME" == "Custom" ]
-            then 
-                while true
-                do
-                    COOKIE_LIFETIME=$(whiptail --inputbox "Please enter the Cookie Lifetime in seconds, so e.g. 1800 for half an hour or 3600 for an hour\nIt is not recommended to set it to less than hafl an hour!" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-                    COOKIE_LIFETIME=${COOKIE_LIFETIME//[!0-9]/}
-                    if [ "$COOKIE_LIFETIME" -lt "1800" ]
-                    then
-                        msg_box "It seems like you have chosen a value below half an hour, which is not recommended. So please try again."
-                    elif [[ "no" == $(ask_yes_or_no "Is this correct? $COOKIE_LIFETIME seconds")  ]]
-                    then
-                        msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. So please try again."
-                    else
-                        occ_command config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
-                        break
-                    fi 
-                done
-            fi
         ;;
         
         *)
@@ -484,9 +434,10 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "LDAP" "(Windows Active directory)   " OFF \
-"Talk" "(Nextcloud Video calls and chat)   " OFF 2>results
+"Talk" "(Nextcloud Video calls and chat)   " OFF  \
+"Cookie Lifetime" "Configure after what time every Nextcloud user gets logged out in the Browser" OFF 2>results
 
-while read -r -u 9 choice
+while read -r -u 11 choice
 do
     case $choice in
         Fail2ban)
@@ -543,11 +494,16 @@ do
             clear
             run_app_script talk
         ;;
-
+	
+        Cookie Lifetime)
+            clear
+            run_app_script cookie_lifetime
+        ;;
+	
         *)
         ;;
     esac
-done 9< results
+done 11< results
 rm -f results
 clear
 
