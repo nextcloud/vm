@@ -435,7 +435,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "LDAP" "(Windows Active directory)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF  \
-"Cookie Lifetime" "Configure after what time every Nextcloud user gets logged out in the Browser" OFF 2>results
+"CookieLifetime" "Configure after what time every Nextcloud user gets logged out in the Browser" OFF 2>results
 
 while read -r -u 11 choice
 do
@@ -495,9 +495,9 @@ do
             run_app_script talk
         ;;
 	
-        Cookie Lifetime)
+        CookieLifetime)
             clear
-            run_app_script cookie_lifetime
+            run_app_script cookielifetime
         ;;
 	
         *)
