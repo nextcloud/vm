@@ -41,6 +41,15 @@ else
     apt install net-tools -y
 fi
 
+# Install net-tools if not existing
+if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    print_text_in_color "$IGreen" "whiptail OK"
+else
+    apt update -q4 & spinner_loading
+    apt install whiptail -y
+fi
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh

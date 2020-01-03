@@ -527,7 +527,7 @@ then
     sleep 3
     msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
 
-    In nextcloud_install_production.sh you can find the check somewhere around line #34.
+    In nextcloud_install_production.sh you can find the check somewhere around line #98.
 
     Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
@@ -979,7 +979,7 @@ fi
 home_sme_server() {
 if lshw -c system | grep -q NUC8i3BEH
 then
-    if lshw -c memory | grep -q BLS16G4S240FSD.16FBD
+    if lshw -c memory | grep -q BLS16G4
     then
         if lshw -c disk | grep -q ST2000LM015-2E81
         then
