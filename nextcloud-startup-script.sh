@@ -376,7 +376,8 @@ clear
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
-"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 2>results
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
+"CookieLifetime" "(Configure after what time every Nextcloud user gets logged out in the Browser)" OFF 2>results
 
 while read -r -u 9 choice
 do
@@ -395,6 +396,11 @@ do
 	"Automatic updates")
             clear
             run_static_script automatic_updates
+        ;;
+		
+        CookieLifetime)
+            clear
+            run_static_script cookielifetime
         ;;
 
         *)
@@ -434,10 +440,9 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "LDAP" "(Windows Active directory)   " OFF \
-"Talk" "(Nextcloud Video calls and chat)   " OFF  \
-"CookieLifetime" "(Configure after what time every Nextcloud user gets logged out in the Browser)" OFF 2>results
+"Talk" "(Nextcloud Video calls and chat)   " OFF 2>results
 
-while read -r -u 11 choice
+while read -r -u 9 choice
 do
     case $choice in
         Fail2ban)
@@ -495,15 +500,10 @@ do
             run_app_script talk
         ;;
 	
-        CookieLifetime)
-            clear
-            run_app_script cookielifetime
-        ;;
-	
         *)
         ;;
     esac
-done 11< results
+done 9< results
 rm -f results
 clear
 
