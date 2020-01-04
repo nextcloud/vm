@@ -499,7 +499,7 @@ do
             clear
             run_app_script talk
         ;;
-	
+
         *)
         ;;
     esac
