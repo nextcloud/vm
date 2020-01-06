@@ -440,21 +440,25 @@ certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "ser
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
 print_text_in_color "$ICyan" "Checking if port ${1} is open with https://ports.yougetsignal.com..."
-install_if_not curl
+install_if_not curl 
 # WAN Adress
 if check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${WANIP4}&portNumber=${1}" | grep -q "is open on"
-then
+then  
     print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
 # Domain name
 elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${2}&portNumber=${1}" | grep -q "is open on"
-then
+then  
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
-else
-    msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
-    any_key "Press any key to exit..."
+else  
+    msg_box "it seems like you port $1 is not open.\nThis can happen when your ISP or upstream GATEWAY banned port scan/detecting.\nPlease check your port status and make sure it is  open
+    if [[ "no" == $(ask_yes_or_no "Make sure you port $1 is open?") ]]
+    then  
+        msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
+        any_key "Press any key to exit..."
     exit 1
-fi
-}
+    fi   
+fi    
+}  
 
 check_distro_version() {
 # Check Ubuntu version
