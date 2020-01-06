@@ -467,7 +467,7 @@ elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsig
 then  
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else  
-    msg_box "it seems like you port $1 is not open.\nThis can happen when your ISP or upstream GATEWAY banned port scan/detecting.\nPlease check your port status and make sure it is  open
+    msg_box "it seems like you port $1 is not open.\nThis can happen when your ISP or upstream GATEWAY banned port scan/detecting.\nPlease check your port status and make sure it is  open"
     if [[ "no" == $(ask_yes_or_no "Make sure you port $1 is open?") ]]
     then  
         msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
