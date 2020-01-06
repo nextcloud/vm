@@ -45,7 +45,7 @@ elif [ "$COOKIE_LIFETIME" == "Custom" ]
 then 
     while true
     do
-        COOKIE_LIFETIME=$(whiptail --inputbox "Please enter the Cookie Lifetime in seconds, so e.g. 1800 for half an hour or 3600 for an hour\nIt is not recommended to set it to less than hafl an hour!" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        COOKIE_LIFETIME=$(whiptail --inputbox "Configure after what time (in seconds) after every Login every Nextcloud user gets logged out in the Browser\nPlease enter the Cookie Lifetime in seconds, so e.g. 1800 for half an hour or 3600 for an hour\nIt is not recommended to set it to less than half an hour!" "$WT_HEIGHT" "$WT_WIDTH" 1800 3>&1 1>&2 2>&3)
         COOKIE_LIFETIME=${COOKIE_LIFETIME//[!0-9]/}
         if [ "$COOKIE_LIFETIME" -lt "1800" ]
         then
