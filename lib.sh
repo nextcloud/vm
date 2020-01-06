@@ -434,8 +434,25 @@ fi
 le_subdomain() {
 a2dissite 000-default.conf
 service apache2 reload
-certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
-}
+print_text_in_color "$ICyan" "Try to verify cert through a FILE which locate in a specific directoy of your host"
+if eval "certbot certonly --standalone --pre-hook \"service apache2 stop\" --post-hook \"service apache2 start\" --agree-tos --rsa-key-size 4096 -d $SUBDOMAIN"
+then 
+    print_text_in_color "$ICyan" "verify cert successfully through the FILE"
+    echo "success" > /tmp/le_subdomain_test
+else 
+    print_text_in_color "$ICyan" "Failed to verify cert through the FILE. Try to verify cert through a DNS TXT record"
+    default_subdomain_le_1="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos --uir --hsts --server https://acme-v02.api.letsencrypt.org/directory -d $SUBDOMAIN"
+    default_subdomain_le_2="--pre-hook \"service apache2 stop\" --post-hook \"service apache2 start\""
+    if eval "certbot certonly --manual --manual-public-ip-logging-ok $default_subdomain_le_2 --preferred-challenges dns $default_subdomain_le_1"
+    then
+        print_text_in_color "$ICyan" "verify cert successfully through the DNS TXT record"
+        echo "success" > /tmp/le_subdomain_test
+    else
+        print_text_in_color "$IRed" "verify cert failed through the FILE and DNS TXT record"
+        return 1 
+    fi
+fi   
+} 
 
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
