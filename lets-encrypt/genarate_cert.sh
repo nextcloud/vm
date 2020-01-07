@@ -29,8 +29,6 @@ else
 fi  
 }   
 
-
-
 methods=(standalone dns)
 
 create_config() {
