@@ -6,6 +6,8 @@
 true
 # shellcheck source=lib.sh
 NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL $LETS_ENC/generate_cert.sh)
+
 unset NC_UPDATE
 unset OO_INSTALL
 
@@ -154,24 +156,8 @@ fi
 # Install certbot (Let's Encrypt)
 install_certbot
 
-# Generate certs
-if le_subdomain
-then
-    # Generate DHparams chifer
-    if [ ! -f "$DHPARAMS" ]
-    then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
-    fi
-    printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
-    a2ensite "$SUBDOMAIN.conf"
-    restart_webserver
-    # Install OnlyOffice
-    occ_command app:install onlyoffice
-else
-	print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
-    any_key "Press any key to continue... "
-    restart_webserver
-fi
+# Generate certs, and auto-configure if successful
+generate_cert $SUBDOMAIN "onlyoffice"
 
 # Set config for OnlyOffice
 if [ -d "$NC_APPS_PATH"/onlyoffice ]

@@ -39,6 +39,7 @@ LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
+
 # User information
 NCPASS=nextcloud
 NCUSER=ncadmin
@@ -222,9 +223,9 @@ domain_check_200() {
     else
         print_text_in_color "$IRed" "DNS lookup failed with nslookup."
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
-	print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
+        print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
         nslookup "${1}" $DNS1
-        return 1
+        exit 1
     fi
 
     # Is the DNS record same as the external IP address of the server?
@@ -242,10 +243,10 @@ msg_box "As you noticed your WAN IP and DNS record doesn't match. This can happe
 If you feel brave, or are sure that everything is setup correctly, then you can choose to skip this test in the next step.
 
 You can always contact us for further support if you wish: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
-	if [[ "no" == $(ask_yes_or_no "Do you feel brave and want to continue?") ]]
+    if [[ "no" == $(ask_yes_or_no "Do you feel brave and want to continue?") ]]
         then
-	    exit
-	fi
+        exit
+    fi
     fi
 }
 
@@ -430,52 +431,28 @@ else
 fi
 }
 
-# Let's Encrypt for subdomains
-le_subdomain() {
-a2dissite 000-default.conf
-service apache2 reload
-print_text_in_color "$ICyan" "Try to verify cert through a FILE which locate in a specific directoy of your host"
-if eval "certbot certonly --standalone --pre-hook \"service apache2 stop\" --post-hook \"service apache2 start\" --agree-tos --rsa-key-size 4096 -d $SUBDOMAIN"
-then 
-    print_text_in_color "$ICyan" "verify cert successfully through the FILE"
-    echo "success" > /tmp/le_subdomain_test
-else 
-    print_text_in_color "$ICyan" "Failed to verify cert through the FILE. Try to verify cert through a DNS TXT record"
-    default_subdomain_le_1="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos --uir --hsts --server https://acme-v02.api.letsencrypt.org/directory -d $SUBDOMAIN"
-    default_subdomain_le_2="--pre-hook \"service apache2 stop\" --post-hook \"service apache2 start\""
-    if eval "certbot certonly --manual --manual-public-ip-logging-ok $default_subdomain_le_2 --preferred-challenges dns $default_subdomain_le_1"
-    then
-        print_text_in_color "$ICyan" "verify cert successfully through the DNS TXT record"
-        echo "success" > /tmp/le_subdomain_test
-    else
-        print_text_in_color "$IRed" "verify cert failed through the FILE and DNS TXT record"
-        return 1 
-    fi
-fi   
-} 
-
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
 print_text_in_color "$ICyan" "Checking if port ${1} is open with https://ports.yougetsignal.com..."
 install_if_not curl 
 # WAN Adress
 if check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${WANIP4}&portNumber=${1}" | grep -q "is open on"
-then  
+then
     print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
 # Domain name
 elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${2}&portNumber=${1}" | grep -q "is open on"
-then  
+then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
-else  
+else
     msg_box "it seems like you port $1 is not open.\nThis can happen when your ISP or upstream GATEWAY banned port scan/detecting.\nPlease check your port status and make sure it is open"
-    if [[ "no" == $(ask_yes_or_no "Make sure you port $1 is open?") ]]
-    then  
+    if [[ "no" == $(ask_yes_or_no "Are you sure you port $1 is open?") ]]
+    then
         msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
         any_key "Press any key to exit..."
     exit 1
-    fi   
-fi    
-}  
+    fi
+fi
+}
 
 check_distro_version() {
 # Check Ubuntu version
@@ -576,8 +553,8 @@ fi
 check_command() {
   if ! "$@";
   then
-     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
-	 print_text_in_color "$IRed" "$* failed"
+    print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+    print_text_in_color "$IRed" "$* failed"
     exit 1
   fi
 }
@@ -876,14 +853,14 @@ fi
 
 set_max_count() {
 if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
-	print_text_in_color "$ICyan" "Max map count already set, skipping..."
+    print_text_in_color "$ICyan" "Max map count already set, skipping..."
 else
-	sysctl -w vm.max_map_count=262144
-	{
-  	echo "###################################################################"
-  	echo "# Docker ES max virtual memory"
-  	echo "vm.max_map_count=262144"
-	} >> /etc/sysctl.conf
+    sysctl -w vm.max_map_count=262144
+    {
+    echo "###################################################################"
+    echo "# Docker ES max virtual memory"
+    echo "vm.max_map_count=262144"
+    } >> /etc/sysctl.conf
 fi
 }
 
@@ -968,7 +945,7 @@ done
 }
 
 print_text_in_color() {
-	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
+    printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
 # Apply patch
@@ -985,7 +962,7 @@ then
     if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "Applying patch https://github.com/nextcloud/${2}/pull/${1} ..."
-	git apply /tmp/"${1}".patch
+    git apply /tmp/"${1}".patch
     fi
 fi
 }
