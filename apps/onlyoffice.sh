@@ -48,15 +48,16 @@ sudo bash onlyoffice.sh"
     exit 1
 fi
 
-# check if apache2 evasive-mod is enabled and disable it because of compatibility issues
-if [ "$(Apache2ctl -M | grep evasive)" != "" ]
+# Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
+if [ "$(apache2ctl -M | grep evasive)" != "" ]
 then
-    msg_box "Please note: if you continue, the ddos protection for webservices will get disabled now, because of compatibility issues with onlyoffice."
-    if [[ "no" == $(ask_yes_or_no "So do you want to continue?")  ]]
+    msg_box "We noticed that 'mod_envasive' is installed which is the DDOS protection for webservices. It have comptibility issues with OnlyOffice and you can choose to disable it in the next step."
+    if [[ "no" == $(ask_yes_or_no "Do you want to disable DDOS protection?")  ]]
         then
-            exit 1
+            sleep 0.1
         else
-            a2dismod evasive
+            a2dismod mod-evasive
+            apt -y install libapache2-mod-evasive
     fi
 fi
 
