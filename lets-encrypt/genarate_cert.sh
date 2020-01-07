@@ -97,7 +97,7 @@ fi
     
 # Generate the cert
 generate_cert() {
-printf "%b" "${IRed}try to generate a cert and auto-configure it.\n${Color_Off}"
+printf "%b" "${ICyan}try to generate a cert and auto-configure it.\n${Color_Off}"
 if [ "$2" == "nextcloud" ]; then
     default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos  --uir --hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 else
