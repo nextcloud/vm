@@ -58,7 +58,7 @@ then
     else
         a2dismod evasive
         a2dismod mod-evasive
-        apt -y install libapache2-mod-evasive
+        apt purge libapache2-mod-evasive -y
     fi
 fi
 
