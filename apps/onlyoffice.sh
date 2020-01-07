@@ -51,7 +51,7 @@ fi
 # Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
 if [ "$(apache2ctl -M | grep evasive)" != "" ]
 then
-    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and $
+    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and will get disabled if you continue."
     if [[ "no" == $(ask_yes_or_no "Do you want to disable DDOS protection?")  ]]
         then
             sleep 0.1
