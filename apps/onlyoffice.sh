@@ -48,6 +48,18 @@ sudo bash onlyoffice.sh"
     exit 1
 fi
 
+# check if apache2 evasive-mod is enabled and disable it because of compatibility issues
+if [ ${Apache2ctl -M | grep evasive} != "" ]
+then
+    msg_box "Please note: if you continue, the ddos protection for webservices will get disabled now, because of compatibility issues with onlyoffice."
+    if [[ "no" == $(ask_yes_or_no "So do you want to continue?")  ]]
+        then
+            exit 1
+        else
+            a2dismod evasive
+    fi
+fi
+
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
 domain_check_200 "$SUBDOMAIN"
