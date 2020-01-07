@@ -53,12 +53,12 @@ if [ "$(apache2ctl -M | grep evasive)" != "" ]
 then
     msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and will get disabled if you continue."
     if [[ "no" == $(ask_yes_or_no "Do you want to disable DDOS protection?")  ]]
-        then
-            sleep 0.1
-        else
-            a2dismod evasive
-	    a2dismod mod-evasive
-            apt -y install libapache2-mod-evasive
+    then
+        sleep 0.1
+    else
+        a2dismod evasive
+	a2dismod mod-evasive
+        apt -y install libapache2-mod-evasive
     fi
 fi
 
