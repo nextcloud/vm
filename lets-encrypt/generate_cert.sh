@@ -59,7 +59,7 @@ if [ -d "$CERTFILES" ]
     if [ "$2" == "nextcloud" ]
     then
         check_command bash "$SCRIPTS/test-new-config.sh" "$1.conf"
-        exit 0
+        return 0
     else
         print_text_in_color "${IGreen}" "Certs are generated!"
         a2ensite "$1.conf"
@@ -127,6 +127,7 @@ for f in "${methods[@]}";do
     if $f
     then
         create_config $1 $2
+        return 0
     else
         attempts_left "$f" $2
     fi
