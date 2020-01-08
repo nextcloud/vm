@@ -48,6 +48,21 @@ sudo bash onlyoffice.sh"
     exit 1
 fi
 
+# Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
+if [ "$(apache2ctl -M | grep evasive)" != "" ]
+then
+    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and you can now choose to disable it."
+    if [[ "no" == $(ask_yes_or_no "Do you want to disable DDOS protection?")  ]]
+    then
+        print_text_in_color "$ICyan" "Keeping mod_evasive active."
+    else
+        a2dismod evasive
+        # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
+        apt purge libapache2-mod-evasive -y
+	systemctl restart apache2
+    fi
+fi
+
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
 domain_check_200 "$SUBDOMAIN"
