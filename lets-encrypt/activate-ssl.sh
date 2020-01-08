@@ -102,7 +102,6 @@ ssl_conf="/etc/apache2/sites-available/"$domain.conf""
 # DHPARAM
 DHPARAMS="$CERTFILES/$domain/dhparam.pem"
 
-
 # Check if "$ssl.conf" exists, and if, then delete
 if [ -f "$ssl_conf" ]
 then
