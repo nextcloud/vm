@@ -18,7 +18,7 @@ debug_mode
 # Check if root
 root_check
 
-COOKIE_LIFETIME=$(whiptail --radiolist  "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+COOKIE_LIFETIME=$(whiptail --radiolist  "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\n\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "1800s" "half an hour" ON \
 "7200s" "two hours" OFF \
 "43200s" "half a day" OFF \
@@ -49,7 +49,7 @@ elif [ "$COOKIE_LIFETIME" == "Custom" ]
 then 
     while true
     do
-        COOKIE_LIFETIME=$(whiptail --inputbox "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\nPlease enter the Cookie Lifetime in seconds, so e.g. 1800 for half an hour or 3600 for an hour\nIt is not recommended to set it to less than half an hour!" "$WT_HEIGHT" "$WT_WIDTH" 1800 3>&1 1>&2 2>&3)
+        COOKIE_LIFETIME=$(whiptail --inputbox "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\n\nPlease enter the Cookie Lifetime in seconds, so e.g. 1800 for half an hour or 3600 for an hour\n\n You can not set a value below 30 minutes (1800 seconds)." "$WT_HEIGHT" "$WT_WIDTH" 1800 3>&1 1>&2 2>&3)
         COOKIE_LIFETIME=${COOKIE_LIFETIME//[!0-9]/}
         if [ "$COOKIE_LIFETIME" -lt "1800" ] || [ "$COOKIE_LIFETIME" == "" ]
         then
