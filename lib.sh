@@ -225,7 +225,7 @@ domain_check_200() {
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
         print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
         nslookup "${1}" $DNS1
-        retrun 1
+        return 1
     fi
 
     # Is the DNS record same as the external IP address of the server?
