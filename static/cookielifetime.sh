@@ -64,10 +64,4 @@ then
             break
         fi
     done
-    while true
-    do
-
-            break
-        fi
-    done
 fi
