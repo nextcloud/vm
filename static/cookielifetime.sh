@@ -25,8 +25,7 @@ COOKIE_LIFETIME=$(whiptail --radiolist  "Configure the logout time (in seconds) 
 "172800s" "2 days" OFF \
 "604800s" "1 week" OFF \
 "2419200s" "4 weeks" OFF \
-"Custom" "setup a custom time" OFF \
-"OFF" "disable the logout time to stay logged in" OFF 3>&1 1>&2 2>&3)
+"Custom" "setup a custom time" OFF 3>&1 1>&2 2>&3)
 
 if [ "$COOKIE_LIFETIME" == "1800s" ]
 then
@@ -71,12 +70,4 @@ then
             break
         fi
     done
-elif [ "$COOKIE_LIFETIME" == "OFF" ]
-then
-    msg_box "Please Note: Disabling the logout time can be a big security issue."
-    if [[ "yes" == $(ask_yes_or_no "Do you want to disable the logout time?")  ]]
-    then
-        occ_command config:system:set remember_login_cookie_lifetime --value="0"
-    else
-        sleep 1
 fi
