@@ -1089,6 +1089,15 @@ else
 fi
 }
 
+# Check if the value is a number
+# EXAMPLE: https://github.com/nextcloud/vm/pull/1012
+check_if_number() {
+case "${1}" in
+    ''|*[!0-9]*) return 1 ;;
+    *) return 0 ;;
+esac
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
