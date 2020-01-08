@@ -3,7 +3,6 @@
 true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-. <(curl -sL $LETS_ENC/generate_cert.sh)
 
 # T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
