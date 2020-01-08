@@ -997,16 +997,7 @@ fi
 }
 
 # Check if the value is a number
-# EXAMPLE:
-# while true
-# do
-# if check_if_number $COOKIE_LIFETIME
-# then
-#    break
-# else
-#    echo "The value you entered doesn't seem to be a number between 0-9, please enter a valid number."
-# fi
-# done
+# EXAMPLE: https://github.com/nextcloud/vm/pull/1012
 check_if_number() {
 case "${1}" in
     ''|*[!0-9]*) return 1 ;;
