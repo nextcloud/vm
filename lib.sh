@@ -225,7 +225,7 @@ domain_check_200() {
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
         print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
         nslookup "${1}" $DNS1
-        exit 0
+        retrun 1
     fi
 
     # Is the DNS record same as the external IP address of the server?
@@ -433,78 +433,72 @@ fi
 
 #generate certs and auto-configure
 # https://certbot.eff.org/docs/using.html#certbot-command-line-options
-standalone() {
-# Generate certs
-if eval "certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
-then
-    return 0
-else
-    return 1
-fi
-}
-
-tls-alpn-01() {
-if eval "certbot certonly --preferred-challenges tls-alpn-01 $default_le"
-then
-    return 0
-else
-    return 1
-fi
-}
-
-dns() {
-if eval "certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
-then
-    return 0
-else
-    return 1
-fi
-}
-
-methods=(standalone dns)
-
-create_config() {
-#Check if $CERTFILES exists
-if [ -d "$CERTFILES" ]
- then
-    # Generate DHparams chifer
-    if [ ! -f "$DHPARAMS" ]
-    then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
-    fi
-    # Activate new config
+generate_cert() {
+    print_text_in_color "${ICyan}" "try to generate a cert and auto-configure it."
     if [ "$2" == "nextcloud" ]
     then
-        check_command bash "$SCRIPTS/test-new-config.sh" "$1.conf"
-        return 0
+        default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos  --uir --hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
     else
-        print_text_in_color "${IGreen}" "Certs are generated!"
-        a2ensite "$1.conf"
-        restart_webserver
-        # Install OnlyOffice
-        occ_command app:install "$2"
-        return 0
+        a2dissite 000-default.conf
+        service apache2 reload
+        default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos --server https://acme-v02.api.letsencrypt.org/directory -d $1"
     fi
-fi
-}
-
-attempts_left() {
-if [ "$1" == "standalone" ]
-then
-    print_text_in_color "${ICyan}" "It seems like no certs were generated, we will do 1 more try."
-    any_key "Press any key to continue..."
-#elif [ "$method" == "tls-alpn-01" ]
-#then
-#    print_text_in_color "${ICyan}" "It seems like no certs were generated, we will do 1 more try."
-#    any_key "Press any key to continue..."
-elif [ "$1" == "dns" ]
-then
-    print_text_in_color "${IRed}" "It seems like no certs were generated, please check your DNS and try again."
-    any_key "Press any key to continue..."
-    if [ "$2" == "nextcloud" ]
+    if eval "certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
     then
-        # Failed
-        msg_box "Sorry, last try failed as well. :/
+        if [ -d "$CERTFILES" ]
+        then
+            # Generate DHparams chifer
+            if [ ! -f "$DHPARAMS" ]
+            then
+                openssl dhparam -dsaparam -out "$DHPARAMS" 4096
+            fi
+            # Activate new config
+            if [ "$2" == "nextcloud" ]
+            then
+                check_command bash "$SCRIPTS/test-new-config.sh" "$1.conf"
+                return 0
+            else
+                print_text_in_color "${IGreen}" "Certs are generated!"
+                a2ensite "$1.conf"
+                restart_webserver
+                # Install OnlyOffice
+                occ_command app:install "$2"
+                return 0
+            fi
+        fi
+    else
+        print_text_in_color "${ICyan}" "It seems like no certs were generated, we will do 1 more try."
+        any_key "Press any key to continue..."
+        if eval "certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
+        then
+            if [ -d "$CERTFILES" ]
+            then
+                # Generate DHparams chifer
+                if [ ! -f "$DHPARAMS" ]
+                then
+                    openssl dhparam -dsaparam -out "$DHPARAMS" 4096
+                fi
+                # Activate new config
+                if [ "$2" == "nextcloud" ]
+                then
+                    check_command bash "$SCRIPTS/test-new-config.sh" "$1.conf"
+                    return 0
+                else
+                    print_text_in_color "${IGreen}" "Certs are generated!"
+                    a2ensite "$1.conf"
+                    restart_webserver
+                    # Install OnlyOffice
+                    occ_command app:install "$2"
+                    return 0
+                fi
+            fi
+        else
+            print_text_in_color "${IRed}" "It seems like no certs were generated, please check your DNS and try again."
+            any_key "Press any key to continue..."
+            if [ "$2" == "nextcloud" ]
+            then
+                # Failed
+msg_box "Sorry, last try failed as well. :/
 
 The script is located in $SCRIPTS/activate-ssl.sh
 Please try to run it again some other time with other settings.
@@ -518,59 +512,41 @@ https://github.com/nextcloud/vm
 
 The script will now do some cleanup and revert the settings."
 
-        #Cleanup
-        apt remove certbot -y
-        apt autoremove -y
-        clear
-    else
-        restart_webserver
-        exit 0
+                #Cleanup
+                apt remove certbot -y
+                apt autoremove -y
+                clear
+            else
+                restart_webserver
+                exit 0
+            fi
+        fi
     fi
-fi
 }
 
-# Generate the cert
-generate_cert() {
-print_text_in_color "${ICyan}" "try to generate a cert and auto-configure it."
-if [ "$2" == "nextcloud" ]
-then
-    default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos  --uir --hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
-else
-    a2dissite 000-default.conf
-    service apache2 reload
-    default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos --server https://acme-v02.api.letsencrypt.org/directory -d $1"
-fi
-for f in "${methods[@]}";do
-    if $f
-    then
-        create_config "$1" "$2"
-        return 0
-    else
-        attempts_left "$f" "$2"
-    fi
-done
-}
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
-print_text_in_color "$ICyan" "Checking if port ${1} is open with https://ports.yougetsignal.com..."
-install_if_not curl 
-# WAN Adress
-if check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${WANIP4}&portNumber=${1}" | grep -q "is open on"
-then
-    print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
-# Domain name
-elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${2}&portNumber=${1}" | grep -q "is open on"
-then
-    print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
-else
-    msg_box "it seems like you port $1 is not open.\nThis can happen when your ISP or upstream GATEWAY banned port scan/detecting.\nPlease check your port status and make sure it is open"
-    if [[ "no" == $(ask_yes_or_no "Are you sure you port $1 is open?") ]]
+    print_text_in_color "$ICyan" "Checking if port ${1} is open with https://ports.yougetsignal.com..."
+    install_if_not curl 
+    # WAN Adress
+    if check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${WANIP4}&portNumber=${1}" | grep -q "is open on"
     then
-        msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
-        any_key "Press any key to exit..."
-    exit 0
+        print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
+        # Domain name
+    elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${2}&portNumber=${1}" | grep -q "is open on"
+    then
+        print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
+    else
+msg_box "It seems like the port ${1} is closed. This could be because your ISP has blocked the port, or that the port isn't open.
+
+If you are 100% sure the port ${1} is open you can now choose to continue. There are no guarantees that it will work anyway though, since Let's Encrypt depend on that the port ${1} is open and accessible from outside your network."
+        if [[ "no" == $(ask_yes_or_no "Are you 100% sure the port ${1} is open?") ]]
+        then
+            msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
+            any_key "Press any key to exit..."
+            exit 0
+        fi
     fi
-fi
 }
 
 check_distro_version() {
