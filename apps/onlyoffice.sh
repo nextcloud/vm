@@ -156,7 +156,7 @@ fi
 install_certbot
 
 # Generate certs, and auto-configure if successful
-generate_cert ${SUBDOMAIN} "onlyoffice"
+generate_cert "$SUBDOMAIN" "onlyoffice"
 
 # Set config for OnlyOffice
 if [ -d "$NC_APPS_PATH"/onlyoffice ]

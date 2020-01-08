@@ -225,7 +225,7 @@ domain_check_200() {
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
         print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
         nslookup "${1}" $DNS1
-        exit 1
+        exit 0
     fi
 
     # Is the DNS record same as the external IP address of the server?
@@ -524,7 +524,7 @@ The script will now do some cleanup and revert the settings."
         clear
     else
         restart_webserver
-        exit 1
+        exit 0
     fi
 fi
 }
@@ -568,7 +568,7 @@ else
     then
         msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
         any_key "Press any key to exit..."
-    exit 1
+    exit 0
     fi
 fi
 }

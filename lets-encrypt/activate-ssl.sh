@@ -204,4 +204,4 @@ then
 fi
 
 #Generate certs, and auto-configure if successful
-generate_cert ${domain} "nextcloud"
+generate_cert "$domain" "nextcloud"
