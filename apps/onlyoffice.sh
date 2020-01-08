@@ -6,7 +6,6 @@
 true
 # shellcheck source=lib.sh
 NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL $LETS_ENC/generate_cert.sh)
 
 unset NC_UPDATE
 unset OO_INSTALL
