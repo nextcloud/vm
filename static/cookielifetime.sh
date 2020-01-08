@@ -53,15 +53,9 @@ then
         if ! check_if_number "$COOKIE_LIFETIME"
         then
             msg_box "The value you entered doesn't seem to be a number between 0-9, please enter a valid number."
-        else
-            break
-        fi
-    done
-    while true
-    do
-        if [ "$COOKIE_LIFETIME" -lt "1800" ] || [ "$COOKIE_LIFETIME" == "" ]
+        elif [ "$COOKIE_LIFETIME" -lt "1800" ]
         then
-            msg_box "It seems like you have chosen a value below 30 minutes. Please try again."
+            msg_box "Please choose a value more than 1800 seconds."
         elif [[ "no" == $(ask_yes_or_no "Is this correct? $COOKIE_LIFETIME seconds")  ]]
         then
             msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. Please try again."
