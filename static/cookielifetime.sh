@@ -51,7 +51,7 @@ then
     do
         COOKIE_LIFETIME=$(whiptail --inputbox "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\nPlease enter the Cookie Lifetime in seconds, so e.g. 1800 for half an hour or 3600 for an hour\nIt is not recommended to set it to less than half an hour!" "$WT_HEIGHT" "$WT_WIDTH" 1800 3>&1 1>&2 2>&3)
         COOKIE_LIFETIME=${COOKIE_LIFETIME//[!0-9]/}
-        if [ "$COOKIE_LIFETIME" < "1800" -o "$COOKIE_LIFETIME" == "" ]
+        if [ "$COOKIE_LIFETIME" -lt "1800" ] || [ "$COOKIE_LIFETIME" == "" ]
         then
             msg_box "It seems like you have chosen a value below half an hour, which is not recommended.Please try again."
         elif [[ "no" == $(ask_yes_or_no "Is this correct? $COOKIE_LIFETIME seconds")  ]]
