@@ -7,7 +7,7 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-print_text_in_color "$ICyan" "Configuring automatic updates..."
+print_text_in_color "$ICyan" "Configuring Cookie Lifetime timeout..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
