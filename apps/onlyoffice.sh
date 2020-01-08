@@ -54,10 +54,10 @@ then
     msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and you can now choose to disable it."
     if [[ "no" == $(ask_yes_or_no "Do you want to disable DDOS protection?")  ]]
     then
-        print_text_in_color "$Cyan" "Keeping mod_evasive active."
+        print_text_in_color "$ICyan" "Keeping mod_evasive active."
     else
         a2dismod evasive
-        a2dismod mod-evasive
+        # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
         apt purge libapache2-mod-evasive -y
 	systemctl restart apache2
     fi
