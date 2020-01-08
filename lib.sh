@@ -482,7 +482,7 @@ if [ -d "$CERTFILES" ]
         a2ensite "$1.conf"
         restart_webserver
         # Install OnlyOffice
-        occ_command app:install $2
+        occ_command app:install "$2"
         return 0
     fi
 fi
@@ -543,10 +543,10 @@ fi
 for f in "${methods[@]}";do
     if $f
     then
-        create_config $1 $2
+        create_config "$1" "$2"
         return 0
     else
-        attempts_left "$f" $2
+        attempts_left "$f" "$2"
     fi
 done
 }

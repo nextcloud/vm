@@ -166,7 +166,7 @@ fi
 install_certbot
 
 # Generate certs and  auto-configure  if successful
-generate_cert $SUBDOMAIN "richdocuments"
+generate_cert ${SUBDOMAIN} "richdocuments"
 
 # Set config for RichDocuments (Collabora App)
 if [ -d "$NC_APPS_PATH"/richdocuments ]
