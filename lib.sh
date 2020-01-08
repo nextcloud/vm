@@ -1008,7 +1008,7 @@ fi
 # fi
 # done
 check_if_number() {
-case $1 in
+case "${1}" in
     ''|*[!0-9]*) return 1 ;;
     *) return 0 ;;
 esac
