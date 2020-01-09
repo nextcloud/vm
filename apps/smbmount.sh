@@ -71,14 +71,17 @@ then
     if [ "$(grep /mnt/smbshares/1 /etc/fstab)" == "" ]
     then 
         echo "$SERVER_SHARE_NAME /mnt/smbshares/1 cifs username=$SMB_USER,password=$SMB_PASSWORD,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        mkdir -p /mnt/smbshares/1
         mount /mnt/smbshares/1
     elif [ "$(grep /mnt/smbshares/2 /etc/fstab)" == "" ]
     then
         echo "$SERVER_SHARE_NAME /mnt/smbshares/2 cifs username=$SMB_USER,password=$SMB_PASSWORD,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        mkdir -p /mnt/smbshares/2
         mount /mnt/smbshares/2
     elif [ "$(grep /mnt/smbshares/3 /etc/fstab)" == "" ]
     then
         echo "$SERVER_SHARE_NAME /mnt/smbshares/3 cifs username=$SMB_USER,password=$SMB_PASSWORD,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        mkdir -p /mnt/smbshares/3
         mount /mnt/smbshares/3
     else
         msg_box "No mounting slots available. Please delete one SMB-Share."
