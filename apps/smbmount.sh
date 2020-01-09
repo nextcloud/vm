@@ -36,6 +36,30 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
 then
+    whiptail --title "mount SMB-Shares" --checklist --separate-output "This option let you mount SMB-Shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF \
+    "/mnt/smbshares/2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $1}')" OFF \
+    "/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF 2>results
+    
+    while read -r -u 11 choice
+    do
+        case $choice in
+            "/mnt/smbshares/1")
+                mount /mnt/smbshare/1
+            ;;
+            
+            "/mnt/smbshares/2")
+                mount /mnt/smbshare/2
+            ;;
+            "/mnt/smbshares/3")
+                mount /mnt/smbshare/3
+            ;;
+            
+            *)
+            ;;
+        esac
+    done 11< results
+    rm -f results
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
 then
