@@ -160,7 +160,7 @@ then
                 then
                     umount /mnt/smbshares/1 -f
                 fi
-                sed -i '/mnt/smbshares/1' /etc/fstab
+                sed -i '/\/mnt\/smbshares\/1/d' /etc/fstab
             ;;
             
             "/mnt/smbshares/2")
@@ -168,14 +168,14 @@ then
                 then
                     umount /mnt/smbshares/2 -f
                 fi
-                sed -i '/mnt/smbshares/2' /etc/fstab
+                sed -i '/\/mnt\/smbshares\/2/d' /etc/fstab
             ;;
             "/mnt/smbshares/3")
                 if [[ $(findmnt -M "/mnt/smbshares/3") ]]
                 then
                     umount /mnt/smbshares/3 -f
                 fi
-                sed -i '/mnt/smbshares/3' /etc/fstab
+                ssed -i '/\/mnt\/smbshares\/3/d' /etc/fstab
             ;;
             
             *)
