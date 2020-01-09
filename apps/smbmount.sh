@@ -73,16 +73,37 @@ then
         echo "$SERVER_SHARE_NAME /mnt/smbshares/1 cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
         mkdir -p /mnt/smbshares/1
         mount /mnt/smbshares/1
+        if [[ ! $(findmnt -M "/mnt/smbshares/1") ]]
+        then
+            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
+            sed -i '/\/mnt\/smbshares\/1/d' /etc/fstab
+        else
+            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/1.\nYou can now use the Nextcloud external storage app to access files there."
+        fi
     elif [ "$(grep /mnt/smbshares/2 /etc/fstab)" == "" ]
     then
         echo "$SERVER_SHARE_NAME /mnt/smbshares/2 cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
         mkdir -p /mnt/smbshares/2
         mount /mnt/smbshares/2
+        if [[ ! $(findmnt -M "/mnt/smbshares/2") ]]
+        then
+            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
+            sed -i '/\/mnt\/smbshares\/2/d' /etc/fstab
+        else
+            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/2.\nYou can now use the Nextcloud external storage app to access files there."
+        fi
     elif [ "$(grep /mnt/smbshares/3 /etc/fstab)" == "" ]
     then
         echo "$SERVER_SHARE_NAME /mnt/smbshares/3 cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
         mkdir -p /mnt/smbshares/3
         mount /mnt/smbshares/3
+        if [[ ! $(findmnt -M "/mnt/smbshares/3") ]]
+        then
+            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
+            sed -i '/\/mnt\/smbshares\/3/d' /etc/fstab
+        else
+                        msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/3.\nYou can now use the Nextcloud external storage app to access files there."
+        fi
     else
         msg_box "No mounting slots available. Please delete one SMB-Share."
     fi
