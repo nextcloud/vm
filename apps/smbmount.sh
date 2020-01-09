@@ -33,6 +33,7 @@ SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manag
 
 if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
 then
+    
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
 then
@@ -63,7 +64,7 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
 then
-    grep /mnt/smbshares /etc/fstab
+    msg_box "$(grep /mnt/smbshares /etc/fstab)" 
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
 then
