@@ -39,6 +39,7 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
 then
+    grep /mnt/smbshares /etc/fstab
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
 then
