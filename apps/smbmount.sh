@@ -27,6 +27,7 @@ chmod 0600 /etc/fstab
 SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manage SMB-Shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "add a SMB-Mount" "(and mount/connect it)" ON \
 "mount SMB-Shares" "(connect SMB-Shares)" OFF \
+"show all SMB-Mounts" "" OFF \
 "unmount SMB-Shares" "(disconnect SMB-Shares)" OFF \
 "delete SMB-Mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
 
@@ -34,6 +35,9 @@ if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
 then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
+then
+    run_app_script smbmount
+elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
 then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
