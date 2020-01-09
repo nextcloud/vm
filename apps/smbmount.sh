@@ -37,7 +37,7 @@ if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
 then
     while true
     do
-        SERVER_SHARE_NAME=$(whiptail --inputbox "Please Enter the Server and Share-Name like this:\n//Server/Share" //Server/Share "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        SERVER_SHARE_NAME=$(whiptail --inputbox "Please Enter the Server and Share-Name like this:\n//Server/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
         if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
         then
             msg_box "It seems like your weren't satisfied by the Path you entered. Please try again."
