@@ -153,16 +153,25 @@ then
     do
         case $choice in
             "/mnt/smbshares/1")
-                umount /mnt/smbshare/1 -f
+                if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+                then
+                    umount /mnt/smbshare/1 -f
+                fi
                 sed -i '/mnt/smbshare/1' /etc/fstab
             ;;
             
             "/mnt/smbshares/2")
-                umount /mnt/smbshare/2 -f
+                if [[ $(findmnt -M "/mnt/smbshares/2") ]]
+                then
+                    umount /mnt/smbshare/2 -f
+                fi
                 sed -i '/mnt/smbshare/2' /etc/fstab
             ;;
             "/mnt/smbshares/3")
-                umount /mnt/smbshare/3 -f
+                if [[ $(findmnt -M "/mnt/smbshares/3") ]]
+                then
+                    umount /mnt/smbshare/3 -f
+                fi
                 sed -i '/mnt/smbshare/3' /etc/fstab
             ;;
             
