@@ -33,7 +33,51 @@ SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manag
 
 if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
 then
-    
+    while true
+    do
+        SERVER_SHARE_NAME=$(whiptail --inputbox "Please Enter the Server and Share-Name like this:\n//Server/Share" //Server/Share "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
+        then
+            msg_box "It seems like your weren't satisfied by the Path you entered. Please try again."
+        else
+            echo "The Server-Share-Name is: $SERVER_SHARE_NAME"
+            break
+        fi
+    done
+    while true
+    do
+        SMB_USER=$(whiptail --inputbox "Please Enter the username of the SMB-USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_USER") ]]
+        then
+            msg_box "It seems like your weren't satisfied by the SMB-User you entered. Please try again."
+        else
+            echo "The SMB-USER is: $SMB_USER"
+            break
+        fi
+    done
+        while true
+    do
+        SMB_PASSWORD=$(whiptail --inputbox "Please Enter the password of the SMB-User $SMB_USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_PASSWORD") ]]
+        then
+            msg_box "It seems like your weren't satisfied by the password for the SMB-User you entered. Please try again."
+        else
+            echo "The SMB-Password of the SMB-User $SMB_USER is: &SMB_PASSWORD"
+            break
+        fi
+    done
+    if [ "$(grep /mnt/smbshares/1)" == "" ]
+    then 
+        echo '$SERVER_SHARE_NAME /mnt/smbshares/1 cifs username=$SMB_USER,password=$SMB_PASSWORD,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0' >> /etc/fstab
+    elif [ "$(grep /mnt/smbshares/2)" == "" ]
+    then
+        echo '$SERVER_SHARE_NAME /mnt/smbshares/2 cifs username=$SMB_USER,password=$SMB_PASSWORD,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0' >> /etc/fstab
+    elif [ "$(grep /mnt/smbshares/2)" == "" ]
+    then
+        echo '$SERVER_SHARE_NAME /mnt/smbshares/3 cifs username=$SMB_USER,password=$SMB_PASSWORD,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0' >> /etc/fstab
+    else
+        msg_box "No mounting slots available. Please delete one SMB-Share."
+    fi
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
 then
