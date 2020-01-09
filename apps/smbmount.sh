@@ -52,14 +52,14 @@ then
     do
         case $choice in
             "mount 1")
-                umount /mnt/smbshare/1
+                umount /mnt/smbshare/1 -f
             ;;
             
             "mount 2")
-                umount /mnt/smbshare/2
+                umount /mnt/smbshare/2 -f
             ;;
             "mount 3")
-                umount /mnt/smbshare/3
+                umount /mnt/smbshare/3 -f
             ;;
             
             *)
@@ -79,16 +79,16 @@ then
     do
         case $choice in
             "mount 1")
-                umount /mnt/smbshare/1
+                umount /mnt/smbshare/1 -f
                 sed -i '/mnt/smbshare/1' /etc/fstab
             ;;
             
             "mount 2")
-                umount /mnt/smbshare/2
+                umount /mnt/smbshare/2 -f
                 sed -i '/mnt/smbshare/2' /etc/fstab
             ;;
             "mount 3")
-                umount /mnt/smbshare/3
+                umount /mnt/smbshare/3 -f
                 sed -i '/mnt/smbshare/3' /etc/fstab
             ;;
             
