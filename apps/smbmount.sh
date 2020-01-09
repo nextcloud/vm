@@ -98,14 +98,14 @@ then
     do
         case $choice in
             "/mnt/smbshares/1")
-                mount /mnt/smbshare/1
+                mount /mnt/smbshares/1
             ;;
             
             "/mnt/smbshares/2")
-                mount /mnt/smbshare/2
+                mount /mnt/smbshares/2
             ;;
             "/mnt/smbshares/3")
-                mount /mnt/smbshare/3
+                mount /mnt/smbshares/3
             ;;
             
             *)
@@ -129,14 +129,14 @@ then
     do
         case $choice in
             "/mnt/smbshares/1")
-                umount /mnt/smbshare/1 -f
+                umount /mnt/smbshares/1 -f
             ;;
             
             "/mnt/smbshares/2")
-                umount /mnt/smbshare/2 -f
+                umount /mnt/smbshares/2 -f
             ;;
             "/mnt/smbshares/3")
-                umount /mnt/smbshare/3 -f
+                umount /mnt/smbshares/3 -f
             ;;
             
             *)
@@ -158,24 +158,24 @@ then
             "/mnt/smbshares/1")
                 if [[ $(findmnt -M "/mnt/smbshares/1") ]]
                 then
-                    umount /mnt/smbshare/1 -f
+                    umount /mnt/smbshares/1 -f
                 fi
-                sed -i '/mnt/smbshare/1' /etc/fstab
+                sed -i '/mnt/smbshares/1' /etc/fstab
             ;;
             
             "/mnt/smbshares/2")
                 if [[ $(findmnt -M "/mnt/smbshares/2") ]]
                 then
-                    umount /mnt/smbshare/2 -f
+                    umount /mnt/smbshares/2 -f
                 fi
-                sed -i '/mnt/smbshare/2' /etc/fstab
+                sed -i '/mnt/smbshares/2' /etc/fstab
             ;;
             "/mnt/smbshares/3")
                 if [[ $(findmnt -M "/mnt/smbshares/3") ]]
                 then
-                    umount /mnt/smbshare/3 -f
+                    umount /mnt/smbshares/3 -f
                 fi
-                sed -i '/mnt/smbshare/3' /etc/fstab
+                sed -i '/mnt/smbshares/3' /etc/fstab
             ;;
             
             *)
