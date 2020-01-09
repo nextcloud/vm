@@ -166,7 +166,23 @@ fi
 install_certbot
 
 # Generate certs and  auto-configure  if successful
-generate_cert "$SUBDOMAIN" "richdocuments"
+if generate_cert  "$SUBDOMAIN"
+then
+    # Generate DHparams chifer
+    if [ ! -f "$DHPARAMS" ]
+    then
+        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
+    fi
+    printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
+    a2ensite "$SUBDOMAIN.conf"
+    restart_webserver
+    # Install Collabora App
+    occ_command app:install richdocuments
+else
+    print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
+    any_key "Press any key to continue... "
+    restart_webserver
+fi
 
 # Set config for RichDocuments (Collabora App)
 if [ -d "$NC_APPS_PATH"/richdocuments ]

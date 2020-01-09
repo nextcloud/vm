@@ -202,5 +202,39 @@ then
     sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
 fi
 
-#Generate certs, and auto-configure if successful
-generate_cert "$domain" "nextcloud"
+#Generate certs and auto-configure if successful
+if generate_cert "$domain"
+then
+    if [ -d "$CERTFILES" ]
+    then
+        # Generate DHparams chifer
+        if [ ! -f "$DHPARAMS" ]
+        then
+            openssl dhparam -dsaparam -out "$DHPARAMS" 4096
+        fi
+        # Activate new config
+        check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
+        exit
+    fi
+else
+msg_box "Sorry, last try failed as well. :/
+
+The script is located in $SCRIPTS/activate-ssl.sh
+Please try to run it again some other time with other settings.
+
+There are different configs you can try in Let's Encrypt's user guide:
+https://letsencrypt.readthedocs.org/en/latest/index.html
+Please check the guide for further information on how to enable SSL.
+
+This script is developed on GitHub, feel free to contribute:
+https://github.com/nextcloud/vm
+
+The script will now do some cleanup and revert the settings."
+
+    # Cleanup
+    apt remove certbot -y
+    apt autoremove -y
+    clear
+fi
+
+exit
