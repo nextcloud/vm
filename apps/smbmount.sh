@@ -105,7 +105,7 @@ then
                         msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/3.\nYou can now use the Nextcloud external storage app to access files there."
         fi
     else
-        msg_box "No mounting slots available. Please delete one SMB-Share."
+        msg_box "No mounting slots available. Please delete one SMB-Mount."
     fi
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
@@ -196,7 +196,7 @@ then
                 then
                     umount /mnt/smbshares/3 -f
                 fi
-                ssed -i '/\/mnt\/smbshares\/3/d' /etc/fstab
+                sed -i '/\/mnt\/smbshares\/3/d' /etc/fstab
             ;;
             
             *)
