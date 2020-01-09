@@ -165,8 +165,8 @@ fi
 # Install certbot (Let's Encrypt)
 install_certbot
 
-# Generate certs
-if le_subdomain
+# Generate certs and  auto-configure  if successful
+if generate_cert  "$SUBDOMAIN"
 then
     # Generate DHparams chifer
     if [ ! -f "$DHPARAMS" ]
@@ -179,7 +179,7 @@ then
     # Install Collabora App
     occ_command app:install richdocuments
 else
-	print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
+    print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
     any_key "Press any key to continue... "
     restart_webserver
 fi

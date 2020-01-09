@@ -222,7 +222,7 @@ domain_check_200() {
     else
         print_text_in_color "$IRed" "DNS lookup failed with nslookup."
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
-	print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
+        print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
         nslookup "${1}" $DNS1
         return 1
     fi
@@ -242,10 +242,10 @@ msg_box "As you noticed your WAN IP and DNS record doesn't match. This can happe
 If you feel brave, or are sure that everything is setup correctly, then you can choose to skip this test in the next step.
 
 You can always contact us for further support if you wish: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
-	if [[ "no" == $(ask_yes_or_no "Do you feel brave and want to continue?") ]]
-        then
-	    exit
-	fi
+        if [[ "no" == $(ask_yes_or_no "Do you feel brave and want to continue?") ]]
+            then
+            exit
+        fi
     fi
 }
 
@@ -430,11 +430,36 @@ else
 fi
 }
 
-# Let's Encrypt for subdomains
-le_subdomain() {
+#generate certs and auto-configure
+# https://certbot.eff.org/docs/using.html#certbot-command-line-options
+generate_cert() {
+print_text_in_color "${ICyan}" "try to generate a cert and auto-configure it."
+default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos  --uir --hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 a2dissite 000-default.conf
 service apache2 reload
-certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
+#http-01
+local  standalone="certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
+#tls-alpn-01
+local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default_le"
+#dns
+local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
+local  methods=(standalone dns)
+for f in "${methods[@]}"
+do
+    eval  ff=$(echo "\$$f")
+    if eval "$ff"
+    then
+        return 0
+    elif [ "$f" == "${methods[@]:(-1)}" ]
+    then
+        print_text_in_color "${IRed}" "It seems like no certs were generated, please check your DNS and try again."
+        any_key "Press any key to continue..."
+        return 1;
+    else
+        print_text_in_color "${ICyan}" "It seems like no certs were generated, we will do 1 more try."
+        any_key "Press any key to continue..."
+    fi
+done
 }
 
 # Check if port is open # check_open_port 443 domain.example.com
@@ -450,9 +475,15 @@ elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsig
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
-    msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
-    any_key "Press any key to exit..."
-    exit 1
+msg_box "It seems like the port ${1} is closed. This could be because your ISP has blocked the port, or that the port isn't open.
+
+If you are 100% sure the port ${1} is open you can now choose to continue. There are no guarantees that it will work anyway though, since Let's Encrypt depend on that the port ${1} is open and accessible from outside your network."
+    if [[ "no" == $(ask_yes_or_no "Are you 100% sure the port ${1} is open?") ]]
+    then
+        msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
+        any_key "Press any key to exit..."
+        exit 0
+    fi
 fi
 }
 
@@ -553,12 +584,12 @@ fi
 }
 
 check_command() {
-  if ! "$@";
-  then
-     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
-	 print_text_in_color "$IRed" "$* failed"
+if ! "$@";
+then
+    print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+    print_text_in_color "$IRed" "$* failed"
     exit 1
-  fi
+fi
 }
 
 # Example: occ_command 'maintenance:mode --on'
@@ -855,14 +886,14 @@ fi
 
 set_max_count() {
 if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
-	print_text_in_color "$ICyan" "Max map count already set, skipping..."
+    print_text_in_color "$ICyan" "Max map count already set, skipping..."
 else
-	sysctl -w vm.max_map_count=262144
-	{
-  	echo "###################################################################"
-  	echo "# Docker ES max virtual memory"
-  	echo "vm.max_map_count=262144"
-	} >> /etc/sysctl.conf
+    sysctl -w vm.max_map_count=262144
+    {
+        echo "###################################################################"
+        echo "# Docker ES max virtual memory"
+        echo "vm.max_map_count=262144"
+    } >> /etc/sysctl.conf
 fi
 }
 
@@ -947,7 +978,7 @@ done
 }
 
 print_text_in_color() {
-	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
+printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
 # Apply patch
@@ -964,7 +995,7 @@ then
     if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "Applying patch https://github.com/nextcloud/${2}/pull/${1} ..."
-	git apply /tmp/"${1}".patch
+        git apply /tmp/"${1}".patch
     fi
 fi
 }
