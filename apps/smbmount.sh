@@ -43,9 +43,60 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
 then
+    whiptail --title "unmount SMB-Shares" --checklist --separate-output "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "mount 1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF \
+    "mount 2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $2}')" OFF \
+    "mount 3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $3}')" OFF 2>results
+    
+    while read -r -u 11 choice
+    do
+        case $choice in
+            "mount 1")
+                umount /mnt/smbshare/1
+            ;;
+            
+            "mount 2")
+                umount /mnt/smbshare/2
+            ;;
+            "mount 3")
+                umount /mnt/smbshare/3
+            ;;
+            
+            *)
+            ;;
+        esac
+    done 11< results
+    rm -f results
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
 then
+    whiptail --title "delete SMB-Shares" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "mount 1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF \
+    "mount 2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $2}')" OFF \
+    "mount 3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $3}')" OFF 2>results
+    
+    while read -r -u 11 choice
+    do
+        case $choice in
+            "mount 1")
+                umount /mnt/smbshare/1
+                sed -i '/mnt/smbshare/1' /etc/fstab
+            ;;
+            
+            "mount 2")
+                umount /mnt/smbshare/2
+                sed -i '/mnt/smbshare/2' /etc/fstab
+            ;;
+            "mount 3")
+                umount /mnt/smbshare/3
+                sed -i '/mnt/smbshare/3' /etc/fstab
+            ;;
+            
+            *)
+            ;;
+        esac
+    done 11< results
+    rm -f results
     run_app_script smbmount
 else
     sleep 1
