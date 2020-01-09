@@ -7,8 +7,6 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-print_text_in_color "$ICyan" "Configuring Cookie Lifetime timeout..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -18,10 +16,14 @@ debug_mode
 # Check if root
 root_check
 
-# install cifs-utils and secure fstab
-apt update
+# install cifs-utils
 install_if_not cifs-utils
-chmod 0600 /etc/fstab
+
+# secure fstab
+if [ "$(ls -l /etc/fstab | awk '{print $1}')" != "-rw-------" ]
+then
+    chmod 0600 /etc/fstab
+fi
 
 # choose categories
 SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manage SMB-Shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
