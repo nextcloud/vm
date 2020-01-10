@@ -108,10 +108,20 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
 then
-    whiptail --title "mount SMB-Shares" --checklist --separate-output "This option let you mount SMB-Shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF \
-    "/mnt/smbshares/2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $1}')" OFF \
-    "/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF 2>results
+    args=(whiptail --title "mount SMB-Shares" --checklist --separate-output "This option let you mount SMB-Shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    if [[ ! $(findmnt -M "/mnt/smbshares/1") ]] && [ "$(grep /mnt/smbshares/1 /etc/fstab)" != "" ]
+    then
+        args+=("/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF)
+    fi
+    if [[ ! $(findmnt -M "/mnt/smbshares/2") ]]  && [ "$(grep /mnt/smbshares/2 /etc/fstab)" != "" ]
+    then
+        args+=("/mnt/smbshares/2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $1}')" OFF)
+    fi
+    if [[ ! $(findmnt -M "/mnt/smbshares/3") ]]  && [ "$(grep /mnt/smbshares/3 /etc/fstab)" != "" ]
+    then
+        args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
+    fi
+    selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
     
     while read -r -u 11 choice
     do
@@ -139,10 +149,20 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
 then
-    whiptail --title "unmount SMB-Shares" --checklist --separate-output "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF \
-    "/mnt/smbshares/2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $1}')" OFF \
-    "/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF 2>results
+    args=(whiptail --title "unmount SMB-Shares" --checklist "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+    then
+        args+=("/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF)
+    fi
+    if [[ $(findmnt -M "/mnt/smbshares/2") ]]
+    then
+        args+=("/mnt/smbshares/2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $1}')" OFF)
+    fi
+    if [[ $(findmnt -M "/mnt/smbshares/3") ]]
+    then
+        args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
+    fi
+    selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
     
     while read -r -u 11 choice
     do
@@ -166,10 +186,20 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
 then
-    whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF \
-    "/mnt/smbshares/2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $1}')" OFF \
-    "/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF 2>results
+    args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    if [ "$(grep /mnt/smbshares/1 /etc/fstab)" != "" ]
+    then
+        args+=("/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF)
+    fi
+    if [ "$(grep /mnt/smbshares/2 /etc/fstab)" != "" ]
+    then
+        args+=("/mnt/smbshares/2" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
+    fi
+    if [ "$(grep /mnt/smbshares/3 /etc/fstab)" != "" ]
+    then
+        args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
+    fi
+    selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
     
     while read -r -u 11 choice
     do
