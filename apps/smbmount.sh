@@ -53,7 +53,6 @@ then
         then
             msg_box "It seems like your weren't satisfied by the SMB-User you entered. Please try again."
         else
-            echo "The SMB-USER is: $SMB_USER"
             break
         fi
     done
@@ -64,7 +63,6 @@ then
         then
             msg_box "It seems like your weren't satisfied by the password for the SMB-User you entered. Please try again."
         else
-            echo "The SMB-Password of the SMB-User $SMB_USER is: $SMB_PASSWORD"
             break
         fi
     done
