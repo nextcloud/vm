@@ -449,18 +449,17 @@ local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-
 local  methods=(standalone dns)
 for f in "${methods[@]}"
 do
-    print_text_in_color "${ICyan}" "try to generate certs and validate them with $f method."
+    print_text_in_color "${ICyan}" "try to generate certs and validate it with $f method."
     eval  ff=$(echo "\$$f")
     if eval "$ff"
     then
         return 0
     elif [ "$f" != "${methods[@]:(-1)}" ]
     then
-        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We will do more tries."
+        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate with the $f method. We will do more tries."
         any_key "Press any key to continue..."
     else
-        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods."
-        print_text_in_color "${IRed}" "Can't generate certs and validate them.  Please check your DNS and try again."
+        print_text_in_color "${IRed}" "It seems like no certs were generated when trying to validate with the $f method. Please check your DNS and try again."
         any_key "Press any key to continue..."
         return 1;
     fi
@@ -487,7 +486,7 @@ If you are 100% sure the port ${1} is open you can now choose to continue. There
     then
         msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
         any_key "Press any key to exit..."
-        exit 1
+        exit 0
     fi
 fi
 }
