@@ -434,7 +434,7 @@ fi
 # https://certbot.eff.org/docs/using.html#certbot-command-line-options
 generate_cert() {
 print_text_in_color "${ICyan}" "try to generate a cert."
-if [[ "no" == $(ask_yes_or_no "Do you need the upgrade-insecure-requests(UIR) and Strict-Transport-Security(HSTS) header?") ]]
+if [[ "no" == $(ask_yes_or_no "Do you need to add the upgrade-insecure-requests(UIR) and Strict-Transport-Security(HSTS) header to every HTTP response?") ]]
 then
     uir_hsts=""
 fi
