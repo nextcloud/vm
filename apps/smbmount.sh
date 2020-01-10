@@ -140,6 +140,11 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
 then
+    if [ "$(grep /mnt/smbshares /etc/fstab)" == "" ]
+    then
+        msg_box "You haven't created any SMB-Mount. So nothing to show."
+        run_app_script smbmount
+    fi
     msg_box "$(grep /mnt/smbshares /etc/fstab)" 
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
