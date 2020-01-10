@@ -433,8 +433,12 @@ fi
 #generate certs and auto-configure
 # https://certbot.eff.org/docs/using.html#certbot-command-line-options
 generate_cert() {
-print_text_in_color "${ICyan}" "try to generate a cert and auto-configure it."
-default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos  --uir --hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
+print_text_in_color "${ICyan}" "try to generate a cert."
+if [[ "no" == $(ask_yes_or_no "Do you need the upgrade-insecure-requests(UIR) and Strict-Transport-Security(HSTS) header?") ]]
+then
+    uir_hsts=""
+fi
+default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 a2dissite 000-default.conf
 service apache2 reload
 #http-01
@@ -450,14 +454,14 @@ do
     if eval "$ff"
     then
         return 0
-    elif [ "$f" == "${methods[@]:(-1)}" ]
+    elif [ "$f" != "${methods[@]:(-1)}" ]
     then
-        print_text_in_color "${IRed}" "It seems like no certs were generated, please check your DNS and try again."
+        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate with the $f method. We will do more tries."
+        any_key "Press any key to continue..."
+    else
+        print_text_in_color "${IRed}" "It seems like no certs were generated when trying to validate with the $f method. Please check your DNS and try again."
         any_key "Press any key to continue..."
         return 1;
-    else
-        print_text_in_color "${ICyan}" "It seems like no certs were generated, we will do 1 more try."
-        any_key "Press any key to continue..."
     fi
 done
 }
