@@ -130,7 +130,7 @@ then
         args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
     fi
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-    if [[ $selected_options != *"/mnt/smbshares/1"* ]]
+    if [[ $selected_options == *"/mnt/smbshares/1"* ]]
     then
         mount /mnt/smbshares/1
         if [[ ! $(findmnt -M "/mnt/smbshares/1") ]]
@@ -140,7 +140,7 @@ then
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/1\nYou can now use the Nextcloud external storage app to access files there."
         fi
     fi
-    if [[ $selected_options != *"/mnt/smbshares/2"* ]]
+    if [[ $selected_options == *"/mnt/smbshares/2"* ]]
     then
         mount /mnt/smbshares/2
         if [[ ! $(findmnt -M "/mnt/smbshares/2") ]]
@@ -150,7 +150,7 @@ then
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/2\nYou can now use the Nextcloud external storage app to access files there."
         fi
     fi
-    if [[ $selected_options != *"/mnt/smbshares/3"* ]]
+    if [[ $selected_options == *"/mnt/smbshares/3"* ]]
     then
         mount /mnt/smbshares/3
         if [[ ! $(findmnt -M "/mnt/smbshares/3") ]]
@@ -159,6 +159,10 @@ then
         else
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/3\nYou can now use the Nextcloud external storage app to access files there."
         fi
+    fi
+    if [[ $selected_options == "/mnt/smbshares/3" ]]
+    then
+        sleep 1
     fi
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
@@ -191,7 +195,7 @@ then
         args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
     fi
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-    if [[ $selected_options != *"/mnt/smbshares/1"* ]]
+    if [[ $selected_options == *"/mnt/smbshares/1"* ]]
     then
         umount /mnt/smbshares/1 -f
         if [[ $(findmnt -M "/mnt/smbshares/1") ]]
@@ -201,7 +205,7 @@ then
             msg_box "Your unmount of /mnt/smbshares/1 was successfull!"
         fi
     fi
-    if [[ $selected_options != *"/mnt/smbshares/2"* ]]
+    if [[ $selected_options == *"/mnt/smbshares/2"* ]]
     then
         umount /mnt/smbshares/2 -f
         if [[ $(findmnt -M "/mnt/smbshares/1") ]]
@@ -211,7 +215,7 @@ then
             msg_box "Your unmount of /mnt/smbshares/2 was successfull!"
         fi
     fi
-    if [[ $selected_options != *"/mnt/smbshares/3"* ]]
+    if [[ $selected_options == *"/mnt/smbshares/3"* ]]
     then
         umount /mnt/smbshares/3 -f
         if [[ $(findmnt -M "/mnt/smbshares/1") ]]
@@ -243,7 +247,7 @@ then
         args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
     fi
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-    if [[ $selected_options != *"/mnt/smbshares/1"* ]]
+    if [[ $selected_options == *"/mnt/smbshares/1"* ]]
     then
         if [[ $(findmnt -M "/mnt/smbshares/1") ]]
         then
@@ -257,7 +261,7 @@ then
             msg_box "Your deletion of /mnt/smbshares/1 was successfull!"
         fi
     fi
-    if [[ $selected_options != *"/mnt/smbshares/2"* ]]
+    if [[ $selected_options == *"/mnt/smbshares/2"* ]]
     then
         if [[ $(findmnt -M "/mnt/smbshares/2") ]]
         then
@@ -271,7 +275,7 @@ then
             msg_box "Your deletion of /mnt/smbshares/2 was successfull!"
         fi
     fi
-    if [[ $selected_options != *"/mnt/smbshares/3"* ]]
+    if [[ $selected_options == *"/mnt/smbshares/3"* ]]
     then
         if [[ $(findmnt -M "/mnt/smbshares/3") ]]
         then
