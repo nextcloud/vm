@@ -22,7 +22,7 @@ install_if_not cifs-utils
 # secure fstab
 if [ "$(stat -c %a /etc/fstab)" != "600" ]
 then
-    echo "chmod 0600 /etc/fstab"
+    chmod 600 /etc/fstab
 fi
 
 # choose categories
