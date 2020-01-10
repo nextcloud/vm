@@ -26,7 +26,7 @@ then
 fi
 
 # choose categories
-SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manage SMB-Shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manage SMB-Shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "add a SMB-Mount" "(and mount/connect it)" ON \
 "mount SMB-Shares" "(connect SMB-Shares)" OFF \
 "show all SMB-Mounts" "" OFF \
@@ -193,7 +193,7 @@ then
         msg_box "You haven't mounted any smb-mount. So nothing to unmount"
         run_app_script smbmount
     fi
-    args=(whiptail --title "unmount SMB-Shares" --checklist "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "unmount SMB-Shares" --checklist "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
     if [[ $(findmnt -M "/mnt/smbshares/1") ]]
     then
         args+=("/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF)
@@ -245,7 +245,7 @@ then
         msg_box "You haven't created any SMB-Mount. So nothing to delete."
         run_app_script smbmount
     fi
-    args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
     if [ "$(grep /mnt/smbshares/1 /etc/fstab)" != "" ]
     then
         args+=("/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF)
