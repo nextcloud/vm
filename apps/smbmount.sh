@@ -144,6 +144,11 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
 then
+    if [[ ! $(findmnt -M "/mnt/smbshares/1") ]] && [[ ! $(findmnt -M "/mnt/smbshares/2") ]] && [[ ! $(findmnt -M "/mnt/smbshares/3") ]]
+    then
+        msg_box "You haven't mounted any smb-mount. So nothing to unmount"
+        run_app_script smbmount
+    fi
     args=(whiptail --title "unmount SMB-Shares" --checklist "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
     if [[ $(findmnt -M "/mnt/smbshares/1") ]]
     then
@@ -177,6 +182,7 @@ then
     then
         msg_box "You haven't created any SMB-Mount. So nothing to delete."
         run_app_script smbmount
+    fi
     args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
     if [ "$(grep /mnt/smbshares/1 /etc/fstab)" != "" ]
     then
