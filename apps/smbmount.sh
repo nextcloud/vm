@@ -135,7 +135,7 @@ then
         mount /mnt/smbshares/1
         if [[ ! $(findmnt -M "/mnt/smbshares/1") ]]
         then
-            msg_box "It seems like the mount wasn't successful. Please try again."
+            msg_box "It seems like the mount of /mnt/smbshares/1 wasn't successful. Please try again."
         else
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/1\nYou can now use the Nextcloud external storage app to access files there."
         fi
@@ -145,7 +145,7 @@ then
         mount /mnt/smbshares/2
         if [[ ! $(findmnt -M "/mnt/smbshares/2") ]]
         then
-            msg_box "It seems like the mount wasn't successful. Please try again."
+            msg_box "It seems like the mount of /mnt/smbshares/2 wasn't successful. Please try again."
         else
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/2\nYou can now use the Nextcloud external storage app to access files there."
         fi
@@ -155,7 +155,7 @@ then
         mount /mnt/smbshares/3
         if [[ ! $(findmnt -M "/mnt/smbshares/3") ]]
         then
-            msg_box "It seems like the mount wasn't successful. Please try again."
+            msg_box "It seems like the mount of /mnt/smbshares/3 wasn't successful. Please try again."
         else
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/3\nYou can now use the Nextcloud external storage app to access files there."
         fi
@@ -194,14 +194,32 @@ then
     if [[ $selected_options != *"/mnt/smbshares/1"* ]]
     then
         umount /mnt/smbshares/1 -f
+        if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+        then
+            msg_box "It seems like the unmount of /mnt/smbshares/1 wasn't successful. Please try again."
+        else
+            msg_box "Your unmount of /mnt/smbshares/1 was successfull!"
+        fi
     fi
     if [[ $selected_options != *"/mnt/smbshares/2"* ]]
     then
         umount /mnt/smbshares/2 -f
+        if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+        then
+            msg_box "It seems like the unmount of /mnt/smbshares/2 wasn't successful. Please try again."
+        else
+            msg_box "Your unmount of /mnt/smbshares/2 was successfull!"
+        fi
     fi
     if [[ $selected_options != *"/mnt/smbshares/3"* ]]
     then
         umount /mnt/smbshares/3 -f
+        if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+        then
+            msg_box "It seems like the unmount of /mnt/smbshares/3 wasn't successful. Please try again."
+        else
+            msg_box "Your unmount of /mnt/smbshares/3 was successfull!"
+        fi
     fi
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
