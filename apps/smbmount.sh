@@ -289,6 +289,7 @@ then
             msg_box "Your deletion of /mnt/smbshares/3 was successfull!"
         fi
     fi
+    run_app_script smbmount
 else
     sleep 1
 fi
