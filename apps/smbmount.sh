@@ -20,9 +20,9 @@ root_check
 install_if_not cifs-utils
 
 # secure fstab
-if [ "$(ls -l /etc/fstab | awk '{print $1}')" != "-rw-------" ]
+if [ "$(stat -c %a /etc/fstab)" != "600" ]
 then
-    chmod 0600 /etc/fstab
+    echo "chmod 0600 /etc/fstab"
 fi
 
 # choose categories
