@@ -739,14 +739,17 @@ apt autoremove -y
 apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
-# Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
-# Kernel 4.15
-apt install -y --install-recommends \
-linux-virtual \
-linux-tools-virtual \
-linux-cloud-tools-virtual \
-linux-image-virtual \
-linux-image-extra-virtual
+if ! home_sme_server
+then
+    # Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
+    # Kernel 4.15
+    apt install -y --install-recommends \
+    linux-virtual \
+    linux-tools-virtual \
+    linux-cloud-tools-virtual \
+    linux-image-virtual \
+    linux-image-extra-virtual
+fi
 
 # Add aliases
 if [ -f /root/.bash_aliases ]
