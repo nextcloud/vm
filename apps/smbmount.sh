@@ -122,26 +122,18 @@ then
         args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
     fi
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-    
-    while read -r -u 11 choice
-    do
-        case $choice in
-            "/mnt/smbshares/1")
-                mount /mnt/smbshares/1
-            ;;
-            
-            "/mnt/smbshares/2")
-                mount /mnt/smbshares/2
-            ;;
-            "/mnt/smbshares/3")
-                mount /mnt/smbshares/3
-            ;;
-            
-            *)
-            ;;
-        esac
-    done 11< results
-    rm -f results
+    if [[ $selected_options != *"/mnt/smbshares/1"* ]]
+    then
+        mount /mnt/smbshares/1
+    fi
+    if [[ $selected_options != *"/mnt/smbshares/2"* ]]
+    then
+        mount /mnt/smbshares/2
+    fi
+    if [[ $selected_options != *"/mnt/smbshares/3"* ]]
+    then
+        mount /mnt/smbshares/3
+    fi
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
 then
@@ -163,26 +155,18 @@ then
         args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
     fi
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-    
-    while read -r -u 11 choice
-    do
-        case $choice in
-            "/mnt/smbshares/1")
-                umount /mnt/smbshares/1 -f
-            ;;
-            
-            "/mnt/smbshares/2")
-                umount /mnt/smbshares/2 -f
-            ;;
-            "/mnt/smbshares/3")
-                umount /mnt/smbshares/3 -f
-            ;;
-            
-            *)
-            ;;
-        esac
-    done 11< results
-    rm -f results
+    if [[ $selected_options != *"/mnt/smbshares/1"* ]]
+    then
+        umount /mnt/smbshares/1 -f
+    fi
+    if [[ $selected_options != *"/mnt/smbshares/2"* ]]
+    then
+        umount /mnt/smbshares/2 -f
+    fi
+    if [[ $selected_options != *"/mnt/smbshares/3"* ]]
+    then
+        umount /mnt/smbshares/3 -f
+    fi
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
 then
@@ -200,39 +184,30 @@ then
         args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
     fi
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-    
-    while read -r -u 11 choice
-    do
-        case $choice in
-            "/mnt/smbshares/1")
-                if [[ $(findmnt -M "/mnt/smbshares/1") ]]
-                then
-                    umount /mnt/smbshares/1 -f
-                fi
-                sed -i '/\/mnt\/smbshares\/1/d' /etc/fstab
-            ;;
-            
-            "/mnt/smbshares/2")
-                if [[ $(findmnt -M "/mnt/smbshares/2") ]]
-                then
-                    umount /mnt/smbshares/2 -f
-                fi
-                sed -i '/\/mnt\/smbshares\/2/d' /etc/fstab
-            ;;
-            "/mnt/smbshares/3")
-                if [[ $(findmnt -M "/mnt/smbshares/3") ]]
-                then
-                    umount /mnt/smbshares/3 -f
-                fi
-                sed -i '/\/mnt\/smbshares\/3/d' /etc/fstab
-            ;;
-            
-            *)
-            ;;
-        esac
-    done 11< results
-    rm -f results
-    run_app_script smbmount
+    if [[ $selected_options != *"/mnt/smbshares/1"* ]]
+    then
+        if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+        then
+            umount /mnt/smbshares/1 -f
+        fi
+        sed -i '/\/mnt\/smbshares\/1/d' /etc/fstab
+    fi
+    if [[ $selected_options != *"/mnt/smbshares/2"* ]]
+    then
+        if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+        then
+            umount /mnt/smbshares/2 -f
+        fi
+        sed -i '/\/mnt\/smbshares\/1/d' /etc/fstab
+    fi
+    if [[ $selected_options != *"/mnt/smbshares/2"* ]]
+    then
+        if [[ $(findmnt -M "/mnt/smbshares/2") ]]
+        then
+            umount /mnt/smbshares/1 -f
+        fi
+        sed -i '/\/mnt\/smbshares\/1/d' /etc/fstab
+    fi
 else
     sleep 1
 fi
