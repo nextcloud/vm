@@ -111,12 +111,12 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
 then
-    if [ "$(grep /mnt/smbshares /etc/fstab)" == "" ] || [[ "$(grep /mnt/smbshares/1 /etc/fstab)" == "" ] && [[!  $(findmnt -M "/mnt/smbshares/1") ]]] || [[ "$(grep /mnt/smbshares/2 /etc/fstab)" == "" ] && [[ ! $(findmnt -M "/mnt/smbshares/2") ]]] || [[ "$(grep /mnt/smbshares/3 /etc/fstab)" == "" ] && [[ ! $(findmnt -M "/mnt/smbshares/3") ]]]
+    if [ "$(grep /mnt/smbshares /etc/fstab)" == "" ]
     then
-        msg_box "It seems like you haven any SMB-Mount or all are mounted."
+        msg_box "It seems like you have not created any SMB-Share."
         run_app_script smbmount
     fi
-    args=(whiptail --title "mount SMB-Shares" --checklist --separate-output "This option let you mount SMB-Shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "mount SMB-Shares" --checklist --separate-output "This option let you mount SMB-Shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
     if [[ ! $(findmnt -M "/mnt/smbshares/1") ]] && [ "$(grep /mnt/smbshares/1 /etc/fstab)" != "" ]
     then
         args+=("/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF)
