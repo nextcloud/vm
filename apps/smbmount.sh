@@ -35,6 +35,11 @@ SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manag
 
 if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
 then
+    if [ "$(grep /mnt/smbshares/1 /etc/fstab)" != "" ] && [ "$(grep /mnt/smbshares/2 /etc/fstab)" != "" ] && [ "$(grep /mnt/smbshares/3 /etc/fstab)" != "" ]
+    then
+        msg_box "No mounting slots available. Please delete one SMB-Mount."
+        run_app_script smbmount
+    fi
     while true
     do
         SERVER_SHARE_NAME=$(whiptail --inputbox "Please Enter the Server and Share-Name like this:\n//Server/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
@@ -100,10 +105,8 @@ then
             msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
             sed -i '/\/mnt\/smbshares\/3/d' /etc/fstab
         else
-                        msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/3.\nYou can now use the Nextcloud external storage app to access files there."
+            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/3.\nYou can now use the Nextcloud external storage app to access files there."
         fi
-    else
-        msg_box "No mounting slots available. Please delete one SMB-Mount."
     fi
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
