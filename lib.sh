@@ -1017,7 +1017,7 @@ if lshw -c system | grep -q NUC8i3BEH
 then
     if lshw -c memory | grep -q BLS16G4
     then
-        if lshw -c disk | grep -q ST2000LM015-2E81
+        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
