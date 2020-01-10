@@ -173,6 +173,10 @@ then
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
 then
+    if [ "$(grep /mnt/smbshares /etc/fstab)" == "" ]
+    then
+        msg_box "You haven't created any SMB-Mount. So nothing to delete."
+        run_app_script smbmount
     args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
     if [ "$(grep /mnt/smbshares/1 /etc/fstab)" != "" ]
     then
