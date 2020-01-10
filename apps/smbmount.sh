@@ -42,7 +42,7 @@ then
         then
             msg_box "It seems like your weren't satisfied by the Path you entered. Please try again."
         else
-            echo "The Server-Share-Name is: $SERVER_SHARE_NAME"
+            SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
             break
         fi
     done
