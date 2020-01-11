@@ -76,7 +76,7 @@ done
 
 # Check if $TLSDOMAIN exists and is reachable
 echo
-print_text_in_color "$ICyan" "Checking if $domain exists and is reachable..."
+print_text_in_color "$ICyan" "Checking if $TLSDOMAIN exists and is reachable..."
 domain_check_200 "$TLSDOMAIN"
 
 # Check if port is open with NMAP
