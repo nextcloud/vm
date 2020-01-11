@@ -102,7 +102,7 @@ then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
   ServerName $SUBDOMAIN:443
-  
+
   <Directory /var/www>
   Options -Indexes
   </Directory>

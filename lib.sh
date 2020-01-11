@@ -327,7 +327,7 @@ You now have two choices:
    2) OnlyOffice
    3) Full Text Search
 
-This script will now exit. 
+This script will now exit.
 The installation was not successful, sorry for the inconvenience.
 
 If you think this is a bug, please report it to $ISSUES"
