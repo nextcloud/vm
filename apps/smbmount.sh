@@ -119,40 +119,21 @@ then
         count=$(( $count + 1))
     done
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-    if [[ $selected_options == *"/mnt/smbshares/1"* ]]
-    then
-        mount /mnt/smbshares/1
-        if [[ ! $(findmnt -M "/mnt/smbshares/1") ]]
+    count=1
+    while  [ $count -le 3 ]
+    do
+        if [[ $selected_options == *"/mnt/smbshares/$count"* ]]
         then
-            msg_box "It seems like the mount of /mnt/smbshares/1 wasn't successful. Please try again."
-        else
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/1\nYou can now use the Nextcloud external storage app to access files there."
+            mount "/mnt/smbshares/$count"
+            if [[ ! $(findmnt -M "/mnt/smbshares/$count") ]]
+            then
+                msg_box "It seems like the mount of /mnt/smbshares/$count wasn't successful. Please try again."
+            else
+                msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/$count\nYou can now use the Nextcloud external storage app to access files there."
+            fi
         fi
-    fi
-    if [[ $selected_options == *"/mnt/smbshares/2"* ]]
-    then
-        mount /mnt/smbshares/2
-        if [[ ! $(findmnt -M "/mnt/smbshares/2") ]]
-        then
-            msg_box "It seems like the mount of /mnt/smbshares/2 wasn't successful. Please try again."
-        else
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/2\nYou can now use the Nextcloud external storage app to access files there."
-        fi
-    fi
-    if [[ $selected_options == *"/mnt/smbshares/3"* ]]
-    then
-        mount /mnt/smbshares/3
-        if [[ ! $(findmnt -M "/mnt/smbshares/3") ]]
-        then
-            msg_box "It seems like the mount of /mnt/smbshares/3 wasn't successful. Please try again."
-        else
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/3\nYou can now use the Nextcloud external storage app to access files there."
-        fi
-    fi
-    if [[ $selected_options == "/mnt/smbshares/3" ]]
-    then
-        sleep 1
-    fi
+        count=$(( $count + 1))
+    done
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
 then
