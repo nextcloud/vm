@@ -98,7 +98,7 @@ then
                 break
             fi
         fi
-        count=($count + 1)
+        count=$($count + 1)
     done
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
@@ -116,7 +116,7 @@ then
         then
             args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
         fi
-        count=($count + 1)
+        count=$($count + 1)
     done
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
     count=1
@@ -132,7 +132,7 @@ then
                 msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/$count\nYou can now use the Nextcloud external storage app to access files there."
             fi
         fi
-        count=($count + 1)
+        count=$($count + 1)
     done
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
@@ -159,7 +159,7 @@ then
         then
             args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
         fi
-        count=($count + 1)
+        count=$($count + 1)
     done
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
     count=1
@@ -175,7 +175,7 @@ then
                 msg_box "Your unmount of /mnt/smbshares/$count was successfull!"
             fi
         fi
-        count=($count + 1)
+        count=$($count + 1)
     done
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
@@ -193,7 +193,7 @@ then
         then
             args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
         fi
-        count=($count + 1)
+        count=$($count + 1)
     done
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
     count=1
@@ -213,7 +213,7 @@ then
                 msg_box "Your deletion of /mnt/smbshares/$count was successfull!"
             fi
         fi
-        count=($count + 1)
+        count=$($count + 1)
     done
     run_app_script smbmount
 else
