@@ -60,14 +60,16 @@ just type: sudo bash /var/scripts/activate-ssl.sh"
     exit
 fi
 
+while true
+do
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-TLS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+TLS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/liao20081228/vm/master/lib.sh)
 unset TLS_INSTALL
-while true
-do
+
 # Ask for domain name
+echo
 if [[ "yes" == $(ask_yes_or_no "Is this correct? $TLSDOMAIN") ]]
 then
     break
