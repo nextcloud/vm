@@ -179,9 +179,7 @@ then
     # Install Collabora App
     occ_command app:install richdocuments
 else
-    print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
-    any_key "Press any key to continue... "
-    restart_webserver
+    last_fail_tls "$SCRIPTS"/apps/collabora.sh
 fi
 
 # Set config for RichDocuments (Collabora App)
