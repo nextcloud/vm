@@ -638,7 +638,7 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
@@ -653,8 +653,8 @@ SSL_CREATE
 fi
 
 # Enable new config
-a2ensite nextcloud_ssl_domain_self_signed.conf
-a2ensite nextcloud_http_domain_self_signed.conf
+a2ensite "$TLS_CONF"
+a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
