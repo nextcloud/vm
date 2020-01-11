@@ -37,7 +37,7 @@ SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manag
 if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
 then
     # check if mounting slots are available
-    if [ "$(grep /mnt/smbshares/1 /etc/fstab)" != "" ] && [ "$(grep /mnt/smbshares/2 /etc/fstab)" != "" ] && [ "$(grep /mnt/smbshares/3 /etc/fstab)" != "" ]
+    if [ -n "$(grep /mnt/smbshares/1 /root/fstabtest)" ] && [ -n "$(grep /mnt/smbshares/2 /root/fstabtest)" ] && [ -n "$(grep /mnt/smbshares/3 /root/fstabtest)" ]
     then
         msg_box "No mounting slots available. Please delete one SMB-Mount."
         run_app_script smbmount
@@ -48,7 +48,7 @@ then
         SERVER_SHARE_NAME=$(whiptail --inputbox "Please Enter the Server and Share-Name like this:\n//Server/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
         if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
         then
-            msg_box "It seems like your weren't satisfied by the Path you entered. Please try again."
+            msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again."
         else
             SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
             break
@@ -57,10 +57,10 @@ then
     # enter smb-user
     while true
     do
-        SMB_USER=$(whiptail --inputbox "Please Enter the username of the SMB-USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        SMB_USER=$(whiptail --inputbox "Please enter the username of the SMB-user" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
         if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_USER") ]]
         then
-            msg_box "It seems like your weren't satisfied by the SMB-User you entered. Please try again."
+            msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again."
         else
             break
         fi
@@ -68,7 +68,7 @@ then
     #enter the password of the smb-user
     while true
     do
-        SMB_PASSWORD=$(whiptail --inputbox "Please Enter the password of the SMB-User $SMB_USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
         if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_PASSWORD") ]]
         then
             msg_box "It seems like your weren't satisfied by the password for the SMB-User you entered. Please try again."
@@ -81,7 +81,7 @@ then
     while  [ $count -le 3 ]
     do
         # check which mounting slot is available
-        if [ "$(grep "/mnt/smbshares/$count" /etc/fstab)" == "" ]
+        if [ -z "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
         then 
             # write to /etc/fstab and mount
             echo "$SERVER_SHARE_NAME /mnt/smbshares/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
@@ -92,17 +92,11 @@ then
             then
                 # if not remove this line from fstab
                 msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
-                sed -i "/\/mnt\/smbshares\/$count/d" /etc/fstab
+                sed -i "\/mnt\/smbshares\/$count/d" /etc/fstab
                 break
             else
-                # if yes check if external storage is enabled
-                occ_command app:list >> NcAppsList
-                if [ "$(grep -n 'files_external' NcAppsList | cut -d : -f 1)" -gt "$(grep -n 'Disabled' NcAppsList | cut -d : -f 1)" ]
-                then
-                    # if not enabled, enable external storage
-                    occ_command app:enable files_external
-                fi
-                rm NcAppsList
+                # Install and enable files_extrnal
+                install_and_enable_app files_external
                 # create and mount external storage to the admin group
                 MOUNT_ID=$(occ_command files_external:create "SMB$count" local null::null -c datadir="/mnt/smbshares/$count" )
                 MOUNT_ID=${MOUNT_ID//[!0-9]/}
@@ -114,7 +108,7 @@ then
         fi
         count=$(( $count + 1))
     done
-    run_app_script smbmount
+    run_app_script smbmount 
 # mount smb-shares
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
 then
@@ -231,7 +225,7 @@ then
     # check if any smb-share available
     if [ "$(grep /mnt/smbshares /etc/fstab)" == "" ]
     then
-        msg_box "You haven't created any SMB-Mount. So nothing to delete."
+        msg_box "You haven't created any SMB-Mount, nothing to delete."
         run_app_script smbmount
     fi
     # check which smb-shares are available
