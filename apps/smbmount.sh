@@ -162,36 +162,21 @@ then
         count=$(( $count + 1))
     done
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-    if [[ $selected_options == *"/mnt/smbshares/1"* ]]
-    then
-        umount /mnt/smbshares/1 -f
-        if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+    count=1
+    while  [ $count -le 3 ]
+    do
+        if [[ $selected_options == *"/mnt/smbshares/$count"* ]]
         then
-            msg_box "It seems like the unmount of /mnt/smbshares/1 wasn't successful. Please try again."
-        else
-            msg_box "Your unmount of /mnt/smbshares/1 was successfull!"
+            umount "/mnt/smbshares/$count" -f
+            if [[ $(findmnt -M "/mnt/smbshares/$count") ]]
+            then
+                msg_box "It seems like the unmount of /mnt/smbshares/$count wasn't successful. Please try again."
+            else
+                msg_box "Your unmount of /mnt/smbshares/$count was successfull!"
+            fi
         fi
-    fi
-    if [[ $selected_options == *"/mnt/smbshares/2"* ]]
-    then
-        umount /mnt/smbshares/2 -f
-        if [[ $(findmnt -M "/mnt/smbshares/2") ]]
-        then
-            msg_box "It seems like the unmount of /mnt/smbshares/2 wasn't successful. Please try again."
-        else
-            msg_box "Your unmount of /mnt/smbshares/2 was successfull!"
-        fi
-    fi
-    if [[ $selected_options == *"/mnt/smbshares/3"* ]]
-    then
-        umount /mnt/smbshares/3 -f
-        if [[ $(findmnt -M "/mnt/smbshares/3") ]]
-        then
-            msg_box "It seems like the unmount of /mnt/smbshares/3 wasn't successful. Please try again."
-        else
-            msg_box "Your unmount of /mnt/smbshares/3 was successfull!"
-        fi
-    fi
+        count=$(( $count + 1))
+    done
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
 then
