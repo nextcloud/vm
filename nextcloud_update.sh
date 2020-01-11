@@ -11,7 +11,7 @@ NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/v
 unset NC_UPDATE
 unset NCDB
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
