@@ -482,7 +482,7 @@ Please check the guide for further information on how to enable SSL.
 This script is developed on GitHub, feel free to contribute:
 https://github.com/nextcloud/vm"
 
-if [ -n $2 ]
+if [ -n "$2" ]
 then
     print_text_in_color "$ICyan" "The script will now do some cleanup and revert the settings."
     any_key "Press any key to start the cleanup"
