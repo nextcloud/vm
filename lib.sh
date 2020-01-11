@@ -490,6 +490,9 @@ then
     apt remove certbot -y
     apt autoremove -y
 fi
+
+# Restart webserver services
+restart_webserver
 }
 
 # Check if port is open # check_open_port 443 domain.example.com
