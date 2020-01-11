@@ -59,9 +59,6 @@ NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
-SITES_AVAILABLE="/etc/apache2/sites-available"
-TLS_CONF="nextcloud_tls_domain_self_signed.conf"
-HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 
 # Nextcloud version
 [ -n "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
@@ -83,12 +80,15 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 [ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(whiptail --title "T&M Hansson IT Let's Encrypt" --inputbox "Nextcloud domain, make sure it looks like this: cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
 
 # Letsencrypt
+SITES_AVAILABLE="/etc/apache2/sites-available"
 LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
 DHPARAMS_TLS="$CERTFILES/$TLSDOMAIN/dhparam.pem"
 DHPARAMS_SUB="$CERTFILES/$SUBDOMAIN/dhparam.pem"
+TLS_CONF="nextcloud_tls_domain_self_signed.conf"
+HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 # Collabora App
-HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
+HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # PHP-FPM
 PHPVER=7.2
@@ -440,7 +440,7 @@ fi
 # https://certbot.eff.org/docs/using.html#certbot-command-line-options
 generate_cert() {
 uir_hsts=""
-if [ -z $SUBDOMAIN ]
+if [ -z "$SUBDOMAIN" ]
 then
     uir_hsts="--uir --hsts"
 fi
