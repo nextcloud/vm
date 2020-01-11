@@ -59,8 +59,10 @@ NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
-SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
-HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
+SITES_AVAILABLE="/etc/apache2/sites-available"
+TLS_CONF="nextcloud_tls_domain_self_signed.conf"
+HTTP_CONF="nextcloud_http_domain_self_signed.conf"
+
 # Nextcloud version
 [ -n "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 [ -n "$NC_UPDATE" ] && NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)

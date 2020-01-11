@@ -524,10 +524,10 @@ install_if_not figlet
 install_if_not ssl-cert
 
 # Generate $HTTP_CONF
-if [ ! -f $HTTP_CONF ]
+if [ ! -f $SITES_AVAILABLE/$HTTP_CONF ]
 then
-    touch "$HTTP_CONF"
-    cat << HTTP_CREATE > "$HTTP_CONF"
+    touch "$SITES_AVAILABLE/$HTTP_CONF"
+    cat << HTTP_CREATE > "$SITES_AVAILABLE/$HTTP_CONF"
 <VirtualHost *:80>
 
 ### YOUR SERVER ADDRESS ###
@@ -557,13 +557,13 @@ then
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
-    
+
     # The following lines prevent .htaccess and .htpasswd files from being
     # viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
-    
+
     # Disable HTTP TRACE method.
     TraceEnable off
 
@@ -574,22 +574,22 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-    
+
 </VirtualHost>
 HTTP_CREATE
-    print_text_in_color "$IGreen" "$HTTP_CONF was successfully created."
+    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
 fi
 
-# Generate $SSL_CONF
-if [ ! -f $SSL_CONF ]
+# Generate $TLS_CONF
+if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
-    touch "$SSL_CONF"
-    cat << SSL_CREATE > "$SSL_CONF"
+    touch "$SITES_AVAILABLE/$TLS_CONF"
+    cat << SSL_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
@@ -649,7 +649,7 @@ then
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
 SSL_CREATE
-    print_text_in_color "$IGreen" "$SSL_CONF was successfully created."
+    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$TLS_CONF was successfully created."
 fi
 
 # Enable new config
