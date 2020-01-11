@@ -433,9 +433,10 @@ fi
 #generate certs and auto-configure
 # https://certbot.eff.org/docs/using.html#certbot-command-line-options
 generate_cert() {
-if [[ "no" == $(ask_yes_or_no "Do you need to add the upgrade-insecure-requests(UIR) and Strict-Transport-Security(HSTS) header to every HTTP response?") ]]
+uir_hsts=""
+if [ -z $SUBDOMAIN ]
 then
-    uir_hsts=""
+    uir_hsts="--uir --hsts"
 fi
 default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 a2dissite 000-default.conf
@@ -449,7 +450,7 @@ local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-
 local  methods=(standalone dns)
 for f in "${methods[@]}"
 do
-    print_text_in_color "${ICyan}" "try to generate certs and validate them with $f method."
+    print_text_in_color "${ICyan}" "Trying to generate certs and validate them with $f method."
     eval  ff=$(echo "\$$f")
     if eval "$ff"
     then
@@ -459,8 +460,7 @@ do
         print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We will do more tries."
         any_key "Press any key to continue..."
     else
-        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods."
-        print_text_in_color "${IRed}" "Can't generate certs and validate them.  Please check your DNS and try again."
+        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
         any_key "Press any key to continue..."
         return 1;
     fi
@@ -480,9 +480,13 @@ elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsig
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
-msg_box "It seems like the port ${1} is closed. This could be because your ISP has blocked the port, or that the port isn't open.
+msg_box "It seems like the port ${1} is closed. This could happend when your
+ISP has blocked the port, or that the port isn't open.
 
-If you are 100% sure the port ${1} is open you can now choose to continue. There are no guarantees that it will work anyway though, since Let's Encrypt depend on that the port ${1} is open and accessible from outside your network."
+If you are 100% sure the port ${1} is open you can now choose to
+continue. There are no guarantees that it will work anyway though,
+since Let's Encrypt depend on that the port ${1} is open and
+accessible from outside your network."
     if [[ "no" == $(ask_yes_or_no "Are you 100% sure the port ${1} is open?") ]]
     then
         msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"

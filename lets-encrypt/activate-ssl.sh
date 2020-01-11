@@ -214,7 +214,7 @@ then
         fi
         # Activate new config
         check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
-        exit
+        exit 0
     fi
 else
 msg_box "Sorry, last try failed as well. :/
