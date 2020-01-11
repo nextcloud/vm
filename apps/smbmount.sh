@@ -71,55 +71,35 @@ then
             break
         fi
     done
-    if [ "$(grep /mnt/smbshares/1 /etc/fstab)" == "" ]
-    then 
-        echo "$SERVER_SHARE_NAME /mnt/smbshares/1 cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
-        mkdir -p /mnt/smbshares/1
-        mount /mnt/smbshares/1
-        if [[ ! $(findmnt -M "/mnt/smbshares/1") ]]
-        then
-            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
-            sed -i '/\/mnt\/smbshares\/1/d' /etc/fstab
-        else
-            occ_command app:enable files_external
-            MOUNT_ID=$(occ_command files_external:create SMB1 local null::null -c datadir=/mnt/smbshares/1)
-            MOUNT_ID=${MOUNT_ID//[!0-9]/}
-            occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/1.\nYou can now use the Nextcloud external storage app to access files there."
+    count=1
+    while  [ $count -le 3 ]
+    do
+        if [ "$(grep "/mnt/smbshares/$count" /etc/fstab)" == "" ]
+        then 
+            echo "$SERVER_SHARE_NAME /mnt/smbshares/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+            mkdir -p /mnt/smbshares/$count
+            mount /mnt/smbshares/$count
+            if [[ ! $(findmnt -M "/mnt/smbshares/$count") ]]
+            then
+                msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
+                sed -i "/\/mnt\/smbshares\/$count/d" /etc/fstab
+                break
+            else
+                occ_command app:list >> NcAppsList
+                if [ $(grep -n 'files_external' NcAppsList | cut -d : -f 1) -gt $(grep -n 'Disabled' NcAppsList | cut -d : -f 1) ]
+                then
+                    occ_command app:enable files_external
+                fi
+                rm NcAppsList
+                MOUNT_ID=$(occ_command files_external:create "SMB$count" local null::null -c datadir="/mnt/smbshares/$count" )
+                MOUNT_ID=${MOUNT_ID//[!0-9]/}
+                occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
+                msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/$count.\nYou can now use the Nextcloud external storage app to access files there."
+                break
+            fi
         fi
-    elif [ "$(grep /mnt/smbshares/2 /etc/fstab)" == "" ]
-    then
-        echo "$SERVER_SHARE_NAME /mnt/smbshares/2 cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
-        mkdir -p /mnt/smbshares/2
-        mount /mnt/smbshares/2
-        if [[ ! $(findmnt -M "/mnt/smbshares/2") ]]
-        then
-            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
-            sed -i '/\/mnt\/smbshares\/2/d' /etc/fstab
-        else
-            occ_command app:enable files_external
-            MOUNT_ID=$(occ_command files_external:create SMB2 local null::null -c datadir=/mnt/smbshares/2)
-            MOUNT_ID=${MOUNT_ID//[!0-9]/}
-            occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/2.\nYou can now use the Nextcloud external storage app to access files there."
-        fi
-    elif [ "$(grep /mnt/smbshares/3 /etc/fstab)" == "" ]
-    then
-        echo "$SERVER_SHARE_NAME /mnt/smbshares/3 cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
-        mkdir -p /mnt/smbshares/3
-        mount /mnt/smbshares/3
-        if [[ ! $(findmnt -M "/mnt/smbshares/3") ]]
-        then
-            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
-            sed -i '/\/mnt\/smbshares\/3/d' /etc/fstab
-        else
-            occ_command app:enable files_external
-            MOUNT_ID=$(occ_command files_external:create SMB3 local null::null -c datadir=/mnt/smbshares/3)
-            MOUNT_ID=${MOUNT_ID//[!0-9]/}
-            occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/3.\nYou can now use the Nextcloud external storage app to access files there."
-        fi
-    fi
+        count=$(( $count + 1))
+    done
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
 then
