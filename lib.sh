@@ -80,7 +80,8 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Letsencrypt
 LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
-DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
+DHPARAMS_MAIN="$CERTFILES/$domain/dhparam.pem"
+DHPARAMS_SUB="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 # Collabora App
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
@@ -465,6 +466,30 @@ do
         return 1;
     fi
 done
+}
+
+# Last message depending on with script that is being run when using the generate_cert() function
+last_fail_tls() {
+msg_box "All methods failed. :/
+
+The script is located in ${1}
+Please try to run it again some other time with other settings.
+
+There are different configs you can try in Let's Encrypt's user guide:
+https://letsencrypt.readthedocs.org/en/latest/index.html
+Please check the guide for further information on how to enable SSL.
+
+This script is developed on GitHub, feel free to contribute:
+https://github.com/nextcloud/vm"
+
+if [ -n $2 ]
+then
+    print_text_in_color "$ICyan" "The script will now do some cleanup and revert the settings."
+    any_key "Press any key to start the cleanup"
+    # Cleanup
+    apt remove certbot -y
+    apt autoremove -y
+fi
 }
 
 # Check if port is open # check_open_port 443 domain.example.com
