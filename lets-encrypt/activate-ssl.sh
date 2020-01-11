@@ -30,7 +30,7 @@ You also have to open port 80+443 against this VMs
 IP address: $ADDRESS - do this in your router/FW.
 Here is a guide: https://goo.gl/Uyuf65
 
-You can find the script here: $SCRIPTS/activate-ssl.sh 
+You can find the script here: $SCRIPTS/activate-ssl.sh
 and you can run it after you got a domain.
 
 Please don't run this script if you don't have
@@ -55,40 +55,35 @@ if [[ "yes" == $(ask_yes_or_no "Do you have a domain that you will use?") ]]
 then
     sleep 1
 else
-msg_box "OK, but if you want to run this script later, 
+msg_box "OK, but if you want to run this script later,
 just type: sudo bash /var/scripts/activate-ssl.sh"
     exit
 fi
 
-echo
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+TLS_INSTALL= 1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset TLS_INSTALL
 while true
 do
 # Ask for domain name
-cat << ENTERDOMAIN
-+---------------------------------------------------------------+
-|    Please enter the domain name you will use for Nextcloud:   |
-|    Like this: example.com, or nextcloud.example.com           |
-+---------------------------------------------------------------+
-ENTERDOMAIN
-echo
-read -r domain
-echo
-if [[ "yes" == $(ask_yes_or_no "Is this correct? $domain") ]]
+if [[ "yes" == $(ask_yes_or_no "Is this correct? $TLSDOMAIN") ]]
 then
     break
 fi
 done
 
-# Check if $domain exists and is reachable
+# Check if $TLSDOMAIN exists and is reachable
 echo
 print_text_in_color "$ICyan" "Checking if $domain exists and is reachable..."
-domain_check_200 "$domain"
+domain_check_200 "$TLSDOMAIN"
 
 # Check if port is open with NMAP
-sed -i "s|127.0.1.1.*|127.0.1.1       $domain nextcloud|g" /etc/hosts
+sed -i "s|127.0.1.1.*|127.0.1.1       $TLSDOMAIN nextcloud|g" /etc/hosts
 network_ok
-check_open_port 80 "$domain"
-check_open_port 443 "$domain"
+check_open_port 80 "$TLSDOMAIN"
+check_open_port 443 "$TLSDOMAIN"
 
 # Fetch latest version of test-new-config.sh
 check_command download_le_script test-new-config
@@ -97,7 +92,7 @@ check_command download_le_script test-new-config
 install_certbot
 
 #Fix issue #28
-ssl_conf="/etc/apache2/sites-available/"$domain.conf""
+ssl_conf="/etc/apache2/sites-available/"$TLSDOMAIN.conf""
 
 # Check if "$ssl.conf" exists, and if, then delete
 if [ -f "$ssl_conf" ]
@@ -129,8 +124,8 @@ then
 
 ### YOUR SERVER ADDRESS ###
 
-    ServerAdmin admin@$domain
-    ServerName $domain
+    ServerAdmin admin@$TLSDOMAIN
+    ServerName $TLSDOMAIN
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
@@ -173,9 +168,9 @@ then
 
 ### LOCATION OF CERT FILES ###
 
-    SSLCertificateChainFile $CERTFILES/$domain/chain.pem
-    SSLCertificateFile $CERTFILES/$domain/cert.pem
-    SSLCertificateKeyFile $CERTFILES/$domain/privkey.pem
+    SSLCertificateChainFile $CERTFILES/$TLSDOMAIN/chain.pem
+    SSLCertificateFile $CERTFILES/$TLSDOMAIN/cert.pem
+    SSLCertificateKeyFile $CERTFILES/$TLSDOMAIN/privkey.pem
     SSLOpenSSLConfCmd DHParameters $DHPARAMS_MAIN
 
 </VirtualHost>
@@ -200,7 +195,7 @@ then
 fi
 
 #Generate certs and auto-configure if successful
-if generate_cert "$domain"
+if generate_cert "$TLSDOMAIN"
 then
     if [ -d "$CERTFILES" ]
     then
@@ -210,7 +205,7 @@ then
             openssl dhparam -dsaparam -out "$DHPARAMS_MAIN" 4096
         fi
         # Activate new config
-        check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
+        check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
         exit 0
     fi
 else

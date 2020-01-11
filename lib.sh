@@ -69,18 +69,21 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 [ -n "$NC_UPDATE" ] && NCBAD=$((NCMAJOR-2))
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
-# OnlyOffice URL
+# OnlyOffice URL (onlyoffice.sh)
 [ -n "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-# Nextcloud Main Domain
+# Nextcloud Main Domain (onlyoffice.sh)
 [ -n "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
-# Collabora Docker URL
+# Collabora Docker URL (collabora.sh
 [ -n "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-# Nextcloud Main Domain
+# Nextcloud Main Domain (collabora.sh)
 [ -n "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+# Nextcloud Main Domain (activate-ssl.sh)
+[ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(whiptail --title "T&M Hansson IT Let's Encrypt" --inputbox "Nextcloud domain, make sure it looks like this: cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
+
 # Letsencrypt
 LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
-DHPARAMS_MAIN="$CERTFILES/$domain/dhparam.pem"
+DHPARAMS_TLS="$CERTFILES/$TLSDOMAIN/dhparam.pem"
 DHPARAMS_SUB="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 # Collabora App
 HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
