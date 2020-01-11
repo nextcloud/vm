@@ -152,18 +152,15 @@ then
         run_app_script smbmount
     fi
     args=(whiptail --title "unmount SMB-Shares" --checklist "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
-    if [[ $(findmnt -M "/mnt/smbshares/1") ]]
-    then
-        args+=("/mnt/smbshares/1" "$(grep /mnt/smbshares/1 /etc/fstab | awk '{print $1}')" OFF)
-    fi
-    if [[ $(findmnt -M "/mnt/smbshares/2") ]]
-    then
-        args+=("/mnt/smbshares/2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $1}')" OFF)
-    fi
-    if [[ $(findmnt -M "/mnt/smbshares/3") ]]
-    then
-        args+=("/mnt/smbshares/3" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
-    fi
+    count=1
+    while  [ $count -le 3 ]
+    do
+        if [[ $(findmnt -M "/mnt/smbshares/$count") ]]
+        then
+            args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
+        fi
+        count=$(( $count + 1))
+    done
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
     if [[ $selected_options == *"/mnt/smbshares/1"* ]]
     then
