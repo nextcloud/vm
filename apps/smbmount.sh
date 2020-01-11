@@ -142,7 +142,26 @@ then
         msg_box "You haven't created any SMB-Mount. So nothing to show."
         run_app_script smbmount
     fi
-    msg_box "$(grep /mnt/smbshares /etc/fstab)" 
+    args=(whiptail --title "list SMB-Shares" --checklist "This option let you show detailed information about your SMB-Shares.\nChoose what you want to show.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    count=1
+    while  [ $count -le 3 ]
+    do
+        if [ "$(grep "/mnt/smbshares/$count" /etc/fstab)" != "" ]
+        then
+            args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
+        fi
+        count=$(( $count + 1))
+    done
+    selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
+    count=1
+    while  [ $count -le 3 ]
+    do
+        if [[ $selected_options == *"/mnt/smbshares/$count"* ]]
+        then
+            msg_box "$(grep "/mnt/smbshares/$count" /etc/fstab)"
+        fi
+        count=$(( $count + 1))
+    done
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
 then
