@@ -63,7 +63,7 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-TLS_INSTALL= 1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+TLS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset TLS_INSTALL
 while true
 do
