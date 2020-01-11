@@ -171,7 +171,7 @@ then
     SSLCertificateChainFile $CERTFILES/$TLSDOMAIN/chain.pem
     SSLCertificateFile $CERTFILES/$TLSDOMAIN/cert.pem
     SSLCertificateKeyFile $CERTFILES/$TLSDOMAIN/privkey.pem
-    SSLOpenSSLConfCmd DHParameters $DHPARAMS_MAIN
+    SSLOpenSSLConfCmd DHParameters $DHPARAMS_TLS
 
 </VirtualHost>
 
@@ -200,9 +200,9 @@ then
     if [ -d "$CERTFILES" ]
     then
         # Generate DHparams chifer
-        if [ ! -f "$DHPARAMS_MAIN" ]
+        if [ ! -f "$DHPARAMS_TLS" ]
         then
-            openssl dhparam -dsaparam -out "$DHPARAMS_MAIN" 4096
+            openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
         fi
         # Activate new config
         check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
