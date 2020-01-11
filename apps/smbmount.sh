@@ -84,7 +84,7 @@ then
             occ_command app:enable files_external
             MOUNT_ID=$(occ_command files_external:create SMB1 local null::null -c datadir=/mnt/smbshares/1)
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
-            occ_command files_external:applicable --add-group=admin $MOUNT_ID -q
+            occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/1.\nYou can now use the Nextcloud external storage app to access files there."
         fi
     elif [ "$(grep /mnt/smbshares/2 /etc/fstab)" == "" ]
@@ -100,7 +100,7 @@ then
             occ_command app:enable files_external
             MOUNT_ID=$(occ_command files_external:create SMB2 local null::null -c datadir=/mnt/smbshares/2)
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
-            occ_command files_external:applicable --add-group=admin $MOUNT_ID -q
+            occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/2.\nYou can now use the Nextcloud external storage app to access files there."
         fi
     elif [ "$(grep /mnt/smbshares/3 /etc/fstab)" == "" ]
@@ -116,7 +116,7 @@ then
             occ_command app:enable files_external
             MOUNT_ID=$(occ_command files_external:create SMB3 local null::null -c datadir=/mnt/smbshares/3)
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
-            occ_command files_external:applicable --add-group=admin $MOUNT_ID -q
+            occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/3.\nYou can now use the Nextcloud external storage app to access files there."
         fi
     fi
