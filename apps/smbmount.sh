@@ -220,7 +220,7 @@ then
     if [[ $selected_options == *"/mnt/smbshares/2"* ]]
     then
         umount /mnt/smbshares/2 -f
-        if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+        if [[ $(findmnt -M "/mnt/smbshares/2") ]]
         then
             msg_box "It seems like the unmount of /mnt/smbshares/2 wasn't successful. Please try again."
         else
@@ -230,7 +230,7 @@ then
     if [[ $selected_options == *"/mnt/smbshares/3"* ]]
     then
         umount /mnt/smbshares/3 -f
-        if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+        if [[ $(findmnt -M "/mnt/smbshares/3") ]]
         then
             msg_box "It seems like the unmount of /mnt/smbshares/3 wasn't successful. Please try again."
         else
@@ -252,7 +252,7 @@ then
     fi
     if [ "$(grep /mnt/smbshares/2 /etc/fstab)" != "" ]
     then
-        args+=("/mnt/smbshares/2" "$(grep /mnt/smbshares/3 /etc/fstab | awk '{print $1}')" OFF)
+        args+=("/mnt/smbshares/2" "$(grep /mnt/smbshares/2 /etc/fstab | awk '{print $1}')" OFF)
     fi
     if [ "$(grep /mnt/smbshares/3 /etc/fstab)" != "" ]
     then
@@ -282,7 +282,7 @@ then
         sed -i '/\/mnt\/smbshares\/2/d' /etc/fstab
         if [[ $(findmnt -M "/mnt/smbshares/2") ]] || [ "$(grep /mnt/smbshares/2 /etc/fstab)" != "" ]
         then
-            msg_box "Something went wrong during deletion of /mnt/smbshares/1. Please try again."
+            msg_box "Something went wrong during deletion of /mnt/smbshares/2. Please try again."
         else
             msg_box "Your deletion of /mnt/smbshares/2 was successfull!"
         fi
