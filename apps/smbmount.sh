@@ -98,7 +98,7 @@ then
                 break
             fi
         fi
-        count=$(( count + 1))
+        count=$(( $count + 1))
     done
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
@@ -116,7 +116,7 @@ then
         then
             args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
         fi
-        count=$(( count + 1))
+        count=$(( $count + 1))
     done
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
     count=1
@@ -153,13 +153,13 @@ then
     fi
     args=(whiptail --title "unmount SMB-Shares" --checklist "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=1
-    while  [ count -le 3 ]
+    while  [ $count -le 3 ]
     do
         if [[ $(findmnt -M "/mnt/smbshares/$count") ]]
         then
             args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
         fi
-        count=$(( count + 1))
+        count=$(( $count + 1))
     done
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
     count=1
@@ -175,7 +175,7 @@ then
                 msg_box "Your unmount of /mnt/smbshares/$count was successfull!"
             fi
         fi
-        count=$(( count + 1))
+        count=$(( $count + 1))
     done
     run_app_script smbmount
 elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
@@ -187,7 +187,7 @@ then
     fi
     args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=1
-    while  [ count -le 3 ]
+    while  [ $count -le 3 ]
     do
         if [ "$(grep "/mnt/smbshares/$count" /etc/fstab)" != "" ]
         then
@@ -213,7 +213,7 @@ then
                 msg_box "Your deletion of /mnt/smbshares/$count was successfull!"
             fi
         fi
-        count=$(( count + 1))
+        count=$(( $count + 1))
     done
     run_app_script smbmount
 else
