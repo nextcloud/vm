@@ -196,48 +196,25 @@ then
         count=$(( $count + 1))
     done
     selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-    if [[ $selected_options == *"/mnt/smbshares/1"* ]]
-    then
-        if [[ $(findmnt -M "/mnt/smbshares/1") ]]
+    count=1
+    while  [ $count -le 3 ]
+    do
+        if [[ $selected_options == *"/mnt/smbshares/$count"* ]]
         then
-            umount /mnt/smbshares/1 -f
+            if [[ $(findmnt -M "/mnt/smbshares/$count") ]]
+            then
+                umount "/mnt/smbshares/$count" -f
+            fi
+            sed -i "/\/mnt\/smbshares\/$count/d" /etc/fstab
+            if [[ $(findmnt -M "/mnt/smbshares/$count") ]] || [ "$(grep "/mnt/smbshares/$count" /etc/fstab)" != "" ]
+            then
+                msg_box "Something went wrong during deletion of /mnt/smbshares/$count. Please try again."
+            else
+                msg_box "Your deletion of /mnt/smbshares/$count was successfull!"
+            fi
         fi
-        sed -i '/\/mnt\/smbshares\/1/d' /etc/fstab
-        if [[ $(findmnt -M "/mnt/smbshares/1") ]] || [ "$(grep /mnt/smbshares/1 /etc/fstab)" != "" ]
-        then
-            msg_box "Something went wrong during deletion of /mnt/smbshares/1. Please try again."
-        else
-            msg_box "Your deletion of /mnt/smbshares/1 was successfull!"
-        fi
-    fi
-    if [[ $selected_options == *"/mnt/smbshares/2"* ]]
-    then
-        if [[ $(findmnt -M "/mnt/smbshares/2") ]]
-        then
-            umount /mnt/smbshares/2 -f
-        fi
-        sed -i '/\/mnt\/smbshares\/2/d' /etc/fstab
-        if [[ $(findmnt -M "/mnt/smbshares/2") ]] || [ "$(grep /mnt/smbshares/2 /etc/fstab)" != "" ]
-        then
-            msg_box "Something went wrong during deletion of /mnt/smbshares/2. Please try again."
-        else
-            msg_box "Your deletion of /mnt/smbshares/2 was successfull!"
-        fi
-    fi
-    if [[ $selected_options == *"/mnt/smbshares/3"* ]]
-    then
-        if [[ $(findmnt -M "/mnt/smbshares/3") ]]
-        then
-            umount /mnt/smbshares/3 -f
-        fi
-        sed -i '/\/mnt\/smbshares\/3/d' /etc/fstab
-        if [[ $(findmnt -M "/mnt/smbshares/3") ]] || [ "$(grep /mnt/smbshares/3 /etc/fstab)" != "" ]
-        then
-            msg_box "Something went wrong during deletion of /mnt/smbshares/3. Please try again."
-        else
-            msg_box "Your deletion of /mnt/smbshares/3 was successfull!"
-        fi
-    fi
+        count=$(( $count + 1))
+    done
     run_app_script smbmount
 else
     sleep 1
