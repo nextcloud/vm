@@ -448,7 +448,7 @@ a2dissite 000-default.conf
 service apache2 reload
 default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 #http-01
-local  standalone="certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
+local  standalone="certbot certonly --standalone --pre-hook \"service apache2 stop\" --post-hook \"service apache2 start\" $default_le"
 #tls-alpn-01
 local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default_le"
 #dns
@@ -458,7 +458,7 @@ local  methods=(standalone dns)
 for f in ${methods[*]}
 do
     print_text_in_color "${ICyan}" "Trying to generate certs and validate them with $f method."
-    current_method="\$$f"
+    eval current_method="\$$f"
     if eval "$current_method"
     then
         return 0
