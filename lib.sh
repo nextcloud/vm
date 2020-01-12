@@ -440,17 +440,12 @@ fi
 # https://certbot.eff.org/docs/using.html#certbot-command-line-options
 generate_cert() {
 uir_hsts=""
-disable_000=""
 if [ -z "$SUBDOMAIN" ]
 then
     uir_hsts="--uir --hsts"
 fi
-if [ -e $SITES_AVAILABLE/../sites-enabled/000-default.conf ]
-then
-    a2dissite 000-default.conf
-    systemctl reload apache2
-    disable_000="yes"
-fi
+a2dissite 000-default.conf
+service apache2 reload
 default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 #http-01
 local  standalone="certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
@@ -474,11 +469,6 @@ do
     else
         print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
         any_key "Press any key to continue..."
-        if [ -n "$disable_000" ]
-        then
-            a2ensite 000-default.conf
-            systemctl reload apache2
-        fi
         return 1;
     fi
 done
