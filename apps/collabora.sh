@@ -102,7 +102,7 @@ then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
   ServerName $SUBDOMAIN:443
-  
+
   <Directory /var/www>
   Options -Indexes
   </Directory>
@@ -112,7 +112,7 @@ then
   SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
   SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
   SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
-  SSLOpenSSLConfCmd DHParameters $DHPARAMS
+  SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
   SSLProtocol             all -SSLv2 -SSLv3
   SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
   SSLHonorCipherOrder     on
@@ -165,13 +165,13 @@ fi
 # Install certbot (Let's Encrypt)
 install_certbot
 
-# Generate certs
-if le_subdomain
+# Generate certs and  auto-configure  if successful
+if generate_cert  "$SUBDOMAIN"
 then
     # Generate DHparams chifer
-    if [ ! -f "$DHPARAMS" ]
+    if [ ! -f "$DHPARAMS_SUB" ]
     then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
+        openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
     fi
     printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
     a2ensite "$SUBDOMAIN.conf"
@@ -179,9 +179,7 @@ then
     # Install Collabora App
     occ_command app:install richdocuments
 else
-	print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
-    any_key "Press any key to continue... "
-    restart_webserver
+    last_fail_tls "$SCRIPTS"/apps/collabora.sh
 fi
 
 # Set config for RichDocuments (Collabora App)

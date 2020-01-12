@@ -16,8 +16,8 @@ debug_mode
 printf "${Color_Off}We will now test that everything is OK\n"
 any_key "Press any key to continue... "
 a2ensite "$1"
-a2dissite nextcloud_ssl_domain_self_signed.conf
-a2dissite nextcloud_http_domain_self_signed.conf
+a2dissite "$TLS_CONF"
+a2dissite "$HTTP_CONF"
 a2dissite 000-default.conf
 if restart_webserver
 then
@@ -80,8 +80,8 @@ rm -f /var/www/index.php
 else
 # If it fails, revert changes back to normal
     a2dissite "$1"
-    a2ensite nextcloud_ssl_domain_self_signed.conf
-    a2ensite nextcloud_http_domain_self_signed.conf
+    a2ensite "$TLS_CONF"
+    a2ensite "$HTTP_CONF"
     a2ensite 000-default.conf
     restart_webserver
     printf "${ICyan}Couldn't load new config, reverted to old settings. Self-signed SSL is OK!${Color_Off}\n"
