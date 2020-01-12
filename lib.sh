@@ -1,4 +1,4 @@
-#!/bin/bash
+#/bin/bash
 # shellcheck disable=2034,2059
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
@@ -445,11 +445,11 @@ if [ -z "$SUBDOMAIN" ]
 then
     uir_hsts="--uir --hsts"
 fi
-if [ -e "$SITES_AVAILABLE"/../sites-enabled/000-default.conf ]
+if [ -e $SITES_AVAILABLE/../sites-enabled/000-default.conf ]
 then
     a2dissite 000-default.conf
     systemctl reload apache2
-    local  disable_000="yes"
+    disable_000="yes"
 fi
 default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 #http-01
