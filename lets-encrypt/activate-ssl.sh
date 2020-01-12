@@ -62,6 +62,7 @@ fi
 
 while true
 do
+print_text_in_color "$ICyan" "Updating lib.sh..."
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
