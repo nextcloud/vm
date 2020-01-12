@@ -25,17 +25,8 @@ then
     chmod 600 /etc/fstab
 fi
 
-# choose categories
-SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manage SMB-Shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"add a SMB-Mount" "(and mount/connect it)" ON \
-"mount SMB-Shares" "(connect SMB-Shares)" OFF \
-"show all SMB-Mounts" "" OFF \
-"unmount SMB-Shares" "(disconnect SMB-Shares)" OFF \
-"delete SMB-Mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
-
-# add SMB-Mount
-if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
-then
+# functions
+add_mount() {
     # check if mounting slots are available
     if [ -n "$(grep /mnt/smbshares/1 /etc/fstab)" ] && [ -n "$(grep /mnt/smbshares/2 /etc/fstab)" ] && [ -n "$(grep /mnt/smbshares/3 /etc/fstab)" ]
     then
@@ -109,9 +100,9 @@ then
         count=$(( $count + 1))
     done
     run_app_script smbmount 
-# mount smb-shares
-elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
-then
+}
+
+mount_shares() {
     # check if any smb-share is created
     if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
     then
@@ -148,9 +139,9 @@ then
         count=$(( count + 1))
     done
     run_app_script smbmount
-# show all smb-mounts
-elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
-then
+}
+
+show_all_mounts() {
     # if no entry created nothing to show
     if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
     then
@@ -181,9 +172,9 @@ then
         count=$(( $count + 1))
     done
     run_app_script smbmount
-# unmount smb-shares
-elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
-then
+}
+
+unmount_shares() {
     # check if any smb-shares are available for unmounting
     if [[ ! $(findmnt -M "/mnt/smbshares/1") ]] && [[ ! $(findmnt -M "/mnt/smbshares/2") ]] && [[ ! $(findmnt -M "/mnt/smbshares/3") ]]
     then
@@ -219,9 +210,9 @@ then
         count=$(( $count + 1))
     done
     run_app_script smbmount
-# delete smb-mounts
-elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
-then
+}
+
+delete_mounts() {
     # check if any smb-share available
     if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
     then
@@ -262,6 +253,36 @@ then
         count=$(( $count + 1))
     done
     run_app_script smbmount
+}
+
+# Mainmenu
+SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manage SMB-Shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"add a SMB-Mount" "(and mount/connect it)" ON \
+"mount SMB-Shares" "(connect SMB-Shares)" OFF \
+"show all SMB-Mounts" "" OFF \
+"unmount SMB-Shares" "(disconnect SMB-Shares)" OFF \
+"delete SMB-Mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
+
+# add SMB-Mount
+if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
+then
+    add_mount
+# mount smb-shares
+elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
+then
+    mount_shares
+# show all smb-mounts
+elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
+then
+    show_all_mounts
+# unmount smb-shares
+elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
+then
+    unmount_shares
+# delete smb-mounts
+elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
+then
+    delete_mounts
 else
     sleep 1
 fi
