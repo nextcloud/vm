@@ -31,7 +31,7 @@ add_mount() {
 if [ -n "$(grep /mnt/smbshares/1 /etc/fstab)" ] && [ -n "$(grep /mnt/smbshares/2 /etc/fstab)" ] && [ -n "$(grep /mnt/smbshares/3 /etc/fstab)" ]
 then
     msg_box "No mounting slots available. Please delete one SMB-Mount."
-    run_app_script smbmount
+    return
 fi
 # enter smb-server and share name
 while true
@@ -99,7 +99,7 @@ do
     fi
     count=$(( $count + 1))
 done
-run_app_script smbmount 
+return
 }
 
 mount_shares() {
@@ -107,7 +107,7 @@ mount_shares() {
 if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
 then
     msg_box "It seems like you have not created any SMB-Share."
-    run_app_script smbmount
+    return
 fi
 args=(whiptail --title "mount SMB-Shares" --checklist --separate-output "This option let you mount SMB-Shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
@@ -138,7 +138,7 @@ do
     fi
     count=$(( count + 1))
 done
-run_app_script smbmount
+return
 }
 
 show_all_mounts() {
@@ -146,7 +146,7 @@ show_all_mounts() {
 if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
 then
     msg_box "You haven't created any SMB-Mount. So nothing to show."
-    run_app_script smbmount
+    return
 fi
 # find out which smb-shares are available
 args=(whiptail --title "list SMB-Shares" --checklist "This option let you show detailed information about your SMB-Shares.\nChoose what you want to show.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
@@ -171,7 +171,7 @@ do
     fi
     count=$(( $count + 1))
 done
-run_app_script smbmount
+return
 }
 
 unmount_shares() {
@@ -179,7 +179,7 @@ unmount_shares() {
 if [[ ! $(findmnt -M "/mnt/smbshares/1") ]] && [[ ! $(findmnt -M "/mnt/smbshares/2") ]] && [[ ! $(findmnt -M "/mnt/smbshares/3") ]]
 then
     msg_box "You haven't mounted any smb-mount. So nothing to unmount"
-    run_app_script smbmount
+    return
 fi
 # find out which shares are available
 args=(whiptail --title "unmount SMB-Shares" --checklist "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
@@ -209,7 +209,7 @@ do
     fi
     count=$(( $count + 1))
 done
-run_app_script smbmount
+return
 }
 
 delete_mounts() {
@@ -217,7 +217,7 @@ delete_mounts() {
 if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
 then
     msg_box "You haven't created any SMB-Mount, nothing to delete."
-    run_app_script smbmount
+    return
 fi
 # check which smb-shares are available
 args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
@@ -252,7 +252,7 @@ do
     fi
     count=$(( $count + 1))
 done
-run_app_script smbmount
+return
 }
 
 # loop main menu until exited
