@@ -105,6 +105,7 @@ Though I (@enoch85) haven't tested this yet, so testing and reporting is welcome
 * [Lorenzo Faleschini](https://github.com/penzoiders)
 * [Georg Großmann](https://github.com/ggeorgg)
 * [szaimen](https://github.com/szaimen)
+* [liao20081228](https://github.com/liao20081228)
 
 [Nextcloud Server]: https://bit.ly/2CHIUkA
 [app store]: https://bit.ly/2HUy4v9
