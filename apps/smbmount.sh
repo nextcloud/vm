@@ -28,7 +28,7 @@ fi
 # functions
 add_mount() {
 # check if mounting slots are available
-if [ -n "$(grep /mnt/smbshares/1 /etc/fstab)" ] && [ -n "$(grep /mnt/smbshares/2 /etc/fstab)" ] && [ -n "$(grep /mnt/smbshares/3 /etc/fstab)" ]
+if grep -q /mnt/smbshares/1 /etc/fstab && grep -q /mnt/smbshares/2 /etc/fstab && grep -q /mnt/smbshares/3 /etc/fstab
 then
     msg_box "No mounting slots available. Please delete one SMB-Mount."
     return
@@ -72,7 +72,7 @@ count=1
 while  [ $count -le 3 ]
 do
     # check which mounting slot is available
-    if [ -z "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
+    if ! grep -q "/mnt/smbshares/$count" /etc/fstab
     then 
         # write to /etc/fstab and mount
         echo "$SERVER_SHARE_NAME /mnt/smbshares/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
@@ -104,7 +104,7 @@ return
 
 mount_shares() {
 # check if any smb-share is created
-if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
+if ! grep -q /mnt/smbshares /etc/fstab
 then
     msg_box "It seems like you have not created any SMB-Share."
     return
@@ -114,7 +114,7 @@ count=1
 # find out which smb-share are available
 while  [ $count -le 3 ]
 do
-    if [[ ! $(findmnt -M "/mnt/smbshares/$count") ]] && [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
+    if [[ ! $(findmnt -M "/mnt/smbshares/$count") ]] && grep -q "/mnt/smbshares/$count" /etc/fstab
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
@@ -143,7 +143,7 @@ return
 
 show_all_mounts() {
 # if no entry created nothing to show
-if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
+if ! grep -q /mnt/smbshares /etc/fstab
 then
     msg_box "You haven't created any SMB-Mount. So nothing to show."
     return
@@ -153,7 +153,7 @@ args=(whiptail --title "list SMB-Shares" --checklist "This option let you show d
 count=1
 while  [ $count -le 3 ]
 do
-    if [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
+    if grep -q "/mnt/smbshares/$count" /etc/fstab
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
@@ -214,7 +214,7 @@ return
 
 delete_mounts() {
 # check if any smb-share available
-if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
+if ! grep -q /mnt/smbshares /etc/fstab
 then
     msg_box "You haven't created any SMB-Mount, nothing to delete."
     return
@@ -224,7 +224,7 @@ args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This o
 count=1
 while  [ $count -le 3 ]
 do
-    if [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
+    if grep -q "/mnt/smbshares/$count" /etc/fstab
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
@@ -243,7 +243,7 @@ do
             umount "/mnt/smbshares/$count" -f
         fi
         sed -i "/\/mnt\/smbshares\/$count/d" /etc/fstab
-        if [[ $(findmnt -M "/mnt/smbshares/$count") ]] || [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
+        if [[ $(findmnt -M "/mnt/smbshares/$count") ]] || grep -q "/mnt/smbshares/$count" /etc/fstab
         then
             msg_box "Something went wrong during deletion of /mnt/smbshares/$count. Please try again."
         else
