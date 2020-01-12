@@ -97,7 +97,7 @@ do
             break
         fi
     fi
-    count=$[$count+1]
+    count=$(($count+1))
 done
 return
 }
@@ -136,7 +136,7 @@ do
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/$count\nYou can now use the Nextcloud external storage app to access files there."
         fi
     fi
-    count=$[$count+1]
+    count=$(($count+1))
 done
 return
 }
@@ -157,7 +157,7 @@ do
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
-    count=$[$count+1]
+    count=$(($count+1))
 done
 # let the user choose which details he wants to see
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
@@ -169,7 +169,7 @@ do
     then
         msg_box "$(grep "/mnt/smbshares/$count" /etc/fstab)"
     fi
-    count=$[$count+1]
+    count=$(($count+1))
 done
 return
 }
@@ -190,7 +190,7 @@ do
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
-    count=$[$count+1]
+    count=$(($count+1))
 done
 # let the user select which shares he wants to unmount
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
@@ -207,7 +207,7 @@ do
             msg_box "Your unmount of /mnt/smbshares/$count was successfull!"
         fi
     fi
-    count=$[$count+1]
+    count=$(($count+1))
 done
 return
 }
@@ -228,7 +228,7 @@ do
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
-    count=$[$count+1]
+    count=$(($count+1))
 done
 # let the user choose which shares he wants to delete
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
@@ -250,7 +250,7 @@ do
             msg_box "Your deletion of /mnt/smbshares/$count was successfull!"
         fi
     fi
-    count=$[$count+1]
+    count=$(($count+1))
 done
 return
 }
