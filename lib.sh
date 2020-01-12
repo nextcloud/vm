@@ -467,7 +467,7 @@ do
     if eval "$ff"
     then
         return 0
-    elif [ "$f" != "${methods[$(expr ${#methods[*]} - 1)]}" ]
+    elif [ "$f" != "${methods[$((${#methods[*]} - 1))]}" ]
     then
         print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We will do more tries."
         any_key "Press any key to continue..."
