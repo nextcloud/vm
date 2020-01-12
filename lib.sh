@@ -440,13 +440,18 @@ fi
 # https://certbot.eff.org/docs/using.html#certbot-command-line-options
 generate_cert() {
 uir_hsts=""
+disable_000=""
 if [ -z "$SUBDOMAIN" ]
 then
     uir_hsts="--uir --hsts"
 fi
+if [ -e "$SITES_AVAILABLE"/../sites-enabled/000-default.conf ]
+then
+    a2dissite 000-default.conf
+    service apache2 reload
+    local  disable_000="yes"
+fi
 default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
-a2dissite 000-default.conf
-service apache2 reload
 #http-01
 local  standalone="certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
 #tls-alpn-01
@@ -454,20 +459,26 @@ local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default
 #dns
 local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
 local  methods=(standalone dns)
-for f in "${methods[@]}"
+
+for f in ${methods[*]}
 do
     print_text_in_color "${ICyan}" "Trying to generate certs and validate them with $f method."
-    eval  ff=$(echo "\$$f")
+    ff="\$$f"
     if eval "$ff"
     then
         return 0
-    elif [ "$f" != "${methods[@]:(-1)}" ]
+    elif [ "$f" != "${methods[$(expr ${#methods[*]} - 1)]}" ]
     then
         print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We will do more tries."
         any_key "Press any key to continue..."
     else
         print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
         any_key "Press any key to continue..."
+        if [ -n "$disable_000" ]
+        then
+            a2ensite 000-default.conf
+            service apache2 reload
+        fi
         return 1;
     fi
 done
