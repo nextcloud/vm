@@ -463,8 +463,8 @@ local  methods=(standalone dns)
 for f in ${methods[*]}
 do
     print_text_in_color "${ICyan}" "Trying to generate certs and validate them with $f method."
-    ff="\$$f"
-    if eval "$ff"
+    current_method="\$$f"
+    if eval "$current_method"
     then
         return 0
     elif [ "$f" != "${methods[$((${#methods[*]} - 1))]}" ]
