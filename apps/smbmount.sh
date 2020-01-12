@@ -255,34 +255,34 @@ delete_mounts() {
     run_app_script smbmount
 }
 
-# Mainmenu
-SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manage SMB-Shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"add a SMB-Mount" "(and mount/connect it)" ON \
-"mount SMB-Shares" "(connect SMB-Shares)" OFF \
-"show all SMB-Mounts" "" OFF \
-"unmount SMB-Shares" "(disconnect SMB-Shares)" OFF \
-"delete SMB-Mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
+# loop main menu until exited
+while true
+do
+    # main menu
+    SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manage SMB-Shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "add a SMB-Mount" "(and mount/connect it)" ON \
+    "mount SMB-Shares" "(connect SMB-Shares)" OFF \
+    "show all SMB-Mounts" "" OFF \
+    "unmount SMB-Shares" "(disconnect SMB-Shares)" OFF \
+    "delete SMB-Mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
 
-# add SMB-Mount
-if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
-then
-    add_mount
-# mount smb-shares
-elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
-then
-    mount_shares
-# show all smb-mounts
-elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
-then
-    show_all_mounts
-# unmount smb-shares
-elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
-then
-    unmount_shares
-# delete smb-mounts
-elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
-then
-    delete_mounts
-else
-    sleep 1
-fi
+    if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
+    then
+        add_mount
+    elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
+    then
+        mount_shares
+    elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
+    then
+        show_all_mounts
+    elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
+    then
+        unmount_shares
+    elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
+    then
+        delete_mounts
+    else
+        break
+    fi
+done
+exit
