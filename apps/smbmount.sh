@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
 true
@@ -37,7 +37,7 @@ SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manag
 if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
 then
     # check if mounting slots are available
-    if [ -n "$(grep /mnt/smbshares/1 /root/fstabtest)" ] && [ -n "$(grep /mnt/smbshares/2 /root/fstabtest)" ] && [ -n "$(grep /mnt/smbshares/3 /root/fstabtest)" ]
+    if [ -n "$(grep /mnt/smbshares/1 /etc/fstab)" ] && [ -n "$(grep /mnt/smbshares/2 /etc/fstab)" ] && [ -n "$(grep /mnt/smbshares/3 /etc/fstab)" ]
     then
         msg_box "No mounting slots available. Please delete one SMB-Mount."
         run_app_script smbmount
@@ -92,7 +92,7 @@ then
             then
                 # if not remove this line from fstab
                 msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
-                sed -i "\/mnt\/smbshares\/$count/d" /etc/fstab
+                sed -i "/\/mnt\/smbshares\/$count/d" /etc/fstab
                 break
             else
                 # Install and enable files_extrnal
@@ -113,7 +113,7 @@ then
 elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
 then
     # check if any smb-share is created
-    if [ "$(grep /mnt/smbshares /etc/fstab)" == "" ]
+    if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
     then
         msg_box "It seems like you have not created any SMB-Share."
         run_app_script smbmount
@@ -123,7 +123,7 @@ then
     # find out which smb-share are available
     while  [ $count -le 3 ]
     do
-        if [[ ! $(findmnt -M "/mnt/smbshares/$count") ]] && [ "$(grep "/mnt/smbshares/$count" /etc/fstab)" != "" ]
+        if [[ ! $(findmnt -M "/mnt/smbshares/$count") ]] && [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
         then
             args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
         fi
@@ -152,7 +152,7 @@ then
 elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
 then
     # if no entry created nothing to show
-    if [ "$(grep /mnt/smbshares /etc/fstab)" == "" ]
+    if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
     then
         msg_box "You haven't created any SMB-Mount. So nothing to show."
         run_app_script smbmount
@@ -162,7 +162,7 @@ then
     count=1
     while  [ $count -le 3 ]
     do
-        if [ "$(grep "/mnt/smbshares/$count" /etc/fstab)" != "" ]
+        if [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
         then
             args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
         fi
@@ -223,7 +223,7 @@ then
 elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
 then
     # check if any smb-share available
-    if [ "$(grep /mnt/smbshares /etc/fstab)" == "" ]
+    if [ -z "$(grep /mnt/smbshares /etc/fstab)" ]
     then
         msg_box "You haven't created any SMB-Mount, nothing to delete."
         run_app_script smbmount
@@ -233,7 +233,7 @@ then
     count=1
     while  [ $count -le 3 ]
     do
-        if [ "$(grep "/mnt/smbshares/$count" /etc/fstab)" != "" ]
+        if [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
         then
             args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
         fi
@@ -252,7 +252,7 @@ then
                 umount "/mnt/smbshares/$count" -f
             fi
             sed -i "/\/mnt\/smbshares\/$count/d" /etc/fstab
-            if [[ $(findmnt -M "/mnt/smbshares/$count") ]] || [ "$(grep "/mnt/smbshares/$count" /etc/fstab)" != "" ]
+            if [[ $(findmnt -M "/mnt/smbshares/$count") ]] || [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
             then
                 msg_box "Something went wrong during deletion of /mnt/smbshares/$count. Please try again."
             else
