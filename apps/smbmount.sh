@@ -68,7 +68,7 @@ do
     fi
 done
 # write everything to /etc/fstab, mount and connect external storage
-count="1"
+count=1
 while  [ $count -le 3 ]
 do
     # check which mounting slot is available
@@ -97,7 +97,7 @@ do
             break
         fi
     fi
-    count=$($count+1)
+    count=$(($count+1))
 done
 return
 }
@@ -110,7 +110,7 @@ then
     return
 fi
 args=(whiptail --title "mount SMB-Shares" --checklist --separate-output "This option let you mount SMB-Shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
-count="1"
+count=1
 # find out which smb-share are available
 while  [ $count -le 3 ]
 do
@@ -118,11 +118,11 @@ do
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
-    count=$($count+1)
+    count=$(($count+1))
 done
 # let the user choose which shares he wants to mount
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-count="1"
+count=1
 # mount selected shares
 while  [ $count -le 3 ]
 do
@@ -136,7 +136,7 @@ do
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/$count\nYou can now use the Nextcloud external storage app to access files there."
         fi
     fi
-    count=$($count+1)
+    count=$(($count+1))
 done
 return
 }
@@ -150,26 +150,26 @@ then
 fi
 # find out which smb-shares are available
 args=(whiptail --title "list SMB-Shares" --checklist "This option let you show detailed information about your SMB-Shares.\nChoose what you want to show.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
-count="1"
+count=1
 while  [ $count -le 3 ]
 do
     if [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
-    count=$($count+1)
+    count=$(($count+1))
 done
 # let the user choose which details he wants to see
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 # show selected shares
-count="1"
+count=1
 while  [ $count -le 3 ]
 do
     if [[ $selected_options == *"/mnt/smbshares/$count"* ]]
     then
         msg_box "$(grep "/mnt/smbshares/$count" /etc/fstab)"
     fi
-    count=$($count+1)
+    count=$(($count+1))
 done
 return
 }
@@ -183,18 +183,18 @@ then
 fi
 # find out which shares are available
 args=(whiptail --title "unmount SMB-Shares" --checklist "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
-count="1"
+count=1
 while  [ $count -le 3 ]
 do
     if [[ $(findmnt -M "/mnt/smbshares/$count") ]]
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
-    count=$($count+1)
+    count=$(($count+1))
 done
 # let the user select which shares he wants to unmount
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-count="1"
+count=1
 while  [ $count -le 3 ]
 do
     if [[ $selected_options == *"/mnt/smbshares/$count"* ]]
@@ -207,7 +207,7 @@ do
             msg_box "Your unmount of /mnt/smbshares/$count was successfull!"
         fi
     fi
-    count=$($count+1)
+    count=$(($count+1))
 done
 return
 }
@@ -221,19 +221,19 @@ then
 fi
 # check which smb-shares are available
 args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
-count="1"
+count=1
 while  [ $count -le 3 ]
 do
     if [ -n "$(grep "/mnt/smbshares/$count" /etc/fstab)" ]
     then
         args+=("/mnt/smbshares/$count" "$(grep "/mnt/smbshares/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
-    count=$($count+1)
+    count=$(($count+1))
 done
 # let the user choose which shares he wants to delete
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 # delete the selected shares
-count="1"
+count=1
 while  [ $count -le 3 ]
 do
     if [[ $selected_options == *"/mnt/smbshares/$count"* ]]
@@ -250,7 +250,7 @@ do
             msg_box "Your deletion of /mnt/smbshares/$count was successfull!"
         fi
     fi
-    count=$($count+1)
+    count=$(($count+1))
 done
 return
 }
