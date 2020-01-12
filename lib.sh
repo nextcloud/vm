@@ -448,7 +448,7 @@ fi
 if [ -e "$SITES_AVAILABLE"/../sites-enabled/000-default.conf ]
 then
     a2dissite 000-default.conf
-    service apache2 reload
+    systemctl reload apache2
     local  disable_000="yes"
 fi
 default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
@@ -477,7 +477,7 @@ do
         if [ -n "$disable_000" ]
         then
             a2ensite 000-default.conf
-            service apache2 reload
+            systemctl reload apache2
         fi
         return 1;
     fi
