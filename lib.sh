@@ -77,7 +77,7 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Nextcloud Main Domain (collabora.sh)
 [ -n "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain (activate-ssl.sh)
-[ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(whiptail --title "T&M Hansson IT Let's Encrypt" --inputbox "Please enter the domain name you will use for Nextcloud.\nMake sure it looks like this:: yourdomain.com, or cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
+[ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(whiptail --title "T&M Hansson IT Let's Encrypt" --inputbox "Please enter the domain name you will use for Nextcloud.\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
 
 # Letsencrypt
 SITES_AVAILABLE="/etc/apache2/sites-available"
