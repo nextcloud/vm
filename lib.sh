@@ -1084,12 +1084,12 @@ notify_user_gui() {
 USER=$(occ_command user:list | awk '{print $3}';)
 for user in $USER
 do
-    if [[ $(occ_command user:info $user)  == *"- admin"* ]]
+    if [[ $(occ_command user:info "$user")  == *"- admin"* ]]
     then
-        args+="$user "
+        args+="$user"
     fi
 done
-NCADMIN="${args[@]}"
+NCADMIN="${args[*]}"
 for admin in $NCADMIN
 do
     occ_command notification:generate -l "$2" "$admin" "$1"
