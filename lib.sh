@@ -59,8 +59,7 @@ NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 [ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
-SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
-HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
+
 # Nextcloud version
 [ -n "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 [ -n "$NC_UPDATE" ] && NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
@@ -69,20 +68,27 @@ HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 [ -n "$NC_UPDATE" ] && NCBAD=$((NCMAJOR-2))
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
-# OnlyOffice URL
-[ -n "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-# Nextcloud Main Domain
-[ -n "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
-# Collabora Docker URL
-[ -n "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-# Nextcloud Main Domain
-[ -n "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+# OnlyOffice URL (onlyoffice.sh)
+[ -n "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+# Nextcloud Main Domain (onlyoffice.sh)
+[ -n "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+# Collabora Docker URL (collabora.sh
+[ -n "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+# Nextcloud Main Domain (collabora.sh)
+[ -n "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+# Nextcloud Main Domain (activate-ssl.sh)
+[ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(whiptail --title "T&M Hansson IT - Let's Encrypt" --inputbox "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
+
 # Letsencrypt
+SITES_AVAILABLE="/etc/apache2/sites-available"
 LETSENCRYPTPATH="/etc/letsencrypt"
 CERTFILES="$LETSENCRYPTPATH/live"
-DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
+DHPARAMS_TLS="$CERTFILES/$TLSDOMAIN/dhparam.pem"
+DHPARAMS_SUB="$CERTFILES/$SUBDOMAIN/dhparam.pem"
+TLS_CONF="nextcloud_tls_domain_self_signed.conf"
+HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 # Collabora App
-HTTPS_CONF="/etc/apache2/sites-available/$SUBDOMAIN.conf"
+HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # PHP-FPM
 PHPVER=7.2
@@ -222,7 +228,7 @@ domain_check_200() {
     else
         print_text_in_color "$IRed" "DNS lookup failed with nslookup."
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
-	print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
+        print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
         nslookup "${1}" $DNS1
         return 1
     fi
@@ -242,10 +248,10 @@ msg_box "As you noticed your WAN IP and DNS record doesn't match. This can happe
 If you feel brave, or are sure that everything is setup correctly, then you can choose to skip this test in the next step.
 
 You can always contact us for further support if you wish: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
-	if [[ "no" == $(ask_yes_or_no "Do you feel brave and want to continue?") ]]
-        then
-	    exit
-	fi
+        if [[ "no" == $(ask_yes_or_no "Do you feel brave and want to continue?") ]]
+            then
+            exit
+        fi
     fi
 }
 
@@ -326,7 +332,7 @@ You now have two choices:
    2) OnlyOffice
    3) Full Text Search
 
-This script will now exit. 
+This script will now exit.
 The installation was not successful, sorry for the inconvenience.
 
 If you think this is a bug, please report it to $ISSUES"
@@ -430,11 +436,70 @@ else
 fi
 }
 
-# Let's Encrypt for subdomains
-le_subdomain() {
+#generate certs and auto-configure
+# https://certbot.eff.org/docs/using.html#certbot-command-line-options
+generate_cert() {
+uir_hsts=""
+if [ -z "$SUBDOMAIN" ]
+then
+    uir_hsts="--uir --hsts"
+fi
 a2dissite 000-default.conf
 service apache2 reload
-certbot certonly --standalone --pre-hook "service apache2 stop" --post-hook "service apache2 start" --agree-tos --rsa-key-size 4096 -d "$SUBDOMAIN"
+default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
+#http-01
+local  standalone="certbot certonly --standalone --pre-hook \"service apache2 stop\" --post-hook \"service apache2 start\" $default_le"
+#tls-alpn-01
+local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default_le"
+#dns
+local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
+local  methods=(standalone dns)
+
+for f in ${methods[*]}
+do
+    print_text_in_color "${ICyan}" "Trying to generate certs and validate them with $f method."
+    current_method=""
+    eval current_method="\$$f"
+    if eval "$current_method"
+    then
+        return 0
+    elif [ "$f" != "${methods[$((${#methods[*]} - 1))]}" ]
+    then
+        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We will do more tries."
+        any_key "Press any key to continue..."
+    else
+        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
+        any_key "Press any key to continue..."
+        return 1;
+    fi
+done
+}
+
+# Last message depending on with script that is being run when using the generate_cert() function
+last_fail_tls() {
+msg_box "All methods failed. :/
+
+The script is located in ${1}
+Please try to run it again some other time with other settings.
+
+There are different configs you can try in Let's Encrypt's user guide:
+https://letsencrypt.readthedocs.org/en/latest/index.html
+Please check the guide for further information on how to enable SSL.
+
+This script is developed on GitHub, feel free to contribute:
+https://github.com/nextcloud/vm"
+
+if [ -n "$2" ]
+then
+    print_text_in_color "$ICyan" "The script will now do some cleanup and revert the settings."
+    any_key "Press any key to start the cleanup..."
+    # Cleanup
+    apt remove certbot -y
+    apt autoremove -y
+fi
+
+# Restart webserver services
+restart_webserver
 }
 
 # Check if port is open # check_open_port 443 domain.example.com
@@ -450,9 +515,19 @@ elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsig
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
-    msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
-    any_key "Press any key to exit..."
-    exit 1
+msg_box "It seems like the port ${1} is closed. This could happend when your
+ISP has blocked the port, or that the port isn't open.
+
+If you are 100% sure the port ${1} is open you can now choose to
+continue. There are no guarantees that it will work anyway though,
+since Let's Encrypt depend on that the port ${1} is open and
+accessible from outside your network."
+    if [[ "no" == $(ask_yes_or_no "Are you 100% sure the port ${1} is open?") ]]
+    then
+        msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
+        any_key "Press any key to exit..."
+        exit 1
+    fi
 fi
 }
 
@@ -553,12 +628,12 @@ fi
 }
 
 check_command() {
-  if ! "$@";
-  then
-     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
-	 print_text_in_color "$IRed" "$* failed"
+if ! "$@";
+then
+    print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+    print_text_in_color "$IRed" "$* failed"
     exit 1
-  fi
+fi
 }
 
 # Example: occ_command 'maintenance:mode --on'
@@ -855,14 +930,14 @@ fi
 
 set_max_count() {
 if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
-	print_text_in_color "$ICyan" "Max map count already set, skipping..."
+    print_text_in_color "$ICyan" "Max map count already set, skipping..."
 else
-	sysctl -w vm.max_map_count=262144
-	{
-  	echo "###################################################################"
-  	echo "# Docker ES max virtual memory"
-  	echo "vm.max_map_count=262144"
-	} >> /etc/sysctl.conf
+    sysctl -w vm.max_map_count=262144
+    {
+        echo "###################################################################"
+        echo "# Docker ES max virtual memory"
+        echo "vm.max_map_count=262144"
+    } >> /etc/sysctl.conf
 fi
 }
 
@@ -947,7 +1022,7 @@ done
 }
 
 print_text_in_color() {
-	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
+printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
 # Apply patch
@@ -964,7 +1039,7 @@ then
     if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "Applying patch https://github.com/nextcloud/${2}/pull/${1} ..."
-	git apply /tmp/"${1}".patch
+        git apply /tmp/"${1}".patch
     fi
 fi
 }
@@ -981,7 +1056,7 @@ if lshw -c system | grep -q NUC8i3BEH
 then
     if lshw -c memory | grep -q BLS16G4
     then
-        if lshw -c disk | grep -q ST2000LM015-2E81
+        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
@@ -994,6 +1069,41 @@ then
 else
     return 1
 fi
+}
+
+# Check if the value is a number
+# EXAMPLE: https://github.com/nextcloud/vm/pull/1012
+check_if_number() {
+case "${1}" in
+    ''|*[!0-9]*) return 1 ;;
+    *) return 0 ;;
+esac
+}
+
+# Example:
+# notify_user_gui \
+# "Subject" \
+# "Message"
+#
+# occ_command notification:generate -l "$2" "$admin" "$1"
+notify_user_gui() {
+USER=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
+print_text_in_color "$ICyan" "Looping through users, this might take a while..."
+for user in $USER
+do
+    if occ_command user:info "$user" | grep -q "\- admin";
+    then
+        print_text_in_color "$ICyan" "Found: $user"
+        local admin_users+="$user "
+    fi
+done
+
+print_text_in_color "$ICyan" "Posting notification to users that are admins:"
+for admin in ${admin_users[*]}
+do
+    occ_command notification:generate -l "$2" "$admin" "$1"
+    print_text_in_color "$IGreen" "$admin"
+done
 }
 
 ## bash colors

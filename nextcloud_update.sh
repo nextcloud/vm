@@ -11,7 +11,7 @@ NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/v
 unset NC_UPDATE
 unset NCDB
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -626,7 +626,11 @@ To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/app
 Thank you for using T&M Hansson IT's updater!"
     occ_command status
     occ_command maintenance:mode --off
-    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update_run.log
+    print_text_in_color "$ICyan" "Sending notification about the successful update to all admins..."
+    notify_user_gui \
+    "Nextcloud is now updated!" \
+    "Your Nextcloud is updated to $CURRENTVERSION_after with the update script in the Nextcloud VM."
+    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update.log
     exit 0
 else
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
@@ -637,6 +641,9 @@ Your files are still backed up at $BACKUP. No worries!
 Please report this issue to $ISSUES
 
 Maintenance mode is kept on."
-occ_command status
+    notify_user_gui \
+    "Nextcloud update failed!" \
+    "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
+    occ_command status
     exit 1
 fi

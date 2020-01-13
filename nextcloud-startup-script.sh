@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 #########
 
@@ -376,7 +376,8 @@ clear
 whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
-"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 2>results
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
+"CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF 2>results
 
 while read -r -u 9 choice
 do
@@ -395,6 +396,11 @@ do
 	"Automatic updates")
             clear
             run_static_script automatic_updates
+        ;;
+		
+        CookieLifetime)
+            clear
+            run_static_script cookielifetime
         ;;
 
         *)
@@ -531,10 +537,13 @@ then
 fi
 clear
 
-# Set notifications for admin
-NCADMIN=$(occ_command user:list | awk '{print $3}')
-occ_command notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." "$NCADMIN" "Please setup SMTP"
-occ_command notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" "$NCADMIN" "Do you need support?"
+notify_user_gui \
+"Please setup SMTP" \
+"Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin."
+
+notify_user_gui \
+"Do you need support?" \
+"If you need support, please visit the shop: https://shop.hanssonit.se, or the forum: https://help.nextcloud.com."
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -146,6 +146,11 @@ install_if_not network-manager
 # Install build-essentials to get make
 install_if_not build-essential
 
+# Just check if the function works and run disk setup
+if home_sme_server
+then
+    run_static_script format-sda-nuc-server
+else
 # Set dual or single drive setup
 msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
 You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
@@ -154,7 +159,6 @@ You will now get the option to decide which disk you want to use for DATA, or ru
 
 whiptail --title "Choose disk format" --radiolist --separate-output "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)            " on \
-"2 Disks Auto NUC Server" "(Nextcloud Home/SME Server, /dev/sda)            " off \
 "2 Disks Manual" "(Choose by yourself)            " off \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)              " off 2>results
 
@@ -162,9 +166,6 @@ choice=$(< results)
     case "$choice" in
         "2 Disks Auto")
             run_static_script format-sdb
-        ;;
-        "2 Disks Auto NUC Server")
-            run_static_script format-sda-nuc-server
         ;;
         "2 Disks Manual")
             run_static_script format-chosen
@@ -176,6 +177,7 @@ choice=$(< results)
         *)
         ;;
     esac
+fi
 
 # Set DNS resolver
 whiptail --title "Set DNS Resolver" --radiolist --separate-output "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
@@ -522,10 +524,10 @@ install_if_not figlet
 install_if_not ssl-cert
 
 # Generate $HTTP_CONF
-if [ ! -f $HTTP_CONF ]
+if [ ! -f $SITES_AVAILABLE/$HTTP_CONF ]
 then
-    touch "$HTTP_CONF"
-    cat << HTTP_CREATE > "$HTTP_CONF"
+    touch "$SITES_AVAILABLE/$HTTP_CONF"
+    cat << HTTP_CREATE > "$SITES_AVAILABLE/$HTTP_CONF"
 <VirtualHost *:80>
 
 ### YOUR SERVER ADDRESS ###
@@ -555,13 +557,13 @@ then
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
-    
+
     # The following lines prevent .htaccess and .htpasswd files from being
     # viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
-    
+
     # Disable HTTP TRACE method.
     TraceEnable off
 
@@ -572,22 +574,22 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-    
+
 </VirtualHost>
 HTTP_CREATE
-    print_text_in_color "$IGreen" "$HTTP_CONF was successfully created."
+    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
 fi
 
-# Generate $SSL_CONF
-if [ ! -f $SSL_CONF ]
+# Generate $TLS_CONF
+if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
-    touch "$SSL_CONF"
-    cat << SSL_CREATE > "$SSL_CONF"
+    touch "$SITES_AVAILABLE/$TLS_CONF"
+    cat << SSL_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
@@ -636,7 +638,7 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
@@ -647,12 +649,12 @@ then
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
 SSL_CREATE
-    print_text_in_color "$IGreen" "$SSL_CONF was successfully created."
+    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$TLS_CONF was successfully created."
 fi
 
 # Enable new config
-a2ensite nextcloud_ssl_domain_self_signed.conf
-a2ensite nextcloud_http_domain_self_signed.conf
+a2ensite "$TLS_CONF"
+a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 

@@ -88,6 +88,7 @@ See [github.com/gjgd/vagrant-nextcloud](https://github.com/gjgd/vagrant-nextclou
 * [Lorenzo Faleschini](https://github.com/penzoiders)
 * [Georg Großmann](https://github.com/ggeorgg)
 * [szaimen](https://github.com/szaimen)
+* [liao20081228](https://github.com/liao20081228)
 
 [Nextcloud Server]: https://bit.ly/2CHIUkA
 [app store]: https://bit.ly/2HUy4v9
