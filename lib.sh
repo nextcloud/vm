@@ -1091,7 +1091,7 @@ USER=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
 print_text_in_color "$ICyan" "Looping through users..."
 for user in $USER
 do
-    if occ_command user:info "$user" | grep -q "admin";
+    if occ_command user:info "$user" | grep -q "\- admin";
     then
         local admin_users+="$user "
     fi
