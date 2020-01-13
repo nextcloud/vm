@@ -626,6 +626,7 @@ To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/app
 Thank you for using T&M Hansson IT's updater!"
     occ_command status
     occ_command maintenance:mode --off
+    print_text_in_color "ICyan" "Sending notification about the successful update to all admins..."
     notify_user_gui "Nextcloud is now updated!" \.
     "Your Nextcloud is updated to $CURRENTVERSION_after with the update script in the Nextcloud VM."
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update.log
