@@ -1082,7 +1082,7 @@ esac
 
 # Example:
 # notify_user_gui \
-# Subject
+# "Subject"
 # "Message"
 #
 # occ_command notification:generate -l "$2" "$admin" "$1"
