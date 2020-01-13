@@ -441,9 +441,9 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "LDAP" "(Windows Active directory)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
-"SMB" "(Connect to SMB-Shares from your local network)   " OFF 2>results
+"SMBmount" "(Connect to SMB-Shares from your local network)   " OFF 2>results
 
-while read -r -u 9 choice
+while read -r -u 11 choice
 do
     case $choice in
         Fail2ban)
@@ -501,7 +501,7 @@ do
             run_app_script talk
         ;;
 
-        SMB)
+        SMBmount)
             clear
             run_app_script smbmount
         ;;
@@ -509,7 +509,7 @@ do
         *)
         ;;
     esac
-done 9< results
+done 11< results
 rm -f results
 clear
 
