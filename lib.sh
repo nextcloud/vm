@@ -1079,20 +1079,22 @@ case "${1}" in
     *) return 0 ;;
 esac
 }
-
 notify_user_gui() {
 USER=$(occ_command user:list | awk '{print $3}';)
+print_text_in_color "$ICyan" "Looping through users..."
 for user in $USER
 do
-    if [[ $(occ_command user:info "$user")  == *"- admin"* ]]
+    if occ_command user:info "$user" | grep -q "admin";
     then
-        args+="$user"
+        local admin_users+="$user "
     fi
 done
-NCADMIN="${args[*]}"
-for admin in $NCADMIN
+
+print_text_in_color "$ICyan" "Posting to admins..."
+for admin in ${admin_users[*]}
 do
-    occ_command notification:generate -l "$2" "$admin" "$1"
+    echo "$2 $admin $1"
+    #occ_command notification:generate -l "$2" "$admin" "$1"
 done
 }
 
