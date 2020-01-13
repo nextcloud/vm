@@ -1094,7 +1094,7 @@ print_text_in_color "$ICyan" "Posting to admins..."
 for admin in ${admin_users[*]}
 do
     occ_command notification:generate -l "$2" "$admin" "$1"
-    print_text_in_color "$ICyan" "Posting to $admin"
+    print_text_in_color "$IGreen" "Posting to $admin"
 done
 }
 
