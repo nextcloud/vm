@@ -440,7 +440,8 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "LDAP" "(Windows Active directory)   " OFF \
-"Talk" "(Nextcloud Video calls and chat)   " OFF 2>results
+"Talk" "(Nextcloud Video calls and chat)   " OFF \
+"SMB" "(Connect to SMB-Shares from your local network)   " OFF 2>results
 
 while read -r -u 9 choice
 do
@@ -500,6 +501,11 @@ do
             run_app_script talk
         ;;
 
+        SMB)
+            clear
+            run_app_script smbmount
+        ;;
+	
         *)
         ;;
     esac
