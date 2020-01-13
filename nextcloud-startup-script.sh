@@ -537,10 +537,13 @@ then
 fi
 clear
 
-# Set notifications for admin
-NCADMIN=$(occ_command user:list | awk '{print $3}')
-occ_command notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." "$NCADMIN" "Please setup SMTP"
-occ_command notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" "$NCADMIN" "Do you need support?"
+notify_user_gui \
+"Please setup SMTP" \
+"Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin."
+
+notify_user_gui \
+"Do you need support?" \
+"If you need support, please visit the shop: https://shop.hanssonit.se, or the forum: https://help.nextcloud.com."
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
