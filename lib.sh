@@ -1080,6 +1080,32 @@ case "${1}" in
 esac
 }
 
+# Example:
+# notify_user_gui \
+# "Subject" \
+# "Message"
+#
+# occ_command notification:generate -l "$2" "$admin" "$1"
+notify_user_gui() {
+USER=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
+print_text_in_color "$ICyan" "Looping through users, this might take a while..."
+for user in $USER
+do
+    if occ_command user:info "$user" | grep -q "\- admin";
+    then
+        print_text_in_color "$ICyan" "Found: $user"
+        local admin_users+="$user "
+    fi
+done
+
+print_text_in_color "$ICyan" "Posting notification to users that are admins:"
+for admin in ${admin_users[*]}
+do
+    occ_command notification:generate -l "$2" "$admin" "$1"
+    print_text_in_color "$IGreen" "$admin"
+done
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
