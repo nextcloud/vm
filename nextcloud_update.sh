@@ -626,10 +626,9 @@ To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/app
 Thank you for using T&M Hansson IT's updater!"
     occ_command status
     occ_command maintenance:mode --off
-    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/cronjobs_success.log
     notify_user_gui "Nextcloud is now updated!" \.
-    "Your Nextcloud is updated to $CURRENTVERSION_after with the update script in the Nextcloud VM"
-    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update_run.log
+    "Your Nextcloud is updated to $CURRENTVERSION_after with the update script in the Nextcloud VM."
+    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update.log
     exit 0
 else
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
@@ -641,7 +640,7 @@ Please report this issue to $ISSUES
 
 Maintenance mode is kept on."
     notify_user_gui "Nextcloud update failed!" \
-    "Your Nextcloud update failed, please check the logs at "$VMLOGS"/update_run.log
+    "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
     occ_command status
     exit 1
 fi
