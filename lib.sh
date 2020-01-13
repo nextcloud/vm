@@ -1079,8 +1079,15 @@ case "${1}" in
     *) return 0 ;;
 esac
 }
+
+# Example:
+# notify_user_gui \
+# Subject
+# "Message"
+#
+# occ_command notification:generate -l "$2" "$admin" "$1"
 notify_user_gui() {
-USER=$(occ_command user:list | awk '{print $3}';)
+USER=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
 print_text_in_color "$ICyan" "Looping through users..."
 for user in $USER
 do
