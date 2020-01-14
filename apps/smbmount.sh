@@ -101,7 +101,7 @@ do
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
             occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
             # Inform the user that mounting was successfull
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count.\nYou can now use the Nextcloud external storage app to access files there."
+            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count.\nYou can now use the Nextcloud external storage app to access files there. It got already mounted to the Nextcloud admin-group."
             break
         fi
     fi
@@ -141,7 +141,7 @@ do
         then
             msg_box "It seems like the mount of $SMBSHARES/$count wasn't successful. Please try again."
         else
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count\nYou can now use the Nextcloud external storage app to access files there."
+            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count\nYou can use the Nextcloud external storage app to access files there."
         fi
     fi
     count=$((count+1))
