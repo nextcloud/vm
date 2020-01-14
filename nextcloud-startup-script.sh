@@ -441,7 +441,7 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "LDAP" "(Windows Active directory)   " OFF \
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
-"SMBmount" "(Connect to SMB-Shares from your local network)   " OFF 2>results
+"SMB-mount" "(Connect to SMB-shares from your local network)   " OFF 2>results
 
 while read -r -u 11 choice
 do
@@ -501,7 +501,7 @@ do
             run_app_script talk
         ;;
 
-        SMBmount)
+        "SMB-mount")
             clear
             run_app_script smbmount
         ;;
