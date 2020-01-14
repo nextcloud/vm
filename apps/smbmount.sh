@@ -67,6 +67,11 @@ do
         break
     fi
 done
+# Get the uid and gid of www-data
+UsID=$(id www-data | awk '{print $1}')
+UsID=${UsID//[!0-9]/}
+GrID=$(id www-data | awk '{print $2}')
+GrID=${GrID//[!0-9]/}
 # Write everything to /etc/fstab, mount and connect external storage
 count=1
 while  [ $count -le 3 ]
@@ -75,7 +80,7 @@ do
     if ! grep -q "/mnt/smbshares/$count" /etc/fstab
     then 
         # Write to /etc/fstab and mount
-        echo "$SERVER_SHARE_NAME /mnt/smbshares/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        echo "$SERVER_SHARE_NAME /mnt/smbshares/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=$UsID,gid=$GrID,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
         mkdir -p /mnt/smbshares/$count
         mount /mnt/smbshares/$count
         # Check if mounting was successful
