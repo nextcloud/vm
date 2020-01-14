@@ -39,7 +39,7 @@ fi
 # Enter SMB-server and Share-name
 while true
 do
-    SERVER_SHARE_NAME=$(whiptail --inputbox "Please Enter the server and Share-name like this:\n//Server/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SERVER_SHARE_NAME=$(whiptail --inputbox "Please enter the server and Share-name like this:\n//Server/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
     then
         msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again."
@@ -101,7 +101,7 @@ do
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
             occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
             # Inform the user that mounting was successfull
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count.\nYou can now use the Nextcloud external storage app to access files there. It got already mounted to the Nextcloud admin-group."
+            msg_box "Your mount was successfull, congratulations!\nIt is accessible in your root directory in $SMBSHARES/$count.\nYou can now use the Nextcloud external storage app to access files there. The Share got already mounted to the Nextcloud admin-group."
             break
         fi
     fi
@@ -117,7 +117,7 @@ then
     msg_box "It seems like you have not created any SMB-share."
     return
 fi
-args=(whiptail --title "mount SMB-shares" --checklist --separate-output "This option let you mount SMB-shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "Mount SMB-shares" --checklist --separate-output "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 # Find out which SMB-shares are available
 while  [ $count -le 3 ]
@@ -157,7 +157,7 @@ then
     return
 fi
 # Find out which SMB-shares are available
-args=(whiptail --title "list SMB-shares" --checklist "This option let you show detailed information about your SMB-shares.\nChoose what you want to show.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "List SMB-shares" --checklist "This option let you show detailed information about your SMB-shares.\nChoose which one you want to show.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le 3 ]
 do
@@ -190,7 +190,7 @@ then
     return
 fi
 # Find out which SMB-shares are available
-args=(whiptail --title "unmount SMB-shares" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "Unmount SMB-shares" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le 3 ]
 do
@@ -228,7 +228,7 @@ then
     return
 fi
 # Check which SMB-shares are available
-args=(whiptail --title "delete SMB-mounts" --checklist --separate-output "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "Delete SMB-mounts" --checklist --separate-output "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le 3 ]
 do
@@ -268,25 +268,25 @@ while true
 do
     # Main menu
     SMB_MOUNT=$(whiptail --title "SMB-share" --radiolist  "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "add a SMB-mount" "(and mount/connect it)" ON \
-    "mount SMB-shares" "(connect SMB-shares)" OFF \
-    "show all SMB-mounts" "(show detailed information about the SMB-mounts)" OFF \
-    "unmount SMB-shares" "(disconnect SMB-shares)" OFF \
-    "delete SMB-mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
+    "Add a SMB-mount" "(and mount/connect it)" ON \
+    "Mount SMB-shares" "(connect SMB-shares)" OFF \
+    "Show all SMB-mounts" "(show detailed information about the SMB-mounts)" OFF \
+    "Unmount SMB-shares" "(disconnect SMB-shares)" OFF \
+    "Delete SMB-mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
 
-    if [ "$SMB_MOUNT" == "add a SMB-mount" ]
+    if [ "$SMB_MOUNT" == "Add a SMB-mount" ]
     then
         add_mount
-    elif [ "$SMB_MOUNT" == "mount SMB-shares" ]
+    elif [ "$SMB_MOUNT" == "Mount SMB-shares" ]
     then
         mount_shares
-    elif [ "$SMB_MOUNT" == "show all SMB-mounts" ]
+    elif [ "$SMB_MOUNT" == "Show all SMB-mounts" ]
     then
         show_all_mounts
-    elif [ "$SMB_MOUNT" == "unmount SMB-shares" ]
+    elif [ "$SMB_MOUNT" == "Unmount SMB-shares" ]
     then
         unmount_shares
-    elif [ "$SMB_MOUNT" == "delete SMB-mounts" ]
+    elif [ "$SMB_MOUNT" == "Delete SMB-mounts" ]
     then
         delete_mounts
     else
