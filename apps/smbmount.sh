@@ -16,27 +16,27 @@ debug_mode
 # Check if root
 root_check
 
-# install cifs-utils
+# Install cifs-utils
 install_if_not cifs-utils
 
-# secure fstab
+# Secure fstab
 if [ "$(stat -c %a /etc/fstab)" != "600" ]
 then
     chmod 600 /etc/fstab
 fi
 
-# functions
+# Functions
 add_mount() {
-# check if mounting slots are available
+# Check if mounting slots are available
 if grep -q /mnt/smbshares/1 /etc/fstab && grep -q /mnt/smbshares/2 /etc/fstab && grep -q /mnt/smbshares/3 /etc/fstab
 then
-    msg_box "No mounting slots available. Please delete one SMB-Mount."
+    msg_box "All three slots are occupied. No mounting slots available. Please delete one of the SMB-mounts."
     return
 fi
-# enter smb-server and share name
+# Enter SMB-server and Share-name
 while true
 do
-    SERVER_SHARE_NAME=$(whiptail --inputbox "Please Enter the Server and Share-Name like this:\n//Server/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SERVER_SHARE_NAME=$(whiptail --inputbox "Please Enter the server and Share-name like this:\n//Server/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
     then
         msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again."
@@ -45,7 +45,7 @@ do
         break
     fi
 done
-# enter smb-user
+# Enter the SMB-user
 while true
 do
     SMB_USER=$(whiptail --inputbox "Please enter the username of the SMB-user" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
@@ -56,43 +56,43 @@ do
         break
     fi
 done
-#enter the password of the smb-user
+# Enter the password of the SMB-user
 while true
 do
     SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_PASSWORD") ]]
     then
-        msg_box "It seems like your weren't satisfied by the password for the SMB-User you entered. Please try again."
+        msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again."
     else
         break
     fi
 done
-# write everything to /etc/fstab, mount and connect external storage
+# Write everything to /etc/fstab, mount and connect external storage
 count=1
 while  [ $count -le 3 ]
 do
-    # check which mounting slot is available
+    # Check which mounting slot is available
     if ! grep -q "/mnt/smbshares/$count" /etc/fstab
     then 
-        # write to /etc/fstab and mount
+        # Write to /etc/fstab and mount
         echo "$SERVER_SHARE_NAME /mnt/smbshares/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=33,gid=33,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
         mkdir -p /mnt/smbshares/$count
         mount /mnt/smbshares/$count
-        # check if mounting was successful
+        # Check if mounting was successful
         if [[ ! $(findmnt -M "/mnt/smbshares/$count") ]]
         then
-            # if not remove this line from fstab
+            # If not remove this line from fstab
             msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
             sed -i "/\/mnt\/smbshares\/$count/d" /etc/fstab
             break
         else
-            # Install and enable files_extrnal
+            # Install and enable files_external
             install_and_enable_app files_external
-            # create and mount external storage to the admin group
+            # Create and mount external storage to the admin group
             MOUNT_ID=$(occ_command files_external:create "SMB$count" local null::null -c datadir="/mnt/smbshares/$count" )
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
             occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
-            # inform the user that mounting was successfull
+            # Inform the user that mounting was successfull
             msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in /mnt/smbshares/$count.\nYou can now use the Nextcloud external storage app to access files there."
             break
         fi
@@ -103,15 +103,15 @@ return
 }
 
 mount_shares() {
-# check if any smb-share is created
+# Check if any SMB-share is created
 if ! grep -q /mnt/smbshares /etc/fstab
 then
-    msg_box "It seems like you have not created any SMB-Share."
+    msg_box "It seems like you have not created any SMB-share."
     return
 fi
-args=(whiptail --title "mount SMB-Shares" --checklist --separate-output "This option let you mount SMB-Shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "mount SMB-shares" --checklist --separate-output "This option let you mount SMB-shares to connect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
-# find out which smb-share are available
+# Find out which SMB-shares are available
 while  [ $count -le 3 ]
 do
     if [[ ! $(findmnt -M "/mnt/smbshares/$count") ]] && grep -q "/mnt/smbshares/$count" /etc/fstab
@@ -120,10 +120,10 @@ do
     fi
     count=$((count+1))
 done
-# let the user choose which shares he wants to mount
+# Let the user choose which SMB-shares he wants to mount
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 count=1
-# mount selected shares
+# Mount selected SMB-shares
 while  [ $count -le 3 ]
 do
     if [[ $selected_options == *"/mnt/smbshares/$count"* ]]
@@ -142,14 +142,14 @@ return
 }
 
 show_all_mounts() {
-# if no entry created nothing to show
+# If no entry created, nothing to show
 if ! grep -q /mnt/smbshares /etc/fstab
 then
-    msg_box "You haven't created any SMB-Mount. So nothing to show."
+    msg_box "You haven't created any SMB-mount. So nothing to show."
     return
 fi
-# find out which smb-shares are available
-args=(whiptail --title "list SMB-Shares" --checklist "This option let you show detailed information about your SMB-Shares.\nChoose what you want to show.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+# Find out which SMB-shares are available
+args=(whiptail --title "list SMB-shares" --checklist "This option let you show detailed information about your SMB-shares.\nChoose what you want to show.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le 3 ]
 do
@@ -159,9 +159,9 @@ do
     fi
     count=$((count+1))
 done
-# let the user choose which details he wants to see
+# Let the user choose which details he wants to see
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-# show selected shares
+# Show selected Shares
 count=1
 while  [ $count -le 3 ]
 do
@@ -175,14 +175,14 @@ return
 }
 
 unmount_shares() {
-# check if any smb-shares are available for unmounting
+# Check if any SMB-shares are available for unmounting
 if [[ ! $(findmnt -M "/mnt/smbshares/1") ]] && [[ ! $(findmnt -M "/mnt/smbshares/2") ]] && [[ ! $(findmnt -M "/mnt/smbshares/3") ]]
 then
-    msg_box "You haven't mounted any smb-mount. So nothing to unmount"
+    msg_box "You haven't mounted any SMB-mount. So nothing to unmount"
     return
 fi
-# find out which shares are available
-args=(whiptail --title "unmount SMB-Shares" --checklist "This option let you unmount SMB-Shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+# Find out which SMB-shares are available
+args=(whiptail --title "unmount SMB-shares" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le 3 ]
 do
@@ -192,7 +192,7 @@ do
     fi
     count=$((count+1))
 done
-# let the user select which shares he wants to unmount
+# Let the user select which SMB-shares he wants to unmount
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 count=1
 while  [ $count -le 3 ]
@@ -213,14 +213,14 @@ return
 }
 
 delete_mounts() {
-# check if any smb-share available
+# Check if any SMB-share is available
 if ! grep -q /mnt/smbshares /etc/fstab
 then
-    msg_box "You haven't created any SMB-Mount, nothing to delete."
+    msg_box "You haven't created any SMB-mount, nothing to delete."
     return
 fi
-# check which smb-shares are available
-args=(whiptail --title "delete SMB-Mounts" --checklist --separate-output "This option let you delete SMB-Shares to disconnect and remove network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+# Check which SMB-shares are available
+args=(whiptail --title "delete SMB-mounts" --checklist --separate-output "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le 3 ]
 do
@@ -230,9 +230,9 @@ do
     fi
     count=$((count+1))
 done
-# let the user choose which shares he wants to delete
+# Let the user choose which SMB-shares he wants to delete
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-# delete the selected shares
+# Delete the selected SMB-shares
 count=1
 while  [ $count -le 3 ]
 do
@@ -255,30 +255,30 @@ done
 return
 }
 
-# loop main menu until exited
+# Loop main menu until exited
 while true
 do
-    # main menu
-    SMB_MOUNT=$(whiptail --title "SMB-Share" --radiolist  "This script let you manage SMB-Shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "add a SMB-Mount" "(and mount/connect it)" ON \
-    "mount SMB-Shares" "(connect SMB-Shares)" OFF \
-    "show all SMB-Mounts" "" OFF \
-    "unmount SMB-Shares" "(disconnect SMB-Shares)" OFF \
-    "delete SMB-Mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
+    # Main menu
+    SMB_MOUNT=$(whiptail --title "SMB-share" --radiolist  "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "add a SMB-mount" "(and mount/connect it)" ON \
+    "mount SMB-shares" "(connect SMB-shares)" OFF \
+    "show all SMB-mounts" "(show detailed information about the SMB-mounts)" OFF \
+    "unmount SMB-shares" "(disconnect SMB-shares)" OFF \
+    "delete SMB-mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
 
-    if [ "$SMB_MOUNT" == "add a SMB-Mount" ]
+    if [ "$SMB_MOUNT" == "add a SMB-mount" ]
     then
         add_mount
-    elif [ "$SMB_MOUNT" == "mount SMB-Shares" ]
+    elif [ "$SMB_MOUNT" == "mount SMB-shares" ]
     then
         mount_shares
-    elif [ "$SMB_MOUNT" == "show all SMB-Mounts" ]
+    elif [ "$SMB_MOUNT" == "show all SMB-mounts" ]
     then
         show_all_mounts
-    elif [ "$SMB_MOUNT" == "unmount SMB-Shares" ]
+    elif [ "$SMB_MOUNT" == "unmount SMB-shares" ]
     then
         unmount_shares
-    elif [ "$SMB_MOUNT" == "delete SMB-Mounts" ]
+    elif [ "$SMB_MOUNT" == "delete SMB-mounts" ]
     then
         delete_mounts
     else
