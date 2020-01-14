@@ -87,7 +87,7 @@ do
         if [[ ! $(findmnt -M "/mnt/smbshares/$count") ]]
         then
             # If not remove this line from fstab
-            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again."
+            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint: you might fix the connection problem by enabling SMB3 on your SMB-server."
             sed -i "/\/mnt\/smbshares\/$count/d" /etc/fstab
             break
         else
