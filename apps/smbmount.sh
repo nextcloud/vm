@@ -112,7 +112,7 @@ return
 
 mount_shares() {
 # Check if any SMB-share is created
-if ! grep -q /mnt/smbshares /etc/fstab
+if ! grep -q "$SMBSHARES" /etc/fstab
 then
     msg_box "It seems like you have not created any SMB-share."
     return
@@ -136,7 +136,7 @@ while  [ $count -le 3 ]
 do
     if [[ $selected_options == *"$SMBSHARES/$count"* ]]
     then
-        mount "/mnt/smbshares/$count"
+        mount "$SMBSHARES/$count"
         if [[ ! $(findmnt -M "$SMBSHARES/$count") ]]
         then
             msg_box "It seems like the mount of $SMBSHARES/$count wasn't successful. Please try again."
