@@ -1087,13 +1087,13 @@ esac
 #
 # occ_command notification:generate -l "$2" "$admin" "$1"
 notify_user_gui() {
-USER=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
+CHECK_USERS=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-for user in $USER
+for admin in $CHECK_USERS
 do
-    if occ_command user:info "$user" | grep -q "\- admin";
+    if occ_command user:info "$admin" | grep -q "\- admin";
     then
-        print_text_in_color "$ICyan" "Posting to: $user"
+        print_text_in_color "$IGreen" "Posting '$1' to: $admin"
         occ_command notification:generate -l "$2" "$admin" "$1"
     fi
 done
