@@ -23,7 +23,7 @@ then
         if [ "$(df -h $NCDATA | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 85 ]
         then
             # Notify user
-            notify_user_gui \
+            notify_admin_gui \
             "Disk space almost full!" \
             "The disk space for ncdata is almost full. We have automatically deleted ZFS snapshots older than 8 weeks and cleaned up your trashbin to free up some space and avoid a fatal crash. Please check $VMLOGS/zfs_prune.log for the results."
             # On screen information

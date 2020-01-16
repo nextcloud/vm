@@ -642,7 +642,7 @@ Thank you for using T&M Hansson IT's updater!"
     occ_command status
     occ_command maintenance:mode --off
     print_text_in_color "$ICyan" "Sending notification about the successful update to all admins..."
-    notify_user_gui \
+    notify_admin_gui \
     "Nextcloud is now updated!" \
     "Your Nextcloud is updated to $CURRENTVERSION_after with the update script in the Nextcloud VM."
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update.log
@@ -656,7 +656,7 @@ Your files are still backed up at $BACKUP. No worries!
 Please report this issue to $ISSUES
 
 Maintenance mode is kept on."
-    notify_user_gui \
+    notify_admin_gui \
     "Nextcloud update failed!" \
     "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
     occ_command status

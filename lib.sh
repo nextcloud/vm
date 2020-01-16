@@ -1083,12 +1083,12 @@ esac
 }
 
 # Example:
-# notify_user_gui \
+# notify_admin_gui \
 # "Subject" \
 # "Message"
 #
 # occ_command notification:generate -l "$2" "$admin" "$1"
-notify_user_gui() {
+notify_admin_gui() {
 CHECK_USERS=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
 for admin in $CHECK_USERS
