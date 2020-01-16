@@ -387,10 +387,12 @@ echo
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
-# Run the updatenotification on a schelude ##TODO disable Nextclouds updater here 
+# Run the updatenotification on a schelude
+occ_command config:system:set upgrade.disable-web --value="true"
+print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_static_script updatenotification.sh
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
-crontab -u root -l | { cat; echo "05  12  *  *  */3 bash $SCRIPTS/cron.php > /dev/null 2>&1"; } | crontab -u root -
+crontab -u root -l | { cat; echo "05  12  *  *  */3 bash $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
