@@ -318,11 +318,13 @@ then
     UPDATED_APPS=$(sed '1~2d' Updated_apps | awk '{print $1}')
     for apps in $UPDATED_APPS
     do
-        CHANGE_FORMATTING+="$apps,"
+        CHANGE_FORMATTING+="$apps"
     done
+    CHANGE_FORMATTING=${CHANGE_FORMATTING[*]}
+    CHANGE_FORMATTING=${CHANGE_FORMATTING// /", "}
     notify_admin_gui \
     "App Updates got installed" \
-    "The following apps where updated: ${CHANGE_FORMATTING[*]}"
+    "The following apps where updated: $CHANGE_FORMATTING"
 fi
 
 # Nextcloud 13 is required.
