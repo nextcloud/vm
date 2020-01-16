@@ -24,6 +24,12 @@ then
     notify_admin_gui \ ## TODO: change name of function everywhere else
     "Update availabile!" \
     "Nextcloud $NCVERSION is available. Please run 'sudo bash /var/scripts/update.sh' from your CLI to update your server."
+    if crontab -l -u root | grep "$SCRIPTS"/update.sh
+    then
+        notify_admin_gui \ ## TODO: change name of function everywhere else
+        "Automatic updates" \
+        "Since you are running Automatic Updates at $AUT_UPDATES_TIME, you don't need to bother about updating the server manually, as that's already taken care of."
+    fi
 else
     print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
 fi
