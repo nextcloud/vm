@@ -309,22 +309,16 @@ fi
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    occ_command app:update --all >> Updated_Apps
+    UPDATED_APPS=$(occ_command app:update | sed '1~2d' | awk '{print $1}' | tr '\n' " ")
+    UPDATED_APPS=${UPDATED_APPS// /", "}
 fi
 
 # Check which apps got updated
-if [ -n $(occ_command app:update --all) ]
+if [[ "$UPDATED_APPS" == @([a-z]) ]]
 then
-    UPDATED_APPS=$(sed '1~2d' Updated_apps | awk '{print $1}')
-    for apps in $UPDATED_APPS
-    do
-        CHANGE_FORMATTING+="$apps"
-    done
-    CHANGE_FORMATTING=${CHANGE_FORMATTING[*]}
-    CHANGE_FORMATTING=${CHANGE_FORMATTING// /", "}
     notify_admin_gui \
     "App Updates got installed" \
-    "The following apps where updated: $CHANGE_FORMATTING"
+    "The following apps where updated: $UPDATED_APPS"
 fi
 
 # Nextcloud 13 is required.
