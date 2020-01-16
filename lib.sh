@@ -66,6 +66,8 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 [ -n "$NC_UPDATE" ] && STABLEVERSION="nextcloud-$NCVERSION"
 [ -n "$NC_UPDATE" ] && NCMAJOR="${NCVERSION%%.*}"
 [ -n "$NC_UPDATE" ] && NCBAD=$((NCMAJOR-2))
+# Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
+AUT_UPDATES_TIME="18"
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # OnlyOffice URL (onlyoffice.sh)
