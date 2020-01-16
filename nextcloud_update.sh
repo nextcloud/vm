@@ -314,11 +314,11 @@ then
 fi
 
 # Check which apps got updated
-if [[ "$UPDATED_APPS" == @([a-z]) ]]
+if [ -n "$UPDATED_APPS" ]
 then
     notify_admin_gui \
     "App Updates got installed" \
-    "The following apps where updated: $UPDATED_APPS"
+    "The following apps were updated: $UPDATED_APPS"
 fi
 
 # Nextcloud 13 is required.
