@@ -18,7 +18,7 @@ debug_mode
 # Check if root
 root_check
 
-msg_box "This option will update your server every week on Saturdays at 18:00 (6 PM).
+msg_box "This option will update your server every week on Saturdays at $AUT_UPDATES_TIME:00.
 The update will run the built in script '$SCRIPTS/update.sh' which will update both the server packages and Nextcloud itself.
 
 You can read more about it here: https://www.techandme.se/nextcloud-update-is-now-fully-automated/
