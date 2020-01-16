@@ -390,7 +390,7 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 # Run the updatenotification on a schelude
 occ_command config:system:set upgrade.disable-web --value="true"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
-download_static_script updatenotification.sh
+download_static_script updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
 crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * 6 $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 
