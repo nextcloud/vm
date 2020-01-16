@@ -28,7 +28,7 @@ then
     then
         notify_admin_gui \ ## TODO: change name of function everywhere else
         "Automatic updates" \
-        "Since you are running Automatic Updates at $AUT_UPDATES_TIME, you don't need to bother about updating the server manually, as that's already taken care of."
+        "Since you are running Automatic Updates at $AUT_UPDATES_TIME:00, you don't need to bother about updating the server manually, as that's already taken care of."
     fi
 else
     print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
