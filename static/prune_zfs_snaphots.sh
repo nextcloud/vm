@@ -36,7 +36,7 @@ The script will also delete everything in trashbin for all users to free up some
             # Get the latest prune script
             if [ ! -f $SCRIPTS/zfs-prune-snapshots ]
             then
-                check_command curl_to_dir "https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/" "zfs-prune-snapshots" "$SCRIPTS"
+                download_static_script zfs-prune-snapshots
             fi
             check_command chmod +x "$SCRIPTS"/zfs-prune-snapshots
             # Prune!
