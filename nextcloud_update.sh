@@ -344,13 +344,13 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
 fi
 
 # Check if new version is larger than current version installed.
+print_text_in_color "$ICyan" "Checking for new Nextcloud version..."
 if version_gt "$NCVERSION" "$CURRENTVERSION"
 then
     print_text_in_color "$ICyan" "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
-	print_text_in_color "$IGreen" "New version available! Upgrade continues..."
+    print_text_in_color "$IGreen" "New version available, upgrade continues!"
 else
-    print_text_in_color "$ICyan" "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION."
-	print_text_in_color "$ICyan" "No need to upgrade, this script will exit..."
+    print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
     exit 0
 fi
 
