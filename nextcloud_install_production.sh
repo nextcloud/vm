@@ -390,7 +390,7 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 # Run the updatenotification on a schelude ##TODO disable Nextclouds updater here 
 download_static_script updatenotification.sh
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
-crontab -u root -l | { cat; echo "*  *  *  *  */3 bash $SCRIPTS/cron.php > /dev/null 2>&1"; } | crontab -u root -
+crontab -u root -l | { cat; echo "05  12  *  *  */3 bash $SCRIPTS/cron.php > /dev/null 2>&1"; } | crontab -u root -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
