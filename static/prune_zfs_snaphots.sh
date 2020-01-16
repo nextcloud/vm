@@ -23,7 +23,9 @@ then
         if [ "$(df -h $NCDATA | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 85 ]
         then
             # Notify user
-            # notify_user_gui "Disk space almost full!" "The disk space for ncdata is almost full. We have automatically deleted ZFS snapshots older than 8 weeks to free up some space. Please check $VMLOGS/zfs_prune.log for the results."
+            notify_user_gui \
+            "Disk space almost full!" \
+            "The disk space for ncdata is almost full. We have automatically deleted ZFS snapshots older than 8 weeks and cleaned up your trashbin to free up some space and avoid a fatal crash. Please check $VMLOGS/zfs_prune.log for the results."
             # On screen information
 msg_box "Your disk space is almost full (more than 85%).
 
@@ -45,7 +47,7 @@ The script will also delete everything in trashbin for all users to free up some
             fi
             touch $VMLOGS/zfs_prune.log
             ./zfs-prune-snapshots 8w ncdata >> $VMLOGS/zfs_prune.log
-            occ_command trashbin:cleanup --all-users
+            occ_command trashbin:cleanup --all-users >> $VMLOGS/zfs_prune.log
         fi
     fi
 fi
