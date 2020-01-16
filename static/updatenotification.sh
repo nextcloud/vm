@@ -21,9 +21,9 @@ root_check
 
 if version_gt "$NCVERSION" "$CURRENTVERSION"
 then
-notify_admin_gui \
-"Update availabile!" \
-"Please run 'sudo bash /var/scripts/update.sh' from your CLI"
+    notify_admin_gui \ ## TODO: change name of function everywhere else
+    "Update availabile!" \
+    "Nextcloud $NCVERSION is available. Please run 'sudo bash /var/scripts/update.sh' from your CLI to update your server."
 else
     print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
 fi
