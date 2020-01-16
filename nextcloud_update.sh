@@ -309,7 +309,7 @@ fi
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    UPDATED_APPS=$(occ_command app:update | sed '1~2d' | awk '{print $1}' | tr '\n' " ")
+    UPDATED_APPS=$(occ_command app:update --all | sed '1~2d' | awk '{print $1}' | tr '\n' " ")
     UPDATED_APPS=${UPDATED_APPS// /", "}
 fi
 
