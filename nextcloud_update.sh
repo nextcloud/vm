@@ -316,6 +316,7 @@ fi
 # Check which apps got updated
 if [ -n "$UPDATED_APPS" ]
 then
+    UPDATED_APPS=${UPDATED_APPS:0:-2}
     notify_admin_gui \
     "App Updates got installed" \
     "The following apps were updated: $UPDATED_APPS"
