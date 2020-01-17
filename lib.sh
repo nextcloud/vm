@@ -66,6 +66,8 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 [ -n "$NC_UPDATE" ] && STABLEVERSION="nextcloud-$NCVERSION"
 [ -n "$NC_UPDATE" ] && NCMAJOR="${NCVERSION%%.*}"
 [ -n "$NC_UPDATE" ] && NCBAD=$((NCMAJOR-2))
+# Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
+AUT_UPDATES_TIME="18"
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # OnlyOffice URL (onlyoffice.sh)
@@ -1081,28 +1083,21 @@ esac
 }
 
 # Example:
-# notify_user_gui \
+# notify_admin_gui \
 # "Subject" \
 # "Message"
 #
 # occ_command notification:generate -l "$2" "$admin" "$1"
-notify_user_gui() {
-USER=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
-print_text_in_color "$ICyan" "Looping through users, this might take a while..."
-for user in $USER
+notify_admin_gui() {
+CHECK_USERS=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
+print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
+for admin in $CHECK_USERS
 do
-    if occ_command user:info "$user" | grep -q "\- admin";
+    if occ_command user:info "$admin" | grep -q "\- admin";
     then
-        print_text_in_color "$ICyan" "Found: $user"
-        local admin_users+="$user "
+        print_text_in_color "$IGreen" "Posting '$1' to: $admin"
+        occ_command notification:generate -l "$2" "$admin" "$1"
     fi
-done
-
-print_text_in_color "$ICyan" "Posting notification to users that are admins:"
-for admin in ${admin_users[*]}
-do
-    occ_command notification:generate -l "$2" "$admin" "$1"
-    print_text_in_color "$IGreen" "$admin"
 done
 }
 
