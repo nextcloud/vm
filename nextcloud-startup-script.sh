@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 #########
 
@@ -440,9 +440,10 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
 "PreviewGenerator" "(Pre-generate previews)   " OFF \
 "LDAP" "(Windows Active directory)   " OFF \
-"Talk" "(Nextcloud Video calls and chat)   " OFF 2>results
+"Talk" "(Nextcloud Video calls and chat)   " OFF \
+"SMB-mount" "(Connect to SMB-shares from your local network)   " OFF 2>results
 
-while read -r -u 9 choice
+while read -r -u 11 choice
 do
     case $choice in
         Fail2ban)
@@ -500,10 +501,15 @@ do
             run_app_script talk
         ;;
 
+        "SMB-mount")
+            clear
+            run_app_script smbmount
+        ;;
+	
         *)
         ;;
     esac
-done 9< results
+done 11< results
 rm -f results
 clear
 
@@ -537,10 +543,13 @@ then
 fi
 clear
 
-# Set notifications for admin
-NCADMIN=$(occ_command user:list | awk '{print $3}')
-occ_command notification:generate -l "Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin." "$NCADMIN" "Please setup SMTP"
-occ_command notification:generate -l "If you need support, please visit the shop: https://shop.hanssonit.se" "$NCADMIN" "Do you need support?"
+notify_admin_gui \
+"Please setup SMTP" \
+"Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin."
+
+notify_admin_gui \
+"Do you need support?" \
+"If you need support, please visit the shop: https://shop.hanssonit.se, or the forum: https://help.nextcloud.com."
 
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status

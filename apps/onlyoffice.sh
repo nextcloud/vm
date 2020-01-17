@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
 true
@@ -95,7 +95,7 @@ fi
 docker pull onlyoffice/documentserver:latest
 docker run -i -t -d -p 127.0.0.3:9090:80 --restart always --name onlyoffice onlyoffice/documentserver
 
-# Install apache2 
+# Install apache2
 install_if_not apache2
 
 # Enable Apache2 module's
@@ -124,8 +124,8 @@ then
     SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
     SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
     SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
-    SSLOpenSSLConfCmd DHParameters $DHPARAMS
-    
+    SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
+
     SSLProtocol             all -SSLv2 -SSLv3
     SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
 
@@ -148,7 +148,7 @@ then
     ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.3:9090/$1$2"
     ProxyPass / "http://127.0.0.3:9090/"
     ProxyPassReverse / "http://127.0.0.3:9090/"
-        
+
     <Location />
         ProxyPassReverse /
     </Location>
@@ -169,13 +169,13 @@ fi
 # Install certbot (Let's Encrypt)
 install_certbot
 
-# Generate certs
-if le_subdomain
+# Generate certs, and auto-configure if successful
+if generate_cert "$SUBDOMAIN"
 then
     # Generate DHparams chifer
-    if [ ! -f "$DHPARAMS" ]
+    if [ ! -f "$DHPARAMS_SUB" ]
     then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
+        openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
     fi
     printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
     a2ensite "$SUBDOMAIN.conf"
@@ -183,9 +183,7 @@ then
     # Install OnlyOffice
     occ_command app:install onlyoffice
 else
-	print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
-    any_key "Press any key to continue... "
-    restart_webserver
+    last_fail_tls $SCRIPTS/apps/onlyoffice.sh
 fi
 
 # Set config for OnlyOffice

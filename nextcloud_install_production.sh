@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -387,6 +387,13 @@ echo
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
+# Run the updatenotification on a schelude
+occ_command config:system:set upgrade.disable-web --value="true"
+print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
+download_static_script updatenotification
+check_command chmod +x "$SCRIPTS"/updatenotification.sh
+crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * 6 $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
+
 # Change values in php.ini (increase max file size)
 # max_execution_time
 sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" "$PHP_INI"
@@ -524,10 +531,10 @@ install_if_not figlet
 install_if_not ssl-cert
 
 # Generate $HTTP_CONF
-if [ ! -f $HTTP_CONF ]
+if [ ! -f $SITES_AVAILABLE/$HTTP_CONF ]
 then
-    touch "$HTTP_CONF"
-    cat << HTTP_CREATE > "$HTTP_CONF"
+    touch "$SITES_AVAILABLE/$HTTP_CONF"
+    cat << HTTP_CREATE > "$SITES_AVAILABLE/$HTTP_CONF"
 <VirtualHost *:80>
 
 ### YOUR SERVER ADDRESS ###
@@ -557,13 +564,13 @@ then
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
-    
+
     # The following lines prevent .htaccess and .htpasswd files from being
     # viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
-    
+
     # Disable HTTP TRACE method.
     TraceEnable off
 
@@ -574,22 +581,22 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-    
+
 </VirtualHost>
 HTTP_CREATE
-    print_text_in_color "$IGreen" "$HTTP_CONF was successfully created."
+    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
 fi
 
-# Generate $SSL_CONF
-if [ ! -f $SSL_CONF ]
+# Generate $TLS_CONF
+if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
-    touch "$SSL_CONF"
-    cat << SSL_CREATE > "$SSL_CONF"
+    touch "$SITES_AVAILABLE/$TLS_CONF"
+    cat << SSL_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
@@ -638,7 +645,7 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
@@ -649,12 +656,12 @@ then
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
 SSL_CREATE
-    print_text_in_color "$IGreen" "$SSL_CONF was successfully created."
+    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$TLS_CONF was successfully created."
 fi
 
 # Enable new config
-a2ensite nextcloud_ssl_domain_self_signed.conf
-a2ensite nextcloud_http_domain_self_signed.conf
+a2ensite "$TLS_CONF"
+a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
