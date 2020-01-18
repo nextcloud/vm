@@ -309,17 +309,17 @@ fi
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    UPDATED_APPS=$(occ_command app:update --all | sed '1~2d' | awk '{print $1}' | tr '\n' " ")
-    UPDATED_APPS=${UPDATED_APPS// /", "}
+    # occ command can not be used due to the check_command() function.
+    UPDATED_APPS="$(sudo -u www-data php $NCPATH/occ app:update --all)"
 fi
 
 # Check which apps got updated
 if [ -n "$UPDATED_APPS" ]
 then
-    UPDATED_APPS=${UPDATED_APPS:0:-2}
+    print_text_in_color "$IGreen" "$UPDATED_APPS"
     notify_admin_gui \
-    "App Updates got installed" \
-    "The following apps were updated: $UPDATED_APPS"
+    "You have app updates!" \
+    "$UPDATED_APPS"
 fi
 
 # Nextcloud 13 is required.
