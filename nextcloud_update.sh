@@ -539,7 +539,7 @@ then
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
-    tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
+    check_command tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
     rm "$HTML/$STABLEVERSION.tar.bz2"
     print_text_in_color "$IGreen" "Restoring config to Nextcloud..."
     rsync -Aaxz $BACKUP/config "$NCPATH"/
