@@ -715,7 +715,13 @@ cd $HTML
 print_text_in_color "$ICyan" "Downloading $STABLEVERSION..."
 curl -fSLO --retry 3 "$NCREPO/$STABLEVERSION.tar.bz2"
 mkdir -p "$GPGDIR"
-curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
+if network_ok
+then
+    curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
+else
+    msg_box There seems to be an issue with your network, please try again later.\nThis script will exit."
+    exit 1
+fi
 chmod -R 600 "$GPGDIR"
 gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
 gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
