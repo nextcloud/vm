@@ -322,7 +322,7 @@ then
     "You've got app updates!" \
     "$UPDATED_APPS"
 else
-    print_text_in_color "$IGreen" "It seems like everything is up-to-date!"
+    print_text_in_color "$IGreen" "Your apps are already up to date!"
 fi
 
 # Nextcloud 13 is required.
