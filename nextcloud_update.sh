@@ -309,6 +309,9 @@ fi
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
+    # Make sure maintenance:mode isn't activated (it will fail if it is)
+    occ_command maintenance:mode --off
+    # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     # occ command can not be used due to the check_command() function.
     UPDATED_APPS="$(sudo -u www-data php $NCPATH/occ app:update --all)"
