@@ -728,7 +728,7 @@ fi
 print_text_in_color "$ICyan" "Checking SHA256 checksum..."
 mkdir -p "$SHA256_DIR"
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.sha256" "$SHA256_DIR"
-SHA256SUM="$(cat $SHA256_DIR/$STABLEVERSION.tar.bz2.sha256 | awk '{print$1}')"
+SHA256SUM="$(tail "$SHA256_DIR"/"$STABLEVERSION".tar.bz2.sha256 | awk '{print$1}')"
 if ! echo "$SHA256SUM" "$STABLEVERSION.tar.bz2" | sha256sum -c
 then
     msg_box "The SHA256 checksums of $STABLEVERSION.tar.bz2 didn't match, please try again."
