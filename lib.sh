@@ -644,6 +644,11 @@ occ_command() {
 check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
+# Example: occ_command_no_check 'maintenance:mode --on'
+occ_command_no_check() {
+sudo -u www-data php "$NCPATH"/occ "$@";
+}
+
 network_ok() {
     print_text_in_color "$ICyan" "Testing if network is OK..."
     install_if_not network-manager
