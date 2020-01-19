@@ -314,19 +314,20 @@ then
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     # occ command can not be used due to the check_command() function.
-    UPDATED_APPS="$(sudo -u www-data php $NCPATH/occ app:update --all)"
+    sudo -u www-data php $NCPATH/occ app:update --all
+#    UPDATED_APPS="$(sudo -u www-data php $NCPATH/occ app:update --all)"
 fi
 
 # Check which apps got updated
-if [ -n "$UPDATED_APPS" ]
-then
-    print_text_in_color "$IGreen" "$UPDATED_APPS"
-    notify_admin_gui \
-    "You've got app updates!" \
-    "$UPDATED_APPS"
-else
-    print_text_in_color "$IGreen" "Your apps are already up to date!"
-fi
+#if [ -n "$UPDATED_APPS" ]
+#then
+#    print_text_in_color "$IGreen" "$UPDATED_APPS"
+#    notify_admin_gui \
+#    "You've got app updates!" \
+#    "$UPDATED_APPS"
+#else
+#    print_text_in_color "$IGreen" "Your apps are already up to date!"
+#fi
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
