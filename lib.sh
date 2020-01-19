@@ -12,6 +12,7 @@ HTML=/var/www
 NCDATA=/mnt/ncdata
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
+SHA256_DIR=/tmp/shas56
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
 NC_APPS_PATH=$NCPATH/apps
