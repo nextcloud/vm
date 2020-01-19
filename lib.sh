@@ -716,7 +716,7 @@ cd $HTML
 print_text_in_color "$ICyan" "Downloading $STABLEVERSION..."
 if network_ok
 then
-    curl -fSLO --retry 3 "$NCREPO/$STABLEVERSION.tar.bz2
+    curl -fSLO --retry 3 "$NCREPO"/"$STABLEVERSION".tar.bz2
 else
     msg_box "There seems to be an issue with your network, please try again later.\nThis script will exit."
     exit 1
