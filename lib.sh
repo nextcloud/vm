@@ -703,6 +703,7 @@ fi
 }
 
 download_verify_nextcloud_stable() {
+# Check the current Nextcloud version
 while [ -z "$NCVERSION" ]
 do
     print_text_in_color "$ICyan" "Fetching the latest Nextcloud version..."
@@ -710,6 +711,7 @@ do
     STABLEVERSION="nextcloud-$NCVERSION"
     print_text_in_color "$IGreen" "$NCVERSION"
 done
+
 # Download the file
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
 cd $HTML
@@ -722,15 +724,14 @@ else
     exit 1
 fi
 
-# Checksum the downloaded file
+# Checksum of the downloaded file
 print_text_in_color "$ICyan" "Checking SHA256 checksum..."
 mkdir -p "$SHA256_DIR"
-install_if_not coreutils
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.sha256" "$SHA256_DIR"
 SHA256SUM="$(cat $SHA256_DIR/$STABLEVERSION.tar.bz2.sha256 | awk '{print$1}')"
-if echo "$SHA256SUM" "$STABLEVERSION.tar.bz2" | sha256sum -c
+if ! echo "$SHA256SUM" "$STABLEVERSION.tar.bz2" | sha256sum -c
 then
-    msg_box "The checksums of $STABLEVERSION.tar.bz2 didn't match, please try again."
+    msg_box "The SHA256 checksums of $STABLEVERSION.tar.bz2 didn't match, please try again."
     exit 1
 fi
 
