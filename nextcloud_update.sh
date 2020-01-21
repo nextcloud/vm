@@ -309,8 +309,25 @@ fi
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    occ_command app:update --all
+    # Make sure maintenance:mode isn't activated (it will fail if it is)
+    occ_command maintenance:mode --off
+    # Check for upgrades
+    print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
+    # occ command can not be used due to the check_command() function.
+    sudo -u www-data php $NCPATH/occ app:update --all
+#    UPDATED_APPS="$(sudo -u www-data php $NCPATH/occ app:update --all)"
 fi
+
+# Check which apps got updated
+#if [ -n "$UPDATED_APPS" ]
+#then
+#    print_text_in_color "$IGreen" "$UPDATED_APPS"
+#    notify_admin_gui \
+#    "You've got app updates!" \
+#    "$UPDATED_APPS"
+#else
+#    print_text_in_color "$IGreen" "Your apps are already up to date!"
+#fi
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
@@ -523,7 +540,7 @@ then
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
-    tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
+    check_command tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
     rm "$HTML/$STABLEVERSION.tar.bz2"
     print_text_in_color "$IGreen" "Restoring config to Nextcloud..."
     rsync -Aaxz $BACKUP/config "$NCPATH"/
