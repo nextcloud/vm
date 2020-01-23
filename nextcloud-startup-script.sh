@@ -240,6 +240,7 @@ download_static_script setup_secure_permissions_nextcloud
 download_static_script change_db_pass
 download_static_script nextcloud
 download_static_script update-config
+download_static_script apps
 download_le_script activate-ssl
 if home_sme_server
 then
