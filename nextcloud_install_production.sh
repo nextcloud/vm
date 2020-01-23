@@ -389,8 +389,6 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 
 # Run the updatenotification on a schelude
 occ_command config:system:set upgrade.disable-web --value="true"
-occ_command app:disable updatenotification
-rm -r $NCPATH/apps/updatenotification
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_static_script updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh

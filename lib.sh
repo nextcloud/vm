@@ -635,6 +635,9 @@ if ! "$@";
 then
     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
     print_text_in_color "$IRed" "$* failed"
+    notify_admin_gui \
+    "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!" \
+    "$* failed"
     exit 1
 fi
 }
@@ -642,6 +645,11 @@ fi
 # Example: occ_command 'maintenance:mode --on'
 occ_command() {
 check_command sudo -u www-data php "$NCPATH"/occ "$@";
+}
+
+# Example: occ_command_no_check 'maintenance:mode --on'
+occ_command_no_check() {
+sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 network_ok() {
@@ -1110,16 +1118,23 @@ esac
 # "Subject" \
 # "Message"
 #
-# occ_command notification:generate -l "$2" "$admin" "$1"
+# occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
-CHECK_USERS=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
+install_if_not jq
+if ! occ_command_no_check app:list --output=json | jq -e '.enabled | .notifications' > /dev/null
+then
+    print_text_in_color "$IGreen" "The notifications app isn't enabled - unable to send notifications"
+    return 1
+fi
+
+CHECK_USERS=$(occ_command_no_check user:list --output=json | jq -r 'keys[]')
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
 for admin in $CHECK_USERS
 do
-    if occ_command user:info "$admin" | grep -q "\- admin";
+    if occ_command_no_check user:info --output=json "$admin" | jq -e '.groups | index("admin")' > /dev/null
     then
         print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-        occ_command notification:generate -l "$2" "$admin" "$1"
+        occ_command_no_check notification:generate -l "$2" "$admin" "$1"
     fi
 done
 }
