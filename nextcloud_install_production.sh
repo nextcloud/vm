@@ -673,6 +673,9 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "Extract" "             " on \
 "Text" "                " on \
 "Mail" "                " on \
+"Deck" "                " on \
+"Social" "              " on \
+"Group-Folders" "       " on \
 "Webmin" "              " on 2>results
 
 while read -r -u 9 choice
@@ -704,13 +707,22 @@ do
         Mail)
             install_and_enable_app mail
         ;;
+        Deck)
+            install_and_enable_app deck
+        ;;
+        Social)
+            install_and_enable_app social
+        ;;
+        Group-Folders)
+            install_and_enable_app groupfolders
+        ;;
         Webmin)
             run_app_script webmin
         ;;
         *)
         ;;
     esac
-done 9< results
+done 11< results
 rm -f results
 
 # Get needed scripts for first bootup
