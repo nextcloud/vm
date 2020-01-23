@@ -309,7 +309,7 @@ fi
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    occ_command_no_check maintenance:mode --off
+    occ_command maintenance:mode --off
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     UPDATED_APPS="$(occ_command_no_check app:update --all)"
