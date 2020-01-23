@@ -18,7 +18,10 @@ root_check
 
 mkdir -p "$SCRIPTS"
 
-# Delete, download, run
-run_main_script additional_apps
+if network_ok
+then
+    # Delete, download, run
+    run_main_script additional_apps
+fi
 
 exit
