@@ -407,7 +407,7 @@ do
         "Share-Folder")
             clear
             occ_command config:system:set share_folder --value="/Shared"
-            msg_box "All new Nextcloud-shares from other users will be stored in the 'Shared' folder by now."
+            msg_box "All new Nextcloud-shares from other users will be stored in the 'Shared' folder from now on."
         ;;
 	
         *)
