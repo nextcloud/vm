@@ -377,7 +377,8 @@ whiptail --title "Extra configurations" --checklist --separate-output "Choose wh
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
-"CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF 2>results
+"CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
+"Share-folder" "(If configured, all Nextcloud-shares from other users will be stored in the 'Shared' folder)" OFF 2>results
 
 while read -r -u 9 choice
 do
@@ -402,7 +403,13 @@ do
             clear
             run_static_script cookielifetime
         ;;
-
+		
+        "Share-Folder")
+            clear
+            occ_command config:system:set share_folder --value="/Shared"
+	    msg_box "All new Nextcloud-shares from other users will be stored in the 'Shared' folder by now."
+        ;;
+	
         *)
         ;;
     esac
