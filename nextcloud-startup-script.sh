@@ -406,8 +406,12 @@ do
 		
         "Share-Folder")
             clear
-            occ_command config:system:set share_folder --value="/Shared"
-            msg_box "All new Nextcloud-shares from other users will be stored in the 'Shared' folder from now on."
+            msg_box "This option will let all Nextcloud-shares, that a Nextcloud-user gets from other Nextcloud-users appear in a folder named 'Shared', that is inside the Nextcloud users root folder.\nIf you don't enable this option, all shares will appear in the Nextcloud users root folder.\nThis folder will be created automatically when the specific user gets his first share.\nPlease note: your root folder must be writeable so that this folder can be automatically created, or you have to create it manually. Otherwise you will not be able to get shares from other Nextcloud-users."
+            if [[ "yes" == $(ask_yes_or_no "Do you want to enable this option?") ]]
+            then
+                occ_command config:system:set share_folder --value="/Shared"
+                msg_box "All new Nextcloud-shares from other users will be stored in the 'Shared' folder from now on."
+            fi
         ;;
 	
         *)
