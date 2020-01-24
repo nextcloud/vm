@@ -109,7 +109,8 @@ then
     "SVG" "" ON \
     "TIFF" "" ON 2>results
 
-    choice=$(< results)
+while read -r choice
+do
     case "$choice" in
             "PNG")
                 occ_command config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
@@ -158,6 +159,7 @@ then
             *)
             ;;
         esac
+done < results
     rm -f results
 else
     # check if imagick ist installed and remove it
