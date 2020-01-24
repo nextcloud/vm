@@ -380,14 +380,13 @@ whiptail --title "Extra configurations" --checklist --separate-output "Choose wh
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF 2>results
 
-while read -r -u 9 choice
-do
-    case $choice in
+choice=$(< results)
+    case "$choice" in
         "Security")
             clear
             run_static_script security
         ;;
-	
+
         "Static IP")
             clear
             run_static_script static_ip
@@ -398,7 +397,7 @@ do
             clear
             run_static_script automatic_updates
         ;;
-		
+
         CookieLifetime)
             clear
             run_static_script cookielifetime
@@ -407,7 +406,6 @@ do
         *)
         ;;
     esac
-done 9< results
 rm -f results
 
 # Let's Encrypt
