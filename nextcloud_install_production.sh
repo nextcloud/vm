@@ -680,19 +680,19 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 
 choice=$(< results)
     case "$choice" in
-        Calendar)
+        "Calendar")
             install_and_enable_app calendar
         ;;
-        Contacts)
+        "Contacts")
             install_and_enable_app contacts
         ;;
-        IssueTemplate)
+        "IssueTemplate")
             install_and_enable_app issuetemplate
         ;;
-        PDFViewer)
+        "PDFViewer")
             install_and_enable_app files_pdfviewer
         ;;
-        Extract)
+        "Extract")
             if install_and_enable_app extract
             then
                 install_if_not unrar
@@ -700,22 +700,22 @@ choice=$(< results)
                 install_if_not p7zip-full
             fi
         ;;
-        Text)
+        "Text")
             install_and_enable_app text
         ;;
-        Mail)
+        "Mail")
             install_and_enable_app mail
         ;;
-        Deck)
+        "Deck")
             install_and_enable_app deck
         ;;
-        Social)
+        "Social")
             install_and_enable_app social
         ;;
-        Group-Folders)
+        "Group-Folders")
             install_and_enable_app groupfolders
         ;;
-        Webmin)
+        "Webmin")
             run_app_script webmin
         ;;
         *)

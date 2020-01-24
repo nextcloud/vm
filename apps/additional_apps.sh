@@ -32,47 +32,47 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 
 choice=$(< results)
     case "$choice" in
-        Fail2ban)
+        "Fail2ban")
             clear
             run_app_script fail2ban
         ;;
 
-        Adminer)
+        "Adminer")
             clear
             run_app_script adminer
         ;;
 
-        Netdata)
+        "Netdata")
             clear
             run_app_script netdata
         ;;
 
-        OnlyOffice)
+        "OnlyOffice")
             clear
             run_app_script onlyoffice
         ;;
 
-        Collabora)
+        "Collabora")
             clear
             run_app_script collabora
         ;;
 
-        Bitwarden)
+        "Bitwarden")
             clear
             run_app_script tmbitwarden
         ;;
 
-        FullTextSearch)
+        "FullTextSearch")
             clear
            run_app_script fulltextsearch
         ;;
 
-        PreviewGenerator)
+        "PreviewGenerator")
             clear
            run_app_script previewgenerator
         ;;
 
-        LDAP)
+        "LDAP")
             clear
 	    print_text_in_color "$ICyan" "Installing LDAP..."
             if install_and_enable_app user_ldap
@@ -82,12 +82,12 @@ choice=$(< results)
 	    fi
         ;;
 
-        Talk)
+        "Talk")
             clear
             run_app_script talk
         ;;
 
-        SMB-mount)
+        "SMB-mount")
             clear
             run_app_script smbmount
         ;;
