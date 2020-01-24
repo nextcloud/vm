@@ -240,6 +240,7 @@ download_static_script setup_secure_permissions_nextcloud
 download_static_script change_db_pass
 download_static_script nextcloud
 download_static_script update-config
+download_static_script apps
 download_le_script activate-ssl
 if home_sme_server
 then
@@ -441,89 +442,8 @@ else
 fi
 clear
 
-# Install Apps
-whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Fail2ban" "(Extra Bruteforce protection)   " OFF \
-"Adminer" "(PostgreSQL GUI)       " OFF \
-"Netdata" "(Real-time server monitoring)       " OFF \
-"Collabora" "(Online editing [2GB RAM])   " OFF \
-"OnlyOffice" "(Online editing [2GB RAM])   " OFF \
-"Bitwarden" "(External password manager)   " OFF \
-"FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
-"PreviewGenerator" "(Pre-generate previews)   " OFF \
-"LDAP" "(Windows Active directory)   " OFF \
-"Talk" "(Nextcloud Video calls and chat)   " OFF \
-"SMB-mount" "(Connect to SMB-shares from your local network)   " OFF 2>results
-
-while read -r -u 11 choice
-do
-    case $choice in
-        Fail2ban)
-            clear
-            run_app_script fail2ban
-        ;;
-
-        Adminer)
-            clear
-            run_app_script adminer
-        ;;
-
-        Netdata)
-            clear
-            run_app_script netdata
-        ;;
-
-        OnlyOffice)
-            clear
-            run_app_script onlyoffice
-        ;;
-
-        Collabora)
-            clear
-            run_app_script collabora
-        ;;
-
-        Bitwarden)
-            clear
-            run_app_script tmbitwarden
-        ;;
-
-        FullTextSearch)
-            clear
-           run_app_script fulltextsearch
-        ;;
-
-        PreviewGenerator)
-            clear
-           run_app_script previewgenerator
-        ;;
-
-        LDAP)
-            clear
-	    print_text_in_color "$ICyan" "Installing LDAP..."
-            if install_and_enable_app user_ldap
-	    then
-	        msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
-	    else msg_box "LDAP installation failed."
-	    fi
-        ;;
-
-        Talk)
-            clear
-            run_app_script talk
-        ;;
-
-        "SMB-mount")
-            clear
-            run_app_script smbmount
-        ;;
-	
-        *)
-        ;;
-    esac
-done 11< results
-rm -f results
-clear
+# Install apps
+bash $SCRIPTS/apps.sh
 
 # Change passwords
 # CLI USER
@@ -552,9 +472,11 @@ if [[ "$NCADMIN" ]]
 then
     print_text_in_color "$ICyan" "Deleting $NCADMIN..."
     occ_command user:delete "$NCADMIN"
+    sleep 2
 fi
 clear
 
+# Add default notifications
 notify_admin_gui \
 "Please setup SMTP" \
 "Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin."
@@ -636,12 +558,6 @@ fi
 mesg n
 
 ROOTNEWPROFILE
-
-# Download all app scripts
-print_text_in_color "$ICyan" "Downloading all the latest app scripts to $SCRIPTS/apps..."
-mkdir -p $SCRIPTS/apps
-cd $SCRIPTS/apps
-check_command curl -s https://codeload.github.com/nextcloud/vm/tar.gz/master | tar -xz --strip=2 vm-master/apps
 
 # Upgrade system
 print_text_in_color "$ICyan" "System will now upgrade..."
