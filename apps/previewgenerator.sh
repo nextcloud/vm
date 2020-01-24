@@ -109,7 +109,7 @@ then
     "SVG" "" ON \
     "TIFF" "" ON 2>results
 
-while read choice
+while read -r choice
 do
     case "$choice" in
             "PNG")

@@ -678,7 +678,7 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "Group-Folders" "       " on \
 "Webmin" "              " on 2>results
 
-while read choice
+while read -r choice
 do
     case "$choice" in
         "Calendar")
