@@ -389,8 +389,6 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 
 # Run the updatenotification on a schelude
 occ_command config:system:set upgrade.disable-web --value="true"
-occ_command app:disable updatenotification
-rm -r $NCPATH/apps/updatenotification
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_static_script updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
@@ -675,6 +673,9 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "Extract" "             " on \
 "Text" "                " on \
 "Mail" "                " on \
+"Deck" "                " on \
+"Social" "              " on \
+"Group-Folders" "       " on \
 "Webmin" "              " on 2>results
 
 while read -r -u 9 choice
@@ -706,13 +707,22 @@ do
         Mail)
             install_and_enable_app mail
         ;;
+        Deck)
+            install_and_enable_app deck
+        ;;
+        Social)
+            install_and_enable_app social
+        ;;
+        Group-Folders)
+            install_and_enable_app groupfolders
+        ;;
         Webmin)
             run_app_script webmin
         ;;
         *)
         ;;
     esac
-done 9< results
+done 11< results
 rm -f results
 
 # Get needed scripts for first bootup
