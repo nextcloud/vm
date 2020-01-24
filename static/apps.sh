@@ -21,7 +21,7 @@ mkdir -p "$SCRIPTS"
 if network_ok
 then
     # Delete, download, run
-    run_main_script additional_apps
+    run_app_script additional_apps
 fi
 
 exit
