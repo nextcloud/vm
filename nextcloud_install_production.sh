@@ -679,8 +679,6 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "Webmin" "              " on 2>results
 
 choice=$(< results)
-    case "$choice" in choice
-do
     case "$choice" in
         Calendar)
             install_and_enable_app calendar
