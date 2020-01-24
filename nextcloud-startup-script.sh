@@ -399,7 +399,7 @@ choice=$(< results)
             run_static_script automatic_updates
         ;;
 
-        CookieLifetime)
+        "CookieLifetime")
             clear
             run_static_script cookielifetime
         ;;
