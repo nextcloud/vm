@@ -406,10 +406,10 @@ do
 		
         "Share-folder")
             clear
-            msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the root of Nextcloud.\n\nIf you don't enable this option, all shares will appear in the Nextcloud GUI root folder, which is the default behaviour."
+            msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour."
             if [[ "yes" == $(ask_yes_or_no "Do you want to enable this option?") ]]
             then
-                #occ_command config:system:set share_folder --value="/Shared"
+                occ_command config:system:set share_folder --value="/Shared"
                 bash "$SECURE"
                 msg_box "All new Nextcloud shares from other users will appear in the 'Shared' folder from now on."
             fi
