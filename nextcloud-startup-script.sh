@@ -378,7 +378,7 @@ whiptail --title "Extra configurations" --checklist --separate-output "Choose wh
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
-"Share-folder" "(If configured, all Nextcloud-shares from other users will be stored in the 'Shared' folder)" OFF 2>results
+"Share-folder" "(If configured, all Nextcloud shares from other users will be stored in a folder named 'Shared')" OFF 2>results
 
 while read -r -u 9 choice
 do
@@ -406,11 +406,12 @@ do
 		
         "Share-folder")
             clear
-            msg_box "This option will let all Nextcloud-shares, that a Nextcloud-user gets from other Nextcloud-users appear in a folder named 'Shared', that is inside the Nextcloud users root folder.\nIf you don't enable this option, all shares will appear in the Nextcloud users root folder.\nThis folder will be created automatically when the specific user gets his first share.\nPlease note: your root folder must be writeable so that this folder can be automatically created, or you have to create it manually. Otherwise you will not be able to get shares from other Nextcloud-users."
+            msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the root of Nextcloud.\n\nIf you don't enable this option, all shares will appear in the Nextcloud GUI root folder, which is the default behaviour."
             if [[ "yes" == $(ask_yes_or_no "Do you want to enable this option?") ]]
             then
-                occ_command config:system:set share_folder --value="/Shared"
-                msg_box "All new Nextcloud-shares from other users will appear in the 'Shared' folder from now on."
+                #occ_command config:system:set share_folder --value="/Shared"
+                bash "$SECURE"
+                msg_box "All new Nextcloud shares from other users will appear in the 'Shared' folder from now on."
             fi
         ;;
 	
