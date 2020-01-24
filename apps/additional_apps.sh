@@ -88,7 +88,7 @@ do
             run_app_script talk
         ;;
 
-        "SMB-mount")
+        SMB-mount)
             clear
             run_app_script smbmount
         ;;
