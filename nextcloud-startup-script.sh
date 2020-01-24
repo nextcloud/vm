@@ -460,9 +460,11 @@ if [[ "$NCADMIN" ]]
 then
     print_text_in_color "$ICyan" "Deleting $NCADMIN..."
     occ_command user:delete "$NCADMIN"
+    sleep 2
 fi
 clear
 
+# Add default notifications
 notify_admin_gui \
 "Please setup SMTP" \
 "Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin."
