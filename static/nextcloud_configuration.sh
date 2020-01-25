@@ -19,7 +19,7 @@ root_check
 # Configure Nextcloud
 choice=$(whiptail --title "Nextcloud Configuration" --checklist "Which settings do you want to configure?\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
-"Share-folder" "(If configured, all Nextcloud shares from other users will be stored in a folder named 'Shared')"
+"Share-folder" "(If configured, all Nextcloud shares from other users will be stored in a folder named 'Shared')" OFF \
 "Disable rich workspaces" "(disable top notes in GUI)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
