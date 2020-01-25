@@ -500,6 +500,7 @@ rm "$SCRIPTS"/temporary-fix.sh
 # Run final cleanup and fixes
 if run_static_script final_fixes
 then
+    check_command rm -f "$SCRIPTS/nextcloud-startup-script.sh"
     reboot
 else
     msg_box "The final cleanup could not proceed. Please report this tos $ISSUES."
