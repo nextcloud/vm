@@ -678,7 +678,7 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "Group-Folders" "       " on \
 "Webmin" "              " on 2>results
 
-while read -r choice
+while read -r -u 11 choice
 do
     case "$choice" in
         "Calendar")
@@ -722,7 +722,7 @@ do
         *)
         ;;
     esac
-done < results
+done 11< results
 rm -f results
 
 # Get needed scripts for first bootup
