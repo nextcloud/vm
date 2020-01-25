@@ -27,9 +27,9 @@ then
     fi
 fi
 
-if [ -x /var/scripts/nextcloud_startup_script.sh ]
+if [ -x /var/scripts/nextcloud-startup-script.sh ]
 then
-    /var/scripts/nextcloud_startup_script.sh
+    /var/scripts/nextcloud-startup-script.sh
 fi
 
 if [ -x /var/scripts/history.sh ]
