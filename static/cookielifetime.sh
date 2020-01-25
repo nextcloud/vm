@@ -46,7 +46,7 @@ case "$choice" in
     "2419200s")
         occ_command config:system:set remember_login_cookie_lifetime --value="2419200"
     ;;
-    "Customs")
+    "Custom")
         while true
         do
             COOKIE_LIFETIME=$(whiptail --inputbox "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\n\nPlease enter the Cookie Lifetime in seconds, so e.g. 1800 for 30 minutes or 3600 for 1 hour\n\n You can not set a value below 30 minutes (1800 seconds)." "$WT_HEIGHT" "$WT_WIDTH" 1800 3>&1 1>&2 2>&3)
