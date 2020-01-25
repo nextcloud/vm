@@ -267,29 +267,38 @@ return
 while true
 do
     # Main menu
-    SMB_MOUNT=$(whiptail --title "SMB-share" --radiolist  "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "SMB-share" --radiolist  "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Add a SMB-mount" "(and mount/connect it)" ON \
     "Mount SMB-shares" "(connect SMB-shares)" OFF \
     "Show all SMB-mounts" "(show detailed information about the SMB-mounts)" OFF \
     "Unmount SMB-shares" "(disconnect SMB-shares)" OFF \
-    "Delete SMB-mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
+    "Delete SMB-mounts" "(and unmount/disconnect them)" OFF \
+    "Exit SMB-share" "Exit this script" OFF 3>&1 1>&2 2>&3)
 
-    if [ "$SMB_MOUNT" == "Add a SMB-mount" ]
+    case "$choice" in
+        *"Add a SMB-mount"*)
+            add_mount
+        ;;&
+        *"Mount SMB-shares"*)
+            mount_shares
+        ;;&
+        *"Show all SMB-mounts"*)
+            show_all_mounts
+        ;;&
+        *"Unmount SMB-shares"*)
+            unmount_shares
+        ;;&
+        *"Delete SMB-mounts"*)
+            delete_mounts
+        ;;&
+        *"Exit SMB-share"*)
+            break
+        ;;&
+        *)
+        ;;
+    esac
+    if [ -z "$choice" ]
     then
-        add_mount
-    elif [ "$SMB_MOUNT" == "Mount SMB-shares" ]
-    then
-        mount_shares
-    elif [ "$SMB_MOUNT" == "Show all SMB-mounts" ]
-    then
-        show_all_mounts
-    elif [ "$SMB_MOUNT" == "Unmount SMB-shares" ]
-    then
-        unmount_shares
-    elif [ "$SMB_MOUNT" == "Delete SMB-mounts" ]
-    then
-        delete_mounts
-    else
         break
     fi
 done
