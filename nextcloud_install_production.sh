@@ -729,7 +729,7 @@ done 11< results
 rm -f results
 
 # Get needed scripts for first bootup
-check_command curl_to_dir "$GITHUB_REPO" nextcloud_startup_script.sh "$SCRIPTS"
+check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
 check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
 download_static_script instruction
 download_static_script history
@@ -737,8 +737,8 @@ download_static_script static_ip
 
 if home_sme_server
 then
-    # Change nextcloud_startup_script.sh
-    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud_startup_script.sh
+    # Change nextcloud-startup-script.sh
+    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
 fi
 
 # Make $SCRIPTS excutable
