@@ -27,9 +27,9 @@ then
     fi
 fi
 
-if [ -x /var/scripts/nextcloud-startup-script.sh ]
+if [ -x /var/scripts/nextcloud_startup_script.sh ]
 then
-    /var/scripts/nextcloud-startup-script.sh
+    /var/scripts/nextcloud_startup_script.sh
 fi
 
 if [ -x /var/scripts/history.sh ]
@@ -46,5 +46,6 @@ ROOT-PROFILE
 echo "alias nextcloud_occ='sudo -u www-data php $NCPATH/occ'"
 echo "alias run_update_nextcloud='bash $SCRIPTS/update.sh'"
 echo "alias additional_apps='bash $SCRIPTS/apps.sh'"
+echo "alias nextcloud_configuration='bash $SCRIPTS/configuration.sh'"
 } > /root/.bash_aliases
 
