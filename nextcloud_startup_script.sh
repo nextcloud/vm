@@ -406,7 +406,7 @@ done 3< results
 rm -f results
 
 # Nextcloud configuration
-run_static_script nextcloud_configuration
+bash $SCRIPTS/configuration.sh
 
 # Let's Encrypt
 msg_box "The following script will install a trusted
