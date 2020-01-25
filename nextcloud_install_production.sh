@@ -50,6 +50,15 @@ else
     apt install whiptail -y
 fi
 
+# Install jq if not existing (for notify_admin_gui)
+if [ "$(dpkg-query -W -f='${Status}' "jq" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    print_text_in_color "$IGreen" "jquery OK"
+else
+    apt update -q4 & spinner_loading
+    apt install jq -y
+fi
+
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
