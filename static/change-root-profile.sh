@@ -44,7 +44,7 @@ ROOT-PROFILE
 # Add Aliases
 {
 echo "alias nextcloud_occ='sudo -u www-data php $NCPATH/occ'"
-echo "alias nextcloud_update='bash $SCRIPTS/update.sh'"
+echo "alias run_update_nextcloud='bash $SCRIPTS/update.sh'"
 echo "alias additional_apps='bash $SCRIPTS/apps.sh'"
 echo "alias nextcloud_configuration='bash $SCRIPTS/configuration.sh'"
 } > /root/.bash_aliases
