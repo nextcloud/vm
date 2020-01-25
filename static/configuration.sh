@@ -17,7 +17,7 @@ debug_mode
 root_check
 
 mkdir -p "$SCRIPTS"
-print_text_in_color "$ICyan" "Running the additional apps script..."
+print_text_in_color "$ICyan" "Running the nextcloud configuration script..."
 
 if network_ok
 then
