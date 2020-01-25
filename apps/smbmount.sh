@@ -276,30 +276,28 @@ do
     "Exit SMB-share" "(exit this script)" OFF 3>&1 1>&2 2>&3)
 
     case "$choice" in
-        *"Add a SMB-mount"*)
+        "Add a SMB-mount")
             add_mount
-        ;;&
-        *"Mount SMB-shares"*)
+        ;;
+        "Mount SMB-shares")
             mount_shares
-        ;;&
-        *"Show all SMB-mounts"*)
+        ;;
+        "Show all SMB-mounts")
             show_all_mounts
-        ;;&
-        *"Unmount SMB-shares"*)
+        ;;
+        "Unmount SMB-shares")
             unmount_shares
-        ;;&
-        *"Delete SMB-mounts"*)
+        ;;
+        "Delete SMB-mounts")
             delete_mounts
-        ;;&
-        *"Exit SMB-share"*)
+        ;;
+        "Exit SMB-share")
             break
-        ;;&
+        ;;
+        "")
+            break
         *)
         ;;
     esac
-    if [ -z "$choice" ]
-    then
-        break
-    fi
 done
 exit
