@@ -273,7 +273,7 @@ do
     "Show all SMB-mounts" "(show detailed information about the SMB-mounts)" OFF \
     "Unmount SMB-shares" "(disconnect SMB-shares)" OFF \
     "Delete SMB-mounts" "(and unmount/disconnect them)" OFF \
-    "Exit SMB-share" "Exit this script" OFF 3>&1 1>&2 2>&3)
+    "Exit SMB-share" "(exit this script)" OFF 3>&1 1>&2 2>&3)
 
     case "$choice" in
         *"Add a SMB-mount"*)
