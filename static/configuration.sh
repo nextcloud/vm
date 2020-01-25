@@ -22,7 +22,7 @@ print_text_in_color "$ICyan" "Running the nextcloud configuration script..."
 if network_ok
 then
     # Delete, download, run
-    run_static_script nextcloud_configuration.sh
+    run_static_script nextcloud_configuration
 fi
 
 exit
