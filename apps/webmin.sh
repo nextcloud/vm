@@ -18,6 +18,13 @@ debug_mode
 # Check if root
 root_check
 
+# Check if webmin ist already installed
+if is_this_installed webmin
+then
+    msg_box "Webmin seems to be already installed. No need to run this script again."
+    exit
+fi
+
 # Install packages for Webmin
 install_if_not apt-transport-https
 install_if_not perl
