@@ -117,7 +117,7 @@ then
     msg_box "It seems like you have not created any SMB-share."
     return
 fi
-args=(whiptail --title "Mount SMB-shares" --checklist --separate-output "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "Mount SMB-shares" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 # Find out which SMB-shares are available
 while  [ $count -le 3 ]
@@ -228,7 +228,7 @@ then
     return
 fi
 # Check which SMB-shares are available
-args=(whiptail --title "Delete SMB-mounts" --checklist --separate-output "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "Delete SMB-mounts" --checklist "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le 3 ]
 do
@@ -267,7 +267,7 @@ return
 while true
 do
     # Main menu
-    choice=$(whiptail --title "SMB-share" --radiolist  "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "SMB-share" --radiolist "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Add a SMB-mount" "(and mount/connect it)" ON \
     "Mount SMB-shares" "(connect SMB-shares)" OFF \
     "Show all SMB-mounts" "(show detailed information about the SMB-mounts)" OFF \
