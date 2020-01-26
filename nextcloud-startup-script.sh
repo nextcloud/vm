@@ -385,23 +385,19 @@ case *"$choice" in
         clear
         run_static_script security
     ;;&
-
     *"Static IP"*)
         clear
         run_static_script static_ip
         rm -f "$SCRIPTS"/lib.sh
     ;;&
-
     *"Automatic updates"*)
         clear
         run_static_script automatic_updates
     ;;&
-
     *"CookieLifetime"*)
         clear
         run_static_script cookielifetime
     ;;&
-
     *)
     ;;
 esac
