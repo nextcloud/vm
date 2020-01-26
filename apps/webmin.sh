@@ -19,7 +19,7 @@ root_check
 # Check if webmin ist already installed
 if is_this_installed webmin
 then
-    msg_box "Webmin seems to be already installed. No need to run this script again."
+    msg_box "This script has run once and is not meant to be run twice. Exiting."
     exit
 fi
 
