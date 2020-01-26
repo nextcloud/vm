@@ -381,7 +381,7 @@ choice=$(whiptail --title "Extra configurations" --checklist "Choose what you wa
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF 3>&1 1>&2 2>&3)
 
 case *"$choice" in
-    "Security"*)
+    *"Security"*)
         clear
         run_static_script security
     ;;&
