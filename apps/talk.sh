@@ -9,15 +9,6 @@ NC_UPDATE=1 && TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nex
 unset NC_UPDATE
 unset TURN_INSTALL
 
-# Check if coturn ist already installed
-if is_this_installed coturn
-then
-    msg_box "Talk seems to be already installed. No need to run this script again."
-    exit
-fi
-
-print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -26,6 +17,15 @@ debug_mode
 
 # Must be root
 root_check
+
+# Check if coturn ist already installed
+if is_this_installed coturn
+then
+    msg_box "Talk seems to be already installed. No need to run this script again."
+    exit
+fi
+
+print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
