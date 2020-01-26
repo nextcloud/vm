@@ -113,47 +113,36 @@ then
         *"PNG"*)
             occ_command config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
         ;;&
-
         *"JPEG"*)
             occ_command config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
         ;;&
-
         *"GIF"*)
             occ_command config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
         ;;&
-
         *"BMP"*)
             occ_command config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
         ;;&
-
         *"MarkDown"*)
             occ_command config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\MarkDown"
         ;;&
-
         *"MP3"*)
             occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MP3"
         ;;&
-
         *"TXT"*)
             occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\TXT"
         ;;&
-
         *"Movie"*)
             occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\Movie"
         ;;&
-
         *"Photoshop"*)
             occ_command config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Photoshop"
         ;;&
-
         *"SVG"*)
             occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\SVG"
         ;;&
-
         *"TIFF"*)
             occ_command config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\TIFF"
         ;;&
-
         *)
         ;;
     esac
@@ -184,35 +173,27 @@ else
         *"PNG"*)
             occ_command config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\PNG"
         ;;&
-
         *"JPEG"*)
             occ_command config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\JPEG"
         ;;&
-
         *"GIF"*)
             occ_command config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\GIF"
         ;;&
-
         *"BMP"*)
             occ_command config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\BMP"
         ;;&
-
         *"MarkDown"*)
             occ_command config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\MarkDown"
         ;;&
-
         *"MP3"*)
             occ_command config:system:set enabledPreviewProviders 16 --value="OC\\Preview\\MP3"
         ;;&
-
         *"TXT"*)
             occ_command config:system:set enabledPreviewProviders 17 --value="OC\\Preview\\TXT"
         ;;&
-
         *"Movie"*)
             occ_command config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\Movie"
         ;;&
-
         *)
         ;;
     esac
