@@ -9,6 +9,7 @@ true
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 
+# Check if fail2ban ist already installed
 if is_this_installed fail2ban
 then
     msg_box "Fail2Ban seems to be already installed. No need to run this script again."
