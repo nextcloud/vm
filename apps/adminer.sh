@@ -7,8 +7,6 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-print_text_in_color "$ICyan" "Installing and securing Adminer..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -24,6 +22,8 @@ then
     msg_box "Adminer seems to be already installed. No need to run this script again."
     exit
 fi
+
+print_text_in_color "$ICyan" "Installing and securing Adminer..."
 
 # Warn user about HTTP/2
 http2_warn Adminer
