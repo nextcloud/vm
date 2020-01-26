@@ -7,13 +7,6 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-# Check if adminer ist already installed
-if is_this_installed adminer
-then
-    msg_box "Adminer seems to be already installed. No need to run this script again."
-    exit
-fi
-
 print_text_in_color "$ICyan" "Installing and securing Adminer..."
 
 # Check for errors + debug code and abort if something isn't right
@@ -24,6 +17,13 @@ debug_mode
 
 # Check if root
 root_check
+
+# Check if adminer ist already installed
+if is_this_installed adminer
+then
+    msg_box "Adminer seems to be already installed. No need to run this script again."
+    exit
+fi
 
 # Warn user about HTTP/2
 http2_warn Adminer
