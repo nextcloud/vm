@@ -374,41 +374,37 @@ sleep 3
 clear
 
 # Extra configurations
-whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "Extra configurations" --checklist "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
-"CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF 2>results
+"CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF 3>&1 1>&2 2>&3)
 
-while read -r -u 4 choice
-do
-    case "$choice" in
-        "Security")
-            clear
-            run_static_script security
-        ;;
+case *"$choice" in
+    "Security"*)
+        clear
+        run_static_script security
+    ;;&
 
-        "Static IP")
-            clear
-            run_static_script static_ip
-            rm -f "$SCRIPTS"/lib.sh
-        ;;
+    *"Static IP"*)
+        clear
+        run_static_script static_ip
+        rm -f "$SCRIPTS"/lib.sh
+    ;;&
 
-	"Automatic updates")
-            clear
-            run_static_script automatic_updates
-        ;;
+    *"Automatic updates"*)
+        clear
+        run_static_script automatic_updates
+    ;;&
 
-        "CookieLifetime")
-            clear
-            run_static_script cookielifetime
-        ;;
+    *"CookieLifetime"*)
+        clear
+        run_static_script cookielifetime
+    ;;&
 
-        *)
-        ;;
-    esac
-done 4< results
-rm -f results
+    *)
+    ;;
+esac
 
 # Let's Encrypt
 msg_box "The following script will install a trusted
