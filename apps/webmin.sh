@@ -7,8 +7,6 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-print_text_in_color "$ICyan" "Installing Webmin..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -24,6 +22,8 @@ then
     msg_box "Webmin seems to be already installed. No need to run this script again."
     exit
 fi
+
+print_text_in_color "$ICyan" "Installing Webmin..."
 
 # Install packages for Webmin
 install_if_not apt-transport-https
