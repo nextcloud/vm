@@ -21,7 +21,7 @@ root_check
 # Check if coturn ist already installed
 if is_this_installed coturn
 then
-    msg_box "This script has run once and is not meant to be run twice. Exiting."
+    msg_box "The 'talk' script is currently not meant to run twice. Please create an issue in the Nextcloud/VM repository, if you would like to."
     exit
 fi
 
