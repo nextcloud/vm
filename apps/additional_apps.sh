@@ -30,7 +30,8 @@ whiptail --title "Which apps do you want to install?" --checklist --separate-out
 "Talk" "(Nextcloud Video calls and chat)   " OFF \
 "SMB-mount" "(Connect to SMB-shares from your local network)   " OFF 2>results
 
-choice=$(< results)
+while read -r choice
+do
     case "$choice" in
         "Fail2ban")
             clear
@@ -95,6 +96,7 @@ choice=$(< results)
         *)
         ;;
     esac
+done < results
 rm -f results
 clear
 

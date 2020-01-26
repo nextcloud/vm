@@ -381,7 +381,8 @@ whiptail --title "Extra configurations" --checklist --separate-output "Choose wh
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
 "Share-folder" "(If configured, all Nextcloud shares from other users will be stored in a folder named 'Shared')" OFF 2>results
 
-choice=$(< results)
+while read -r -u 4 choice
+do
     case "$choice" in
         "Security")
             clear
@@ -418,6 +419,7 @@ choice=$(< results)
         *)
         ;;
     esac
+done 4< results
 rm -f results
 
 # Let's Encrypt

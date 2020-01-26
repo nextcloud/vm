@@ -350,6 +350,9 @@ calculate_php_fpm
 # Install VM-tools
 install_if_not open-vm-tools
 
+# Install jQuery, needed for notify_admin_gui
+install_if_not jq
+
 # Download and validate Nextcloud package
 check_command download_verify_nextcloud_stable
 
@@ -678,7 +681,8 @@ whiptail --title "Install apps or software" --checklist --separate-output "Autom
 "Group-Folders" "       " on \
 "Webmin" "              " on 2>results
 
-choice=$(< results)
+while read -r -u 11 choice
+do
     case "$choice" in
         "Calendar")
             install_and_enable_app calendar
@@ -721,6 +725,7 @@ choice=$(< results)
         *)
         ;;
     esac
+done 11< results
 rm -f results
 
 # Get needed scripts for first bootup
