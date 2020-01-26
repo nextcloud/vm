@@ -21,7 +21,7 @@ root_check
 # Check if coturn ist already installed
 if is_this_installed coturn
 then
-    msg_box "Talk seems to be already installed. No need to run this script again."
+    msg_box "This script has run once and is not meant to be run twice. Exiting."
     exit
 fi
 
