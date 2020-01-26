@@ -158,9 +158,9 @@ You could still choose to only run on one disk though, which is not recommended,
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
 
 choice=$(whiptail --title "Choose disk format" --radiolist "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"2 Disks Auto" "(Automatically configured)            " ON \
-"2 Disks Manual" "(Choose by yourself)            " OFF \
-"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)              " OFF 3>&1 1>&2 2>&3)
+"2 Disks Auto" "(Automatically configured)" ON \
+"2 Disks Manual" "(Choose by yourself)" OFF \
+"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "2 Disks Auto")
@@ -180,9 +180,9 @@ fi
 
 # Set DNS resolver
 choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Quad9" "(https://www.quad9.net/)            " ON \
-"Cloudflare" "(https://www.cloudflare.com/dns/)            " OFF \
-"Local" "($GATEWAY + 149.112.112.112)              " OFF 3>&1 1>&2 2>&3)
+"Quad9" "(https://www.quad9.net/)" ON \
+"Cloudflare" "(https://www.cloudflare.com/dns/)" OFF \
+"Local" "($GATEWAY + 149.112.112.112)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     Quad9)
@@ -667,17 +667,17 @@ a2dissite default-ssl
 restart_webserver
 
 choice=$(whiptail --title "Install apps or software" --checklist "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Calendar" "            " ON \
-"Contacts" "            " ON \
-"IssueTemplate" "       " ON \
-"PDFViewer" "           " ON \
-"Extract" "             " ON \
-"Text" "                " ON \
-"Mail" "                " ON \
-"Deck" "                " ON \
-"Social" "              " ON \
-"Group-Folders" "       " ON \
-"Webmin" "              " ON 3>&1 1>&2 2>&3)
+"Calendar" "" ON \
+"Contacts" "" ON \
+"IssueTemplate" "" ON \
+"PDFViewer" "" ON \
+"Extract" "" ON \
+"Text" "" ON \
+"Mail" "" ON \
+"Deck" "" ON \
+"Social" "" ON \
+"Group-Folders" "" ON \
+"Webmin" "" ON 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Calendar"*)
