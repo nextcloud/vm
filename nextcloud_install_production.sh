@@ -185,15 +185,15 @@ choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider sho
 "Local" "($GATEWAY + 149.112.112.112)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    Quad9)
+    "Quad9")
         sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
         sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
     ;;
-    Cloudflare)
+    "Cloudflare")
         sed -i "s|#DNS=.*|DNS=1.1.1.1 2606:4700:4700::1111|g" /etc/systemd/resolved.conf
         sed -i "s|#FallbackDNS=.*|FallbackDNS=1.0.0.1 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
     ;;
-    Local)
+    "Local")
         sed -i "s|#DNS=.*|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
         sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
     ;;
