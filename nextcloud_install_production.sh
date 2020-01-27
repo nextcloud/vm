@@ -785,6 +785,12 @@ fi
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
 
+# Put IP adress in /etc/issue (shown before the login)
+if [ -f /etc/issue ]
+then
+    echo "\4" >> /etc/issue
+fi
+
 # Force MOTD to show correct number of updates
 sudo /usr/lib/update-notifier/update-motd-updates-available --force
 
