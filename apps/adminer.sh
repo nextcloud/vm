@@ -19,8 +19,11 @@ root_check
 # Check if adminer ist already installed
 if is_this_installed adminer
 then
-    msg_box "The 'adminer' script is currently not meant to run twice. Please create an issue here: $ISSUES, if you would like to."
-    exit
+    msg_box "It seems like 'adminer' is already installed."
+    if [[ "no" == $(ask_yes_or_no "Do you want to continue anyway?") ]]
+    then
+        exit
+    fi
 fi
 
 print_text_in_color "$ICyan" "Installing and securing Adminer..."
