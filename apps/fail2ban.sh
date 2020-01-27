@@ -19,6 +19,7 @@ debug_mode
 root_check
 
 # Check if fail2ban ist already installed
+print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
 if is_this_installed fail2ban
 then
     msg_box "It seems like 'fail2ban' is already installed.\nIf you continue, all default settings will be removed and fail2ban wil be reinstalled."
