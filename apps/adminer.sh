@@ -43,8 +43,7 @@ then
         apt purge adminer -y
         if ! restart_webserver
         then
-        msg_box "Apache2 could not restart...
-        The script will exit."
+            msg_box "Apache2 could not restart...\nThe script will exit."
             exit
         else
             msg_box "Adminer was successfully uninstalled and all settings were resetted."
