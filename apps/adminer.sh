@@ -16,14 +16,40 @@ debug_mode
 # Check if root
 root_check
 
+# Check that the script can see the external IP (apache fails otherwise)
+check_external_ip() {
+if [ -z "$WANIP4" ]
+then
+    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again."
+    sleep 3
+    exit 1
+fi
+}
+
 # Check if adminer ist already installed
 print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
 then
-    msg_box "It seems like 'adminer' is already installed."
-    if [[ "no" == $(ask_yes_or_no "Do you want to continue anyway?") ]]
+    msg_box "It seems like 'Adminer' is already installed.\nIf you continue, Adminer and all Adminer-settings get deleted."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
         exit
+    else
+        check_external_ip
+        print_text_in_color "$ICyan" "Uninstalling Adminer and resetting all settings..."
+        a2disconf adminer.conf
+        rm $ADMINER_CONF
+        rm $ADMINERDIR/adminer.php
+        apt purge adminer -y
+        if ! restart_webserver
+        then
+        msg_box "Apache2 could not restart...
+        The script will exit."
+            exit
+        else
+            msg_box "Adminer was successfully uninstalled and all settings were resetted."
+            exit
+        fi
     fi
 fi
 
@@ -32,13 +58,7 @@ print_text_in_color "$ICyan" "Installing and securing Adminer..."
 # Warn user about HTTP/2
 http2_warn Adminer
 
-# Check that the script can see the external IP (apache fails otherwise)
-if [ -z "$WANIP4" ]
-then
-    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again."
-    sleep 3
-    exit 1
-fi
+check_external_ip
 
 # Check distrobution and version
 check_distro_version
