@@ -17,6 +17,7 @@ debug_mode
 root_check
 
 # Check if adminer ist already installed
+print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
 then
     msg_box "It seems like 'adminer' is already installed."
