@@ -21,7 +21,7 @@ root_check
 # Check if fail2ban ist already installed
 if is_this_installed fail2ban
 then
-    msg_box "The 'fail2ban' script is currently not meant to run twice. Please create an issue in the Nextcloud/VM repository, if you would like to."
+    msg_box "The 'fail2ban' script is currently not meant to run twice. Please create an issue here: $ISSUES, if you would like to."
     exit
 fi
 
