@@ -23,6 +23,8 @@ then
     msg_box "It seems like 'Webmin' is already installed.\nIf you continue, Webmin will get removed now."
     if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
+        exit
+    else
         check_command apt purge webmin -y
         msg_box "Webmin was successfully uninstalled."
         exit
