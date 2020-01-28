@@ -21,7 +21,7 @@ root_check
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
-# Check if onlyoffice ist already installed
+# Check if collabora ist already installed
 print_text_in_color "$ICyan" "Checking if Onlyoffice or Collabora is already installed..."
 if does_this_docker_exist 'onlyoffice/documentserver' || does_this_docker_exist 'collabora/code'
 then
