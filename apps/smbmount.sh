@@ -46,7 +46,7 @@ fi
 # Enter SMB-server and Share-name
 while true
 do
-    SERVER_SHARE_NAME=$(whiptail --inputbox "Please enter the server and Share-name like this:\n//Server/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SERVER_SHARE_NAME=$(whiptail --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//ip-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
     then
         msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again."
@@ -97,7 +97,7 @@ do
         if [[ ! $(findmnt -M "$SMBSHARES/$count") ]]
         then
             # If not remove this line from fstab
-            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint: you might fix the connection problem by enabling SMB3 on your SMB-server."
+            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint: you might fix the connection problem by enabling SMB3 on your SMB-server.\nYou could also try to use the ip-address of the SMB-server, if not already done."
             sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
             break
         else
