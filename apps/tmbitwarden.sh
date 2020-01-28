@@ -17,7 +17,7 @@ debug_mode
 # Check if root
 root_check
 
-# Check if Bitwarden ist already installed
+# Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
 if [ -d "root/bwdata/docker" ]
 then
