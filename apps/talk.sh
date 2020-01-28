@@ -26,16 +26,15 @@ then
     if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
         exit
-    else
-        print_text_in_color "$ICyan" "Uninstalling Talk and resetting all settings..."
-        occ_command_no_check config:app:delete spreed stun_servers
-        occ_command_no_check config:app:delete spreed turn_servers
-        occ_command_no_check app:remove spreed
-        rm $TURN_CONF
-        apt purge coturn -y
-        msg_box "Talk was successfully uninstalled and all settings were resetted."
-        exit
     fi
+    print_text_in_color "$ICyan" "Uninstalling Talk and resetting all settings..."
+    occ_command_no_check config:app:delete spreed stun_servers
+    occ_command_no_check config:app:delete spreed turn_servers
+    occ_command_no_check app:remove spreed
+    rm $TURN_CONF
+    apt purge coturn -y
+    msg_box "Talk was successfully uninstalled and all settings were resetted."
+    exit
 fi
 
 print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
