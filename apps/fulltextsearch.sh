@@ -19,7 +19,7 @@ debug_mode
 # Must be root
 root_check
 
-# Check if fulltextsearch ist already installed
+# Check if fulltextsearch is already installed
 print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
 if does_this_docker_exist "$nc_fts"
 then
