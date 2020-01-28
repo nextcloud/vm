@@ -19,6 +19,13 @@ root_check
 # Install cifs-utils
 install_if_not cifs-utils
 
+# Make sure, that name resolution works
+install_if_not winbind
+if [ -z "$(grep "^hosts:" /etc/nsswitch.conf | grep wins)" ]
+then
+    sed -i '/^hosts/ s/$/ wins/' /etc/nsswitch.conf
+fi
+
 # Secure fstab
 if [ "$(stat -c %a /etc/fstab)" != "600" ]
 then
