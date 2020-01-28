@@ -6,8 +6,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -38,6 +37,9 @@ then
 fi
 
 print_text_in_color "$ICyan" "Installing Fail2ban..."
+
+NC_UPDATE=1 
+unset NC_UPDATE
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
