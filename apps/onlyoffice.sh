@@ -33,14 +33,14 @@ fi
 
 print_text_in_color "$ICyan" "(Re-)Installing OnlyOffice..."
 
-# shellcheck source=lib.sh
-NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset OO_INSTALL
-
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
+
+# Install Onlyoffice
+NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+unset OO_INSTALL
 
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
