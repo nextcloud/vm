@@ -97,7 +97,7 @@ do
         if [[ ! $(findmnt -M "$SMBSHARES/$count") ]]
         then
             # If not remove this line from fstab
-            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint: you might fix the connection problem by enabling SMB3 on your SMB-server.\nYou could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.\nPlease also make sure, that 'ping IP-address' of your SMB-Server from your Nextcloud-instance works."
+            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint:\n- you might fix the connection problem by enabling SMB3 on your SMB-server.\n- You could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.\n- Please also make sure, that 'ping IP-address' of your SMB-Server from your Nextcloud-instance works."
             sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
             break
         else
