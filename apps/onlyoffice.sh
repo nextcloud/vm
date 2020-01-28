@@ -37,7 +37,7 @@ print_text_in_color "$ICyan" "(Re-)Installing OnlyOffice..."
 ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
 
-# Install Onlyoffice
+# shellcheck source=src/lib.sh
 NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset OO_INSTALL
