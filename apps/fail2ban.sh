@@ -28,9 +28,10 @@ then
         exit
     else
         print_text_in_color "$ICyan" "Uninstalling Fail2Ban and resetting all settings..."
+        fail2ban-client unban --all
+        check_command apt purge fail2ban -y
         rm /etc/fail2ban/filter.d/nextcloud.conf
         rm /etc/fail2ban/jail.local
-        check_command apt purge fail2ban -y
         msg_box "Adminer was successfully uninstalled and all settings were resetted."
         exit
     fi
