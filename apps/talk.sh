@@ -20,7 +20,6 @@ root_check
 
 # Check if adminer ist already installed
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
-install_if_not jq
 if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ]
 then
     msg_box "It seems like 'Talk' is already installed.\nIf you continue, Talk and all Talk-settings get deleted."
