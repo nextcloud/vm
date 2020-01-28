@@ -5,11 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset COLLABORA_INSTALL
-
-print_text_in_color "$ICyan" "Installing Collabora..."
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -22,6 +18,23 @@ root_check
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
+
+# Check if onlyoffice ist already installed
+print_text_in_color "$ICyan" "Checking if Onlyoffice or Collabora is already installed..."
+if does_this_docker_exist 'onlyoffice/documentserver' || does_this_docker_exist 'collabora/code'
+then
+    msg_box "It seems like 'Onlyoffice' or 'Collabora' is already installed.\nIf you continue, Onlyoffice will be deleted and Collabora (re-)installed."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
+    then
+        exit
+    fi
+fi
+
+print_text_in_color "$ICyan" "(Re-)Installing Collabora..."
+
+NC_UPDATE=1 && COLLABORA_INSTALL=1 
+unset NC_UPDATE
+unset COLLABORA_INSTALL
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 Collabora
