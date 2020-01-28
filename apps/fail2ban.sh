@@ -26,15 +26,14 @@ then
     if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
         exit
-    else
-        print_text_in_color "$ICyan" "Uninstalling Fail2Ban and resetting all settings..."
-        fail2ban-client unban --all
-        check_command apt purge fail2ban -y
-        rm /etc/fail2ban/filter.d/nextcloud.conf
-        rm /etc/fail2ban/jail.local
-        msg_box "Fail2Ban was successfully uninstalled and all settings were resetted."
-        exit
     fi
+    print_text_in_color "$ICyan" "Uninstalling Fail2Ban and resetting all settings..."
+    fail2ban-client unban --all
+    check_command apt purge fail2ban -y
+    rm /etc/fail2ban/filter.d/nextcloud.conf
+    rm /etc/fail2ban/jail.local
+    msg_box "Fail2Ban was successfully uninstalled and all settings were resetted."
+    exit
 fi
 
 print_text_in_color "$ICyan" "Installing Fail2ban..."
