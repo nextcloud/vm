@@ -13,7 +13,7 @@ true
 DEBUG=0
 debug_mode
 
-# Check if adminer ist already installed
+# Check if Netdata ist already installed
 print_text_in_color "$ICyan" "Checking if Netdata is already installed..."
 if [ -d /etc/netdata ]
 then
