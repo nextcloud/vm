@@ -27,7 +27,7 @@ root_check
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
-# Check if spreedme ist already installed
+# Check if spreedme is already installed
 print_text_in_color "$ICyan" "Checking if Spreed.me is already installed..."
 if [ -d "$SNAPDIR" ]
 then
