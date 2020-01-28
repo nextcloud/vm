@@ -22,7 +22,7 @@ root_check
 lowest_compatible_nc 13
 
 # Check if onlyoffice ist already installed
-print_text_in_color "$ICyan" "Checking if Onlyoffice is already installed..."
+print_text_in_color "$ICyan" "Checking if Onlyoffice or Collabora is already installed..."
 if does_this_docker_exist 'onlyoffice/documentserver' || does_this_docker_exist 'collabora/code'
 then
     msg_box "It seems like 'Onlyoffice' or 'Collabora' is already installed.\nIf you continue, Collabora will be deleted and Onlyoffice (re-)installed."
