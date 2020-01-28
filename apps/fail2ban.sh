@@ -22,9 +22,16 @@ root_check
 print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
 if is_this_installed fail2ban
 then
-    msg_box "It seems like 'Fail2Ban' is already installed."
-    if [[ "no" == $(ask_yes_or_no "Do you want to continue anyway?") ]]
+    msg_box "It seems like 'Fail2Ban' is already installed.\nIf you continue, Fail2Ban and all Fail2Ban-settings get deleted."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
+        exit
+    else
+        print_text_in_color "$ICyan" "Uninstalling Fail2Ban and resetting all settings..."
+        rm /etc/fail2ban/filter.d/nextcloud.conf
+        rm /etc/fail2ban/jail.local
+        check_command apt purge fail2ban -y
+        msg_box "Adminer was successfully uninstalled and all settings were resetted."
         exit
     fi
 fi
