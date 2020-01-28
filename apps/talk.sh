@@ -32,7 +32,7 @@ then
         occ_command_no_check config:app:delete spreed turn_servers
         occ_command_no_check app:remove spreed
         rm $TURN_CONF
-        check_command apt purge coturn -y
+        apt purge coturn -y
         msg_box "Talk was successfully uninstalled and all settings were resetted."
         exit
     fi
