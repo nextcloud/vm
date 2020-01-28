@@ -8,8 +8,6 @@ true
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 
-print_text_in_color "$ICyan" "Installing Spreed.ME..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -28,6 +26,19 @@ root_check
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
+
+# Check if spreedme ist already installed
+print_text_in_color "$ICyan" "Checking if Spreed.me is already installed..."
+if [ -d "$SNAPDIR" ]
+then
+    msg_box "It seems like 'Spreed.me' is already installed.\nIf you continue, it will be reinstalled."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
+    then
+        exit
+    fi
+fi
+
+print_text_in_color "$ICyan" "(Re-)Installing Spreed.ME..."
 
 # Install if missing
 install_if_not apache2
