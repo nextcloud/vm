@@ -26,7 +26,7 @@ then
 fi
 }
 
-# Check if adminer ist already installed
+# Check if adminer is already installed
 print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
 then
