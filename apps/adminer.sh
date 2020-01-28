@@ -34,22 +34,20 @@ then
     if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
         exit
-    else
-        check_external_ip
-        print_text_in_color "$ICyan" "Uninstalling Adminer and resetting all settings..."
-        a2disconf adminer.conf
-        rm $ADMINER_CONF
-        rm $ADMINERDIR/adminer.php
-        check_command apt purge adminer -y
-        if ! restart_webserver
-        then
-            msg_box "Apache2 could not restart...\nThe script will exit."
-            exit
-        else
-            msg_box "Adminer was successfully uninstalled and all settings were resetted."
-            exit
-        fi
     fi
+    check_external_ip
+    print_text_in_color "$ICyan" "Uninstalling Adminer and resetting all settings..."
+    a2disconf adminer.conf
+    rm $ADMINER_CONF
+    rm $ADMINERDIR/adminer.php
+    check_command apt purge adminer -y
+    if ! restart_webserver
+    then
+        msg_box "Apache2 could not restart...\nThe script will exit."
+        exit
+    fi
+    msg_box "Adminer was successfully uninstalled and all settings were resetted."
+    exit
 fi
 
 print_text_in_color "$ICyan" "Installing and securing Adminer..."
