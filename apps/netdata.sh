@@ -23,17 +23,9 @@ then
         exit
     fi
     # Uninstall
-    killall -9 netdata
-    if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
-    then
-        if ! yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
-        then
-            rm -Rf /usr/src/netdata.git
-        fi
-    elif [ -f /usr/libexec/netdata-uninstaller.sh ]
-    then
-        yes | bash /usr/libexec/netdata-uninstaller.sh --yes
-    fi
+    check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
+    check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
+    rm $SCRIPTS/netdata-uninstaller.sh
     userdel netdata
     groupdel netdata
     gpasswd -d netdata adm
