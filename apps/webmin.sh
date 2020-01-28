@@ -18,11 +18,13 @@ root_check
 
 # Check if adminer ist already installed
 print_text_in_color "$ICyan" "Checking if Webmin is already installed..."
-if is_this_installed adminer
+if is_this_installed webmin
 then
-    msg_box "It seems like 'Webmin' is already installed."
-    if [[ "no" == $(ask_yes_or_no "Do you want to continue anyway?") ]]
+    msg_box "It seems like 'Webmin' is already installed.\nIf you continue, Webmin will get removed now."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
+        check_command apt purge webmin -y
+        msg_box "Webmin was successfully uninstalled."
         exit
     fi
 fi
