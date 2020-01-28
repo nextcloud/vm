@@ -7,19 +7,21 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-print_text_in_color "$ICyan" "Installing Netdata..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
 DEBUG=0
 debug_mode
 
-# Download and install Netdata
+# Check if adminer ist already installed
+print_text_in_color "$ICyan" "Checking if Netdata is already installed..."
 if [ -d /etc/netdata ]
 then
-msg_box "Netdata seems to be installed.
-We will now remove Netdata and reinstall the latest stable version"
+    msg_box "It seems like 'Netdata' is already installed.\nIf you continue, Netdata and all Netdata-settings will get deleted."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
+    then
+        exit
+    fi
     # Uninstall
     if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
     then
@@ -35,22 +37,18 @@ We will now remove Netdata and reinstall the latest stable version"
     groupdel netdata
     gpasswd -d netdata adm
     gpasswd -d netdata proxy
-    # Install
-    is_process_running dpkg
-    is_process_running apt
-    apt update -q4 & spinner_loading
-    curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
-    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh all --dont-wait --no-updates --stable-channel
-    rm -f $SCRIPTS/kickstart.sh
-else
-    # Install
-    is_process_running dpkg
-    is_process_running apt
-    apt update -q4 & spinner_loading
-    curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
-    sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh all --dont-wait --no-updates --stable-channel
-    rm -f $SCRIPTS/kickstart.sh
+    rm -r /etc/netdata
+    exit
 fi
+
+# Install
+print_text_in_color "$ICyan" "Installing Netdata..."
+is_process_running dpkg
+is_process_running apt
+apt update -q4 & spinner_loading
+curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
+sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh all --dont-wait --no-updates --stable-channel
+rm -f $SCRIPTS/kickstart.sh
 
 # Check Netdata instructions after script is done
 any_key "Please check information above and press any key to continue..."
