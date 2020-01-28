@@ -5,7 +5,9 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+unset COLLABORA_INSTALL
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -31,10 +33,6 @@ then
 fi
 
 print_text_in_color "$ICyan" "(Re-)Installing Collabora..."
-
-NC_UPDATE=1 && COLLABORA_INSTALL=1 
-unset NC_UPDATE
-unset COLLABORA_INSTALL
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 Collabora
