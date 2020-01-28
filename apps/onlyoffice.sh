@@ -9,8 +9,6 @@ NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextc
 unset NC_UPDATE
 unset OO_INSTALL
 
-print_text_in_color "$ICyan" "Installing OnlyOffice..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -22,6 +20,19 @@ root_check
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
+
+# Check if onlyoffice ist already installed
+print_text_in_color "$ICyan" "Checking if Onlyoffice is already installed..."
+if does_this_docker_exist 'onlyoffice/documentserver' || does_this_docker_exist 'collabora/code'
+then
+    msg_box "It seems like 'Onlyoffice' or 'Collabora' is already installed.\nIf you continue, Collabora will be deleted and Onlyoffice (re-)installed."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
+    then
+        exit
+    fi
+fi
+
+print_text_in_color "$ICyan" "(Re-)Installing OnlyOffice..."
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 OnlyOffice
