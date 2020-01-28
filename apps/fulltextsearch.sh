@@ -6,11 +6,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset ES_INSTALL
-
-print_text_in_color "$ICyan" "Installing Elastic Search & Full Text Search on Nextcloud..."
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -20,6 +16,23 @@ debug_mode
 
 # Must be root
 root_check
+
+# Check if fulltextsearch ist already installed
+print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
+if does_this_docker_exist "$nc_fts"
+then
+    msg_box "It seems like 'Fulltextsearch' is already installed.\nIf you continue, Fulltextsearch will get reinstalled."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
+    then
+        exit
+    fi
+fi
+
+print_text_in_color "$ICyan" "Installing Elastic Search & Full Text Search on Nextcloud..."
+
+NC_UPDATE=1 && ES_INSTALL=1 
+unset NC_UPDATE
+unset ES_INSTALL
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
