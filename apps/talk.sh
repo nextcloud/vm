@@ -27,6 +27,7 @@ then
     then
         exit
     else
+        print_text_in_color "$ICyan" "Uninstalling Talk and resetting all settings..."
         occ_command_no_check config:app:delete spreed stun_servers
         occ_command_no_check config:app:delete spreed turn_servers
         occ_command_no_check app:remove spreed
