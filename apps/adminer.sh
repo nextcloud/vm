@@ -40,7 +40,7 @@ then
         a2disconf adminer.conf
         rm $ADMINER_CONF
         rm $ADMINERDIR/adminer.php
-        apt purge adminer -y
+        check_command apt purge adminer -y
         if ! restart_webserver
         then
             msg_box "Apache2 could not restart...\nThe script will exit."
