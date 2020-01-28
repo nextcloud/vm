@@ -20,11 +20,20 @@ root_check
 
 # Check if adminer ist already installed
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
-if is_this_installed coturn
+install_if_not jq
+if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ]
 then
-    msg_box "It seems like 'Talk' is already installed."
-    if [[ "no" == $(ask_yes_or_no "Do you want to continue anyway?") ]]
+    msg_box "It seems like 'Talk' is already installed.\nIf you continue, Talk and all Talk-settings get deleted."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
+        exit
+    else
+        occ_command_no_check config:app:delete spreed stun_servers
+        occ_command_no_check config:app:delete spreed turn_servers
+        occ_command_no_check app:remove spreed
+        rm $TURN_CONF
+        check_command apt purge coturn -y
+        msg_box "Talk was successfully uninstalled and all settings were resetted."
         exit
     fi
 fi
