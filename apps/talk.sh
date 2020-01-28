@@ -18,7 +18,7 @@ debug_mode
 # Must be root
 root_check
 
-# Check if adminer ist already installed
+# Check if adminer is already installed
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
 if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ]
 then
