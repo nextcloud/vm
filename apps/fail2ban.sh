@@ -32,7 +32,7 @@ then
         check_command apt purge fail2ban -y
         rm /etc/fail2ban/filter.d/nextcloud.conf
         rm /etc/fail2ban/jail.local
-        msg_box "Adminer was successfully uninstalled and all settings were resetted."
+        msg_box "Fail2Ban was successfully uninstalled and all settings were resetted."
         exit
     fi
 fi
