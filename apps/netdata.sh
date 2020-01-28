@@ -23,6 +23,7 @@ then
         exit
     fi
     # Uninstall
+    killall -9 netdata
     if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
     then
         if ! yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
