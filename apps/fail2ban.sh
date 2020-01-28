@@ -18,7 +18,7 @@ debug_mode
 # Check if root
 root_check
 
-# Check if fail2ban ist already installed
+# Check if fail2ban is already installed
 print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
 if is_this_installed fail2ban
 then
