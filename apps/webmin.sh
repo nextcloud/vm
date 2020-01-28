@@ -24,11 +24,10 @@ then
     if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
         exit
-    else
-        check_command apt purge webmin -y
-        msg_box "Webmin was successfully uninstalled."
-        exit
     fi
+    check_command apt purge webmin -y
+    msg_box "Webmin was successfully uninstalled."
+    exit
 fi
 
 print_text_in_color "$ICyan" "Installing Webmin..."
