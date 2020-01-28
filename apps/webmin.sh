@@ -16,7 +16,7 @@ debug_mode
 # Check if root
 root_check
 
-# Check if webmin ist already installed
+# Check if webmin is already installed
 print_text_in_color "$ICyan" "Checking if Webmin is already installed..."
 if is_this_installed webmin
 then
