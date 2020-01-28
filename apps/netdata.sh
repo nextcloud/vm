@@ -17,7 +17,7 @@ debug_mode
 print_text_in_color "$ICyan" "Checking if Netdata is already installed..."
 if [ -d /etc/netdata ]
 then
-    msg_box "It seems like 'Netdata' is already installed.\nIf you continue, Netdata and all Netdata-settings will get deleted."
+    msg_box "It seems like 'Netdata' is already installed.\nIf you continue, Netdata will get deleted."
     if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
     then
         exit
