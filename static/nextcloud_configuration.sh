@@ -19,7 +19,7 @@ root_check
 # Configure Nextcloud
 choice=$(whiptail --title "Nextcloud Configuration" --checklist "Which settings do you want to configure?\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
-"Share-folder" "(Nextcloud shares from other users will appear in a folder named 'Shared')" OFF \
+"Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
 "Disable workspaces" "(disable top notes in GUI)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
