@@ -42,7 +42,7 @@ case "$choice" in
             # Install jq if not already installed
             install_if_not jq
             # Check if text is enabled
-            if ! occ_command_no_check app:list --output=json | jq -e '.enabled | .text' > /dev/null
+            if ! occ_command app:list --output=json | jq -e '.enabled | .text' > /dev/null
                 then
                 msg_box "The text app isn't enabled - unable to disable rich workspaces."
                 sleep 1
