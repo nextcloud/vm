@@ -398,9 +398,6 @@ case *"$choice" in
     ;;
 esac
 
-# Nextcloud configuration
-bash $SCRIPTS/configuration.sh
-
 # Let's Encrypt
 msg_box "The following script will install a trusted
 SSL certificate through Let's Encrypt.
@@ -420,6 +417,9 @@ else
     any_key "Press any key to continue..."
 fi
 clear
+
+# Nextcloud configuration
+bash $SCRIPTS/configuration.sh
 
 # Install apps
 bash $SCRIPTS/apps.sh
