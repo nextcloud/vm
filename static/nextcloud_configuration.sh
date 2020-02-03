@@ -20,7 +20,7 @@ root_check
 choice=$(whiptail --title "Nextcloud Configuration" --checklist "Which settings do you want to configure?\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
 "Share-folder" "(Nextcloud shares from other users will appear in a folder named 'Shared')" OFF \
-"Disable rich workspaces" "(disable top notes in GUI)" OFF 3>&1 1>&2 2>&3)
+"Disable workspaces" "(disable top notes in GUI)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"CookieLifetime"*)
@@ -35,7 +35,7 @@ case "$choice" in
             msg_box "All new Nextcloud shares from other users will appear in the 'Shared' folder from now on."
         fi
     ;;&
-    *"Disable rich workspaces"*)
+    *"Disable workspaces"*)
         msg_box "This option will will disable a feature named 'rich workspaces'. It will disable the top notes in GUI."
         if [[ "yes" == $(ask_yes_or_no "Do you want to disable rich workspaces?") ]]
         then
