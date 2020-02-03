@@ -241,6 +241,7 @@ download_static_script change_db_pass
 download_static_script nextcloud
 download_static_script update-config
 download_static_script apps
+download_static_script configuration
 download_le_script activate-ssl
 if home_sme_server
 then
@@ -377,8 +378,7 @@ clear
 choice=$(whiptail --title "Extra configurations" --checklist "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
-"Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
-"CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF 3>&1 1>&2 2>&3)
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 3>&1 1>&2 2>&3)
 
 case *"$choice" in
     *"Security"*)
@@ -394,13 +394,12 @@ case *"$choice" in
         clear
         run_static_script automatic_updates
     ;;&
-    *"CookieLifetime"*)
-        clear
-        run_static_script cookielifetime
-    ;;&
     *)
     ;;
 esac
+
+# Nextcloud configuration
+bash $SCRIPTS/configuration.sh
 
 # Let's Encrypt
 msg_box "The following script will install a trusted
