@@ -36,15 +36,25 @@ case "$choice" in
         fi
     ;;&
     *"Disable rich workspaces"*)
-        msg_box "This option will will disable a feature names 'rich workspaces'. It will disable the top notes in GUI."
+        msg_box "This option will will disable a feature named 'rich workspaces'. It will disable the top notes in GUI."
         if [[ "yes" == $(ask_yes_or_no "Do you want to disable rich workspaces?") ]]
         then
-            occ_command config:app:set text workspace_available --value=0
-            msg_box "Rich workspaces are now disabled."
+            # Install jq if not already installed
+            install_if_not jq
+            # Check if text is enabled
+            if ! occ_command_no_check app:list --output=json | jq -e '.enabled | .text' > /dev/null
+                then
+                msg_box "The text app isn't enabled - unable to disable rich workspaces."
+                sleep 1
+            else
+                # Disable workspaces
+                occ_command config:app:set text workspace_available --value=0
+                msg_box "Rich workspaces are now disabled."
+            fi
+            
         fi
     ;;&
     *)
     ;;
 esac
-
 exit
