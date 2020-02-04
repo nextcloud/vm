@@ -380,7 +380,7 @@ choice=$(whiptail --title "Extra configurations" --checklist "Choose what you wa
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF 3>&1 1>&2 2>&3)
 
-case *"$choice" in
+case "$choice" in
     *"Security"*)
         clear
         run_static_script security
