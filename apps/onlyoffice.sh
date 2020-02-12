@@ -29,9 +29,10 @@ then
     then
         exit
     fi
+    print_text_in_color "$ICyan" "(Re-)Installing OnlyOffice..."
+else
+    print_text_in_color "$ICyan" "Installing OnlyOffice..."
 fi
-
-print_text_in_color "$ICyan" "(Re-)Installing OnlyOffice..."
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 OnlyOffice
