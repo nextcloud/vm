@@ -16,16 +16,6 @@ debug_mode
 # Check if root
 root_check
 
-# Check that the script can see the external IP (apache fails otherwise)
-check_external_ip() {
-if [ -z "$WANIP4" ]
-then
-    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again."
-    sleep 3
-    exit 1
-fi
-}
-
 # Check if adminer is already installed
 print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
@@ -35,6 +25,7 @@ then
     then
         exit
     fi
+    # Check that the script can see the external IP (apache fails otherwise)
     check_external_ip
     print_text_in_color "$ICyan" "Uninstalling Adminer and resetting all settings..."
     a2disconf adminer.conf
@@ -55,6 +46,7 @@ print_text_in_color "$ICyan" "Installing and securing Adminer..."
 # Warn user about HTTP/2
 http2_warn Adminer
 
+# Check that the script can see the external IP (apache fails otherwise)
 check_external_ip
 
 # Check distrobution and version
