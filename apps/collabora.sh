@@ -28,9 +28,10 @@ then
     then
         exit
     fi
+    print_text_in_color "$ICyan" "(Re-)Installing Collabora..."
+else
+    print_text_in_color "$ICyan" "Installing Collabora..."
 fi
-
-print_text_in_color "$ICyan" "(Re-)Installing Collabora..."
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 Collabora
