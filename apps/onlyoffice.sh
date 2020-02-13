@@ -25,12 +25,12 @@ lowest_compatible_nc 13
 
 ## Onlyoffice for NC 18.0.1 onwwards
 # Check for the NC-version
-NCVERSION="$(occ_command config:system:get version | sed 's/^\(.*\..*\..*\)\..*/\1/')"
-NCVERSION="${NCVERSION//./}"
+CURRENTNCVERSION="$(occ_command config:system:get version | sed 's/^\(.*\..*\..*\)\..*/\1/')"
+CURRENTNCVERSION="${CURRENTNCVERSION//./}"
 
 # Check if onlyoffice is already installed
 print_text_in_color "$ICyan" "Checking if Onlyoffice or Collabora is already installed..."
-if [ "$NCVERSION" -ge 1801 ] && ! does_this_docker_exist 'onlyoffice/documentserver' || ! does_this_docker_exist 'collabora/code'
+if [ "$CURRENTNCVERSION" -ge 1801 ] && ! does_this_docker_exist 'onlyoffice/documentserver' || ! does_this_docker_exist 'collabora/code'
 then
     install_if_not jq
     if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
