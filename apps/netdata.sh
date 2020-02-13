@@ -17,21 +17,33 @@ debug_mode
 print_text_in_color "$ICyan" "Checking if Netdata is already installed..."
 if [ -d /etc/netdata ]
 then
-    msg_box "It seems like 'Netdata' is already installed.\nIf you continue, Netdata will get deleted."
-    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
-    then
-        exit
-    fi
-    # Uninstall
-    check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
-    check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
-    rm $SCRIPTS/netdata-uninstaller.sh
-    msg_box "Netdata was successfully uninstalled."
-    exit
+    choice=$(whiptail --radiolist "It seems like 'Netdata' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Uninstall Netdata" "" ON \
+    "Reinstall Netdata" "" OFF 3>&1 1>&2 2>&3)
+    
+    case "$choice" in
+        "Uninstall Netdata")
+            print_text_in_color "$ICyan" "Uninstalling Netdata..."
+            check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
+            check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
+            rm $SCRIPTS/netdata-uninstaller.sh
+            msg_box "Netdata was successfully uninstalled."
+            exit
+        ;;
+        "Reinstall Netdata")
+            print_text_in_color "$ICyan" "Reinstalling Netdata..."
+            check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
+            check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
+            rm $SCRIPTS/netdata-uninstaller.sh
+        ;;
+        *)
+        ;;
+    esac
+else
+    print_text_in_color "$ICyan" "Installing Netdata..."
 fi
 
 # Install
-print_text_in_color "$ICyan" "Installing Netdata..."
 is_process_running dpkg
 is_process_running apt
 apt update -q4 & spinner_loading
