@@ -23,6 +23,47 @@ root_check
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
+## Onlyoffice for NC 18.0.1 onwwards
+# Check for the NC-version
+NCVERSION="$(occ_command config:system:get version | sed 's/^\(.*\..*\..*\)\..*/\1/')"
+NCVERSION="${NCVERSION//./}"
+
+# Check if onlyoffice is already installed
+print_text_in_color "$ICyan" "Checking if Onlyoffice or Collabora is already installed..."
+if [ "$NCVERSION" -ge 1801 ] && ! does_this_docker_exist 'onlyoffice/documentserver' || ! does_this_docker_exist 'collabora/code'
+then
+    install_if_not jq
+    if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
+    then
+        choice=$(whiptail --radiolist "It seems like 'Onlyoffice' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+        "Uninstall Onlyoffice" "" ON \
+        "Reinstall Onlyoffice" "" OFF 3>&1 1>&2 2>&3)
+    
+        case "$choice" in
+            "Uninstall Onlyoffice")
+                print_text_in_color "$ICyan" "Uninstalling Onlyoffice..."
+                occ_command_no_check app:remove onlyoffice
+                occ_command app:remove documentserver_community
+                msg_box "Onlyoffice was successfully uninstalled."
+                exit
+            ;;
+            "Reinstall Onlyoffice")
+                print_text_in_color "$ICyan" "Reinstalling Onlyoffice..."
+                occ_command_no_check app:remove onlyoffice
+                occ_command app:remove documentserver_community
+            ;;
+            *)
+            ;;
+        esac
+    else
+        print_text_in_color "$ICyan" "Installing OnlyOffice..."
+    fi
+    install_and_enable_app onlyoffice
+    install_and_enable_app documentserver_community
+    msg_box "Onlyoffice was successfully installed."
+    exit
+fi
+
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
