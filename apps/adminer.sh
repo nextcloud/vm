@@ -20,28 +20,42 @@ root_check
 print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
 then
-    msg_box "It seems like 'Adminer' is already installed.\nIf you continue, Adminer and all Adminer-settings get deleted."
-    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
-    then
-        exit
-    fi
-    # Check that the script can see the external IP (apache fails otherwise)
-    check_external_ip
-    print_text_in_color "$ICyan" "Uninstalling Adminer and resetting all settings..."
-    a2disconf adminer.conf
-    rm $ADMINER_CONF
-    rm $ADMINERDIR/adminer.php
-    check_command apt purge adminer -y
-    if ! restart_webserver
-    then
-        msg_box "Apache2 could not restart...\nThe script will exit."
-        exit
-    fi
-    msg_box "Adminer was successfully uninstalled and all settings were resetted."
-    exit
+    choice=$(whiptail --radiolist "It seems like 'Adminer' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Uninstall Adminer" "" ON \
+    "Reinstall Adminer" "" OFF 3>&1 1>&2 2>&3)
+    
+    case "$choice" in
+        "Uninstall Adminer")
+            # Check that the script can see the external IP (apache fails otherwise)
+            check_external_ip
+            print_text_in_color "$ICyan" "Uninstalling Adminer and resetting all settings..."
+            a2disconf adminer.conf
+            rm $ADMINER_CONF
+            rm $ADMINERDIR/adminer.php
+            check_command apt purge adminer -y
+            if ! restart_webserver
+            then
+                msg_box "Apache2 could not restart...\nThe script will exit."
+                exit
+            fi
+            msg_box "Adminer was successfully uninstalled and all settings were resetted."
+            exit
+        ;;
+        "Reinstall Adminer")
+            # Check that the script can see the external IP (apache fails otherwise)
+            check_external_ip
+            print_text_in_color "$ICyan" "Reinstalling and securing Adminer..."
+            a2disconf adminer.conf
+            rm $ADMINER_CONF
+            rm $ADMINERDIR/adminer.php
+            check_command apt purge adminer -y
+        ;;
+        *)
+        ;;
+    esac
+else
+    print_text_in_color "$ICyan" "Installing and securing Adminer..."
 fi
-
-print_text_in_color "$ICyan" "Installing and securing Adminer..."
 
 # Warn user about HTTP/2
 http2_warn Adminer
