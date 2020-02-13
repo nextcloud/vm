@@ -59,7 +59,7 @@ then
         print_text_in_color "$ICyan" "Installing OnlyOffice..."
     fi
     install_and_enable_app onlyoffice
-    install_and_enable_app documentserver_community
+    install_and_enable_app documentserver_community && spinner_loading
     msg_box "Onlyoffice was successfully installed."
     exit
 fi
