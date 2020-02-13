@@ -28,9 +28,10 @@ then
     then
         exit
     fi
+    print_text_in_color "$ICyan" "(Re-)Installing Elastic Search & Full Text Search on Nextcloud..."
+else
+    print_text_in_color "$ICyan" "Installing Elastic Search & Full Text Search on Nextcloud..."
 fi
-
-print_text_in_color "$ICyan" "(Re-)Installing Elastic Search & Full Text Search on Nextcloud..."
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
