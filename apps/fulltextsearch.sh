@@ -17,6 +17,9 @@ debug_mode
 # Must be root
 root_check
 
+# Variables
+nc_fts="ark74/nc_fts"
+
 # Check if fulltextsearch is already installed
 print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
 if does_this_docker_exist "$nc_fts"
