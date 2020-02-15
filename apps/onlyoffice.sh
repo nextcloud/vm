@@ -86,7 +86,7 @@ then
     then
 msg_box "It seems like Nextcloud is not installed or that you don't use https on:
 $NEXTCLOUDDOMAIN.
-You can simply run this script again and choose to reinstall OnlyOffice by running these commands:
+You can simply run this script again and choose to reinstall OnlyOffice after enabling SSL by running these commands:
 sudo -i
 additional_apps"    
     fi
