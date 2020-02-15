@@ -33,8 +33,8 @@ then
 fi
 
 # Check if onlyoffice is already installed
-print_text_in_color "$ICyan" "Checking if Onlyoffice or Collabora is already installed..."
-if [ "$CURRENTNCVERSION" -ge 18001 ] && ! does_this_docker_exist 'onlyoffice/documentserver' || ! does_this_docker_exist 'collabora/code'
+print_text_in_color "$ICyan" "Checking if Onlyoffice is already installed..."
+if [ "$CURRENTNCVERSION" -ge 18001 ] && ! does_this_docker_exist 'onlyoffice/documentserver'
 then
     install_if_not jq
     if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
@@ -62,9 +62,34 @@ then
     else
         print_text_in_color "$ICyan" "Installing OnlyOffice..."
     fi
+    # Test RAM size (2GB min) + CPUs (min 2)
+    ram_check 2 OnlyOffice
+    cpu_check 2 OnlyOffice
+    
+    # Check if Collabora is previously installed
+    # If yes, then stop and prune the docker container
+    docker_prune_this 'collabora/code'
+
+    # Disable RichDocuments (Collabora App) if activated
+    if [ -d "$NC_APPS_PATH"/richdocuments ]
+    then
+        occ_command app:remove richdocuments
+    fi
+    
     install_and_enable_app onlyoffice
     install_and_enable_app documentserver_community
     msg_box "Onlyoffice was successfully installed."
+    
+    # Check if Nextcloud is installed with SSL
+    NEXTCLOUDDOMAIN=$(occ_command config:system:get overwrite.cli.url)
+    if ! curl -s "$NEXTCLOUDDOMAIN"/status.php | grep -q 'installed":true'
+    then
+msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+$NEXTCLOUDDOMAIN.
+You can simply run this script again and choose to reinstall OnlyOffice by running these commands:
+sudo -i
+additional_apps"    
+    fi
     exit
 fi
 
