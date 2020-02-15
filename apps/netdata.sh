@@ -27,6 +27,8 @@ then
             check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
             check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
             rm $SCRIPTS/netdata-uninstaller.sh
+            # Remove /etc/netdata, to be able to install it automatically the next run. But it is not needed, because the uninstall script handles this.
+            #rm -r /etc/netdata
             msg_box "Netdata was successfully uninstalled."
             exit
         ;;
