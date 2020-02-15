@@ -23,18 +23,9 @@ root_check
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
-## Onlyoffice for NC 18.0.1 onwwards
-# Check for the NC-version
-CURRENTNCVERSION="$(occ_command config:system:get version | sed 's/^\(.*\..*\..*\)\..*/\1/')"
-CURRENTNCVERSION="${CURRENTNCVERSION//./}"
-if [ "$CURRENTNCVERSION" -lt "9999" ]
-then
-    CURRENTNCVERSION="$(sed 's/./&0/3' <<<"$CURRENTNCVERSION")"
-fi
-
 # Check if onlyoffice is already installed
 print_text_in_color "$ICyan" "Checking if Onlyoffice is already installed..."
-if [ "$CURRENTNCVERSION" -ge 18001 ] && ! does_this_docker_exist 'onlyoffice/documentserver'
+if version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
 then
     install_if_not jq
     if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
