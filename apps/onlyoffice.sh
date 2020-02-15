@@ -78,17 +78,18 @@ then
     
     install_and_enable_app onlyoffice
     install_and_enable_app documentserver_community
-    msg_box "Onlyoffice was successfully installed."
     
     # Check if Nextcloud is installed with SSL
-    NEXTCLOUDDOMAIN=$(occ_command config:system:get overwrite.cli.url)
-    if ! curl -s "$NEXTCLOUDDOMAIN"/status.php | grep -q 'installed":true'
+    NEXTCLOUDDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url)
+    if curl -s "$NEXTCLOUDDOMAIN"/status.php | grep -q 'installed":true'
     then
-msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-$NEXTCLOUDDOMAIN.
+        msg_box "Onlyoffice was successfully installed."
+    else
+msg_box "Onlyoffice was successfully installed.
+But it seems like Nextcloud is not installed or that you don't use https on your Nextcloud-domain.
 You can simply run this script again and choose to reinstall OnlyOffice after enabling SSL by running these commands:
 sudo -i
-additional_apps"    
+additional_apps"   
     fi
     exit
 fi
