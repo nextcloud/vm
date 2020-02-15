@@ -21,14 +21,69 @@ root_check
 print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
 if does_this_docker_exist "$nc_fts"
 then
-    msg_box "It seems like 'Fulltextsearch' is already installed.\nIf you continue, Fulltextsearch will get reinstalled."
-    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
-    then
-        exit
-    fi
-    print_text_in_color "$ICyan" "(Re-)Installing Elastic Search & Full Text Search on Nextcloud..."
+    choice=$(whiptail --radiolist "It seems like 'Fulltextsearch' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Uninstall Fulltextsearch" "" ON \
+    "Reinstall Fulltextsearch" "" OFF 3>&1 1>&2 2>&3)
+
+    case "$choice" in
+        "Uninstall Fulltextsearch")
+            print_text_in_color "$ICyan" "Uninstalling Fulltextsearch..."
+
+            # Remove nc_fts docker if installed
+            docker_prune_this "$nc_fts"
+
+            # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
+            if [ -d $NC_APPS_PATH/fulltextsearch ]
+            then
+                print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
+                sudo -u www-data php $NCPATH/occ fulltextsearch:reset
+                occ_command app:disable fulltextsearch
+                rm -rf $NC_APPS_PATH/fulltextsearch
+            fi
+            if [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
+            then
+                occ_command app:disable fulltextsearch_elasticsearch
+                rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
+            fi
+            if [ -d $NC_APPS_PATH/files_fulltextsearch ]
+            then
+                occ_command app:disable files_fulltextsearch
+                rm -rf $NC_APPS_PATH/files_fulltextsearch
+            fi
+            
+            msg_box "Fulltextsearch was successfully uninstalled."
+            exit
+        ;;
+        "Reinstall Fulltextsearch")
+            print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
+
+            # Remove nc_fts docker if installed
+            docker_prune_this "$nc_fts"
+
+            # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
+            if [ -d $NC_APPS_PATH/fulltextsearch ]
+            then
+                print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
+                sudo -u www-data php $NCPATH/occ fulltextsearch:reset
+                occ_command app:disable fulltextsearch
+                rm -rf $NC_APPS_PATH/fulltextsearch
+            fi
+            if [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
+            then
+                occ_command app:disable fulltextsearch_elasticsearch
+                rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
+            fi
+            if [ -d $NC_APPS_PATH/files_fulltextsearch ]
+            then
+                occ_command app:disable files_fulltextsearch
+                rm -rf $NC_APPS_PATH/files_fulltextsearch
+            fi
+        ;;
+        *)
+        ;;
+    esac
 else
-    print_text_in_color "$ICyan" "Installing Elastic Search & Full Text Search on Nextcloud..."
+    print_text_in_color "$ICyan" "Installing Fulltextsearch..."
 fi
 
 # Nextcloud 13 is required.
@@ -63,35 +118,11 @@ then
     deluser --group solr
 fi
 
-# Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-if [ -d $NC_APPS_PATH/fulltextsearch ]
-then
-    print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-    sudo -u www-data php $NCPATH/occ fulltextsearch:reset
-    occ_command app:disable fulltextsearch
-    rm -rf $NC_APPS_PATH/fulltextsearch
-fi
-if [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
-then
-    occ_command app:disable fulltextsearch_elasticsearch
-    rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
-fi
-if [ -d $NC_APPS_PATH/files_fulltextsearch ]
-then
-    occ_command app:disable files_fulltextsearch
-    rm -rf $NC_APPS_PATH/files_fulltextsearch
-fi
-
 # Check & install docker
 install_docker
 set_max_count
 mkdir -p "$RORDIR"
-if does_this_docker_exist "$nc_fts"
-then
-    docker_prune_this "$nc_fts"
-else
-    docker pull "$nc_fts"
-fi
+docker pull "$nc_fts"
 
 # Create configuration YML 
 cat << YML_CREATE > /opt/es/readonlyrest.yml
