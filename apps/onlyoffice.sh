@@ -17,7 +17,7 @@ debug_mode
 # Check if root
 root_check
 
-# Nextcloud 13 is required.
+# Nextcloud 18 is required.
 lowest_compatible_nc 18
 
 # Test RAM size (2GB min) + CPUs (min 2)
@@ -51,6 +51,7 @@ then
                 print_text_in_color "$ICyan" "Reinstalling Onlyoffice..."
                 occ_command_no_check app:remove onlyoffice
                 occ_command app:remove documentserver_community
+		docker_prune_this 'onlyoffice/documentserver'
             ;;
             *)
             ;;
@@ -119,6 +120,7 @@ sleep 2
 if install_and_enable_app documentserver_community
 then
     chown -R www-data:www-data "$NC_APPS_PATH"
+    occ_command config:app:set onlyoffice DocumentServerUrl --value=https://"$(occ_command_no_check config:system:get overwrite.cli.url)/"
     msg_box "Onlyoffice was successfully installed."
 fi
 
