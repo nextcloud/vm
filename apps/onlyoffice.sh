@@ -120,7 +120,7 @@ sleep 2
 if install_and_enable_app documentserver_community
 then
     chown -R www-data:www-data "$NC_APPS_PATH"
-    occ_command config:app:set onlyoffice DocumentServerUrl --value=https://"$(occ_command_no_check config:system:get overwrite.cli.url)/"
+    occ_command config:app:set onlyoffice DocumentServerUrl --value=https://"$(occ_command_no_check config:system:get overwrite.cli.url)apps/documentserver_community/"
     msg_box "Onlyoffice was successfully installed."
 fi
 
