@@ -273,7 +273,7 @@ chown root:root -R $SCRIPTS
 # Allow $UNIXUSER to run figlet script
 chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
 
-msg_box "This script will configure your Nextcloud and activate SSL.
+msg_box "This script will configure your Nextcloud and activate TLS.
 It will also do the following:
 
 - Generate new SSH keys for the server
@@ -400,15 +400,15 @@ esac
 
 # Let's Encrypt
 msg_box "The following script will install a trusted
-SSL certificate through Let's Encrypt.
+TLS certificate through Let's Encrypt.
 
-It's recommended to use SSL together with Nextcloud.
+It's recommended to use TLS (https) together with Nextcloud.
 Please open port 80 and 443 to this servers IP before you continue.
 
 More information can be found here:
 https://www.techandme.se/open-port-80-443/"
 
-if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
+if [[ "yes" == $(ask_yes_or_no "Do you want to install TLS?") ]]
 then
     bash $SCRIPTS/activate-ssl.sh
 else
