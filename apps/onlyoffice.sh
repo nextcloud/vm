@@ -53,14 +53,14 @@ then
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-            rm -rf "${CERTFILES/$SUBDOMAIN:?}/"
+            rm -rf "$CERTFILES"/"$SUBDOMAIN"*
         fi
         # Remove Apache2 config
         if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
         then
             a2dissite "$SUBDOMAIN".conf
             restart_webserver
-            rm "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+            rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
         fi
         # Remove app
         occ_command_no_check app:remove onlyoffice
@@ -125,14 +125,14 @@ then
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-        rm -rf rm -rf "${CERTFILES/$SUBDOMAIN:?}/"
+        rm -rf "$CERTFILES"/"$SUBDOMAIN"*
     fi
     # Remove Apache2 config
     if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
     then
         a2dissite "$SUBDOMAIN".conf
         restart_webserver
-        rm "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
     # Remove app
     occ_command_no_check app:remove richdocuments
