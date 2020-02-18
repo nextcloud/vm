@@ -55,7 +55,7 @@ then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
             REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
             for remove in $REMOVE_OLD
-                do rm -rf "$REMOVE_OLD"
+                do rm -rf "$remove"
             done
         fi
         # Remove Apache2 config
@@ -130,7 +130,7 @@ then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
         REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
         for remove in $REMOVE_OLD
-            do rm -rf "$REMOVE_OLD"
+            do rm -rf "$remove"
         done
     fi
     # Remove Apache2 config
