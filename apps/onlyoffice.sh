@@ -38,8 +38,6 @@ To run this script again, just exectue 'sudo bash $SCRIPTS/apps.sh' and choose O
     exit
 fi
 
-
-
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
@@ -148,7 +146,7 @@ fi
 # Install OnlyOffice
 msg_box "We will now install OnlyOffice.
 
-Please note that it might take very long time to install it, and you will not see any progress bar.
+Please note that it might take very long time to install the app, and you will not see any progress bar.
 
 Please be paitent, don't abort."
 install_and_enable_app onlyoffice
