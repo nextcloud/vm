@@ -27,9 +27,32 @@ cpu_check 2 OnlyOffice
 # Get the latest packages
 apt update -q4 & spinner_loading
 
-# Check if onlyoffice is already installed
-print_text_in_color "$ICyan" "Checking if Onlyoffice is already installed..."
-if version_gt "$CURRENTVERSION" "18.0.1" && ! does_this_docker_exist 'onlyoffice/documentserver'
+# Check if Onlyoffice is installed using the old method
+if does_this_docker_exist 'onlyoffice/documentserver'
+then
+    if version_gt "$CURRENTVERSION" "18.0.1"
+    then
+        print_text_in_color "$ICyan" "Your server is compatible with the new way of installing Onlyoffice. We will now remove the old docker and install the app from Nextcloud instead."
+        # Remove docker image
+        docker_prune_this 'onlyoffice/documentserver'
+        # Revoke LE
+        SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+        then
+            certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+        fi
+        # Remove Apache2 config
+        if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+        then
+            a2dissite "$SUBDOMAIN".conf
+            restart_webserver
+            rm "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+        fi
+        # Remove app
+        occ_command_no_check app:remove onlyoffice
+    fi
+# Check if onlyoffice is installe using the new method
+elif version_gt "$CURRENTVERSION" "18.0.1" && ! does_this_docker_exist 'onlyoffice/documentserver'
 then
     install_if_not jq
     if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
@@ -41,24 +64,18 @@ then
         case "$choice" in
             "Uninstall Onlyoffice")
                 print_text_in_color "$ICyan" "Uninstalling Onlyoffice..."
-                occ_command_no_check app:remove onlyoffice
                 occ_command app:remove documentserver_community
-		docker_prune_this 'onlyoffice/documentserver'
                 msg_box "Onlyoffice was successfully uninstalled."
                 exit
             ;;
             "Reinstall Onlyoffice")
                 print_text_in_color "$ICyan" "Reinstalling Onlyoffice..."
-                occ_command_no_check app:remove onlyoffice
                 occ_command app:remove documentserver_community
-		docker_prune_this 'onlyoffice/documentserver'
             ;;
             *)
             ;;
         esac
 	fi
-else
-        print_text_in_color "$ICyan" "Installing OnlyOffice..."
 fi
 
 # Check if Nextcloud is installed with SSL
@@ -120,7 +137,7 @@ sleep 2
 if install_and_enable_app documentserver_community
 then
     chown -R www-data:www-data "$NC_APPS_PATH"
-    occ_command config:app:set onlyoffice DocumentServerUrl --value=https://"$(occ_command_no_check config:system:get overwrite.cli.url)apps/documentserver_community/"
+    occ_command config:app:set onlyoffice DocumentServerUrl --value="$(occ_command_no_check config:system:get overwrite.cli.url)apps/documentserver_community/"
     msg_box "Onlyoffice was successfully installed."
 fi
 
