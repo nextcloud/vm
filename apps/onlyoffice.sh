@@ -53,7 +53,10 @@ then
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-            rm -rf "${CERTFILES:?/}"/"${SUBDOMAIN:?}"*
+            REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+            for remove in $REMOVE_OLD
+                do rm -rf $REMOVE_OLD
+            done
         fi
         # Remove Apache2 config
         if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
@@ -125,7 +128,10 @@ then
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-        rm -rf "${CERTFILES:?/}"/"${SUBDOMAIN:?}"*
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf $REMOVE_OLD
+        done
     fi
     # Remove Apache2 config
     if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
