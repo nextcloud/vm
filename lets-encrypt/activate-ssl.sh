@@ -95,7 +95,7 @@ check_command download_le_script test-new-config
 install_certbot
 
 #Fix issue #28
-tls_conf="/etc/apache2/sites-available/"$TLSDOMAIN.conf""
+tls_conf="$SITES_AVAILABLE"/"$TLSDOMAIN.conf"
 
 # Check if "$tls.conf" exists, and if, then delete
 if [ -f "$tls_conf" ]
@@ -109,7 +109,7 @@ then
     touch "$tls_conf"
     print_text_in_color "$IGreen" "$tls_conf was successfully created."
     sleep 2
-    cat << tls_CREATE > "$tls_conf"
+    cat << TLS_CREATE > "$tls_conf"
 <VirtualHost *:80>
     RewriteEngine On
     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
@@ -181,7 +181,7 @@ then
 ### EXTRAS ###
     SSLUseStapling On
     SSLStaplingCache "shmcb:logs/ssl_stapling(32768)"
-SSL_CREATE
+TLS_CREATE
 fi
 
 # Check if PHP-FPM is installed and if not, then remove PHP-FPM related lines from config
