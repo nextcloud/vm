@@ -24,13 +24,26 @@ lowest_compatible_nc 18
 ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
 
+# Check if Nextcloud is installed with SSL
+if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
+then
+msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
+
+You easily activate TLS (HTTPS) by running the Let's Encrypt script found in $SCRIPTS.
+More info here: https://bit.ly/37wRCin
+
+To run this script again, just exectue 'sudo bash $SCRIPTS/apps.sh' and choose OnlyOffice."
+    exit
+fi
+
 # Get the latest packages
 apt update -q4 & spinner_loading
 
 # Check if Onlyoffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
-    if version_gt "$CURRENTVERSION" "18.0.1"
+    # Greater than 18.0.0 is 18.0.1 which is required
+    if version_gt "$CURRENTVERSION" "18.0.0"
     then
         print_text_in_color "$ICyan" "Your server is compatible with the new way of installing Onlyoffice. We will now remove the old docker and install the app from Nextcloud instead."
         # Remove docker image
@@ -39,7 +52,8 @@ then
         SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
-            certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+            yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+            rm -rf "$CERTFILES/$SUBDOMAIN"
         fi
         # Remove Apache2 config
         if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
@@ -51,8 +65,8 @@ then
         # Remove app
         occ_command_no_check app:remove onlyoffice
     fi
-# Check if onlyoffice is installe using the new method
-elif version_gt "$CURRENTVERSION" "18.0.1" && ! does_this_docker_exist 'onlyoffice/documentserver'
+# Check if Onlyoffice is installed using the new method
+elif version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
 then
     install_if_not jq
     if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
@@ -76,17 +90,12 @@ then
             ;;
         esac
 	fi
-fi
+else
+msg_box "You need to run at least Nextcloud 18.0.1 to be able to run Onlyoffice. Please upgrade using the built in script:
 
-# Check if Nextcloud is installed with SSL
-if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
-then
-msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
+'sudo bash $SCRIPTS/update.sh'
 
-You easily activate TLS (HTTPS) by running the Let's Encrypt script found in $SCRIPTS.
-More info here: https://bit.ly/37wRCin
-
-To run this script again, just exectue 'sudo bash $SCRIPTS/additional_apps.sh' and choose OnlyOffice."
+You can also buy support directly in our shop: https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
     exit
 fi
 
@@ -105,25 +114,28 @@ then
     fi
 fi
 
-# Check if OnlyOffice or Collabora is previously installed
-# If yes, then stop and prune the docker container
-docker_prune_this 'onlyoffice/documentserver'
-docker_prune_this 'collabora/code'
-
-# Disable RichDocuments (Collabora App) if activated
-if [ -d "$NC_APPS_PATH"/richdocuments ]
+# Check if collabora is installed and remove every trace of it
+if does_this_docker_exist 'collabora/code'
 then
-    occ_command app:remove richdocuments
-fi
-
-# Disable OnlyOffice if activated
-if [ -d "$NC_APPS_PATH"/onlyoffice ]
-then
-    occ_command app:remove onlyoffice
-    if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
+    msg_box "You cant run both Collabora and Onlyoffice on the same VM. We will now remove Collabora from the server."
+    # Remove docker image
+    docker_prune_this 'collabora/code'
+    # Revoke LE
+    SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
-        occ_command app:remove documentserver_community
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+        rm -rf "$CERTFILES/$SUBDOMAIN"
     fi
+    # Remove Apache2 config
+    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+    then
+        a2dissite "$SUBDOMAIN".conf
+        restart_webserver
+        rm "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+    fi
+    # Remove app
+    occ_command_no_check app:remove richdocuments
 fi
 
 # Install OnlyOffice
