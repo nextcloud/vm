@@ -4,9 +4,12 @@
 
 # shellcheck disable=2034,2059
 true
-
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+unset OO_INSTALL
+
+print_text_in_color "$ICyan" "Installing OnlyOffice..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -20,77 +23,9 @@ root_check
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
-# Check if onlyoffice is already installed
-print_text_in_color "$ICyan" "Checking if Onlyoffice is already installed..."
-if does_this_docker_exist 'onlyoffice/documentserver'
-then
-    choice=$(whiptail --radiolist "It seems like 'OnlyOffice' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Uninstall OnlyOffice" "" ON \
-    "Reinstall OnlyOffice" "" OFF 3>&1 1>&2 2>&3)
-
-    case "$choice" in
-        "Uninstall OnlyOffice")
-            print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
-            # Check if OnlyOffice is previously installed
-            # If yes, then stop and prune the docker container
-            docker_prune_this 'onlyoffice/documentserver'
-
-            # Disable OnlyOffice (Collabora App) if activated
-            if [ -d "$NC_APPS_PATH"/onlyoffice ]
-            then
-                occ_command app:remove onlyoffice
-            fi
-            
-            msg_box "OnlyOffice was successfully uninstalled."
-            exit
-        ;;
-        "Reinstall OnlyOffice")
-            print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
-            
-            # Check if OnlyOffice is previously installed
-            # If yes, then stop and prune the docker container
-            docker_prune_this 'onlyoffice/documentserver'
-        ;;
-        *)
-        ;;
-    esac
-else
-    print_text_in_color "$ICyan" "Installing OnlyOffice..."
-fi
-
-# Check if OnlyOffice or Collabora is previously installed
-# If yes, then stop and prune the docker container
-docker_prune_this 'collabora/code'
-
-# remove OnlyOffice-documentserver if activated
-install_if_not jq
-if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
-then
-    msg_box "Removing OnlyOffice-documentserver: $1\nYou will be given the option to abort when you hit OK."
-    any_key "Press any key to continue. Press CTRL+C to abort"
-    occ_command app:remove documentserver_community
-fi
-
-# Disable RichDocuments (Collabora App) if activated
-if [ -d "$NC_APPS_PATH"/richdocuments ]
-then
-    occ_command app:remove richdocuments
-fi
-
-# Disable OnlyOffice (Collabora App) if activated
-if [ -d "$NC_APPS_PATH"/onlyoffice ]
-then
-    occ_command app:remove onlyoffice
-fi
-
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
-
-# shellcheck source=src/lib.sh
-NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset OO_INSTALL
 
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
@@ -138,6 +73,23 @@ check_open_port 443 "$SUBDOMAIN"
 
 # Install Docker
 install_docker
+
+# Check if OnlyOffice or Collabora is previously installed
+# If yes, then stop and prune the docker container
+docker_prune_this 'onlyoffice/documentserver'
+docker_prune_this 'collabora/code'
+
+# Disable RichDocuments (Collabora App) if activated
+if [ -d "$NC_APPS_PATH"/richdocuments ]
+then
+    occ_command app:remove richdocuments
+fi
+
+# Disable OnlyOffice (Collabora App) if activated
+if [ -d "$NC_APPS_PATH"/onlyoffice ]
+then
+    occ_command app:remove onlyoffice
+fi
 
 # Install Onlyoffice docker
 docker pull onlyoffice/documentserver:latest
