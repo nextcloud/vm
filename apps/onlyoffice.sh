@@ -54,7 +54,7 @@ then
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
             REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-            for remove in "$REMOVE_OLD"
+            for remove in $REMOVE_OLD
                 do rm -rf "$REMOVE_OLD"
             done
         fi
@@ -129,7 +129,7 @@ then
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
         REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-        for remove in "$REMOVE_OLD"
+        for remove in $REMOVE_OLD
             do rm -rf "$REMOVE_OLD"
         done
     fi
