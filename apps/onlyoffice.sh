@@ -17,6 +17,8 @@ debug_mode
 # Check if root
 root_check
 
+print_text_in_color "$ICyan" "Running the OnlyOffice install script..."
+
 # Nextcloud 18 is required.
 lowest_compatible_nc 18
 
@@ -36,8 +38,7 @@ To run this script again, just exectue 'sudo bash $SCRIPTS/apps.sh' and choose O
     exit
 fi
 
-# Get the latest packages
-apt update -q4 & spinner_loading
+
 
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
@@ -45,7 +46,7 @@ then
     # Greater than 18.0.0 is 18.0.1 which is required
     if version_gt "$CURRENTVERSION" "18.0.0"
     then
-        print_text_in_color "$ICyan" "Your server is compatible with the new way of installing OnlyOffice. We will now remove the old docker and install the app from Nextcloud instead."
+        msg_box "Your server is compatible with the new way of installing OnlyOffice. We will now remove the old docker and install the app from Nextcloud instead."
         # Remove docker image
         docker_prune_this 'onlyoffice/documentserver'
         # Revoke LE
