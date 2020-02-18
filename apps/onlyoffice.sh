@@ -79,10 +79,10 @@ then
             "Uninstall OnlyOffice")
                 print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
                 occ_command app:remove documentserver_community
-                msg_box "Onlyoffice was successfully uninstalled."
+                msg_box "OnlyOffice was successfully uninstalled."
                 exit
             ;;
-            "Reinstall Onlyoffice")
+            "Reinstall OnlyOffice")
                 print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
                 occ_command app:remove documentserver_community
             ;;
