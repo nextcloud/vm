@@ -95,7 +95,7 @@ check_command download_le_script test-new-config
 install_certbot
 
 #Fix issue #28
-tls_conf="$SITES_AVAILABLE"/"$TLSDOMAIN.conf"
+tls_conf="$SITES_AVAILABLE/$TLSDOMAIN.conf"
 
 # Check if "$tls.conf" exists, and if, then delete
 if [ -f "$tls_conf" ]
