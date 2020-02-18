@@ -39,13 +39,13 @@ fi
 # Get the latest packages
 apt update -q4 & spinner_loading
 
-# Check if Onlyoffice is installed using the old method
+# Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
     # Greater than 18.0.0 is 18.0.1 which is required
     if version_gt "$CURRENTVERSION" "18.0.0"
     then
-        print_text_in_color "$ICyan" "Your server is compatible with the new way of installing Onlyoffice. We will now remove the old docker and install the app from Nextcloud instead."
+        print_text_in_color "$ICyan" "Your server is compatible with the new way of installing OnlyOffice. We will now remove the old docker and install the app from Nextcloud instead."
         # Remove docker image
         docker_prune_this 'onlyoffice/documentserver'
         # Revoke LE
@@ -53,7 +53,7 @@ then
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-            rm -rf "$CERTFILES/$SUBDOMAIN"
+            rm -rf "${CERTFILES/$SUBDOMAIN:?}/"
         fi
         # Remove Apache2 config
         if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
@@ -65,25 +65,25 @@ then
         # Remove app
         occ_command_no_check app:remove onlyoffice
     fi
-# Check if Onlyoffice is installed using the new method
+# Check if OnlyOffice is installed using the new method
 elif version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
 then
     install_if_not jq
     if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
     then
-        choice=$(whiptail --radiolist "It seems like 'Onlyoffice' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-        "Uninstall Onlyoffice" "" OFF \
-        "Reinstall Onlyoffice" "" ON 3>&1 1>&2 2>&3)
+        choice=$(whiptail --radiolist "It seems like 'OnlyOffice' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+        "Uninstall OnlyOffice" "" OFF \
+        "Reinstall OnlyOffice" "" ON 3>&1 1>&2 2>&3)
 
         case "$choice" in
-            "Uninstall Onlyoffice")
-                print_text_in_color "$ICyan" "Uninstalling Onlyoffice..."
+            "Uninstall OnlyOffice")
+                print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
                 occ_command app:remove documentserver_community
                 msg_box "Onlyoffice was successfully uninstalled."
                 exit
             ;;
             "Reinstall Onlyoffice")
-                print_text_in_color "$ICyan" "Reinstalling Onlyoffice..."
+                print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
                 occ_command app:remove documentserver_community
             ;;
             *)
@@ -91,7 +91,7 @@ then
         esac
 	fi
 else
-msg_box "You need to run at least Nextcloud 18.0.1 to be able to run Onlyoffice. Please upgrade using the built in script:
+msg_box "You need to run at least Nextcloud 18.0.1 to be able to run OnlyOffice. Please upgrade using the built in script:
 
 'sudo bash $SCRIPTS/update.sh'
 
@@ -117,7 +117,7 @@ fi
 # Check if collabora is installed and remove every trace of it
 if does_this_docker_exist 'collabora/code'
 then
-    msg_box "You cant run both Collabora and Onlyoffice on the same VM. We will now remove Collabora from the server."
+    msg_box "You can't run both Collabora and OnlyOffice on the same VM. We will now remove Collabora from the server."
     # Remove docker image
     docker_prune_this 'collabora/code'
     # Revoke LE
@@ -125,7 +125,7 @@ then
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-        rm -rf "$CERTFILES/$SUBDOMAIN"
+        rm -rf rm -rf "${CERTFILES/$SUBDOMAIN:?}/"
     fi
     # Remove Apache2 config
     if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
@@ -139,7 +139,7 @@ then
 fi
 
 # Install OnlyOffice
-msg_box "We will now install Onlyoffice.
+msg_box "We will now install OnlyOffice.
 
 Please note that it might take very long time to install it, and you will not see any progress bar.
 
@@ -150,7 +150,7 @@ if install_and_enable_app documentserver_community
 then
     chown -R www-data:www-data "$NC_APPS_PATH"
     occ_command config:app:set onlyoffice DocumentServerUrl --value="$(occ_command_no_check config:system:get overwrite.cli.url)apps/documentserver_community/"
-    msg_box "Onlyoffice was successfully installed."
+    msg_box "OnlyOffice was successfully installed."
 fi
 
 # Just make sure the script exits
