@@ -9,8 +9,6 @@ NC_UPDATE=1 && TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nex
 unset NC_UPDATE
 unset TURN_INSTALL
 
-print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -19,6 +17,40 @@ debug_mode
 
 # Must be root
 root_check
+
+# Check if adminer is already installed
+print_text_in_color "$ICyan" "Checking if Talk is already installed..."
+if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ]
+then
+    choice=$(whiptail --radiolist "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Uninstall Nextcloud Talk" "" ON \
+    "Reinstall Nextcloud Talk" "" OFF 3>&1 1>&2 2>&3)
+    
+    case "$choice" in
+        "Uninstall Nextcloud Talk")
+            print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
+            occ_command_no_check config:app:delete spreed stun_servers
+            occ_command_no_check config:app:delete spreed turn_servers
+            occ_command_no_check app:remove spreed
+            rm $TURN_CONF
+            apt purge coturn -y
+            msg_box "Nextcloud Talk was successfully uninstalled and all settings were resetted."
+            exit
+        ;;
+        "Reinstall Nextcloud Talk")
+            print_text_in_color "$ICyan" "Reinstalling Nextcloud Talk..."
+            occ_command_no_check config:app:delete spreed stun_servers
+            occ_command_no_check config:app:delete spreed turn_servers
+            occ_command_no_check app:remove spreed
+            rm $TURN_CONF
+            apt purge coturn -y
+        ;;
+        *)
+        ;;
+    esac
+else
+    print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
+fi
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
