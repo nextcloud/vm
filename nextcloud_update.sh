@@ -97,12 +97,8 @@ fi
 # Update Netdata
 if [ -d /etc/netdata ]
 then
-    if network_ok
-    then
-        check_command curl_to_dir https://github.com/netdata/netdata/blob/master/packaging/installer netdata-updater.sh $SCRIPTS
-        check_command bash $SCRIPTS/netdata-updater.sh
-        rm $SCRIPTS/netdata-updater.sh
-    fi
+    NETDATA_UPDATER_PATH=$(find /usr -name "netdata-updater.sh")
+    bash "$NETDATA_UPDATER_PATH"
 fi
 
 # Update Redis PHP extension
