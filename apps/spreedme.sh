@@ -8,6 +8,8 @@ true
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 
+print_text_in_color "$ICyan" "Installing Spreed.ME..."
+
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -26,19 +28,6 @@ root_check
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
-
-# Check if spreedme is already installed
-print_text_in_color "$ICyan" "Checking if Spreed.me is already installed..."
-if [ -d "$SNAPDIR" ]
-then
-    msg_box "It seems like 'Spreed.me' is already installed.\nIf you continue, it will be reinstalled."
-    if [[ "no" == $(ask_yes_or_no "Do you really want to continue?") ]]
-    then
-        exit
-    fi
-fi
-
-print_text_in_color "$ICyan" "(Re-)Installing Spreed.ME..."
 
 # Install if missing
 install_if_not apache2
@@ -103,11 +92,9 @@ cat << VHOST > "$VHOST"
     ProxyPass http://127.0.0.1:8080/webrtc
     ProxyPassReverse /webrtc
 </Location>
-
 <Location /webrtc/ws>
     ProxyPass ws://127.0.0.1:8080/webrtc/ws
 </Location>
-
     ProxyVia On
     ProxyPreserveHost On
     RequestHeader set X-Forwarded-Proto 'https' env=HTTPS
@@ -125,12 +112,10 @@ restart_webserver
 if ! systemctl restart snap.spreedme.spreed-webrtc.service
 then
 msg_box "Something is wrong, the installation did not finish correctly.
-
 Please report this to $ISSUES"
     exit 1
 else
 msg_box "Success! Spreed.ME is now installed and configured.
-
 You may have to change SPREED_WEBRTC_ORIGIN in:
 (sudo nano) $NCPATH/apps/spreedme/config/config.php"
     exit 0
