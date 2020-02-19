@@ -240,6 +240,8 @@ download_static_script setup_secure_permissions_nextcloud
 download_static_script change_db_pass
 download_static_script nextcloud
 download_static_script update-config
+download_static_script apps
+download_static_script configuration
 download_le_script activate-ssl
 if home_sme_server
 then
@@ -271,7 +273,7 @@ chown root:root -R $SCRIPTS
 # Allow $UNIXUSER to run figlet script
 chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
 
-msg_box "This script will configure your Nextcloud and activate SSL.
+msg_box "This script will configure your Nextcloud and activate TLS.
 It will also do the following:
 
 - Generate new SSH keys for the server
@@ -373,53 +375,40 @@ sleep 3
 clear
 
 # Extra configurations
-whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "Extra configurations" --checklist "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
-"Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
-"CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF 2>results
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 3>&1 1>&2 2>&3)
 
-while read -r -u 9 choice
-do
-    case $choice in
-        "Security")
-            clear
-            run_static_script security
-        ;;
-	
-        "Static IP")
-            clear
-            run_static_script static_ip
-            rm -f "$SCRIPTS"/lib.sh
-        ;;
-
-	"Automatic updates")
-            clear
-            run_static_script automatic_updates
-        ;;
-		
-        CookieLifetime)
-            clear
-            run_static_script cookielifetime
-        ;;
-
-        *)
-        ;;
-    esac
-done 9< results
-rm -f results
+case *"$choice" in
+    *"Security"*)
+        clear
+        run_static_script security
+    ;;&
+    *"Static IP"*)
+        clear
+        run_static_script static_ip
+        rm -f "$SCRIPTS"/lib.sh
+    ;;&
+    *"Automatic updates"*)
+        clear
+        run_static_script automatic_updates
+    ;;&
+    *)
+    ;;
+esac
 
 # Let's Encrypt
 msg_box "The following script will install a trusted
-SSL certificate through Let's Encrypt.
+TLS certificate through Let's Encrypt.
 
-It's recommended to use SSL together with Nextcloud.
+It's recommended to use TLS (https) together with Nextcloud.
 Please open port 80 and 443 to this servers IP before you continue.
 
 More information can be found here:
 https://www.techandme.se/open-port-80-443/"
 
-if [[ "yes" == $(ask_yes_or_no "Do you want to install SSL?") ]]
+if [[ "yes" == $(ask_yes_or_no "Do you want to install TLS?") ]]
 then
     bash $SCRIPTS/activate-ssl.sh
 else
@@ -429,89 +418,11 @@ else
 fi
 clear
 
-# Install Apps
-whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Fail2ban" "(Extra Bruteforce protection)   " OFF \
-"Adminer" "(PostgreSQL GUI)       " OFF \
-"Netdata" "(Real-time server monitoring)       " OFF \
-"Collabora" "(Online editing [2GB RAM])   " OFF \
-"OnlyOffice" "(Online editing [2GB RAM])   " OFF \
-"Bitwarden" "(External password manager)   " OFF \
-"FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
-"PreviewGenerator" "(Pre-generate previews)   " OFF \
-"LDAP" "(Windows Active directory)   " OFF \
-"Talk" "(Nextcloud Video calls and chat)   " OFF \
-"SMB-mount" "(Connect to SMB-shares from your local network)   " OFF 2>results
+# Nextcloud configuration
+bash $SCRIPTS/configuration.sh
 
-while read -r -u 11 choice
-do
-    case $choice in
-        Fail2ban)
-            clear
-            run_app_script fail2ban
-        ;;
-
-        Adminer)
-            clear
-            run_app_script adminer
-        ;;
-
-        Netdata)
-            clear
-            run_app_script netdata
-        ;;
-
-        OnlyOffice)
-            clear
-            run_app_script onlyoffice
-        ;;
-
-        Collabora)
-            clear
-            run_app_script collabora
-        ;;
-
-        Bitwarden)
-            clear
-            run_app_script tmbitwarden
-        ;;
-
-        FullTextSearch)
-            clear
-           run_app_script fulltextsearch
-        ;;
-
-        PreviewGenerator)
-            clear
-           run_app_script previewgenerator
-        ;;
-
-        LDAP)
-            clear
-	    print_text_in_color "$ICyan" "Installing LDAP..."
-            if install_and_enable_app user_ldap
-	    then
-	        msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
-	    else msg_box "LDAP installation failed."
-	    fi
-        ;;
-
-        Talk)
-            clear
-            run_app_script talk
-        ;;
-
-        "SMB-mount")
-            clear
-            run_app_script smbmount
-        ;;
-	
-        *)
-        ;;
-    esac
-done 11< results
-rm -f results
-clear
+# Install apps
+bash $SCRIPTS/apps.sh
 
 # Change passwords
 # CLI USER
@@ -540,9 +451,11 @@ if [[ "$NCADMIN" ]]
 then
     print_text_in_color "$ICyan" "Deleting $NCADMIN..."
     occ_command user:delete "$NCADMIN"
+    sleep 2
 fi
 clear
 
+# Add default notifications
 notify_admin_gui \
 "Please setup SMTP" \
 "Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin."
@@ -624,12 +537,6 @@ fi
 mesg n
 
 ROOTNEWPROFILE
-
-# Download all app scripts
-print_text_in_color "$ICyan" "Downloading all the latest app scripts to $SCRIPTS/apps..."
-mkdir -p $SCRIPTS/apps
-cd $SCRIPTS/apps
-check_command curl -s https://codeload.github.com/nextcloud/vm/tar.gz/master | tar -xz --strip=2 vm-master/apps
 
 # Upgrade system
 print_text_in_color "$ICyan" "System will now upgrade..."

@@ -96,7 +96,7 @@
             <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
 
             <p>It's recomended to <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a>
-            The easiest way to get a real SSL certificate is to run the Lets' Encrypt script included on this server.<br>
+            The easiest way to get a real TLS certificate is to run the Lets' Encrypt script included on this server.<br>
             Just run 'sudo bash /var/scripts/activate-ssl.sh' from your terminal and follow the instructions.
             <h3>
                 <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6yn7ePiqQz3_Mpi" target="_blank">Login details</a>

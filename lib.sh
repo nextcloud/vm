@@ -71,10 +71,6 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 AUT_UPDATES_TIME="18"
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
-# OnlyOffice URL (onlyoffice.sh)
-[ -n "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-# Nextcloud Main Domain (onlyoffice.sh)
-[ -n "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Collabora Docker URL (collabora.sh
 [ -n "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain (collabora.sh)
@@ -1089,7 +1085,7 @@ if lshw -c system | grep -q NUC8i3BEH
 then
     if lshw -c memory | grep -q BLS16G4
     then
-        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81
+        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81 || lshw -c disk | grep -q "Samsung SSD 860"
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi

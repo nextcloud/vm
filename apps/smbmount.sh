@@ -19,6 +19,13 @@ root_check
 # Install cifs-utils
 install_if_not cifs-utils
 
+# Make sure, that name resolution works
+install_if_not winbind
+if [ "$(grep "^hosts:" /etc/nsswitch.conf | grep wins)" == "" ]
+then
+    sed -i '/^hosts/ s/$/ wins/' /etc/nsswitch.conf
+fi
+
 # Secure fstab
 if [ "$(stat -c %a /etc/fstab)" != "600" ]
 then
@@ -39,7 +46,7 @@ fi
 # Enter SMB-server and Share-name
 while true
 do
-    SERVER_SHARE_NAME=$(whiptail --inputbox "Please enter the server and Share-name like this:\n//Server/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SERVER_SHARE_NAME=$(whiptail --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
     then
         msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again."
@@ -90,7 +97,7 @@ do
         if [[ ! $(findmnt -M "$SMBSHARES/$count") ]]
         then
             # If not remove this line from fstab
-            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint: you might fix the connection problem by enabling SMB3 on your SMB-server."
+            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint:\n- you might fix the connection problem by enabling SMB3 on your SMB-server.\n- You could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.\n- Please also make sure, that 'ping IP-address' of your SMB-Server from your Nextcloud-instance works."
             sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
             break
         else
@@ -117,7 +124,7 @@ then
     msg_box "It seems like you have not created any SMB-share."
     return
 fi
-args=(whiptail --title "Mount SMB-shares" --checklist --separate-output "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "Mount SMB-shares" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 # Find out which SMB-shares are available
 while  [ $count -le 3 ]
@@ -228,7 +235,7 @@ then
     return
 fi
 # Check which SMB-shares are available
-args=(whiptail --title "Delete SMB-mounts" --checklist --separate-output "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "Delete SMB-mounts" --checklist "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le 3 ]
 do
@@ -267,30 +274,38 @@ return
 while true
 do
     # Main menu
-    SMB_MOUNT=$(whiptail --title "SMB-share" --radiolist  "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "SMB-share" --radiolist "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Add a SMB-mount" "(and mount/connect it)" ON \
     "Mount SMB-shares" "(connect SMB-shares)" OFF \
     "Show all SMB-mounts" "(show detailed information about the SMB-mounts)" OFF \
     "Unmount SMB-shares" "(disconnect SMB-shares)" OFF \
-    "Delete SMB-mounts" "(and unmount/disconnect them)" OFF 3>&1 1>&2 2>&3)
+    "Delete SMB-mounts" "(and unmount/disconnect them)" OFF \
+    "Exit SMB-share" "(exit this script)" OFF 3>&1 1>&2 2>&3)
 
-    if [ "$SMB_MOUNT" == "Add a SMB-mount" ]
-    then
-        add_mount
-    elif [ "$SMB_MOUNT" == "Mount SMB-shares" ]
-    then
-        mount_shares
-    elif [ "$SMB_MOUNT" == "Show all SMB-mounts" ]
-    then
-        show_all_mounts
-    elif [ "$SMB_MOUNT" == "Unmount SMB-shares" ]
-    then
-        unmount_shares
-    elif [ "$SMB_MOUNT" == "Delete SMB-mounts" ]
-    then
-        delete_mounts
-    else
-        break
-    fi
+    case "$choice" in
+        "Add a SMB-mount")
+            add_mount
+        ;;
+        "Mount SMB-shares")
+            mount_shares
+        ;;
+        "Show all SMB-mounts")
+            show_all_mounts
+        ;;
+        "Unmount SMB-shares")
+            unmount_shares
+        ;;
+        "Delete SMB-mounts")
+            delete_mounts
+        ;;
+        "Exit SMB-share")
+            break
+        ;;
+        "")
+            break
+        ;;
+        *)
+        ;;
+    esac
 done
 exit
