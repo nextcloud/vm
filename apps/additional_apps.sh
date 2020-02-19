@@ -33,51 +33,61 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 case "$choice" in
     *"Fail2ban"*)
         clear
+        print_text_in_color "$ICyan" "Downloading Fail2ban.sh..."
         run_app_script fail2ban
     ;;&
     *"Adminer"*)
         clear
+        print_text_in_color "$ICyan" "Downloading Adminer.sh..."
         run_app_script adminer
     ;;&
     *"Netdata"*)
         clear
+        print_text_in_color "$ICyan" "Downloading Netdata.sh..."
         run_app_script netdata
     ;;&
     *"OnlyOffice"*)
         clear
+        print_text_in_color "$ICyan" "Downloading OnlyOffice.sh..."
         run_app_script onlyoffice
     ;;&
     *"Collabora"*)
         clear
+        print_text_in_color "$ICyan" "Downloading Collabora.sh..."
         run_app_script collabora
     ;;&
     *"Bitwarden"*)
         clear
+        print_text_in_color "$ICyan" "Downloading Bitwarden.sh..."
         run_app_script tmbitwarden
     ;;&
     *"FullTextSearch"*)
         clear
-       run_app_script fulltextsearch
+        print_text_in_color "$ICyan" "Downloading FullTextSearch.sh..."
+        run_app_script fulltextsearch
     ;;&
     *"PreviewGenerator"*)
         clear
-       run_app_script previewgenerator
+        print_text_in_color "$ICyan" "Downloading PreviewGenerator.sh..."
+        run_app_script previewgenerator
     ;;&
     *"LDAP"*)
         clear
-	print_text_in_color "$ICyan" "Installing LDAP..."
+        print_text_in_color "$ICyan" "Installing LDAP..."
         if install_and_enable_app user_ldap
-	then
-	    msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
-	else msg_box "LDAP installation failed."
-	fi
+    then
+        msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
+    else msg_box "LDAP installation failed."
+    fi
     ;;&
     *"Talk"*)
         clear
+        print_text_in_color "$ICyan" "Downloading Talk.sh..."
         run_app_script talk
     ;;&
     *"SMB-mount"*)
         clear
+        print_text_in_color "$ICyan" "Downloading SMB-mount.sh..."
         run_app_script smbmount
     ;;&
     *)
