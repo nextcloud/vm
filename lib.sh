@@ -930,10 +930,10 @@ if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
 else
-msg_box "It appears that something went wrong with the update. 
-Please report this to $ISSUES"
-occ_command -V
-exit
+msg_box "Your current version are still not compatible with the version required ("$1") to run this script. 
+Please try again."
+    occ_command -V
+    exit
 fi
 }
 
