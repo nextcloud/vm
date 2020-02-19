@@ -13,6 +13,9 @@ true
 DEBUG=0
 debug_mode
 
+# Must be root
+root_check
+
 # Check if Netdata is already installed
 print_text_in_color "$ICyan" "Checking if Netdata is already installed..."
 if [ -d /etc/netdata ]
