@@ -33,7 +33,26 @@ then
             # Check if Collabora is previously installed
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
-
+            
+            # Revoke LE
+            SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+            then
+                yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+                REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+                for remove in $REMOVE_OLD
+                    do rm -rf "$remove"
+                done
+            fi
+            
+            # Remove Apache2 config
+            if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+            then
+                a2dissite "$SUBDOMAIN".conf
+                restart_webserver
+                rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+            fi
+            
             # Disable RichDocuments (Collabora App) if activated
             if [ -d "$NC_APPS_PATH"/richdocuments ]
             then
@@ -50,6 +69,25 @@ then
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
             
+                        # Revoke LE
+            SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+            then
+                yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+                REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+                for remove in $REMOVE_OLD
+                    do rm -rf "$remove"
+                done
+            fi
+            
+            # Remove Apache2 config
+            if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+            then
+                a2dissite "$SUBDOMAIN".conf
+                restart_webserver
+                rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+            fi
+            
             # Disable RichDocuments (Collabora App) if activated
             if [ -d "$NC_APPS_PATH"/richdocuments ]
             then
@@ -65,7 +103,29 @@ fi
 
 # Check if OnlyOffice is previously installed
 # If yes, then stop and prune the docker container
-docker_prune_this 'onlyoffice/documentserver'
+if does_this_docker_exist 'onlyoffice/documentserver'
+then
+    docker_prune_this 'onlyoffice/documentserver'
+    
+    # Revoke LE
+    SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+    then
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf "$remove"
+        done
+    fi
+    
+    # Remove Apache2 config
+    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+    then
+        a2dissite "$SUBDOMAIN".conf
+        restart_webserver
+        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+    fi
+fi
 
 # remove OnlyOffice-documentserver if activated
 if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
