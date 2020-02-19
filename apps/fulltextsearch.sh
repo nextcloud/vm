@@ -6,7 +6,9 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+unset ES_INSTALL
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -16,9 +18,6 @@ debug_mode
 
 # Must be root
 root_check
-
-# Variables
-nc_fts="ark74/nc_fts"
 
 # Check if fulltextsearch is already installed
 print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
@@ -98,11 +97,6 @@ then
     msg_box "It seems there is no Nextcloud server installed, please check your installation."
     exit 1
 fi
-
-# Installing ES
-NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset ES_INSTALL
 
 # Disable and remove Nextant + Solr
 if [ -d "$NC_APPS_PATH"/nextant ]
