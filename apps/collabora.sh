@@ -80,7 +80,7 @@ fi
 ram_check 2 Collabora
 cpu_check 2 Collabora
 
-# shellcheck source=src/lib.sh
+# shellcheck source=lib.sh
 NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset COLLABORA_INSTALL
