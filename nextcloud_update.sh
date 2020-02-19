@@ -97,12 +97,11 @@ fi
 # Update Netdata
 if [ -d /etc/netdata ]
 then
-    if [ -f /usr/src/netdata.git/netdata-updater.sh ]
+    if network_ok
     then
-        run_app_script netdata
-    elif [ -f /usr/libexec/netdata-updater.sh ]
-    then
-        bash /usr/libexec/netdata-updater.sh
+        check_command curl_to_dir https://github.com/netdata/netdata/blob/master/packaging/installer netdata-updater.sh $SCRIPTS
+        check_command bash $SCRIPTS/netdata-updater.sh
+        rm $SCRIPTS/netdata-updater.sh
     fi
 fi
 
