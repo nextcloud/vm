@@ -27,7 +27,7 @@ then
     case "$choice" in
         "Uninstall Webmin")
             print_text_in_color "$ICyan" "Uninstalling Webmin..."
-            check_command apt purge webmin -y
+            check_command apt --purge autoremove -y webmin
             msg_box "Webmin was successfully uninstalled."
             exit
         ;;
