@@ -33,11 +33,7 @@ then
             rm $ADMINER_CONF
             rm $ADMINERDIR/adminer.php
             check_command apt purge adminer -y
-            if ! restart_webserver
-            then
-                msg_box "Apache2 could not restart...\nThe script will exit."
-                exit
-            fi
+            restart_webserver
             msg_box "Adminer was successfully uninstalled and all settings were resetted."
             exit
         ;;
