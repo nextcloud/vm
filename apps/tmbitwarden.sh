@@ -19,10 +19,19 @@ root_check
 
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
-if [ -d "root/bwdata/docker" ]
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
-    msg_box "It seems like 'Bitwarden' is already installed.\nYou cannot run this script twice, because you would loose all your passwords."
-    exit 1
+    if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
+    then
+        if is_this_installed apache2
+        then
+            if [ -d /root/bwdata ]
+            then
+                msg_box "It seems like 'Bitwarden' is already installed.\nYou cannot run this script twice, because you would loose all your passwords."
+                exit 1
+            fi
+        fi
+    fi
 fi
 
 print_text_in_color "$ICyan" "Installing Bitwarden password manager..."
