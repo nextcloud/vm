@@ -68,13 +68,7 @@ fi
 docker_prune_this 'onlyoffice/documentserver'
 
 # remove OnlyOffice-documentserver if activated
-install_if_not jq
-if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
-then
-    msg_box "Removing OnlyOffice-documentserver: $1\nYou will be given the option to abort when you hit OK."
-    any_key "Press any key to continue. Press CTRL+C to abort"
-    occ_command app:remove documentserver_community
-fi
+occ_command app:remove documentserver_community
 
 # Disable OnlyOffice (Collabora App) if activated
 if [ -d "$NC_APPS_PATH"/onlyoffice ]
