@@ -91,6 +91,10 @@ fi
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 2 FullTextSearch
+cpu_check 2 FullTextSearch
+
 # Make sure there is an Nextcloud installation
 if ! [ "$(occ_command -V)" ]
 then
