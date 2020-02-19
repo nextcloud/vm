@@ -7,8 +7,6 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-print_text_in_color "$ICyan" "Installing and securing Adminer..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -18,16 +16,48 @@ debug_mode
 # Check if root
 root_check
 
+# Check if adminer is already installed
+print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
+if is_this_installed adminer
+then
+    choice=$(whiptail --radiolist "It seems like 'Adminer' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Uninstall Adminer" "" ON \
+    "Reinstall Adminer" "" OFF 3>&1 1>&2 2>&3)
+    
+    case "$choice" in
+        "Uninstall Adminer")
+            # Check that the script can see the external IP (apache fails otherwise)
+            check_external_ip
+            print_text_in_color "$ICyan" "Uninstalling Adminer and resetting all settings..."
+            a2disconf adminer.conf
+            rm $ADMINER_CONF
+            rm $ADMINERDIR/adminer.php
+            check_command apt purge adminer -y
+            restart_webserver
+            msg_box "Adminer was successfully uninstalled and all settings were resetted."
+            exit
+        ;;
+        "Reinstall Adminer")
+            # Check that the script can see the external IP (apache fails otherwise)
+            check_external_ip
+            print_text_in_color "$ICyan" "Reinstalling and securing Adminer..."
+            a2disconf adminer.conf
+            rm $ADMINER_CONF
+            rm $ADMINERDIR/adminer.php
+            check_command apt purge adminer -y
+        ;;
+        *)
+        ;;
+    esac
+else
+    print_text_in_color "$ICyan" "Installing and securing Adminer..."
+fi
+
 # Warn user about HTTP/2
 http2_warn Adminer
 
 # Check that the script can see the external IP (apache fails otherwise)
-if [ -z "$WANIP4" ]
-then
-    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again."
-    sleep 3
-    exit 1
-fi
+check_external_ip
 
 # Check distrobution and version
 check_distro_version
@@ -40,17 +70,13 @@ ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
 Alias /adminer.php $ADMINERDIR/adminer.php
-
 <Directory $ADMINERDIR>
-
 <IfModule mod_dir.c>
 DirectoryIndex adminer.php
 </IfModule>
 AllowOverride None
-
 # Only allow connections from localhost:
 Require ip $GATEWAY/24
-
 </Directory>
 ADMINER_CREATE
 
@@ -65,12 +91,9 @@ The script will exit."
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
 http://$ADDRESS/adminer.php
-
 You can download more plugins and get more information here: 
 https://www.adminer.org
-
 Your PostgreSQL connection information can be found in $NCPATH/config/config.php
-
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
 fi
