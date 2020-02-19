@@ -70,13 +70,17 @@ ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
 Alias /adminer.php $ADMINERDIR/adminer.php
+
 <Directory $ADMINERDIR>
+
 <IfModule mod_dir.c>
 DirectoryIndex adminer.php
 </IfModule>
 AllowOverride None
+
 # Only allow connections from localhost:
 Require ip $GATEWAY/24
+
 </Directory>
 ADMINER_CREATE
 
@@ -91,9 +95,12 @@ The script will exit."
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
 http://$ADDRESS/adminer.php
+
 You can download more plugins and get more information here: 
 https://www.adminer.org
+
 Your PostgreSQL connection information can be found in $NCPATH/config/config.php
+
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
 fi
