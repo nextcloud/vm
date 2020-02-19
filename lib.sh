@@ -931,7 +931,9 @@ then
     sleep 1
 else
 msg_box "Your current version are still not compatible with the version required ("$1") to run this script. 
-Please try again."
+
+To upgrade between major versions, please check this out: 
+https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
     occ_command -V
     exit
 fi
