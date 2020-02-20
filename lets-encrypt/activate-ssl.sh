@@ -18,11 +18,11 @@ root_check
 # Information
 msg_box "Important! Please read this:
 
-This script will install SSL from Let's Encrypt.
+This script will install TLS from Let's Encrypt.
 It's free of charge, and very easy to maintain.
 
 Before we begin the installation you need to have
-a domain that the SSL certs will be valid for.
+a domain that the TLS certs will be valid for.
 If you don't have a domain yet, get one before
 you run this script!
 
@@ -95,21 +95,21 @@ check_command download_le_script test-new-config
 install_certbot
 
 #Fix issue #28
-ssl_conf="/etc/apache2/sites-available/"$TLSDOMAIN.conf""
+tls_conf="$SITES_AVAILABLE/$TLSDOMAIN.conf"
 
-# Check if "$ssl.conf" exists, and if, then delete
-if [ -f "$ssl_conf" ]
+# Check if "$tls.conf" exists, and if, then delete
+if [ -f "$tls_conf" ]
 then
-    rm -f "$ssl_conf"
+    rm -f "$tls_conf"
 fi
 
-# Generate nextcloud_ssl_domain.conf
-if [ ! -f "$ssl_conf" ]
+# Generate nextcloud_tls_domain.conf
+if [ ! -f "$tls_conf" ]
 then
-    touch "$ssl_conf"
-    print_text_in_color "$IGreen" "$ssl_conf was successfully created."
+    touch "$tls_conf"
+    print_text_in_color "$IGreen" "$tls_conf was successfully created."
     sleep 2
-    cat << SSL_CREATE > "$ssl_conf"
+    cat << TLS_CREATE > "$tls_conf"
 <VirtualHost *:80>
     RewriteEngine On
     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
@@ -181,20 +181,20 @@ then
 ### EXTRAS ###
     SSLUseStapling On
     SSLStaplingCache "shmcb:logs/ssl_stapling(32768)"
-SSL_CREATE
+TLS_CREATE
 fi
 
 # Check if PHP-FPM is installed and if not, then remove PHP-FPM related lines from config
 if [ ! -f "$PHP_POOL_DIR"/nextcloud.conf ]
 then
-    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$ssl_conf"
-    sed -i "s|SetHandler.*|#|g" "$ssl_conf"
-    sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
+    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$tls_conf"
+    sed -i "s|SetHandler.*|#|g" "$tls_conf"
+    sed -i "s|</FilesMatch.*|#|g" "$tls_conf"
 elif ! is_this_installed php"$PHPVER"-fpm
 then
     sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
-    sed -i "s|SetHandler.*|#|g" "$ssl_conf"
-    sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
+    sed -i "s|SetHandler.*|#|g" "$tls_conf"
+    sed -i "s|</FilesMatch.*|#|g" "$tls_conf"
 fi
 
 #Generate certs and auto-configure if successful

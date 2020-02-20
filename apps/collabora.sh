@@ -5,11 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset COLLABORA_INSTALL
-
-print_text_in_color "$ICyan" "Installing Collabora..."
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -26,6 +22,115 @@ lowest_compatible_nc 13
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 Collabora
 cpu_check 2 Collabora
+
+# Check if collabora is already installed
+print_text_in_color "$ICyan" "Checking if Collabora is already installed..."
+if does_this_docker_exist 'collabora/code'
+then
+    choice=$(whiptail --radiolist "It seems like 'Collabora' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Uninstall Collabora" "" OFF \
+    "Reinstall Collabora" "" ON 3>&1 1>&2 2>&3)
+
+    case "$choice" in
+        "Uninstall Collabora")
+            print_text_in_color "$ICyan" "Uninstalling Collabora..."
+            # Check if Collabora is previously installed
+            # If yes, then stop and prune the docker container
+            docker_prune_this 'collabora/code'
+            
+            # Revoke LE
+            SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+            then
+                yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+                REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+                for remove in $REMOVE_OLD
+                    do rm -rf "$remove"
+                done
+            fi
+            
+            # Remove Apache2 config
+            if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+            then
+                a2dissite "$SUBDOMAIN".conf
+                restart_webserver
+                rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+            fi
+            
+            # Disable RichDocuments (Collabora App) if activated
+            if [ -d "$NC_APPS_PATH"/richdocuments ]
+            then
+                occ_command app:remove richdocuments
+            fi
+            
+            msg_box "Collabora was successfully uninstalled."
+            exit
+        ;;
+        "Reinstall Collabora")
+            print_text_in_color "$ICyan" "Reinstalling Collabora..."
+            
+            # Check if Collabora is previously installed
+            # If yes, then stop and prune the docker container
+            docker_prune_this 'collabora/code'
+            
+            # Disable RichDocuments (Collabora App) if activated
+            if [ -d "$NC_APPS_PATH"/richdocuments ]
+            then
+                occ_command app:remove richdocuments
+            fi
+        ;;
+        *)
+        ;;
+    esac
+else
+    print_text_in_color "$ICyan" "Installing Collabora..."
+fi
+
+# Check if OnlyOffice is previously installed
+# If yes, then stop and prune the docker container
+if does_this_docker_exist 'onlyoffice/documentserver'
+then
+    docker_prune_this 'onlyoffice/documentserver'
+    
+    # Revoke LE
+    SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+    then
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf "$remove"
+        done
+    fi
+    
+    # Remove Apache2 config
+    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+    then
+        a2dissite "$SUBDOMAIN".conf
+        restart_webserver
+        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+    fi
+fi
+
+# remove OnlyOffice-documentserver if activated
+if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
+then
+    any_key "OnlyOffice will get uninstalled. Press any key to continue. Press CTRL+C to abort"
+    occ_command app:remove documentserver_community
+fi
+
+# Disable OnlyOffice (Collabora App) if activated
+if [ -d "$NC_APPS_PATH"/onlyoffice ]
+then
+    occ_command app:remove onlyoffice
+fi
+
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+unset COLLABORA_INSTALL
 
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
@@ -59,23 +164,6 @@ check_open_port 443 "$SUBDOMAIN"
 
 # Install Docker
 install_docker
-
-# Check if OnlyOffice or Collabora is previously installed
-# If yes, then stop and prune the docker container
-docker_prune_this 'collabora/code'
-docker_prune_this 'onlyoffice/documentserver'
-
-# Disable RichDocuments (Collabora App) if activated
-if [ -d "$NC_APPS_PATH"/richdocuments ]
-then
-    occ_command app:remove richdocuments
-fi
-
-# Disable OnlyOffice (Collabora App) if activated
-if [ -d "$NC_APPS_PATH"/onlyoffice ]
-then
-    occ_command app:remove onlyoffice
-fi
 
 # Install Collabora docker
 docker pull collabora/code:latest
@@ -203,4 +291,5 @@ then
     any_key "Press any key to continue... "
 fi
 
+# Make sure the script exits
 exit

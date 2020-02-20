@@ -7,7 +7,6 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-print_text_in_color "$ICyan" "Installing Bitwarden password manager..."
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -17,6 +16,25 @@ debug_mode
 
 # Check if root
 root_check
+
+# Check if Bitwarden is already installed
+print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+then
+    if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
+    then
+        if is_this_installed apache2
+        then
+            if [ -d /root/bwdata ]
+            then
+                msg_box "It seems like 'Bitwarden' is already installed.\n\nYou cannot run this script twice, because you would loose all your passwords."
+                exit 1
+            fi
+        fi
+    fi
+fi
+
+print_text_in_color "$ICyan" "Installing Bitwarden password manager..."
 
 msg_box "Bitwarden is a password manager that is seperate from Nextcloud, though we provide this service because it's self hosted and secure.
 
@@ -37,7 +55,8 @@ msg_box "The necessary preparations to run expose Bitwarden to the internet are:
 if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
 then
 msg_box "OK, please do the necessary preparations before you run this script and then simply run it again once you're done.
-The script is located at: $SCRIPTS/apps/tmbitwarden.sh"
+
+To run this script again, execute $SCRIPTS/apps.sh and choose Bitwarden"
     exit
 else
     sleep 0.1
@@ -74,3 +93,5 @@ fi
 
 # Start Apache2
 check_command systemctl start apache2.service
+
+exit

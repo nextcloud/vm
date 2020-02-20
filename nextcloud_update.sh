@@ -97,12 +97,11 @@ fi
 # Update Netdata
 if [ -d /etc/netdata ]
 then
-    if [ -f /usr/src/netdata.git/netdata-updater.sh ]
+    print_text_in_color "$ICyan" "Updating Netdata..."
+    NETDATA_UPDATER_PATH="$(find /usr -name 'netdata-updater.sh')"
+    if [ -n "$NETDATA_UPDATER_PATH" ]
     then
-        run_app_script netdata
-    elif [ -f /usr/libexec/netdata-updater.sh ]
-    then
-        bash /usr/libexec/netdata-updater.sh
+        bash "$NETDATA_UPDATER_PATH"
     fi
 fi
 
@@ -309,25 +308,22 @@ fi
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    # Make sure maintenance:mode isn't activated (it will fail if it is)
     occ_command maintenance:mode --off
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
-    # occ command can not be used due to the check_command() function.
-    sudo -u www-data php $NCPATH/occ app:update --all
-#    UPDATED_APPS="$(sudo -u www-data php $NCPATH/occ app:update --all)"
+    UPDATED_APPS="$(occ_command_no_check app:update --all)"
 fi
 
 # Check which apps got updated
-#if [ -n "$UPDATED_APPS" ]
-#then
-#    print_text_in_color "$IGreen" "$UPDATED_APPS"
-#    notify_admin_gui \
-#    "You've got app updates!" \
-#    "$UPDATED_APPS"
-#else
-#    print_text_in_color "$IGreen" "Your apps are already up to date!"
-#fi
+if [ -n "$UPDATED_APPS" ]
+then
+    print_text_in_color "$IGreen" "$UPDATED_APPS"
+    notify_admin_gui \
+    "You've got app updates!" \
+    "$UPDATED_APPS"
+else
+    print_text_in_color "$IGreen" "Your apps are already up to date!"
+fi
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13

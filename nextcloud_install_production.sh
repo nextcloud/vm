@@ -157,51 +157,49 @@ You could still choose to only run on one disk though, which is not recommended,
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
 
-whiptail --title "Choose disk format" --radiolist --separate-output "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"2 Disks Auto" "(Automatically configured)            " on \
-"2 Disks Manual" "(Choose by yourself)            " off \
-"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)              " off 2>results
+choice=$(whiptail --title "Choose disk format" --radiolist "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"2 Disks Auto" "(Automatically configured)" ON \
+"2 Disks Manual" "(Choose by yourself)" OFF \
+"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" OFF 3>&1 1>&2 2>&3)
 
-choice=$(< results)
-    case "$choice" in
-        "2 Disks Auto")
-            run_static_script format-sdb
-        ;;
-        "2 Disks Manual")
-            run_static_script format-chosen
-        ;;
-        "1 Disk")
-            print_text_in_color "$IRed" "1 Disk setup chosen."
-            sleep 2
-        ;;
-        *)
-        ;;
-    esac
+case "$choice" in
+    "2 Disks Auto")
+        run_static_script format-sdb
+    ;;
+    "2 Disks Manual")
+        run_static_script format-chosen
+    ;;
+    "1 Disk")
+        print_text_in_color "$IRed" "1 Disk setup chosen."
+        sleep 2
+    ;;
+    *)
+    ;;
+esac
 fi
 
 # Set DNS resolver
-whiptail --title "Set DNS Resolver" --radiolist --separate-output "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Quad9" "(https://www.quad9.net/)            " on \
-"Cloudflare" "(https://www.cloudflare.com/dns/)            " off \
-"Local" "($GATEWAY + 149.112.112.112)              " off 2>results
+choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Quad9" "(https://www.quad9.net/)" ON \
+"Cloudflare" "(https://www.cloudflare.com/dns/)" OFF \
+"Local" "($GATEWAY + 149.112.112.112)" OFF 3>&1 1>&2 2>&3)
 
-choice=$(< results)
-    case "$choice" in
-        Quad9)
-            sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
-            sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
-        ;;
-        Cloudflare)
-            sed -i "s|#DNS=.*|DNS=1.1.1.1 2606:4700:4700::1111|g" /etc/systemd/resolved.conf
-            sed -i "s|#FallbackDNS=.*|FallbackDNS=1.0.0.1 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
-        ;;
-        Local)
-            sed -i "s|#DNS=.*|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
-            sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
-        ;;
-        *)
-        ;;
-    esac
+case "$choice" in
+    "Quad9")
+        sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
+        sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
+    ;;
+    "Cloudflare")
+        sed -i "s|#DNS=.*|DNS=1.1.1.1 2606:4700:4700::1111|g" /etc/systemd/resolved.conf
+        sed -i "s|#FallbackDNS=.*|FallbackDNS=1.0.0.1 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
+    ;;
+    "Local")
+        sed -i "s|#DNS=.*|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
+        sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
+    ;;
+    *)
+    ;;
+esac
 check_command systemctl restart network-manager.service
 network_ok
 
@@ -350,6 +348,9 @@ calculate_php_fpm
 # Install VM-tools
 install_if_not open-vm-tools
 
+# Install jQuery, needed for notify_admin_gui
+install_if_not jq
+
 # Download and validate Nextcloud package
 check_command download_verify_nextcloud_stable
 
@@ -389,8 +390,6 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 
 # Run the updatenotification on a schelude
 occ_command config:system:set upgrade.disable-web --value="true"
-occ_command app:disable updatenotification
-rm -r $NCPATH/apps/updatenotification
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_static_script updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
@@ -667,53 +666,61 @@ a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
-whiptail --title "Install apps or software" --checklist --separate-output "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Calendar" "            " on \
-"Contacts" "            " on \
-"IssueTemplate" "       " on \
-"PDFViewer" "           " on \
-"Extract" "             " on \
-"Text" "                " on \
-"Mail" "                " on \
-"Webmin" "              " on 2>results
+choice=$(whiptail --title "Install apps or software" --checklist "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Calendar" "" ON \
+"Contacts" "" ON \
+"IssueTemplate" "" ON \
+"PDFViewer" "" ON \
+"Extract" "" ON \
+"Text" "" ON \
+"Mail" "" ON \
+"Deck" "" ON \
+"Social" "" ON \
+"Group-Folders" "" ON \
+"Webmin" "" ON 3>&1 1>&2 2>&3)
 
-while read -r -u 9 choice
-do
-    case "$choice" in
-        Calendar)
-            install_and_enable_app calendar
-        ;;
-        Contacts)
-            install_and_enable_app contacts
-        ;;
-        IssueTemplate)
-            install_and_enable_app issuetemplate
-        ;;
-        PDFViewer)
-            install_and_enable_app files_pdfviewer
-        ;;
-        Extract)
-            if install_and_enable_app extract
-            then
-                install_if_not unrar
-                install_if_not p7zip
-                install_if_not p7zip-full
-            fi
-        ;;
-        Text)
-            install_and_enable_app text
-        ;;
-        Mail)
-            install_and_enable_app mail
-        ;;
-        Webmin)
-            run_app_script webmin
-        ;;
-        *)
-        ;;
-    esac
-done 9< results
-rm -f results
+case "$choice" in
+    *"Calendar"*)
+        install_and_enable_app calendar
+    ;;&
+    *"Contacts"*)
+        install_and_enable_app contacts
+    ;;&
+    *"IssueTemplate"*)
+        install_and_enable_app issuetemplate
+    ;;&
+    *"PDFViewer"*)
+        install_and_enable_app files_pdfviewer
+    ;;&
+    *"Extract"*)
+        if install_and_enable_app extract
+        then
+            install_if_not unrar
+            install_if_not p7zip
+            install_if_not p7zip-full
+        fi
+    ;;&
+    *"Text"*)
+        install_and_enable_app text
+    ;;&
+    *"Mail"*)
+        install_and_enable_app mail
+    ;;&
+    *"Deck"*)
+        install_and_enable_app deck
+    ;;&
+    *"Social"*)
+        install_and_enable_app social
+    ;;&
+    *"Group-Folders"*)
+        install_and_enable_app groupfolders
+    ;;&
+    *"Webmin"*)
+        run_app_script webmin
+    ;;&
+    *)
+    ;;
+esac
 
 # Get needed scripts for first bootup
 check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
@@ -777,6 +784,12 @@ fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
+
+# Put IP adress in /etc/issue (shown before the login)
+if [ -f /etc/issue ]
+then
+    echo "\4" >> /etc/issue
+fi
 
 # Force MOTD to show correct number of updates
 sudo /usr/lib/update-notifier/update-motd-updates-available --force

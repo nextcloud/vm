@@ -96,7 +96,7 @@ then
 
     # Choose file formats fo the case when imagick is installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" "" ON \
     "JPEG" "" ON \
     "GIF" "" ON \
@@ -107,60 +107,45 @@ then
     "Movie" "" ON \
     "Photoshop" "" ON \
     "SVG" "" ON \
-    "TIFF" "" ON 2>results
+    "TIFF" "" ON 3>&1 1>&2 2>&3)
 
-    while read -r -u 11 choice
-    do
-        case $choice in
-            "PNG")
-                occ_command config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
-            ;;
-
-            "JPEG")
-                occ_command config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
-            ;;
-
-            "GIF")
-                occ_command config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
-            ;;
-
-            "BMP")
-                occ_command config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
-            ;;
-
-            "MarkDown")
-                occ_command config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\MarkDown"
-            ;;
-
-            "MP3")
-                occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MP3"
-            ;;
-
-            "TXT")
-                occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\TXT"
-            ;;
-
-            "Movie")
-                occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\Movie"
-            ;;
-
-            "Photoshop")
-                occ_command config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Photoshop"
-            ;;
-
-            "SVG")
-                occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\SVG"
-            ;;
-
-            "TIFF")
-                occ_command config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\TIFF"
-            ;;
-
-            *)
-            ;;
-        esac
-    done 11< results
-    rm -f results
+    case "$choice" in
+        *"PNG"*)
+            occ_command config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
+        ;;&
+        *"JPEG"*)
+            occ_command config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
+        ;;&
+        *"GIF"*)
+            occ_command config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
+        ;;&
+        *"BMP"*)
+            occ_command config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
+        ;;&
+        *"MarkDown"*)
+            occ_command config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\MarkDown"
+        ;;&
+        *"MP3"*)
+            occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MP3"
+        ;;&
+        *"TXT"*)
+            occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\TXT"
+        ;;&
+        *"Movie"*)
+            occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\Movie"
+        ;;&
+        *"Photoshop"*)
+            occ_command config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Photoshop"
+        ;;&
+        *"SVG"*)
+            occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\SVG"
+        ;;&
+        *"TIFF"*)
+            occ_command config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\TIFF"
+        ;;&
+        *)
+        ;;
+    esac
 else
     # check if imagick ist installed and remove it
     if is_this_installed php-imagick
@@ -174,7 +159,7 @@ else
     fi
     # Choose file formats fo the case when imagick is not installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    whiptail --title "Choose file formats" --checklist --separate-output "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" "" ON \
     "JPEG" "" ON \
     "GIF" "" ON \
@@ -182,48 +167,36 @@ else
     "MarkDown" "" ON \
     "MP3" "" ON \
     "TXT" "" ON \
-    "Movie" "" ON 2>results
+    "Movie" "" ON 3>&1 1>&2 2>&3)
 
-    while read -r -u 8 choice
-    do
-        case $choice in
-            "PNG")
-                occ_command config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\PNG"
-            ;;
-
-            "JPEG")
-                occ_command config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\JPEG"
-            ;;
-
-            "GIF")
-                occ_command config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\GIF"
-            ;;
-
-            "BMP")
-                occ_command config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\BMP"
-            ;;
-
-            "MarkDown")
-                occ_command config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\MarkDown"
-            ;;
-
-            "MP3")
-                occ_command config:system:set enabledPreviewProviders 16 --value="OC\\Preview\\MP3"
-            ;;
-
-            "TXT")
-                occ_command config:system:set enabledPreviewProviders 17 --value="OC\\Preview\\TXT"
-            ;;
-
-            "Movie")
-                occ_command config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\Movie"
-            ;;
-
-            *)
-            ;;
-        esac
-    done 8< results
-    rm -f results
+    case "$choice" in
+        *"PNG"*)
+            occ_command config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\PNG"
+        ;;&
+        *"JPEG"*)
+            occ_command config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\JPEG"
+        ;;&
+        *"GIF"*)
+            occ_command config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\GIF"
+        ;;&
+        *"BMP"*)
+            occ_command config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\BMP"
+        ;;&
+        *"MarkDown"*)
+            occ_command config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\MarkDown"
+        ;;&
+        *"MP3"*)
+            occ_command config:system:set enabledPreviewProviders 16 --value="OC\\Preview\\MP3"
+        ;;&
+        *"TXT"*)
+            occ_command config:system:set enabledPreviewProviders 17 --value="OC\\Preview\\TXT"
+        ;;&
+        *"Movie"*)
+            occ_command config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\Movie"
+        ;;&
+        *)
+        ;;
+    esac
 fi
 
 # Set aspect ratio

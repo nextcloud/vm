@@ -71,10 +71,6 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 AUT_UPDATES_TIME="18"
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
-# OnlyOffice URL (onlyoffice.sh)
-[ -n "$OO_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-# Nextcloud Main Domain (onlyoffice.sh)
-[ -n "$OO_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Collabora Docker URL (collabora.sh
 [ -n "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain (collabora.sh)
@@ -411,6 +407,16 @@ If you think that this is a bug, please report it to https://github.com/nextclou
 fi
 }
 
+# Check that the script can see the external IP (apache fails otherwise), used e.g. in the adminer app script.
+check_external_ip() {
+if [ -z "$WANIP4" ]
+then
+    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again."
+    sleep 3
+    exit 1
+fi
+}
+
 restart_webserver() {
 check_command systemctl restart apache2
 if is_this_installed php"$PHPVER"-fpm
@@ -635,6 +641,9 @@ if ! "$@";
 then
     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
     print_text_in_color "$IRed" "$* failed"
+    notify_admin_gui \
+    "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!" \
+    "$* failed"
     exit 1
 fi
 }
@@ -642,6 +651,11 @@ fi
 # Example: occ_command 'maintenance:mode --on'
 occ_command() {
 check_command sudo -u www-data php "$NCPATH"/occ "$@";
+}
+
+# Example: occ_command_no_check 'maintenance:mode --on'
+occ_command_no_check() {
+sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 network_ok() {
@@ -926,10 +940,12 @@ if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
 else
-msg_box "It appears that something went wrong with the update. 
-Please report this to $ISSUES"
-occ_command -V
-exit
+msg_box "Your current version are still not compatible with the version required to run this script. 
+
+To upgrade between major versions, please check this out: 
+https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
+    occ_command -V
+    exit
 fi
 }
 
@@ -1081,7 +1097,7 @@ if lshw -c system | grep -q NUC8i3BEH
 then
     if lshw -c memory | grep -q BLS16G4
     then
-        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81
+        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81 || lshw -c disk | grep -q "Samsung SSD 860"
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
@@ -1110,16 +1126,23 @@ esac
 # "Subject" \
 # "Message"
 #
-# occ_command notification:generate -l "$2" "$admin" "$1"
+# occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
-CHECK_USERS=$(occ_command user:list | awk '{print $2}' | cut -d ":" -f1;)
+install_if_not jq
+if ! occ_command_no_check app:list --output=json | jq -e '.enabled | .notifications' > /dev/null
+then
+    print_text_in_color "$IGreen" "The notifications app isn't enabled - unable to send notifications"
+    return 1
+fi
+
+CHECK_USERS=$(occ_command_no_check user:list --output=json | jq -r 'keys[]')
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
 for admin in $CHECK_USERS
 do
-    if occ_command user:info "$admin" | grep -q "\- admin";
+    if occ_command_no_check user:info --output=json "$admin" | jq -e '.groups | index("admin")' > /dev/null
     then
         print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-        occ_command notification:generate -l "$2" "$admin" "$1"
+        occ_command_no_check notification:generate -l "$2" "$admin" "$1"
     fi
 done
 }
