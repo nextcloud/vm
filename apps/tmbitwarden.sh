@@ -27,7 +27,7 @@ then
         then
             if [ -d /root/bwdata ]
             then
-                msg_box "It seems like 'Bitwarden' is already installed.\nYou cannot run this script twice, because you would loose all your passwords."
+                msg_box "It seems like 'Bitwarden' is already installed.\n\nYou cannot run this script twice, because you would loose all your passwords."
                 exit 1
             fi
         fi
