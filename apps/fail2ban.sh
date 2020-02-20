@@ -9,8 +9,6 @@ true
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 
-print_text_in_color "$ICyan" "Installing Fail2ban..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -19,6 +17,38 @@ debug_mode
 
 # Check if root
 root_check
+
+# Check if fail2ban is already installed
+print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
+if is_this_installed fail2ban
+then
+    choice=$(whiptail --radiolist "It seems like 'Fail2Ban' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Uninstall Fail2Ban" "" OFF \
+    "Reinstall Fail2Ban" "" ON 3>&1 1>&2 2>&3)
+    
+    case "$choice" in
+        "Uninstall Fail2Ban")
+            print_text_in_color "$ICyan" "Uninstalling Fail2Ban and resetting all settings..."
+            fail2ban-client unban --all
+            check_command apt purge fail2ban -y
+            rm /etc/fail2ban/filter.d/nextcloud.conf
+            rm /etc/fail2ban/jail.local
+            msg_box "Fail2Ban was successfully uninstalled and all settings were resetted."
+            exit
+        ;;
+        "Reinstall Fail2Ban")
+            print_text_in_color "$ICyan" "Reinstalling Fail2Ban..."
+            fail2ban-client unban --all
+            check_command apt purge fail2ban -y
+            rm /etc/fail2ban/filter.d/nextcloud.conf
+            rm /etc/fail2ban/jail.local
+        ;;
+        *)
+        ;;
+    esac
+else
+    print_text_in_color "$ICyan" "Installing Fail2ban..."
+fi
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
