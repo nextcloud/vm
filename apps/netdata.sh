@@ -63,7 +63,6 @@ then
             then
                 bash /usr/libexec/netdata/netdata-uninstaller.sh --force --yes
             else
-            else
                 check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
                 check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
                 rm $SCRIPTS/netdata-uninstaller.sh
