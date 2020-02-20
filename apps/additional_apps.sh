@@ -75,10 +75,11 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Installing LDAP..."
         if install_and_enable_app user_ldap
-    then
-        msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
-    else msg_box "LDAP installation failed."
-    fi
+        then
+            msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
+        else
+            msg_box "LDAP installation failed."
+        fi
     ;;&
     *"Talk"*)
         clear
