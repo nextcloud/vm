@@ -125,6 +125,8 @@ then
     occ_command app:remove onlyoffice
 fi
 
+# shellcheck disable=2034,2059
+true
 # shellcheck source=lib.sh
 NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
