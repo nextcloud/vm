@@ -55,7 +55,8 @@ msg_box "The necessary preparations to run expose Bitwarden to the internet are:
 if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
 then
 msg_box "OK, please do the necessary preparations before you run this script and then simply run it again once you're done.
-The script is located at: $SCRIPTS/apps/tmbitwarden.sh"
+
+To run this script again, execute $SCRIPTS/apps.sh and choose Bitwarden"
     exit
 else
     sleep 0.1
