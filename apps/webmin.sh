@@ -21,8 +21,8 @@ print_text_in_color "$ICyan" "Checking if Webmin is already installed..."
 if is_this_installed webmin
 then
     choice=$(whiptail --radiolist "It seems like 'Webmin' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Uninstall Webmin" "" ON \
-    "Reinstall Webmin" "" OFF 3>&1 1>&2 2>&3)
+    "Uninstall Webmin" "" OFF \
+    "Reinstall Webmin" "" ON 3>&1 1>&2 2>&3)
     
     case "$choice" in
         "Uninstall Webmin")
