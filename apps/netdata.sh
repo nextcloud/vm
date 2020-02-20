@@ -21,25 +21,45 @@ print_text_in_color "$ICyan" "Checking if Netdata is already installed..."
 if [ -d /etc/netdata ]
 then
     choice=$(whiptail --radiolist "It seems like 'Netdata' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Uninstall Netdata" "" ON \
-    "Reinstall Netdata" "" OFF 3>&1 1>&2 2>&3)
-    
+    "Uninstall Netdata" "" OFF \
+    "Reinstall Netdata" "" ON 3>&1 1>&2 2>&3)
+
     case "$choice" in
         "Uninstall Netdata")
             print_text_in_color "$ICyan" "Uninstalling Netdata..."
-            check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
-            check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
-            rm $SCRIPTS/netdata-uninstaller.sh
-            # Remove /etc/netdata, to be able to install it automatically the next run. But it is not needed, because the uninstall script handles this.
-            #rm -r /etc/netdata
-            msg_box "Netdata was successfully uninstalled."
+            if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
+            then
+                if ! yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+                then
+                    rm -Rf /usr/src/netdata.git
+                fi
+            elif [ -f /usr/libexec/netdata-uninstaller.sh ]
+            then
+                yes | bash /usr/libexec/netdata-uninstaller.sh --yes
+            else
+                check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
+                check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
+                rm $SCRIPTS/netdata-uninstaller.sh
+                msg_box "Netdata was successfully uninstalled."
+            fi
             exit
         ;;
         "Reinstall Netdata")
             print_text_in_color "$ICyan" "Reinstalling Netdata..."
-            check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
-            check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
-            rm $SCRIPTS/netdata-uninstaller.sh
+            if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
+            then
+                if ! yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+                then
+                    rm -Rf /usr/src/netdata.git
+                fi
+            elif [ -f /usr/libexec/netdata-uninstaller.sh ]
+            then
+                yes | bash /usr/libexec/netdata-uninstaller.sh --yes
+            else
+                check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
+                check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
+                rm $SCRIPTS/netdata-uninstaller.sh
+            fi
         ;;
         *)
         ;;
