@@ -97,8 +97,12 @@ fi
 # Update Netdata
 if [ -d /etc/netdata ]
 then
-    NETDATA_UPDATER_PATH=$(find /usr -name "netdata-updater.sh")
-    bash "$NETDATA_UPDATER_PATH"
+    print_text_in_color "$ICyan" "Updating Netdata..."
+    NETDATA_UPDATER_PATH="$(find /usr -name netdata-updater.sh)"
+    if [ ! -z $NETDATA_UPDATER_PATH ]
+    then
+        bash "$NETDATA_UPDATER_PATH"
+    fi
 fi
 
 # Update Redis PHP extension
