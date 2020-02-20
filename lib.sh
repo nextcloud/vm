@@ -407,6 +407,16 @@ If you think that this is a bug, please report it to https://github.com/nextclou
 fi
 }
 
+# Check that the script can see the external IP (apache fails otherwise), used e.g. in the adminer app script.
+check_external_ip() {
+if [ -z "$WANIP4" ]
+then
+    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again."
+    sleep 3
+    exit 1
+fi
+}
+
 restart_webserver() {
 check_command systemctl restart apache2
 if is_this_installed php"$PHPVER"-fpm
@@ -930,7 +940,7 @@ if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
 else
-msg_box "Your current version are still not compatible with the version required ("$1") to run this script. 
+msg_box "Your current version are still not compatible with the version required to run this script. 
 
 To upgrade between major versions, please check this out: 
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
