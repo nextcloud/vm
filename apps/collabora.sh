@@ -19,13 +19,17 @@ root_check
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 2 Collabora
+cpu_check 2 Collabora
+
 # Check if collabora is already installed
 print_text_in_color "$ICyan" "Checking if Collabora is already installed..."
 if does_this_docker_exist 'collabora/code'
 then
     choice=$(whiptail --radiolist "It seems like 'Collabora' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Uninstall Collabora" "" ON \
-    "Reinstall Collabora" "" OFF 3>&1 1>&2 2>&3)
+    "Uninstall Collabora" "" OFF \
+    "Reinstall Collabora" "" ON 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Uninstall Collabora")
@@ -68,25 +72,6 @@ then
             # Check if Collabora is previously installed
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
-            
-                        # Revoke LE
-            SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-            if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
-            then
-                yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-                REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-                for remove in $REMOVE_OLD
-                    do rm -rf "$remove"
-                done
-            fi
-            
-            # Remove Apache2 config
-            if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
-            then
-                a2dissite "$SUBDOMAIN".conf
-                restart_webserver
-                rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
-            fi
             
             # Disable RichDocuments (Collabora App) if activated
             if [ -d "$NC_APPS_PATH"/richdocuments ]
@@ -139,10 +124,6 @@ if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
     occ_command app:remove onlyoffice
 fi
-
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 Collabora
-cpu_check 2 Collabora
 
 # shellcheck source=lib.sh
 NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -308,4 +289,5 @@ then
     any_key "Press any key to continue... "
 fi
 
+# Make sure the script exits
 exit
