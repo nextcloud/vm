@@ -29,13 +29,15 @@ then
             print_text_in_color "$ICyan" "Uninstalling Netdata..."
             if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
             then
-                if ! yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+                if ! yes no | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
                 then
                     rm -Rf /usr/src/netdata.git
                 fi
             elif [ -f /usr/libexec/netdata-uninstaller.sh ]
             then
-                yes | bash /usr/libexec/netdata-uninstaller.sh --yes
+                yes no | bash /usr/libexec/netdata-uninstaller.sh --yes
+            elif [ -f /usr/libexec/netdata/netdata-uninstaller.sh ]
+                bash /usr/libexec/netdata/netdata-uninstaller.sh --force --yes
             else
                 check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
                 check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
@@ -49,13 +51,16 @@ then
             print_text_in_color "$ICyan" "Reinstalling Netdata..."
             if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
             then
-                if ! yes | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+                if ! yes no | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
                 then
                     rm -Rf /usr/src/netdata.git
                 fi
             elif [ -f /usr/libexec/netdata-uninstaller.sh ]
             then
                 yes | bash /usr/libexec/netdata-uninstaller.sh --yes
+            elif [ -f /usr/libexec/netdata/netdata-uninstaller.sh ]
+                bash /usr/libexec/netdata/netdata-uninstaller.sh --force --yes
+            else
             else
                 check_command curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
                 check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
