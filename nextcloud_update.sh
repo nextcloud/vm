@@ -98,8 +98,8 @@ fi
 if [ -d /etc/netdata ]
 then
     print_text_in_color "$ICyan" "Updating Netdata..."
-    NETDATA_UPDATER_PATH="$(find /usr -name netdata-updater.sh)"
-    if [ ! -z $NETDATA_UPDATER_PATH ]
+    NETDATA_UPDATER_PATH="$(find /usr -name 'netdata-updater.sh')"
+    if [ -n "$NETDATA_UPDATER_PATH" ]
     then
         bash "$NETDATA_UPDATER_PATH"
     fi
