@@ -90,7 +90,7 @@ do
     if ! grep -q "$SMBSHARES/$count" /etc/fstab
     then 
         # Write to /etc/fstab and mount
-        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=$UsID,gid=$GrID,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=$UsID,gid=$GrID,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
         mkdir -p "$SMBSHARES/$count"
         mount "$SMBSHARES/$count"
         # Check if mounting was successful
