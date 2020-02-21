@@ -1139,8 +1139,7 @@ esac
 #
 # occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
-install_if_not jq
-if ! occ_command_no_check app:list --output=json | jq -e '.enabled | .notifications' > /dev/null
+if ! is_app_enabled notifications
 then
     print_text_in_color "$IGreen" "The notifications app isn't enabled - unable to send notifications"
     return 1
