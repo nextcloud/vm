@@ -70,8 +70,7 @@ then
 # Check if OnlyOffice is installed using the new method
 elif version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
 then
-    install_if_not jq
-    if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
+    if is_app_enabled documentserver_community
     then
         choice=$(whiptail --radiolist "It seems like 'OnlyOffice' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         "Uninstall OnlyOffice" "" OFF \
