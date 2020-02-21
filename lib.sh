@@ -695,12 +695,6 @@ fi
 }
 
 install_and_enable_app() {
-# Check if app is already installed
-if is_app_enabled "$1"
-then
-    return
-fi
-
 # Download and install $1
 if [ ! -d "$NC_APPS_PATH/$1" ]
 then
@@ -722,11 +716,11 @@ or when a new version of the app is released with the following command:
         if [ -d "$NC_APPS_PATH/$1" ]
         then
             occ_command app:enable "$1"
+            chown -R www-data:www-data "$NC_APPS_PATH"
         fi
     fi
 else
     print_text_in_color "$ICyan" "It seems like $1 is installed already, trying to enable it..."
-    # occ_command not possible here because it uses check_command and will exit if occ_command fails
     occ_command_no_check app:enable "$1"
 fi
 }
