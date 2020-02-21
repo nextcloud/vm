@@ -113,7 +113,7 @@ then
 fi
 
 # remove OnlyOffice-documentserver if activated
-if occ_command_no_check app:list --output=json | jq -e '.enabled | .documentserver_community' > /dev/null
+if is_app_enabled documentserver_community
 then
     any_key "OnlyOffice will get uninstalled. Press any key to continue. Press CTRL+C to abort"
     occ_command app:remove documentserver_community
