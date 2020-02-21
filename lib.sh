@@ -683,6 +683,17 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
+# example: is_app_enabled documentserver_community
+is_app_enabled() {
+install_if_not jq
+if occ_command app:list --output=json | jq -e ".enabled | .$1" > /dev/null
+then
+    return 0
+else
+    return 1
+fi
+}
+
 install_and_enable_app() {
 # Download and install $1
 if [ ! -d "$NC_APPS_PATH/$1" ]
