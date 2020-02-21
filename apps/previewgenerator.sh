@@ -28,7 +28,7 @@ then
 fi
 
 # Encryption may not be enabled
-if [ -n "$(occ_command app:list | grep encryption | awk '{print $3}')" ]
+if is_app_enabled encryption
 then
     msg_box "It seems like you have encryption enabled which is unsupported when using the Preview Generator"
     exit
