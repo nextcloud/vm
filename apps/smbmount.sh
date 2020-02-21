@@ -108,7 +108,7 @@ do
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
             occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
             # Inform the user that mounting was successfull
-            msg_box "Your mount was successfull, congratulations!\nIt is accessible in your root directory in $SMBSHARES/$count.\nYou can now use the Nextcloud external storage app to access files there. The Share got already mounted to the Nextcloud admin-group."
+            msg_box "Your mount was successfull, congratulations!\nIt is accessible in your root directory in $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share got already mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing. Afterwards everything will work reliably."
             break
         fi
     fi
