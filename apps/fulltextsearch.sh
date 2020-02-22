@@ -54,14 +54,8 @@ then
             fi
             
             # Remove nc_fts docker if installed
+            docker volume stop esdata # docker_prune_this will 'system prune' everything
             docker_prune_this "$nc_fts"
-            docker volume stop esdata
-            if [ -f "$SCRIPTS"/dockerprune.sh ]
-            then
-                bash "$SCRIPTS"/dockerprune.sh
-            else
-                docker system prune --volumes --force
-            fi
             
             msg_box "Fulltextsearch was successfully uninstalled."
             exit
@@ -93,14 +87,8 @@ then
             fi
             
             # Remove nc_fts docker if installed
+            docker volume stop esdata # docker_prune_this will 'system prune' everything
             docker_prune_this "$nc_fts"
-            docker volume stop esdata
-            if [ -f "$SCRIPTS"/dockerprune.sh ]
-            then
-                bash "$SCRIPTS"/dockerprune.sh
-            else
-                docker system prune --volumes --force
-            fi
         ;;
         *)
         ;;
