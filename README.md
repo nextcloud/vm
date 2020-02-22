@@ -96,6 +96,7 @@ Though I (@enoch85) haven't tested this yet, so testing and reporting is welcome
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
 * [Daniel Hanson](https://github.com/enoch85) @ [T&M Hansson IT AB](https://www.hanssonit.se)
+* [Simon Lindner](https://github.com/szaimen)
 * You? :)
 
 ## Special thanks to
@@ -104,7 +105,6 @@ Though I (@enoch85) haven't tested this yet, so testing and reporting is welcome
 * [Stefan Heitmüller](https://github.com/morph027) @ [morph027's Blog](https://morph027.gitlab.io/)
 * [Lorenzo Faleschini](https://github.com/penzoiders)
 * [Georg Großmann](https://github.com/ggeorgg)
-* [szaimen](https://github.com/szaimen)
 * [liao20081228](https://github.com/liao20081228)
 
 [Nextcloud Server]: https://bit.ly/2CHIUkA
