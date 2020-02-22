@@ -35,19 +35,19 @@ then
             print_text_in_color "$ICyan" "Uninstalling Fulltextsearch..."
 
             # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-            if [ -d $NC_APPS_PATH/fulltextsearch ]
+            if is_app_installed fulltextsearch
             then
                 print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-                sudo -u www-data php $NCPATH/occ fulltextsearch:reset
+                occ_command_no_check fulltextsearch:reset
                 occ_command app:disable fulltextsearch
                 rm -rf $NC_APPS_PATH/fulltextsearch
             fi
-            if [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
+            if is_app_installed fulltextsearch_elasticsearch
             then
                 occ_command app:disable fulltextsearch_elasticsearch
                 rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
             fi
-            if [ -d $NC_APPS_PATH/files_fulltextsearch ]
+            if is_app_installed files_fulltextsearch
             then
                 occ_command app:disable files_fulltextsearch
                 rm -rf $NC_APPS_PATH/files_fulltextsearch
@@ -67,19 +67,19 @@ then
             print_text_in_color "$ICyan" "Reinstalling FullTextSearch..."
 
             # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-            if [ -d $NC_APPS_PATH/fulltextsearch ]
+            if is_app_installed fulltextsearch
             then
                 print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-                sudo -u www-data php $NCPATH/occ fulltextsearch:reset
+                occ_command_no_check fulltextsearch:reset
                 occ_command app:disable fulltextsearch
                 rm -rf $NC_APPS_PATH/fulltextsearch
             fi
-            if [ -d $NC_APPS_PATH/fulltextsearch_elasticsearch ]
+            if is_app_installed fulltextsearch_elasticsearch
             then
                 occ_command app:disable fulltextsearch_elasticsearch
                 rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
             fi
-            if [ -d $NC_APPS_PATH/files_fulltextsearch ]
+            if is_app_installed files_fulltextsearch
             then
                 occ_command app:disable files_fulltextsearch
                 rm -rf $NC_APPS_PATH/files_fulltextsearch
@@ -103,7 +103,7 @@ then
 fi
 
 # Disable and remove Nextant + Solr
-if [ -d "$NC_APPS_PATH"/nextant ]
+if is_app_installed nextant
 then
     # Remove Nextant
     msg_box "We will now remove Nextant + Solr and replace it with Full Text Search"
