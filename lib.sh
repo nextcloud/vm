@@ -683,13 +683,24 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
+# example: is_app_enabled documentserver_community
+is_app_enabled() {
+install_if_not jq
+if occ_command app:list --output=json | jq -e ".enabled | .$1" > /dev/null
+then
+    return 0
+else
+    return 1
+fi
+}
+
 install_and_enable_app() {
 # Download and install $1
 if [ ! -d "$NC_APPS_PATH/$1" ]
 then
     print_text_in_color "$ICyan" "Installing $1..."
     # occ_command not possible here because it uses check_command and will exit if occ_command fails
-    installcmd="$(sudo -u www-data php ${NCPATH}/occ app:install "$1")"
+    installcmd="$(occ_command_no_check app:install "$1")"
     if grep 'not compatible' <<< "$installcmd"
     then
 msg_box "The $1 app could not be installed.
@@ -710,9 +721,7 @@ or when a new version of the app is released with the following command:
     fi
 else
     print_text_in_color "$ICyan" "It seems like $1 is installed already, trying to enable it..."
-    # occ_command not possible here because it uses check_command and will exit if occ_command fails
-    sudo -u www-data php ${NCPATH}/occ app:enable "$1"
-    chown -R www-data:www-data "$NC_APPS_PATH"
+    occ_command_no_check app:enable "$1"
 fi
 }
 
@@ -1128,8 +1137,7 @@ esac
 #
 # occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
-install_if_not jq
-if ! occ_command_no_check app:list --output=json | jq -e '.enabled | .notifications' > /dev/null
+if ! is_app_enabled notifications
 then
     print_text_in_color "$IGreen" "The notifications app isn't enabled - unable to send notifications"
     return 1
