@@ -52,11 +52,10 @@ then
                 occ_command app:disable files_fulltextsearch
                 rm -rf $NC_APPS_PATH/files_fulltextsearch
             fi
-            
+
             # Remove nc_fts docker if installed
-            docker volume stop esdata # docker_prune_this will 'system prune' everything
             docker_prune_this "$nc_fts"
-            
+
             msg_box "Fulltextsearch was successfully uninstalled."
             exit
         ;;
@@ -64,7 +63,7 @@ then
             # Test RAM size (2GB min) + CPUs (min 2)
             ram_check 2 FullTextSearch
             cpu_check 2 FullTextSearch
-            
+
             print_text_in_color "$ICyan" "Reinstalling FullTextSearch..."
 
             # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
@@ -85,9 +84,8 @@ then
                 occ_command app:disable files_fulltextsearch
                 rm -rf $NC_APPS_PATH/files_fulltextsearch
             fi
-            
+
             # Remove nc_fts docker if installed
-            docker volume stop esdata # docker_prune_this will 'system prune' everything
             docker_prune_this "$nc_fts"
         ;;
         *)
@@ -127,7 +125,7 @@ set_max_count
 mkdir -p "$RORDIR"
 docker pull "$nc_fts"
 
-# Create configuration YML 
+# Create configuration YML
 cat << YML_CREATE > /opt/es/readonlyrest.yml
 readonlyrest:
   access_control_rules:
