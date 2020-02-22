@@ -706,7 +706,7 @@ fi
 
 install_and_enable_app() {
 # Download and install $1
-if [ ! -d "$NC_APPS_PATH/$1" ]
+if ! is_app_installed "$1"
 then
     print_text_in_color "$ICyan" "Installing $1..."
     # occ_command not possible here because it uses check_command and will exit if occ_command fails
@@ -723,7 +723,7 @@ or when a new version of the app is released with the following command:
     rm -Rf "$NCPATH/apps/$1"
     else
         # Enable $1
-        if [ -d "$NC_APPS_PATH/$1" ]
+        if is_app_installed "$1"
         then
             occ_command app:enable "$1"
             chown -R www-data:www-data "$NC_APPS_PATH"
