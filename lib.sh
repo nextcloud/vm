@@ -694,6 +694,16 @@ else
 fi
 }
 
+#example: is_app_installed documentserver_community
+is_app_installed() {
+if [ -d "$NC_APPS_PATH/$1" ]
+then
+    return 0
+else
+    return 1
+fi
+}
+
 install_and_enable_app() {
 # Download and install $1
 if [ ! -d "$NC_APPS_PATH/$1" ]
