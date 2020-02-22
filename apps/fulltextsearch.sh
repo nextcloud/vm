@@ -34,15 +34,6 @@ then
         "Uninstall Fulltextsearch")
             print_text_in_color "$ICyan" "Uninstalling Fulltextsearch..."
 
-            # Remove nc_fts docker if installed
-            docker_prune_this "$nc_fts"
-            docker volume stop esdata
-            if [ -f "$SCRIPTS"/dockerprune.sh ]
-            then
-                bash "$SCRIPTS"/dockerprune.sh
-            else
-                docker system prune --volumes
-            fi
             # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
             if [ -d $NC_APPS_PATH/fulltextsearch ]
             then
@@ -60,6 +51,16 @@ then
             then
                 occ_command app:disable files_fulltextsearch
                 rm -rf $NC_APPS_PATH/files_fulltextsearch
+            fi
+            
+            # Remove nc_fts docker if installed
+            docker_prune_this "$nc_fts"
+            docker volume stop esdata
+            if [ -f "$SCRIPTS"/dockerprune.sh ]
+            then
+                bash "$SCRIPTS"/dockerprune.sh
+            else
+                docker system prune --volumes --force
             fi
             
             msg_box "Fulltextsearch was successfully uninstalled."
@@ -72,16 +73,6 @@ then
             
             print_text_in_color "$ICyan" "Reinstalling FullTextSearch..."
 
-            # Remove nc_fts docker if installed
-            docker_prune_this "$nc_fts"
-            docker volume stop esdata
-            if [ -f "$SCRIPTS"/dockerprune.sh ]
-            then
-                bash "$SCRIPTS"/dockerprune.sh
-            else
-                docker system prune --volumes
-            fi
-
             # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
             if [ -d $NC_APPS_PATH/fulltextsearch ]
             then
@@ -99,6 +90,16 @@ then
             then
                 occ_command app:disable files_fulltextsearch
                 rm -rf $NC_APPS_PATH/files_fulltextsearch
+            fi
+            
+            # Remove nc_fts docker if installed
+            docker_prune_this "$nc_fts"
+            docker volume stop esdata
+            if [ -f "$SCRIPTS"/dockerprune.sh ]
+            then
+                bash "$SCRIPTS"/dockerprune.sh
+            else
+                docker system prune --volumes --force
             fi
         ;;
         *)
