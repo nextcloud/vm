@@ -46,7 +46,7 @@ then
     install_and_enable_app previewgenerator
 
     # check if the previewgenerator is installed and enabled
-    if [ -d "$NC_APPS_PATH/previewgenerator" ]
+    if is_app_installed previewgenerator
     then
         # enable previews
         occ_command config:system:set enable_previews --value=true --type=boolean
