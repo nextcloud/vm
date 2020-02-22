@@ -19,6 +19,9 @@ debug_mode
 # Must be root
 root_check
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Check if fulltextsearch is already installed
 print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
 if does_this_docker_exist "$nc_fts"
@@ -57,7 +60,11 @@ then
             exit
         ;;
         "Reinstall Fulltextsearch")
-            print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
+            # Test RAM size (2GB min) + CPUs (min 2)
+            ram_check 2 FullTextSearch
+            cpu_check 2 FullTextSearch
+            
+            print_text_in_color "$ICyan" "Reinstalling FullTextSearch..."
 
             # Remove nc_fts docker if installed
             docker_prune_this "$nc_fts"
@@ -87,13 +94,6 @@ then
 else
     print_text_in_color "$ICyan" "Installing Fulltextsearch..."
 fi
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
-
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 FullTextSearch
-cpu_check 2 FullTextSearch
 
 # Make sure there is an Nextcloud installation
 if ! [ "$(occ_command -V)" ]
@@ -177,4 +177,5 @@ then
 msg_box "Full Text Search was successfully installed!"
 fi
 
+# Make sure the script exists
 exit
