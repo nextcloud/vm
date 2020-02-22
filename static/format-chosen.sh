@@ -55,10 +55,10 @@ then
     SYSNAME="machines"
     DEVTYPE=sdb
 else
-msg_box "It seems like you didn't mount a second disk. 
+msg_box "It seems like you didn't add a second disk. 
 To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
 
-This script will now exit. Please mount a second disk and start over."
+This script will now exit. Please add a second disk and start over."
 exit 1
 fi
 
