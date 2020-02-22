@@ -27,8 +27,8 @@ print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed...
 if does_this_docker_exist "$nc_fts"
 then
     choice=$(whiptail --radiolist "It seems like 'Fulltextsearch' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Uninstall Fulltextsearch" "" ON \
-    "Reinstall Fulltextsearch" "" OFF 3>&1 1>&2 2>&3)
+    "Uninstall Fulltextsearch" "" OFF \
+    "Reinstall Fulltextsearch" "" ON 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Uninstall Fulltextsearch")
