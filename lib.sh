@@ -1147,7 +1147,7 @@ CHECK_USERS=$(occ_command_no_check user:list --output=json | jq -r 'keys[]')
 
 if [[ $CHECK_USERS = *" "* ]]
 then
-    print_text_in_color "$IGreen" "There are user existent, that contain spaces - unable to send notifications"
+    print_text_in_color "$IRed" "There are user existent, that contain spaces - unable to send notifications"
     return 1
 fi
 
