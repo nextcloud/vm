@@ -36,7 +36,13 @@ then
 
             # Remove nc_fts docker if installed
             docker_prune_this "$nc_fts"
-
+            docker volume stop esdata
+            if [ -f "$SCRIPTS"/dockerprune.sh ]
+            then
+                bash "$SCRIPTS"/dockerprune.sh
+            else
+                docker system prune --volumes
+            fi
             # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
             if [ -d $NC_APPS_PATH/fulltextsearch ]
             then
@@ -68,6 +74,13 @@ then
 
             # Remove nc_fts docker if installed
             docker_prune_this "$nc_fts"
+            docker volume stop esdata
+            if [ -f "$SCRIPTS"/dockerprune.sh ]
+            then
+                bash "$SCRIPTS"/dockerprune.sh
+            else
+                docker system prune --volumes
+            fi
 
             # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
             if [ -d $NC_APPS_PATH/fulltextsearch ]
