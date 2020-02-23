@@ -9,9 +9,6 @@ NC_UPDATE=1 && TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nex
 unset NC_UPDATE
 unset TURN_INSTALL
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -20,6 +17,9 @@ debug_mode
 
 # Must be root
 root_check
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
 
 # Check if adminer is already installed
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
