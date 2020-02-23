@@ -18,6 +18,9 @@ debug_mode
 # Check if root
 root_check
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Check if fail2ban is already installed
 print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
 if is_this_installed fail2ban
@@ -49,9 +52,6 @@ then
 else
     print_text_in_color "$ICyan" "Installing Fail2ban..."
 fi
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
 
 ### Local variables ###
 # location of Nextcloud logs

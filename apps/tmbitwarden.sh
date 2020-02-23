@@ -7,7 +7,6 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -16,6 +15,10 @@ debug_mode
 
 # Check if root
 root_check
+
+# Test RAM size (3 GB min) + CPUs (min 2)
+ram_check 3 Bitwarden
+cpu_check 2 Bitwarden
 
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
@@ -61,10 +64,6 @@ To run this script again, execute $SCRIPTS/apps.sh and choose Bitwarden"
 else
     sleep 0.1
 fi
-
-# Test RAM size (3 GB min) + CPUs (min 2)
-ram_check 3 Bitwarden
-cpu_check 2 Bitwarden
 
 # Install Docker
 install_docker
