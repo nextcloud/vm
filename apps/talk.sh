@@ -166,7 +166,7 @@ check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 # Enable Spreed (Talk)
 STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
 TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
-if [ ! -d "$NC_APPS_PATH"/spreed ]
+if ! is_app_installed spreed
 then
     install_and_enable_app spreed
     occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
@@ -174,7 +174,7 @@ then
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 
-if [ -d "$NC_APPS_PATH"/spreed ]
+if is_app_installed spreed
 then
 msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:
 https://nextcloud.com/talk/"

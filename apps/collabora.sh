@@ -58,7 +58,7 @@ then
             fi
             
             # Disable RichDocuments (Collabora App) if activated
-            if [ -d "$NC_APPS_PATH"/richdocuments ]
+            if is_app_installed richdocuments
             then
                 occ_command app:remove richdocuments
             fi
@@ -74,7 +74,7 @@ then
             docker_prune_this 'collabora/code'
             
             # Disable RichDocuments (Collabora App) if activated
-            if [ -d "$NC_APPS_PATH"/richdocuments ]
+            if is_app_installed richdocuments
             then
                 occ_command app:remove richdocuments
             fi
@@ -120,7 +120,7 @@ then
 fi
 
 # Disable OnlyOffice (Collabora App) if activated
-if [ -d "$NC_APPS_PATH"/onlyoffice ]
+if is_app_installed onlyoffice
 then
     occ_command app:remove onlyoffice
 fi
@@ -271,7 +271,7 @@ else
 fi
 
 # Set config for RichDocuments (Collabora App)
-if [ -d "$NC_APPS_PATH"/richdocuments ]
+if is_app_installed richdocuments
 then
     occ_command config:app:set richdocuments wopi_url --value=https://"$SUBDOMAIN"
     chown -R www-data:www-data "$NC_APPS_PATH"
