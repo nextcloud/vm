@@ -96,7 +96,7 @@ Though I (@enoch85) haven't tested this yet, so testing and reporting is welcome
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
 * [Daniel Hanson](https://github.com/enoch85) @ [T&M Hansson IT AB](https://www.hanssonit.se)
-* [Simon Lindner](https://github.com/szaimen)
+* [szaimen](https://github.com/szaimen)
 * You? :)
 
 ## Special thanks to
