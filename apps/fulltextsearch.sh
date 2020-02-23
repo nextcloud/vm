@@ -22,6 +22,10 @@ root_check
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 2 FullTextSearch
+cpu_check 2 FullTextSearch
+
 # Check if fulltextsearch is already installed
 print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
 if does_this_docker_exist "$nc_fts"
@@ -57,10 +61,6 @@ then
             exit
         ;;
         "Reinstall Fulltextsearch")
-            # Test RAM size (2GB min) + CPUs (min 2)
-            ram_check 2 FullTextSearch
-            cpu_check 2 FullTextSearch
-
             print_text_in_color "$ICyan" "Reinstalling FullTextSearch..."
 
             # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
