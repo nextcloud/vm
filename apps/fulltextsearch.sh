@@ -39,18 +39,15 @@ then
             then
                 print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
                 occ_command_no_check fulltextsearch:reset
-                occ_command app:disable fulltextsearch
-                rm -rf $NC_APPS_PATH/fulltextsearch
+                occ_command app:remove fulltextsearch
             fi
             if is_app_installed fulltextsearch_elasticsearch
             then
-                occ_command app:disable fulltextsearch_elasticsearch
-                rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
+                occ_command app:remove fulltextsearch_elasticsearch
             fi
             if is_app_installed files_fulltextsearch
             then
-                occ_command app:disable files_fulltextsearch
-                rm -rf $NC_APPS_PATH/files_fulltextsearch
+                occ_command app:remove files_fulltextsearch
             fi
 
             # Remove nc_fts docker if installed
@@ -71,18 +68,15 @@ then
             then
                 print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
                 occ_command_no_check fulltextsearch:reset
-                occ_command app:disable fulltextsearch
-                rm -rf $NC_APPS_PATH/fulltextsearch
+                occ_command app:remove fulltextsearch
             fi
             if is_app_installed fulltextsearch_elasticsearch
             then
-                occ_command app:disable fulltextsearch_elasticsearch
-                rm -rf $NC_APPS_PATH/fulltextsearch_elasticsearch
+                occ_command app:remove fulltextsearch_elasticsearch
             fi
             if is_app_installed files_fulltextsearch
             then
-                occ_command app:disable files_fulltextsearch
-                rm -rf $NC_APPS_PATH/files_fulltextsearch
+                occ_command app:remove files_fulltextsearch
             fi
 
             # Remove nc_fts docker if installed
@@ -107,8 +101,7 @@ if is_app_installed nextant
 then
     # Remove Nextant
     msg_box "We will now remove Nextant + Solr and replace it with Full Text Search"
-    occ_command app:disable nextant
-    rm -rf $NC_APPS_PATH/nextant
+    occ_command app:remove nextant
 
     # Remove Solr
     service solr stop
