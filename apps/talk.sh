@@ -9,6 +9,9 @@ NC_UPDATE=1 && TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nex
 unset NC_UPDATE
 unset TURN_INSTALL
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -51,9 +54,6 @@ then
 else
     print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
 fi
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
 
 # Check if Nextcloud is installed
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
