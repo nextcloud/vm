@@ -1153,16 +1153,8 @@ then
     return 1
 fi
 
-CHECK_USERS=$(occ_command_no_check user:list --output=json | jq -r 'keys[]')
-
-if [[ $CHECK_USERS = *" "* ]]
-then
-    print_text_in_color "$IRed" "There are user existent, that contain spaces - unable to send notifications"
-    return 1
-fi
-
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-for admin in $CHECK_USERS
+occ_command_no_check user:list --output=json | jq -r 'keys[]' | while read -r admin
 do
     if occ_command_no_check user:info --output=json "$admin" | jq -e '.groups | index("admin")' > /dev/null
     then
