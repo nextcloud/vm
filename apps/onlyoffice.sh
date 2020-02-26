@@ -157,5 +157,10 @@ then
     msg_box "OnlyOffice was successfully installed."
 fi
 
+if ! is_app_installed onlyoffice || ! is_app_installed documentserver_community
+then
+    msg_box "Something got wrong during the installation. Please report this here: $ISSUES"
+fi
+
 # Just make sure the script exits
 exit
