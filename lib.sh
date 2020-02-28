@@ -891,6 +891,22 @@ run_static_script() {
 # Run any script in ../apps
 # call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
 run_app_script() {
+    # Use local file, if existant
+    if [ -f "${SCRIPTS}/apps/$1.sh" ]
+    then
+        bash "${SCRIPTS}/apps/$1.sh"
+        return
+    elif [ -f "${SCRIPTS}/apps/$1.php" ]
+    then
+        php "${SCRIPTS}/apps/$1.php"
+        return
+    elif [ -f "${SCRIPTS}/apps/$1.py" ]
+    then
+        install_if_not python3
+        python3 "${SCRIPTS}/apps/$1.py"
+        return
+    fi
+    
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if curl_to_dir "${APP}" "${1}.sh" "$SCRIPTS"
     then
