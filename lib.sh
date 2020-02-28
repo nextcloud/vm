@@ -710,7 +710,7 @@ if ! is_app_installed "$1"
 then
     print_text_in_color "$ICyan" "Installing $1..."
     # occ_command not possible here because it uses check_command and will exit if occ_command fails
-    installcmd="$(occ_command_no_check app:install "$1")"
+    installcmd="$(occ_command_no_check app:install $1)"
     if grep 'not compatible' <<< "$installcmd"
     then
 msg_box "The $1 app could not be installed.
