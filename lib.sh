@@ -810,6 +810,21 @@ download_le_script() {
 # Run any script in ../master
 # call like: run_main_script name_of_script
 run_main_script() {
+    if [ -f "${SCRIPTS}/main/$1.sh" ]
+    then
+        bash "${SCRIPTS}/main/$1.sh"
+        return
+    elif [ -f "${SCRIPTS}/main/$1.php" ]
+    then
+        php "${SCRIPTS}/main/$1.php"
+        return
+    elif [ -f "${SCRIPTS}/main/$1.py" ]
+    then
+        install_if_not python3
+        python3 "${SCRIPTS}/main/$1.py"
+        return
+    fi
+
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if curl_to_dir "${GITHUB_REPO}" "${1}.sh" "$SCRIPTS"
     then
