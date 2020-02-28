@@ -3,11 +3,21 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Inspired by https://github.com/nextcloud/nextcloudpi/blob/master/etc/nextcloudpi-config.d/fail2ban.sh
 
+# Use local lib file if existant
+if [ -f /var/scripts/main/lib.sh ]
+then
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+NC_UPDATE=1 source /var/scripts/main/lib.sh
+unset NC_UPDATE
+else
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
