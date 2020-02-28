@@ -810,6 +810,7 @@ download_le_script() {
 # Run any script in ../master
 # call like: run_main_script name_of_script
 run_main_script() {
+    # Use local file, if existant
     if [ -f "${SCRIPTS}/main/$1.sh" ]
     then
         bash "${SCRIPTS}/main/$1.sh"
@@ -849,6 +850,22 @@ run_main_script() {
 # Run any script in ../static
 # call like: run_static_script name_of_script
 run_static_script() {
+    # Use local file, if existant
+    if [ -f "${SCRIPTS}/static/$1.sh" ]
+    then
+        bash "${SCRIPTS}/static/$1.sh"
+        return
+    elif [ -f "${SCRIPTS}/static/$1.php" ]
+    then
+        php "${SCRIPTS}/static/$1.php"
+        return
+    elif [ -f "${SCRIPTS}/static/$1.py" ]
+    then
+        install_if_not python3
+        python3 "${SCRIPTS}/static/$1.py"
+        return
+    fi
+    
     # Get ${1} script
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if curl_to_dir "${STATIC}" "${1}.sh" "$SCRIPTS"
