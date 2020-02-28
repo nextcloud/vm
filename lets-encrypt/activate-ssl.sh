@@ -9,7 +9,7 @@ then
 true
 # shellcheck source=lib.sh
 source /var/scripts/main/lib.sh
-elif
+else
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
