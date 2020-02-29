@@ -20,6 +20,10 @@ mkdir -p "$SCRIPTS"/main
 mv "$SCRIPTS"/lib.sh "$SCRIPTS"/main 
 mv "$SCRIPTS"/nextcloud_update.sh "$SCRIPTS"/main
 
+# Set ownership and permission
+chown -R root:root "$SCRIPTS"
+chmod -R +x "$SCRIPTS"
+
 # Run the nextcloud_install_production script
 bash "$SCRIPTS"/nextcloud_install_production.sh
 
