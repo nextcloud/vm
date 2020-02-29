@@ -723,8 +723,18 @@ case "$choice" in
 esac
 
 # Get needed scripts for first bootup
-check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
-check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
+if [ -f "${SCRIPTS}"/main/nextcloud-startup-script.sh ]
+then
+    cp "${SCRIPTS}"/main/nextcloud-startup-script.sh "$SCRIPTS"
+else
+    check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
+fi
+if [ -f "${SCRIPTS}"/main/lib.sh ]
+then
+    cp "${SCRIPTS}"/main/lib.sh "$SCRIPTS"
+else
+    check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
+fi
 download_static_script instruction
 download_static_script history
 download_static_script static_ip
