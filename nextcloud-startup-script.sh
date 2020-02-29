@@ -240,8 +240,10 @@ case "$choice" in
     ;;
     "Bugfixes")
         clear
-	print_text_in_color "$ICyan" "OK, download files from github and get the latest bugfixes from now on"
-        rm -r "$SCRIPTS"!(you-can-not-run-the-startup-script-several-times.sh|nextcloud-startup-script.sh)
+	print_text_in_color "$ICyan" "OK, downloading files from github and getting the latest bugfixes from now on"
+        rm -r "$SCRIPTS"/apps
+	rm -r "$SCRIPTS"/main
+	rm -r "$SCRIPTS"/static
     ;;
     *)
     ;;
