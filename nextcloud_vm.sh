@@ -5,6 +5,13 @@
 # Variables:
 SCRIPTS=/var/scripts
 
+# Check if root
+if [[ "$EUID" -ne 0 ]]
+then
+    echo "You have to run this script as root! Exiting..."
+    exit 1
+fi
+
 # Todo: Test internet connection
 
 # Todo: Verify the release package and integrity with the gpg key
@@ -26,6 +33,7 @@ then
     rm "$SCRIPTS"/issue_template.md
     rm "$SCRIPTS"/.travis.yml
     rm "$SCRIPTS"/README.md
+    rm 
 fi
 
 # Move all main files to "$SCRIPTS"/main (apart from install-production and startup-script)
