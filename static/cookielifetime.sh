@@ -13,7 +13,7 @@ else
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/testing/lib.sh)
 fi
 
 print_text_in_color "$ICyan" "Configuring Cookie Lifetime timeout..."

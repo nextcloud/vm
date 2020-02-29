@@ -31,7 +31,7 @@ then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/testing/lib.sh)
 unset FIRST_IFACE
 else
     print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
