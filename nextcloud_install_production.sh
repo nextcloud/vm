@@ -14,10 +14,19 @@ else
     apt install curl -y
 fi
 
+# Use local lib file if existant
+if [ -f /var/scripts/main/lib.sh ]
+then
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+source /var/scripts/main/lib.sh
+else
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+fi
 
 # Check if dpkg or apt is running
 is_process_running apt
@@ -50,12 +59,23 @@ else
     apt install whiptail -y
 fi
 
+# Use local lib file if existant
+if [ -f /var/scripts/main/lib.sh ]
+then
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 source /var/scripts/main/lib.sh
+unset FIRST_IFACE
+unset CHECK_CURRENT_REPO
+else
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 unset CHECK_CURRENT_REPO
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
