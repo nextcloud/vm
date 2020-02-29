@@ -794,6 +794,11 @@ fi
 # Force MOTD to show correct number of updates
 sudo /usr/lib/update-notifier/update-motd-updates-available --force
 
+if [ -f "$SCRIPTS"/nextcloud_install_production.sh ]
+then
+    rm "$SCRIPTS"/nextcloud_install_production.sh
+fi
+
 # Reboot
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
 reboot
