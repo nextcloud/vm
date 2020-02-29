@@ -18,7 +18,7 @@ SCRIPTS=/var/scripts
 # This is for testing purposes only; should get removed if everything above is ready.
 if [ ! -d "$SCRIPTS"/apps ] && [ ! -d "$SCRIPTS"/main ] && [ ! -d "$SCRIPTS"/lets-encrypt ] && [ ! -d "$SCRIPTS"/static ]
 then
-    git clone git:github.com/nextcloud/vm.git "$SCRIPTS"
+    git clone https://github.com/nextcloud/vm.git "$SCRIPTS"
 fi
 
 # Move all main files to "$SCRIPTS"/main (apart from install-production and startup-script)
