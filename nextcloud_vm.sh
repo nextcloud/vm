@@ -11,7 +11,7 @@ SCRIPTS=/var/scripts
 
 # Todo: Download the release package (.tar) file
 
-# Todo: Verify the integrity of the downloaded package?
+# Todo: Verify the state of the downloaded package with a checksum?
 
 # Todo: Extract everything to "$SCRIPTS"
 
