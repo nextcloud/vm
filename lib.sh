@@ -782,8 +782,25 @@ rm -f releases
 # Initial download of script in ../static
 # call like: download_static_script name_of_script
 download_static_script() {
-    # Get ${1} script
+    # Delete the script in /var/scripts
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    
+    # Copy local file to the right place if existant
+    if [ -f "${SCRIPTS}/static/$1.sh" ]
+    then
+        cp "${SCRIPTS}/static/$1.sh" "${SCRIPTS}"
+        return
+    elif [ -f "${SCRIPTS}/static/$1.php" ]
+    then
+        cp "${SCRIPTS}/static/$1.php" "${SCRIPTS}"
+        return
+    elif [ -f "${SCRIPTS}/static/$1.py" ]
+    then
+        cp "${SCRIPTS}/static/$1.py" "${SCRIPTS}"
+        return
+    fi
+    
+    # Get ${1} script
     if ! { curl_to_dir "${STATIC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
@@ -810,7 +827,7 @@ download_le_script() {
 # Run any script in ../master
 # call like: run_main_script name_of_script
 run_main_script() {
-    # Use local file, if existant
+    # Use local file if existant
     if [ -f "${SCRIPTS}/main/$1.sh" ]
     then
         bash "${SCRIPTS}/main/$1.sh"
@@ -850,7 +867,7 @@ run_main_script() {
 # Run any script in ../static
 # call like: run_static_script name_of_script
 run_static_script() {
-    # Use local file, if existant
+    # Use local file if existant
     if [ -f "${SCRIPTS}/static/$1.sh" ]
     then
         bash "${SCRIPTS}/static/$1.sh"
@@ -891,7 +908,7 @@ run_static_script() {
 # Run any script in ../apps
 # call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
 run_app_script() {
-    # Use local file, if existant
+    # Use local file if existant
     if [ -f "${SCRIPTS}/apps/$1.sh" ]
     then
         bash "${SCRIPTS}/apps/$1.sh"
