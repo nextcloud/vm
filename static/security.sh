@@ -6,12 +6,12 @@
 # Use local lib file if existant
 if [ -f /var/scripts/main/lib.sh ]
 then
-# shellcheck disable=2034,2059,2154
+# shellcheck disable=2034,2059,SC2154
 true
 # shellcheck source=lib.sh
 source /var/scripts/main/lib.sh
 else
-# shellcheck disable=2034,2059,2154
+# shellcheck disable=2034,2059,SC2154
 true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
