@@ -813,8 +813,25 @@ download_static_script() {
 # Initial download of script in ../lets-encrypt
 # call like: download_le_script name_of_script
 download_le_script() {
-    # Get ${1} script
+    # Delete the script in /var/scripts
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    
+    # Copy local file to the right place if existant
+    if [ -f "${SCRIPTS}/lets-encrypt/$1.sh" ]
+    then
+        cp "${SCRIPTS}/lets-encrypt/$1.sh" "${SCRIPTS}"
+        return
+    elif [ -f "${SCRIPTS}/lets-encrypt/$1.php" ]
+    then
+        cp "${SCRIPTS}/lets-encrypt/$1.php" "${SCRIPTS}"
+        return
+    elif [ -f "${SCRIPTS}/lets-encrypt/$1.py" ]
+    then
+        cp "${SCRIPTS}/lets-encrypt$1.py" "${SCRIPTS}"
+        return
+    fi
+    
+    # Get ${1} script
     if ! { curl_to_dir "${LETS_ENC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
