@@ -243,6 +243,7 @@ case "$choice" in
         print_text_in_color "$ICyan" "OK, downloading files from github and getting the latest bugfixes from now on"
         rm -r "$SCRIPTS"/apps
         rm -r "$SCRIPTS"/main
+        rm -r "$SCRIPTS"/lets-encrypt
         rm -r "$SCRIPTS"/static
     ;;
     *)
