@@ -42,6 +42,16 @@ else
     print_text_in_color "$ICyan" "Installing Webmin..."
 fi
 
+# Check if local script is available
+if [ -f "$SCRIPTS"/apps/webmin.sh ]
+then
+    msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download files from webmin.com for installing webmin, that will not be checked for integrity."
+    if [[ "no" == $(ask_yes_or_no "Do you want to install webmin anyway?") ]]
+    then
+        exit
+    fi
+fi
+
 # Install packages for Webmin
 install_if_not apt-transport-https
 install_if_not perl
