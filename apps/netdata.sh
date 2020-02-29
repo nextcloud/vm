@@ -76,6 +76,15 @@ else
     print_text_in_color "$ICyan" "Installing Netdata..."
 fi
 
+if [ -f "$SCRIPTS"/apps/netdata.sh ]
+then
+    msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download scripts from my-netdata.io/github for installing and uninstalling netdata, that will not be checked for integrity."
+    if [[ "no" == $(ask_yes_or_no "Do you want to install netdata anyway?") ]]
+    then
+        exit
+    fi
+fi
+
 # Install
 is_process_running dpkg
 is_process_running apt
