@@ -23,8 +23,9 @@ then
     # Remove all unnecessary files
     rm -r "$SCRIPTS"/.git
     rm "$SCRIPTS"/LICENSE
-    rm "$SCRIPTS"/issue-templace.md
+    rm "$SCRIPTS"/issue_templace.md
     rm "$SCRIPTS"/.travis.yml
+    rm "$SCRIPTS"/README.md
 fi
 
 # Move all main files to "$SCRIPTS"/main (apart from install-production and startup-script)
