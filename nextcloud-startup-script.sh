@@ -235,15 +235,15 @@ choice=$(whiptail --radiolist "What is more important to you?\nSelect by pressin
 case "$choice" in
     "Security")
         clear
-	print_text_in_color "$ICyan" "OK, using all pre-downloaded local files from now on"
+        print_text_in_color "$ICyan" "OK, using all pre-downloaded local files from now on"
         sleep 1
     ;;
     "Bugfixes")
         clear
-	print_text_in_color "$ICyan" "OK, downloading files from github and getting the latest bugfixes from now on"
+        print_text_in_color "$ICyan" "OK, downloading files from github and getting the latest bugfixes from now on"
         rm -r "$SCRIPTS"/apps
-	rm -r "$SCRIPTS"/main
-	rm -r "$SCRIPTS"/static
+        rm -r "$SCRIPTS"/main
+        rm -r "$SCRIPTS"/static
     ;;
     *)
     ;;
