@@ -53,6 +53,7 @@ else
     print_text_in_color "$ICyan" "Installing and securing Adminer..."
 fi
 
+# Check if local script is available.
 if [ -f "$SCRIPTS"/apps/adminer.sh ]
 then
     msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download files from www.adminer.org for installing and updating adminer, that will not be checked for integrity."
