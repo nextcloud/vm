@@ -827,7 +827,7 @@ download_le_script() {
         return
     elif [ -f "${SCRIPTS}/lets-encrypt/$1.py" ]
     then
-        cp "${SCRIPTS}/lets-encrypt$1.py" "${SCRIPTS}"
+        cp "${SCRIPTS}/lets-encrypt/$1.py" "${SCRIPTS}"
         return
     fi
     
