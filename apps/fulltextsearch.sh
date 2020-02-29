@@ -96,6 +96,16 @@ then
     exit 1
 fi
 
+# Check if local script is available
+if [ -f "$SCRIPTS"/apps/fulltextsearch.sh ]
+then
+    msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download a script from get.docker.com for installing docker if not already done, that will not be checked for integrity."
+    if [[ "no" == $(ask_yes_or_no "Do you want to install fulltextsearch anyway?") ]]
+    then
+        exit
+    fi
+fi
+
 # Disable and remove Nextant + Solr
 if is_app_installed nextant
 then
