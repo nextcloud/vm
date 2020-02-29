@@ -7,7 +7,7 @@ SCRIPTS=/var/scripts
 
 # Todo: Test internet connection
 
-# Todo: Verify the release package with the gpg key
+# Todo: Verify the release package and integrity with the gpg key
 
 # Todo: Download the release package (.tar) file
 
