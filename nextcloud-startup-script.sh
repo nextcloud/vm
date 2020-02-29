@@ -227,28 +227,31 @@ Please report any bugs you find here: $ISSUES"
     exit 1
 fi
 
-# Choose if you want security or bugfixes
-choice=$(whiptail --radiolist "What is more important to you?\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Security" "Use the pre-downloaded local files" OFF \
-"Bugfixes" "Download files from github and get the latest bugfixes" ON 3>&1 1>&2 2>&3)
+if [ -d "$SCRIPTS"/apps ] && [ -d "$SCRIPTS"/main ] && [ -d "$SCRIPTS"/lets-encrypt ] && [ -d "$SCRIPTS"/static ]
+then
+    # Choose if you want security or bugfixes
+    choice=$(whiptail --radiolist "What is more important to you?\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Security" "Use the pre-downloaded local files" OFF \
+    "Bugfixes" "Download files from github and get the latest bugfixes" ON 3>&1 1>&2 2>&3)
 
-case "$choice" in
-    "Security")
-        clear
-        print_text_in_color "$ICyan" "OK, using all pre-downloaded local files from now on"
-        sleep 1
-    ;;
-    "Bugfixes")
-        clear
-        print_text_in_color "$ICyan" "OK, downloading files from github and getting the latest bugfixes from now on"
-        rm -r "$SCRIPTS"/apps
-        rm -r "$SCRIPTS"/main
-        rm -r "$SCRIPTS"/lets-encrypt
-        rm -r "$SCRIPTS"/static
-    ;;
-    *)
-    ;;
-esac
+    case "$choice" in
+        "Security")
+            clear
+            print_text_in_color "$ICyan" "OK, using all pre-downloaded local files from now on"
+            sleep 1
+        ;;
+        "Bugfixes")
+            clear
+            print_text_in_color "$ICyan" "OK, downloading files from github and getting the latest bugfixes from now on"
+            rm -r "$SCRIPTS"/apps
+            rm -r "$SCRIPTS"/main
+            rm -r "$SCRIPTS"/lets-encrypt
+            rm -r "$SCRIPTS"/static
+        ;;
+        *)
+        ;;
+    esac
+fi
 
 touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 
