@@ -4,12 +4,23 @@
 # DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
 #################################################################################################################
 
+# Use local lib file if existant
+if [ -f /var/scripts/main/lib.sh ]
+then
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+NCDB=1 && NC_UPDATE=1 source /var/scripts/main/lib.sh
+unset NC_UPDATE
+unset NCDB
+else
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset NCDB
+fi
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
