@@ -33,7 +33,7 @@ then
     rm "$SCRIPTS"/issue_template.md
     rm "$SCRIPTS"/.travis.yml
     rm "$SCRIPTS"/README.md
-    rm 
+    rm "$SCRIPTS"/nextcloud_vm.sh
 fi
 
 # Move all main files to "$SCRIPTS"/main (apart from install-production and startup-script)
