@@ -53,6 +53,15 @@ else
     print_text_in_color "$ICyan" "Installing and securing Adminer..."
 fi
 
+if [ -f "$SCRIPTS"/apps/adminer.sh ]
+then
+    msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download files from www.adminer.org for installing and updating adminer, that will not be checked for integrity."
+    if [[ "no" == $(ask_yes_or_no "Do you want to install adminer anyway?") ]]
+    then
+        exit
+    fi
+fi
+
 # Warn user about HTTP/2
 http2_warn Adminer
 
