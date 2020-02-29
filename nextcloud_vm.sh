@@ -26,7 +26,7 @@ mkdir -p "$SCRIPTS"
 # This is for testing purposes only; should get removed if everything above is ready.
 if [ ! -d "$SCRIPTS"/apps ] && [ ! -d "$SCRIPTS"/main ] && [ ! -d "$SCRIPTS"/lets-encrypt ] && [ ! -d "$SCRIPTS"/static ]
 then
-    git clone https://github.com/nextcloud/vm.git "$SCRIPTS"
+    git clone -b testing --single-branch https://github.com/nextcloud/vm.git "$SCRIPTS"
     # Remove all unnecessary files
     rm -r "$SCRIPTS"/.git
     rm "$SCRIPTS"/LICENSE
