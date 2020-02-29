@@ -2,6 +2,9 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
+# Variables:
+SCRIPTS=/var/scripts
+
 # Todo: Test internet connection
 
 # Todo: Verify the release package with the gpg key
