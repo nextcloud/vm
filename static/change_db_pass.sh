@@ -1,11 +1,22 @@
 #!/bin/bash
+
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+
+# Use local lib file if existant
+if [ -f /var/scripts/main/lib.sh ]
+then
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+NCDBPASS=1 source /var/scripts/main/lib.sh
+unset NCDBPASS
+else
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 NCDBPASS=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NCDBPASS
-
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
