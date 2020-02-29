@@ -227,7 +227,7 @@ Please report any bugs you find here: $ISSUES"
     exit 1
 fi
 
-if [ -d "$SCRIPTS"/apps ] && [ -d "$SCRIPTS"/main ] && [ -d "$SCRIPTS"/lets-encrypt ] && [ -d "$SCRIPTS"/static ]
+if [ -d "$SCRIPTS"/apps ] || [ -d "$SCRIPTS"/main ] || [ -d "$SCRIPTS"/lets-encrypt ] || [ -d "$SCRIPTS"/static ]
 then
     # Choose if you want security or bugfixes
     choice=$(whiptail --radiolist "What is more important to you?\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
