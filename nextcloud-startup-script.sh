@@ -227,6 +227,26 @@ Please report any bugs you find here: $ISSUES"
     exit 1
 fi
 
+# Choose if you want security or bugfixes
+choice=$(whiptail --radiolist "What is more important to you?\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Security" "Use the pre-downloaded local files" OFF \
+"Bugfixes" "Download files from github and get the latest bugfixes" ON 3>&1 1>&2 2>&3)
+
+case "$choice" in
+    "Security")
+        clear
+	print_text_in_color "$ICyan" "OK, using all pre-downloaded local files from now on"
+        sleep 1
+    ;;
+    "Bugfixes")
+        clear
+	print_text_in_color "$ICyan" "OK, download files from github and get the latest bugfixes from now on"
+        rm -r "$SCRIPTS"!(you-can-not-run-the-startup-script-several-times.sh|nextcloud-startup-script.sh)
+    ;;
+    *)
+    ;;
+esac
+
 touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 
 echo
