@@ -25,7 +25,7 @@ true
 # shellcheck source=lib.sh
 FIRST_IFACE=1 source /var/scripts/lib.sh
 unset FIRST_IFACE
-# If we have internet, then use the latest variables from the lib remote file
+# Use latest lib from the repository if no local lib was found
 elif print_text_in_color "$ICyan" "Testing internet connection..." && ping github.com -c 2
 then
 # shellcheck disable=2034,2059
