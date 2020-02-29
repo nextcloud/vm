@@ -126,11 +126,21 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
     exit 1
 fi
 
+# Use local lib file if existant
+if [ -f /var/scripts/main/lib.sh ]
+then
+# shellcheck source=lib.sh
+NCDB=1 && CHECK_CURRENT_REPO=1 && NC_UPDATE=1 source /var/scripts/main/lib.sh
+unset NC_UPDATE
+unset CHECK_CURRENT_REPO
+unset NCDB
+else
 # shellcheck source=lib.sh
 NCDB=1 && CHECK_CURRENT_REPO=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset CHECK_CURRENT_REPO
 unset NCDB
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
