@@ -76,6 +76,7 @@ else
     print_text_in_color "$ICyan" "Installing Netdata..."
 fi
 
+# Check if local script is available
 if [ -f "$SCRIPTS"/apps/netdata.sh ]
 then
     msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download scripts from my-netdata.io/github for installing and uninstalling netdata, that will not be checked for integrity."
