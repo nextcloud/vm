@@ -19,6 +19,12 @@ SCRIPTS=/var/scripts
 if [ ! -d "$SCRIPTS"/apps ] && [ ! -d "$SCRIPTS"/main ] && [ ! -d "$SCRIPTS"/lets-encrypt ] && [ ! -d "$SCRIPTS"/static ]
 then
     git clone https://github.com/nextcloud/vm.git "$SCRIPTS"
+    
+    # Remove all unnecessary files
+    rm -r "$SCRIPTS"/.git
+    rm "$SCRIPTS"/LICENSE
+    rm "$SCRIPTS"/issue-templace.md
+    rm "$SCRIPTS"/.travis.yml
 fi
 
 # Move all main files to "$SCRIPTS"/main (apart from install-production and startup-script)
