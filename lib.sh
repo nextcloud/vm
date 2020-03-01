@@ -18,18 +18,6 @@ RORDIR=/opt/es/
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 
-# Helper function for generating random passwords
-gen_passwd() {
-    local length=$1
-    local charset="$2"
-    local password=""
-    while [ ${#password} -lt "$length" ]
-    do
-        password=$(echo "$password""$(head -c 100 /dev/urandom | LC_ALL=C tr -dc "$charset")" | fold -w "$length" | head -n 1)
-    done
-    echo "$password"
-}
-
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
@@ -1157,6 +1145,18 @@ do
         occ_command_no_check notification:generate -l "$2" "$admin" "$1"
     fi
 done
+}
+
+# Helper function for generating random passwords
+gen_passwd() {
+    local length=$1
+    local charset="$2"
+    local password=""
+    while [ ${#password} -lt "$length" ]
+    do
+        password=$(echo "$password""$(head -c 100 /dev/urandom | LC_ALL=C tr -dc "$charset")" | fold -w "$length" | head -n 1)
+    done
+    print_text_in_color "$Cyan" "$password"
 }
 
 ## bash colors
