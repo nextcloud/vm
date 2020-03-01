@@ -63,6 +63,19 @@ then
                 occ_command app:remove richdocuments
             fi
             
+            # Remove trusted domain
+            count=0
+            while [ "$count" -lt 10 ]
+            do
+                if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+                then
+                    occ_command_no_check config:system:delete trusted_domains "$count"
+                    break
+                else
+                    count=$((count+1))
+                fi
+            done
+            
             msg_box "Collabora was successfully uninstalled."
             exit
         ;;
@@ -110,6 +123,19 @@ then
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
+    
+    # Remove trusted domain
+    count=0
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        then
+            occ_command_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
 fi
 
 # remove OnlyOffice-documentserver if activated
