@@ -18,6 +18,9 @@ debug_mode
 # Must be root
 root_check
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Check if adminer is already installed
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
 if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ]
@@ -51,9 +54,6 @@ then
 else
     print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
 fi
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
 
 # Check if Nextcloud is installed
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
@@ -166,7 +166,7 @@ check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 # Enable Spreed (Talk)
 STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
 TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
-if [ ! -d "$NC_APPS_PATH"/spreed ]
+if ! is_app_installed spreed
 then
     install_and_enable_app spreed
     occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
@@ -174,7 +174,7 @@ then
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 
-if [ -d "$NC_APPS_PATH"/spreed ]
+if is_app_installed spreed
 then
 msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:
 https://nextcloud.com/talk/"
