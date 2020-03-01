@@ -66,6 +66,18 @@ then
         fi
         # Remove app
         occ_command_no_check app:remove onlyoffice
+        # Remove trusted domain
+        count=0
+        while [ "$count" -lt 10 ]
+        do
+            if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+            then
+                occ_command_no_check config:system:delete trusted_domains "$count"
+                break
+            else
+                count=$((count+1))
+            fi
+        done
     fi
 # Check if OnlyOffice is installed using the new method
 elif version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
@@ -140,6 +152,18 @@ then
     fi
     # Remove app
     occ_command_no_check app:remove richdocuments
+    # Remove trusted domain
+    count=0
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        then
+            occ_command_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
 fi
 
 # Install OnlyOffice
