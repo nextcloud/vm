@@ -12,7 +12,14 @@ then
     exit 1
 fi
 
-# Todo: Test internet connection
+# Test internet connection
+ping -c1 -W1 -q github.com &>/dev/null
+status=$( echo $? )
+if [[ $status != 0 ]]
+then
+    echo "Couldn't reach github.com. Exiting..."
+    exit 1
+fi
 
 # Todo: Verify the release package and integrity with the gpg key
 
