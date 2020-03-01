@@ -1161,7 +1161,7 @@ esac
 notify_admin_gui() {
 if ! is_app_enabled notifications
 then
-    print_text_in_color "$IGreen" "The notifications app isn't enabled - unable to send notifications"
+    print_text_in_color "$IRed" "The notifications app isn't enabled - unable to send notifications"
     return 1
 fi
 
