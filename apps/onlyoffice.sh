@@ -64,6 +64,18 @@ then
             restart_webserver
             rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
         fi
+       # Remove trusted domain
+        count=0
+        while [ "$count" -lt 10 ]
+        do
+            if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+            then
+                occ_command_no_check config:system:delete trusted_domains "$count"
+                break
+            else
+                count=$((count+1))
+            fi
+        done
     fi
 # Check if OnlyOffice is installed using the new method
 elif version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
@@ -78,7 +90,11 @@ then
             "Uninstall OnlyOffice")
 	        print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
 		occ_command app:remove documentserver_community
-		occ_command_no_check app:remove onlyoffice
+                # Disable Onlyoffice App if activated
+                if is_app_installed onlyoffice
+                then
+                    occ_command app:remove onlyoffice
+                fi
 		msg_box "OnlyOffice was successfully uninstalled."
 		exit
             ;;
@@ -137,8 +153,23 @@ then
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
-    # Remove app
-    occ_command_no_check app:remove richdocuments
+    # Disable Collabora App if activated
+    if is_app_installed richdocuments
+    then
+       occ_command app:remove richdocuments
+    fi
+    # Remove trusted domain
+    count=0
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        then
+            occ_command_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
 fi
 
 # Install OnlyOffice
