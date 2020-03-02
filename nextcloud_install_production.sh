@@ -41,7 +41,7 @@ else
     apt install net-tools -y
 fi
 
-# Install net-tools if not existing
+# Install whiptail if not existing
 if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     print_text_in_color "$IGreen" "whiptail OK"
@@ -118,11 +118,13 @@ fi
 # Check if it's a clean server
 stop_if_installed postgresql
 stop_if_installed apache2
+stop_if_installed nginx
 stop_if_installed php
 stop_if_installed php-fpm
 stop_if_installed php"$PHPVER"-fpm
 stop_if_installed php7.0-fpm
 stop_if_installed php7.1-fpm
+stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
