@@ -64,8 +64,6 @@ then
             restart_webserver
             rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
         fi
-        # Remove app
-        occ_command_no_check app:remove onlyoffice
     fi
 # Check if OnlyOffice is installed using the new method
 elif version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
@@ -78,10 +76,11 @@ then
 
         case "$choice" in
             "Uninstall OnlyOffice")
-                print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
-                occ_command app:remove documentserver_community
-                msg_box "OnlyOffice was successfully uninstalled."
-                exit
+	        print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
+		occ_command app:remove documentserver_community
+		occ_command_no_check app:remove onlyoffice
+		msg_box "OnlyOffice was successfully uninstalled."
+		exit
             ;;
             "Reinstall OnlyOffice")
                 print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
