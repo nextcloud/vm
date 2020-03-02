@@ -85,12 +85,6 @@ then
             # Check if Collabora is previously installed
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
-            
-            # Disable RichDocuments (Collabora App) if activated
-            if is_app_installed richdocuments
-            then
-                occ_command app:remove richdocuments
-            fi
         ;;
         *)
         ;;
