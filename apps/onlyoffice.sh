@@ -64,8 +64,7 @@ then
             restart_webserver
             rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
         fi
-        # Remove app
-        occ_command_no_check app:remove onlyoffice
+
         # Remove trusted domain
         count=0
         while [ "$count" -lt 10 ]
@@ -90,9 +89,10 @@ then
 
         case "$choice" in
             "Uninstall OnlyOffice")
-                print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
-                occ_command app:remove documentserver_community
-                msg_box "OnlyOffice was successfully uninstalled."
+	    print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
+	    occ_command app:remove documentserver_community
+	    occ_command_no_check app:remove onlyoffice
+	    msg_box "OnlyOffice was successfully uninstalled."
                 exit
             ;;
             "Reinstall OnlyOffice")
