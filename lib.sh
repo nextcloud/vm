@@ -931,6 +931,11 @@ any_key() {
 }
 
 lowest_compatible_nc() {
+if [ -z $NC_UPDATE ]
+then
+NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
+unset NC_UPDATE
+fi
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
 msg_box "This script is developed to work with Nextcloud $1 and later.
@@ -965,8 +970,11 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
+if [ -z $NC_UPDATE ]
+then
 NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
 unset NC_UPDATE
+fi
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
@@ -1103,6 +1111,11 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 # 2 = repository
 # Nextcloud version
 git_apply_patch() {
+if [ -z $NC_UPDATE ]
+then
+NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
+unset NC_UPDATE
+fi
 if [[ "$CURRENTVERSION" = "$3" ]]
 then
     curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
