@@ -37,7 +37,6 @@ then
             # Check if Collabora is previously installed
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
-            
             # Revoke LE
             SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
             if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
