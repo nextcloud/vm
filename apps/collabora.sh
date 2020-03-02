@@ -48,7 +48,6 @@ then
                     do rm -rf "$remove"
                 done
             fi
-            
             # Remove Apache2 config
             if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
             then
@@ -56,13 +55,11 @@ then
                 restart_webserver
                 rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
             fi
-            
             # Disable RichDocuments (Collabora App) if activated
             if is_app_installed richdocuments
             then
                 occ_command app:remove richdocuments
             fi
-            
             # Remove trusted domain
             count=0
             while [ "$count" -lt 10 ]
@@ -98,7 +95,6 @@ fi
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
     docker_prune_this 'onlyoffice/documentserver'
-    
     # Revoke LE
     SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
@@ -109,7 +105,6 @@ then
             do rm -rf "$remove"
         done
     fi
-    
     # Remove Apache2 config
     if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
     then
@@ -117,7 +112,6 @@ then
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
-    
     # Remove trusted domain
     count=0
     while [ "$count" -lt 10 ]
