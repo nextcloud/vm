@@ -139,7 +139,7 @@ then
     occ_command app:remove documentserver_community
 fi
 
-# Disable OnlyOffice (Collabora App) if activated
+# Disable OnlyOffice App if activated
 if is_app_installed onlyoffice
 then
     occ_command app:remove onlyoffice
@@ -285,7 +285,7 @@ then
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
     # Install Collabora App
-    occ_command app:install richdocuments
+    install_and_enable_app richdocuments
 else
     last_fail_tls "$SCRIPTS"/apps/collabora.sh
 fi
