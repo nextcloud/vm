@@ -379,6 +379,11 @@ fi
 restart_webserver
 }
 
+# Compatibility with older VMs
+calculate_max_children() {
+    calculate_php_fpm
+}
+
 test_connection() {
 # Install dnsutils if not existing
 if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
