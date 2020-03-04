@@ -29,7 +29,7 @@ fi
 
 if [ "$REPORTEDNCVERSION" == "$NCVERSION" ]
 then    
-    print_text_in_color "$ICYAN" "The notification about a new NC-Softwareupdate has been already reported! ($NCVERSION)"
+    print_text_in_color "$ICyan" "The notification about a new NC-Softwareupdate has been already reported! ($NCVERSION)"
     exit
 fi
 
