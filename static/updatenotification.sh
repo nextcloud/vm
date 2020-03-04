@@ -43,7 +43,7 @@ then
         sed -i "s/^REPORTEDNCVERSION.*/REPORTEDNCVERSION=$NCVERSION" /$SCRIPTS/updatenotification.sh
     else
         notify_admin_gui \
-        "Update availabile!" \
+        "Update available!" \
         "Nextcloud $NCVERSION is available. Please run 'sudo bash /var/scripts/update.sh' from your CLI to update your server."
         sed -i "s/^REPORTEDNCVERSION.*/REPORTEDNCVERSION=$NCVERSION" /$SCRIPTS/updatenotification.sh
     fi
