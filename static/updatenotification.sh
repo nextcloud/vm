@@ -23,7 +23,7 @@ REPORTEDNCVERSION=""
 
 if [ "$CURRENTVERSION" == "$NCVERSION" ]
 then
-    print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)
+    print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
     exit
 fi
 
