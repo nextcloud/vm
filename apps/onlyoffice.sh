@@ -185,11 +185,13 @@ then
     chown -R www-data:www-data "$NC_APPS_PATH"
     occ_command config:app:set onlyoffice DocumentServerUrl --value="$(occ_command_no_check config:system:get overwrite.cli.url)apps/documentserver_community/"
     msg_box "OnlyOffice was successfully installed."
+else
+    msg_box "The documentserver_community app failed to install. Please try again later.\n\nIf the error presist, please report the issue to https://github.com/nextcloud/documentserver_community\n\n'sudo -u www-data php ./occ app:install documentserver_community failed!'"
 fi
 
-if ! is_app_installed onlyoffice || ! is_app_installed documentserver_community
+if ! is_app_installed onlyoffice
 then
-    msg_box "Something got wrong during the installation. Please report this here: $ISSUES"
+    msg_box "The onlyoffice app failed to install. Please try again later."
 fi
 
 # Just make sure the script exits
