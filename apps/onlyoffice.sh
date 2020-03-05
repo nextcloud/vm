@@ -76,6 +76,13 @@ then
                 count=$((count+1))
             fi
         done
+    else
+msg_box "You need to run at least Nextcloud 18.0.1 to be able to run OnlyOffice. Please upgrade using the built in script:
+
+'sudo bash $SCRIPTS/update.sh'
+
+You can also buy support directly in our shop: https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
+        exit
     fi
 # Check if OnlyOffice is installed using the new method
 elif version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
