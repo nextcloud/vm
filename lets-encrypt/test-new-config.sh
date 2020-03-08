@@ -56,6 +56,11 @@ cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/sh
 if ! certbot renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1 ; then
         echo "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
+        # Check if port 80 is open
+        if ! check_open_port 80 $1
+        then
+            notify_admin_gui "Let's Encrypt failed to renew!" "It seems lke port 80 is closed in your system, which means that your TLS certificate can't be renewed automatically. Please open port 80 to renew your certificate."
+        fi
 else
         echo "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
 fi
