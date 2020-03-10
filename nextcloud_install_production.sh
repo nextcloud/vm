@@ -181,6 +181,7 @@ esac
 fi
 
 # Set DNS resolver
+# https://medium.com/@ahmadb/fixing-dns-issues-in-ubuntu-18-04-lts-bd4f9ca56620
 choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Quad9" "(https://www.quad9.net/)" ON \
 "Cloudflare" "(https://www.cloudflare.com/dns/)" OFF \
