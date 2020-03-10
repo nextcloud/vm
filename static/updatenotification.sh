@@ -28,8 +28,8 @@ then
 fi
 
 if [ "$REPORTEDNCVERSION" == "$NCVERSION" ]
-then    
-    print_text_in_color "$ICyan" "The notification about a new NC-Softwareupdate has been already reported! ($NCVERSION)"
+then
+    print_text_in_color "$ICyan" "The notification regarding the new Nextcloud update has been already reported! ($NCVERSION)"
     exit
 fi
 
@@ -40,11 +40,11 @@ then
         notify_admin_gui \
         "New Nextcloud version!" \
         "Nextcloud $NCVERSION just became available. Since you are running Automatic Updates at $AUT_UPDATES_TIME:00, you don't need to bother about updating the server manually, as that's already taken care of."
-        sed -i "s/^REPORTEDNCVERSION.*/REPORTEDNCVERSION=$NCVERSION/" $SCRIPTS/updatenotification.sh
+        sed -i "s|^REPORTEDNCVERSION.*|REPORTEDNCVERSION=$NCVERSION|" $SCRIPTS/updatenotification.sh
     else
         notify_admin_gui \
         "Update available!" \
         "Nextcloud $NCVERSION is available. Please run 'sudo bash /var/scripts/update.sh' from your CLI to update your server."
-        sed -i "s/^REPORTEDNCVERSION.*/REPORTEDNCVERSION=$NCVERSION/" $SCRIPTS/updatenotification.sh
+        sed -i "s|^REPORTEDNCVERSION.*|REPORTEDNCVERSION=$NCVERSION|" $SCRIPTS/updatenotification.sh
     fi
 fi
