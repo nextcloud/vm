@@ -41,8 +41,8 @@ fi
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
-    # Greater than 18.0.0 is 18.0.1 which is required
-    if version_gt "$CURRENTVERSION" "18.0.0"
+    # Greater than 18.0.1 is 18.0.2 which is required
+    if version_gt "$CURRENTVERSION" "18.0.1"
     then
         msg_box "Your server is compatible with the new way of installing OnlyOffice. We will now remove the old docker and install the app from Nextcloud instead."
         # Remove docker image
@@ -85,7 +85,7 @@ You can also buy support directly in our shop: https://shop.hanssonit.se/product
         exit
     fi
 # Check if OnlyOffice is installed using the new method
-elif version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
+elif version_gt "$CURRENTVERSION" "18.0.1" && ! does_this_docker_exist 'onlyoffice/documentserver'
 then
     if is_app_enabled documentserver_community
     then
