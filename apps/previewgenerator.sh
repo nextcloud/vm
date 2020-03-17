@@ -28,7 +28,7 @@ then
 fi
 
 # Encryption may not be enabled
-if [ -n "$(occ_command app:list | grep encryption | awk '{print $3}')" ]
+if is_app_enabled encryption
 then
     msg_box "It seems like you have encryption enabled which is unsupported when using the Preview Generator"
     exit
@@ -46,7 +46,7 @@ then
     install_and_enable_app previewgenerator
 
     # check if the previewgenerator is installed and enabled
-    if [ -d "$NC_APPS_PATH/previewgenerator" ]
+    if is_app_installed previewgenerator
     then
         # enable previews
         occ_command config:system:set enable_previews --value=true --type=boolean

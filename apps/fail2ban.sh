@@ -18,6 +18,9 @@ debug_mode
 # Check if root
 root_check
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Check if fail2ban is already installed
 print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
 if is_this_installed fail2ban
@@ -50,9 +53,6 @@ else
     print_text_in_color "$ICyan" "Installing Fail2ban..."
 fi
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
-
 ### Local variables ###
 # location of Nextcloud logs
 NCLOG="$(find / -name nextcloud.log)"
@@ -83,6 +83,7 @@ occ_command config:system:set logfile --value="$NCLOG"
 occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
 
 # Create nextcloud.conf file
+# Test: failregex = Login failed.*Remote IP.*<HOST>
 cat << NCONF > /etc/fail2ban/filter.d/nextcloud.conf
 [Definition]
 failregex=^{"reqId":".*","remoteAddr":".*","app":"core","message":"Login failed: '.*' \(Remote IP: '<HOST>'\)","level":2,"time":".*"}$

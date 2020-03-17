@@ -18,6 +18,18 @@ RORDIR=/opt/es/
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 
+# Helper function for generating random passwords
+gen_passwd() {
+    local length=$1
+    local charset="$2"
+    local password=""
+    while [ ${#password} -lt "$length" ]
+    do
+        password=$(echo "$password""$(head -c 100 /dev/urandom | LC_ALL=C tr -dc "$charset")" | fold -w "$length" | head -n 1)
+    done
+    echo "$password"
+}
+
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
@@ -48,14 +60,14 @@ UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
-MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+MARIADB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+NEWMARIADBPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 ETCMYCNF=/etc/mysql/my.cnf
 MYCNF=/root/.my.cnf
 [ -n "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
-PGDB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 [ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
@@ -101,21 +113,21 @@ ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
 RSHUF=$(shuf -i 30-35 -n 1)
-REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
+REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 # Extra security
 SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-[ -n "$ES_INSTALL" ] && INDEX_USER=$(tr -dc '[:lower:]' < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ -n "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ -n "$ES_INSTALL" ] && INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
+[ -n "$ES_INSTALL" ] && ROREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
 [ -n "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
 [ -n "$ES_INSTALL" ] && fts_es_name="fts_esror"
 # Talk
 [ -n "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
 [ -n "$TURN_INSTALL" ] && TURN_PORT=5349
 [ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
-[ -n "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ -n "$TURN_INSTALL" ] && TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 
 ## FUNCTIONS
@@ -365,6 +377,11 @@ then
     print_text_in_color "$ICyan" "Please run this again to set optimal values"
 fi
 restart_webserver
+}
+
+# Compatibility with older VMs
+calculate_max_children() {
+    calculate_php_fpm
 }
 
 test_connection() {
@@ -683,13 +700,34 @@ calc_wt_size() {
     export WT_MENU_HEIGHT
 }
 
+# example: is_app_enabled documentserver_community
+is_app_enabled() {
+install_if_not jq
+if occ_command app:list --output=json | jq -e ".enabled | .$1" > /dev/null
+then
+    return 0
+else
+    return 1
+fi
+}
+
+#example: is_app_installed documentserver_community
+is_app_installed() {
+if [ -d "$NC_APPS_PATH/$1" ]
+then
+    return 0
+else
+    return 1
+fi
+}
+
 install_and_enable_app() {
 # Download and install $1
-if [ ! -d "$NC_APPS_PATH/$1" ]
+if ! is_app_installed "$1"
 then
     print_text_in_color "$ICyan" "Installing $1..."
     # occ_command not possible here because it uses check_command and will exit if occ_command fails
-    installcmd="$(sudo -u www-data php ${NCPATH}/occ app:install "$1")"
+    installcmd="$(occ_command_no_check app:install "$1")"
     if grep 'not compatible' <<< "$installcmd"
     then
 msg_box "The $1 app could not be installed.
@@ -702,7 +740,7 @@ or when a new version of the app is released with the following command:
     rm -Rf "$NCPATH/apps/$1"
     else
         # Enable $1
-        if [ -d "$NC_APPS_PATH/$1" ]
+        if is_app_installed "$1"
         then
             occ_command app:enable "$1"
             chown -R www-data:www-data "$NC_APPS_PATH"
@@ -710,9 +748,7 @@ or when a new version of the app is released with the following command:
     fi
 else
     print_text_in_color "$ICyan" "It seems like $1 is installed already, trying to enable it..."
-    # occ_command not possible here because it uses check_command and will exit if occ_command fails
-    sudo -u www-data php ${NCPATH}/occ app:enable "$1"
-    chown -R www-data:www-data "$NC_APPS_PATH"
+    occ_command_no_check app:enable "$1"
 fi
 }
 
@@ -900,6 +936,12 @@ any_key() {
 }
 
 lowest_compatible_nc() {
+if [ -z "$NC_UPDATE" ]
+then
+# shellcheck source=lib.sh
+NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
+unset NC_UPDATE
+fi
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
 msg_box "This script is developed to work with Nextcloud $1 and later.
@@ -934,8 +976,12 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
+if [ -z "$NC_UPDATE" ]
+then
+# shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
 unset NC_UPDATE
+fi
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
@@ -1072,6 +1118,12 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 # 2 = repository
 # Nextcloud version
 git_apply_patch() {
+if [ -z "$NC_UPDATE" ]
+then
+# shellcheck source=lib.sh
+NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
+unset NC_UPDATE
+fi
 if [[ "$CURRENTVERSION" = "$3" ]]
 then
     curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
@@ -1097,7 +1149,7 @@ if lshw -c system | grep -q NUC8i3BEH
 then
     if lshw -c memory | grep -q BLS16G4
     then
-        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81 || lshw -c disk | grep -q "Samsung SSD 860"
+        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81 || lshw -c disk | grep -q "Samsung SSD 860" || lshw -c disk | grep -q ST5000LM000-2AN1
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
@@ -1128,16 +1180,14 @@ esac
 #
 # occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
-install_if_not jq
-if ! occ_command_no_check app:list --output=json | jq -e '.enabled | .notifications' > /dev/null
+if ! is_app_enabled notifications
 then
-    print_text_in_color "$IGreen" "The notifications app isn't enabled - unable to send notifications"
+    print_text_in_color "$IRed" "The notifications app isn't enabled - unable to send notifications"
     return 1
 fi
 
-CHECK_USERS=$(occ_command_no_check user:list --output=json | jq -r 'keys[]')
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-for admin in $CHECK_USERS
+occ_command_no_check user:list --output=json | jq -r 'keys[]' | while read -r admin
 do
     if occ_command_no_check user:info --output=json "$admin" | jq -e '.groups | index("admin")' > /dev/null
     then
