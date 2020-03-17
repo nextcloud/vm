@@ -41,7 +41,7 @@ else
     apt install net-tools -y
 fi
 
-# Install net-tools if not existing
+# Install whiptail if not existing
 if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     print_text_in_color "$IGreen" "whiptail OK"
@@ -118,11 +118,13 @@ fi
 # Check if it's a clean server
 stop_if_installed postgresql
 stop_if_installed apache2
+stop_if_installed nginx
 stop_if_installed php
 stop_if_installed php-fpm
 stop_if_installed php"$PHPVER"-fpm
 stop_if_installed php7.0-fpm
 stop_if_installed php7.1-fpm
+stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
@@ -179,6 +181,7 @@ esac
 fi
 
 # Set DNS resolver
+# https://medium.com/@ahmadb/fixing-dns-issues-in-ubuntu-18-04-lts-bd4f9ca56620
 choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Quad9" "(https://www.quad9.net/)" ON \
 "Cloudflare" "(https://www.cloudflare.com/dns/)" OFF \
@@ -393,7 +396,7 @@ occ_command config:system:set upgrade.disable-web --value="true"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_static_script updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
-crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * 6 $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
+crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time

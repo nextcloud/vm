@@ -39,10 +39,8 @@ case "$choice" in
         msg_box "This option will will disable a feature named 'rich workspaces'. It will disable the top notes in GUI."
         if [[ "yes" == $(ask_yes_or_no "Do you want to disable rich workspaces?") ]]
         then
-            # Install jq if not already installed
-            install_if_not jq
             # Check if text is enabled
-            if ! occ_command app:list --output=json | jq -e '.enabled | .text' > /dev/null
+            if ! is_app_enabled text
                 then
                 msg_box "The text app isn't enabled - unable to disable rich workspaces."
                 sleep 1

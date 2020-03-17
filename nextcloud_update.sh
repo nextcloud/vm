@@ -97,12 +97,11 @@ fi
 # Update Netdata
 if [ -d /etc/netdata ]
 then
-    if [ -f /usr/src/netdata.git/netdata-updater.sh ]
+    print_text_in_color "$ICyan" "Updating Netdata..."
+    NETDATA_UPDATER_PATH="$(find /usr -name 'netdata-updater.sh')"
+    if [ -n "$NETDATA_UPDATER_PATH" ]
     then
-        run_app_script netdata
-    elif [ -f /usr/libexec/netdata-updater.sh ]
-    then
-        bash /usr/libexec/netdata-updater.sh
+        bash "$NETDATA_UPDATER_PATH"
     fi
 fi
 

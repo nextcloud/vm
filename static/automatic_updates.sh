@@ -32,6 +32,7 @@ In the next step you will be able to choose to proceed or exit."
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to enable automatic updates?") ]]
 then
+    occ_command config:app:set updatenotification notify_groups --value="[]"
     touch $VMLOGS/update.log
     crontab -u root -l | { cat; echo "0 $AUT_UPDATES_TIME * * 6 $SCRIPTS/update.sh minor >> $VMLOGS/update.log"; } | crontab -u root -
     if [[ "yes" == $(ask_yes_or_no "Do you want to reboot your server after every update? *recommended*") ]]

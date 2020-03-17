@@ -90,7 +90,7 @@ do
     if ! grep -q "$SMBSHARES/$count" /etc/fstab
     then 
         # Write to /etc/fstab and mount
-        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3,uid=$UsID,gid=$GrID,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=$UsID,gid=$GrID,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
         mkdir -p "$SMBSHARES/$count"
         mount "$SMBSHARES/$count"
         # Check if mounting was successful
@@ -102,13 +102,16 @@ do
             break
         else
             # Install and enable files_external
-            install_and_enable_app files_external
+            if ! is_app_enabled files_external
+            then
+                install_and_enable_app files_external
+            fi
             # Create and mount external storage to the admin group
             MOUNT_ID=$(occ_command files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
             occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
             # Inform the user that mounting was successfull
-            msg_box "Your mount was successfull, congratulations!\nIt is accessible in your root directory in $SMBSHARES/$count.\nYou can now use the Nextcloud external storage app to access files there. The Share got already mounted to the Nextcloud admin-group."
+            msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing. Afterwards everything will work reliably."
             break
         fi
     fi

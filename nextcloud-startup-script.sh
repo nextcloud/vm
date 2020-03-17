@@ -380,7 +380,7 @@ choice=$(whiptail --title "Extra configurations" --checklist "Choose what you wa
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF 3>&1 1>&2 2>&3)
 
-case *"$choice" in
+case "$choice" in
     *"Security"*)
         clear
         run_static_script security

@@ -9,8 +9,6 @@ NC_UPDATE=1 && TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nex
 unset NC_UPDATE
 unset TURN_INSTALL
 
-print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -22,6 +20,40 @@ root_check
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
+
+# Check if adminer is already installed
+print_text_in_color "$ICyan" "Checking if Talk is already installed..."
+if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ]
+then
+    choice=$(whiptail --radiolist "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Uninstall Nextcloud Talk" "" OFF \
+    "Reinstall Nextcloud Talk" "" ON 3>&1 1>&2 2>&3)
+    
+    case "$choice" in
+        "Uninstall Nextcloud Talk")
+            print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
+            occ_command_no_check config:app:delete spreed stun_servers
+            occ_command_no_check config:app:delete spreed turn_servers
+            occ_command_no_check app:remove spreed
+            rm $TURN_CONF
+            apt purge coturn -y
+            msg_box "Nextcloud Talk was successfully uninstalled and all settings were resetted."
+            exit
+        ;;
+        "Reinstall Nextcloud Talk")
+            print_text_in_color "$ICyan" "Reinstalling Nextcloud Talk..."
+            occ_command_no_check config:app:delete spreed stun_servers
+            occ_command_no_check config:app:delete spreed turn_servers
+            occ_command_no_check app:remove spreed
+            rm $TURN_CONF
+            apt purge coturn -y
+        ;;
+        *)
+        ;;
+    esac
+else
+    print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
+fi
 
 # Check if Nextcloud is installed
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
@@ -98,9 +130,8 @@ bps-capacity=0
 stale-nonce
 cert=$CERTFILES/$TURN_DOMAIN/cert.pem
 pkey=$CERTFILES/$TURN_DOMAIN/privkey.pem
-dh-file=$CERTFILES/$TURN_DOMAIN/dhparam.pem
 cipher-list="ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AES:RSA+3DES:!ADH:!AECDH:!MD5"
-no-loopback-peers
+allow-loopback-peers
 no-multicast-peers
 no-tlsv1
 no-tlsv1_1
@@ -134,7 +165,7 @@ check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 # Enable Spreed (Talk)
 STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
 TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
-if [ ! -d "$NC_APPS_PATH"/spreed ]
+if ! is_app_installed spreed
 then
     install_and_enable_app spreed
     occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
@@ -142,7 +173,7 @@ then
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 
-if [ -d "$NC_APPS_PATH"/spreed ]
+if is_app_installed spreed
 then
 msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:
 https://nextcloud.com/talk/"
