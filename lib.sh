@@ -522,6 +522,7 @@ then
     # Cleanup
     apt remove certbot -y
     apt autoremove -y
+    rm -f "$SCRIPTS"/test-new-config.sh
 fi
 
 # Restart webserver services
