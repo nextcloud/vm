@@ -55,7 +55,7 @@ fi
 
 ### Local variables ###
 # location of Nextcloud logs
-NCLOG="$(find / -name nextcloud.log)"
+NCLOG="$(print_text_in_color "$ICyan" "Finding nextclod.log..." && find / -name nextcloud.log -quit)"
 # time to ban an IP that exceeded attempts
 BANTIME_=600000
 # cooldown time for incorrect passwords
