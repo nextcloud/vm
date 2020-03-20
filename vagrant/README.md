@@ -16,3 +16,6 @@ Go to [https://localhost:8080/](https://localhost:8080/) and access Nextcloud wi
 
 See https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh for default values.
 
+# Special thanks to
+@gjgd for providing https://github.com/gjgd/vagrant-nextcloud which this is based upon
+
