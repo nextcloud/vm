@@ -106,6 +106,29 @@ fi
 if network_ok
 then
     print_text_in_color "$IGreen" "Online!"
+elif home_sme_server
+then
+msg_box "It seems like the last try failed as well using LAN ethernet.
+
+Since the Home/SME server is equipped with a WIFI module, you will now be asked to enable it to get connectivity.
+
+Please note: It's not recomended to run a server on WIFI. Using an ethernet cable is always the best."
+    if [[ "yes" == $(ask_yes_or_no "Do you want to enable WIFI on this server?") ]]
+    then
+        nmtui
+    fi
+        if network_ok
+        then
+            print_text_in_color "$IGreen" "Online!"
+	else
+msg_box "Network NOT OK. You must have a working network connection to run this script.
+
+Please contact us for support:
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/
+
+Please also post this issue on: https://github.com/nextcloud/vm/issues"
+        exit 1
+        fi
 else
 msg_box "Network NOT OK. You must have a working network connection to run this script.
 
