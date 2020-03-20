@@ -795,7 +795,10 @@ then
 fi
 
 # Force MOTD to show correct number of updates
-sudo /usr/lib/update-notifier/update-motd-updates-available --force
+if is_this_installed update-notifier-common
+then
+    sudo /usr/lib/update-notifier/update-motd-updates-available --force
+fi
 
 # Reboot
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
