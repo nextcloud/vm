@@ -309,6 +309,16 @@ msg_box "Please note:
     https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 clear
 
+msg_box "Please note:
+
+The first setup is meant to be run once, and not aborted.
+If you feel uncertain about the options during the setup, just choose the defaults by hitting [ENTER] at each question.
+
+When the setup is done, the server will automatically reboot.
+
+Please report any issues to: $ISSUES"
+clear
+
 # Change Timezone
 print_text_in_color "$ICyan" "Current timezone is $(cat /etc/timezone)"
 if [[ "no" == $(ask_yes_or_no "Do you want to change the timezone?") ]]
