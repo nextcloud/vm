@@ -55,7 +55,9 @@ STABLEVERSION="nextcloud-$NCVERSION"
 
 The `nextcloud_install_production.sh` script can be run as part of Vagrant provisioning.
 
-See [github.com/gjgd/vagrant-nextcloud](https://github.com/gjgd/vagrant-nextcloud).
+See [this subrepo](https://github.com/nextcloud/vm/tree/master/vagrant) for more information.
+
+Please report any issues you can find. Improvments are welcome!
 
 ## First look
 ![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
