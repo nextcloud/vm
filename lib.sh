@@ -628,7 +628,7 @@ mem_required="$((${1}*(1000*1024)))" # 100MiB/GiB margin
 if [ "${mem_available}" -lt "${mem_required}" ]
 then
     print_text_in_color "$IRed" "Error: ${1} GB RAM required to install ${2}!" >&2
-    print_text_in_color "$IRed" "Current RAM is: ("$mem_available_gb" GB)" >&2
+    print_text_in_color "$IRed" "Current RAM is: ($mem_available_gb GB)" >&2
     sleep 3
     msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
 
@@ -637,7 +637,7 @@ then
     Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
 else
-    print_text_in_color "$IGreen" "RAM for ${2} OK! ("$mem_available_gb" GB)"
+    print_text_in_color "$IGreen" "RAM for ${2} OK! ($mem_available_gb GB)"
 fi
 }
 
