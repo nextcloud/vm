@@ -38,7 +38,8 @@ then
     case "$choice" in
         "Uninstall Fulltextsearch")
             print_text_in_color "$ICyan" "Uninstalling Fulltextsearch..."
-
+            # Reset database table
+            check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
             # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
             if is_app_installed fulltextsearch
             then
@@ -54,12 +55,8 @@ then
             then
                 occ_command app:remove files_fulltextsearch
             fi
-
             # Remove nc_fts docker if installed
             docker_prune_this "$nc_fts"
-
-            # Reset database table
-            check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
 
             msg_box "Fulltextsearch was successfully uninstalled."
             exit
@@ -71,6 +68,9 @@ then
             if is_app_installed fulltextsearch
             then
                 print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
+                # Reset database table
+                check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
+                # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
                 occ_command_no_check fulltextsearch:reset
                 occ_command app:remove fulltextsearch
             fi
@@ -85,9 +85,6 @@ then
 
             # Remove nc_fts docker if installed
             docker_prune_this "$nc_fts"
-
-            # Reset database table
-            check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
         ;;
         *)
         ;;
