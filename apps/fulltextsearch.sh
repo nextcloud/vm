@@ -6,9 +6,10 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset ES_INSTALL
+unset NCDB
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -58,7 +59,7 @@ then
             docker_prune_this "$nc_fts"
 
             # Reset database table
-            sudo -Hiu postgres psql nextcloud_db -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
+            check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
 
             msg_box "Fulltextsearch was successfully uninstalled."
             exit
@@ -86,7 +87,7 @@ then
             docker_prune_this "$nc_fts"
 
             # Reset database table
-            sudo -Hiu postgres psql nextcloud_db -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
+            check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
         ;;
         *)
         ;;
