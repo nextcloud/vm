@@ -46,6 +46,16 @@ then
     fi
 fi
 
+# Check if local script is available.
+if [ -f "$SCRIPTS"/apps/tmbitwarden.sh ]
+then
+    msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download a script from get.docker.com for installing docker if not already done, and download scripts from github for installing and updating bitwarden, that will not be checked for integrity."
+    if [[ "no" == $(ask_yes_or_no "Do you want to install bitwarden anyway?") ]]
+    then
+        exit
+    fi
+fi
+
 print_text_in_color "$ICyan" "Installing Bitwarden password manager..."
 
 msg_box "Bitwarden is a password manager that is seperate from Nextcloud, though we provide this service because it's self hosted and secure.
