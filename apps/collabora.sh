@@ -46,7 +46,6 @@ then
             # Check if Collabora is previously installed
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
-            
             # Revoke LE
             SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
             if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
@@ -57,7 +56,6 @@ then
                     do rm -rf "$remove"
                 done
             fi
-            
             # Remove Apache2 config
             if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
             then
@@ -65,12 +63,23 @@ then
                 restart_webserver
                 rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
             fi
-            
             # Disable RichDocuments (Collabora App) if activated
             if is_app_installed richdocuments
             then
                 occ_command app:remove richdocuments
             fi
+            # Remove trusted domain
+            count=0
+            while [ "$count" -lt 10 ]
+            do
+                if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+                then
+                    occ_command_no_check config:system:delete trusted_domains "$count"
+                    break
+                else
+                    count=$((count+1))
+                fi
+            done
             
             msg_box "Collabora was successfully uninstalled."
             exit
@@ -81,12 +90,6 @@ then
             # Check if Collabora is previously installed
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
-            
-            # Disable RichDocuments (Collabora App) if activated
-            if is_app_installed richdocuments
-            then
-                occ_command app:remove richdocuments
-            fi
         ;;
         *)
         ;;
@@ -100,7 +103,6 @@ fi
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
     docker_prune_this 'onlyoffice/documentserver'
-    
     # Revoke LE
     SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
@@ -111,7 +113,6 @@ then
             do rm -rf "$remove"
         done
     fi
-    
     # Remove Apache2 config
     if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
     then
@@ -119,6 +120,18 @@ then
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
+    # Remove trusted domain
+    count=0
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        then
+            occ_command_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
 fi
 
 # remove OnlyOffice-documentserver if activated
@@ -128,7 +141,7 @@ then
     occ_command app:remove documentserver_community
 fi
 
-# Disable OnlyOffice (Collabora App) if activated
+# Disable OnlyOffice App if activated
 if is_app_installed onlyoffice
 then
     occ_command app:remove onlyoffice
@@ -285,7 +298,7 @@ then
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
     # Install Collabora App
-    occ_command app:install richdocuments
+    install_and_enable_app richdocuments
 else
     last_fail_tls "$SCRIPTS"/apps/collabora.sh
 fi

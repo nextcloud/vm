@@ -51,8 +51,8 @@ fi
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
-    # Greater than 18.0.0 is 18.0.1 which is required
-    if version_gt "$CURRENTVERSION" "18.0.0"
+    # Greater than 18.0.1 is 18.0.2 which is required
+    if version_gt "$CURRENTVERSION" "18.0.1"
     then
         msg_box "Your server is compatible with the new way of installing OnlyOffice. We will now remove the old docker and install the app from Nextcloud instead."
         # Remove docker image
@@ -74,11 +74,28 @@ then
             restart_webserver
             rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
         fi
-        # Remove app
-        occ_command_no_check app:remove onlyoffice
+       # Remove trusted domain
+        count=0
+        while [ "$count" -lt 10 ]
+        do
+            if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+            then
+                occ_command_no_check config:system:delete trusted_domains "$count"
+                break
+            else
+                count=$((count+1))
+            fi
+        done
+    else
+msg_box "You need to run at least Nextcloud 18.0.1 to be able to run OnlyOffice. Please upgrade using the built in script:
+
+'sudo bash $SCRIPTS/update.sh'
+
+You can also buy support directly in our shop: https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
+        exit
     fi
 # Check if OnlyOffice is installed using the new method
-elif version_gt "$CURRENTVERSION" "18.0.0" && ! does_this_docker_exist 'onlyoffice/documentserver'
+elif version_gt "$CURRENTVERSION" "18.0.1" && ! does_this_docker_exist 'onlyoffice/documentserver'
 then
     if is_app_enabled documentserver_community
     then
@@ -88,10 +105,15 @@ then
 
         case "$choice" in
             "Uninstall OnlyOffice")
-                print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
-                occ_command app:remove documentserver_community
-                msg_box "OnlyOffice was successfully uninstalled."
-                exit
+	        print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
+		occ_command app:remove documentserver_community
+                # Disable Onlyoffice App if activated
+                if is_app_installed onlyoffice
+                then
+                    occ_command app:remove onlyoffice
+                fi
+		msg_box "OnlyOffice was successfully uninstalled."
+		exit
             ;;
             "Reinstall OnlyOffice")
                 print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
@@ -148,8 +170,23 @@ then
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
-    # Remove app
-    occ_command_no_check app:remove richdocuments
+    # Disable Collabora App if activated
+    if is_app_installed richdocuments
+    then
+       occ_command app:remove richdocuments
+    fi
+    # Remove trusted domain
+    count=0
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        then
+            occ_command_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
 fi
 
 # Install OnlyOffice
@@ -165,11 +202,13 @@ then
     chown -R www-data:www-data "$NC_APPS_PATH"
     occ_command config:app:set onlyoffice DocumentServerUrl --value="$(occ_command_no_check config:system:get overwrite.cli.url)apps/documentserver_community/"
     msg_box "OnlyOffice was successfully installed."
+else
+    msg_box "The documentserver_community app failed to install. Please try again later.\n\nIf the error presist, please report the issue to https://github.com/nextcloud/documentserver_community\n\n'sudo -u www-data php ./occ app:install documentserver_community failed!'"
 fi
 
-if ! is_app_installed onlyoffice || ! is_app_installed documentserver_community
+if ! is_app_installed onlyoffice
 then
-    msg_box "Something got wrong during the installation. Please report this here: $ISSUES"
+    msg_box "The onlyoffice app failed to install. Please try again later."
 fi
 
 # Just make sure the script exits

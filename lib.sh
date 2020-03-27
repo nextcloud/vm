@@ -18,6 +18,18 @@ RORDIR=/opt/es/
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 
+# Helper function for generating random passwords
+gen_passwd() {
+    local length=$1
+    local charset="$2"
+    local password=""
+    while [ ${#password} -lt "$length" ]
+    do
+        password=$(echo "$password""$(head -c 100 /dev/urandom | LC_ALL=C tr -dc "$charset")" | fold -w "$length" | head -n 1)
+    done
+    echo "$password"
+}
+
 # Ubuntu OS
 DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
@@ -48,14 +60,14 @@ UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
-MARIADB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-NEWMARIADBPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+MARIADB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+NEWMARIADBPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 ETCMYCNF=/etc/mysql/my.cnf
 MYCNF=/root/.my.cnf
 [ -n "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
-PGDB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
-NEWPGPASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 [ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
@@ -101,21 +113,21 @@ ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
 RSHUF=$(shuf -i 30-35 -n 1)
-REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
+REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 # Extra security
 SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-[ -n "$ES_INSTALL" ] && INDEX_USER=$(tr -dc '[:lower:]' < /dev/urandom | fold -w "$SHUF" | head -n 1)
-[ -n "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ -n "$ES_INSTALL" ] && INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
+[ -n "$ES_INSTALL" ] && ROREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
 [ -n "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
 [ -n "$ES_INSTALL" ] && fts_es_name="fts_esror"
 # Talk
 [ -n "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
 [ -n "$TURN_INSTALL" ] && TURN_PORT=5349
 [ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
-[ -n "$TURN_INSTALL" ] && TURN_SECRET=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ -n "$TURN_INSTALL" ] && TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 
 ## FUNCTIONS
@@ -367,6 +379,11 @@ fi
 restart_webserver
 }
 
+# Compatibility with older VMs
+calculate_max_children() {
+    calculate_php_fpm
+}
+
 test_connection() {
 # Install dnsutils if not existing
 if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
@@ -505,6 +522,7 @@ then
     # Cleanup
     apt remove certbot -y
     apt autoremove -y
+    rm -f "$SCRIPTS"/test-new-config.sh
 fi
 
 # Restart webserver services
@@ -603,11 +621,14 @@ fi
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
 # Example: ram_check 2 Nextcloud
 ram_check() {
+install_if_not bc
 mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
-if [ "${mem_available}" -lt "$((${1}*1002400))" ]
+mem_available_gb="$(echo "scale=2; $mem_available/(1024*1024)" | bc)"
+mem_required="$((${1}*(924*1024)))" # 100MiB/GiB margin and allow 90% to be able to run on physical machines
+if [ "${mem_available}" -lt "${mem_required}" ]
 then
     print_text_in_color "$IRed" "Error: ${1} GB RAM required to install ${2}!" >&2
-    print_text_in_color "$IRed" "Current RAM is: ("$((mem_available/1002400))" GB)" >&2
+    print_text_in_color "$IRed" "Current RAM is: ($mem_available_gb GB)" >&2
     sleep 3
     msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
 
@@ -616,7 +637,7 @@ then
     Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
 else
-    print_text_in_color "$IGreen" "RAM for ${2} OK! ($((mem_available/1002400)) GB)"
+    print_text_in_color "$IGreen" "RAM for ${2} OK! ($mem_available_gb GB)"
 fi
 }
 
@@ -919,6 +940,12 @@ any_key() {
 }
 
 lowest_compatible_nc() {
+if [ -z "$NC_UPDATE" ]
+then
+# shellcheck source=lib.sh
+NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
+unset NC_UPDATE
+fi
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
 msg_box "This script is developed to work with Nextcloud $1 and later.
@@ -953,8 +980,12 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
+if [ -z "$NC_UPDATE" ]
+then
+# shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
 unset NC_UPDATE
+fi
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
@@ -1091,6 +1122,12 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 # 2 = repository
 # Nextcloud version
 git_apply_patch() {
+if [ -z "$NC_UPDATE" ]
+then
+# shellcheck source=lib.sh
+NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
+unset NC_UPDATE
+fi
 if [[ "$CURRENTVERSION" = "$3" ]]
 then
     curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
@@ -1116,7 +1153,7 @@ if lshw -c system | grep -q NUC8i3BEH
 then
     if lshw -c memory | grep -q BLS16G4
     then
-        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81 || lshw -c disk | grep -q "Samsung SSD 860"
+        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q ST5000LM015-2E81 || lshw -c disk | grep -q "Samsung SSD 860" || lshw -c disk | grep -q ST5000LM000-2AN1
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
@@ -1149,7 +1186,7 @@ esac
 notify_admin_gui() {
 if ! is_app_enabled notifications
 then
-    print_text_in_color "$IGreen" "The notifications app isn't enabled - unable to send notifications"
+    print_text_in_color "$IRed" "The notifications app isn't enabled - unable to send notifications"
     return 1
 fi
 
