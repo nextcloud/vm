@@ -28,7 +28,7 @@ then
     choice=$(whiptail --radiolist "It seems like 'Fail2Ban' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall Fail2Ban" "" OFF \
     "Reinstall Fail2Ban" "" ON 3>&1 1>&2 2>&3)
-    
+
     case "$choice" in
         "Uninstall Fail2Ban")
             print_text_in_color "$ICyan" "Uninstalling Fail2Ban and resetting all settings..."
@@ -55,7 +55,30 @@ fi
 
 ### Local variables ###
 # location of Nextcloud logs
-NCLOG="$(print_text_in_color "$ICyan" "Finding nextcloud.log..." && find / -name nextcloud.log -quit)"
+print_text_in_color "$ICyan" "Finding nextcloud.log..."
+while :
+do
+    NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
+
+    if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
+    then
+         for remove in "$NCLOG"
+         do
+             rm -f "$NCLOG"
+         done
+         print_text_in_color "$ICyan" "Found multiple logs, deleting all of them and creating a new one in the correnct path..."
+         # Create $VMLOGS dir
+         mkdir -p "$VMLOGS"
+         # Set loggging
+         occ_command config:system:set log_type --value=file
+         occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
+         occ_command config:system:set loglevel --value=2
+         chown www-data:www-data "$VMLOGS/nextcloud.log"
+    else
+        break
+    fi
+
+done
 # time to ban an IP that exceeded attempts
 BANTIME_=600000
 # cooldown time for incorrect passwords
@@ -67,19 +90,7 @@ apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
 check_command update-rc.d fail2ban disable
 
-if [ -z "$NCLOG" ]
-then
-    print_text_in_color "$IRed" "nextcloud.log not found"
-    print_text_in_color "$IRed" "Please add your logpath to $NCPATH/config/config.php and restart this script."
-    exit 1
-else
-    chown www-data:www-data "$NCLOG"
-fi
-
-# Set values in config.php
-occ_command config:system:set loglevel --value=2
-occ_command config:system:set log_type --value=file
-occ_command config:system:set logfile --value="$NCLOG"
+#Set timezone
 occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
 
 # Create nextcloud.conf file
@@ -92,7 +103,7 @@ failregex=^{"reqId":".*","remoteAddr":".*","app":"core","message":"Login failed:
 NCONF
 
 # Disable default Debian sshd chain
-check_command sed -i "s|true|false|g" /etc/fail2ban/jail.d/defaults-debian.conf 
+check_command sed -i "s|true|false|g" /etc/fail2ban/jail.d/defaults-debian.conf
 
 # Create jail.local file
 cat << FCONF > /etc/fail2ban/jail.local
@@ -145,7 +156,7 @@ maxretry = $MAXRETRY_
 enabled  = true
 port     = http,https
 filter   = nextcloud
-logpath  = $NCLOG
+logpath  = $VMLOGS
 maxretry = $MAXRETRY_
 FCONF
 
