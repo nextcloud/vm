@@ -1,10 +1,20 @@
 #!/bin/bash
+
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+
+# Use local lib file if existant
+if [ -f /var/scripts/main/lib.sh ]
+then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+source /var/scripts/main/lib.sh
+else
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/testing/lib.sh)
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -66,7 +76,7 @@ print_text_in_color "$ICyan" "Updating lib.sh..."
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-TLS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+TLS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/testing/lib.sh)
 unset TLS_INSTALL
 
 # Ask for domain name

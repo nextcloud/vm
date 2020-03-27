@@ -3,13 +3,25 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # SwITNet Ltd © - 2020, https://switnet.net/
 
+# Use local lib file if existant
+if [ -f /var/scripts/main/lib.sh ]
+then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && ES_INSTALL=1 source /var/scripts/main/lib.sh
+unset NC_UPDATE
+unset ES_INSTALL
+else
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+
+NCDB=1 && NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/testing/lib.sh)
 unset NC_UPDATE
 unset ES_INSTALL
 unset NCDB
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
