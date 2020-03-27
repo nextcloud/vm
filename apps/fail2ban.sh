@@ -75,10 +75,15 @@ do
          occ_command config:system:set loglevel --value=2
          chown www-data:www-data "$VMLOGS/nextcloud.log"
     else
-        break
+         # Set loggging
+         occ_command config:system:set log_type --value=file
+         occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
+         occ_command config:system:set loglevel --value=2
+         break
     fi
 
 done
+
 # time to ban an IP that exceeded attempts
 BANTIME_=600000
 # cooldown time for incorrect passwords
