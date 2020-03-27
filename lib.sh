@@ -624,7 +624,7 @@ ram_check() {
 install_if_not bc
 mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
 mem_available_gb="$(echo "scale=2; $mem_available/(1024*1024)" | bc)"
-mem_required="$((${1}*(1000*1024)))" # 100MiB/GiB margin
+mem_required="$((${1}*(924*1024)))" # 100MiB/GiB margin and allow 90% to be able to run on physical machines
 if [ "${mem_available}" -lt "${mem_required}" ]
 then
     print_text_in_color "$IRed" "Error: ${1} GB RAM required to install ${2}!" >&2
