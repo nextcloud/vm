@@ -61,6 +61,7 @@ do
     NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
     if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
     then
+        # If muliplte logs already exist, delete them and set the correct path
         print_text_in_color "$ICyan" "Found multiple logs, deleting all of them and creating a new one in the correnct path..."
         xargs rm -f <<< "$NCLOG"
         # Create $VMLOGS dir
@@ -94,7 +95,7 @@ apt update -q4 & spinner_loading
 check_command apt install fail2ban -y
 check_command update-rc.d fail2ban disable
 
-#Set timezone
+# Set timezone
 occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
 
 # Create nextcloud.conf file
