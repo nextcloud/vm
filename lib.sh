@@ -522,6 +522,7 @@ then
     # Cleanup
     apt remove certbot -y
     apt autoremove -y
+    rm -f "$SCRIPTS"/test-new-config.sh
 fi
 
 # Restart webserver services
@@ -620,11 +621,14 @@ fi
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
 # Example: ram_check 2 Nextcloud
 ram_check() {
+install_if_not bc
 mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
-if [ "${mem_available}" -lt "$((${1}*1002400))" ]
+mem_available_gb="$(echo "scale=2; $mem_available/(1024*1024)" | bc)"
+mem_required="$((${1}*(924*1024)))" # 100MiB/GiB margin and allow 90% to be able to run on physical machines
+if [ "${mem_available}" -lt "${mem_required}" ]
 then
     print_text_in_color "$IRed" "Error: ${1} GB RAM required to install ${2}!" >&2
-    print_text_in_color "$IRed" "Current RAM is: ("$((mem_available/1002400))" GB)" >&2
+    print_text_in_color "$IRed" "Current RAM is: ($mem_available_gb GB)" >&2
     sleep 3
     msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
 
@@ -633,7 +637,7 @@ then
     Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
     exit 1
 else
-    print_text_in_color "$IGreen" "RAM for ${2} OK! ($((mem_available/1002400)) GB)"
+    print_text_in_color "$IGreen" "RAM for ${2} OK! ($mem_available_gb GB)"
 fi
 }
 

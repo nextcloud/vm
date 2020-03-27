@@ -301,7 +301,7 @@ a2enconf php"$PHPVER"-fpm
 print_text_in_color "$ICyan" "Enabling HTTP/2 server wide..."
 cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
-    Protocols h2 h2c http/1.1
+    Protocols h2 http/1.1
     H2Direct on
 </IfModule>
 HTTP2_ENABLE
@@ -795,7 +795,10 @@ then
 fi
 
 # Force MOTD to show correct number of updates
-sudo /usr/lib/update-notifier/update-motd-updates-available --force
+if is_this_installed update-notifier-common
+then
+    sudo /usr/lib/update-notifier/update-motd-updates-available --force
+fi
 
 # Reboot
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
