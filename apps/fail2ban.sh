@@ -59,31 +59,30 @@ print_text_in_color "$ICyan" "Finding nextcloud.log..."
 while :
 do
     NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
-
     if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
     then
-         for remove in "$NCLOG"
-         do
-             rm -f "$NCLOG"
-         done
-         print_text_in_color "$ICyan" "Found multiple logs, deleting all of them and creating a new one in the correnct path..."
-         # Create $VMLOGS dir
-         mkdir -p "$VMLOGS"
-         # Set loggging
-         occ_command config:system:set log_type --value=file
-         occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
-         occ_command config:system:set loglevel --value=2
-         chown www-data:www-data "$VMLOGS/nextcloud.log"
+        print_text_in_color "$ICyan" "Found multiple logs, deleting all of them and creating a new one in the correnct path..."
+        xargs rm -f <<< "$NCLOG"
+        # Create $VMLOGS dir
+        mkdir -p "$VMLOGS"
+        # Set loggging
+        occ_command config:system:set log_type --value=file
+        occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
+        occ_command config:system:set loglevel --value=2
+        chown www-data:www-data "$VMLOGS/nextcloud.log"
     else
-         # Set loggging
-         occ_command config:system:set log_type --value=file
-         occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
-         occ_command config:system:set loglevel --value=2
-         break
+        if [ "$(occ_command config:system:get logfile)" = "$VMLOGS/nextcloud.log" ]
+        then
+            break
+        else
+            # Set loggging
+            occ_command config:system:set log_type --value=file
+            occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
+            occ_command config:system:set loglevel --value=2
+            break
+        fi
     fi
-
 done
-
 # time to ban an IP that exceeded attempts
 BANTIME_=600000
 # cooldown time for incorrect passwords
