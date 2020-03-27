@@ -57,6 +57,9 @@ then
             # Remove nc_fts docker if installed
             docker_prune_this "$nc_fts"
 
+            # Reset database table
+            sudo -Hiu postgres psql nextcloud_db -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
+
             msg_box "Fulltextsearch was successfully uninstalled."
             exit
         ;;
@@ -81,6 +84,9 @@ then
 
             # Remove nc_fts docker if installed
             docker_prune_this "$nc_fts"
+
+            # Reset database table
+            sudo -Hiu postgres psql nextcloud_db -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
         ;;
         *)
         ;;
