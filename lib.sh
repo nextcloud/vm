@@ -803,8 +803,25 @@ rm -f releases
 # Initial download of script in ../static
 # call like: download_static_script name_of_script
 download_static_script() {
-    # Get ${1} script
+    # Delete the script in /var/scripts
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    
+    # Copy local file to the right place if existant
+    if [ -f "${SCRIPTS}/static/$1.sh" ]
+    then
+        cp "${SCRIPTS}/static/$1.sh" "${SCRIPTS}"
+        return
+    elif [ -f "${SCRIPTS}/static/$1.php" ]
+    then
+        cp "${SCRIPTS}/static/$1.php" "${SCRIPTS}"
+        return
+    elif [ -f "${SCRIPTS}/static/$1.py" ]
+    then
+        cp "${SCRIPTS}/static/$1.py" "${SCRIPTS}"
+        return
+    fi
+    
+    # Get ${1} script
     if ! { curl_to_dir "${STATIC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
@@ -817,8 +834,25 @@ download_static_script() {
 # Initial download of script in ../lets-encrypt
 # call like: download_le_script name_of_script
 download_le_script() {
-    # Get ${1} script
+    # Delete the script in /var/scripts
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    
+    # Copy local file to the right place if existant
+    if [ -f "${SCRIPTS}/lets-encrypt/$1.sh" ]
+    then
+        cp "${SCRIPTS}/lets-encrypt/$1.sh" "${SCRIPTS}"
+        return
+    elif [ -f "${SCRIPTS}/lets-encrypt/$1.php" ]
+    then
+        cp "${SCRIPTS}/lets-encrypt/$1.php" "${SCRIPTS}"
+        return
+    elif [ -f "${SCRIPTS}/lets-encrypt/$1.py" ]
+    then
+        cp "${SCRIPTS}/lets-encrypt/$1.py" "${SCRIPTS}"
+        return
+    fi
+    
+    # Get ${1} script
     if ! { curl_to_dir "${LETS_ENC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
@@ -831,6 +865,22 @@ download_le_script() {
 # Run any script in ../master
 # call like: run_main_script name_of_script
 run_main_script() {
+    # Use local file if existant
+    if [ -f "${SCRIPTS}/main/$1.sh" ]
+    then
+        bash "${SCRIPTS}/main/$1.sh"
+        return
+    elif [ -f "${SCRIPTS}/main/$1.php" ]
+    then
+        php "${SCRIPTS}/main/$1.php"
+        return
+    elif [ -f "${SCRIPTS}/main/$1.py" ]
+    then
+        install_if_not python3
+        python3 "${SCRIPTS}/main/$1.py"
+        return
+    fi
+
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if curl_to_dir "${GITHUB_REPO}" "${1}.sh" "$SCRIPTS"
     then
@@ -855,6 +905,22 @@ run_main_script() {
 # Run any script in ../static
 # call like: run_static_script name_of_script
 run_static_script() {
+    # Use local file if existant
+    if [ -f "${SCRIPTS}/static/$1.sh" ]
+    then
+        bash "${SCRIPTS}/static/$1.sh"
+        return
+    elif [ -f "${SCRIPTS}/static/$1.php" ]
+    then
+        php "${SCRIPTS}/static/$1.php"
+        return
+    elif [ -f "${SCRIPTS}/static/$1.py" ]
+    then
+        install_if_not python3
+        python3 "${SCRIPTS}/static/$1.py"
+        return
+    fi
+    
     # Get ${1} script
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if curl_to_dir "${STATIC}" "${1}.sh" "$SCRIPTS"
@@ -880,6 +946,22 @@ run_static_script() {
 # Run any script in ../apps
 # call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
 run_app_script() {
+    # Use local file if existant
+    if [ -f "${SCRIPTS}/apps/$1.sh" ]
+    then
+        bash "${SCRIPTS}/apps/$1.sh"
+        return
+    elif [ -f "${SCRIPTS}/apps/$1.php" ]
+    then
+        php "${SCRIPTS}/apps/$1.php"
+        return
+    elif [ -f "${SCRIPTS}/apps/$1.py" ]
+    then
+        install_if_not python3
+        python3 "${SCRIPTS}/apps/$1.py"
+        return
+    fi
+    
     rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
     if curl_to_dir "${APP}" "${1}.sh" "$SCRIPTS"
     then
