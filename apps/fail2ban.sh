@@ -70,6 +70,7 @@ do
         occ_command config:system:set log_type --value=file
         occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
         occ_command config:system:set loglevel --value=2
+        touch "$VMLOGS/nextcloud.log"
         chown www-data:www-data "$VMLOGS/nextcloud.log"
     else
         if [ "$(occ_command config:system:get logfile)" = "$VMLOGS/nextcloud.log" ]
@@ -80,6 +81,8 @@ do
             occ_command config:system:set log_type --value=file
             occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
             occ_command config:system:set loglevel --value=2
+            touch "$VMLOGS/nextcloud.log"
+            chown www-data:www-data "$VMLOGS/nextcloud.log"
             break
         fi
     fi
