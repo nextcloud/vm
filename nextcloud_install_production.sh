@@ -16,8 +16,7 @@ then
     fi
 
     # Test internet connection
-    ping -c1 -W1 github.com &>/dev/null
-    if [[ $? != 0 ]]
+    if ! ping -c1 -W1 github.com &>/dev/null
     then
         echo "Couldn't reach github.com. Exiting..."
         exit 1
