@@ -621,6 +621,6 @@ sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/g
 
 # Reboot
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
-rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
-rm -f "$SCRIPTS/nextcloud-startup-script.sh"
+check_command rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
+check_command rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 reboot
