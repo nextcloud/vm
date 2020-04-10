@@ -584,8 +584,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 18.04 "$DISTRO" 18.04.4; then
-msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
+if ! version 18.04 "$DISTRO" 20.04.4; then
+msg_box "Ubuntu version $DISTRO must be between 18.04 - 20.04.4"
     exit 1
 fi
 }
