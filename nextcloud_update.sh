@@ -41,6 +41,17 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     fi
 fi
 
+# Ubuntu 16.04 is deprecated
+check_distro_version
+
+# Hold PHP if Ondrejs PPA is used
+print_text_in_color "$ICyan" "Checking if Onreys PPA is installed..."
+apt update -q4 & spinner_loading
+if apt-cache policy | grep "ondrej" >/dev/null 2>&1
+then
+    apt-mark hold php*
+fi
+
 # System Upgrade
 if is_this_installed mysql-common
 then
@@ -49,16 +60,6 @@ then
     then
          apt-mark hold mariadb*
     fi
-fi
-
-# Ubuntu 16.04 is deprecated
-check_distro_version
-
-# Hold PHP due to max supported version in Nextcloud
-# FIX: Allow 7.2 - 7.4 but don't update if using ondrejs packages
-if is_this_installed php7.3-common || is_this_installed php7.4-common
-then
-    apt-mark hold php*
 fi
 
 # Move all logs to new dir (2019-09-04)
@@ -83,7 +84,6 @@ then
     fi
 fi
 
-apt update -q4 & spinner_loading
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 if is_this_installed mysql-common
 then
@@ -111,7 +111,7 @@ fi
 
 # Update Redis PHP extension
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
-if version 20.04 "$DISTRO" 20.04.10
+if version 20.04 "$DISTRO" 20.04.6
 then
     if pecl list | grep redis >/dev/null 2>&1
     then
