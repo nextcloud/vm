@@ -56,7 +56,7 @@ then
     sleep 1
 else
 msg_box "OK, but if you want to run this script later,
-just type: sudo bash /var/scripts/activate-rls.sh"
+just type: sudo bash /var/scripts/activate-tls.sh"
     exit
 fi
 
