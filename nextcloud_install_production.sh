@@ -263,7 +263,6 @@ check_command apt install -y \
     php"$PHPVER"-json \
     php"$PHPVER"-gmp \
     php"$PHPVER"-bz2 \
-
     php-pear
     # php"$PHPVER"-imagick \
     # libmagickcore-6.q16-3-extra
