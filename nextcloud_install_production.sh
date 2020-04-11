@@ -260,13 +260,20 @@ check_command apt install -y \
     php"$PHPVER"-zip \
     php"$PHPVER"-mbstring \
     php"$PHPVER"-soap \
-#    php"$PHPVER"-smbclient \
     php"$PHPVER"-json \
     php"$PHPVER"-gmp \
     php"$PHPVER"-bz2 \
+
     php-pear
     # php"$PHPVER"-imagick \
     # libmagickcore-6.q16-3-extra
+    
+ # Install smbclient
+ # php"$PHPVER"-smbclient does not yet work in PHP 7.4
+ install_if_not libsmbclient-dev
+ yes no | pecl install smbclient
+ echo "# SMBCLIENT" >> $PHP_INI
+ echo "extension=smbclient.so" >> $PHP_INI
 
 # Enable php-fpm
 a2enconf php"$PHPVER"-fpm
