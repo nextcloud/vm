@@ -662,9 +662,12 @@ if ! "$@";
 then
     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
     print_text_in_color "$IRed" "$* failed"
-    notify_admin_gui \
-    "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!" \
-    "$* failed"
+    if occ_command_no_check -V > /dev/null
+    then
+        notify_admin_gui \
+        "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!" \
+        "$* failed"
+    fi
     exit 1
 fi
 }
