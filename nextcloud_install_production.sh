@@ -232,7 +232,7 @@ fi
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
 # curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt update -q4 & spinner_loading
-apt install postgresql-10 -y
+apt install postgresql -y
 
 # Create DB
 cd /tmp
@@ -286,7 +286,7 @@ check_command apt install -y \
     php"$PHPVER"-zip \
     php"$PHPVER"-mbstring \
     php"$PHPVER"-soap \
-    php"$PHPVER"-smbclient \
+#    php"$PHPVER"-smbclient \
     php"$PHPVER"-json \
     php"$PHPVER"-gmp \
     php"$PHPVER"-bz2 \
@@ -759,7 +759,7 @@ apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
 # Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
-# Kernel 4.15
+# Kernel 5.4
 apt install -y --install-recommends \
 linux-virtual \
 linux-tools-virtual \
