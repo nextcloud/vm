@@ -51,7 +51,11 @@ then
     fi
 fi
 
+# Ubuntu 16.04 is deprecated
+check_distro_version
+
 # Hold PHP due to max supported version in Nextcloud
+# FIX: Allow 7.2 - 7.4 but don't update if using ondrejs packages
 if is_this_installed php7.3-common || is_this_installed php7.4-common
 then
     apt-mark hold php*
@@ -107,78 +111,27 @@ fi
 
 # Update Redis PHP extension
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
-if version 18.04 "$DISTRO" 18.04.10; then
-    if ! pecl list | grep redis >/dev/null 2>&1
+if version 20.04 "$DISTRO" 20.04.10
+then
+    if pecl list | grep redis >/dev/null 2>&1
     then
         if is_this_installed php"$PHPVER"-common
         then
             install_if_not php"$PHPVER"-dev
-        elif is_this_installed php7.0-common
-        then
-            install_if_not php7.0-dev
-        elif is_this_installed php7.1-common
-        then
-            install_if_not php7.1-dev
-        elif is_this_installed php7.3-common
-        then
-            install_if_not php7.3-dev
-        fi
-        apt purge php-redis -y
-        apt autoremove -y
-        pecl channel-update pecl.php.net
-        yes no | pecl install redis
-        systemctl restart redis-server
-        # Check if redis.so is enabled
-        # PHP 7.0 apache
-        if [ -f /etc/php/7.0/apache2/php.ini ]
-        then
-            ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
-        # PHP "$PHPVER" apache
-        elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
-        then
-            ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
-        # PHP "$PHPVER" fpm
-        elif [ -f "$PHP_INI" ]
-        then
-            ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
-        fi
-        restart_webserver
-    elif pecl list | grep redis >/dev/null 2>&1
-    then
-        if is_this_installed php"$PHPVER"-common
-        then
-            install_if_not php"$PHPVER"-dev
-        elif is_this_installed php7.0-common
-        then
-            install_if_not php7.0-dev
-        elif is_this_installed php7.1-common
-        then
-            install_if_not php7.1-dev
-        elif is_this_installed php7.3-common
-        then
-            install_if_not php7.3-dev
         fi
         pecl channel-update pecl.php.net
         yes no | pecl upgrade redis
         systemctl restart redis-server
-        # Check if redis.so is enabled
-        # PHP 7.0 apache
-        if [ -f /etc/php/7.0/apache2/php.ini ]
-        then
-            ! [[ "$(grep -R extension=redis.so /etc/php/7.0/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/7.0/apache2/php.ini
-        # PHP "$PHPVER" apache
-        elif [ -f /etc/php/"$PHPVER"/apache2/php.ini ]
-        then
-            ! [[ "$(grep -R extension=redis.so /etc/php/"$PHPVER"/apache2/php.ini)" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> /etc/php/"$PHPVER"/apache2/php.ini
-        # PHP "$PHPVER" fpm
-        elif [ -f "$PHP_INI" ]
-        then
-            ! [[ "$(grep -R extension=redis.so "$PHP_INI")" == "extension=redis.so" ]]  > /dev/null 2>&1 && echo "extension=redis.so" >> "$PHP_INI"
-        fi
-        restart_webserver
     fi
+    
+    # Double check if redis.so is enabled
+    if ! grep -qFx extension=redis.so "$PHP_INI"
+    then
+        echo "extension=redis.so" >> "$PHP_INI"
+    fi
+        restart_webserver
 else
-    msg_box "Ubuntu version $DISTRO must be at least 18.04 to upgrade Redis."
+    msg_box "Ubuntu version $DISTRO must be at least 20.04 to upgrade Redis."
 fi
 
 # Upgrade APCu and igbinary
@@ -346,8 +299,8 @@ Latest release: $NCVERSION
 
 It is best to keep your Nextcloud server upgraded regularly, and to install all point releases
 and major releases without skipping any of them, as skipping releases increases the risk of
-errors. Major releases are 13, 14, 15 and 16. Point releases are intermediate releases for each
-major release. For example, 14.0.52 and 15.0.2 are point releases.
+errors. Major releases are 16, 17, 18 and 19. Point releases are intermediate releases for each
+major release. For example, 18.0.5 and 19.0.2 are point releases.
 
 You can read more about Nextcloud releases here: https://github.com/nextcloud/server/wiki/Maintenance-and-Release-Schedule
 
@@ -414,56 +367,6 @@ then
     fi
 fi
 
-# If MariaDB then:
-mariadb_backup() {
-MYCNF=/root/.my.cnf
-MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
-NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-# Path to specific files
-# Make sure old instaces can upgrade as well
-if [ ! -f "$MYCNF" ] && [ -f /var/mysql_password.txt ]
-then
-    regressionpw=$(cat /var/mysql_password.txt)
-cat << LOGIN > "$MYCNF"
-[client]
-password='$regressionpw'
-LOGIN
-    chmod 0600 $MYCNF
-    chown root:root $MYCNF
-    msg_box "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1
-elif [ -z "$MARIADBMYCNFPASS" ] && [ -f /var/mysql_password.txt ]
-then
-    regressionpw=$(cat /var/mysql_password.txt)
-    {
-    echo "[client]"
-    echo "password='$regressionpw'"
-    } >> "$MYCNF"
-    msg_box "Please restart the upgrade process, we fixed the password file $MYCNF."
-    exit 1
-fi
-
-# Backup MariaDB
-if mysql -u root -p"$MARIADBMYCNFPASS" -e "SHOW DATABASES LIKE '$NCCONFIGDB'" > /dev/null
-then
-    print_text_in_color "$ICyan" "Doing mysqldump of $NCCONFIGDB..."
-    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d "$NCCONFIGDB" > "$BACKUP"/nextclouddb.sql
-else
-    print_text_in_color "$ICyan" "Doing mysqldump of all databases..."
-    check_command mysqldump -u root -p"$MARIADBMYCNFPASS" -d --all-databases > "$BACKUP"/alldatabases.sql
-fi
-}
-
-# Do the actual backup
-if is_this_installed mysql-common && ! is_this_installed postgresql-common
-then
-    mariadb_backup
-elif is_this_installed mariadb-common && ! is_this_installed postgresql-common
-then
-    mariadb_backup
-fi
-
 # Check if backup exists and move to old
 print_text_in_color "$ICyan" "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
@@ -477,12 +380,11 @@ then
 fi
 
 # Do a backup of the ZFS mount
-if is_this_installed libzfs2linux
+if is_this_installed zfs-auto-snapshot
 then
     if grep -rq ncdata /etc/mtab
     then
         check_multiverse
-        install_if_not zfs-auto-snapshot
         sed -i "s|date --utc|date|g" /usr/sbin/zfs-auto-snapshot
         check_command zfs-auto-snapshot -r ncdata
     fi
@@ -590,12 +492,6 @@ fi
 
 # Recover apps that exists in the backed up apps folder
 run_static_script recover_apps
-
-# Enable Apps
-if [ -d "$SNAPDIR" ]
-then
-    run_app_script spreedme
-fi
 
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
