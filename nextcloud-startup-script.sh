@@ -82,12 +82,6 @@ network:
       dhcp6: yes
 SETDHCP
     check_command netplan apply
-    check_command service network-manager restart
-    ip link set "$IFACE" down
-    wait
-    ip link set "$IFACE" up
-    wait
-    check_command service network-manager restart
     print_text_in_color "$ICyan" "Checking connection..."
     sleep 1
     if ! nslookup github.com
@@ -155,7 +149,7 @@ debug_mode
 lowest_compatible_nc 16
 
 # Check that this run on the PostgreSQL VM
-if ! is_this_installed postgresql-10
+if ! is_this_installed postgresql-common
 then
     print_text_in_color "$IRed" "This script is intended to be run using a PostgreSQL database, but PostgreSQL is not installed."
     print_text_in_color "$IRed" "Aborting..."
@@ -163,10 +157,10 @@ then
 fi
 
 # Set keyboard layout, important when changing passwords and such
-if [ "$KEYBOARD_LAYOUT" = "se" ]
+if [ "$KEYBOARD_LAYOUT" = "us" ]
 then
     clear
-    print_text_in_color "$ICyan" "Current keyboard layout is Swedish."
+    print_text_in_color "$ICyan" "Current keyboard layout is English (United States)."
     if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
     then
         print_text_in_color "$ICyan" "Not changing keyboard layout..."
@@ -182,9 +176,12 @@ fi
 # Set locales
 print_text_in_color "$ICyan" "Setting locales..."
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
-if [ "$KEYBOARD_LAYOUT" = "se" ]
+if [ "$KEYBOARD_LAYOUT" = "us" ]
 then
-    print_text_in_color "$ICyan" "Svensk locale är redan konfigurerad."
+    print_text_in_color "$ICyan" "US locales are set."
+elif [ "$KEYBOARD_LAYOUT" = "se" ]
+then 
+    sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 elif [ "$KEYBOARD_LAYOUT" = "de" ]
 then 
     sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
@@ -265,7 +262,7 @@ download_static_script nextcloud
 download_static_script update-config
 download_static_script apps
 download_static_script configuration
-download_le_script activate-ssl
+download_le_script activate-tls
 if home_sme_server
 then
     download_static_script nhss_index
@@ -443,10 +440,10 @@ https://www.techandme.se/open-port-80-443/"
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to install TLS?") ]]
 then
-    bash $SCRIPTS/activate-ssl.sh
+    bash $SCRIPTS/activate-tls.sh
 else
     echo
-    print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
+    print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
     any_key "Press any key to continue..."
 fi
 clear
