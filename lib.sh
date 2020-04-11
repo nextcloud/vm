@@ -102,7 +102,7 @@ HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # PHP-FPM
-PHPVER=7.2
+PHPVER=7.4
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
@@ -390,18 +390,13 @@ if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
 then
     apt update -q4 & spinner_loading && apt install dnsutils -y
 fi
-# Install network-manager if not existing
-if ! dpkg-query -W -f='${Status}' "network-manager" | grep -q "ok installed"
+# Install net-tools if not existing
+if ! dpkg-query -W -f='${Status}' "net-tools" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install network-manager -y
+    apt update -q4 & spinner_loading && apt install net-tools -y
 fi
-check_command service network-manager restart
-ip link set "$IFACE" down
-sleep 2
-ip link set "$IFACE" up
-sleep 2
 print_text_in_color "$ICyan" "Checking connection..."
-check_command service network-manager restart
+netplan apply
 sleep 2
 if nslookup github.com
 then
@@ -561,13 +556,13 @@ fi
 check_distro_version() {
 # Check Ubuntu version
 print_text_in_color "$ICyan" "Checking server OS and version..."
-if lsb_release -c | grep -ic "bionic" &> /dev/null
+if lsb_release -c | grep -ic "bionic" &> /dev/null || lsb_release -c | grep -ic "focal" &> /dev/null
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
 then 
     OS=1
-elif uname -a | grep -ic "bionic" &> /dev/null
+elif uname -a | grep -ic "bionic" &> /dev/null || uname -a | grep -ic "focal" &> /dev/null
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu" &> /dev/null
@@ -684,12 +679,11 @@ sudo -u www-data php "$NCPATH"/occ "$@";
 
 network_ok() {
     print_text_in_color "$ICyan" "Testing if network is OK..."
-    install_if_not network-manager
-    if ! service network-manager restart > /dev/null
+    if ! netplan apply
     then
-        service networking restart > /dev/null
+        systemctl restart systemd-networkd > /dev/null
     fi
-    sleep 5 && site_200 github.com
+    sleep 3 && site_200 github.com
 }
 
 # Whiptail auto-size
