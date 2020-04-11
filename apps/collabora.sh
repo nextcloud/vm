@@ -298,7 +298,7 @@ then
     chmod a+x "$SCRIPTS/dockerprune.sh"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
     print_text_in_color "$ICyan" "Docker automatic prune job added."
-    service docker restart
+    systemctl restart docker.service
     docker restart code
     print_text_in_color "$IGreen" "Collabora is now successfully installed."
     any_key "Press any key to continue... "

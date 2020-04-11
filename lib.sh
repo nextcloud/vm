@@ -403,8 +403,8 @@ then
     print_text_in_color "$IGreen" "Online!"
 elif ! nslookup github.com
 then
-    print_text_in_color "$ICyan" "Trying to restart networking service..."
-    check_command service networking restart && sleep 2
+    print_text_in_color "$ICyan" "Trying to restart netplan service..."
+    check_command systemctl restart systemd-networkd && sleep 2
     if nslookup github.com
     then
         print_text_in_color "$IGreen" "Online!"
@@ -466,10 +466,10 @@ then
     uir_hsts="--uir --hsts"
 fi
 a2dissite 000-default.conf
-service apache2 reload
+systemctl reload apache2.service
 default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 #http-01
-local  standalone="certbot certonly --standalone --pre-hook \"service apache2 stop\" --post-hook \"service apache2 start\" $default_le"
+local  standalone="certbot certonly --standalone --pre-hook \"systemctl stop apache2.service\" --post-hook \"systemctl start apache2.service\" $default_le"
 #tls-alpn-01
 local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default_le"
 #dns

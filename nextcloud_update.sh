@@ -127,7 +127,7 @@ if version 18.04 "$DISTRO" 18.04.10; then
         apt autoremove -y
         pecl channel-update pecl.php.net
         yes no | pecl install redis
-        service redis-server restart
+        systemctl restart redis-server
         # Check if redis.so is enabled
         # PHP 7.0 apache
         if [ -f /etc/php/7.0/apache2/php.ini ]
@@ -160,7 +160,7 @@ if version 18.04 "$DISTRO" 18.04.10; then
         fi
         pecl channel-update pecl.php.net
         yes no | pecl upgrade redis
-        service redis-server restart
+        systemctl restart redis-server
         # Check if redis.so is enabled
         # PHP 7.0 apache
         if [ -f /etc/php/7.0/apache2/php.ini ]
@@ -391,7 +391,7 @@ fi
 countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort." "10"
 
 # Stop Apache2
-check_command service apache2 stop
+check_command systemctl stop apache2.service
 
 # Create backup dir (/mnt/NCBACKUP/)
 if [ ! -d "$BACKUP" ]
@@ -584,7 +584,7 @@ then
     if ! pgrep postgres >/dev/null 2>&1
     then
         print_text_in_color "$ICyan" "Starting PostgreSQL..."
-        check_command service postgresql start
+        check_command systemctl start postgresql.service
     fi
 fi
 

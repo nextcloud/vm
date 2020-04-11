@@ -118,7 +118,6 @@ fi
 
 # Install needed network
 install_if_not netplan.io
-install_if_not network-manager
 
 # Install build-essentials to get make
 install_if_not build-essential
@@ -178,7 +177,7 @@ case "$choice" in
     *)
     ;;
 esac
-check_command systemctl restart network-manager.service
+test_connection
 network_ok
 
 # Check where the best mirrors are and update
@@ -216,7 +215,7 @@ CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
 CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
 END
 print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
-service postgresql restart
+systemctl restart postgresql
 
 # Install Apache
 check_command apt install apache2 -y
