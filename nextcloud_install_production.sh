@@ -271,8 +271,11 @@ check_command apt install -y \
  # php"$PHPVER"-smbclient does not yet work in PHP 7.4
  install_if_not libsmbclient-dev
  yes no | pecl install smbclient
- echo "# SMBCLIENT" >> $PHP_INI
- echo "extension=smbclient.so" >> $PHP_INI
+ if ! grep -qFx extension=smbclient.so "$PHP_INI"
+ then
+     echo "# PECL smbclient" >> "$PHP_INI"
+     echo "extension=smbclient.so" >> "$PHP_INI"
+ fi
 
 # Enable php-fpm
 a2enconf php"$PHPVER"-fpm
