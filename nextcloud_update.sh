@@ -139,7 +139,7 @@ if [ "${CURRENTVERSION%%.*}" -ge "17" ]
 then
     if [ -f "$PHP_INI" ]
     then
-        print_text_in_color "$ICyan" "Trying to upgrade igbinary and APCu..."
+        print_text_in_color "$ICyan" "Trying to upgrade igbinary, smbclient, and APCu..."
         if pecl list | grep igbinary >/dev/null 2>&1
         then
             yes no | pecl upgrade igbinary
@@ -147,6 +147,15 @@ then
             if ! grep -qFx extension=igbinary.so "$PHP_INI"
             then
                 echo "extension=igbinary.so" >> "$PHP_INI"
+            fi
+        fi
+        if pecl list | grep smbclient >/dev/null 2>&1
+        then
+            yes no | pecl upgrade smbclient
+            # Check if igbinary.so is enabled
+            if ! grep -qFx extension=smbclient.so "$PHP_INI"
+            then
+                echo "extension=smbclient.so" >> "$PHP_INI"
             fi
         fi
         if pecl list | grep apcu >/dev/null 2>&1
