@@ -55,11 +55,12 @@ fi
 # System Upgrade
 if is_this_installed mysql-common
 then
-    apt-mark hold mysql*
-    if is_this_installed mariadb-common
-    then
-         apt-mark hold mariadb*
-    fi
+    msg_box "MySQL is not supported in this script anymore. Please contact us to get support for upgrading your server: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+    exit 0
+elif is_this_installed mariadb-common
+then
+    msg_box "MariaDB is not supported in this script anymore. Please contact us to get support for upgrading your server: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+    exit 0
 fi
 
 # Move all logs to new dir (2019-09-04)
@@ -85,18 +86,6 @@ then
 fi
 
 export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-if is_this_installed mysql-common
-then
-    apt-mark unhold mysql*
-    print_text_in_color "$ICyan" "If you want to upgrade MySQL/MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
-    sleep 2
-    if is_this_installed mariadb-common
-    then
-        apt-mark unhold mariadb*
-        print_text_in_color "$ICyan" "If you want to upgrade MariaDB, please run 'sudo apt update && sudo apt dist-upgrade -y'"
-        sleep 2
-    fi
-fi
 
 # Update Netdata
 if [ -d /etc/netdata ]
