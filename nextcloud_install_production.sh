@@ -661,7 +661,6 @@ choice=$(whiptail --title "Install apps or software" --checklist "Automatically 
 "Text" "" ON \
 "Mail" "" ON \
 "Deck" "" ON \
-"Social" "" ON \
 "Group-Folders" "" ON \
 "Webmin" "" ON 3>&1 1>&2 2>&3)
 
@@ -694,9 +693,6 @@ case "$choice" in
     ;;&
     *"Deck"*)
         install_and_enable_app deck
-    ;;&
-    *"Social"*)
-        install_and_enable_app social
     ;;&
     *"Group-Folders"*)
         install_and_enable_app groupfolders
