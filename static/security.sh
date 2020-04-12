@@ -6,7 +6,7 @@
 # shellcheck disable=2034,2059,SC2154
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

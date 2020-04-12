@@ -3,7 +3,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04/lib.sh)
 
 check_command git clone https://github.com/nextcloud/vm.git
 
