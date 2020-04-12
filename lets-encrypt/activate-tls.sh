@@ -2,7 +2,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
@@ -66,7 +66,7 @@ print_text_in_color "$ICyan" "Updating lib.sh..."
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-TLS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04/lib.sh)
+TLS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 unset TLS_INSTALL
 
 # Ask for domain name

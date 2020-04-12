@@ -32,7 +32,7 @@ Server installation. Simplified. :cloud:
 No problem, brave explorer! We made it simple. 
 
 In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://cloud.hanssonit.se/s/zjsqkrSpzqJGE9N?path=%2FTESTING) folder on the download server. If you want to try the latest version yourself, just follow the steps below:
-1. Download the latest [nextcloud_update.sh](https://raw.githubusercontent.com/nextcloud/vm/20.04/nextcloud_update.sh) to your server.
+1. Download the latest [nextcloud_update.sh](https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/nextcloud_update.sh) to your server.
 2. Put the below variables right above line 256 **(# Major versions unsupported)**
 3. Run nextcloud_update.sh
 

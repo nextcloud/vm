@@ -14,7 +14,7 @@ elif print_text_in_color "$ICyan" "Testing internet connection..." && ping githu
 then
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 else
     print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
     print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues/"

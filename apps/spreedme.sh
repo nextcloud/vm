@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04/lib.sh)
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 unset NC_UPDATE
 
 print_text_in_color "$ICyan" "Installing Spreed.ME..."
