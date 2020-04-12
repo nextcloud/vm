@@ -31,7 +31,7 @@ gen_passwd() {
 }
 
 # Ubuntu OS
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
+DISTRO=$(lsb_release -sr)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Network
 [ -n "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
@@ -556,7 +556,7 @@ fi
 check_distro_version() {
 # Check Ubuntu version
 print_text_in_color "$ICyan" "Checking server OS and version..."
-if lsb_release -c | grep -ic "bionic" &> /dev/null || lsb_release -c | grep -ic "focal" &> /dev/null
+if lsb_release -sc | grep -ic "bionic" &> /dev/null || lsb_release -sc | grep -ic "focal" &> /dev/null
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
