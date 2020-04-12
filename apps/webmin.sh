@@ -51,7 +51,7 @@ install_if_not libauthen-pam-perl
 install_if_not libpam-runtime
 install_if_not libio-pty-perl
 install_if_not apt-show-versions
-install_if_not python
+install_if_not python2
 
 # Install Webmin
 if curl -fsSL http://www.webmin.com/jcameron-key.asc | sudo apt-key add -
