@@ -584,8 +584,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 18.04 "$DISTRO" 18.04.4; then
-msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
+if ! version 18.04 "$DISTRO" 20.04.4; then
+msg_box "Ubuntu version $DISTRO must be between 18.04 - 20.04.4"
     exit 1
 fi
 }
@@ -662,9 +662,12 @@ if ! "$@";
 then
     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
     print_text_in_color "$IRed" "$* failed"
-    notify_admin_gui \
-    "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!" \
-    "$* failed"
+    if occ_command_no_check -V > /dev/null
+    then
+        notify_admin_gui \
+        "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!" \
+        "$* failed"
+    fi
     exit 1
 fi
 }

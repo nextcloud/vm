@@ -52,7 +52,7 @@ then
 fi
 
 # Hold PHP due to max supported version in Nextcloud
-if is_this_installed php7.3-common
+if is_this_installed php7.3-common || is_this_installed php7.4-common
 then
     apt-mark hold php*
 fi
