@@ -266,16 +266,6 @@ check_command apt install -y \
     php-pear
     # php"$PHPVER"-imagick \
     # libmagickcore-6.q16-3-extra
-    
- # Install smbclient
- # php"$PHPVER"-smbclient does not yet work in PHP 7.4
- install_if_not libsmbclient-dev
- yes no | pecl install smbclient
- if ! grep -qFx extension=smbclient.so "$PHP_INI"
- then
-     echo "# PECL smbclient" >> "$PHP_INI"
-     echo "extension=smbclient.so" >> "$PHP_INI"
- fi
 
 # Enable php-fpm
 a2enconf php"$PHPVER"-fpm
@@ -454,6 +444,16 @@ echo "pgsql.log_notice = 0"
 
 # Install Redis (distrubuted cache)
 run_static_script redis-server-ubuntu
+
+ # Install smbclient
+ # php"$PHPVER"-smbclient does not yet work in PHP 7.4
+ install_if_not libsmbclient-dev
+ yes no | pecl install smbclient
+ if ! grep -qFx extension=smbclient.so "$PHP_INI"
+ then
+     echo "# PECL smbclient" >> "$PHP_INI"
+     echo "extension=smbclient.so" >> "$PHP_INI"
+ fi
 
 # Enable igbinary for PHP
 # https://github.com/igbinary/igbinary
