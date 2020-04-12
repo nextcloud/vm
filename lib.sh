@@ -59,20 +59,12 @@ UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 # Database
-SHUF=$(shuf -i 25-29 -n 1)
-MARIADB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-NEWMARIADBPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-[ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-ETCMYCNF=/etc/mysql/my.cnf
-MYCNF=/root/.my.cnf
-[ -n "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
 PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 [ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
-
 # Nextcloud version
 [ -n "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 [ -n "$NC_UPDATE" ] && NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
@@ -89,7 +81,6 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 [ -n "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain (activate-ssl.sh)
 [ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(whiptail --title "T&M Hansson IT - Let's Encrypt" --inputbox "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
-
 # Letsencrypt
 SITES_AVAILABLE="/etc/apache2/sites-available"
 LETSENCRYPTPATH="/etc/letsencrypt"
