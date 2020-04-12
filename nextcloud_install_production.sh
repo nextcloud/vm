@@ -317,10 +317,6 @@ restart_webserver
 # Calculate the values of PHP-FPM based on the amount of RAM available (it's done in the startup script as well)
 calculate_php_fpm
 
-# Enable SMB client # already loaded with php-smbclient
-# echo '# This enables php-smbclient' >> /etc/php/"$PHPVER"/apache2/php.ini
-# echo 'extension="smbclient.so"' >> /etc/php/"$PHPVER"/apache2/php.ini
-
 # Install VM-tools
 install_if_not open-vm-tools
 
