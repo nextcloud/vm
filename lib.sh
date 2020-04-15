@@ -274,7 +274,7 @@ start_if_stopped() {
 if ! pgrep "$1"
 then
     print_text_in_color "$ICyan" "Starting $1..."
-    check_command service "$1" start
+    check_command systemctl start "$1".service
 fi
 }
 
@@ -421,7 +421,7 @@ fi
 }
 
 restart_webserver() {
-check_command systemctl restart apache2
+check_command systemctl restart apache2.service
 if is_this_installed php"$PHPVER"-fpm
 then
     check_command systemctl restart php"$PHPVER"-fpm.service
@@ -1051,7 +1051,7 @@ cat << OVERLAY2 > /etc/docker/daemon.json
 }
 OVERLAY2
 systemctl daemon-reload
-systemctl restart docker
+systemctl restart docker.service
 }
 
 # Remove all dockers excluding one

@@ -110,7 +110,7 @@ then
         fi
         pecl channel-update pecl.php.net
         yes no | pecl upgrade redis
-        systemctl restart redis-server
+        systemctl restart redis-server.service
     fi
     
     # Double check if redis.so is enabled

@@ -149,7 +149,7 @@ else
 fi
 
 # Restart the TURN server
-check_command systemctl restart coturn
+check_command systemctl restart coturn.service
 
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!

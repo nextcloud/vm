@@ -215,7 +215,7 @@ CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
 CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
 END
 print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
-systemctl restart postgresql
+systemctl restart postgresql.service
 
 # Install Apache
 check_command apt install apache2 -y
