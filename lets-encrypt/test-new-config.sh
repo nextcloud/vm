@@ -74,7 +74,7 @@ chmod +x $SCRIPTS/letsencryptrenew.sh
 
 # Cleanup
 rm -f $SCRIPTS/test-new-config.sh
-rm -f $SCRIPTS/activate-ssl.sh
+rm -f $SCRIPTS/activate-tls.sh
 rm -f /var/www/index.php
 
 else
