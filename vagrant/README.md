@@ -1,7 +1,7 @@
 # Nextcloud VM with vagrant
 This subrepo contains all the Vagrant config to get an Ubuntu 18.04 VM with the latest version of Nextcloud installed.
 
-**Please note that this is not the preferred way to install Nextcloud. It's also untested in the current state.**
+**Please note that this is __not__ the preferred way to install Nextcloud. It's also untested in the current state.**
 
 # Setup
 `vagrant up` will install everything
