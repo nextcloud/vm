@@ -31,20 +31,20 @@ then
 
     case "$choice" in
         "Uninstall Fail2Ban")
-            print_text_in_color "$ICyan" "Uninstalling Fail2Ban and resetting all settings..."
+            print_text_in_color "$ICyan" "Uninstalling Fail2Ban..."
             fail2ban-client unban --all
-            check_command apt purge fail2ban -y
             rm /etc/fail2ban/filter.d/nextcloud.conf
             rm /etc/fail2ban/jail.local
-            msg_box "Fail2Ban was successfully uninstalled and all settings were resetted."
+            check_command apt purge fail2ban -y
+            msg_box "Fail2Ban was successfully uninstalled."
             exit
         ;;
         "Reinstall Fail2Ban")
             print_text_in_color "$ICyan" "Reinstalling Fail2Ban..."
             fail2ban-client unban --all
-            check_command apt purge fail2ban -y
             rm /etc/fail2ban/filter.d/nextcloud.conf
             rm /etc/fail2ban/jail.local
+            check_command apt purge fail2ban -y
         ;;
         *)
         ;;
@@ -61,12 +61,17 @@ do
     NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
     if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
     then
-        # If muliplte logs already exist, delete them and set the correct path
-        print_text_in_color "$ICyan" "Found multiple logs, deleting all of them and creating a new one in the correnct path..."
+        # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
+        print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
         xargs rm -f <<< "$NCLOG"
+        # check if $VMLOGS exists as a file rather than a directory, and if so, delete it
+        if [ -e "$VMLOGS" ]
+        then
+            rm $VMLOGS
+        fi
         # Create $VMLOGS dir
         mkdir -p "$VMLOGS"
-        # Set loggging
+        # Set logging
         occ_command config:system:set log_type --value=file
         occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
         occ_command config:system:set loglevel --value=2
@@ -77,7 +82,7 @@ do
         then
             break
         else
-            # Set loggging
+            # Set logging
             occ_command config:system:set log_type --value=file
             occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
             occ_command config:system:set loglevel --value=2
@@ -88,7 +93,7 @@ do
     fi
 done
 # time to ban an IP that exceeded attempts
-BANTIME_=600000
+BANTIME_=1209600
 # cooldown time for incorrect passwords
 FINDTIME_=1800
 # failed attempts before banning an IP
@@ -147,12 +152,9 @@ action = %(action_)s
 # SSH
 #
 
-[ssh]
+[sshd]
 
 enabled  = true
-port     = ssh
-filter   = sshd
-logpath  = /var/log/auth.log
 maxretry = $MAXRETRY_
 
 #
@@ -164,7 +166,7 @@ maxretry = $MAXRETRY_
 enabled  = true
 port     = http,https
 filter   = nextcloud
-logpath  = $VMLOGS
+logpath  = $VMLOGS/nextcloud.log
 maxretry = $MAXRETRY_
 FCONF
 
