@@ -115,9 +115,6 @@ failregex=^{"reqId":".*","remoteAddr":".*","app":"core","message":"Login failed:
             ^.*\"remoteAddr\":\"<HOST>\".*Trusted domain error.*\$
 NCONF
 
-# Disable default Debian sshd chain
-check_command sed -i "s|true|false|g" /etc/fail2ban/jail.d/defaults-debian.conf
-
 # Create jail.local file
 cat << FCONF > /etc/fail2ban/jail.local
 # The DEFAULT allows a global definition of the options. They can be overridden
