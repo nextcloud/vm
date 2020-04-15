@@ -17,7 +17,7 @@
                 align: center;
                 text-align: center;
                 background: #0082c9; /* Old browsers */
-                background-image: url('/nextcloud/core/img/background.png');
+                background-image: url('/nextcloud/core/img/background.png'), linear-gradient(10deg, #0082c9 0%, rgb(28, 175, 255) 50%);
                 background-size: cover;
             }
             div.logotext   {
