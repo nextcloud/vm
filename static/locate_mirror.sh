@@ -23,7 +23,7 @@ then
     print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
     sleep 1
 else
-    if [[ "$KEYBOARD_LAYOUT" =~ ,|.|/|_ ]]
+    if [[ "$KEYBOARD_LAYOUT" =~ ,|/|_ ]]
     then
         msg_box "Your keymap contains more than one language, or a special character. ($KEYBOARD_LAYOUT)\nThis script can only handle one keymap at the time.\nWe will now exit."
         exit 1
