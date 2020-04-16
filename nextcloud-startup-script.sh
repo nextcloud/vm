@@ -203,10 +203,13 @@ As long as the user you created have sudo permissions it's safe to continue.
 This would be the case if you created a new user with the script in the previous step.
 
 If the user you are running this script with is a user that doesn't have sudo permissions,
-please abort this script and report this issue to $ISSUES."
+please abort this script (CTRL+C) and report this issue to $ISSUES."
         fi
     fi
 fi
+
+# Upgrade mirrors
+run_static_script locate_mirror
 
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
