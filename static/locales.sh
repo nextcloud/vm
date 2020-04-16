@@ -11,7 +11,6 @@ root_check
 
 # Set locales
 print_text_in_color "$ICyan" "Setting locales..."
-KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 if [ "$KEYBOARD_LAYOUT" = "us" ]
 then
     print_text_in_color "$ICyan" "US locales are already set."
@@ -31,3 +30,5 @@ elif [ "$KEYBOARD_LAYOUT" = "ch" ]
 then
     sudo locale-gen "de_CH.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 fi
+
+# TODO: "localectl list-x11-keymap-layouts" and pair with locales
