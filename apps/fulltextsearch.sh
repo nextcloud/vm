@@ -145,8 +145,8 @@ docker run -d --restart always \
 --name $fts_es_name \
 --ulimit memlock=-1:-1 \
 --ulimit nofile=65536:65536 \
--p 9200:9200 \
--p 9300:9300 \
+-p 127.0.0.1:9200:9200 \
+-p 127.0.0.1:9300:9300 \
 -v esdata:/usr/share/elasticsearch/data \
 -v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
 -e "discovery.type=single-node" \
