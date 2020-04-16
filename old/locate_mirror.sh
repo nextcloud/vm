@@ -23,10 +23,9 @@ then
     print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
     sleep 1
 else
-    keymap="$(localectl status | grep "Layout" | awk '{print $3}')"
-    if [[ "$keymap" =~ ,|/|_ ]]
+    if [[ "$KEYBOARD_LAYOUT" =~ ,|.|/|_ ]]
     then
-        msg_box "Your keymap contains more than one language, or a special character.\nThis script can only handle one keymap at the time.\nWe will now exit."
+        msg_box "Your keymap contains more than one language, or a special character. ($KEYBOARD_LAYOUT)\nThis script can only handle one keymap at the time.\nWe will now exit."
         exit 1
     fi
     print_text_in_color "$ICyan" "Locating the best mirrors..."
