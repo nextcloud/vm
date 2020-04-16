@@ -23,13 +23,19 @@ then
     print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
     sleep 1
 else
+    keymap="$(localectl status | grep "Layout" | awk '{print $3}')"
+    if [[ "$keymap" =~ ,|/|_ ]]
+    then
+        msg_box "Your keymap contains more than one language, or a special character.\nThis script can only handle one keymap at the time.\nWe will now exit."
+        exit 1
+    fi
     print_text_in_color "$ICyan" "Locating the best mirrors..."
     apt update -q4 & spinner_loading
     apt install python-pip -y
     pip install \
         --upgrade pip \
         apt-select
-    check_command apt-select -m up-to-date -t 5 -c -C "$(localectl status | grep "Layout" | awk '{print $3}')"
+    check_command apt-select -m up-to-date -t 5 -c -C $keymap
     sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
     if [ -f sources.list ]
     then
