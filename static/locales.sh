@@ -7,6 +7,8 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 
+root_check
+
 # Set locales
 print_text_in_color "$ICyan" "Setting locales..."
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
