@@ -32,7 +32,7 @@ gen_passwd() {
 
 # Ubuntu OS
 DISTRO=$(lsb_release -sr)
-KEYBOARD_LAYOUT=$(setxkbmap -query | grep "layout" | awk '{print $2}')
+KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Network
 [ -n "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
