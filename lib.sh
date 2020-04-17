@@ -36,7 +36,7 @@ KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Network
 [ -n "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
-REPO=$(grep deb-src /etc/apt/sources.list | grep archive | awk '{print $3}' | head -1)
+REPO=$(grep deb-src /etc/apt/sources.list | grep ubuntu.com | awk '{print $3}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
 WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
