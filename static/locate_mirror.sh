@@ -35,8 +35,9 @@ else
         exit 1
     fi
     print_text_in_color "$ICyan" "Locating the best mirrors..."
-    apt update -q4 & spinner_loading
-    apt install python-pip -y
+    curl_to_dir https://bootstrap.pypa.io get-pip.py /tmp
+    install_if_not python3
+    cd /tmp && python3 get-pip.py
     pip install \
         --upgrade pip \
         apt-select
