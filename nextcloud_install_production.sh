@@ -53,9 +53,8 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
+FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 unset FIRST_IFACE
-unset CHECK_CURRENT_REPO
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -186,27 +185,8 @@ esac
 test_connection
 network_ok
 
-# Check where the best mirrors are and update
-echo
-printf "Your current server repository is:  ${ICyan}%s${Color_Off}\n" "$REPO"
-if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
-then
-    print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
-    sleep 1
-else
-   print_text_in_color "$ICyan" "Locating the best mirrors..."
-   apt update -q4 & spinner_loading
-   apt install python-pip -y
-   pip install \
-       --upgrade pip \
-       apt-select
-    apt-select -m up-to-date -t 5 -c
-    sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-    if [ -f sources.list ]
-    then
-        sudo mv sources.list /etc/apt/
-    fi
-fi
+# Check current repo
+run_static_script locate_mirror
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"

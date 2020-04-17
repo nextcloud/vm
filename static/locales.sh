@@ -7,6 +7,7 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 
+# Must be root
 root_check
 
 # Set locales

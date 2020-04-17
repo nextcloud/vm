@@ -7,6 +7,7 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 
+# Must be root
 root_check
 
 # Check where the best mirrors are and update
@@ -24,7 +25,7 @@ then
 else
     if [[ "$KEYBOARD_LAYOUT" =~ ,|/|_ ]]
     then
-        msg_box "Your keymap contains more than one language, or a special character. ($KEYBOARD_LAYOUT)\nThis script can only handle one keymap at the time.\nWe will now exit."
+        msg_box "Your keymap contains more than one language, or a special character. ($KEYBOARD_LAYOUT)\nThis script can only handle one keymap at the time.\nThe default mirror ($REPO) will be kept."
         exit 1
     fi
     print_text_in_color "$ICyan" "Locating the best mirrors..."

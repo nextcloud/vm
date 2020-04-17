@@ -42,18 +42,16 @@ then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 source /var/scripts/lib.sh
+NCDB=1 && FIRST_IFACE=1 source /var/scripts/lib.sh
 unset NCDB
 unset FIRST_IFACE
-unset  CHECK_CURRENT_REPO
  # If we have internet, then use the latest variables from the lib remote file
 elif print_text_in_color "$ICyan" "Testing internet connection..." && ping github.com -c 2
 then
 true
 # shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
+NCDB=1 && FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 unset FIRST_IFACE
-unset CHECK_CURRENT_REPO
 unset NCDB
 else
     print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
@@ -134,9 +132,8 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
 fi
 
 # shellcheck source=lib.sh
-NCDB=1 && CHECK_CURRENT_REPO=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
+NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/20.04_testing/lib.sh)
 unset NC_UPDATE
-unset CHECK_CURRENT_REPO
 unset NCDB
 
 # Check for errors + debug code and abort if something isn't right
