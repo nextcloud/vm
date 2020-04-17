@@ -32,4 +32,4 @@ then
     sudo locale-gen "de_CH.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 fi
 
-# TODO: "localectl list-x11-keymap-layouts" and pair with "cat /etc/locale.gen"
+# TODO: "localectl list-x11-keymap-layouts" and pair with "cat /etc/locale.gen | grep UTF-8"
