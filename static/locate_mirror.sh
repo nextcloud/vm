@@ -10,6 +10,12 @@ true
 # Must be root
 root_check
 
+# Use another method if the new one doesn't work
+if [ -z "$REPO" ]
+then
+    REPO=$(apt-cache policy | grep ubuntu.com | tail -1 | awk '{print $2}')
+fi
+
 # Check where the best mirrors are and update
 msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
 This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
