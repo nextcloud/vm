@@ -10,9 +10,6 @@ true
 # Must be root
 root_check
 
-# Install needed dependency for KEYBOARD_LAYOUT (setxkbmap)
-install_if_not x11-xkb-utils
-
 # Set locales
 print_text_in_color "$ICyan" "Setting locales..."
 if [ "$KEYBOARD_LAYOUT" = "us" ]
