@@ -20,7 +20,8 @@ root_check
 choice=$(whiptail --title "Nextcloud Configuration" --checklist "Which settings do you want to configure?\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
 "Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
-"Disable workspaces" "(disable top notes in GUI)" OFF 3>&1 1>&2 2>&3)
+"Disable workspaces" "(disable top notes in GUI)" \
+"Disable user flows" "(Disable user settings for Nextcloud Flow)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"CookieLifetime"*)
@@ -49,7 +50,21 @@ case "$choice" in
                 occ_command config:app:set text workspace_available --value=0
                 msg_box "Rich workspaces are now disabled."
             fi
-            
+        fi
+    ;;&
+    *"Disable user flows"*)
+        # Greater than 18.0.3 is 18.0.4 which is required
+        if version_gt "$CURRENTVERSION" "18.0.3"
+        then
+            msg_box "This option will disable the with Nextcloud 18 introduced user flows. It will disable the user flow settings. Admin flows will continue to work."
+            if [[ "yes" == $(ask_yes_or_no "Do you want to disable user flows?") ]]
+            then
+                occ_command config:app:set workflowengine user_scope_disabled --value yes
+                msg_box "User flow settings are now disabled."
+            fi
+        else
+            msg_box "'Disable user flows' is only available on Nextcloud 18.0.4 and above.\nPlease upgrade by running 'sudo bash /var/scripts/update.sh'"
+            sleep 1
         fi
     ;;&
     *)
