@@ -709,7 +709,7 @@ calc_wt_size() {
 
 # example: is_app_enabled documentserver_community
 is_app_enabled() {
-if occ_command app:list | sed 'Disabled:/Q' | grep -q "$1"
+if occ_command app:list | sed '/Disabled:/Q' | grep -q "$1"
 then
     return 0
 else
