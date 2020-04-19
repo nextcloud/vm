@@ -20,6 +20,7 @@ fi
 msg_box "To make downloads as fast as possible when updating Ubuntu you should have download mirrors that are as close to you as possible.
 
 Please note that there are no gurantees that the download mirrors this script will find are staying up for the lifetime of this server.
+
 This is the method used: https://github.com/jblakeman/apt-select"
 print_text_in_color "$ICyan" "Checking current mirror..."
 print_text_in_color "$ICyan" "Your current server repository is: $REPO"
