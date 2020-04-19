@@ -570,7 +570,10 @@ You can find the download link here: https://www.ubuntu.com/download/server"
 fi
 
 if ! version 18.04 "$DISTRO" 20.04.4; then
-msg_box "Ubuntu version $DISTRO must be between 18.04 - 20.04.4"
+msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+msg_box "Please contact us to get support for upgrading your server:
+https://www.hanssonit.se/#contact
+https://shop.hanssonit.se/"
     exit 1
 fi
 }
