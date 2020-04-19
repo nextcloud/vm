@@ -45,10 +45,11 @@ fi
 check_distro_version
 
 # Hold PHP if Ondrejs PPA is used
-print_text_in_color "$ICyan" "Checking if Onreys PPA is installed..."
+print_text_in_color "$ICyan" "Checking if Onrejs PPA is installed..."
 apt update -q4 & spinner_loading
 if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
+    print_text_in_color "$ICyan" "Yes it is! Holding PHP to avoid upgrading to a newer version without migration..."
     apt-mark hold php*
 fi
 
