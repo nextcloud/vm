@@ -312,6 +312,11 @@ then
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     UPDATED_APPS="$(occ_command_no_check app:update --all)"
+    ########## TEMPORARY FIX ################# 2020-04-19
+    if occ_command app:list | grep -q  "mail"
+    then
+        occ_command upgrade
+    fi
 fi
 
 # Check which apps got updated
@@ -625,9 +630,6 @@ if [ ! -d "$VMLOGS" ]
 then
     mkdir -p "$VMLOGS"
 fi
-
-########## TEMPORARY FIX ################# 2020-04-19
-occ_command upgrade
 
 CURRENTVERSION_after=$(occ_command status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
