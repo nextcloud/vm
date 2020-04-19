@@ -1180,7 +1180,7 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-occ_command_no_check user:list | sed 's/^  - //g' | sed 's/:.*//' | while read -r admin
+occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r admin
 do
     if occ_command_no_check user:info "$admin" | grep -xq "    \- admin"
     then
