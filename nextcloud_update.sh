@@ -121,7 +121,10 @@ then
     fi
         restart_webserver
 else
-    msg_box "Ubuntu version $DISTRO must be at least 20.04 to upgrade Redis."
+msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to upgrade Redis."
+msg_box "Please contact us to get support for upgrading your server:
+https://www.hanssonit.se/#contact
+https://shop.hanssonit.se/"
 fi
 
 # Upgrade APCu and igbinary
