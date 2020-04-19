@@ -17,12 +17,9 @@ then
 fi
 
 # Check where the best mirrors are and update
-msg_box "To make downloads as fast as possible when updating you should have download mirrors that are as close to you as possible.
-This server comes with download mirrors that are based in the United States.
+msg_box "To make downloads as fast as possible when updating Ubuntu you should have download mirrors that are as close to you as possible.
 
-If you are located outside of the United States, it might be a good idea to change the mirrors so that downloads are faster.
-
-Please note that there are no gurantees that the download mirrors this script finds are staying up for the lifetime of this server..
+Please note that there are no gurantees that the download mirrors this script will find are staying up for the lifetime of this server.
 This is the method used: https://github.com/jblakeman/apt-select"
 print_text_in_color "$ICyan" "Checking current mirror..."
 print_text_in_color "$ICyan" "Your current server repository is: $REPO"
