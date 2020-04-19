@@ -693,8 +693,7 @@ calc_wt_size() {
 
 # example: is_app_enabled documentserver_community
 is_app_enabled() {
-install_if_not jq
-if occ_command app:list --output=json | jq -e ".enabled | .$1" > /dev/null
+if occ_command app:list | sed '/Disabled:/Q' | grep -q "$1"
 then
     return 0
 else
@@ -1178,9 +1177,9 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-occ_command_no_check user:list --output=json | jq -r 'keys[]' | while read -r admin
+occ_command_no_check user:list | sed 's/^  - //g' | sed 's/:.*//' | while read -r admin
 do
-    if occ_command_no_check user:info --output=json "$admin" | jq -e '.groups | index("admin")' > /dev/null
+    if occ_command_no_check user:info "$admin" | grep -xq "    \- admin"
     then
         print_text_in_color "$IGreen" "Posting '$1' to: $admin"
         occ_command_no_check notification:generate -l "$2" "$admin" "$1"
