@@ -626,6 +626,9 @@ then
     mkdir -p "$VMLOGS"
 fi
 
+########## TEMPORARY FIX ################# 2020-04-19
+occ_command upgrade
+
 CURRENTVERSION_after=$(occ_command status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
 then
