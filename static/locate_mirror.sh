@@ -17,10 +17,13 @@ then
 fi
 
 # Check where the best mirrors are and update
-msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
-This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
+msg_box "To make downloads as fast as possible when updating you should have download mirrors that are as close to you as possible.
+This server comes with download mirrors that are based in the United States.
 
-If you are located outside of Europe, we recomend you to change the mirrors so that downloads are faster."
+If you are located outside of the United States, it might be a good idea to change the mirrors so that downloads are faster.
+
+Please note that there are no gurantees that the download mirrors this script finds are staying up for the lifetime of this server..
+This is the method used: https://github.com/jblakeman/apt-select"
 print_text_in_color "$ICyan" "Checking current mirror..."
 print_text_in_color "$ICyan" "Your current server repository is: $REPO"
 
@@ -41,7 +44,7 @@ else
     pip install \
         --upgrade pip \
         apt-select
-    check_command apt-select -m up-to-date -t 5 -c -C "$KEYBOARD_LAYOUT"
+    check_command apt-select -m up-to-date -t 6 -c -C "$KEYBOARD_LAYOUT"
     sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
     if [ -f sources.list ]
     then
