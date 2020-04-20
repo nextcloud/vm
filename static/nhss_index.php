@@ -96,7 +96,7 @@
             <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
 
             <p>It's recomended to <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpidm0/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a>
-            The easiest way to get a real SSL certificate is to run the Lets' Encrypt script included on this server.<br>
+            The easiest way to get a real TLS certificate is to run the Lets' Encrypt script included on this server.<br>
             Just run 'sudo bash /var/scripts/activate-tls.sh' from your terminal and follow the instructions.
             <h3>
                 <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidb0" target="_blank">Login details</a>

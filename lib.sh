@@ -495,7 +495,7 @@ Please try to run it again some other time with other settings.
 
 There are different configs you can try in Let's Encrypt's user guide:
 https://letsencrypt.readthedocs.org/en/latest/index.html
-Please check the guide for further information on how to enable SSL.
+Please check the guide for further information on how to enable TLS.
 
 This script is developed on GitHub, feel free to contribute:
 https://github.com/nextcloud/vm"

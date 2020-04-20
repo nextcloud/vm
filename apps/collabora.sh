@@ -157,11 +157,11 @@ if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
 msg_box "It seems like Nextcloud is not installed or that you don't use https on:
 ${NCDOMAIN//\\/}.
-Please install Nextcloud and make sure your domain is reachable, or activate SSL
+Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.
 
-If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
-When SSL is activated, run these commands from your terminal:
+If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
+When TLS is activated, run these commands from your terminal:
 sudo curl -sLO $APP/collabora.sh
 sudo bash collabora.sh"
     exit 1
@@ -208,7 +208,7 @@ then
   Options -Indexes
   </Directory>
 
-  # SSL configuration, you may want to take the easy route instead and use Lets Encrypt!
+  # TLS configuration, you may want to take the easy route instead and use Lets Encrypt!
   SSLEngine on
   SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
   SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem

@@ -565,7 +565,7 @@ fi
 if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
     touch "$SITES_AVAILABLE/$TLS_CONF"
-    cat << SSL_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
+    cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
@@ -624,7 +624,7 @@ then
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
-SSL_CREATE
+TLS_CREATE
     print_text_in_color "$IGreen" "$SITES_AVAILABLE/$TLS_CONF was successfully created."
 fi
 
