@@ -37,8 +37,10 @@ else
     fi
     print_text_in_color "$ICyan" "Locating the best mirrors..."
     curl_to_dir https://bootstrap.pypa.io get-pip.py /tmp
-    install_if_not python2
-    cd /tmp && python2 get-pip.py
+    install_if_not python3
+    install_if_not python3-testresources
+    install_if_not python3-distutils
+    cd /tmp && python3 get-pip.py
     pip install \
         --upgrade pip \
         apt-select
