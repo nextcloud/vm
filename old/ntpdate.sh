@@ -13,8 +13,11 @@ true
 DEBUG=0
 debug_mode
 
-if site_200 google.com 
+if network_ok
 then
-    ntpdate -s 1.se.pool.ntp.org
+    if is_this_installed ntpdate
+    then
+        ntpdate -s 1.se.pool.ntp.org
+    fi
 fi
 exit

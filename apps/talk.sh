@@ -61,11 +61,11 @@ if ! curl -s https://"${TURN_DOMAIN//\\/}"/status.php | grep -q 'installed":true
 then
 msg_box "It seems like Nextcloud is not installed or that you don't use https on:
 ${TURN_DOMAIN//\\/}
-Please install Nextcloud and make sure your domain is reachable, or activate SSL
+Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.
-If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
+If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
 
-When SSL is activated, run these commands from your terminal:
+When TLS is activated, run these commands from your terminal:
 sudo curl -sLO $APP/talk.sh
 sudo bash talk.sh"
     exit 1
@@ -122,8 +122,6 @@ cat << TURN_CREATE > "$TURN_CONF"
 tls-listening-port=$TURN_PORT
 fingerprint
 lt-cred-mech
-use-auth-secret
-static-auth-secret=$TURN_SECRET
 realm=$TURN_DOMAIN
 total-quota=100
 bps-capacity=0
@@ -131,7 +129,6 @@ stale-nonce
 cert=$CERTFILES/$TURN_DOMAIN/cert.pem
 pkey=$CERTFILES/$TURN_DOMAIN/privkey.pem
 cipher-list="ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AES:RSA+3DES:!ADH:!AECDH:!MD5"
-allow-loopback-peers
 no-multicast-peers
 no-tlsv1
 no-tlsv1_1
@@ -149,7 +146,7 @@ else
 fi
 
 # Restart the TURN server
-check_command systemctl restart coturn
+check_command systemctl restart coturn.service
 
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!

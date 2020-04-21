@@ -30,7 +30,7 @@ You also have to open port 80+443 against this VMs
 IP address: $ADDRESS - do this in your router/FW.
 Here is a guide: https://goo.gl/Uyuf65
 
-You can find the script here: $SCRIPTS/activate-ssl.sh
+You can find the script here: $SCRIPTS/activate-tls.sh
 and you can run it after you got a domain.
 
 Please don't run this script if you don't have
@@ -40,14 +40,14 @@ https://store.binero.se/?lang=en-US"
 if [[ "no" == $(ask_yes_or_no "Are you sure you want to continue?") ]]
 then
 msg_box "OK, but if you want to run this script later,
-just type: sudo bash $SCRIPTS/activate-ssl.sh"
+just type: sudo bash $SCRIPTS/activate-tls.sh"
     exit
 fi
 
 if [[ "no" == $(ask_yes_or_no "Have you forwarded port 80+443 in your router?") ]]
 then
 msg_box "OK, but if you want to run this script later,
-just type: sudo bash /var/scripts/activate-ssl.sh"
+just type: sudo bash /var/scripts/activate-tls.sh"
     exit
 fi
 
@@ -56,7 +56,7 @@ then
     sleep 1
 else
 msg_box "OK, but if you want to run this script later,
-just type: sudo bash /var/scripts/activate-ssl.sh"
+just type: sudo bash /var/scripts/activate-tls.sh"
     exit
 fi
 
@@ -215,7 +215,7 @@ You don't need to worry about security as port 80 is directly forwarded to 443, 
         exit 0
     fi
 else
-    last_fail_tls "$SCRIPTS"/activate-ssl.sh cleanup
+    last_fail_tls "$SCRIPTS"/activate-tls.sh cleanup
 fi
 
 exit

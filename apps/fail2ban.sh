@@ -165,7 +165,7 @@ FCONF
 # Update settings
 check_command update-rc.d fail2ban defaults
 check_command update-rc.d fail2ban enable
-check_command service fail2ban restart
+check_command systemctl restart fail2ban.service
 
 # The End
 msg_box "Fail2ban is now sucessfully installed.

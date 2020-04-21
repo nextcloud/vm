@@ -31,12 +31,12 @@ gen_passwd() {
 }
 
 # Ubuntu OS
-DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
+DISTRO=$(lsb_release -sr)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Network
 [ -n "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
-[ -n "$CHECK_CURRENT_REPO" ] && REPO=$(apt-get update | grep -m 1 Hit | awk '{ print $2}')
+REPO=$(grep deb-src /etc/apt/sources.list | grep http | awk '{print $3}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
 WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
@@ -60,19 +60,12 @@ UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
-MARIADB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-NEWMARIADBPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-[ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-ETCMYCNF=/etc/mysql/my.cnf
-MYCNF=/root/.my.cnf
-[ -n "$MYCNFPW" ] && MARIADBMYCNFPASS=$(grep "password" $MYCNF | sed -n "/password/s/^password='\(.*\)'$/\1/p")
 PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 [ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
-
 # Nextcloud version
 [ -n "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 [ -n "$NC_UPDATE" ] && NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
@@ -87,9 +80,8 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 [ -n "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain (collabora.sh)
 [ -n "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
-# Nextcloud Main Domain (activate-ssl.sh)
+# Nextcloud Main Domain (activate-tls.sh)
 [ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(whiptail --title "T&M Hansson IT - Let's Encrypt" --inputbox "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
-
 # Letsencrypt
 SITES_AVAILABLE="/etc/apache2/sites-available"
 LETSENCRYPTPATH="/etc/letsencrypt"
@@ -102,7 +94,7 @@ HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # PHP-FPM
-PHPVER=7.2
+PHPVER=7.4
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
@@ -126,8 +118,6 @@ APACHE2=/etc/apache2/apache2.conf
 # Talk
 [ -n "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
 [ -n "$TURN_INSTALL" ] && TURN_PORT=5349
-[ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
-[ -n "$TURN_INSTALL" ] && TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 
 ## FUNCTIONS
@@ -283,7 +273,7 @@ start_if_stopped() {
 if ! pgrep "$1"
 then
     print_text_in_color "$ICyan" "Starting $1..."
-    check_command service "$1" start
+    check_command systemctl start "$1".service
 fi
 }
 
@@ -390,26 +380,21 @@ if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
 then
     apt update -q4 & spinner_loading && apt install dnsutils -y
 fi
-# Install network-manager if not existing
-if ! dpkg-query -W -f='${Status}' "network-manager" | grep -q "ok installed"
+# Install net-tools if not existing
+if ! dpkg-query -W -f='${Status}' "net-tools" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install network-manager -y
+    apt update -q4 & spinner_loading && apt install net-tools -y
 fi
-check_command service network-manager restart
-ip link set "$IFACE" down
-sleep 2
-ip link set "$IFACE" up
-sleep 2
 print_text_in_color "$ICyan" "Checking connection..."
-check_command service network-manager restart
+netplan apply
 sleep 2
 if nslookup github.com
 then
     print_text_in_color "$IGreen" "Online!"
 elif ! nslookup github.com
 then
-    print_text_in_color "$ICyan" "Trying to restart networking service..."
-    check_command service networking restart && sleep 2
+    print_text_in_color "$ICyan" "Trying to restart netplan service..."
+    check_command systemctl restart systemd-networkd && sleep 2
     if nslookup github.com
     then
         print_text_in_color "$IGreen" "Online!"
@@ -435,7 +420,7 @@ fi
 }
 
 restart_webserver() {
-check_command systemctl restart apache2
+check_command systemctl restart apache2.service
 if is_this_installed php"$PHPVER"-fpm
 then
     check_command systemctl restart php"$PHPVER"-fpm.service
@@ -471,10 +456,10 @@ then
     uir_hsts="--uir --hsts"
 fi
 a2dissite 000-default.conf
-service apache2 reload
+systemctl reload apache2.service
 default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 #http-01
-local  standalone="certbot certonly --standalone --pre-hook \"service apache2 stop\" --post-hook \"service apache2 start\" $default_le"
+local  standalone="certbot certonly --standalone --pre-hook \"systemctl stop apache2.service\" --post-hook \"systemctl start apache2.service\" $default_le"
 #tls-alpn-01
 local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default_le"
 #dns
@@ -510,7 +495,7 @@ Please try to run it again some other time with other settings.
 
 There are different configs you can try in Let's Encrypt's user guide:
 https://letsencrypt.readthedocs.org/en/latest/index.html
-Please check the guide for further information on how to enable SSL.
+Please check the guide for further information on how to enable TLS.
 
 This script is developed on GitHub, feel free to contribute:
 https://github.com/nextcloud/vm"
@@ -561,13 +546,13 @@ fi
 check_distro_version() {
 # Check Ubuntu version
 print_text_in_color "$ICyan" "Checking server OS and version..."
-if lsb_release -c | grep -ic "bionic" &> /dev/null
+if lsb_release -sc | grep -ic "bionic" &> /dev/null || lsb_release -sc | grep -ic "focal" &> /dev/null
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
 then 
     OS=1
-elif uname -a | grep -ic "bionic" &> /dev/null
+elif uname -a | grep -ic "bionic" &> /dev/null || uname -a | grep -ic "focal" &> /dev/null
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu" &> /dev/null
@@ -585,7 +570,10 @@ You can find the download link here: https://www.ubuntu.com/download/server"
 fi
 
 if ! version 18.04 "$DISTRO" 20.04.4; then
-msg_box "Ubuntu version $DISTRO must be between 18.04 - 20.04.4"
+msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+msg_box "Please contact us to get support for upgrading your server:
+https://www.hanssonit.se/#contact
+https://shop.hanssonit.se/"
     exit 1
 fi
 }
@@ -684,12 +672,11 @@ sudo -u www-data php "$NCPATH"/occ "$@";
 
 network_ok() {
     print_text_in_color "$ICyan" "Testing if network is OK..."
-    install_if_not network-manager
-    if ! service network-manager restart > /dev/null
+    if ! netplan apply
     then
-        service networking restart > /dev/null
+        systemctl restart systemd-networkd > /dev/null
     fi
-    sleep 5 && site_200 github.com
+    sleep 3 && site_200 github.com
 }
 
 # Whiptail auto-size
@@ -1065,7 +1052,7 @@ cat << OVERLAY2 > /etc/docker/daemon.json
 }
 OVERLAY2
 systemctl daemon-reload
-systemctl restart docker
+systemctl restart docker.service
 }
 
 # Remove all dockers excluding one
@@ -1193,7 +1180,7 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-occ_command_no_check user:list | sed 's/^  - //g' | sed 's/:.*//' | while read -r admin
+occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r admin
 do
     if occ_command_no_check user:info "$admin" | grep -xq "    \- admin"
     then

@@ -26,7 +26,7 @@ lowest_compatible_nc 18
 ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
 
-# Check if Nextcloud is installed with SSL
+# Check if Nextcloud is installed with TLS
 if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
 then
 msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
@@ -133,7 +133,7 @@ then
         a2dismod evasive
         # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
         apt purge libapache2-mod-evasive -y
-	systemctl restart apache2
+	systemctl restart apache2.service
     fi
 fi
 

@@ -53,9 +53,8 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
-unset CHECK_CURRENT_REPO
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -66,33 +65,8 @@ debug_mode
 # Check if root
 root_check
 
-# Set keyboard layout
-if [ "$KEYBOARD_LAYOUT" != "se" ]
-then
-    print_text_in_color "$ICyan" "Current keyboard layout is $KEYBOARD_LAYOUT"
-    if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
-    then
-        print_text_in_color "$ICyan" "Not changing keyboard layout..."
-        sleep 1
-    else
-        dpkg-reconfigure keyboard-configuration
-        msg_box "The server will now be rebooted to apply the new keyboard settings. Please run this script again once rebooted."
-        reboot
-    fi
-fi
-
 # Set locales
-KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
-install_if_not language-pack-en-base
-if [ "$KEYBOARD_LAYOUT" = "se" ]
-then
-    sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-elif [ "$KEYBOARD_LAYOUT" = "de" ]
-then
-    sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-else
-    sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-fi
+run_static_script locales
 
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
@@ -104,7 +78,13 @@ bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
 rm -f $SCRIPTS/adduser.sh
 
 # Check distribution and version
-check_distro_version
+if ! version 20.04 "$DISTRO" 20.04.6
+then
+    msg_box "This script can only be run on Ubuntu 20.04 (server)."
+    exit 1
+fi
+# Use this when Ubuntu 18.04 is deprecated from the function:
+#check_distro_version
 check_universe
 check_multiverse
 
@@ -143,7 +123,6 @@ fi
 
 # Install needed network
 install_if_not netplan.io
-install_if_not network-manager
 
 # Install build-essentials to get make
 install_if_not build-essential
@@ -203,36 +182,17 @@ case "$choice" in
     *)
     ;;
 esac
-check_command systemctl restart network-manager.service
+test_connection
 network_ok
 
-# Check where the best mirrors are and update
-echo
-printf "Your current server repository is:  ${ICyan}%s${Color_Off}\n" "$REPO"
-if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
-then
-    print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
-    sleep 1
-else
-   print_text_in_color "$ICyan" "Locating the best mirrors..."
-   apt update -q4 & spinner_loading
-   apt install python-pip -y
-   pip install \
-       --upgrade pip \
-       apt-select
-    apt-select -m up-to-date -t 5 -c
-    sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-    if [ -f sources.list ]
-    then
-        sudo mv sources.list /etc/apt/
-    fi
-fi
+# Check current repo
+run_static_script locate_mirror
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
 # curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt update -q4 & spinner_loading
-apt install postgresql-10 -y
+apt install postgresql -y
 
 # Create DB
 cd /tmp
@@ -241,7 +201,7 @@ CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
 CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
 END
 print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
-service postgresql restart
+systemctl restart postgresql.service
 
 # Install Apache
 check_command apt install apache2 -y
@@ -286,7 +246,6 @@ check_command apt install -y \
     php"$PHPVER"-zip \
     php"$PHPVER"-mbstring \
     php"$PHPVER"-soap \
-    php"$PHPVER"-smbclient \
     php"$PHPVER"-json \
     php"$PHPVER"-gmp \
     php"$PHPVER"-bz2 \
@@ -343,10 +302,6 @@ restart_webserver
 
 # Calculate the values of PHP-FPM based on the amount of RAM available (it's done in the startup script as well)
 calculate_php_fpm
-
-# Enable SMB client # already loaded with php-smbclient
-# echo '# This enables php-smbclient' >> /etc/php/"$PHPVER"/apache2/php.ini
-# echo 'extension="smbclient.so"' >> /etc/php/"$PHPVER"/apache2/php.ini
 
 # Install VM-tools
 install_if_not open-vm-tools
@@ -471,6 +426,16 @@ echo "pgsql.log_notice = 0"
 
 # Install Redis (distrubuted cache)
 run_static_script redis-server-ubuntu
+
+ # Install smbclient
+ # php"$PHPVER"-smbclient does not yet work in PHP 7.4
+ install_if_not libsmbclient-dev
+ yes no | pecl install smbclient
+ if ! grep -qFx extension=smbclient.so "$PHP_INI"
+ then
+     echo "# PECL smbclient" >> "$PHP_INI"
+     echo "extension=smbclient.so" >> "$PHP_INI"
+ fi
 
 # Enable igbinary for PHP
 # https://github.com/igbinary/igbinary
@@ -600,7 +565,7 @@ fi
 if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
     touch "$SITES_AVAILABLE/$TLS_CONF"
-    cat << SSL_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
+    cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
@@ -659,7 +624,7 @@ then
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
-SSL_CREATE
+TLS_CREATE
     print_text_in_color "$IGreen" "$SITES_AVAILABLE/$TLS_CONF was successfully created."
 fi
 
@@ -678,7 +643,6 @@ choice=$(whiptail --title "Install apps or software" --checklist "Automatically 
 "Text" "" ON \
 "Mail" "" ON \
 "Deck" "" ON \
-"Social" "" ON \
 "Group-Folders" "" ON \
 "Webmin" "" ON 3>&1 1>&2 2>&3)
 
@@ -711,9 +675,6 @@ case "$choice" in
     ;;&
     *"Deck"*)
         install_and_enable_app deck
-    ;;&
-    *"Social"*)
-        install_and_enable_app social
     ;;&
     *"Group-Folders"*)
         install_and_enable_app groupfolders
@@ -759,7 +720,7 @@ apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
 # Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
-# Kernel 4.15
+# Kernel 5.4
 apt install -y --install-recommends \
 linux-virtual \
 linux-tools-virtual \

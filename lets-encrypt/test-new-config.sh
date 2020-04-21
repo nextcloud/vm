@@ -21,7 +21,7 @@ a2dissite "$HTTP_CONF"
 a2dissite 000-default.conf
 if restart_webserver
 then
-msg_box "New settings works! SSL is now activated and OK!
+msg_box "New settings works! TLS is now activated and OK!
 
 This cert will expire in 90 days if you don't renew it.
 There are several ways of renewing this cert and here are some tips and tricks:
@@ -63,7 +63,7 @@ fi
 # Check if service is running
 if ! pgrep apache2 > /dev/null
 then
-    service apache2 start
+    systemctl start apache2.service
 fi
 CRONTAB
 }
@@ -74,7 +74,7 @@ chmod +x $SCRIPTS/letsencryptrenew.sh
 
 # Cleanup
 rm -f $SCRIPTS/test-new-config.sh
-rm -f $SCRIPTS/activate-ssl.sh
+rm -f $SCRIPTS/activate-tls.sh
 rm -f /var/www/index.php
 
 else
@@ -84,7 +84,7 @@ else
     a2ensite "$HTTP_CONF"
     a2ensite 000-default.conf
     restart_webserver
-    printf "${ICyan}Couldn't load new config, reverted to old settings. Self-signed SSL is OK!${Color_Off}\n"
+    printf "${ICyan}Couldn't load new config, reverted to old settings. Self-signed TLS is OK!${Color_Off}\n"
     any_key "Press any key to continue... "
     exit 1
 fi

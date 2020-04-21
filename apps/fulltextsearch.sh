@@ -108,7 +108,7 @@ then
     occ_command app:remove nextant
 
     # Remove Solr
-    service solr stop
+    systemctl stop solr.service
     rm -rf /var/solr
     rm -rf /opt/solr*
     rm /etc/init.d/solr

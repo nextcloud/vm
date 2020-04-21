@@ -138,7 +138,7 @@ systemctl restart docker.service
 print_text_in_color "$ICyan" "Reloading daemon"
 systemctl daemon-reload
 print_text_in_color "$ICyan" "Restarting the docker service"
-check_command systemctl restart docker
+check_command systemctl restart docker.service
 apt-mark unhold docker-ce
 
 # Remove old cached versions to avoid failures on update to new version

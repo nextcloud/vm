@@ -42,18 +42,16 @@ then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 source /var/scripts/lib.sh
+NCDB=1 && FIRST_IFACE=1 source /var/scripts/lib.sh
 unset NCDB
 unset FIRST_IFACE
-unset  CHECK_CURRENT_REPO
  # If we have internet, then use the latest variables from the lib remote file
 elif print_text_in_color "$ICyan" "Testing internet connection..." && ping github.com -c 2
 then
 true
 # shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 && CHECK_CURRENT_REPO=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
-unset CHECK_CURRENT_REPO
 unset NCDB
 else
     print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
@@ -82,12 +80,6 @@ network:
       dhcp6: yes
 SETDHCP
     check_command netplan apply
-    check_command service network-manager restart
-    ip link set "$IFACE" down
-    wait
-    ip link set "$IFACE" up
-    wait
-    check_command service network-manager restart
     print_text_in_color "$ICyan" "Checking connection..."
     sleep 1
     if ! nslookup github.com
@@ -140,9 +132,8 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
 fi
 
 # shellcheck source=lib.sh
-NCDB=1 && CHECK_CURRENT_REPO=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
-unset CHECK_CURRENT_REPO
 unset NCDB
 
 # Check for errors + debug code and abort if something isn't right
@@ -155,7 +146,7 @@ debug_mode
 lowest_compatible_nc 16
 
 # Check that this run on the PostgreSQL VM
-if ! is_this_installed postgresql-10
+if ! is_this_installed postgresql-common
 then
     print_text_in_color "$IRed" "This script is intended to be run using a PostgreSQL database, but PostgreSQL is not installed."
     print_text_in_color "$IRed" "Aborting..."
@@ -163,10 +154,10 @@ then
 fi
 
 # Set keyboard layout, important when changing passwords and such
-if [ "$KEYBOARD_LAYOUT" = "se" ]
+if [ "$KEYBOARD_LAYOUT" = "us" ]
 then
     clear
-    print_text_in_color "$ICyan" "Current keyboard layout is Swedish."
+    print_text_in_color "$ICyan" "Current keyboard layout is English (United States)."
     if [[ "no" == $(ask_yes_or_no "Do you want to change keyboard layout?") ]]
     then
         print_text_in_color "$ICyan" "Not changing keyboard layout..."
@@ -180,24 +171,7 @@ then
 fi
 
 # Set locales
-print_text_in_color "$ICyan" "Setting locales..."
-KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
-if [ "$KEYBOARD_LAYOUT" = "se" ]
-then
-    print_text_in_color "$ICyan" "Svensk locale är redan konfigurerad."
-elif [ "$KEYBOARD_LAYOUT" = "de" ]
-then 
-    sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-elif [ "$KEYBOARD_LAYOUT" = "us" ]
-then
-    sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-elif [ "$KEYBOARD_LAYOUT" = "fr" ]
-then
-    sudo locale-gen "fr_FR.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-elif [ "$KEYBOARD_LAYOUT" = "ch" ]
-then
-    sudo locale-gen "de_CH.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-fi
+run_static_script locales
 
 # Is this run as a pure root user?
 if is_root
@@ -226,10 +200,13 @@ As long as the user you created have sudo permissions it's safe to continue.
 This would be the case if you created a new user with the script in the previous step.
 
 If the user you are running this script with is a user that doesn't have sudo permissions,
-please abort this script and report this issue to $ISSUES."
+please abort this script (CTRL+C) and report this issue to $ISSUES."
         fi
     fi
 fi
+
+# Upgrade mirrors
+run_static_script locate_mirror
 
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
@@ -265,7 +242,7 @@ download_static_script nextcloud
 download_static_script update-config
 download_static_script apps
 download_static_script configuration
-download_le_script activate-ssl
+download_le_script activate-tls
 if home_sme_server
 then
     download_static_script nhss_index
@@ -360,34 +337,6 @@ sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
 clear
 
-# Check where the best mirrors are and update
-msg_box "To make downloads as fast as possible when updating you should have mirrors that are as close to you as possible.
-This VM comes with mirrors based on servers in that where used when the VM was released and packaged.
-
-If you are located outside of Europe, we recomend you to change the mirrors so that downloads are faster."
-print_text_in_color "$ICyan" "Checking current mirror..."
-print_text_in_color "$ICyan" "Your current server repository is: $REPO"
-
-if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
-then
-    print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
-    sleep 1
-else
-    print_text_in_color "$ICyan" "Locating the best mirrors..."
-    apt update -q4 & spinner_loading
-    apt install python-pip -y
-    pip install \
-        --upgrade pip \
-        apt-select
-    check_command apt-select -m up-to-date -t 5 -c -C "$(localectl status | grep "Layout" | awk '{print $3}')"
-    sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-    if [ -f sources.list ]
-    then
-        sudo mv sources.list /etc/apt/
-    fi
-fi
-clear
-
 # Pretty URLs
 print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
@@ -443,10 +392,10 @@ https://www.techandme.se/open-port-80-443/"
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to install TLS?") ]]
 then
-    bash $SCRIPTS/activate-ssl.sh
+    bash $SCRIPTS/activate-tls.sh
 else
     echo
-    print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-ssl.sh"
+    print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
     any_key "Press any key to continue..."
 fi
 clear
