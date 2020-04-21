@@ -64,11 +64,6 @@ do
         # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
         print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
         xargs rm -f <<< "$NCLOG"
-        # check if $VMLOGS exists as a file rather than a directory, and if so, delete it
-        if [ -e "$VMLOGS" ]
-        then
-            rm $VMLOGS
-        fi
         # Create $VMLOGS dir
         mkdir -p "$VMLOGS"
         # Set logging
