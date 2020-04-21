@@ -42,7 +42,7 @@ else
     pip install \
         --upgrade pip \
         apt-select
-    check_command apt-select -m up-to-date -t 6 -c -C "$KEYBOARD_LAYOUT"
+    check_command apt-select -m up-to-date -t 4 -c -C "$KEYBOARD_LAYOUT"
     sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
     if [ -f sources.list ]
     then
