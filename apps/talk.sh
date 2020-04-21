@@ -18,6 +18,9 @@ debug_mode
 # Must be root
 root_check
 
+# Must be 20.04
+check_distro_version
+
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
