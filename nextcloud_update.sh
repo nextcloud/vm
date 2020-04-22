@@ -54,7 +54,7 @@ then
 fi
 
 # Don't allow MySQL/MariaDB
-if if ! grep -q pgsql /var/www/nextcloud/config/config.php
+if ! grep -q pgsql /var/www/nextcloud/config/config.php
 then
     msg_box "MySQL/MariaDB is not supported in this script anymore. Please contact us to get support for upgrading your server: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     exit 0
