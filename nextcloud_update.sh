@@ -53,14 +53,10 @@ then
     apt-mark hold php*
 fi
 
-# System Upgrade
-if is_this_installed mysql-common
+# Don't allow MySQL/MariaDB
+if if ! grep -q pgsql /var/www/nextcloud/config/config.php
 then
-    msg_box "MySQL is not supported in this script anymore. Please contact us to get support for upgrading your server: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
-    exit 0
-elif is_this_installed mariadb-common
-then
-    msg_box "MariaDB is not supported in this script anymore. Please contact us to get support for upgrading your server: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+    msg_box "MySQL/MariaDB is not supported in this script anymore. Please contact us to get support for upgrading your server: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     exit 0
 fi
 
