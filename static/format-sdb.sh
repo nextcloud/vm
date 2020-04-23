@@ -173,7 +173,7 @@ Automatic scrubbing is done monthly via a cronjob that you can find here:
 Automatic snapshots are taken with 'zfs-auto-snapshot'. You can list current snapshots with:
 'sudo zfs list -t snapshot'. 
 Manpage is here: 
-http://manpages.ubuntu.com/manpages/bionic/man8/zfs-auto-snapshot.8.html
+http://manpages.ubuntu.com/manpages/focal/man8/zfs-auto-snapshot.8.html
 
 CURRENT STATUS:
 $(zpool status $LABEL_)
