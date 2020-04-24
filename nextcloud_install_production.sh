@@ -95,6 +95,13 @@ msg_box "Nextcloud repo is not available, exiting..."
     exit 1
 fi
 
+# Fix LVM on BASE image
+if grep -q "LVM" /etc/fstab
+then
+    # Resize LVM (live installer is &%¤%/!
+    lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+fi
+
 # Check if it's a clean server
 stop_if_installed postgresql
 stop_if_installed apache2
