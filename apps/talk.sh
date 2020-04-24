@@ -124,7 +124,8 @@ check_command sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/c
 cat << TURN_CREATE > "$TURN_CONF"
 tls-listening-port=$TURN_PORT
 fingerprint
-lt-cred-mech
+use-auth-secret
+static-auth-secret=$TURN_SECRET
 realm=$TURN_DOMAIN
 total-quota=100
 bps-capacity=0
