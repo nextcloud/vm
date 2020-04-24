@@ -13,4 +13,8 @@ true
 DEBUG=0
 debug_mode
 
+# Resize LVM (somthing happened during installation)
+lvresize /dev/ubuntu-vg/ubuntu-lv /dev/sda3
+resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+
 exit
