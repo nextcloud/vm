@@ -16,7 +16,11 @@ debug_mode
 # Must be root
 root_check
 
-# Resize LVM (somthing happened during installation)
-check_command lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+# Fix LVM on BASE image
+if grep -q "LVM" /etc/fstab
+then
+    # Resize LVM (live installer is &%¤%/!
+    lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+fi
 
 exit
