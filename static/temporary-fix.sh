@@ -17,7 +17,6 @@ debug_mode
 root_check
 
 # Resize LVM (somthing happened during installation)
-lvresize /dev/ubuntu-vg/ubuntu-lv /dev/sda3
-resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+check_command lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
 
 exit
