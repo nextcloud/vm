@@ -437,13 +437,13 @@ then
     certbot --version 2> /dev/null
 else
     print_text_in_color "$ICyan" "Installing certbot (Let's Encrypt)..."
-    apt update -q4 & spinner_loading
-    install_if_not software-properties-common
-    add-apt-repository ppa:certbot/certbot -y
+    #apt update -q4 & spinner_loading
+    #install_if_not software-properties-common
+    #add-apt-repository ppa:certbot/certbot -y
     apt update -q4 & spinner_loading
     install_if_not certbot
-    apt update -q4 & spinner_loading
-    apt dist-upgrade -y
+    #apt update -q4 & spinner_loading
+    #apt dist-upgrade -y
 fi
 }
 
