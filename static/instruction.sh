@@ -24,7 +24,9 @@ cat << INST2
 | To be 100% sure that all the keystrokes work correctly (like @),      |
 | please use an SSH terminal like Putty. You can download it here:      |
 | https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html        |
-| Connect like this: ncadmin@local.IP.of.this.server                    |
+| If you are running Windows 10 1809 or later, you can simply use SSH   |
+| from the command prompt.                                              |
+| Connect like this: ssh ncadmin@local.IP.of.this.server                |
 |                                                                       |
 | You can schedule the Nextcloud update process using a cron job.       |
 | This is done using a script built into this server that automatically |
