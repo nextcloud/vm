@@ -378,6 +378,7 @@ calculate_max_children() {
 }
 
 test_connection() {
+check_distro_version
 # Install dnsutils if not existing
 if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
 then
@@ -545,7 +546,6 @@ fi
 
 check_distro_version() {
 # Check Ubuntu version
-print_text_in_color "$ICyan" "Checking server OS and version..."
 if lsb_release -sc | grep -ic "bionic" &> /dev/null || lsb_release -sc | grep -ic "focal" &> /dev/null
 then
     OS=1
@@ -671,6 +671,7 @@ sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 network_ok() {
+    check_distro_version
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if ! netplan apply
     then
