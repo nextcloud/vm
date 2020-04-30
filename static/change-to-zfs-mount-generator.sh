@@ -31,6 +31,8 @@ POOLNAME=ncdata
 if [ -z "$POOLNAME" ]
 then
     msg_box "It seems like the POOLNAME variable is empty, we can't continue without it."
+    exit 1
+fi
 
 # Make sure the correct packages are installed
 install_if_not zfs-zed
