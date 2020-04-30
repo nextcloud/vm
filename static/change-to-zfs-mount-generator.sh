@@ -5,7 +5,7 @@
 # https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
 # Tested on Ubuntu 20.04
 
-# This script came to life when we were having issues with importing the ZFS pool (ncdata) on Ubuntu 20.04. 
+# This script came to life when we were having issues with importing the ZFS pool (ncdata) on Ubuntu 20.04.
 # After some forum reading and some digging on Github, this is the result.
 # The intention here is to make the import process more robust, and less prune to fail
 # Esentially, changing from źfs-mount.service' to 'zfs-mount-generator' which by many has been working better.
@@ -28,7 +28,7 @@ check_multiverse
 
 POOLNAME=ncdata
 
-if [ -z $POOLNAME ]
+if [ -z "$POOLNAME" ]
 then
     msg_box "It seems like the POOLNAME variable is empty, we can't continue without it."
 
@@ -39,7 +39,7 @@ install_if_not zfs-zed
 mkdir -p /etc/zfs/zfs-list.cache
 
 # Enable ZFS Event Daemon(ZED) aka ZEDLET
-if [ -f [/usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh ]
+if [ -f [ /usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh ]
 then
     check_command ln -s /usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d
 else
@@ -52,8 +52,8 @@ fi
 systemctl enable zfs-import-cache
 systemctl enable zfs-import.target
 # DISABLE OLD METHOD
-# systemctl disable zfs-mount
-# systemctl disable zfs.target
+systemctl disable zfs-mount
+systemctl disable zfs.target
 # FOR ZEDLET
 check_command systemctl enable zfs-zed.service
 check_command systemctl enable zfs.target
@@ -64,8 +64,8 @@ zfs set canmount=on "$POOLNAME"
 sleep 1
 if [ -z /etc/zfs/zfs-list.cache/"$POOLNAME" ]
 then
-    print_text_in_color $IRed" "/etc/zfs/zfs-list.cache/"$POOLNAME" is emtpy, setting it manually instead."
-    echo $(zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand,encroot,keylocation) > /etc/zfs/zfs-list.cache/"$POOLNAME"
+    print_text_in_color "$IRed" "/etc/zfs/zfs-list.cache/$POOLNAME is emtpy, setting it manually instead."
+    echo "$(zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand,encroot,keylocation)" > /etc/zfs/zfs-list.cache/"$POOLNAME"
 fi
 
 #
