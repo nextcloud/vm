@@ -39,7 +39,7 @@ install_if_not zfs-zed
 mkdir -p /etc/zfs/zfs-list.cache
 
 # Enable ZFS Event Daemon(ZED) aka ZEDLET
-if [ -f [ /usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh ]
+if [ -f /usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh ]
 then
     check_command ln -s /usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d
 else
