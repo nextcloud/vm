@@ -142,9 +142,6 @@ unset NCDB
 DEBUG=0
 debug_mode
 
-# Nextcloud 18 is required.
-lowest_compatible_nc 18
-
 # Check that this run on the PostgreSQL VM
 if ! is_this_installed postgresql-common
 then
@@ -172,6 +169,9 @@ fi
 
 # Set locales
 run_static_script locales
+
+# Nextcloud 18 is required
+lowest_compatible_nc 18
 
 # Is this run as a pure root user?
 if is_root
