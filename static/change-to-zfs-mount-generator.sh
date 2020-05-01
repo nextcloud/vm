@@ -10,10 +10,6 @@
 # The intention here is to make the import process more robust, and less prune to fail
 # Esentially, changing from źfs-mount.service' to 'zfs-mount-generator' which by many has been working better.
 
-####     ####
-#### WIP ####
-####     ####
-
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -25,6 +21,13 @@ root_check
 # Needs to be Ubuntu 20.04 and Multiverse
 check_distro_version
 check_multiverse
+
+# ZFS needs to be installed
+if ! is_this_installed libzfs2linux
+then
+    msg_box "This script is only intened to be run if you have ZFS installed"
+    exit 1
+fi
 
 POOLNAME=ncdata
 
@@ -72,10 +75,8 @@ fi
 # Enable and disable services
 # NEEDED:
 systemctl enable zfs-import-cache
-systemctl enable zfs-import.target
 # DISABLE OLD METHOD
 systemctl disable zfs-mount
-systemctl disable zfs.target
 # FOR ZEDLET
 check_command systemctl enable zfs-zed.service
 check_command systemctl enable zfs.target
