@@ -34,6 +34,20 @@ then
     exit 1
 fi
 
+# In either case it's always better to use UUID instead of the /dev/sdX name, so do that as well
+# Import zpool in case missing
+zpool import -f "$POOLNAME"
+
+# Get UUID
+if fdisk -l /dev/sdb1
+then
+    UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
+fi
+
+# Export / import
+zpool export "$POOLNAME"
+zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
+
 # Make sure the correct packages are installed
 install_if_not zfs-zed
 
@@ -62,27 +76,11 @@ check_command systemctl enable zfs.target
 check_command systemctl start zfs-zed.service
 
 # Activate config
+touch /etc/zfs/zfs-list.cache/"$POOLNAME"
 zfs set canmount=on "$POOLNAME"
 sleep 1
-if [ -z /etc/zfs/zfs-list.cache/"$POOLNAME" ]
+if [ -s /etc/zfs/zfs-list.cache/"$POOLNAME" ]
 then
-    print_text_in_color "$IRed" "/etc/zfs/zfs-list.cache/$POOLNAME is emtpy, setting it manually instead."
+    print_text_in_color "$ICyan" "/etc/zfs/zfs-list.cache/$POOLNAME is emtpy, setting values manually instead."
     echo "$(zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand,encroot,keylocation)" > /etc/zfs/zfs-list.cache/"$POOLNAME"
 fi
-
-# Set new mountpoint
-#zfs set mountpoint=/etc/zfs/zfs-list.cache/"$POOLNAME" "$POOLNAME"
-
-#
-# In either case it's always better to use UUID instead of the /dev/sdX name, so do that as well
-#
-
-# Get UUID
-if fdisk -l /dev/sdb1
-then
-    UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
-fi
-
-# Export / import
-zpool export "$POOLNAME"
-zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
