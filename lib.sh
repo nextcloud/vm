@@ -378,7 +378,26 @@ calculate_max_children() {
 }
 
 test_connection() {
-check_distro_version
+version(){
+    local h t v
+
+    [[ $2 = "$1" || $2 = "$3" ]] && return 0
+
+    v=$(printf '%s\n' "$@" | sort -V)
+    h=$(head -n1 <<<"$v")
+    t=$(tail -n1 <<<"$v")
+
+    [[ $2 != "$h" && $2 != "$t" ]]
+}
+if ! version 18.04 "$DISTRO" 20.04.6
+then
+    print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+    print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
+    print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
+    print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
+    sleep 300
+fi
+
 # Install dnsutils if not existing
 if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
 then
@@ -671,13 +690,31 @@ sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 network_ok() {
-    check_distro_version
-    print_text_in_color "$ICyan" "Testing if network is OK..."
-    if ! netplan apply
-    then
-        systemctl restart systemd-networkd > /dev/null
-    fi
-    sleep 3 && site_200 github.com
+version(){
+    local h t v
+
+    [[ $2 = "$1" || $2 = "$3" ]] && return 0
+
+    v=$(printf '%s\n' "$@" | sort -V)
+    h=$(head -n1 <<<"$v")
+    t=$(tail -n1 <<<"$v")
+
+    [[ $2 != "$h" && $2 != "$t" ]]
+}
+if ! version 18.04 "$DISTRO" 20.04.6
+then
+    print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+    print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
+    print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
+    print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
+    sleep 300
+fi
+print_text_in_color "$ICyan" "Testing if network is OK..."
+if ! netplan apply
+then
+    systemctl restart systemd-networkd > /dev/null
+fi
+sleep 3 && site_200 github.com
 }
 
 # Whiptail auto-size
