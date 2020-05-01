@@ -36,7 +36,10 @@ fi
 
 # In either case it's always better to use UUID instead of the /dev/sdX name, so do that as well
 # Import zpool in case missing
-zpool import -f "$POOLNAME"
+if zpool list | grep -q 'no pools available'
+then
+    zpool import -f "$POOLNAME"
+fi
 
 # Get UUID
 if fdisk -l /dev/sdb1
