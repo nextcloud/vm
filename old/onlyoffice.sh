@@ -183,7 +183,7 @@ then
     fi
     printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
     a2ensite "$SUBDOMAIN.conf"
-    check_command systemctl reload apache2
+    restart_webserver
     # Install OnlyOffice
     occ_command app:install onlyoffice
 else
