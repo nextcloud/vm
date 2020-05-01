@@ -142,8 +142,8 @@ unset NCDB
 DEBUG=0
 debug_mode
 
-# Nextcloud 16 is required.
-lowest_compatible_nc 16
+# Nextcloud 18 is required.
+lowest_compatible_nc 18
 
 # Check that this run on the PostgreSQL VM
 if ! is_this_installed postgresql-common
