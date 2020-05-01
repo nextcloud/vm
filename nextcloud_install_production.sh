@@ -166,6 +166,9 @@ case "$choice" in
 esac
 fi
 
+# Change to zfs-mount-generator
+run_static_script change-to-zfs-mount-generator
+
 # Set DNS resolver
 # https://medium.com/@ahmadb/fixing-dns-issues-in-ubuntu-18-04-lts-bd4f9ca56620
 choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
