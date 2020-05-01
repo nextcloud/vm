@@ -395,6 +395,7 @@ then
     print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
+    sleep 300
 fi
 
 # Install dnsutils if not existing
@@ -706,6 +707,7 @@ then
     print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
+    sleep 300
 fi
 print_text_in_color "$ICyan" "Testing if network is OK..."
 if ! netplan apply
