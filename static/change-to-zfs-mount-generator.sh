@@ -70,6 +70,9 @@ then
     echo "$(zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand,encroot,keylocation)" > /etc/zfs/zfs-list.cache/"$POOLNAME"
 fi
 
+# Set new mountpoint
+#zfs set mountpoint=/etc/zfs/zfs-list.cache/"$POOLNAME" "$POOLNAME"
+
 #
 # In either case it's always better to use UUID instead of the /dev/sdX name, so do that as well
 #
