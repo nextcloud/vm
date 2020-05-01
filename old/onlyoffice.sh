@@ -5,9 +5,13 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 && OO_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
-unset OO_INSTALL
+
+# OnlyOffice URL (onlyoffice.sh)
+SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+# Nextcloud Main Domain (onlyoffice.sh)
+NCDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 
 print_text_in_color "$ICyan" "Installing OnlyOffice..."
 
@@ -124,7 +128,7 @@ then
     SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
     SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
     SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
-    SSLOpenSSLConfCmd DHParameters $DHPARAMS
+    SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
     
     SSLProtocol             all -SSLv2 -SSLv3
     SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
@@ -170,12 +174,12 @@ fi
 install_certbot
 
 # Generate certs
-if le_subdomain
+if generate_cert "$SUBDOMAIN"
 then
     # Generate DHparams chifer
-    if [ ! -f "$DHPARAMS" ]
+    if [ ! -f "$DHPARAMS_SUB" ]
     then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
+        openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
     fi
     printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
     a2ensite "$SUBDOMAIN.conf"
@@ -183,7 +187,7 @@ then
     # Install OnlyOffice
     occ_command app:install onlyoffice
 else
-	print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
+    print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
     any_key "Press any key to continue... "
     restart_webserver
 fi
