@@ -82,5 +82,5 @@ sleep 1
 if [ -s /etc/zfs/zfs-list.cache/"$POOLNAME" ]
 then
     print_text_in_color "$ICyan" "/etc/zfs/zfs-list.cache/$POOLNAME is emtpy, setting values manually instead."
-    echo "$(zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand,encroot,keylocation)" > /etc/zfs/zfs-list.cache/"$POOLNAME"
+    zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand,encroot,keylocation > /etc/zfs/zfs-list.cache/"$POOLNAME"
 fi
