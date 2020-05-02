@@ -1232,7 +1232,7 @@ done
 
 zpool_import_if_missing() {
 # ZFS needs to be installed
-if ! is_this_installed libzfs2linux
+if ! is_this_installed zfsutils-linux
 then
     print_text_in_color "$IRed" "This function is only intened to be run if you have ZFS installed."
     return 1
@@ -1247,12 +1247,13 @@ then
     zpool import -f "$POOLNAME"
 fi
 # Check if UUID is used
-if zpool list -v | grep sdb
+if zpool list -v | grep "$DEVTYPE"
 then
     # Get UUID
-    if fdisk -l /dev/sdb1 >/dev/null 2>&1
+    check_command partprobe -s
+    if fdisk -l /dev/"$DEVTYPE"1 >/dev/null 2>&1
     then
-        UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
+        UUID_SDB1=$(blkid -o value -s UUID /dev/"DEVTYPE"1)
     fi
     # Export / import the correct way (based on UUID)
     check_command zpool export "$POOLNAME"
