@@ -22,37 +22,11 @@ root_check
 check_distro_version
 check_multiverse
 
-# ZFS needs to be installed
-if ! is_this_installed libzfs2linux
-then
-    msg_box "This script is only intened to be run if you have ZFS installed"
-    exit 1
-fi
-
-POOLNAME=ncdata
-
-if [ -z "$POOLNAME" ]
-then
-    msg_box "It seems like the POOLNAME variable is empty, we can't continue without it."
-    exit 1
-fi
-
-# In either case it's always better to use UUID instead of the /dev/sdX name, so do that as well
-# Import zpool in case missing
-if zpool list | grep -q 'no pools available'
-then
-    zpool import -f "$POOLNAME"
-fi
-
-# Get UUID
-if fdisk -l /dev/sdb1
-then
-    UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
-fi
-
-# Export / import
-zpool export "$POOLNAME"
-zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
+# Import if missing and export again to import it with UUID
+# https://github.com/nextcloud/vm/master/lib.sh#L1233
+# Set a different name for the pool (if used outside of this repo)
+# export POOLNAME=ncdata
+zpool_import_if_missing
 
 # Make sure the correct packages are installed
 install_if_not zfs-zed
