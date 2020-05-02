@@ -1245,17 +1245,19 @@ fi
 if ! zpool list "$POOLNAME" >/dev/null 2>&1
 then
     zpool import -f "$POOLNAME"
-else
-    return 1
 fi
-# Get UUID
-if fdisk -l /dev/sdb1 >/dev/null 2>&1
+# Check if UUID is used
+if zpool list -v | grep sdb
 then
-    UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
+    # Get UUID
+    if fdisk -l /dev/sdb1 >/dev/null 2>&1
+    then
+        UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
+    fi
+    # Export / import the correct way (based on UUID)
+    check_command zpool export "$POOLNAME"
+    check_command zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
 fi
-# Export / import the correct way
-check_command zpool export "$POOLNAME"
-check_command zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
 }
 
 ## bash colors
