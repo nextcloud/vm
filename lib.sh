@@ -1247,13 +1247,13 @@ then
     zpool import -f "$POOLNAME"
 fi
 # Check if UUID is used
-if zpool list -v | grep "$DEVTYPE"
+if zpool list -v | grep sdb
 then
     # Get UUID
     check_command partprobe -s
-    if fdisk -l /dev/"$DEVTYPE"1 >/dev/null 2>&1
+    if fdisk -l /dev/sdb1 >/dev/null 2>&1
     then
-        UUID_SDB1=$(blkid -o value -s UUID /dev/"DEVTYPE"1)
+        UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
     fi
     # Export / import the correct way (based on UUID)
     check_command zpool export "$POOLNAME"
