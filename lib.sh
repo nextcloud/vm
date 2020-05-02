@@ -1230,17 +1230,16 @@ do
 done
 }
 
-zfs_import_if_missing() {
+zpool_import_if_missing() {
 # ZFS needs to be installed
 if ! is_this_installed libzfs2linux
 then
-    msg_box "This script is only intened to be run if you have ZFS installed"
-    exit 1
-fi
-if [ -z "$POOLNAME" ]
+    print_text_in_color "$IRed" "This function is only intened to be run if you have ZFS installed."
+    return 1
+elif [ -z "$POOLNAME" ]
 then
-    msg_box "It seems like the POOLNAME variable is empty, we can't continue without it."
-    exit 1
+    print_text_in_color "$IRed" "It seems like the POOLNAME variable is empty, we can't continue without it."
+    return 1
 fi
 # In either case it's always better to use UUID instead of the /dev/sdX name, so do that as well
 # Import zpool in case missing
