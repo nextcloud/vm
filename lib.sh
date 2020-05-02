@@ -1241,14 +1241,15 @@ then
     print_text_in_color "$IRed" "It seems like the POOLNAME variable is empty, we can't continue without it."
     return 1
 fi
-# In either case it's always better to use UUID instead of the /dev/sdX name, so do that as well
 # Import zpool in case missing
-if zpool list | grep -q 'no pools available'
+if ! zpool list "$POOLNAME" >/dev/null 2>&1
 then
     zpool import -f "$POOLNAME"
+else
+    return 1
 fi
 # Get UUID
-if fdisk -l /dev/sdb1
+if fdisk -l /dev/sdb1 >/dev/null 2>&1
 then
     UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
 fi
