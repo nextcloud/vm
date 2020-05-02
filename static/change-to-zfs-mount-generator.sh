@@ -23,7 +23,7 @@ check_distro_version
 check_multiverse
 
 # Import if missing and export again to import it with UUID
-# https://github.com/nextcloud/vm/master/lib.sh#L1233
+# https://github.com/nextcloud/vm/blob/master/lib.sh#L1233
 # Set a different name for the pool (if used outside of this repo)
 # export POOLNAME=ncdata
 zpool_import_if_missing
