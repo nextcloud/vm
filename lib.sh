@@ -9,7 +9,8 @@ true
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
-NCDATA=/mnt/ncdata
+POOLNAME=ncdata
+NCDATA=/mnt/"$POOLNAME"
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/shas56
@@ -378,7 +379,26 @@ calculate_max_children() {
 }
 
 test_connection() {
-check_distro_version
+version(){
+    local h t v
+
+    [[ $2 = "$1" || $2 = "$3" ]] && return 0
+
+    v=$(printf '%s\n' "$@" | sort -V)
+    h=$(head -n1 <<<"$v")
+    t=$(tail -n1 <<<"$v")
+
+    [[ $2 != "$h" && $2 != "$t" ]]
+}
+if ! version 18.04 "$DISTRO" 20.04.6
+then
+    print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+    print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
+    print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
+    print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
+    sleep 300
+fi
+
 # Install dnsutils if not existing
 if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
 then
@@ -671,13 +691,31 @@ sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 network_ok() {
-    check_distro_version
-    print_text_in_color "$ICyan" "Testing if network is OK..."
-    if ! netplan apply
-    then
-        systemctl restart systemd-networkd > /dev/null
-    fi
-    sleep 3 && site_200 github.com
+version(){
+    local h t v
+
+    [[ $2 = "$1" || $2 = "$3" ]] && return 0
+
+    v=$(printf '%s\n' "$@" | sort -V)
+    h=$(head -n1 <<<"$v")
+    t=$(tail -n1 <<<"$v")
+
+    [[ $2 != "$h" && $2 != "$t" ]]
+}
+if ! version 18.04 "$DISTRO" 20.04.6
+then
+    print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+    print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
+    print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
+    print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
+    sleep 300
+fi
+print_text_in_color "$ICyan" "Testing if network is OK..."
+if ! netplan apply
+then
+    systemctl restart systemd-networkd > /dev/null
+fi
+sleep 3 && site_200 github.com
 }
 
 # Whiptail auto-size
@@ -1190,6 +1228,37 @@ do
         occ_command_no_check notification:generate -l "$2" "$admin" "$1"
     fi
 done
+}
+
+zpool_import_if_missing() {
+# ZFS needs to be installed
+if ! is_this_installed zfsutils-linux
+then
+    print_text_in_color "$IRed" "This function is only intened to be run if you have ZFS installed."
+    return 1
+elif [ -z "$POOLNAME" ]
+then
+    print_text_in_color "$IRed" "It seems like the POOLNAME variable is empty, we can't continue without it."
+    return 1
+fi
+# Import zpool in case missing
+if ! zpool list "$POOLNAME" >/dev/null 2>&1
+then
+    zpool import -f "$POOLNAME"
+fi
+# Check if UUID is used
+if zpool list -v | grep sdb
+then
+    # Get UUID
+    check_command partprobe -s
+    if fdisk -l /dev/sdb1 >/dev/null 2>&1
+    then
+        UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
+    fi
+    # Export / import the correct way (based on UUID)
+    check_command zpool export "$POOLNAME"
+    check_command zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
+fi
 }
 
 ## bash colors

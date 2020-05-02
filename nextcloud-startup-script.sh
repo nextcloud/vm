@@ -142,9 +142,6 @@ unset NCDB
 DEBUG=0
 debug_mode
 
-# Nextcloud 16 is required.
-lowest_compatible_nc 16
-
 # Check that this run on the PostgreSQL VM
 if ! is_this_installed postgresql-common
 then
@@ -152,6 +149,9 @@ then
     print_text_in_color "$IRed" "Aborting..."
     exit 1
 fi
+
+# Import if missing and export again to import it with UUID
+zpool_import_if_missing
 
 # Set keyboard layout, important when changing passwords and such
 if [ "$KEYBOARD_LAYOUT" = "us" ]
@@ -172,6 +172,9 @@ fi
 
 # Set locales
 run_static_script locales
+
+# Nextcloud 18 is required
+lowest_compatible_nc 18
 
 # Is this run as a pure root user?
 if is_root

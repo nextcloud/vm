@@ -23,4 +23,7 @@ then
     lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
 fi
 
+# Fix ZFS
+run_static_script change-to-zfs-mount-generator
+
 exit
