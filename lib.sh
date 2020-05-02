@@ -9,7 +9,8 @@ true
 SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 HTML=/var/www
-NCDATA=/mnt/ncdata
+POOLNAME=ncdata
+NCDATA=/mnt/"$POOLNAME"
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/shas56
@@ -1227,6 +1228,34 @@ do
         occ_command_no_check notification:generate -l "$2" "$admin" "$1"
     fi
 done
+}
+
+zpool_import_if_missing() {
+# ZFS needs to be installed
+if ! is_this_installed libzfs2linux
+then
+    print_text_in_color "$IRed" "This function is only intened to be run if you have ZFS installed."
+    return 1
+elif [ -z "$POOLNAME" ]
+then
+    print_text_in_color "$IRed" "It seems like the POOLNAME variable is empty, we can't continue without it."
+    return 1
+fi
+# Import zpool in case missing
+if ! zpool list "$POOLNAME" >/dev/null 2>&1
+then
+    zpool import -f "$POOLNAME"
+else
+    return 1
+fi
+# Get UUID
+if fdisk -l /dev/sdb1 >/dev/null 2>&1
+then
+    UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
+fi
+# Export / import the correct way
+check_command zpool export "$POOLNAME"
+check_command zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
 }
 
 ## bash colors

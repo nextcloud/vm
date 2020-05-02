@@ -150,6 +150,9 @@ then
     exit 1
 fi
 
+# Import if missing and export again to import it with UUID
+zpool_import_if_missing
+
 # Set keyboard layout, important when changing passwords and such
 if [ "$KEYBOARD_LAYOUT" = "us" ]
 then
