@@ -54,7 +54,7 @@ add_mount() {
 count=1
 while [ $count -le $MAX_COUNT ]
 do
-    if grep -q $SMBSHARES/$count /etc/fstab
+    if grep -q "$SMBSHARES/$count " /etc/fstab
     then
         count=$((count+1))
     else
@@ -105,7 +105,7 @@ count=1
 while  [ $count -le $MAX_COUNT ]
 do
     # Check which mounting slot is available
-    if ! grep -q "$SMBSHARES/$count" /etc/fstab
+    if ! grep -q "$SMBSHARES/$count " /etc/fstab
     then 
         # Write to /etc/fstab and mount
         echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
@@ -116,7 +116,7 @@ do
         then
             # If not remove this line from fstab
             msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint:\n- you might fix the connection problem by enabling SMB3 on your SMB-server.\n- You could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.\n- Please also make sure, that 'ping IP-address' of your SMB-Server from your Nextcloud-instance works."
-            sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
+            sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
             break
         else
             # Install and enable files_external
@@ -149,7 +149,7 @@ fi
 count=1
 while [ $count -le $MAX_COUNT ]
 do
-    if grep -q $SMBSHARES/$count /etc/fstab
+    if grep -q "$SMBSHARES/$count " /etc/fstab
     then
         if mountpoint -q $SMBSHARES/$count
         then
@@ -171,9 +171,9 @@ count=1
 # Find out which SMB-shares are available
 while  [ $count -le $MAX_COUNT ]
 do
-    if ! mountpoint -q $SMBSHARES/$count && grep -q "$SMBSHARES/$count" /etc/fstab
+    if ! mountpoint -q $SMBSHARES/$count && grep -q "$SMBSHARES/$count " /etc/fstab
     then
-        args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
+        args+=("$SMBSHARES/$count " "$(grep "$SMBSHARES/$count " /etc/fstab | awk '{print $1}')" OFF)
     fi
     count=$((count+1))
 done
@@ -183,7 +183,7 @@ count=1
 # Mount selected SMB-shares
 while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $selected_options == *"$SMBSHARES/$count"* ]]
+    if [[ $selected_options == *"$SMBSHARES/$count "* ]]
     then
         mount "$SMBSHARES/$count"
         if ! mountpoint -q $SMBSHARES/$count
@@ -210,9 +210,9 @@ args=(whiptail --title "List SMB-shares" --checklist "This option let you show d
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
-    if grep -q "$SMBSHARES/$count" /etc/fstab
+    if grep -q "$SMBSHARES/$count " /etc/fstab
     then
-        args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
+        args+=("$SMBSHARES/$count " "$(grep "$SMBSHARES/$count " /etc/fstab | awk '{print $1}')" OFF)
     fi
     count=$((count+1))
 done
@@ -222,9 +222,9 @@ selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $selected_options == *"$SMBSHARES/$count"* ]]
+    if [[ $selected_options == *"$SMBSHARES/$count "* ]]
     then
-        msg_box "$(grep "$SMBSHARES/$count" /etc/fstab)"
+        msg_box "$(grep "$SMBSHARES/$count " /etc/fstab)"
     fi
     count=$((count+1))
 done
@@ -255,7 +255,7 @@ while  [ $count -le $MAX_COUNT ]
 do
     if mountpoint -q $SMBSHARES/$count
     then
-        args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
+        args+=("$SMBSHARES/$count " "$(grep "$SMBSHARES/$count " /etc/fstab | awk '{print $1}')" OFF)
     fi
     count=$((count+1))
 done
@@ -264,7 +264,7 @@ selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $selected_options == *"$SMBSHARES/$count"* ]]
+    if [[ $selected_options == *"$SMBSHARES/$count "* ]]
     then
         umount "$SMBSHARES/$count"
         if mountpoint -q $SMBSHARES/$count
@@ -291,9 +291,9 @@ args=(whiptail --title "Delete SMB-mounts" --checklist "This option let you dele
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
-    if grep -q "$SMBSHARES/$count" /etc/fstab
+    if grep -q "$SMBSHARES/$count " /etc/fstab
     then
-        args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
+        args+=("$SMBSHARES/$count " "$(grep "$SMBSHARES/$count " /etc/fstab | awk '{print $1}')" OFF)
     fi
     count=$((count+1))
 done
@@ -303,7 +303,7 @@ selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $selected_options == *"$SMBSHARES/$count"* ]]
+    if [[ $selected_options == *"$SMBSHARES/$count "* ]]
     then
         if mountpoint -q $SMBSHARES/$count
         then
@@ -312,8 +312,8 @@ do
             then
                 msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful. Please try again."
             else
-                sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
-                if grep -q "$SMBSHARES/$count" /etc/fstab
+                sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+                if grep -q "$SMBSHARES/$count " /etc/fstab
                 then
                     msg_box "Something went wrong during deletion of $SMBSHARES/$count. Please try again."
                 else
