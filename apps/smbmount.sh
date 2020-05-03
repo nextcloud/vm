@@ -150,7 +150,25 @@ then
     msg_box "It seems like you have not created any SMB-share."
     return
 fi
-args=(whiptail --title "Mount SMB-shares" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+count=1
+while [ $count -le $MAX_COUNT ]
+do
+    if grep -q $SMBSHARES/$count /etc/fstab
+    then
+        if mountpoint -q $SMBSHARES/$count
+        then
+            count=$((count+1))
+        fi
+    else
+        count=$((count+1))
+    fi
+done
+if [ $count -gt $MAX_COUNT ]
+then
+    msg_box "No existing SMB-mount-entry is unmounted. So nothing to mount."
+    return
+fi
+args=(whiptail --title "Mount SMB-shares" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 # Find out which SMB-shares are available
 while  [ $count -le $MAX_COUNT ]
