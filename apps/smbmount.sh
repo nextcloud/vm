@@ -50,14 +50,17 @@ fi
 # Functions
 add_mount() {
 # Check if mounting slots are available
-args="grep -q $SMBSHARES/1 /etc/fstab "
-count=2
+count=1
 while [ $count -le $MAX_COUNT ]
 do
-    args+="&& grep -q $SMBSHARES/$count /etc/fstab "
-    count=$((count+1))
+    if grep -q $SMBSHARES/$count /etc/fstab
+    then
+        count=$((count+1))
+    else
+        break
+    fi
 done
-if ${args[@]}
+if [ $count -gt $MAX_COUNT ]
 then
     msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.\nIf you really want to mount more, you can simply download the smb-mount script directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:\n'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh /var/scripts'\n'sudo nano /var/scripts/smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file\n'sudo bash /var/scripts/smbmount.sh' # Execute the script."
     return
@@ -113,7 +116,7 @@ do
         mkdir -p "$SMBSHARES/$count"
         mount "$SMBSHARES/$count"
         # Check if mounting was successful
-        if [[ ! $(findmnt -M "$SMBSHARES/$count") ]]
+        if ! mountpoint -q $SMBSHARES/$count
         then
             # If not remove this line from fstab
             msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint:\n- you might fix the connection problem by enabling SMB3 on your SMB-server.\n- You could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.\n- Please also make sure, that 'ping IP-address' of your SMB-Server from your Nextcloud-instance works."
@@ -151,7 +154,7 @@ count=1
 # Find out which SMB-shares are available
 while  [ $count -le $MAX_COUNT ]
 do
-    if [[ ! $(findmnt -M "$SMBSHARES/$count") ]] && grep -q "$SMBSHARES/$count" /etc/fstab
+    if ! mountpoint -q $SMBSHARES/$count && grep -q "$SMBSHARES/$count" /etc/fstab
     then
         args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
@@ -166,7 +169,7 @@ do
     if [[ $selected_options == *"$SMBSHARES/$count"* ]]
     then
         mount "$SMBSHARES/$count"
-        if [[ ! $(findmnt -M "$SMBSHARES/$count") ]]
+        if ! mountpoint -q $SMBSHARES/$count
         then
             msg_box "It seems like the mount of $SMBSHARES/$count wasn't successful. Please try again."
         else
@@ -213,7 +216,17 @@ return
 
 unmount_shares() {
 # Check if any SMB-shares are available for unmounting
-if [[ ! $(findmnt -M "$SMBSHARES/1") ]] && [[ ! $(findmnt -M "$SMBSHARES/2") ]] && [[ ! $(findmnt -M "$SMBSHARES/3") ]]
+count=1
+while [ $count -le $MAX_COUNT ]
+do
+    if ! mountpoint -q $SMBSHARES/$count
+    then
+        count=$((count+1))
+    else
+        break
+    fi
+done
+if [ $count -gt $MAX_COUNT ]
 then
     msg_box "You haven't mounted any SMB-mount. So nothing to unmount"
     return
@@ -223,7 +236,7 @@ args=(whiptail --title "Unmount SMB-shares" --checklist "This option let you unm
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $(findmnt -M "$SMBSHARES/$count") ]]
+    if mountpoint -q $SMBSHARES/$count
     then
         args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
     fi
@@ -237,7 +250,7 @@ do
     if [[ $selected_options == *"$SMBSHARES/$count"* ]]
     then
         umount "$SMBSHARES/$count" -f
-        if [[ $(findmnt -M "$SMBSHARES/$count") ]]
+        if mountpoint -q $SMBSHARES/$count
         then
             msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful. Please try again."
         else
@@ -275,12 +288,12 @@ while  [ $count -le $MAX_COUNT ]
 do
     if [[ $selected_options == *"$SMBSHARES/$count"* ]]
     then
-        if [[ $(findmnt -M "$SMBSHARES/$count") ]]
+        if mountpoint -q $SMBSHARES/$count
         then
             umount "$SMBSHARES/$count" -f
         fi
         sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
-        if [[ $(findmnt -M "$SMBSHARES/$count") ]] || grep -q "$SMBSHARES/$count" /etc/fstab
+        if mountpoint -q $SMBSHARES/$count || grep -q "$SMBSHARES/$count" /etc/fstab
         then
             msg_box "Something went wrong during deletion of $SMBSHARES/$count. Please try again."
         else
