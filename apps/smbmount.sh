@@ -310,7 +310,7 @@ do
             umount "$SMBSHARES/$count"
             if mountpoint -q $SMBSHARES/$count
             then
-                msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful. Please try again."
+                msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful during the deletion. Please try again."
             else
                 sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
                 if grep -q "$SMBSHARES/$count " /etc/fstab
