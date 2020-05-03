@@ -100,11 +100,6 @@ do
         break
     fi
 done
-# Get the uid and gid of www-data
-UsID=$(id www-data | awk '{print $1}')
-UsID=${UsID//[!0-9]/}
-GrID=$(id www-data | awk '{print $2}')
-GrID=${GrID//[!0-9]/}
 # Write everything to /etc/fstab, mount and connect external storage
 count=1
 while  [ $count -le $MAX_COUNT ]
@@ -113,7 +108,7 @@ do
     if ! grep -q "$SMBSHARES/$count" /etc/fstab
     then 
         # Write to /etc/fstab and mount
-        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=$UsID,gid=$GrID,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
         mkdir -p "$SMBSHARES/$count"
         mount "$SMBSHARES/$count"
         # Check if mounting was successful
@@ -271,7 +266,7 @@ while  [ $count -le $MAX_COUNT ]
 do
     if [[ $selected_options == *"$SMBSHARES/$count"* ]]
     then
-        umount "$SMBSHARES/$count" -f
+        umount "$SMBSHARES/$count"
         if mountpoint -q $SMBSHARES/$count
         then
             msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful. Please try again."
@@ -312,14 +307,19 @@ do
     then
         if mountpoint -q $SMBSHARES/$count
         then
-            umount "$SMBSHARES/$count" -f
-        fi
-        sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
-        if mountpoint -q $SMBSHARES/$count || grep -q "$SMBSHARES/$count" /etc/fstab
-        then
-            msg_box "Something went wrong during deletion of $SMBSHARES/$count. Please try again."
-        else
-            msg_box "Your deletion of $SMBSHARES/$count was successfull!"
+            umount "$SMBSHARES/$count"
+            if mountpoint -q $SMBSHARES/$count
+            then
+                msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful. Please try again."
+            else
+                sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
+                if grep -q "$SMBSHARES/$count" /etc/fstab
+                then
+                    msg_box "Something went wrong during deletion of $SMBSHARES/$count. Please try again."
+                else
+                    msg_box "Your deletion of $SMBSHARES/$count was successfull!"
+                fi
+            fi
         fi
     fi
     count=$((count+1))
