@@ -99,7 +99,7 @@ GrID=$(id www-data | awk '{print $2}')
 GrID=${GrID//[!0-9]/}
 # Write everything to /etc/fstab, mount and connect external storage
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     # Check which mounting slot is available
     if ! grep -q "$SMBSHARES/$count" /etc/fstab
@@ -145,7 +145,7 @@ fi
 args=(whiptail --title "Mount SMB-shares" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 # Find out which SMB-shares are available
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     if [[ ! $(findmnt -M "$SMBSHARES/$count") ]] && grep -q "$SMBSHARES/$count" /etc/fstab
     then
@@ -157,7 +157,7 @@ done
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 count=1
 # Mount selected SMB-shares
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     if [[ $selected_options == *"$SMBSHARES/$count"* ]]
     then
@@ -184,7 +184,7 @@ fi
 # Find out which SMB-shares are available
 args=(whiptail --title "List SMB-shares" --checklist "This option let you show detailed information about your SMB-shares.\nChoose which one you want to show.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     if grep -q "$SMBSHARES/$count" /etc/fstab
     then
@@ -196,7 +196,7 @@ done
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 # Show selected Shares
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     if [[ $selected_options == *"$SMBSHARES/$count"* ]]
     then
@@ -217,7 +217,7 @@ fi
 # Find out which SMB-shares are available
 args=(whiptail --title "Unmount SMB-shares" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     if [[ $(findmnt -M "$SMBSHARES/$count") ]]
     then
@@ -228,7 +228,7 @@ done
 # Let the user select which SMB-shares he wants to unmount
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     if [[ $selected_options == *"$SMBSHARES/$count"* ]]
     then
@@ -255,7 +255,7 @@ fi
 # Check which SMB-shares are available
 args=(whiptail --title "Delete SMB-mounts" --checklist "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     if grep -q "$SMBSHARES/$count" /etc/fstab
     then
@@ -267,7 +267,7 @@ done
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 # Delete the selected SMB-shares
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     if [[ $selected_options == *"$SMBSHARES/$count"* ]]
     then
