@@ -16,6 +16,11 @@ debug_mode
 # Check if root
 root_check
 
+# Variables
+SMBSHARES="/mnt/smbshares"
+SMBSHARES_SED="\/mnt\/smbshares"
+MAX_COUNT=8
+
 # Install cifs-utils
 install_if_not cifs-utils
 
@@ -31,9 +36,6 @@ if [ "$(stat -c %a /etc/fstab)" != "600" ]
 then
     chmod 600 /etc/fstab
 fi
-# Variables
-SMBSHARES="/mnt/smbshares"
-SMBSHARES_SED="\/mnt\/smbshares"
 
 # Functions
 add_mount() {
