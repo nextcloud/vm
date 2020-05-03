@@ -113,8 +113,8 @@ network:
    renderer: networkd
    ethernets:
        $IFACE: #object name
-         dhcp4: no # dhcp v4 disable
-         dhcp6: no # dhcp v6 disable
+         dhcp4: false # dhcp v4 disable
+         dhcp6: false # dhcp v6 disable
          addresses: [$LANIP] # client IP address
          gateway4: $GATEWAYIP # gateway address
          nameservers:
@@ -132,8 +132,8 @@ network:
    renderer: networkd
    ethernets:
        $IFACE2: #object name
-         dhcp4: no # dhcp v4 disable
-         dhcp6: no # dhcp v6 disable
+         dhcp4: false # dhcp v4 disable
+         dhcp6: false # dhcp v6 disable
          addresses: [$ADDRESS/24] # client IP address
          gateway4: $GATEWAY # gateway address
          nameservers:
