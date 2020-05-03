@@ -17,9 +17,9 @@ debug_mode
 root_check
 
 # Variables
+MAX_COUNT=16
 SMBSHARES="/mnt/smbshares"
 SMBSHARES_SED="\/mnt\/smbshares"
-MAX_COUNT=16
 
 # Check MAX_COUNT
 if ! [ $MAX_COUNT -gt 0 ]
@@ -41,6 +41,10 @@ fi
 if [ "$(stat -c %a /etc/fstab)" != "600" ]
 then
     chmod 600 /etc/fstab
+fi
+if [ "$(stat -c %G /etc/fstab)" != "root" ] || [ "$(stat -c %U /etc/fstab)" != "root" ]
+then
+    chown root:root /etc/fstab
 fi
 
 # Functions
