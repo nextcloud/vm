@@ -21,6 +21,7 @@ SMBSHARES="/mnt/smbshares"
 SMBSHARES_SED="\/mnt\/smbshares"
 MAX_COUNT=16
 
+# Check MAX_COUNT
 if ! [ $MAX_COUNT -gt 0 ]
 then
     msg_box "The MAX_COUNT variable has to be a positive integer, greater than 0. Please Change it accordingly. Recommended is MAX_COUNT=16, because not all menus work reliably with a higher count."
@@ -45,9 +46,16 @@ fi
 # Functions
 add_mount() {
 # Check if mounting slots are available
-if grep -q "$SMBSHARES/1" /etc/fstab && grep -q "$SMBSHARES/2" /etc/fstab && grep -q "$SMBSHARES/3" /etc/fstab
+args="grep -q $SMBSHARES/1 /etc/fstab "
+count=2
+while [ $count -le $MAX_COUNT ]
+do
+    args+="&& grep -q $SMBSHARES/$count /etc/fstab "
+    count=$((count+1))
+done
+if ${args[@]}
 then
-    msg_box "All three slots are occupied. No mounting slots available. Please delete one of the SMB-mounts."
+    msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.\nIf you really want to mount more, you can simply download the smb-mount script directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:\n'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh /var/scripts'\n'sudo nano /var/scripts/smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file\n'sudo bash /var/scripts/smbmount.sh' # Execute the script."
     return
 fi
 # Enter SMB-server and Share-name
