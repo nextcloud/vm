@@ -25,7 +25,7 @@ SMBSHARES_SED="\/mnt\/smbshares"
 if ! [ $MAX_COUNT -gt 0 ]
 then
     msg_box "The MAX_COUNT variable has to be a positive integer, greater than 0. Please change it accordingly. Recommended is MAX_COUNT=16, because not all menus work reliably with a higher count."
-    return
+    exit
 fi
 
 # Install cifs-utils
