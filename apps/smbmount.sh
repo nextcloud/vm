@@ -158,6 +158,8 @@ do
         if mountpoint -q $SMBSHARES/$count
         then
             count=$((count+1))
+        else
+            break
         fi
     else
         count=$((count+1))
