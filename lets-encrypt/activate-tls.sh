@@ -185,7 +185,7 @@ TLS_CREATE
 fi
 
 # Check if PHP-FPM is installed and if not, then remove PHP-FPM related lines from config
-if ! ps aux | grep -q php-fpm
+if ! pgrep php-fpm
 then
     sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM $PHPVER is missing|g" "$tls_conf"
     sed -i "s|SetHandler.*|#|g" "$tls_conf"
