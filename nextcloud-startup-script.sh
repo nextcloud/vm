@@ -76,8 +76,8 @@ network:
   renderer: networkd
   ethernets:
     $IFACE:
-      dhcp4: yes
-      dhcp6: yes
+      dhcp4: true
+      dhcp6: true
 SETDHCP
     check_command netplan apply
     print_text_in_color "$ICyan" "Checking connection..."
