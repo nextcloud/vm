@@ -187,12 +187,13 @@ fi
 # Check if PHP-FPM is installed and if not, then remove PHP-FPM related lines from config
 if [ ! -f "$PHP_POOL_DIR"/nextcloud.conf ]
 then
-    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$tls_conf"
+    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM $PHPVER is missing|g" "$tls_conf"
     sed -i "s|SetHandler.*|#|g" "$tls_conf"
     sed -i "s|</FilesMatch.*|#|g" "$tls_conf"
+    
 elif ! is_this_installed php"$PHPVER"-fpm
 then
-    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
+    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM $PHPVER is missing|g" "$1"
     sed -i "s|SetHandler.*|#|g" "$tls_conf"
     sed -i "s|</FilesMatch.*|#|g" "$tls_conf"
 fi
