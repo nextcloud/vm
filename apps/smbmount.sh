@@ -16,6 +16,18 @@ debug_mode
 # Check if root
 root_check
 
+# Variables
+MAX_COUNT=16
+SMBSHARES="/mnt/smbshares"
+SMBSHARES_SED="\/mnt\/smbshares"
+
+# Check MAX_COUNT
+if ! [ $MAX_COUNT -gt 0 ]
+then
+    msg_box "The MAX_COUNT variable has to be a positive integer, greater than 0. Please change it accordingly. Recommended is MAX_COUNT=16, because not all menus work reliably with a higher count."
+    exit
+fi
+
 # Install cifs-utils
 install_if_not cifs-utils
 
@@ -31,16 +43,27 @@ if [ "$(stat -c %a /etc/fstab)" != "600" ]
 then
     chmod 600 /etc/fstab
 fi
-# Variables
-SMBSHARES="/mnt/smbshares"
-SMBSHARES_SED="\/mnt\/smbshares"
+if [ "$(stat -c %G /etc/fstab)" != "root" ] || [ "$(stat -c %U /etc/fstab)" != "root" ]
+then
+    chown root:root /etc/fstab
+fi
 
 # Functions
 add_mount() {
 # Check if mounting slots are available
-if grep -q "$SMBSHARES/1" /etc/fstab && grep -q "$SMBSHARES/2" /etc/fstab && grep -q "$SMBSHARES/3" /etc/fstab
+count=1
+while [ $count -le $MAX_COUNT ]
+do
+    if grep -q "$SMBSHARES/$count " /etc/fstab
+    then
+        count=$((count+1))
+    else
+        break
+    fi
+done
+if [ $count -gt $MAX_COUNT ]
 then
-    msg_box "All three slots are occupied. No mounting slots available. Please delete one of the SMB-mounts."
+    msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.\nIf you really want to mount more, you can simply download the smb-mount script directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:\n'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh /var/scripts'\n'sudo nano /var/scripts/smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file\n'sudo bash /var/scripts/smbmount.sh' # Execute the script."
     return
 fi
 # Enter SMB-server and Share-name
@@ -77,28 +100,23 @@ do
         break
     fi
 done
-# Get the uid and gid of www-data
-UsID=$(id www-data | awk '{print $1}')
-UsID=${UsID//[!0-9]/}
-GrID=$(id www-data | awk '{print $2}')
-GrID=${GrID//[!0-9]/}
 # Write everything to /etc/fstab, mount and connect external storage
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
     # Check which mounting slot is available
-    if ! grep -q "$SMBSHARES/$count" /etc/fstab
+    if ! grep -q "$SMBSHARES/$count " /etc/fstab
     then 
         # Write to /etc/fstab and mount
-        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=$UsID,gid=$GrID,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
         mkdir -p "$SMBSHARES/$count"
         mount "$SMBSHARES/$count"
         # Check if mounting was successful
-        if [[ ! $(findmnt -M "$SMBSHARES/$count") ]]
+        if ! mountpoint -q $SMBSHARES/$count
         then
             # If not remove this line from fstab
             msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint:\n- you might fix the connection problem by enabling SMB3 on your SMB-server.\n- You could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.\n- Please also make sure, that 'ping IP-address' of your SMB-Server from your Nextcloud-instance works."
-            sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
+            sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
             break
         else
             # Install and enable files_external
@@ -110,8 +128,9 @@ do
             MOUNT_ID=$(occ_command files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
             occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
-            # Inform the user that mounting was successfull
-            msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing. Afterwards everything will work reliably."
+            occ_command files_external:option "$MOUNT_ID" filesystem_check_changes 1
+            # Inform the user that mounting was successful
+            msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing."
             break
         fi
     fi
@@ -127,14 +146,34 @@ then
     msg_box "It seems like you have not created any SMB-share."
     return
 fi
-args=(whiptail --title "Mount SMB-shares" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nIf nothing is shown, then there is nothing to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+count=1
+while [ $count -le $MAX_COUNT ]
+do
+    if grep -q "$SMBSHARES/$count " /etc/fstab
+    then
+        if mountpoint -q $SMBSHARES/$count
+        then
+            count=$((count+1))
+        else
+            break
+        fi
+    else
+        count=$((count+1))
+    fi
+done
+if [ $count -gt $MAX_COUNT ]
+then
+    msg_box "No existing SMB-mount-entry is unmounted. So nothing to mount."
+    return
+fi
+args=(whiptail --title "Mount SMB-shares" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 # Find out which SMB-shares are available
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
-    if [[ ! $(findmnt -M "$SMBSHARES/$count") ]] && grep -q "$SMBSHARES/$count" /etc/fstab
+    if ! mountpoint -q $SMBSHARES/$count && grep -q "$SMBSHARES/$count " /etc/fstab
     then
-        args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
+        args+=("$SMBSHARES/$count " "$(grep "$SMBSHARES/$count " /etc/fstab | awk '{print $1}')" OFF)
     fi
     count=$((count+1))
 done
@@ -142,16 +181,16 @@ done
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 count=1
 # Mount selected SMB-shares
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $selected_options == *"$SMBSHARES/$count"* ]]
+    if [[ $selected_options == *"$SMBSHARES/$count "* ]]
     then
         mount "$SMBSHARES/$count"
-        if [[ ! $(findmnt -M "$SMBSHARES/$count") ]]
+        if ! mountpoint -q $SMBSHARES/$count
         then
             msg_box "It seems like the mount of $SMBSHARES/$count wasn't successful. Please try again."
         else
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count\nYou can use the Nextcloud external storage app to access files there."
+            msg_box "Your mount was successful, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count\nYou can use the Nextcloud external storage app to access files there."
         fi
     fi
     count=$((count+1))
@@ -169,11 +208,11 @@ fi
 # Find out which SMB-shares are available
 args=(whiptail --title "List SMB-shares" --checklist "This option let you show detailed information about your SMB-shares.\nChoose which one you want to show.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
-    if grep -q "$SMBSHARES/$count" /etc/fstab
+    if grep -q "$SMBSHARES/$count " /etc/fstab
     then
-        args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
+        args+=("$SMBSHARES/$count " "$(grep "$SMBSHARES/$count " /etc/fstab | awk '{print $1}')" OFF)
     fi
     count=$((count+1))
 done
@@ -181,11 +220,11 @@ done
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 # Show selected Shares
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $selected_options == *"$SMBSHARES/$count"* ]]
+    if [[ $selected_options == *"$SMBSHARES/$count "* ]]
     then
-        msg_box "$(grep "$SMBSHARES/$count" /etc/fstab)"
+        msg_box "$(grep "$SMBSHARES/$count " /etc/fstab)"
     fi
     count=$((count+1))
 done
@@ -194,7 +233,17 @@ return
 
 unmount_shares() {
 # Check if any SMB-shares are available for unmounting
-if [[ ! $(findmnt -M "$SMBSHARES/1") ]] && [[ ! $(findmnt -M "$SMBSHARES/2") ]] && [[ ! $(findmnt -M "$SMBSHARES/3") ]]
+count=1
+while [ $count -le $MAX_COUNT ]
+do
+    if ! mountpoint -q $SMBSHARES/$count
+    then
+        count=$((count+1))
+    else
+        break
+    fi
+done
+if [ $count -gt $MAX_COUNT ]
 then
     msg_box "You haven't mounted any SMB-mount. So nothing to unmount"
     return
@@ -202,27 +251,27 @@ fi
 # Find out which SMB-shares are available
 args=(whiptail --title "Unmount SMB-shares" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $(findmnt -M "$SMBSHARES/$count") ]]
+    if mountpoint -q $SMBSHARES/$count
     then
-        args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
+        args+=("$SMBSHARES/$count " "$(grep "$SMBSHARES/$count " /etc/fstab | awk '{print $1}')" OFF)
     fi
     count=$((count+1))
 done
 # Let the user select which SMB-shares he wants to unmount
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $selected_options == *"$SMBSHARES/$count"* ]]
+    if [[ $selected_options == *"$SMBSHARES/$count "* ]]
     then
-        umount "$SMBSHARES/$count" -f
-        if [[ $(findmnt -M "$SMBSHARES/$count") ]]
+        umount "$SMBSHARES/$count"
+        if mountpoint -q $SMBSHARES/$count
         then
             msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful. Please try again."
         else
-            msg_box "Your unmount of $SMBSHARES/$count was successfull!"
+            msg_box "Your unmount of $SMBSHARES/$count was successful!"
         fi
     fi
     count=$((count+1))
@@ -240,11 +289,11 @@ fi
 # Check which SMB-shares are available
 args=(whiptail --title "Delete SMB-mounts" --checklist "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
-    if grep -q "$SMBSHARES/$count" /etc/fstab
+    if grep -q "$SMBSHARES/$count " /etc/fstab
     then
-        args+=("$SMBSHARES/$count" "$(grep "$SMBSHARES/$count" /etc/fstab | awk '{print $1}')" OFF)
+        args+=("$SMBSHARES/$count " "$(grep "$SMBSHARES/$count " /etc/fstab | awk '{print $1}')" OFF)
     fi
     count=$((count+1))
 done
@@ -252,20 +301,25 @@ done
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 # Delete the selected SMB-shares
 count=1
-while  [ $count -le 3 ]
+while  [ $count -le $MAX_COUNT ]
 do
-    if [[ $selected_options == *"$SMBSHARES/$count"* ]]
+    if [[ $selected_options == *"$SMBSHARES/$count "* ]]
     then
-        if [[ $(findmnt -M "$SMBSHARES/$count") ]]
+        if mountpoint -q $SMBSHARES/$count
         then
-            umount "$SMBSHARES/$count" -f
-        fi
-        sed -i "/$SMBSHARES_SED\/$count/d" /etc/fstab
-        if [[ $(findmnt -M "$SMBSHARES/$count") ]] || grep -q "$SMBSHARES/$count" /etc/fstab
-        then
-            msg_box "Something went wrong during deletion of $SMBSHARES/$count. Please try again."
-        else
-            msg_box "Your deletion of $SMBSHARES/$count was successfull!"
+            umount "$SMBSHARES/$count"
+            if mountpoint -q $SMBSHARES/$count
+            then
+                msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful during the deletion. Please try again."
+            else
+                sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+                if grep -q "$SMBSHARES/$count " /etc/fstab
+                then
+                    msg_box "Something went wrong during deletion of $SMBSHARES/$count. Please try again."
+                else
+                    msg_box "Your deletion of $SMBSHARES/$count was successful!"
+                fi
+            fi
         fi
     fi
     count=$((count+1))
