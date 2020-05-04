@@ -129,7 +129,7 @@ do
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
             occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
             occ_command files_external:option "$MOUNT_ID" filesystem_check_changes 1
-            # Inform the user that mounting was successfull
+            # Inform the user that mounting was successful
             msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing."
             break
         fi
@@ -190,7 +190,7 @@ do
         then
             msg_box "It seems like the mount of $SMBSHARES/$count wasn't successful. Please try again."
         else
-            msg_box "Your mount was successfull, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count\nYou can use the Nextcloud external storage app to access files there."
+            msg_box "Your mount was successful, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count\nYou can use the Nextcloud external storage app to access files there."
         fi
     fi
     count=$((count+1))
@@ -271,7 +271,7 @@ do
         then
             msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful. Please try again."
         else
-            msg_box "Your unmount of $SMBSHARES/$count was successfull!"
+            msg_box "Your unmount of $SMBSHARES/$count was successful!"
         fi
     fi
     count=$((count+1))
@@ -317,7 +317,7 @@ do
                 then
                     msg_box "Something went wrong during deletion of $SMBSHARES/$count. Please try again."
                 else
-                    msg_box "Your deletion of $SMBSHARES/$count was successfull!"
+                    msg_box "Your deletion of $SMBSHARES/$count was successful!"
                 fi
             fi
         fi
