@@ -631,18 +631,20 @@ fi
 ram_check() {
 install_if_not bc
 mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
-mem_available_gb="$(echo "scale=2; $mem_available/(1024*1024)" | bc)"
+mem_available_gb="$(printf '%0.2f\n' "$(echo "scale=3; $mem_available/(1024*1024)" | bc)")"
 mem_required="$((${1}*(924*1024)))" # 100MiB/GiB margin and allow 90% to be able to run on physical machines
 if [ "${mem_available}" -lt "${mem_required}" ]
 then
     print_text_in_color "$IRed" "Error: ${1} GB RAM required to install ${2}!" >&2
     print_text_in_color "$IRed" "Current RAM is: ($mem_available_gb GB)" >&2
     sleep 3
-    msg_box "If you want to bypass this check you could do so by commenting out (# before the line) 'ram_check X' in the script that you are trying to run.
+    msg_box "** Error: insufficient memory. ${mem_available_gb}GB RAM installed, ${1}GB required.
 
-    In nextcloud_install_production.sh you can find the check somewhere around line #98.
+To bypass this check, comment out (add # before the line) 'ram_check X' in the script that you are trying to run.
 
-    Please notice that things may be veery slow and not work as expeced. YOU HAVE BEEN WARNED!"
+In nextcloud_install_production.sh you can find the check somewhere around line #98.
+
+Please note that things may be very slow and not work as expected. YOU HAVE BEEN WARNED!"
     exit 1
 else
     print_text_in_color "$IGreen" "RAM for ${2} OK! ($mem_available_gb GB)"
