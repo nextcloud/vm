@@ -455,12 +455,28 @@ restart_webserver
 
 if home_sme_server
 then
-    # Add specific values to PHP-FPM based on 16 GB RAM
-    check_command sed -i "s|pm.max_children.*|pm.max_children = 300|g" "$PHP_POOL_DIR"/nextcloud.conf
-    check_command sed -i "s|pm.start_servers.*|pm.start_servers = 50|g" "$PHP_POOL_DIR"/nextcloud.conf
-    check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 50|g" "$PHP_POOL_DIR"/nextcloud.conf
-    check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 200|g" "$PHP_POOL_DIR"/nextcloud.conf
-    restart_webserver
+    install_if_not bc
+    mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
+    mem_available_gb="$(echo "scale=0; $mem_available/(1024*1024)" | bc)"
+    # 32 GB RAM
+    if [[ 30 -lt "${mem_available_gb}" ]]
+    then
+        # Add specific values to PHP-FPM based on 32 GB RAM
+        check_command sed -i "s|pm.max_children.*|pm.max_children = 600|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.start_servers.*|pm.start_servers = 100|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 100|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 400|g" "$PHP_POOL_DIR"/nextcloud.conf
+        restart_webserver
+    # 16 GB RAM
+    elif [[ 14 -lt "${mem_available_gb}" ]]
+    then
+        # Add specific values to PHP-FPM based on 16 GB RAM
+        check_command sed -i "s|pm.max_children.*|pm.max_children = 300|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.start_servers.*|pm.start_servers = 50|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 50|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 200|g" "$PHP_POOL_DIR"/nextcloud.conf
+        restart_webserver
+    fi
 else
     # Calculate the values of PHP-FPM based on the amount of RAM available (minimum 2 GB or 8 children)
     calculate_php_fpm
