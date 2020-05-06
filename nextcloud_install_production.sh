@@ -726,16 +726,16 @@ apt autoremove -y
 apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
-# Install virtual kernels for Hyper-V, and extra for UTF8 kernel module + Collabora and OnlyOffice
+# Install virtual kernels for Hyper-V, (and extra for UTF8 kernel module + Collabora and OnlyOffice)
 # Kernel 5.4
 if ! home_sme_server
 then
    apt install -y --install-recommends \
-   linux-virtual \
-   linux-tools-virtual \
-   linux-cloud-tools-virtual \
-   linux-image-virtual \
-   linux-image-extra-virtual
+   linux-virtual \ # Hyper-V
+   linux-image-virtual \ # Hyper-V
+   linux-tools-virtual \ # Hyper-V
+   linux-cloud-tools-virtual # Hyper-V
+   # linux-image-extra-virtual only needed for AUFS driver with Docker
 fi
 
 # Add aliases
