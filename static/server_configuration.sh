@@ -18,7 +18,7 @@ root_check
 
 # Server configurations
 choice=$(whiptail --title "Server configurations" --checklist "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Activate TLS" "(Enable HTTPS with let's encrypt)" ON \
+"Activate TLS" "(Enable HTTPS with Let's Encrypt)" ON \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF 3>&1 1>&2 2>&3)
@@ -31,7 +31,6 @@ case "$choice" in
     *"Static IP"*)
         clear
         run_static_script static_ip
-        rm -f "$SCRIPTS"/lib.sh
     ;;&
     *"Automatic updates"*)
         clear
