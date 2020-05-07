@@ -359,49 +359,8 @@ check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 clear
 
-# Extra configurations
-choice=$(whiptail --title "Extra configurations" --checklist "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
-"Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
-"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 3>&1 1>&2 2>&3)
-
-case "$choice" in
-    *"Security"*)
-        clear
-        run_static_script security
-    ;;&
-    *"Static IP"*)
-        clear
-        run_static_script static_ip
-        rm -f "$SCRIPTS"/lib.sh
-    ;;&
-    *"Automatic updates"*)
-        clear
-        run_static_script automatic_updates
-    ;;&
-    *)
-    ;;
-esac
-
-# Let's Encrypt
-msg_box "The following script will install a trusted
-TLS certificate through Let's Encrypt.
-
-It's recommended to use TLS (https) together with Nextcloud.
-Please open port 80 and 443 to this servers IP before you continue.
-
-More information can be found here:
-https://www.techandme.se/open-port-80-443/"
-
-if [[ "yes" == $(ask_yes_or_no "Do you want to install TLS?") ]]
-then
-    bash $SCRIPTS/activate-tls.sh
-else
-    echo
-    print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
-    any_key "Press any key to continue..."
-fi
-clear
+# Server configurations
+bash $SCRIPTS/server_configuration.sh
 
 # Nextcloud configuration
 bash $SCRIPTS/configuration.sh
