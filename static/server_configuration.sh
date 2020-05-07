@@ -5,8 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -40,7 +39,7 @@ case "$choice" in
     ;;&
     *"Activate TLS"*)
         clear
-        msg_box "The following script will install a trusted
+msg_box "The following script will install a trusted
 TLS certificate through Let's Encrypt.
 It's recommended to use TLS (https) together with Nextcloud.
 Please open port 80 and 443 to this servers IP before you continue.
@@ -49,7 +48,12 @@ https://www.techandme.se/open-port-80-443/"
 
         if [[ "yes" == $(ask_yes_or_no "Do you want to install TLS?") ]]
         then
-            bash $SCRIPTS/activate-tls.sh
+            if [ -f $SCRIPTS/activate-tls.sh ]
+            then
+                bash $SCRIPTS/activate-tls.sh
+            else
+                run_le_script activate-tls
+            fi
         else
             echo
             print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
