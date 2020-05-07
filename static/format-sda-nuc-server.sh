@@ -23,43 +23,7 @@ umount /mnt/* &> /dev/null
 # mkdir if not existing
 mkdir -p "$MOUNT_"
 
-# Check what Hypervisor disks are available
-SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
-if [ "$SYSVENDOR" == "VMware, Inc." ];
-then
-    SYSNAME="VMware"
-    DEVTYPE=sda
-elif [ "$SYSVENDOR" == "Microsoft Corporation" ];
-then
-    SYSNAME="Hyper-V"
-    DEVTYPE=sda
-elif [ "$SYSVENDOR" == "innotek GmbH" ];
-then
-    SYSNAME="VirtualBox"
-    DEVTYPE=sda
-elif [ "$SYSVENDOR" == "Xen" ];
-then
-    SYSNAME="Xen/XCP-NG"
-    DEVTYPE=xvdb
-elif [ "$SYSVENDOR" == "QEMU" ];
-then
-    SYSNAME="KVM/QEMU"
-    DEVTYPE=vdb
-elif [ "$SYSVENDOR" == "DigitalOcean" ];
-then
-    SYSNAME="DigitalOcean"
-    DEVTYPE=sda
-elif partprobe /dev/sda &>/dev/null;
-then
-    SYSNAME="machines"
-    DEVTYPE=sda
-else
-msg_box "It seems like you didn't add a second disk. 
-To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
-
-This script will now exit. Please add a second disk and start over."
-exit 1
-fi
+DEVTYPE=sda
 
 # Get the name of the drive
 DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)

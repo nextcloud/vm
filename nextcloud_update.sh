@@ -91,6 +91,7 @@ then
     NETDATA_UPDATER_PATH="$(find /usr -name 'netdata-updater.sh')"
     if [ -n "$NETDATA_UPDATER_PATH" ]
     then
+        install_if_not cmake # Needed for Netdata in newer versions
         bash "$NETDATA_UPDATER_PATH"
     fi
 fi
@@ -263,11 +264,6 @@ then
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     UPDATED_APPS="$(occ_command_no_check app:update --all)"
-    ########## TEMPORARY FIX ################# 2020-04-19
-    if occ_command app:list | grep -q  "mail"
-    then
-        occ_command upgrade
-    fi
 fi
 
 # Check which apps got updated

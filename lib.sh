@@ -526,8 +526,7 @@ then
     print_text_in_color "$ICyan" "The script will now do some cleanup and revert the settings."
     any_key "Press any key to start the cleanup..."
     # Cleanup
-    apt remove certbot -y
-    apt autoremove -y
+    snap remove certbot
     rm -f "$SCRIPTS"/test-new-config.sh
 fi
 

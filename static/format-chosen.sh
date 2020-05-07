@@ -24,6 +24,7 @@ umount /mnt/* &> /dev/null
 mkdir -p "$MOUNT_"
 
 # Check what Hypervisor disks are available
+# HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ') TODO
 SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 if [ "$SYSVENDOR" == "VMware, Inc." ];
 then
@@ -41,7 +42,7 @@ elif [ "$SYSVENDOR" == "Xen" ];
 then
     SYSNAME="Xen/XCP-NG"
     DEVTYPE=xvdb
-elif [ "$SYSVENDOR" == "QEMU" ];
+elif [ "$SYSVENDOR" == "QEMU" ] | [ "$SYSVENDOR" == "Red Hat" ];
 then
     SYSNAME="KVM/QEMU"
     DEVTYPE=vdb
