@@ -456,6 +456,7 @@ rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
 rm -f "$SCRIPTS/static_ip.sh"
+rm -f "$SCRIPTS/lib.sh"
 
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
 find "$NCPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
