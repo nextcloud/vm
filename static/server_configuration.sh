@@ -38,7 +38,7 @@ case "$choice" in
         clear
         run_static_script automatic_updates
     ;;&
-        *"Activate TLS"*)
+    *"Activate TLS"*)
         clear
         msg_box "The following script will install a trusted
 TLS certificate through Let's Encrypt.
