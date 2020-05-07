@@ -52,7 +52,8 @@ https://www.techandme.se/open-port-80-443/"
             then
                 bash $SCRIPTS/activate-tls.sh
             else
-                run_le_script activate-tls
+                download_le_script activate-tls
+                bash $SCRIPTS/activate-tls.sh
             fi
         else
             echo
