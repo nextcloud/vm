@@ -930,6 +930,30 @@ run_app_script() {
     fi
 }
 
+# Run any script in ../lets-encrypt
+# call like: run_le_script activate-tls
+run_le_script() {
+    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
+    if curl_to_dir "${LETS_ENC}" "${1}.sh" "$SCRIPTS"
+    then
+        bash "${SCRIPTS}/${1}.sh"
+        rm -f "${SCRIPTS}/${1}.sh"
+    elif curl_to_dir "${LETS_ENC}" "${1}.php" "$SCRIPTS"
+    then
+        php "${SCRIPTS}/${1}.php"
+        rm -f "${SCRIPTS}/${1}.php"
+    elif curl_to_dir "${LETS_ENC}" "${1}.py" "$SCRIPTS"
+    then
+        install_if_not python3
+        python3 "${SCRIPTS}/${1}.py"
+        rm -f "${SCRIPTS}/${1}.py"
+    else
+        print_text_in_color "$IRed" "Downloading ${1} failed"
+        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${APP}/${1}.sh|php|py' again."
+        exit
+    fi
+}
+
 version(){
     local h t v
 
