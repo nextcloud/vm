@@ -16,14 +16,4 @@ debug_mode
 # Must be root
 root_check
 
-# Fix LVM on BASE image
-if grep -q "LVM" /etc/fstab
-then
-    # Resize LVM (live installer is &%¤%/!
-    lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
-fi
-
-# Fix ZFS
-run_static_script change-to-zfs-mount-generator
-
 exit

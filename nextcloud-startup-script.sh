@@ -423,7 +423,7 @@ clear
 NCADMIN=$(occ_command user:list | awk '{print $3}')
 print_text_in_color "$ICyan" "The current admin user in Nextcloud GUI is [$NCADMIN]"
 print_text_in_color "$ICyan" "We will now replace this user with your own."
-any_key "Press any key to replace the current admin user for Nextcloud..."
+any_key "Press any key to replace the current (local) admin user for Nextcloud..."
 # Create new user
 while true
 do

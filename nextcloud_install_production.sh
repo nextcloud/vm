@@ -153,9 +153,14 @@ choice=$(whiptail --title "Choose disk format" --radiolist "How would you like t
 case "$choice" in
     "2 Disks Auto")
         run_static_script format-sdb
+        # Change to zfs-mount-generator
+        run_static_script change-to-zfs-mount-generator
+
     ;;
     "2 Disks Manual")
         run_static_script format-chosen
+        # Change to zfs-mount-generator
+        run_static_script change-to-zfs-mount-generator
     ;;
     "1 Disk")
         print_text_in_color "$IRed" "1 Disk setup chosen."
@@ -165,9 +170,6 @@ case "$choice" in
     ;;
 esac
 fi
-
-# Change to zfs-mount-generator
-run_static_script change-to-zfs-mount-generator
 
 # Set DNS resolver
 # https://medium.com/@ahmadb/fixing-dns-issues-in-ubuntu-18-04-lts-bd4f9ca56620
