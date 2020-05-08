@@ -246,6 +246,7 @@ download_static_script update-config
 download_static_script apps
 download_static_script configuration
 download_le_script activate-tls
+download_static_script menu
 if home_sme_server
 then
     download_static_script nhss_index
