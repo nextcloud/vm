@@ -20,7 +20,7 @@ root_check
 choice=$(whiptail --title "Main Menu" --radiolist "Choose the menu you want to see or execute updates.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Additional Apps" "(See a list of available Apps)" OFF \
 "Nextcloud Configuration" "(See a list of available Nextcloud Configuration)" OFF \
-"Server Configuration" "(See a list of available Server Configuration)" OFF 
+"Server Configuration" "(See a list of available Server Configuration)" OFF \
 "Update Nextcloud" "(Update Nextcloud to the latest release)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
