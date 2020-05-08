@@ -25,16 +25,48 @@ choice=$(whiptail --title "Main Menu" --radiolist "Choose the menu you want to s
 
 case "$choice" in
     "Additional Apps")
-        bash $SCRIPTS/apps.sh
+        if [ -f $SCRIPTS/apps.sh ]
+        then
+            bash $SCRIPTS/apps.sh
+        else
+            if network_ok
+            then
+                run_app_script additional_apps
+            fi
+        fi
     ;;
     "Nextcloud Configuration")
-        bash $SCRIPTS/config.sh
+        if [ -f $SCRIPTS/configuration.sh ]
+        then
+            bash $SCRIPTS/configuration.sh
+        else
+            if network_ok
+            then
+                run_static_script nextcloud_configuration
+            fi
+        fi
     ;;
     "Server Configuration")
-        bash $SCRIPTS/server_configuration.sh
+        if [ -f $SCRIPTS/server_configuration.sh ]
+        then
+            bash $SCRIPTS/server_configuration.sh
+        else
+            if network_ok
+            then
+                run_static_script server_configuration
+            fi
+        fi
     ;;
     "Update Nextcloud")
-        bash $SCRIPTS/update.sh
+        if [ -f $SCRIPTS/update.sh ]
+        then
+            bash $SCRIPTS/update.sh
+        else
+            if network_ok
+            then
+                run_main_script nextcloud_update
+            fi
+        fi
     ;;
     *)
     ;;
