@@ -32,7 +32,7 @@ debug_mode
 root_check
 
 # Server configurations
-choice=$(whiptail --title "Server configurations" --checklist "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "Server configurations" --checklist "Choose what you want to configure\nSelect by pressing the spacebar\nYou can view this menu later bei running 'sudo bash $SCRIPTS/server_configuration.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" ON \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
