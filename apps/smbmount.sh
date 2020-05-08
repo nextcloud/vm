@@ -28,6 +28,9 @@ then
     exit
 fi
 
+# Install whiptail if not existing
+install_if_not whiptail
+
 # Install cifs-utils
 install_if_not cifs-utils
 
