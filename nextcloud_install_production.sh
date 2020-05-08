@@ -701,6 +701,7 @@ check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
 download_static_script instruction
 download_static_script history
 download_static_script static_ip
+download_static_script server_configuration
 
 if home_sme_server
 then
