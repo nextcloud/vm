@@ -39,5 +39,4 @@ case "$choice" in
     *)
     ;;
 esac
-fi
 exit
