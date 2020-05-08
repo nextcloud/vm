@@ -21,6 +21,10 @@ mkdir -p "$SCRIPTS"
 if [ "${1}" = "minor" ]
 then
     echo "$((NCMAJOR-1))" > /tmp/minor.version
+elif [ "${1}" = "beta" ]
+    echo "beta" > /tmp/prerelease.version
+elif [ "${1}" != "" ]
+    echo "${1}" > /tmp/prerelease.version
 fi
 
 # Delete, download, run
