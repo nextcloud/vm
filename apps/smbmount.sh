@@ -21,15 +21,15 @@ MAX_COUNT=16
 SMBSHARES="/mnt/smbshares"
 SMBSHARES_SED="\/mnt\/smbshares"
 
+# Install whiptail if not existing
+install_if_not whiptail
+
 # Check MAX_COUNT
 if ! [ $MAX_COUNT -gt 0 ]
 then
     msg_box "The MAX_COUNT variable has to be a positive integer, greater than 0. Please change it accordingly. Recommended is MAX_COUNT=16, because not all menus work reliably with a higher count."
     exit
 fi
-
-# Install whiptail if not existing
-install_if_not whiptail
 
 # Install cifs-utils
 install_if_not cifs-utils
