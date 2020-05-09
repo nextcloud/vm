@@ -344,11 +344,11 @@ case "$choice" in
 esac
 
 # Test if SMB-share is still mounted and unmount if yes
-if mountpoint -q $selected_option
+if mountpoint -q "$selected_option"
 then
-    umount $selected_option
+    umount "$selected_option"
     was_mounted=yes
-    if mountpoint -q $selected_option
+    if mountpoint -q "$selected_option"
     then
         msg_box "It seems like the unmount of $selected_option wasn't successful while trying to change the mount. Please try again."
         return
@@ -361,10 +361,10 @@ sed -i "/$selected_option_sed/d" /etc/fstab
 
 # Write changed line to /etc/fstab and mount
 echo "$SERVER_SHARE_NAME $selected_option cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
-mount $selected_option
+mount "$selected_option"
 
 # Check if mounting was successful
-if ! mountpoint -q $selected_option
+if ! mountpoint -q "$selected_option"
 then
     # If not remove this line from fstab
     msg_box "It seems like the mount of the changed configuration wasn't successful. It will get deleted now. The old config will get restored now. Please try again to change the mount."
@@ -372,8 +372,8 @@ then
     echo "$fstab_entry" >> /etc/fstab
     if [[ $was_mounted == yes ]]
     then
-        mount $selected_option
-        if ! mountpoint -q $selected_option
+        mount "$selected_option"
+        if ! mountpoint -q "$selected_option"
         then
             msg_box "Your old configuration couldn't get mounted but is restored to /etc/fstab."
         fi
