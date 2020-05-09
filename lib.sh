@@ -543,7 +543,7 @@ if check_command curl -s -H 'Cache-Control: no-cache' "https://networkappers.com
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
 # Domain name
-elif check_command curl -s -H 'Cache-Control: no-cache' "https://networkappers.com/api/port.php?ip=${2}&port=${1}" | grep -q "open"
+elif check_command curl -s -H 'Cache-Control: no-cache' "https://www.networkappers.com/api/port.php?ip=${2}&port=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
