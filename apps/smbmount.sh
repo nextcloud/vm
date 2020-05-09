@@ -293,16 +293,17 @@ choice=$(whiptail --title "Change a SMB-mount" --checklist "$fstab_entry\n\nChoo
 "Share" "(change the SMB-share to use the same mount directory)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    *"Password"*)
+    *"Share"*)
         clear
-        # Enter the password of the SMB-user
+        # Enter SMB-server and Share-name
         while true
         do
-            SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-            if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_PASSWORD") ]]
+            SERVER_SHARE_NAME=$(whiptail --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
             then
-                msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again."
+                msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again."
             else
+                SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
                 break
             fi
         done
@@ -321,17 +322,16 @@ case "$choice" in
             fi
         done
     ;;&
-    *"Share"*)
+    *"Password"*)
         clear
-        # Enter SMB-server and Share-name
+        # Enter the password of the SMB-user
         while true
         do
-            SERVER_SHARE_NAME=$(whiptail --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-            if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
+            SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_PASSWORD") ]]
             then
-                msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again."
+                msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again."
             else
-                SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
                 break
             fi
         done
