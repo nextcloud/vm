@@ -96,7 +96,7 @@ done
 # Enter the password of the SMB-user
 while true
 do
-    SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER. Please note, that comma as a character in the password is not supported." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_PASSWORD") ]]
     then
         msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again."
@@ -327,7 +327,7 @@ case "$choice" in
         # Enter the password of the SMB-user
         while true
         do
-            SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER. Please note, that comma as a character in the password is not supported." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
             if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_PASSWORD") ]]
             then
                 msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again."
