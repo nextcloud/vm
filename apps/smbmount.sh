@@ -272,6 +272,11 @@ done
 # Let the user choose which mount he wants to change
 selected_option=$("${args[@]}" 3>&1 1>&2 2>&3)
 
+if [[ "$selected_option" == "" ]]
+then
+    return
+fi
+
 # Store fstab entry for later in a variable
 fstab_entry=$(grep "$selected_option" /etc/fstab)
 SERVER_SHARE_NAME=$(echo "$fstab_entry" | awk '{print $1}')
