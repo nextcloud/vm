@@ -101,7 +101,6 @@ do
     then
         msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again."
     else
-        SMB_PASSWORD=${SMB_PASSWORD//,/\\054}
         break
     fi
 done
@@ -333,7 +332,6 @@ case "$choice" in
             then
                 msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again."
             else
-                SMB_PASSWORD=${SMB_PASSWORD//,/\\054}
                 break
             fi
         done
