@@ -476,6 +476,9 @@ do
                 sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
                 msg_box "Your deletion of $SMBSHARES/$count was successful!"
             fi
+        else
+            sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+            msg_box "Your deletion of $SMBSHARES/$count was successful!"
         fi
     fi
     count=$((count+1))
