@@ -287,7 +287,7 @@ SMB_PASSWORD=${SMB_PASSWORD%%,*}
 
 
 # Let the user choose which entries he wants to change
-choice=$(whiptail --title "$fstab_entry" --checklist "Choose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "Change a SMB-mount" --checklist "$fstab_entry\n\nChoose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Password" "(change the password of the SMB-user)" OFF \
 "Username" "(change the username of the SMB-user)" OFF \
 "Share" "(change the SMB-share to use the same mount directory)" OFF 3>&1 1>&2 2>&3)
