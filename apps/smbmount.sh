@@ -336,6 +336,9 @@ case "$choice" in
             fi
         done
     ;;&
+    "")
+        return
+    ;;&
     *)
     ;;
 esac
