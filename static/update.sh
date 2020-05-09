@@ -24,7 +24,7 @@ then
 elif [ "${1}" = "beta" ]
 then
     echo "beta" > /tmp/prerelease.version
-elif [ "${1}" != "" ]
+elif [[ "${1}" == *"RC"* ]]
 then
     echo "${1}" > /tmp/prerelease.version
 fi
