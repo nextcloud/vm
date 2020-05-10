@@ -312,7 +312,7 @@ then
     was_mounted=yes
     if mountpoint -q "$SMBSHARES/$count"
     then
-        msg_box "It seems like the unmount of "$SMBSHARES/$count" wasn't successful while trying to change the mount. Please try again."
+        msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful while trying to change the mount. Please try again."
         return
     fi
 fi
@@ -321,7 +321,7 @@ fi
 fstab_entry=$(grep "$SMBSHARES/$count " /etc/fstab)
 
 # Get old password and username
-if ! [ -f $SMB_CREDENTIALS/SMB$count ]
+if ! [ -f "$SMB_CREDENTIALS/SMB$count" ]
 then
     SERVER_SHARE_NAME=$(echo "$fstab_entry" | awk '{print $1}')
     SMB_USER=${fstab_entry##*username=}
@@ -329,7 +329,7 @@ then
     SMB_PASSWORD=${fstab_entry##*password=}
     SMB_PASSWORD=${SMB_PASSWORD%%,*}
 else
-    old_credentials=$(cat $SMB_CREDENTIALS/SMB$count)
+    old_credentials=$(cat "$SMB_CREDENTIALS/SMB$count")
     SMB_USER=$(echo "$old_credentials" | grep username=)
     SMB_USER=${SMB_USER##*username=}
     SMB_PASSWORD=$(echo "$old_credentials" | grep password=)
@@ -399,9 +399,9 @@ sed -i "/$selected_option_sed/d" /etc/fstab
 unset old_credentials
 
 # Backup old credentials file
-if [ -f $SMB_CREDENTIALS/SMB$count ]
+if [ -f "$SMB_CREDENTIALS/SMB$count" ]
 then
-    mv $SMB_CREDENTIALS/SMB$count $SMB_CREDENTIALS/SMB$count.old
+    mv "$SMB_CREDENTIALS/SMB$count" "$SMB_CREDENTIALS/SMB$count.old"
 fi
 
 # Write changed line to /etc/fstab and mount
@@ -410,8 +410,8 @@ mkdir -p $SMB_CREDENTIALS
 touch $SMB_CREDENTIALS/SMB$count
 chown -R root:root $SMB_CREDENTIALS
 chmod -R 600 $SMB_CREDENTIALS
-echo "username=$SMB_USER" > $SMB_CREDENTIALS/SMB$count
-echo "password=$SMB_PASSWORD" >> $SMB_CREDENTIALS/SMB$count
+echo "username=$SMB_USER" > "$SMB_CREDENTIALS/SMB$count"
+echo "password=$SMB_PASSWORD" >> "$SMB_CREDENTIALS/SMB$count"
 unset SMB_USER && unset SMB_PASSWORD
 mount "$SMBSHARES/$count"
 
@@ -423,10 +423,10 @@ then
     sed -i "/$selected_option_sed/d" /etc/fstab
     echo "$fstab_entry" >> /etc/fstab
     unset fstab_entry
-    if [ -f $SMB_CREDENTIALS/SMB$count.old ]
+    if [ -f "$SMB_CREDENTIALS/SMB$count.old" ]
     then
-        rm $SMB_CREDENTIALS/SMB$count
-        mv $SMB_CREDENTIALS/SMB$count.old $SMB_CREDENTIALS/SMB$count
+        rm "$SMB_CREDENTIALS/SMB$count"
+        mv "$SMB_CREDENTIALS/SMB$count.old" "$SMB_CREDENTIALS/SMB$count"
     fi
     if [[ $was_mounted == yes ]]
     then
@@ -439,9 +439,9 @@ then
     fi
 else
     # Remove the backup file
-    if [ -f $SMB_CREDENTIALS/SMB$count.old ]
+    if [ -f "$SMB_CREDENTIALS/SMB$count.old" ]
     then
-        check_command rm $SMB_CREDENTIALS/SMB$count.old
+        check_command rm "$SMB_CREDENTIALS/SMB$count.old"
     fi
     
     # Inform the user that mounting was successful
