@@ -147,7 +147,7 @@ do
                 fi
 
                 # Create and mount external storage to the admin group
-                MOUNT_ID=$(occ_command_no_check files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
+                MOUNT_ID=$(occ_command files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
                 MOUNT_ID=${MOUNT_ID//[!0-9]/}
                 occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
                 occ_command files_external:option "$MOUNT_ID" filesystem_check_changes 1
