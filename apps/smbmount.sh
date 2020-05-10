@@ -302,41 +302,42 @@ then
     return
 fi
 
+# Get count back from selected_option
+count=${selected_option//[!0-9]/}
+
 # Test if SMB-share is still mounted and unmount if yes
-if mountpoint -q "$selected_option"
+if mountpoint -q "$SMBSHARES/$count"
 then
-    umount "$selected_option"
+    umount "$SMBSHARES/$count"
     was_mounted=yes
-    if mountpoint -q "$selected_option"
+    if mountpoint -q "$SMBSHARES/$count"
     then
-        msg_box "It seems like the unmount of $selected_option wasn't successful while trying to change the mount. Please try again."
+        msg_box "It seems like the unmount of "$SMBSHARES/$count" wasn't successful while trying to change the mount. Please try again."
         return
     fi
 fi
 
 # Store fstab entry for later in a variable
-fstab_entry=$(grep "$selected_option" /etc/fstab)
-SERVER_SHARE_NAME=$(echo "$fstab_entry" | awk '{print $1}')
-
-# Get count back from selected_option
-count=${selected_option//[!0-9]/}
+fstab_entry=$(grep "$SMBSHARES/$count " /etc/fstab)
 
 # Get old password and username
 if ! [ -f $SMB_CREDENTIALS/SMB$count ]
 then
+    SERVER_SHARE_NAME=$(echo "$fstab_entry" | awk '{print $1}')
     SMB_USER=${fstab_entry##*username=}
     SMB_USER=${SMB_USER%%,*}
     SMB_PASSWORD=${fstab_entry##*password=}
     SMB_PASSWORD=${SMB_PASSWORD%%,*}
 else
-    SMB_USER=$(grep username= $SMB_CREDENTIALS/SMB$count)
+    old_credentials=$(cat $SMB_CREDENTIALS/SMB$count)
+    SMB_USER=$(echo "$old_credentials" | grep username=)
     SMB_USER=${SMB_USER##*username=}
-    SMB_PASSWORD=$(grep password= $SMB_CREDENTIALS/SMB$count)
+    SMB_PASSWORD=$(echo "$old_credentials" | grep password=)
     SMB_PASSWORD=${SMB_PASSWORD##*password=}
 fi
 
 # Let the user choose which entries he wants to change
-choice=$(whiptail --title "Change a SMB-mount" --checklist "$fstab_entry\n\nChoose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "Change a SMB-mount" --checklist "$fstab_entry\n$old_credentials\nChoose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Password" "(change the password of the SMB-user)" OFF \
 "Username" "(change the username of the SMB-user)" OFF \
 "Share" "(change the SMB-share to use the same mount directory)" OFF 3>&1 1>&2 2>&3)
@@ -395,6 +396,7 @@ esac
 # Remove that line from fstab
 selected_option_sed=${selected_option//\//\\/}
 sed -i "/$selected_option_sed/d" /etc/fstab
+unset old_credentials
 
 # Backup old credentials file
 if [ -f $SMB_CREDENTIALS/SMB$count ]
@@ -403,7 +405,7 @@ then
 fi
 
 # Write changed line to /etc/fstab and mount
-echo "$SERVER_SHARE_NAME $selected_option cifs credentials=$SMB_CREDENTIALS/SMB$count,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
 mkdir -p $SMB_CREDENTIALS
 touch $SMB_CREDENTIALS/SMB$count
 chown -R root:root $SMB_CREDENTIALS
@@ -411,10 +413,10 @@ chmod -R 600 $SMB_CREDENTIALS
 echo "username=$SMB_USER" > $SMB_CREDENTIALS/SMB$count
 echo "password=$SMB_PASSWORD" >> $SMB_CREDENTIALS/SMB$count
 unset SMB_USER && unset SMB_PASSWORD
-mount "$selected_option"
+mount "$SMBSHARES/$count"
 
 # Check if mounting was successful
-if ! mountpoint -q "$selected_option"
+if ! mountpoint -q "$SMBSHARES/$count"
 then
     # If not remove this line from fstab
     msg_box "It seems like the mount of the changed configuration wasn't successful. It will get deleted now. The old config will get restored now. Please try again to change the mount."
@@ -429,13 +431,19 @@ then
     if [[ $was_mounted == yes ]]
     then
         unset was_mounted
-        mount "$selected_option"
-        if ! mountpoint -q "$selected_option"
+        mount "$SMBSHARES/$count"
+        if ! mountpoint -q "$SMBSHARES/$count"
         then
             msg_box "Your old configuration couldn't get mounted but is restored to /etc/fstab."
         fi
     fi
 else
+    # Remove the backup file
+    if [ -f $SMB_CREDENTIALS/SMB$count.old ]
+    then
+        check_command rm $SMB_CREDENTIALS/SMB$count.old
+    fi
+    
     # Inform the user that mounting was successful
     msg_box "Your change of the mount was successful, congratulations!"
 fi
