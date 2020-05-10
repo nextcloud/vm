@@ -536,14 +536,14 @@ restart_webserver
 
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
-print_text_in_color "$ICyan" "Checking if port ${1} is open with https://ports.yougetsignal.com..."
+print_text_in_color "$ICyan" "Checking if port ${1} is open with https://www.networkappers.com/tools/open-port-checker..."
 install_if_not curl
 # WAN Adress
-if check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${WANIP4}&portNumber=${1}" | grep -q "is open on"
+if check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://networkappers.com/api/port.php?ip=${WANIP4}&port=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
 # Domain name
-elif check_command curl -s -H 'Cache-Control: no-cache' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${2}&portNumber=${1}" | grep -q "is open on"
+elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://www.networkappers.com/api/port.php?ip=${2}&port=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
