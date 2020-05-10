@@ -149,8 +149,8 @@ do
                 # Create and mount external storage to the admin group
                 MOUNT_ID=$(occ_command_no_check files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
                 MOUNT_ID=${MOUNT_ID//[!0-9]/}
-                occ_command_no_check files_external:applicable --add-group=admin "$MOUNT_ID" -q
-                occ_command_no_check files_external:option "$MOUNT_ID" filesystem_check_changes 1
+                occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
+                occ_command files_external:option "$MOUNT_ID" filesystem_check_changes 1
 
                 # Inform the user that mounting was successful
                 msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing."
@@ -407,7 +407,7 @@ fi
 # Write changed line to /etc/fstab and mount
 echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
 mkdir -p $SMB_CREDENTIALS
-touch $SMB_CREDENTIALS/SMB$count
+touch "$SMB_CREDENTIALS/SMB$count"
 chown -R root:root $SMB_CREDENTIALS
 chmod -R 600 $SMB_CREDENTIALS
 echo "username=$SMB_USER" > "$SMB_CREDENTIALS/SMB$count"
