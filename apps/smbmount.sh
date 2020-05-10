@@ -114,6 +114,7 @@ do
     then 
         # Write to /etc/fstab and mount
         echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        unset SERVER_SHARE_NAME && unset SMB_USER && unset SMB_PASSWORD
         mkdir -p "$SMBSHARES/$count"
         mount "$SMBSHARES/$count"
         
@@ -125,21 +126,29 @@ do
             sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
             break
         else
-            # Install and enable files_external
-            if ! is_app_enabled files_external
+            # Check if Nextcloud is existing
+            if [ -f $NCPATH/occ ]
             then
-                install_and_enable_app files_external
+                # Install and enable files_external
+                if ! is_app_enabled files_external
+                then
+                    install_and_enable_app files_external
+                fi
+
+                # Create and mount external storage to the admin group
+                MOUNT_ID=$(occ_command_no_check files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
+                MOUNT_ID=${MOUNT_ID//[!0-9]/}
+                occ_command_no_check files_external:applicable --add-group=admin "$MOUNT_ID" -q
+                occ_command_no_check files_external:option "$MOUNT_ID" filesystem_check_changes 1
+
+                # Inform the user that mounting was successful
+                msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing."
+                break
+            else
+                # Inform the user that mounting was successful
+                msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count."
+                break
             fi
-            
-            # Create and mount external storage to the admin group
-            MOUNT_ID=$(occ_command_no_check files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
-            MOUNT_ID=${MOUNT_ID//[!0-9]/}
-            occ_command_no_check files_external:applicable --add-group=admin "$MOUNT_ID" -q
-            occ_command_no_check files_external:option "$MOUNT_ID" filesystem_check_changes 1
-            
-            # Inform the user that mounting was successful
-            msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing."
-            break
         fi
     fi
     count=$((count+1))
@@ -277,6 +286,18 @@ then
     return
 fi
 
+# Test if SMB-share is still mounted and unmount if yes
+if mountpoint -q "$selected_option"
+then
+    umount "$selected_option"
+    was_mounted=yes
+    if mountpoint -q "$selected_option"
+    then
+        msg_box "It seems like the unmount of $selected_option wasn't successful while trying to change the mount. Please try again."
+        return
+    fi
+fi
+
 # Store fstab entry for later in a variable
 fstab_entry=$(grep "$selected_option" /etc/fstab)
 SERVER_SHARE_NAME=$(echo "$fstab_entry" | awk '{print $1}')
@@ -284,7 +305,6 @@ SMB_USER=${fstab_entry##*username=}
 SMB_USER=${SMB_USER%%,*}
 SMB_PASSWORD=${fstab_entry##*password=}
 SMB_PASSWORD=${SMB_PASSWORD%%,*}
-
 
 # Let the user choose which entries he wants to change
 choice=$(whiptail --title "Change a SMB-mount" --checklist "$fstab_entry\n\nChoose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
@@ -343,24 +363,13 @@ case "$choice" in
     ;;
 esac
 
-# Test if SMB-share is still mounted and unmount if yes
-if mountpoint -q "$selected_option"
-then
-    umount "$selected_option"
-    was_mounted=yes
-    if mountpoint -q "$selected_option"
-    then
-        msg_box "It seems like the unmount of $selected_option wasn't successful while trying to change the mount. Please try again."
-        return
-    fi
-fi
-
 # Remove that line from fstab
 selected_option_sed=${selected_option//\//\\/}
 sed -i "/$selected_option_sed/d" /etc/fstab
 
 # Write changed line to /etc/fstab and mount
 echo "$SERVER_SHARE_NAME $selected_option cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+unset SERVER_SHARE_NAME && unset SMB_USER && unset SMB_PASSWORD
 mount "$selected_option"
 
 # Check if mounting was successful
@@ -370,8 +379,10 @@ then
     msg_box "It seems like the mount of the changed configuration wasn't successful. It will get deleted now. The old config will get restored now. Please try again to change the mount."
     sed -i "/$selected_option_sed/d" /etc/fstab
     echo "$fstab_entry" >> /etc/fstab
+    unset fstab_entry
     if [[ $was_mounted == yes ]]
     then
+        unset was_mounted
         mount "$selected_option"
         if ! mountpoint -q "$selected_option"
         then
