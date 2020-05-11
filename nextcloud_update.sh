@@ -289,23 +289,23 @@ then
     rm -f /tmp/minor.version
 elif [ -f /tmp/prerelease.version ]
 then
-    msg_box "WARNING, you are about to update to a Beta version of Nextcloud, there's no turning back, because you cannot downgrade. Please only continue if you have made a backup."
+    msg_box "WARNING! You are about to update to a Beta/RC version of Nextcloud.\nThere's no turning back, because it's not possible to downgrade.\n\nPlease only continue if you have made a backup, or took a snapshot."
     if [[ "no" == $(ask_yes_or_no "Do you really want to do this?") ]]
     then
-        sleep 1
+        rm -f /tmp/prerelease.version
     else
         if grep -q beta /tmp/prerelease.version
         then
             NCREPO="https://download.nextcloud.com/server/prereleases"
             NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
             STABLEVERSION="nextcloud-$NCVERSION"
-            rm /tmp/prerelease.version
+            rm -f /tmp/prerelease.version
         elif grep -q RC /tmp/prerelease.version
         then
             NCREPO="https://download.nextcloud.com/server/prereleases"
             NCVERSION=$(cat /tmp/prerelease.version)
             STABLEVERSION="nextcloud-$NCVERSION"
-            rm /tmp/prerelease.version
+            rm -f /tmp/prerelease.version
         fi
     fi
 fi
