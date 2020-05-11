@@ -300,7 +300,8 @@ then
             NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
             STABLEVERSION="nextcloud-$NCVERSION"
             rm /tmp/prerelease.version
-        else
+        elif grep -q RC /tmp/prerelease.version
+        then
             NCREPO="https://download.nextcloud.com/server/prereleases"
             NCVERSION=$(cat /tmp/prerelease.version)
             STABLEVERSION="nextcloud-$NCVERSION"
