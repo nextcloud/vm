@@ -299,13 +299,11 @@ then
             NCREPO="https://download.nextcloud.com/server/prereleases"
             NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
             STABLEVERSION="nextcloud-$NCVERSION"
-            rm -f /tmp/prerelease.version
         elif grep -q RC /tmp/prerelease.version
         then
             NCREPO="https://download.nextcloud.com/server/prereleases"
             NCVERSION=$(cat /tmp/prerelease.version)
             STABLEVERSION="nextcloud-$NCVERSION"
-            rm -f /tmp/prerelease.version
         fi
     fi
 fi
@@ -329,15 +327,20 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
     exit 1
 fi
 
-# Check if new version is larger than current version installed.
-print_text_in_color "$ICyan" "Checking for new Nextcloud version..."
-if version_gt "$NCVERSION" "$CURRENTVERSION"
+# Check if new version is larger than current version installed. Skip version check if you want to upgrade to a prerelease.
+if ! [ -f /tmp/prerelease.version ]
 then
-    print_text_in_color "$ICyan" "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
-    print_text_in_color "$IGreen" "New version available, upgrade continues!"
+    print_text_in_color "$ICyan" "Checking for new Nextcloud version..."
+    if version_gt "$NCVERSION" "$CURRENTVERSION"
+    then
+        print_text_in_color "$ICyan" "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
+        print_text_in_color "$IGreen" "New version available, upgrade continues!"
+    else
+        print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
+        exit 0
+    fi
 else
-    print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
-    exit 0
+    check_command rm /tmp/prerelease.version
 fi
 
 # Check if PHP version is compatible with $NCVERSION
