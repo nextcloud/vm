@@ -289,10 +289,12 @@ then
     rm -f /tmp/minor.version
 elif [ -f /tmp/prerelease.version ]
 then
+    PRERELEASE_VERSION=yes
+    rm -f /tmp/prerelease.version
     msg_box "WARNING! You are about to update to a Beta/RC version of Nextcloud.\nThere's no turning back, because it's not possible to downgrade.\n\nPlease only continue if you have made a backup, or took a snapshot."
     if [[ "no" == $(ask_yes_or_no "Do you really want to do this?") ]]
     then
-        rm -f /tmp/prerelease.version
+        unset PRERELEASE_VERSION
     else
         if grep -q beta /tmp/prerelease.version
         then
@@ -328,7 +330,7 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
 fi
 
 # Check if new version is larger than current version installed. Skip version check if you want to upgrade to a prerelease.
-if ! [ -f /tmp/prerelease.version ]
+if [ -z "$PRERELEASE_VERSION" ]
 then
     print_text_in_color "$ICyan" "Checking for new Nextcloud version..."
     if version_gt "$NCVERSION" "$CURRENTVERSION"
@@ -339,8 +341,6 @@ then
         print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
         exit 0
     fi
-else
-    check_command rm /tmp/prerelease.version
 fi
 
 # Check if PHP version is compatible with $NCVERSION
@@ -545,8 +545,8 @@ then
     mkdir -p "$VMLOGS"
 fi
 
-CURRENTVERSION_after=$(occ_command status | grep "versionstring" | awk '{print $3}')
-if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
+CURRENTVERSION_after=$(occ_command_no_check status | grep "versionstring" | awk '{print $3}')
+if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]] || [ -n "$PRERELEASE_VERSION" ]
 then
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
 
