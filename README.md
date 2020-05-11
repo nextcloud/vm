@@ -31,25 +31,16 @@ Server installation. Simplified. :cloud:
 ## I want to test a Release Candidate (RC), or Beta!
 No problem, brave explorer! We made it simple. 
 
-In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://cloud.hanssonit.se/s/zjsqkrSpzqJGE9N?path=%2FTESTING) folder on the download server. If you want to try the latest version yourself, just follow the steps below:
-1. Download the latest [nextcloud_update.sh](https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_update.sh) to your server.
-2. Put the below variables right above line 256 **(# Major versions unsupported)**
-3. Run nextcloud_update.sh
+In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://cloud.hanssonit.se/s/zjsqkrSpzqJGE9N?path=%2FTESTING) folder on the download server. 
 
-To test a specific RC version:
+If you want to try the latest version yourself, there are two variables that you could use:
 
-```
-NCREPO="https://download.nextcloud.com/server/prereleases"
-NCVERSION=16.0.0RC1
-STABLEVERSION="nextcloud-$NCVERSION"
-```
+1. For latest **beta** version: `sudo bash /var/scripts/update.sh beta`
 
-Or the latest Beta:
-```
-NCREPO="https://download.nextcloud.com/server/prereleases"
-NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
-STABLEVERSION="nextcloud-$NCVERSION"
-```
+2. For specific **RC** version: `sudo bash /var/scripts/update.sh 19.0.0RC1`
+
+Please keep in mind that this is only intended for testing and might crash your Nextcloud. Please keep backups!
+
 
 ## Vagrant example (Beta)
 

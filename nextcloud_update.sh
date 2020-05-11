@@ -287,6 +287,29 @@ then
     export NCVERSION
     export STABLEVERSION="nextcloud-$NCVERSION"
     rm -f /tmp/minor.version
+elif [ -f /tmp/prerelease.version ]
+then
+    PRERELEASE_VERSION=yes
+    msg_box "WARNING! You are about to update to a Beta/RC version of Nextcloud.\nThere's no turning back, because it's not possible to downgrade.\n\nPlease only continue if you have made a backup, or took a snapshot."
+    if [[ "no" == $(ask_yes_or_no "Do you really want to do this?") ]]
+    then
+        rm -f /tmp/prerelease.version
+        unset PRERELEASE_VERSION
+    else
+        if grep -q beta /tmp/prerelease.version
+        then
+            NCREPO="https://download.nextcloud.com/server/prereleases"
+            NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+            STABLEVERSION="nextcloud-$NCVERSION"
+            rm -f /tmp/prerelease.version
+        elif grep -q RC /tmp/prerelease.version
+        then
+            NCREPO="https://download.nextcloud.com/server/prereleases"
+            NCVERSION=$(cat /tmp/prerelease.version)
+            STABLEVERSION="nextcloud-$NCVERSION"
+            rm -f /tmp/prerelease.version
+        fi
+    fi
 fi
 
 # Major versions unsupported
@@ -308,15 +331,18 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
     exit 1
 fi
 
-# Check if new version is larger than current version installed.
-print_text_in_color "$ICyan" "Checking for new Nextcloud version..."
-if version_gt "$NCVERSION" "$CURRENTVERSION"
+# Check if new version is larger than current version installed. Skip version check if you want to upgrade to a prerelease.
+if [ -z "$PRERELEASE_VERSION" ]
 then
-    print_text_in_color "$ICyan" "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
-    print_text_in_color "$IGreen" "New version available, upgrade continues!"
-else
-    print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
-    exit 0
+    print_text_in_color "$ICyan" "Checking for new Nextcloud version..."
+    if version_gt "$NCVERSION" "$CURRENTVERSION"
+    then
+        print_text_in_color "$ICyan" "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
+        print_text_in_color "$IGreen" "New version available, upgrade continues!"
+    else
+        print_text_in_color "$IGreen" "You already run the latest version! ($CURRENTVERSION)"
+        exit 0
+    fi
 fi
 
 # Check if PHP version is compatible with $NCVERSION
@@ -522,7 +548,7 @@ then
 fi
 
 CURRENTVERSION_after=$(occ_command status | grep "versionstring" | awk '{print $3}')
-if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]]
+if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]] || [ -n "$PRERELEASE_VERSION" ]
 then
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
 
