@@ -547,7 +547,7 @@ then
     mkdir -p "$VMLOGS"
 fi
 
-CURRENTVERSION_after=$(occ_command_no_check status | grep "versionstring" | awk '{print $3}')
+CURRENTVERSION_after=$(occ_command status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]] || [ -n "$PRERELEASE_VERSION" ]
 then
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
