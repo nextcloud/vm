@@ -39,16 +39,6 @@ then
     sed -i '/^hosts/ s/$/ wins/' /etc/nsswitch.conf
 fi
 
-# Secure fstab
-if [ "$(stat -c %a /etc/fstab)" != "600" ]
-then
-    chmod 600 /etc/fstab
-fi
-if [ "$(stat -c %G /etc/fstab)" != "root" ] || [ "$(stat -c %U /etc/fstab)" != "root" ]
-then
-    chown root:root /etc/fstab
-fi
-
 # Functions
 add_mount() {
 
