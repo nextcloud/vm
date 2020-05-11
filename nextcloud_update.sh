@@ -340,7 +340,7 @@ then
         print_text_in_color "$ICyan" "Latest release is: $NCVERSION. Current version is: $CURRENTVERSION."
         print_text_in_color "$IGreen" "New version available, upgrade continues!"
     else
-        print_text_in_color "$IGreen" "You already run the latest version! ($NCVERSION)"
+        print_text_in_color "$IGreen" "You already run the latest version! ($CURRENTVERSION)"
         exit 0
     fi
 fi
