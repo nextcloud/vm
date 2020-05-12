@@ -20,6 +20,7 @@ root_check
 MAX_COUNT=16
 SMBSHARES="/mnt/smbshares"
 SMBSHARES_SED=${SMBSHARES//\//\\/}
+SMB_CREDENTIALS="/root/.smbcredentials" 
 
 # Install whiptail if not existing
 install_if_not whiptail
@@ -39,16 +40,6 @@ install_if_not winbind
 if [ "$(grep "^hosts:" /etc/nsswitch.conf | grep wins)" == "" ]
 then
     sed -i '/^hosts/ s/$/ wins/' /etc/nsswitch.conf
-fi
-
-# Secure fstab
-if [ "$(stat -c %a /etc/fstab)" != "600" ]
-then
-    chmod 600 /etc/fstab
-fi
-if [ "$(stat -c %G /etc/fstab)" != "root" ] || [ "$(stat -c %U /etc/fstab)" != "root" ]
-then
-    chown root:root /etc/fstab
 fi
 
 # Functions
@@ -116,7 +107,14 @@ do
     if ! grep -q "$SMBSHARES/$count " /etc/fstab
     then 
         # Write to /etc/fstab and mount
-        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+        mkdir -p $SMB_CREDENTIALS
+        touch $SMB_CREDENTIALS/SMB$count
+        chown -R root:root $SMB_CREDENTIALS
+        chmod -R 600 $SMB_CREDENTIALS
+        echo "username=$SMB_USER" > $SMB_CREDENTIALS/SMB$count
+        echo "password=$SMB_PASSWORD" >> $SMB_CREDENTIALS/SMB$count
+        unset SMB_USER && unset SMB_PASSWORD
         mkdir -p "$SMBSHARES/$count"
         mount "$SMBSHARES/$count"
         
@@ -126,23 +124,35 @@ do
             # If not remove this line from fstab
             msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint:\n- you might fix the connection problem by enabling SMB3 on your SMB-server.\n- You could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.\n- Please also make sure, that 'ping IP-address' of your SMB-Server from your Nextcloud-instance works."
             sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+            if [ -f $SMB_CREDENTIALS/SMB$count ]
+            then
+                check_command rm $SMB_CREDENTIALS/SMB$count
+            fi
             break
         else
-            # Install and enable files_external
-            if ! is_app_enabled files_external
+            # Check if Nextcloud is existing
+            if [ -f $NCPATH/occ ]
             then
-                install_and_enable_app files_external
+                # Install and enable files_external
+                if ! is_app_enabled files_external
+                then
+                    install_and_enable_app files_external
+                fi
+
+                # Create and mount external storage to the admin group
+                MOUNT_ID=$(occ_command files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
+                MOUNT_ID=${MOUNT_ID//[!0-9]/}
+                occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
+                occ_command files_external:option "$MOUNT_ID" filesystem_check_changes 1
+
+                # Inform the user that mounting was successful
+                msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing."
+                break
+            else
+                # Inform the user that mounting was successful
+                msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count."
+                break
             fi
-            
-            # Create and mount external storage to the admin group
-            MOUNT_ID=$(occ_command_no_check files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
-            MOUNT_ID=${MOUNT_ID//[!0-9]/}
-            occ_command_no_check files_external:applicable --add-group=admin "$MOUNT_ID" -q
-            occ_command_no_check files_external:option "$MOUNT_ID" filesystem_check_changes 1
-            
-            # Inform the user that mounting was successful
-            msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing."
-            break
         fi
     fi
     count=$((count+1))
@@ -244,7 +254,12 @@ while  [ $count -le $MAX_COUNT ]
 do
     if [[ $selected_options == *"$SMBSHARES/$count "* ]]
     then
-        msg_box "$(grep "$SMBSHARES/$count " /etc/fstab)"
+        if [ -f $SMB_CREDENTIALS/SMB$count ]
+        then
+            msg_box "$(grep "$SMBSHARES/$count " /etc/fstab)\n$(cat $SMB_CREDENTIALS/SMB$count)"
+        else
+            msg_box "$(grep "$SMBSHARES/$count " /etc/fstab)"
+        fi
     fi
     count=$((count+1))
 done
@@ -280,17 +295,42 @@ then
     return
 fi
 
-# Store fstab entry for later in a variable
-fstab_entry=$(grep "$selected_option" /etc/fstab)
-SERVER_SHARE_NAME=$(echo "$fstab_entry" | awk '{print $1}')
-SMB_USER=${fstab_entry##*username=}
-SMB_USER=${SMB_USER%%,*}
-SMB_PASSWORD=${fstab_entry##*password=}
-SMB_PASSWORD=${SMB_PASSWORD%%,*}
+# Get count back from selected_option
+count=${selected_option//[!0-9]/}
 
+# Test if SMB-share is still mounted and unmount if yes
+if mountpoint -q "$SMBSHARES/$count"
+then
+    umount "$SMBSHARES/$count"
+    was_mounted=yes
+    if mountpoint -q "$SMBSHARES/$count"
+    then
+        msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful while trying to change the mount. Please try again."
+        return
+    fi
+fi
+
+# Store fstab entry for later in a variable
+fstab_entry=$(grep "$SMBSHARES/$count " /etc/fstab)
+
+# Get old password and username
+if ! [ -f "$SMB_CREDENTIALS/SMB$count" ]
+then
+    SERVER_SHARE_NAME=$(echo "$fstab_entry" | awk '{print $1}')
+    SMB_USER=${fstab_entry##*username=}
+    SMB_USER=${SMB_USER%%,*}
+    SMB_PASSWORD=${fstab_entry##*password=}
+    SMB_PASSWORD=${SMB_PASSWORD%%,*}
+else
+    old_credentials=$(cat "$SMB_CREDENTIALS/SMB$count")
+    SMB_USER=$(echo "$old_credentials" | grep username=)
+    SMB_USER=${SMB_USER##*username=}
+    SMB_PASSWORD=$(echo "$old_credentials" | grep password=)
+    SMB_PASSWORD=${SMB_PASSWORD##*password=}
+fi
 
 # Let the user choose which entries he wants to change
-choice=$(whiptail --title "Change a SMB-mount" --checklist "$fstab_entry\n\nChoose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "Change a SMB-mount" --checklist "$fstab_entry\n$old_credentials\nChoose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Password" "(change the password of the SMB-user)" OFF \
 "Username" "(change the username of the SMB-user)" OFF \
 "Share" "(change the SMB-share to use the same mount directory)" OFF 3>&1 1>&2 2>&3)
@@ -346,42 +386,57 @@ case "$choice" in
     ;;
 esac
 
-# Test if SMB-share is still mounted and unmount if yes
-if mountpoint -q "$selected_option"
-then
-    umount "$selected_option"
-    was_mounted=yes
-    if mountpoint -q "$selected_option"
-    then
-        msg_box "It seems like the unmount of $selected_option wasn't successful while trying to change the mount. Please try again."
-        return
-    fi
-fi
-
 # Remove that line from fstab
 selected_option_sed=${selected_option//\//\\/}
 sed -i "/$selected_option_sed/d" /etc/fstab
+unset old_credentials
+
+# Backup old credentials file
+if [ -f "$SMB_CREDENTIALS/SMB$count" ]
+then
+    mv "$SMB_CREDENTIALS/SMB$count" "$SMB_CREDENTIALS/SMB$count.old"
+fi
 
 # Write changed line to /etc/fstab and mount
-echo "$SERVER_SHARE_NAME $selected_option cifs username=$SMB_USER,password=$SMB_PASSWORD,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
-mount "$selected_option"
+echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,vers=3.0,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino 0 0" >> /etc/fstab
+mkdir -p $SMB_CREDENTIALS
+touch "$SMB_CREDENTIALS/SMB$count"
+chown -R root:root $SMB_CREDENTIALS
+chmod -R 600 $SMB_CREDENTIALS
+echo "username=$SMB_USER" > "$SMB_CREDENTIALS/SMB$count"
+echo "password=$SMB_PASSWORD" >> "$SMB_CREDENTIALS/SMB$count"
+unset SMB_USER && unset SMB_PASSWORD
+mount "$SMBSHARES/$count"
 
 # Check if mounting was successful
-if ! mountpoint -q "$selected_option"
+if ! mountpoint -q "$SMBSHARES/$count"
 then
     # If not remove this line from fstab
     msg_box "It seems like the mount of the changed configuration wasn't successful. It will get deleted now. The old config will get restored now. Please try again to change the mount."
     sed -i "/$selected_option_sed/d" /etc/fstab
     echo "$fstab_entry" >> /etc/fstab
+    unset fstab_entry
+    if [ -f "$SMB_CREDENTIALS/SMB$count.old" ]
+    then
+        rm "$SMB_CREDENTIALS/SMB$count"
+        mv "$SMB_CREDENTIALS/SMB$count.old" "$SMB_CREDENTIALS/SMB$count"
+    fi
     if [[ $was_mounted == yes ]]
     then
-        mount "$selected_option"
-        if ! mountpoint -q "$selected_option"
+        unset was_mounted
+        mount "$SMBSHARES/$count"
+        if ! mountpoint -q "$SMBSHARES/$count"
         then
             msg_box "Your old configuration couldn't get mounted but is restored to /etc/fstab."
         fi
     fi
 else
+    # Remove the backup file
+    if [ -f "$SMB_CREDENTIALS/SMB$count.old" ]
+    then
+        check_command rm "$SMB_CREDENTIALS/SMB$count.old"
+    fi
+    
     # Inform the user that mounting was successful
     msg_box "Your change of the mount was successful, congratulations!"
 fi
@@ -477,10 +532,18 @@ do
                 msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful during the deletion. Please try again."
             else
                 sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+                if [ -f $SMB_CREDENTIALS/SMB$count ]
+                then
+                    check_command rm $SMB_CREDENTIALS/SMB$count
+                fi
                 msg_box "Your deletion of $SMBSHARES/$count was successful!"
             fi
         else
             sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+            if [ -f $SMB_CREDENTIALS/SMB$count ]
+            then
+                check_command rm $SMB_CREDENTIALS/SMB$count
+            fi
             msg_box "Your deletion of $SMBSHARES/$count was successful!"
         fi
     fi
