@@ -43,9 +43,15 @@ case "$choice" in
         fi
     ;;
     "Update Nextcloud")
-        if network_ok
+        if [ -f $SCRIPTS/update.sh ]
         then
-            run_static_script update
+            bash $SCRIPTS/update.sh
+        else
+            if network_ok
+            then
+                download_static_script update
+                bash $SCRIPTS/update.sh
+            fi
         fi
     ;;
     *)
