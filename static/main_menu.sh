@@ -64,7 +64,7 @@ case "$choice" in
         else
             if network_ok
             then
-                run_main_script nextcloud_update
+                run_static_script update
             fi
         fi
     ;;
