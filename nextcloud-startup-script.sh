@@ -246,6 +246,7 @@ download_static_script update-config
 download_static_script apps
 download_static_script configuration
 download_le_script activate-tls
+download_static_script menu
 if home_sme_server
 then
     download_static_script nhss_index
@@ -457,6 +458,9 @@ rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
 rm -f "$SCRIPTS/static_ip.sh"
 rm -f "$SCRIPTS/lib.sh"
+rm -f "$SCRIPTS/configuration.sh"
+rm -f "$SCRIPTS/apps.sh"
+rm -f "$SCRIPTS/server_configuration.sh"
 
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
 find "$NCPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete

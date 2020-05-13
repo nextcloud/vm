@@ -22,6 +22,9 @@ SMBSHARES="/mnt/smbshares"
 SMBSHARES_SED=${SMBSHARES//\//\\/}
 SMB_CREDENTIALS="/root/.smbcredentials" 
 
+# Install whiptail if not existing
+install_if_not whiptail
+
 # Check MAX_COUNT
 if ! [ $MAX_COUNT -gt 0 ]
 then
