@@ -16,4 +16,7 @@ debug_mode
 # Must be root
 root_check
 
+# Fix SMB issues (https://github.com/nextcloud/server/issues/20622)
+git_apply_patch 20941 server 18.0.4
+
 exit
