@@ -829,105 +829,73 @@ rm -r "$GPGDIR"
 rm -f releases
 }
 
-# Initial download of script in ../static
-# call like: download_static_script name_of_script
-download_static_script() {
-    # Get ${1} script
-    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if ! { curl_to_dir "${STATIC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${STATIC}" "${1}.py" "$SCRIPTS"; }
+# call like: download_script folder_variable name_of_script
+# e.g. download_script APP additional_apps
+# Use it for functions like download_static_script
+download_script() {
+    rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
+    if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
-        print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
+        print_text_in_color "$IRed" "{$2} failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|.php|.py' again."
         print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
         print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
+}
+
+# call like: run_script folder_variable name_of_script
+# e.g. run_script APP additional_apps
+# Use it for functions like run_static_script
+run_script() {
+    rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
+    if curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS"
+    then
+        bash "${SCRIPTS}/${2}.sh"
+        rm -f "${SCRIPTS}/${2}.sh"
+    elif curl_to_dir "${!1}" "${2}.php" "$SCRIPTS"
+    then
+        php "${SCRIPTS}/${2}.php"
+        rm -f "${SCRIPTS}/${2}.php"
+    elif curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"
+    then
+        install_if_not python3
+        python3 "${SCRIPTS}/${2}.py"
+        rm -f "${SCRIPTS}/${2}.py"
+    else
+        print_text_in_color "$IRed" "Downloading ${2} failed"
+        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|php|py' again."
+        exit 1
+    fi
+}
+
+# Initial download of script in ../static
+# call like: download_static_script name_of_script
+download_static_script() {
+download_script STATIC ${1}
 }
 
 # Initial download of script in ../lets-encrypt
 # call like: download_le_script name_of_script
 download_le_script() {
-    # Get ${1} script
-    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if ! { curl_to_dir "${LETS_ENC}" "${1}.sh" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.php" "$SCRIPTS" || curl_to_dir "${LETS_ENC}" "${1}.py" "$SCRIPTS"; }
-    then
-        print_text_in_color "$IRed" "{$1} failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|.php|.py' again."
-        print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
-        print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
-        exit 1
-    fi
+download_script LETS_ENC ${1}
 }
 
 # Run any script in ../master
 # call like: run_main_script name_of_script
 run_main_script() {
-    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if curl_to_dir "${GITHUB_REPO}" "${1}.sh" "$SCRIPTS"
-    then
-        bash "${SCRIPTS}/${1}.sh"
-        rm -f "${SCRIPTS}/${1}.sh"
-    elif curl_to_dir "${GITHUB_REPO}" "${1}.php" "$SCRIPTS"
-    then
-        php "${SCRIPTS}/${1}.php"
-        rm -f "${SCRIPTS}/${1}.php"
-    elif curl_to_dir "${GITHUB_REPO}" "${1}.py" "$SCRIPTS"
-    then
-        install_if_not python3
-        python3 "${SCRIPTS}/${1}.py"
-        rm -f "${SCRIPTS}/${1}.py"
-    else
-        print_text_in_color "$IRed" "Downloading ${1} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${GITHUB_REPO}/${1}.sh|php|py' again."
-        exit 1
-    fi
+run_script GITHUB_REPO ${1}
 }
 
 # Run any script in ../static
 # call like: run_static_script name_of_script
 run_static_script() {
-    # Get ${1} script
-    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if curl_to_dir "${STATIC}" "${1}.sh" "$SCRIPTS"
-    then
-        bash "${SCRIPTS}/${1}.sh"
-        rm -f "${SCRIPTS}/${1}.sh"
-    elif curl_to_dir "${STATIC}" "${1}.php" "$SCRIPTS"
-    then
-        php "${SCRIPTS}/${1}.php"
-        rm -f "${SCRIPTS}/${1}.php"
-    elif curl_to_dir "${STATIC}" "${1}.py" "$SCRIPTS"
-    then
-        install_if_not python3
-        python3 "${SCRIPTS}/${1}.py"
-        rm -f "${SCRIPTS}/${1}.py"
-    else
-        print_text_in_color "$IRed" "Downloading ${1} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${STATIC}/${1}.sh|php|py' again."
-        exit 1
-    fi
+run_script STATIC ${1}
 }
 
 # Run any script in ../apps
 # call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
 run_app_script() {
-    rm -f "${SCRIPTS}/${1}.sh" "${SCRIPTS}/${1}.php" "${SCRIPTS}/${1}.py"
-    if curl_to_dir "${APP}" "${1}.sh" "$SCRIPTS"
-    then
-        bash "${SCRIPTS}/${1}.sh"
-        rm -f "${SCRIPTS}/${1}.sh"
-    elif curl_to_dir "${APP}" "${1}.php" "$SCRIPTS"
-    then
-        php "${SCRIPTS}/${1}.php"
-        rm -f "${SCRIPTS}/${1}.php"
-    elif curl_to_dir "${APP}" "${1}.py" "$SCRIPTS"
-    then
-        install_if_not python3
-        python3 "${SCRIPTS}/${1}.py"
-        rm -f "${SCRIPTS}/${1}.py"
-    else
-        print_text_in_color "$IRed" "Downloading ${1} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${APP}/${1}.sh|php|py' again."
-        exit
-    fi
+run_script APP ${1}
 }
 
 version(){
