@@ -71,13 +71,13 @@ then
                     count=$((count+1))
                 fi
             done
-            
+
             msg_box "Collabora was successfully uninstalled."
             exit
         ;;
         "Reinstall Collabora")
             print_text_in_color "$ICyan" "Reinstalling Collabora..."
-            
+
             # Check if Collabora is previously installed
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
@@ -138,12 +138,9 @@ then
     occ_command app:remove onlyoffice
 fi
 
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset COLLABORA_INSTALL
+# Get needed variables
+nc_update
+collabora_install
 
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"

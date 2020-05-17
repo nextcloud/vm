@@ -50,11 +50,8 @@ else
     apt install whiptail -y
 fi
 
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset FIRST_IFACE
+# Get needed variables
+first_iface
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -398,9 +395,9 @@ occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
 occ_command config:system:set versions_retention_obligation --value="auto, 365"
 
 # Remove simple signup
-occ_command config:system:set simpleSignUpLink.shown --value="false" 
+occ_command config:system:set simpleSignUpLink.shown --value="false"
 
-# Enable OPCache for PHP 
+# Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 phpenmod opcache
 {
@@ -606,13 +603,13 @@ then
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
-    
+
     # The following lines prevent .htaccess and .htpasswd files from being
     # viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
-    
+
     # Disable HTTP TRACE method.
     TraceEnable off
 

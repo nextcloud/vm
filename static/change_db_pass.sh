@@ -2,8 +2,10 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDBPASS=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NCDBPASS
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get needed variables
+ncdbpass
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
