@@ -50,6 +50,10 @@ elif [ "$SYSVENDOR" == "DigitalOcean" ];
 then
     SYSNAME="DigitalOcean"
     DEVTYPE=sda
+elif [ "$SYSVENDOR" == "Intel(R) Client Systems" ];
+then
+    SYSNAME="Intel-NUC"
+    DEVTYPE=sda
 elif partprobe /dev/sdb &>/dev/null;
 then
     SYSNAME="machines"
