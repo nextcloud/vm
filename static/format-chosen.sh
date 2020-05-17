@@ -46,9 +46,13 @@ elif [[ "$SYSVENDOR" == "QEMU" || "$SYSVENDOR" == "Red Hat" ]];
 then
     SYSNAME="KVM/QEMU"
     DEVTYPE=vdb
-elif [[ "$SYSVENDOR" == "DigitalOcean" || "$SYSVENDOR" == "Intel(R) Client Systems" ]];
+elif [ "$SYSVENDOR" == "DigitalOcean" ];
 then
     SYSNAME="DigitalOcean"
+    DEVTYPE=sda
+elif [ "$SYSVENDOR" == "Intel(R) Client Systems" ];
+then
+    SYSNAME="Intel-NUC"
     DEVTYPE=sda
 elif partprobe /dev/sdb &>/dev/null;
 then
