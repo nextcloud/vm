@@ -137,10 +137,9 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
     exit 1
 fi
 
-# shellcheck source=lib.sh
-NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset NCDB
+# Get needed variables
+ncdb
+nc_update
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
