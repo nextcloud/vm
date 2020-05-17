@@ -69,18 +69,17 @@ ROOT_PROFILE="/root/.bash_profile"
 SHUF=$(shuf -i 25-29 -n 1)
 PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-[ -n "$NCDB" ] && ncdb && unset NCDB
 ncdb() {
 NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 }
-[ -n "$NCDBPASS" ] && ncdbpass && unset NCDBPASS
+[ -n "$NCDB" ] && ncdb && unset NCDB
 ncdbpass() {
 NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 }
+[ -n "$NCDBPASS" ] && ncdbpass && unset NCDBPASS
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Nextcloud version
-[ -n "$NC_UPDATE" ] && nc_update && unset NC_UPDATE
 nc_update() {
 CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
@@ -88,22 +87,23 @@ STABLEVERSION="nextcloud-$NCVERSION"
 NCMAJOR="${NCVERSION%%.*}"
 NCBAD=$((NCMAJOR-2))
 }
+[ -n "$NC_UPDATE" ] && nc_update && unset NC_UPDATE
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 # Collabora Docker URL (collabora.sh
-[ -n "$COLLABORA_INSTALL" ] && collabora_install && unset COLLABORA_INSTALL
 collabora_install() {
 SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain (collabora.sh)
 NCDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 }
+[ -n "$COLLABORA_INSTALL" ] && collabora_install && unset COLLABORA_INSTALL
 # Nextcloud Main Domain (activate-tls.sh)
-[ -n "$TLS_INSTALL" ] && tls_install && unset TLS_INSTALL
 tls_install() {
 TLSDOMAIN=$(whiptail --title "T&M Hansson IT - Let's Encrypt" --inputbox "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
 }
+[ -n "$TLS_INSTALL" ] && tls_install && unset TLS_INSTALL
 # Letsencrypt
 SITES_AVAILABLE="/etc/apache2/sites-available"
 LETSENCRYPTPATH="/etc/letsencrypt"
@@ -133,15 +133,14 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-[ -n "$ES_INSTALL" ] && es_install && unset ES_INSTALL
 es_install() {
 INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
 ROREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
 nc_fts="ark74/nc_fts"
 fts_es_name="fts_esror"
 }
+[ -n "$ES_INSTALL" ] && es_install && unset ES_INSTALL
 # Talk
-[ -n "$TURN_INSTALL" ] && turn_install && unset TURN_INSTALL
 turn_install() {
 TURN_CONF="/etc/turnserver.conf"
 TURN_PORT=5349
@@ -149,7 +148,7 @@ TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrit
 SHUF=$(shuf -i 25-29 -n 1)
 TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 }
-
+[ -n "$TURN_INSTALL" ] && turn_install && unset TURN_INSTALL
 
 ## FUNCTIONS
 
