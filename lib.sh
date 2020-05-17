@@ -37,7 +37,8 @@ KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Network
 [ -n "$FIRST_IFACE" ] && first_iface && unset FIRST_IFACE
 first_iface() {
-IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')}
+IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+}
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
 REPO=$(grep deb-src /etc/apt/sources.list | grep http | awk '{print $3}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
@@ -45,7 +46,8 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
 [ -n "$LOAD_IP6" ] && load_ip6 && unset LOAD_IP6
 load_ip6() {
-WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)}
+WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
+}
 INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 DNS1="9.9.9.9"
@@ -69,10 +71,12 @@ PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 [ -n "$NCDB" ] && ncdb && unset NCDB
 ncdb() {
-NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")}
+NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+}
 [ -n "$NCDBPASS" ] && ncdbpass && unset NCDBPASS
 ncdbpass() {
-NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")}
+NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+}
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Nextcloud version
@@ -82,7 +86,8 @@ CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" 
 NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
 STABLEVERSION="nextcloud-$NCVERSION"
 NCMAJOR="${NCVERSION%%.*}"
-NCBAD=$((NCMAJOR-2))}
+NCBAD=$((NCMAJOR-2))
+}
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
 # Keys
@@ -92,11 +97,13 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 collabora_install() {
 SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain (collabora.sh)
-NCDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)}
+NCDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+}
 # Nextcloud Main Domain (activate-tls.sh)
 [ -n "$TLS_INSTALL" ] && tls_install && unset TLS_INSTALL
 tls_install() {
-TLSDOMAIN=$(whiptail --title "T&M Hansson IT - Let's Encrypt" --inputbox "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)}
+TLSDOMAIN=$(whiptail --title "T&M Hansson IT - Let's Encrypt" --inputbox "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
+}
 # Letsencrypt
 SITES_AVAILABLE="/etc/apache2/sites-available"
 LETSENCRYPTPATH="/etc/letsencrypt"
@@ -131,7 +138,8 @@ es_install() {
 INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
 ROREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
 nc_fts="ark74/nc_fts"
-fts_es_name="fts_esror"}
+fts_es_name="fts_esror"
+}
 # Talk
 [ -n "$TURN_INSTALL" ] && turn_install && unset TURN_INSTALL
 turn_install() {
@@ -139,7 +147,8 @@ TURN_CONF="/etc/turnserver.conf"
 TURN_PORT=5349
 TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 SHUF=$(shuf -i 25-29 -n 1)
-TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")}
+TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+}
 
 
 ## FUNCTIONS
