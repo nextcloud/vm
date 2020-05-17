@@ -871,31 +871,31 @@ run_script() {
 # Initial download of script in ../static
 # call like: download_static_script name_of_script
 download_static_script() {
-download_script STATIC ${1}
+download_script STATIC "${1}"
 }
 
 # Initial download of script in ../lets-encrypt
 # call like: download_le_script name_of_script
 download_le_script() {
-download_script LETS_ENC ${1}
+download_script LETS_ENC "${1}"
 }
 
 # Run any script in ../master
 # call like: run_main_script name_of_script
 run_main_script() {
-run_script GITHUB_REPO ${1}
+run_script GITHUB_REPO "${1}"
 }
 
 # Run any script in ../static
 # call like: run_static_script name_of_script
 run_static_script() {
-run_script STATIC ${1}
+run_script STATIC "${1}"
 }
 
 # Run any script in ../apps
 # call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
 run_app_script() {
-run_script APP ${1}
+run_script APP "${1}"
 }
 
 version(){
