@@ -865,8 +865,8 @@ run_script() {
             rm -f "${SCRIPTS}/${2}.py"
         fi
     else
-        print_text_in_color "$IRed" "Downloading ${2} failed"
-        print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|php|py' again."
+        print_text_in_color "$IRed" "Running ${2} failed"
+        print_text_in_color "$ICyan" "Script failed to execute. Please run: 'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again."
         exit 1
     fi
 }
