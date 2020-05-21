@@ -848,19 +848,22 @@ download_script() {
 # Use it for functions like run_static_script
 run_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
-    if curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS"
+    if download_script "${1}" "${2}"
     then
-        bash "${SCRIPTS}/${2}.sh"
-        rm -f "${SCRIPTS}/${2}.sh"
-    elif curl_to_dir "${!1}" "${2}.php" "$SCRIPTS"
-    then
-        php "${SCRIPTS}/${2}.php"
-        rm -f "${SCRIPTS}/${2}.php"
-    elif curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"
-    then
-        install_if_not python3
-        python3 "${SCRIPTS}/${2}.py"
-        rm -f "${SCRIPTS}/${2}.py"
+        if [ -f "${SCRIPTS}/${2}".sh ]
+        then
+            bash "${SCRIPTS}/${2}.sh"
+            rm -f "${SCRIPTS}/${2}.sh"
+        elif [ -f "${SCRIPTS}/${2}".php ]
+        then
+            php "${SCRIPTS}/${2}.php"
+            rm -f "${SCRIPTS}/${2}.php"
+        elif [ -f "${SCRIPTS}/${2}".py ]
+        then
+            install_if_not python3
+            python3 "${SCRIPTS}/${2}.py"
+            rm -f "${SCRIPTS}/${2}.py"
+        fi
     else
         print_text_in_color "$IRed" "Downloading ${2} failed"
         print_text_in_color "$ICyan" "Script failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|php|py' again."
