@@ -502,7 +502,10 @@ fi
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
 yes | occ_command db:convert-filecache-bigint
 occ_command db:add-missing-indices
-occ_command db:add-missing-columns
+if [ "${CURRENTVERSION%%.*}" -ge "19" ]
+then
+    occ_command db:add-missing-columns
+fi
 
 # Install Figlet
 install_if_not figlet
