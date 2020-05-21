@@ -477,6 +477,7 @@ then
     if [ "${CURRENTVERSION%%.*}" -ge "19" ]
     then
         occ_command db:add-missing-columns
+        install_if_not php"$PHPVER"-bcmath
     fi
 else
 msg_box "Something went wrong with backing up your old nextcloud instance
