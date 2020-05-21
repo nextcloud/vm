@@ -538,15 +538,9 @@ Please report any bugs here: https://github.com/nextcloud/vm/issues
 
 TIPS & TRICKS:
 1. Publish your server online: https://goo.gl/iUGE2U
-
 2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
-
-3. To update this VM just type: sudo bash /var/scripts/update.sh
-
-4. Change IP to something outside DHCP: sudo nano /etc/netplan/01-netcfg.yaml
-
-5. For a better experience it's a good idea to setup an email account here:
-   https://yourcloud.xyz/settings/admin"
+3. To update this server just type: sudo bash /var/scripts/update.sh
+4. Install apps, configure Nextcloud, and server: sudo bash $SCRIPTS/menu.sh"
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
