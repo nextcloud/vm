@@ -33,7 +33,7 @@ case "$choice" in
     "Nextcloud Configuration")
         if network_ok
         then
-            run_static_script configuration
+            run_static_script nextcloud_configuration
         fi
     ;;
     "Server Configuration")
