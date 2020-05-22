@@ -21,7 +21,13 @@ debug_mode
 root_check
 
 # Must be 20.04
-check_distro_version
+if ! version 20.04 "$DISTRO" 20.04.6
+then
+msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to install Talk"
+msg_box "Please contact us to get support for upgrading your server:
+https://www.hanssonit.se/#contact
+https://shop.hanssonit.se/"
+fi
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
