@@ -236,7 +236,6 @@ echo
 print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
 # Scripts in static (.sh, .php, .py)
 download_le_script activate-tls
-download_static_script update-config
 download_static_script temporary-fix
 download_static_script update
 download_static_script trusted
@@ -244,6 +243,7 @@ download_static_script test_connection
 download_static_script setup_secure_permissions_nextcloud
 download_static_script change_db_pass
 download_static_script nextcloud
+download_static_script update-config
 download_static_script menu
 download_static_script server_configuration
 download_static_script nextcloud_configuration
