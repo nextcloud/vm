@@ -235,18 +235,20 @@ touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 echo
 print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
 # Scripts in static (.sh, .php, .py)
-download_static_script temporary-fix
-download_static_script update
-download_static_script trusted
-download_static_script test_connection
-download_static_script setup_secure_permissions_nextcloud
-download_static_script change_db_pass
-download_static_script nextcloud
-download_static_script update-config
-download_static_script apps
-download_static_script configuration
-download_le_script activate-tls
-download_static_script menu
+download_script LETS_ENC activate-tls
+download_script STATIC update-config
+download_script STATIC temporary-fix
+download_script STATIC update
+download_script STATIC trusted
+download_script STATIC test_connection
+download_script STATIC setup_secure_permissions_nextcloud
+download_script STATIC change_db_pass
+download_script STATIC nextcloud
+download_script STATIC menu
+download_script STATIC server_configuration
+download_script STATIC nextcloud_configuration
+download_script APP additional_apps
+
 if home_sme_server
 then
     download_static_script nhss_index
@@ -364,10 +366,10 @@ clear
 bash $SCRIPTS/server_configuration.sh
 
 # Nextcloud configuration
-bash $SCRIPTS/configuration.sh
+bash $SCRIPTS/nextcloud_configuration.sh
 
 # Install apps
-bash $SCRIPTS/apps.sh
+bash $SCRIPTS/additional_apps.sh
 
 # Change passwords
 # CLI USER
@@ -458,9 +460,9 @@ rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
 rm -f "$SCRIPTS/static_ip.sh"
 rm -f "$SCRIPTS/lib.sh"
-rm -f "$SCRIPTS/configuration.sh"
-rm -f "$SCRIPTS/apps.sh"
 rm -f "$SCRIPTS/server_configuration.sh"
+rm -f "$SCRIPTS/nextcloud_configuration.sh"
+rm -f "$SCRIPTS/additional_apps.sh"
 
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
 find "$NCPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
@@ -512,13 +514,8 @@ apt autoremove -y
 apt autoclean
 
 # Set trusted domain in config.php
-if [ -f "$SCRIPTS"/trusted.sh ]
-then
-    bash "$SCRIPTS"/trusted.sh
-    rm -f "$SCRIPTS"/trusted.sh
-else
-    run_static_script trusted
-fi
+bash $SCRIPTS/trusted.sh
+rm  -f $SCRIPTS/update.sh
 
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
