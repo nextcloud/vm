@@ -515,7 +515,7 @@ apt autoclean
 
 # Set trusted domain in config.php
 bash $SCRIPTS/trusted.sh
-rm  -f $SCRIPTS/update.sh
+rm  -f $SCRIPTS/trusted.sh
 
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
