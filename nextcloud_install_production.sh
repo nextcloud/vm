@@ -258,6 +258,7 @@ check_command apt install -y \
     php"$PHPVER"-json \
     php"$PHPVER"-gmp \
     php"$PHPVER"-bz2 \
+    php"$PHPVER"-bcmath \
     php-pear
     # php"$PHPVER"-imagick \
     # libmagickcore-6.q16-3-extra
@@ -498,6 +499,10 @@ fi
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
 yes | occ_command db:convert-filecache-bigint
 occ_command db:add-missing-indices
+if [ "${CURRENTVERSION%%.*}" -ge "19" ]
+then
+    occ_command db:add-missing-columns
+fi
 
 # Install Figlet
 install_if_not figlet
@@ -698,7 +703,6 @@ check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
 download_static_script instruction
 download_static_script history
 download_static_script static_ip
-download_static_script server_configuration
 
 if home_sme_server
 then

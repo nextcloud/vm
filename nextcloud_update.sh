@@ -476,6 +476,11 @@ then
     print_text_in_color "$ICyan" "Optimizing Nextcloud..."
     yes | occ_command db:convert-filecache-bigint
     occ_command db:add-missing-indices
+    if [ "${CURRENTVERSION%%.*}" -ge "19" ]
+    then
+        occ_command db:add-missing-columns
+        install_if_not php"$PHPVER"-bcmath
+    fi
 else
 msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if the folders exist."
