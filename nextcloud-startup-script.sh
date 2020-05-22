@@ -235,19 +235,19 @@ touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 echo
 print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
 # Scripts in static (.sh, .php, .py)
-download_script LETS_ENC activate-tls
-download_script STATIC update-config
-download_script STATIC temporary-fix
-download_script STATIC update
-download_script STATIC trusted
-download_script STATIC test_connection
-download_script STATIC setup_secure_permissions_nextcloud
-download_script STATIC change_db_pass
-download_script STATIC nextcloud
-download_script STATIC menu
-download_script STATIC server_configuration
-download_script STATIC nextcloud_configuration
-download_script APP additional_apps
+download_le_script activate-tls
+download_static_script update-config
+download_static_script temporary-fix
+download_static_script update
+download_static_script trusted
+download_static_script test_connection
+download_static_script setup_secure_permissions_nextcloud
+download_static_script change_db_pass
+download_static_script nextcloud
+download_static_script menu
+download_static_script server_configuration
+download_static_script nextcloud_configuration
+download_app_script additional_apps
 
 if home_sme_server
 then
