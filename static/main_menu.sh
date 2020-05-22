@@ -27,19 +27,19 @@ case "$choice" in
     "Additional Apps")
         if network_ok
         then
-            run_script STATIC apps
+            run_app_script additional_apps
         fi
     ;;
     "Nextcloud Configuration")
         if network_ok
         then
-            run_script STATIC configuration
+            run_static_script configuration
         fi
     ;;
     "Server Configuration")
         if network_ok
         then
-            run_script STATIC server_configuration
+            run_static_script server_configuration
         fi
     ;;
     "Update Nextcloud")
