@@ -63,14 +63,14 @@ debug_mode
 root_check
 
 # Set locales
-run_static_script locales
+run_script STATIC locales
 
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
 # Create new current user
-download_static_script adduser
+download_script STATIC adduser
 bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
 rm -f $SCRIPTS/adduser.sh
 
@@ -134,7 +134,7 @@ install_if_not build-essential
 # Just check if the function works and run disk setup
 if home_sme_server
 then
-    run_static_script format-sda-nuc-server
+    run_script STATIC format-sda-nuc-server
 else
 # Set dual or single drive setup
 msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
@@ -149,15 +149,15 @@ choice=$(whiptail --title "Choose disk format" --radiolist "How would you like t
 
 case "$choice" in
     "2 Disks Auto")
-        run_static_script format-sdb
+        run_script STATIC format-sdb
         # Change to zfs-mount-generator
-        run_static_script change-to-zfs-mount-generator
+        run_script STATIC change-to-zfs-mount-generator
 
     ;;
     "2 Disks Manual")
-        run_static_script format-chosen
+        run_script STATIC format-chosen
         # Change to zfs-mount-generator
-        run_static_script change-to-zfs-mount-generator
+        run_script STATIC change-to-zfs-mount-generator
     ;;
     "1 Disk")
         print_text_in_color "$IRed" "1 Disk setup chosen."
@@ -195,7 +195,7 @@ test_connection
 network_ok
 
 # Check current repo
-run_static_script locate_mirror
+run_script STATIC locate_mirror
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
@@ -330,7 +330,7 @@ tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML" & spinner_loading
 rm "$HTML/$STABLEVERSION.tar.bz2"
 
 # Secure permissions
-download_static_script setup_secure_permissions_nextcloud
+download_script STATIC setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
 # Install Nextcloud
@@ -356,7 +356,7 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 # Run the updatenotification on a schelude
 occ_command config:system:set upgrade.disable-web --value="true"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
-download_static_script updatenotification
+download_script STATIC updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
 crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 
@@ -432,7 +432,7 @@ echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
 # Install Redis (distrubuted cache)
-run_static_script redis-server-ubuntu
+run_script STATIC redis-server-ubuntu
 
  # Install smbclient
  # php"$PHPVER"-smbclient does not yet work in PHP 7.4
@@ -691,7 +691,7 @@ case "$choice" in
         install_and_enable_app groupfolders
     ;;&
     *"Webmin"*)
-        run_app_script webmin
+        run_script APP webmin
     ;;&
     *)
     ;;
@@ -700,9 +700,9 @@ esac
 # Get needed scripts for first bootup
 check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
 check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
-download_static_script instruction
-download_static_script history
-download_static_script static_ip
+download_script STATIC instruction
+download_script STATIC history
+download_script STATIC static_ip
 
 if home_sme_server
 then
@@ -715,8 +715,8 @@ chmod +x -R "$SCRIPTS"
 chown root:root -R "$SCRIPTS"
 
 # Prepare first bootup
-check_command run_static_script change-ncadmin-profile
-check_command run_static_script change-root-profile
+check_command run_script STATIC change-ncadmin-profile
+check_command run_script STATIC change-root-profile
 
 # Upgrade
 apt update -q4 & spinner_loading

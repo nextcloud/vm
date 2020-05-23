@@ -22,7 +22,7 @@ print_text_in_color "$ICyan" "Running the additional apps script..."
 if network_ok
 then
     # Delete, download, run
-    run_app_script additional_apps
+    run_script APP additional_apps
 fi
 
 exit

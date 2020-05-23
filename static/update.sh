@@ -30,6 +30,6 @@ then
 fi
 
 # Delete, download, run
-run_main_script nextcloud_update
+run_script GITHUB_REPO nextcloud_update
 
 exit

@@ -310,7 +310,7 @@ fi
 # Warn user that HTTP/2 will be disabled if installing app that use Apache2 PHP instead of PHP-FPM
 # E.g: http2_warn Modsecurity
 http2_warn() {
-msg_box "This VM has HTTP/2 enabled by default. 
+msg_box "This VM has HTTP/2 enabled by default.
 
 If you continue with installing $1, HTTP/2 will be disabled since it's not compatible with the mpm module used by $1.
 
@@ -595,13 +595,13 @@ if lsb_release -sc | grep -ic "bionic" &> /dev/null || lsb_release -sc | grep -i
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
-then 
+then
     OS=1
 elif uname -a | grep -ic "bionic" &> /dev/null || uname -a | grep -ic "focal" &> /dev/null
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu" &> /dev/null
-then 
+then
     OS=1
 fi
 
@@ -871,7 +871,7 @@ download_script() {
 
 # call like: run_script folder_variable name_of_script
 # e.g. run_script APP additional_apps
-# Use it for functions like run_static_script
+# Use it for functions like run_script STATIC
 run_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
     if download_script "${1}" "${2}"
@@ -989,7 +989,7 @@ or experience other issues then please report this to $ISSUES"
 #    rm master.zip*
 #    rm updater/ -R
 #    mv updater-master/ updater/
-#    download_static_script setup_secure_permissions_nextcloud -P $SCRIPTS
+#    download_script STATIC setup_secure_permissions_nextcloud -P $SCRIPTS
 #    bash $SECURE
 #    cd
 
@@ -997,7 +997,7 @@ or experience other issues then please report this to $ISSUES"
     chown -R www-data:www-data "$NCPATH"
     rm -rf "$NCPATH"/assets
     yes | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
-    download_static_script setup_secure_permissions_nextcloud -P $SCRIPTS
+    download_script STATIC setup_secure_permissions_nextcloud -P $SCRIPTS
     bash $SECURE
     occ_command maintenance:mode --off
 fi
@@ -1012,9 +1012,9 @@ if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
 else
-msg_box "Your current version are still not compatible with the version required to run this script. 
+msg_box "Your current version are still not compatible with the version required to run this script.
 
-To upgrade between major versions, please check this out: 
+To upgrade between major versions, please check this out:
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
     occ_command -V
     exit
