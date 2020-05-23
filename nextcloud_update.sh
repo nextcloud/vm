@@ -74,11 +74,11 @@ then
     then
         print_text_in_color "$ICyan" "Changing to Overlay2 for Docker CE..."
         print_text_in_color "$ICyan" "Please report any issues to $ISSUES."
-        run_static_script docker_overlay2
+        run_script STATIC docker_overlay2
     elif grep -q "aufs" /etc/default/docker
     then
         apt-mark hold docker-ce
-        run_static_script docker_overlay2
+        run_script STATIC docker_overlay2
     fi
 fi
 
@@ -222,7 +222,7 @@ if is_this_installed libzfs2linux
 then
     if grep -rq ncdata /etc/mtab
     then
-        run_static_script prune_zfs_snaphots
+        run_script STATIC prune_zfs_snaphots
     fi
 fi
 
@@ -521,7 +521,7 @@ then
 fi
 
 # Recover apps that exists in the backed up apps folder
-run_static_script recover_apps
+run_script STATIC recover_apps
 
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]

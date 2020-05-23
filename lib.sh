@@ -845,7 +845,7 @@ download_script() {
 
 # call like: run_script folder_variable name_of_script
 # e.g. run_script APP additional_apps
-# Use it for functions like run_static_script
+# Use it for functions like run_script STATIC
 run_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
     if download_script "${1}" "${2}"

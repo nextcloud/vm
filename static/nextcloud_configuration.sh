@@ -26,7 +26,7 @@ choice=$(whiptail --title "Nextcloud Configuration" --checklist "Which settings 
 
 case "$choice" in
     *"CookieLifetime"*)
-        run_static_script cookielifetime
+        run_script STATIC cookielifetime
     ;;&
     *"Share-folder"*)
         clear

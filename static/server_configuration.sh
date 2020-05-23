@@ -41,15 +41,15 @@ choice=$(whiptail --title "Server configurations" --checklist "Choose what you w
 case "$choice" in
     *"Security"*)
         clear
-        run_static_script security
+        run_script STATIC security
     ;;&
     *"Static IP"*)
         clear
-        run_static_script static_ip
+        run_script STATIC static_ip
     ;;&
     *"Automatic updates"*)
         clear
-        run_static_script automatic_updates
+        run_script STATIC automatic_updates
     ;;&
     *"Activate TLS"*)
         clear
