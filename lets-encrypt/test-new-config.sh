@@ -47,7 +47,7 @@ then
 fi
 
 # Set trusted domains
-run_static_script trusted
+run_script STATIC trusted
 
 add_crontab_le() {
 # shellcheck disable=SC2016
