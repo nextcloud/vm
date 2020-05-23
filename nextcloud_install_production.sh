@@ -73,7 +73,7 @@ ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
 # Create new current user
-download_static_script adduser
+download_script STATIC adduser
 bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
 rm -f $SCRIPTS/adduser.sh
 
@@ -333,7 +333,7 @@ tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML" & spinner_loading
 rm "$HTML/$STABLEVERSION.tar.bz2"
 
 # Secure permissions
-download_static_script setup_secure_permissions_nextcloud
+download_script STATIC setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
 # Install Nextcloud
@@ -359,7 +359,7 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 # Run the updatenotification on a schelude
 occ_command config:system:set upgrade.disable-web --value="true"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
-download_static_script updatenotification
+download_script STATIC updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
 crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 
@@ -703,9 +703,9 @@ esac
 # Get needed scripts for first bootup
 check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
 check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
-download_static_script instruction
-download_static_script history
-download_static_script static_ip
+download_script STATIC instruction
+download_script STATIC history
+download_script STATIC static_ip
 
 if home_sme_server
 then

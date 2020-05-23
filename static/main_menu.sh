@@ -49,7 +49,7 @@ case "$choice" in
         else
             if network_ok
             then
-                download_static_script update
+                download_script STATIC update
                 bash $SCRIPTS/update.sh
             fi
         fi

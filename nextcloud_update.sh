@@ -231,13 +231,13 @@ CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
 if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh &>/dev/null
 then
    rm -f "$SCRIPTS/nextcloud.sh"
-   download_static_script nextcloud
+   download_script STATIC nextcloud
    chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
    chmod +x "$SCRIPTS/nextcloud.sh"
 elif [ -f $SCRIPTS/techandme.sh ]
 then
    rm -f "$SCRIPTS/techandme.sh"
-   download_static_script nextcloud
+   download_script STATIC nextcloud
    chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
    chmod +x "$SCRIPTS/nextcloud.sh"
    if [ -f /home/"$CURRUSR"/.bash_profile ]
@@ -253,7 +253,7 @@ fi
 if [ ! -f "$SECURE" ]
 then
     mkdir -p "$SCRIPTS"
-    download_static_script setup_secure_permissions_nextcloud
+    download_script STATIC setup_secure_permissions_nextcloud
     chmod +x "$SECURE"
 fi
 
