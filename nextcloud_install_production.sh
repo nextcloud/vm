@@ -694,7 +694,7 @@ case "$choice" in
         install_and_enable_app groupfolders
     ;;&
     *"Webmin"*)
-        run_app_script webmin
+        run_script App webmin
     ;;&
     *)
     ;;
