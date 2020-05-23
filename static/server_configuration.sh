@@ -66,7 +66,7 @@ https://www.techandme.se/open-port-80-443/"
             then
                 bash $SCRIPTS/activate-tls.sh
             else
-                download_le_script activate-tls
+                download_script LETS_ENC activate-tls
                 bash $SCRIPTS/activate-tls.sh
             fi
         else
@@ -74,7 +74,7 @@ https://www.techandme.se/open-port-80-443/"
             print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
             any_key "Press any key to continue..."
         fi
-        
+
         # Just make sure they are gone
         rm -f "$SCRIPTS/test-new-config.sh"
         rm -f "$SCRIPTS/activate-tls.sh"
