@@ -816,8 +816,7 @@ download_verify_nextcloud_stable() {
 while [ -z "$NCVERSION" ]
 do
     print_text_in_color "$ICyan" "Fetching the latest Nextcloud version..."
-    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
-    STABLEVERSION="nextcloud-$NCVERSION"
+    nc_update
     print_text_in_color "$IGreen" "$NCVERSION"
 done
 
