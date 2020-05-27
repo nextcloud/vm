@@ -36,8 +36,9 @@ then
 
     # Extract everything to "$SCRIPTS"
     # Todo: Remove the hashtags after it is released
-    mkdir -p "$SCRIPTS"
-    #tar -xvzf $DOWNLOAD_DIR/$(ls $DOWNLOAD_DIR).tar.gz -C $SCRIPTS
+    #VM_VERSION=$(ls $DOWNLOAD_DIR)
+    #tar -xvzf $DOWNLOAD_DIR/$VM_VERSION -C /var
+    #mv /var/vm-${VM_VERSION%%.tar.gz} $SCRIPTS
     #rm -rf $DOWNLOAD_DIR
 
     # This section is for testing purposes only; should get removed if everything above is ready.
