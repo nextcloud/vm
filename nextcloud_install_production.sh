@@ -50,11 +50,8 @@ else
     apt install whiptail -y
 fi
 
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset FIRST_IFACE
+# Get needed variables
+first_iface
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

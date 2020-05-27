@@ -6,10 +6,12 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && NC_UPDATE=1 && ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset ES_INSTALL
-unset NCDB
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get needed variables
+ncdb
+nc_update
+es_install
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
