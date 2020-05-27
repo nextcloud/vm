@@ -3,8 +3,9 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # Variables:
+# Todo: make DOWNLOAD_DIR readable again; is disabled for now to fix travis
 SCRIPTS=/var/scripts
-DOWNLOAD_DIR=/tmp/NC_VM
+#DOWNLOAD_DIR=/tmp/NC_VM
 
 # Download and validate Nextcloud VM
 if ! [ -d $SCRIPTS ]
@@ -36,15 +37,16 @@ then
 
     # Extract everything to "$SCRIPTS"
     # Todo: Remove the hashtags after it is released
-    mkdir -p "$SCRIPTS"
-    #tar -xvzf $DOWNLOAD_DIR/$(ls $DOWNLOAD_DIR).tar.gz -C $SCRIPTS
+    #VM_VERSION=$(ls $DOWNLOAD_DIR)
+    #tar -xvzf $DOWNLOAD_DIR/$VM_VERSION -C /var
+    #mv /var/vm-${VM_VERSION%%.tar.gz} $SCRIPTS
     #rm -rf $DOWNLOAD_DIR
 
     # This section is for testing purposes only; should get removed if everything above is ready.
-    git clone -b run_locally --single-branch https://github.com/nextcloud/vm.git "$SCRIPTS"
+    git clone -b run_locally --single-branch https://github.com/nextcloud/vm.git "$SCRIPTS"n &>/dev/null
 
     # Remove all unnecessary files
-    rm -r "$SCRIPTS"/.git
+    rm -rf "$SCRIPTS"/.git
     rm "$SCRIPTS"/LICENSE
     rm "$SCRIPTS"/issue_template.md
     rm "$SCRIPTS"/.travis.yml
