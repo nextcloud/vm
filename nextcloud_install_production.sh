@@ -378,6 +378,7 @@ occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
 rm -f "$NCDATA/nextcloud.log"
 occ_command config:system:set loglevel --value=2
 occ_command config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
+occ_command config:system:set log.condition apps --value admin_audit
 install_and_enable_app admin_audit
 
 # Set SMTP mail
