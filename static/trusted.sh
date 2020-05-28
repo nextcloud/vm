@@ -13,7 +13,7 @@ source /var/scripts/main/lib.sh &>/dev/null || . <(curl -sL https://raw.githubus
 DEBUG=0
 debug_mode
 
-download_script STATIC update-config
+download_script STATIC update-config static
 if [ -f $SCRIPTS/update-config.php ]
 then
     # Change config.php

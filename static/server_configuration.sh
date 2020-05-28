@@ -41,15 +41,15 @@ choice=$(whiptail --title "Server configurations" --checklist "Choose what you w
 case "$choice" in
     *"Security"*)
         clear
-        run_script STATIC security
+        run_script STATIC security static
     ;;&
     *"Static IP"*)
         clear
-        run_script STATIC static_ip
+        run_script STATIC static_ip static
     ;;&
     *"Automatic updates"*)
         clear
-        run_script STATIC automatic_updates
+        run_script STATIC automatic_updates static
     ;;&
     *"Activate TLS"*)
         clear
@@ -66,7 +66,7 @@ https://www.techandme.se/open-port-80-443/"
             then
                 bash $SCRIPTS/activate-tls.sh
             else
-                download_script LETS_ENC activate-tls
+                download_script LETS_ENC activate-tls lets-encrypt
                 bash $SCRIPTS/activate-tls.sh
             fi
         else
