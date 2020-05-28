@@ -1,13 +1,7 @@
 #!/bin/bash
 
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-source /var/scripts/main/lib.sh &>/dev/null || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
+apt install curl -y
 
-check_command git clone https://github.com/nextcloud/vm.git
-
-cd vm || exit && print_text_in_color "$IRed" "Could not cd into the 'vm' folder."
+curl -sLO https://raw.githubusercontent.com/nextcloud/vm/run_locally/nextcloud_install_production.sh
 
 yes no | sudo bash nextcloud_install_production.sh
-
