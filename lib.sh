@@ -859,7 +859,16 @@ rm -f releases
 # Use it for functions like download_static_script
 download_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
-    if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
+    if [ -f $SCRIPTS/"${3}"/"${2}".sh ]
+    then
+        check_command cp $SCRIPTS/"${3}"/"${2}".sh $SCRIPTS
+    elif [ -f $SCRIPTS/"${3}"/"${2}".php ]
+    then
+        check_command cp $SCRIPTS/"${3}"/"${2}".php $SCRIPTS
+    elif [ -f $SCRIPTS/"${3}"/"${2}".py ]
+    then
+        check_command cp $SCRIPTS/"${3}"/"${2}".py $SCRIPTS
+    elif ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "{$2} failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|.php|.py' again."
         print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
@@ -873,7 +882,7 @@ download_script() {
 # Use it for functions like run_script STATIC
 run_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
-    if download_script "${1}" "${2}"
+    if download_script "${1}" "${2}" "${3}"
     then
         if [ -f "${SCRIPTS}/${2}".sh ]
         then
@@ -899,31 +908,31 @@ run_script() {
 # Initial download of script in ../static
 # call like: download_static_script name_of_script
 download_static_script() {
-download_script STATIC "${1}"
+download_script STATIC "${1}" static
 }
 
 # Initial download of script in ../lets-encrypt
 # call like: download_le_script name_of_script
 download_le_script() {
-download_script LETS_ENC "${1}"
+download_script LETS_ENC "${1}" lets-encrypt
 }
 
 # Run any script in ../master
 # call like: run_main_script name_of_script
 run_main_script() {
-run_script GITHUB_REPO "${1}"
+run_script GITHUB_REPO "${1}" main
 }
 
 # Run any script in ../static
 # call like: run_static_script name_of_script
 run_static_script() {
-run_script STATIC "${1}"
+run_script STATIC "${1}" static
 }
 
 # Run any script in ../apps
 # call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
 run_app_script() {
-run_script APP "${1}"
+run_script APP "${1}" apps
 }
 
 version(){
@@ -996,7 +1005,7 @@ or experience other issues then please report this to $ISSUES"
     chown -R www-data:www-data "$NCPATH"
     rm -rf "$NCPATH"/assets
     yes | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
-    download_script STATIC setup_secure_permissions_nextcloud -P $SCRIPTS
+    download_script STATIC setup_secure_permissions_nextcloud static -P $SCRIPTS
     bash $SECURE
     occ_command maintenance:mode --off
 fi

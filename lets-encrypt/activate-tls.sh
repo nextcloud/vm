@@ -85,7 +85,7 @@ check_open_port 80 "$TLSDOMAIN"
 check_open_port 443 "$TLSDOMAIN"
 
 # Fetch latest version of test-new-config.sh
-check_command download_script LETS_ENC test-new-config
+check_command download_script LETS_ENC test-new-config lets-encrypt
 
 # Install certbot (Let's Encrypt)
 install_certbot
