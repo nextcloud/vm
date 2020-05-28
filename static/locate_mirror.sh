@@ -35,6 +35,15 @@ else
         msg_box "Your keymap contains more than one language, or a special character. ($KEYBOARD_LAYOUT)\nThis script can only handle one keymap at the time.\nThe default mirror ($REPO) will be kept."
         exit 1
     fi
+    # Check if local script is available
+    if [ -f "$SCRIPTS"/static/locate_mirror.sh ]
+    then
+        msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download files from pypa.io for locating the best server, that will not be checked for integrity."
+        if [[ "no" == $(ask_yes_or_no "Do you want to find the best server anyway?") ]]
+        then
+            exit
+        fi
+    fi
     print_text_in_color "$ICyan" "Locating the best mirrors..."
     curl_to_dir https://bootstrap.pypa.io get-pip.py /tmp
     install_if_not python3

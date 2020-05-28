@@ -23,7 +23,7 @@ then
     choice=$(whiptail --radiolist "It seems like 'Webmin' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall Webmin" "" OFF \
     "Reinstall Webmin" "" ON 3>&1 1>&2 2>&3)
-    
+
     case "$choice" in
         "Uninstall Webmin")
             print_text_in_color "$ICyan" "Uninstalling Webmin..."
@@ -40,6 +40,16 @@ then
     esac
 else
     print_text_in_color "$ICyan" "Installing Webmin..."
+fi
+
+# Check if local script is available
+if [ -f "$SCRIPTS"/apps/webmin.sh ]
+then
+    msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download files from webmin.com for installing webmin, that will not be checked for integrity."
+    if [[ "no" == $(ask_yes_or_no "Do you want to install webmin anyway?") ]]
+    then
+        exit
+    fi
 fi
 
 # Install packages for Webmin
