@@ -65,6 +65,16 @@ else
     sleep 0.1
 fi
 
+# Check if local script is available.
+if [ -f "$SCRIPTS"/apps/tmbitwarden.sh ]
+then
+    msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download scripts from github for installing and updating bitwarden, that will not be checked for integrity."
+    if [[ "no" == $(ask_yes_or_no "Do you want to install bitwarden anyway?") ]]
+    then
+        exit
+    fi
+fi
+
 # Install Docker
 install_docker
 install_if_not docker-compose
@@ -72,7 +82,7 @@ install_if_not docker-compose
 # Stop Apache to not conflict when LE is run
 check_command systemctl stop apache2.service
 
-# Install Bitwarden 
+# Install Bitwarden
 install_if_not curl
 cd /root
 curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"

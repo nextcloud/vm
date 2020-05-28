@@ -23,7 +23,7 @@ then
     choice=$(whiptail --radiolist "It seems like 'Adminer' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall Adminer" "" OFF \
     "Reinstall Adminer" "" ON 3>&1 1>&2 2>&3)
-    
+
     case "$choice" in
         "Uninstall Adminer")
             # Check that the script can see the external IP (apache fails otherwise)
@@ -62,6 +62,16 @@ check_external_ip
 # Check distrobution and version
 check_distro_version
 
+# Check if local script is available.
+if [ -f "$SCRIPTS"/apps/adminer.sh ]
+then
+    msg_box "It seems like you have chosen the option 'Security' during the startup script and are using all files locally.\nPlease note that continuing will download files from www.adminer.org for installing and updating adminer, that will not be checked for integrity."
+    if [[ "no" == $(ask_yes_or_no "Do you want to install adminer anyway?") ]]
+    then
+        exit
+    fi
+fi
+
 # Install Adminer
 apt update -q4 & spinner_loading
 install_if_not adminer
@@ -96,7 +106,7 @@ else
 msg_box "Adminer was sucessfully installed and can be reached here:
 http://$ADDRESS/adminer.php
 
-You can download more plugins and get more information here: 
+You can download more plugins and get more information here:
 https://www.adminer.org
 
 Your PostgreSQL connection information can be found in $NCPATH/config/config.php
