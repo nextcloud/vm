@@ -862,7 +862,7 @@ download_script() {
     if [ -f $SCRIPTS/"${3}"/"${2}".sh ]
     then
         check_command cp $SCRIPTS/"${3}"/"${2}".sh $SCRIPTS
-    elif [ -f $SCRIPTS/${3}/${2}.php ]
+    elif [ -f $SCRIPTS/"${3}"/"${2}".php ]
     then
         check_command cp $SCRIPTS/"${3}"/"${2}".php $SCRIPTS
     elif [ -f $SCRIPTS/"${3}"/"${2}".py ]
