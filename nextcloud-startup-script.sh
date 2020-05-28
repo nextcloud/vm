@@ -251,7 +251,7 @@ then
         "Bugfixes")
             clear
             print_text_in_color "$ICyan" "OK, downloading files from github and getting the latest bugfixes from now on"
-            rm -rf $SCRIPTS/*/
+            rm -rf "$SCRIPTS"/*/
         ;;
         *)
         ;;
