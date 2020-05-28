@@ -3,8 +3,9 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # Variables:
+# Todo: make DOWNLOAD_DIR readable again; is disabled for now to fix travis
 SCRIPTS=/var/scripts
-DOWNLOAD_DIR=/tmp/NC_VM
+#DOWNLOAD_DIR=/tmp/NC_VM
 
 # Download and validate Nextcloud VM
 if ! [ -d $SCRIPTS ]
