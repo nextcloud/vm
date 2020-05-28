@@ -859,15 +859,15 @@ rm -f releases
 # Use it for functions like download_static_script
 download_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
-    if [ -f $SCRIPTS/${3}/${2}.sh ]
+    if [ -f $SCRIPTS/"${3}"/"${2}".sh ]
     then
-        check_command cp $SCRIPTS/${3}/${2}.sh $SCRIPTS
+        check_command cp $SCRIPTS/"${3}"/"${2}".sh $SCRIPTS
     elif [ -f $SCRIPTS/${3}/${2}.php ]
     then
-        check_command cp $SCRIPTS/${3}/${2}.php $SCRIPTS
-    elif [ -f $SCRIPTS/${3}/${2}.py ]
+        check_command cp $SCRIPTS/"${3}"/"${2}".php $SCRIPTS
+    elif [ -f $SCRIPTS/"${3}"/"${2}".py ]
     then
-        check_command cp $SCRIPTS/${3}/${2}.py $SCRIPTS
+        check_command cp $SCRIPTS/"${3}"/"${2}".py $SCRIPTS
     elif ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "{$2} failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|.php|.py' again."
