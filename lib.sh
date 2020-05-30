@@ -858,8 +858,12 @@ rm -f releases
 # e.g. download_script APP additional_apps
 # Use it for functions like download_static_script
 download_script() {
-    rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
-    if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
+    rm -f "$SCRIPTS"/"${2}".*
+    FIND_RESULT=$(find "$SCRIPTS"/*/ -name "${2}".* -print -quit 2>&1 | grep -v find)
+    if [ -n "$FIND_RESULT" ]
+    then
+        check_command cp "$FIND_RESULT" "$SCRIPTS"
+    elif ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "{$2} failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|.php|.py' again."
         print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
@@ -872,7 +876,7 @@ download_script() {
 # e.g. run_script APP additional_apps
 # Use it for functions like run_script STATIC
 run_script() {
-    rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
+    rm -f "$SCRIPTS"/"${2}".*
     if download_script "${1}" "${2}"
     then
         if [ -f "${SCRIPTS}/${2}".sh ]
