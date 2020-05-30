@@ -156,7 +156,7 @@ then
 fi
 
 # Set locales
-run_script STATIC locales static
+run_script STATIC locales
 
 # Nextcloud 18 is required
 lowest_compatible_nc 18
@@ -177,7 +177,7 @@ Please create a user with sudo permissions and the run this command:
 sudo -u [user-with-sudo-permissions] sudo bash /var/scripts/nextcloud-startup-script.sh
 
 We will do this for you when you hit OK."
-       download_script STATIC adduser static
+       download_script STATIC adduser
        bash $SCRIPTS/adduser.sh "$SCRIPTS/nextcloud-startup-script.sh"
        rm $SCRIPTS/adduser.sh
        else
@@ -194,7 +194,7 @@ please abort this script (CTRL+C) and report this issue to $ISSUES."
 fi
 
 # Upgrade mirrors
-run_script STATIC locate_mirror static
+run_script STATIC locate_mirror
 
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
@@ -243,27 +243,27 @@ touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 echo
 print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
 # Scripts in static (.sh, .php, .py)
-download_script LETS_ENC activate-tls lets-encrypt
-download_script STATIC temporary-fix static
-download_script STATIC update static
-download_script STATIC trusted static
-download_script STATIC test_connection static
-download_script STATIC setup_secure_permissions_nextcloud static
-download_script STATIC change_db_pass static
-download_script STATIC nextcloud static
-download_script STATIC update-config static
-download_script STATIC menu static
-download_script STATIC server_configuration static
-download_script STATIC nextcloud_configuration static
-download_script APP additional_apps apps
+download_script LETS_ENC activate-tls
+download_script STATIC temporary-fix
+download_script STATIC update
+download_script STATIC trusted
+download_script STATIC test_connection
+download_script STATIC setup_secure_permissions_nextcloud
+download_script STATIC change_db_pass
+download_script STATIC nextcloud
+download_script STATIC update-config
+download_script STATIC menu
+download_script STATIC server_configuration
+download_script STATIC nextcloud_configuration
+download_script APP additional_apps
 
 if home_sme_server
 then
-    download_script STATIC nhss_index static
+    download_script STATIC nhss_index
     mv $SCRIPTS/nhss_index.php $HTML/index.php && rm -f $HTML/html/index.html
     chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
 else
-    download_script STATIC index static
+    download_script STATIC index
     mv $SCRIPTS/index.php $HTML/index.php && rm -f $HTML/html/index.html
     chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
 fi

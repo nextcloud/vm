@@ -34,42 +34,42 @@ case "$choice" in
     *"Fail2ban"*)
         clear
         print_text_in_color "$ICyan" "Downloading Fail2ban.sh..."
-        run_script APP fail2ban apps
+        run_script APP fail2ban
     ;;&
     *"Adminer"*)
         clear
         print_text_in_color "$ICyan" "Downloading Adminer.sh..."
-        run_script APP adminer apps
+        run_script APP adminer
     ;;&
     *"Netdata"*)
         clear
         print_text_in_color "$ICyan" "Downloading Netdata.sh..."
-        run_script APP netdata apps
+        run_script APP netdata
     ;;&
     *"OnlyOffice"*)
         clear
         print_text_in_color "$ICyan" "Downloading OnlyOffice.sh..."
-        run_script APP onlyoffice apps
+        run_script APP onlyoffice
     ;;&
     *"Collabora"*)
         clear
         print_text_in_color "$ICyan" "Downloading Collabora.sh..."
-        run_script APP collabora apps
+        run_script APP collabora
     ;;&
     *"Bitwarden"*)
         clear
         print_text_in_color "$ICyan" "Downloading Bitwarden.sh..."
-        run_script APP tmbitwarden apps
+        run_script APP tmbitwarden
     ;;&
     *"FullTextSearch"*)
         clear
         print_text_in_color "$ICyan" "Downloading FullTextSearch.sh..."
-        run_script APP fulltextsearch apps
+        run_script APP fulltextsearch
     ;;&
     *"PreviewGenerator"*)
         clear
         print_text_in_color "$ICyan" "Downloading PreviewGenerator.sh..."
-        run_script APP previewgenerator apps
+        run_script APP previewgenerator
     ;;&
     *"LDAP"*)
         clear
@@ -84,12 +84,12 @@ case "$choice" in
     *"Talk"*)
         clear
         print_text_in_color "$ICyan" "Downloading Talk.sh..."
-        run_script APP talk apps
+        run_script APP talk
     ;;&
     *"SMB-mount"*)
         clear
         print_text_in_color "$ICyan" "Downloading SMB-mount.sh..."
-        run_script APP smbmount apps
+        run_script APP smbmount
     ;;&
     *)
     ;;

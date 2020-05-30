@@ -76,11 +76,11 @@ then
     then
         print_text_in_color "$ICyan" "Changing to Overlay2 for Docker CE..."
         print_text_in_color "$ICyan" "Please report any issues to $ISSUES."
-        run_script STATIC docker_overlay2 static
+        run_script STATIC docker_overlay2
     elif grep -q "aufs" /etc/default/docker
     then
         apt-mark hold docker-ce
-        run_script STATIC docker_overlay2 static
+        run_script STATIC docker_overlay2
     fi
 fi
 
@@ -224,7 +224,7 @@ if is_this_installed libzfs2linux
 then
     if grep -rq ncdata /etc/mtab
     then
-        run_script STATIC prune_zfs_snaphots static
+        run_script STATIC prune_zfs_snaphots
     fi
 fi
 
@@ -233,13 +233,13 @@ CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
 if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh &>/dev/null
 then
    rm -f "$SCRIPTS/nextcloud.sh"
-   download_script STATIC nextcloud static
+   download_script STATIC nextcloud
    chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
    chmod +x "$SCRIPTS/nextcloud.sh"
 elif [ -f $SCRIPTS/techandme.sh ]
 then
    rm -f "$SCRIPTS/techandme.sh"
-   download_script STATIC nextcloud static
+   download_script STATIC nextcloud
    chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
    chmod +x "$SCRIPTS/nextcloud.sh"
    if [ -f /home/"$CURRUSR"/.bash_profile ]
@@ -255,7 +255,7 @@ fi
 if [ ! -f "$SECURE" ]
 then
     mkdir -p "$SCRIPTS"
-    download_script STATIC setup_secure_permissions_nextcloud static
+    download_script STATIC setup_secure_permissions_nextcloud
     chmod +x "$SECURE"
 fi
 
@@ -523,7 +523,7 @@ then
 fi
 
 # Recover apps that exists in the backed up apps folder
-run_script STATIC recover_apps static
+run_script STATIC recover_apps
 
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
