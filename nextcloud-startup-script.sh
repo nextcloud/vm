@@ -36,14 +36,34 @@ done
 is_process_running apt
 is_process_running dpkg
 
+# Use local lib file in case there is no internet connection
+if [ -f /var/scripts/lib.sh ]
+then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-source /var/scripts/main/lib.sh &>/dev/null || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
+source /var/scripts/lib.sh
 
 # Get needed variables
 ncdb
 first_iface
+
+ # If we have internet, then use the latest variables from the lib remote file
+elif print_text_in_color "$ICyan" "Testing internet connection..." && ping github.com -c 2
+then
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get needed variables
+ncdb
+first_iface
+
+else
+    print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
+    print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues/"
+    exit 1
+fi
 
 # Check if root
 root_check

@@ -15,7 +15,7 @@ then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-source /var/scripts/main/lib.sh &>/dev/null || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 else
     print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
     print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues/"
