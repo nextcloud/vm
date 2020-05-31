@@ -5,11 +5,9 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-
-# Get needed variables
-nc_update
-turn_install
+NC_UPDATE=1 && TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+unset TURN_INSTALL
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -39,7 +37,7 @@ then
     choice=$(whiptail --radiolist "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall Nextcloud Talk" "" OFF \
     "Reinstall Nextcloud Talk" "" ON 3>&1 1>&2 2>&3)
-
+    
     case "$choice" in
         "Uninstall Nextcloud Talk")
             print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
@@ -87,8 +85,8 @@ NONO_PORTS=(22 25 53 80 443 3306 5432 7983 8983 10000)
 msg_box "The default port for Talk used in this script is port $TURN_PORT.
 You can read more about that port here: https://www.speedguide.net/port.php?port=$TURN_PORT
 
-You will now be given the option to change this port to something of your own.
-Please keep in mind NOT to use the following ports as they are likley to be in use already:
+You will now be given the option to change this port to something of your own. 
+Please keep in mind NOT to use the following ports as they are likley to be in use already: 
 ${NONO_PORTS[*]}"
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to change port?") ]]
