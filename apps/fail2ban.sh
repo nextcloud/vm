@@ -6,7 +6,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+[ -f /var/scripts/main/lib.sh ] && NC_UPDATE=1 source /var/scripts/main/lib.sh || NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 
 # Check for errors + debug code and abort if something isn't right

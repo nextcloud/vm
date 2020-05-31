@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+[ -f /var/scripts/main/lib.sh ] && source /var/scripts/main/lib.sh || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -71,13 +71,13 @@ then
                     count=$((count+1))
                 fi
             done
-            
+
             msg_box "Collabora was successfully uninstalled."
             exit
         ;;
         "Reinstall Collabora")
             print_text_in_color "$ICyan" "Reinstalling Collabora..."
-            
+
             # Check if Collabora is previously installed
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
@@ -141,7 +141,7 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+[ -f /var/scripts/main/lib.sh ] && NC_UPDATE=1 && COLLABORA_INSTALL=1 source /var/scripts/main/lib.sh || NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset COLLABORA_INSTALL
 

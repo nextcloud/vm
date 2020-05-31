@@ -9,27 +9,11 @@ print_text_in_color() {
 	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
-# Use local lib file in case there is no internet connection
-if [ -f /var/scripts/lib.sh ]
-then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 source /var/scripts/lib.sh
+[ -f /var/scripts/main/lib.sh ] && FIRST_IFACE=1 source /var/scripts/main/lib.sh || FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
- # If we have internet, then use the latest variables from the lib remote file
-elif printf "Testing internet connection..." && ping github.com -c 2
-then
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset FIRST_IFACE
-else
-    printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
-    printf "Please report this to https://github.com/nextcloud/vm/issues/"
-    exit 1
-fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

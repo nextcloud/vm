@@ -7,7 +7,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+[ -f /var/scripts/main/lib.sh ] && NCDB=1 && NC_UPDATE=1 source /var/scripts/main/lib.sh || NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset NCDB
 
@@ -110,7 +110,7 @@ then
         yes no | pecl upgrade redis
         systemctl restart redis-server.service
     fi
-    
+
     # Double check if redis.so is enabled
     if ! grep -qFx extension=redis.so "$PHP_INI"
     then
@@ -413,8 +413,8 @@ then
         sed -i "s|date --utc|date|g" /usr/sbin/zfs-auto-snapshot
         check_command zfs-auto-snapshot -r ncdata
     fi
-fi  
-   
+fi
+
 # Backup data
 for folders in config apps
 do
@@ -457,7 +457,7 @@ fi
 if [ -d $BACKUP/apps/ ]
 then
     print_text_in_color "$ICyan" "$BACKUP/apps/ exists"
-    echo 
+    echo
     print_text_in_color "$IGreen" "All files are backed up."
     occ_command maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"

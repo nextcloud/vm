@@ -36,28 +36,12 @@ done
 is_process_running apt
 is_process_running dpkg
 
-# Use local lib file in case there is no internet connection
-if [ -f /var/scripts/lib.sh ]
-then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 source /var/scripts/lib.sh
-unset NCDB
-unset FIRST_IFACE
- # If we have internet, then use the latest variables from the lib remote file
-elif printf "Testing internet connection..." && ping github.com -c 2
-then
-true
-# shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+[ -f /var/scripts/main/lib.sh ] && NCDB=1 && FIRST_IFACE=1 source /var/scripts/main/lib.sh || NCDB=1 && FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 unset NCDB
-else
-    printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
-    printf "Please report this to https://github.com/nextcloud/vm/issues/"
-    exit 1
-fi
 
 # Check if root
 root_check
@@ -132,7 +116,7 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
 fi
 
 # shellcheck source=lib.sh
-NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+[ -f /var/scripts/main/lib.sh ] && NCDB=1 && NC_UPDATE=1 source /var/scripts/main/lib.sh || NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
 unset NCDB
 
