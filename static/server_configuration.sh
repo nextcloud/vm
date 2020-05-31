@@ -10,7 +10,7 @@ true
 # shellcheck source=lib.sh
 source /var/scripts/lib.sh
  # If we have internet, then use the latest variables from the lib remote file
-elif printf "$ICyan" "Testing internet connection..." && ping github.com -c 2
+elif printf "Testing internet connection..." && ping github.com -c 2
 then
 # shellcheck disable=2034,2059
 true

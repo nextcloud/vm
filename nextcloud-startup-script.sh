@@ -46,7 +46,7 @@ NCDB=1 && FIRST_IFACE=1 source /var/scripts/lib.sh
 unset NCDB
 unset FIRST_IFACE
  # If we have internet, then use the latest variables from the lib remote file
-elif printf "$ICyan" "Testing internet connection..." && ping github.com -c 2
+elif printf "Testing internet connection..." && ping github.com -c 2
 then
 true
 # shellcheck source=lib.sh
