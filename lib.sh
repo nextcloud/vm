@@ -859,7 +859,7 @@ rm -f releases
 # Use it for functions like download_static_script
 download_script() {
     rm -f "$SCRIPTS"/"${2}".*
-    FIND_RESULT=$(find "$SCRIPTS"/*/ -name "${2}".* -print -quit 2>&1 | grep -v find)
+    FIND_RESULT=$(find "$SCRIPTS"/*/ -name "${2}.*" -print -quit 2>&1 | grep -v find)
     if [ -n "$FIND_RESULT" ]
     then
         check_command cp "$FIND_RESULT" "$SCRIPTS"
