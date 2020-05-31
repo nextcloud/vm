@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && source /var/scripts/main/lib.sh || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -63,7 +63,7 @@ fi
 while true
 do
 print_text_in_color "$ICyan" "Updating lib.sh..."
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && TLS_INSTALL=1 source /var/scripts/main/lib.sh || TLS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)

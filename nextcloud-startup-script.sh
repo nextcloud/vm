@@ -36,7 +36,7 @@ done
 is_process_running apt
 is_process_running dpkg
 
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && NCDB=1 && FIRST_IFACE=1 source /var/scripts/main/lib.sh || NCDB=1 && FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)

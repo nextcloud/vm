@@ -5,14 +5,14 @@
 # Use local lib file in case there is no internet connection
 if [ -f /var/scripts/lib.sh ]
 then
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 source /var/scripts/lib.sh
  # If we have internet, then use the latest variables from the lib remote file
 elif printf "Testing internet connection..." && ping github.com -c 2
 then
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && source /var/scripts/main/lib.sh || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)

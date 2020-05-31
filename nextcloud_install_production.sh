@@ -79,7 +79,7 @@ else
     apt install curl -y
 fi
 
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && source /var/scripts/main/lib.sh || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -115,7 +115,7 @@ else
     apt install whiptail -y
 fi
 
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && FIRST_IFACE=1 source /var/scripts/main/lib.sh || FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)

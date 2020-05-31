@@ -9,7 +9,7 @@ print_text_in_color() {
 	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && FIRST_IFACE=1 source /var/scripts/main/lib.sh || FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)

@@ -2,7 +2,7 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && source /var/scripts/main/lib.sh || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -138,7 +138,7 @@ then
     occ_command app:remove onlyoffice
 fi
 
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && NC_UPDATE=1 && COLLABORA_INSTALL=1 source /var/scripts/main/lib.sh || NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)

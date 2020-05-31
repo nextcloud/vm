@@ -3,7 +3,7 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # REMOVE disable of SC2154 WHEN PUTTING SPAMHAUS IN PRODUCTION (it's just to fixing travis for now)
-# shellcheck disable=2034,2059,SC2154
+# shellcheck disable=2015,2034,2059,SC2154
 true
 # shellcheck source=lib.sh
 [ -f /var/scripts/main/lib.sh ] && source /var/scripts/main/lib.sh || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)

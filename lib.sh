@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=2034,2059
+# shellcheck disable=2015,2034,2059
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
