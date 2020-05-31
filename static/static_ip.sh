@@ -2,18 +2,18 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
+# shellcheck disable=2015,2034,2059
+true
+# shellcheck source=lib.sh
+[ -f /var/scripts/main/lib.sh ] && FIRST_IFACE=1 source /var/scripts/main/lib.sh || FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset FIRST_IFACE
+
 IRed='\e[0;91m'         # Red
 ICyan='\e[0;96m'        # Cyan
 Color_Off='\e[0m'       # Text Reset
 print_text_in_color() {
 	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
-
-# shellcheck disable=SC2015,2034,2059
-true
-# shellcheck source=lib.sh
-[ -f /var/scripts/main/lib.sh ] && FIRST_IFACE=1 source /var/scripts/main/lib.sh || FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset FIRST_IFACE
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
