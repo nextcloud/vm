@@ -67,6 +67,12 @@ then
     rm -Rf /var/log/ncvm/
 fi
 
+# Remove the local lib.sh since it's causing issues with new functions (2020-06-01)
+if [ -f $SCRIPTS/lib.sh ]
+then
+    rm -f $SCRIPTS/lib.sh
+fi
+
 # Update docker-ce to overlay2 since devicemapper is deprecated
 if [ -f /etc/systemd/system/docker.service ]
 then
