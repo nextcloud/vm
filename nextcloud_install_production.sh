@@ -69,7 +69,7 @@ root_check
 run_script STATIC locales
 
 # Test RAM size (2GB min) + CPUs (min 1)
-ram_check 1 Nextcloud
+ram_check 0.75 Nextcloud
 cpu_check 1 Nextcloud
 
 # Create new current user
