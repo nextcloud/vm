@@ -316,9 +316,6 @@ restart_webserver
 # Calculate the values of PHP-FPM based on the amount of RAM available (it's done in the startup script as well)
 calculate_php_fpm
 
-# Install VM-tools
-install_if_not open-vm-tools
-
 # Download and validate Nextcloud package
 check_command download_verify_nextcloud_stable
 
