@@ -1235,6 +1235,33 @@ then
 fi
 }
 
+check_php() {
+GETPHP=$(php -v | grep -m 1 PHP | awk '{print $2}' | cut -d "-" -f1)
+
+if [ -z "$GETPHP" ]
+then
+    print_text_in_color "$IRed" "Can't find proper PHP version, aborting..."
+    exit 1
+fi
+
+if grep 7.0 <<< "$GETPHP"
+then
+   PHPVER=7.0
+if grep 7.1 <<< "$GETPHP"
+then
+   PHPVER=7.1
+if grep 7.2 <<< "$GETPHP"
+then
+   PHPVER=7.2
+elif grep 7.3 <<< "$GETPHP"
+then
+   PHPVER=7.3
+elif grep 7.4 <<< "$GETPHP"
+then
+   PHPVER=7.4
+fi
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
