@@ -125,7 +125,7 @@ if ! grep -qFx extension=redis.so "$PHP_INI"
 then
     echo "extension=redis.so" >> "$PHP_INI"
 fi
-    restart_webserver
+restart_webserver
 
 # Upgrade APCu and igbinary
 if [ "${CURRENTVERSION%%.*}" -ge "17" ]
