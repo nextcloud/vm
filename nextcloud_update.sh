@@ -102,33 +102,30 @@ then
     fi
 fi
 
-# Update Redis PHP extension
+# Update Redis PHP extension (18.04 --> 20.04 since 16.04 already is deprecated in the top of this script)
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
-if version 20.04 "$DISTRO" 20.04.6
+
+# Check current PHP version
+check_php
+
+# Do the upgrade
+if pecl list | grep redis >/dev/null 2>&1
 then
-    if pecl list | grep redis >/dev/null 2>&1
+    if is_this_installed php"$PHPVER"-common
     then
-        if is_this_installed php"$PHPVER"-common
-        then
-            install_if_not php"$PHPVER"-dev
-        fi
-        pecl channel-update pecl.php.net
-        yes no | pecl upgrade redis
-        systemctl restart redis-server.service
+        install_if_not php"$PHPVER"-dev
     fi
-    
-    # Double check if redis.so is enabled
-    if ! grep -qFx extension=redis.so "$PHP_INI"
-    then
-        echo "extension=redis.so" >> "$PHP_INI"
-    fi
-        restart_webserver
-else
-msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to upgrade Redis."
-msg_box "Please contact us to get support for upgrading your server:
-https://www.hanssonit.se/#contact
-https://shop.hanssonit.se/"
+    pecl channel-update pecl.php.net
+    yes no | pecl upgrade redis
+    systemctl restart redis-server.service
 fi
+
+# Double check if redis.so is enabled
+if ! grep -qFx extension=redis.so "$PHP_INI"
+then
+    echo "extension=redis.so" >> "$PHP_INI"
+fi
+    restart_webserver
 
 # Upgrade APCu and igbinary
 if [ "${CURRENTVERSION%%.*}" -ge "17" ]
@@ -482,6 +479,7 @@ then
     occ_command db:add-missing-indices
     if [ "${CURRENTVERSION%%.*}" -ge "19" ]
     then
+        check_php
         occ_command db:add-missing-columns
         install_if_not php"$PHPVER"-bcmath
     fi

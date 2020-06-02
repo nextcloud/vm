@@ -1235,6 +1235,39 @@ then
 fi
 }
 
+check_php() {
+print_text_in_color "$ICyan" "Getting current PHP-version..."
+GETPHP="$(php -v | grep -m 1 PHP | awk '{print $2}' | cut -d '-' -f1)"
+
+if [ -z "$GETPHP" ]
+then
+    print_text_in_color "$IRed" "Can't find proper PHP version, aborting..."
+    exit 1
+fi
+
+if grep 7.0 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=7.0
+elif grep 7.1 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=7.1
+elif grep 7.2 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=7.2
+elif grep 7.3 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=7.3
+elif grep 7.4 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=7.4
+fi
+
+export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
+export PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
+
+print_text_in_color "$IGreen" PHPVER="$PHPVER"
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset

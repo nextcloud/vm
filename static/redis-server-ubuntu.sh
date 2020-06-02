@@ -24,6 +24,9 @@ then
     mkdir -p $SCRIPTS
 fi
 
+# Check the current PHPVER
+check_php
+
 # Install Redis
 install_if_not php"$PHPVER"-dev
 pecl channel-update pecl.php.net
