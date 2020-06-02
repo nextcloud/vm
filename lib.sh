@@ -1236,6 +1236,7 @@ fi
 }
 
 check_php() {
+print_text_in_color "$ICyan" "Getting current PHP-version..."
 GETPHP="$(php -v | grep -m 1 PHP | awk '{print $2}' | cut -d '-' -f1)"
 
 if [ -z "$GETPHP" ]
@@ -1263,6 +1264,8 @@ fi
 
 export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
 export PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
+
+print_text_in_color "$IGreen" "$PHPVER"
 }
 
 
