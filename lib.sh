@@ -1236,7 +1236,7 @@ fi
 }
 
 check_php() {
-GETPHP=$(php -v | grep -m 1 PHP | awk '{print $2}' | cut -d "-" -f1)
+GETPHP="$(php -v | grep -m 1 PHP | awk '{print $2}' | cut -d '-' -f1)"
 
 if [ -z "$GETPHP" ]
 then
@@ -1246,21 +1246,25 @@ fi
 
 if grep 7.0 <<< "$GETPHP"
 then
-   PHPVER=7.0
-if grep 7.1 <<< "$GETPHP"
+   export PHPVER=7.0
+elif grep 7.1 <<< "$GETPHP"
 then
-   PHPVER=7.1
-if grep 7.2 <<< "$GETPHP"
+   export PHPVER=7.1
+elif grep 7.2 <<< "$GETPHP"
 then
-   PHPVER=7.2
+   export PHPVER=7.2
 elif grep 7.3 <<< "$GETPHP"
 then
-   PHPVER=7.3
+   export PHPVER=7.3
 elif grep 7.4 <<< "$GETPHP"
 then
-   PHPVER=7.4
+   export PHPVER=7.4
 fi
+
+export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
+export PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
 }
+
 
 ## bash colors
 # Reset
