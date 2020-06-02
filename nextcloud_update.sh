@@ -482,6 +482,7 @@ then
     occ_command db:add-missing-indices
     if [ "${CURRENTVERSION%%.*}" -ge "19" ]
     then
+        check_php
         occ_command db:add-missing-columns
         install_if_not php"$PHPVER"-bcmath
     fi
