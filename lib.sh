@@ -710,13 +710,14 @@ then
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
     sleep 300
+else
+    print_text_in_color "$ICyan" "Testing if network is OK..."
+    if ! netplan apply
+    then
+        systemctl restart systemd-networkd > /dev/null
+    fi
+    sleep 3 && site_200 github.com
 fi
-print_text_in_color "$ICyan" "Testing if network is OK..."
-if ! netplan apply
-then
-    systemctl restart systemd-networkd > /dev/null
-fi
-sleep 3 && site_200 github.com
 }
 
 # Whiptail auto-size
