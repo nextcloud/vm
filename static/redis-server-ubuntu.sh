@@ -24,8 +24,13 @@ then
     mkdir -p $SCRIPTS
 fi
 
-# Install Redis
+# Check the current PHPVER
 check_php
+PHPVER="$PHPVER"
+export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
+export PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
+
+# Install Redis
 install_if_not php"$PHPVER"-dev
 pecl channel-update pecl.php.net
 if ! yes no | pecl install -Z redis
