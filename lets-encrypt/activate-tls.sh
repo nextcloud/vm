@@ -103,6 +103,10 @@ then
     rm -f "$tls_conf"
 fi
 
+# Check current PHP version --> PHPVER
+# To get the correct version for the Apache conf file
+check_php
+
 # Generate nextcloud_tls_domain.conf
 if [ ! -f "$tls_conf" ]
 then
