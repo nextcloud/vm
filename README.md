@@ -1,17 +1,17 @@
-Nextcloud VM
-============
+Nextcloud RPi
+=============
 
 Server installation. Simplified. :cloud:
 --------------------------------
 
 #### Interactive Guidance
-> **The Nextcloud VM** — _(aka **N**ext**c**loud **V**irtual **M**achine_ or _**NcVM**)_ — helps you create a personal or corporate [Nextcloud Server] _faster_ and _easier._ Fundamentally, NcVM is a carefully crafted _family_ of [\*nix] scripts which interactively guide you through a quality-controlled installation to obtain an [A+ security-rated] Nextcloud instance.
+> **The Nextcloud RPi** — _(aka **N**ext**c**loud **V**irtual **M**achine_ or _**NcRPi**)_ — helps you create a personal or corporate [Nextcloud Server] _faster_ and _easier._ Fundamentally, NcRpi is a carefully crafted _family_ of [\*nix] scripts which interactively guide you through a quality-controlled installation to obtain an [A+ security-rated] Nextcloud instance.
 
 #### Curated Extras
-> The Nextcloud [app store] extends core features by allowing you to enable a multitude of free one-click apps. However, _integration apps_ there like [Collabora Online] and [ONLYOFFICE] are solely _bridges_ to Nextcloud. You’re still required to install those services _separately_, which can be complex. NcVM provides optional _**full installation of select curated apps**_, including those and others. Monitor and manage your cloud using any web browser with NcVM’s hand-picked collection of power utilities featuring stunning, modern UIs.
+> The Nextcloud [app store] extends core features by allowing you to enable a multitude of free one-click apps. However, _integration apps_ there like [Collabora Online] and [ONLYOFFICE] are solely _bridges_ to Nextcloud. You’re still required to install those services _separately_, which can be complex. NcRPi provides optional _**full installation of select curated apps**_, including those and others. Monitor and manage your cloud using any web browser with NcRPi’s hand-picked collection of power utilities featuring stunning, modern UIs.
 
 #### All Systems Go
-> NcVM can check for and install _stable_ updates to keep things current, smooth, and secure.
+> NcRPi can check for and install _stable_ updates to keep things current, smooth, and secure.
 
 --------------------
 
@@ -20,18 +20,15 @@ Server installation. Simplified. :cloud:
 * Report [your issue](https://github.com/nextcloud/vm/issues/new)
 * Help us with [existing issues](https://github.com/nextcloud/vm/issues)
 * Write scripts so that the release process becomes automated with [Vagrant](https://www.vagrantup.com/docs/getting-started/), [Terraform](https://www.terraform.io/) or similar
-* **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB for both VMware, Hyper-V and [more](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration?currentPageId=bls17dahv0jgrltpif20)**
+* **[Donate](https://shop.hanssonit.se/product-category/donate/)**
   
 ## Full documentation
-* [VM](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm) (the easiest option)
 * [Install with scripts](https://docs.hanssonit.se/s/bj0vl1ihv0jgrmfm08j0/build-your-own/d/bj0vl4ahv0jgrmfm0950/nextcloud-vm) (if you feel brave)
 * [FAQ](https://docs.hanssonit.se/s/bj101nihv0jgrmfm09f0/faq/d/bj101pihv0jgrmfm0a10/nextcloud-vm?currentPageId=bj101sqhv0jgrmfm0a1g) (Frequently Asked Questions)
 * [Machine configuration](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/machine-setup-nextcloud-vm) (of the released version)
 
 ## I want to test a Release Candidate (RC), or Beta!
 No problem, brave explorer! We made it simple. 
-
-In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://cloud.hanssonit.se/s/zjsqkrSpzqJGE9N?path=%2FTESTING) folder on the download server. 
 
 If you want to try the latest version yourself, there are two variables that you could use:
 
