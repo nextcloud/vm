@@ -101,10 +101,10 @@ then
     # Resize LVM (live installer is &%¤%/!
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
     lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
-
-    # Backup solution
-   while lvdisplay | grep "Size" | awk '{print $3}' && lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-     do
+elif home_sme_server
+then
+    while lvdisplay | grep "Size" | awk '{print $3}' && lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+    do
         if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
         then
             if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
