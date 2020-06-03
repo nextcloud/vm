@@ -103,12 +103,23 @@ then
     lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
 
     # Backup solution
-    until lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv | grep -qr "Insufficient free space"
-    do
-        lvdisplay | grep "Size" | awk '{print $3}'
-        lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+   while lvdisplay | grep "Size" | awk '{print $3}' && lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+     do
+        if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+        then
+            if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+            then
+                if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                then
+                    if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                    then
+                        resize2fs /dev/ubuntu-vg/ubuntu-lv
+                        break
+                    fi
+                fi
+            fi
+        fi
     done
-    resize2fs /dev/ubuntu-vg/ubuntu-lv
 fi
 
 # Check if it's a clean server
