@@ -100,28 +100,28 @@ if grep -q "LVM" /etc/fstab
 then
     # Resize LVM (live installer is &%¤%/!
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-    lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
-elif home_sme_server
-then
-    while lvdisplay | grep "Size" | awk '{print $3}' && lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-    do
-        if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-        then
-            if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+    if ! lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+    then
+        print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
+        while lvdisplay | grep "Size" | awk '{print $3}' && lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+        do
+            if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
             then
-                if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                 then
-                    if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                    if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                     then
-                        resize2fs /dev/ubuntu-vg/ubuntu-lv
-                        break
+                        if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                        then
+                            resize2fs /dev/ubuntu-vg/ubuntu-lv
+                            break
+                        fi
                     fi
                 fi
             fi
-        fi
-    done
+        done
+    fi
 fi
-
 # Check if it's a clean server
 stop_if_installed postgresql
 stop_if_installed apache2
