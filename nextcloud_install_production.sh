@@ -107,6 +107,7 @@ then
     do
         if lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv | grep -q "Insufficient free space"
         then
+            resize2fs /dev/ubuntu-vg/ubuntu-lv
             break
         fi
     done
