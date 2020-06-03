@@ -514,6 +514,10 @@ fi
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
 yes | occ_command db:convert-filecache-bigint
 occ_command db:add-missing-indices
+while [ -z "$CURRENTVERSION" ]
+do
+    CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+done
 if [ "${CURRENTVERSION%%.*}" -ge "19" ]
 then
     occ_command db:add-missing-columns
