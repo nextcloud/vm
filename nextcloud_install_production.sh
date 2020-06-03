@@ -99,7 +99,17 @@ fi
 if grep -q "LVM" /etc/fstab
 then
     # Resize LVM (live installer is &%¤%/!
+    print_text_in_color "$ICyan" "Extending LVM..."
     lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+    
+    # Backup solution
+    while lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+    do
+        if lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv | grep -q "Insufficient free space"
+        then
+            break
+        fi
+    done
 fi
 
 # Check if it's a clean server
