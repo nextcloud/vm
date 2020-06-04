@@ -464,7 +464,7 @@ else
     install_if_not snapd
     snap install --beta certbot --classic
     # Update $PATH in current session (login and logout is required otherwise)
-    hash -r
+    check_command hash -r
 fi
 }
 
