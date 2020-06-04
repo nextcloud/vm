@@ -263,8 +263,7 @@ check_command apt install -y \
     php"$PHPVER"-bz2 \
     php"$PHPVER"-bcmath \
     php-pear
-    php-imagick
-    php-smbclient
+    php"$PHPVER"-imagick \
     # libmagickcore-6.q16-3-extra
 
 # Enable php-fpm
@@ -438,14 +437,13 @@ run_script STATIC redis-server-ubuntu
 
  # Install smbclient
  # php"$PHPVER"-smbclient does not yet work in PHP 7.4
- #Commenting below out as php-smbclient being installed above in Install PHP section
- #install_if_not libsmbclient-dev
- #yes no | pecl install smbclient
- #if ! grep -qFx extension=smbclient.so "$PHP_INI"
- #then
- #    echo "# PECL smbclient" >> "$PHP_INI"
- #    echo "extension=smbclient.so" >> "$PHP_INI"
- #fi
+ install_if_not libsmbclient-dev
+ yes no | pecl install smbclient
+ if ! grep -qFx extension=smbclient.so "$PHP_INI"
+ then
+     echo "# PECL smbclient" >> "$PHP_INI"
+     echo "extension=smbclient.so" >> "$PHP_INI"
+ fi
 
 # Enable igbinary for PHP
 # https://github.com/igbinary/igbinary
