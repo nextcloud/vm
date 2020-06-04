@@ -16,16 +16,4 @@ debug_mode
 # Must be root
 root_check
 
-# Fix SMB issues (https://github.com/nextcloud/server/issues/20622)
-# git_apply_patch 20941 server 18.0.4
-
-if [ -d "$NC_APPS_PATH"/files_external/3rdparty/icewind/smb ]
-then
-    print_text_in_color "$ICyan" "Adding temporary fix for SMB bug..."
-    rm -Rf "$NC_APPS_PATH"/files_external/3rdparty/icewind/smb
-    cd "$NC_APPS_PATH"/files_external/3rdparty/icewind/
-    install_if_not git
-    git clone https://github.com/icewind1991/SMB.git smb
-    bash "$SECURE"
-fi
 exit
