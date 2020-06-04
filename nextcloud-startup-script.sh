@@ -297,9 +297,8 @@ It will also do the following:
 - Add additional options if you choose them
 - And more..."
 
-msg_box "Please note:
-
-[#] The script will take about 10 minutes to finish, depending on your internet connection.
+msg_box "PLEASE NOTE:
+[#] Please finish the whole script. The server will reboot once done.
 
 [#] Please read the on-screen instructions carefully, they will guide you through the setup.
 
@@ -315,7 +314,7 @@ msg_box "Please note:
     https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
 clear
 
-msg_box "Please note:
+msg_box "PLEASE NOTE:
 
 The first setup is meant to be run once, and not aborted.
 If you feel uncertain about the options during the setup, just choose the defaults by hitting [ENTER] at each question.
@@ -401,6 +400,10 @@ then
     sleep 2
 fi
 clear
+
+msg_box "Well done, you have now finished most of the setup.
+
+There are still some stuff left to do, but they are automated so sit back and relax! :)"
 
 # Add default notifications
 notify_admin_gui \
@@ -518,26 +521,32 @@ bash $SCRIPTS/trusted.sh
 rm -f $SCRIPTS/trusted.sh
 
 # Success!
-msg_box "Congratulations! You have successfully installed Nextcloud!
+msg_box "The installation process is *almost* done.
 
-Login to Nextcloud in your browser:
-- IP: $ADDRESS
-- Hostname: $(hostname -f)
+Please hit OK in all the following prompts and let the server reboot to complete the installation process."
 
-SUPPORT:
+msg_box "TIPS & TRICKS:
+1. Publish your server online: https://goo.gl/iUGE2U
+2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
+3. To update this server just type: sudo bash /var/scripts/update.sh
+4. Install apps, configure Nextcloud, and server: sudo bash $SCRIPTS/menu.sh"
+
+msg_box "SUPPORT:
 Please ask for help in the forums, visit our shop to buy support,
 or buy a yearly subscription from Nextcloud:
 - SUPPORT: https://shop.hanssonit.se/product/premium-support-per-30-minutes/
 - FORUM: https://help.nextcloud.com/
 - SUBSCRIPTION: https://nextcloud.com/pricing/ (Please refer to @enoch85)
 
-Please report any bugs here: https://github.com/nextcloud/vm/issues
+BUGS:
+Please report any bugs here: https://github.com/nextcloud/vm/issues"
 
-TIPS & TRICKS:
-1. Publish your server online: https://goo.gl/iUGE2U
-2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
-3. To update this server just type: sudo bash /var/scripts/update.sh
-4. Install apps, configure Nextcloud, and server: sudo bash $SCRIPTS/menu.sh"
+msg_box "Congratulations! You have successfully installed Nextcloud!
+
+LOGIN:
+Login to Nextcloud in your browser:
+- IP: $ADDRESS
+- Hostname: $(hostname -f)"
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
