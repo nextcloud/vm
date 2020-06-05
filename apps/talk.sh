@@ -25,6 +25,7 @@ msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.0
 msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
+exit
 fi
 
 # Nextcloud 13 is required.
