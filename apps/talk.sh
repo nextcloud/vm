@@ -127,6 +127,9 @@ fi
 check_command install_if_not coturn
 check_command sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
 
+# Just create it just in case
+mkdir -p "$VMLOGS"
+
 # Generate $TURN_CONF
 cat << TURN_CREATE > "$TURN_CONF"
 tls-listening-port=$TURN_PORT
@@ -145,7 +148,7 @@ no-tlsv1
 no-tlsv1_1
 no-stdout-log
 simple-log
-log-file=/var/log/turnserver.log
+log-file="$VMLOGS"/turnserver.log
 TURN_CREATE
 if [ -f "$TURN_CONF" ];
 then
