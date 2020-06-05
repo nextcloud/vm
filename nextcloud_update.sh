@@ -363,7 +363,7 @@ If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-
 fi
 
 # Check if PHP version is compatible with $NCVERSION
-PHP_VER=72
+PHP_VER=73
 NC_VER=20
 if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
 then
