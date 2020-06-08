@@ -103,8 +103,9 @@ then
     if ! lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
     then
         print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-        while lvdisplay | grep "Size" | awk '{print $3}' && lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+        while :
         do
+            lvdisplay | grep "Size" | awk '{print $3}'
             if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
             then
                 if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
@@ -122,6 +123,7 @@ then
         done
     fi
 fi
+
 # Check if it's a clean server
 stop_if_installed postgresql
 stop_if_installed apache2
