@@ -298,7 +298,7 @@ It will also do the following:
 - And more..."
 
 msg_box "PLEASE NOTE:
-[#] Please finish the whole script. The server will reboot once done.
+[#] Please finish the whole setup. The server will reboot once done.
 
 [#] Please read the on-screen instructions carefully, they will guide you through the setup.
 
