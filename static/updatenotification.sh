@@ -35,7 +35,7 @@ then
     exit
 fi
 
-if [ "$NCVERSION" == "$NCMIN" ] && version_gt "$NCMIN" "$REPORTEDMIN"
+if [ "$NCVERSION" == "$NCMIN" ] && version_gt "$NCMIN" "$REPORTEDMIN" && version_gt "$NCMIN" "$CURRENTVERSION"
 then
     sed -i "s|^REPORTEDMAJ.*|REPORTEDMAJ=$NCVERSION|" $SCRIPTS/updatenotification.sh
     sed -i "s|^REPORTEDMIN.*|REPORTEDMIN=$NCMIN|" $SCRIPTS/updatenotification.sh
@@ -52,7 +52,7 @@ then
     exit
 fi
 
-if version_gt "$NCMIN" "$REPORTEDMIN"
+if version_gt "$NCMIN" "$REPORTEDMIN" && version_gt "$NCMIN" "$CURRENTVERSION"
 then
     sed -i "s|^REPORTEDMIN.*|REPORTEDMIN=$NCMIN|" $SCRIPTS/updatenotification.sh
     if crontab -l -u root | grep -q $SCRIPTS/update.sh
@@ -67,7 +67,7 @@ then
     fi
 fi
 
-if version_gt "$NCVERSION" "$REPORTEDMAJ"
+if version_gt "$NCVERSION" "$REPORTEDMAJ" && version_gt "$NCVERSION" "$CURRENTVERSION"
 then
     sed -i "s|^REPORTEDMAJ.*|REPORTEDMAJ=$NCVERSION|" $SCRIPTS/updatenotification.sh
     notify_admin_gui \
