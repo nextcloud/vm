@@ -19,5 +19,14 @@ root_check
 print_text_in_color "$ICyan" "Installing and configuring S.M.A.R.T..."
 
 # Install smartmontools
+install_if_not smartmontools
 
 # Add a crontab to check the disk, and post the output with notify_admin_gui ever week (maybe with updatenotification?)
+if home_sme_server
+then
+    smartctl --all /dev/nvme0n1
+    smartctl --all /dev/sda
+elif [check which disks are used]
+    smartctl --all /dev/sda
+    smartctl --all /dev/sdb
+fi
