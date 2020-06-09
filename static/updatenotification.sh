@@ -42,12 +42,12 @@ then
     if crontab -l -u root | grep -q $SCRIPTS/update.sh
     then
         notify_admin_gui \
-        "New Nextcloud version!" \
-        "Nextcloud $NCVERSION just became available. Since you are running Automatic Updates on Saturdays at $AUT_UPDATES_TIME:00, you don't need to bother about updating the server manually, as that's already taken care of."
+        "New minor Nextcloud Update!" \
+        "Nextcloud $NCMIN just became available. Since you are running Automatic Updates on Saturdays at $AUT_UPDATES_TIME:00, you don't need to bother about updating the server to minor Nextcloud versions manually, as that's already taken care of."
     else
         notify_admin_gui \
-        "Update available!" \
-        "Nextcloud $NCVERSION is available. Please run 'sudo bash /var/scripts/update.sh' from your CLI to update your server."
+        "New minor Nextcloud Update!" \
+        "Nextcloud $NCMIN just became available. Please run 'sudo bash /var/scripts/update.sh minor' from your CLI to update your server to Nextcloud $NCMIN."
     fi
     exit
 fi
@@ -58,12 +58,12 @@ then
     if crontab -l -u root | grep -q $SCRIPTS/update.sh
     then
         notify_admin_gui \
-        "New Nextcloud version!" \
-        "Nextcloud $NCMIN just became available. Since you are running Automatic Updates on Saturdays at $AUT_UPDATES_TIME:00, you don't need to bother about updating the server manually, as that's already taken care of."
+        "New minor Nextcloud Update!" \
+        "Nextcloud $NCMIN just became available. Since you are running Automatic Updates on Saturdays at $AUT_UPDATES_TIME:00, you don't need to bother about updating the server to minor Nextcloud versions manually, as that's already taken care of."
     else
         notify_admin_gui \
-        "Update available!" \
-        "Nextcloud $NCMIN is available. Please run 'sudo bash /var/scripts/update.sh minor' from your CLI to update your server."
+        "New minor Nextcloud Update!" \
+        "Nextcloud $NCMIN just became available. Please run 'sudo bash /var/scripts/update.sh minor' from your CLI to update your server to Nextcloud $NCMIN."
     fi
 fi
 
@@ -71,6 +71,6 @@ if version_gt "$NCVERSION" "$REPORTEDMAJ"
 then
     sed -i "s|^REPORTEDMAJ.*|REPORTEDMAJ=$NCVERSION|" $SCRIPTS/updatenotification.sh
     notify_admin_gui \
-    "Update available!" \
-    "Nextcloud $NCVERSION is available. Please run 'sudo bash /var/scripts/update.sh' from your CLI to update your server."
+    "New major Nextcloud Update!" \
+    "Nextcloud $NCVERSION just became available. Please run 'sudo bash /var/scripts/update.sh' from your CLI to update your server to Nextcloud $NCVERSION."
 fi
