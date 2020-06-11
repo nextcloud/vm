@@ -99,10 +99,14 @@ fi
 if grep -q "LVM" /etc/fstab
 then
     # Resize LVM (live installer is &%¤%/!
+    # VM
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-    if ! lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+    lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+
+    # HomeSME Server
+    if home_sme_server
     then
-        print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
+    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
         while :
         do
             lvdisplay | grep "Size" | awk '{print $3}'
