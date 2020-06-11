@@ -1154,7 +1154,7 @@ home_sme_server() {
 # OLD DISKS: "Samsung SSD 860" || ST5000LM000-2AN1  || ST5000LM015-2E81
 if lshw -c system | grep -q NUC8i3BEH
 then
-    if lshw -c memory | grep -q BLS16G4
+    if lshw -c memory | grep -q BLS16G4 || lshw -c memory | grep -q 18ASF2G72HZ
     then
         if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q WDS400
         then
