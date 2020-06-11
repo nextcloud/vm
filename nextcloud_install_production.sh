@@ -106,7 +106,7 @@ then
     # HomeSME Server
     if home_sme_server
     then
-    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
+        print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
         while :
         do
             lvdisplay | grep "Size" | awk '{print $3}'
