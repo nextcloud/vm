@@ -20,8 +20,8 @@ debug_mode
 root_check
 
 NCMIN=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
-REPORTEDMAJ=""
-REPORTEDMIN=""
+REPORTEDMAJ="$CURRENTVERSION"
+REPORTEDMIN="$CURRENTVERSION"
 
 if [ "$CURRENTVERSION" == "$NCVERSION" ] && [ "$CURRENTVERSION" == "$NCMIN" ]
 then
@@ -35,7 +35,7 @@ then
     exit
 fi
 
-if [ "$NCVERSION" == "$NCMIN" ] && version_gt "$NCMIN" "$REPORTEDMIN" && version_gt "$NCMIN" "$CURRENTVERSION"
+if [ "$NCVERSION" == "$NCMIN" ] && version_gt "$NCMIN" "$REPORTEDMIN"
 then
     sed -i "s|^REPORTEDMAJ.*|REPORTEDMAJ=$NCVERSION|" $SCRIPTS/updatenotification.sh
     sed -i "s|^REPORTEDMIN.*|REPORTEDMIN=$NCMIN|" $SCRIPTS/updatenotification.sh
@@ -52,7 +52,7 @@ then
     exit
 fi
 
-if version_gt "$NCMIN" "$REPORTEDMIN" && version_gt "$NCMIN" "$CURRENTVERSION"
+if version_gt "$NCMIN" "$REPORTEDMIN"
 then
     sed -i "s|^REPORTEDMIN.*|REPORTEDMIN=$NCMIN|" $SCRIPTS/updatenotification.sh
     if crontab -l -u root | grep -q $SCRIPTS/update.sh
@@ -67,7 +67,7 @@ then
     fi
 fi
 
-if version_gt "$NCVERSION" "$REPORTEDMAJ" && version_gt "$NCVERSION" "$CURRENTVERSION"
+if version_gt "$NCVERSION" "$REPORTEDMAJ"
 then
     sed -i "s|^REPORTEDMAJ.*|REPORTEDMAJ=$NCVERSION|" $SCRIPTS/updatenotification.sh
     notify_admin_gui \
