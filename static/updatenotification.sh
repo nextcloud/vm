@@ -20,8 +20,8 @@ debug_mode
 root_check
 
 NCMIN=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
-REPORTEDMAJ=""
-REPORTEDMIN=""
+REPORTEDMAJ="$CURRENTVERSION"
+REPORTEDMIN="$CURRENTVERSION"
 
 if [ "$CURRENTVERSION" == "$NCVERSION" ] && [ "$CURRENTVERSION" == "$NCMIN" ]
 then
