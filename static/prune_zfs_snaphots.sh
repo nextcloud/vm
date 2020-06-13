@@ -20,16 +20,16 @@ if [ -d $NCDATA ]
 then
     if is_this_installed zfs-auto-snapshot
     then
-        if [ "$(df -h $NCDATA | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 85 ]
+        if [ "$(df -h $NCDATA | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 70 ]
         then
             # Notify user
             notify_admin_gui \
             "Disk space almost full!" \
-            "The disk space for ncdata is almost full. We have automatically deleted ZFS snapshots older than 8 weeks and cleaned up your trashbin to free up some space and avoid a fatal crash. Please check $VMLOGS/zfs_prune.log for the results."
+            "The disk space for ncdata is almost full. We have automatically deleted ZFS snapshots older than 4 weeks and cleaned up your trashbin to free up some space and avoid a fatal crash. Please check $VMLOGS/zfs_prune.log for the results."
             # On screen information
-msg_box "Your disk space is almost full (more than 85%).
+msg_box "Your disk space is almost full (more than 70%).
 
-To solve that, we will now delete ZFS snapshots older than 8 weeks
+To solve that, we will now delete ZFS snapshots older than 4 weeks
 
 The script will also delete everything in trashbin for all users to free up some space."
             countdown "To abort, please press CTRL+C within 10 seconds." 10
@@ -50,7 +50,7 @@ The script will also delete everything in trashbin for all users to free up some
                 mkdir -p "$VMLOGS"
             fi
             touch $VMLOGS/zfs_prune.log
-            ./zfs-prune-snapshots.sh 8w ncdata >> $VMLOGS/zfs_prune.log
+            ./zfs-prune-snapshots.sh 4w ncdata >> $VMLOGS/zfs_prune.log
             occ_command trashbin:cleanup --all-users >> $VMLOGS/zfs_prune.log
         fi
     fi
