@@ -74,7 +74,7 @@ then
 fi
 
 # Update updatenotification.sh
-if [ -f $SCRIPTS/updatenotification.sh
+if [ -f $SCRIPTS/updatenotification.sh ]
 then
     download_script STATIC updatenotification
     chmod +x $SCRIPTS/updatenotification.sh
