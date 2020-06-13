@@ -25,7 +25,7 @@ install_if_not smartmontools
 if home_sme_server
 then
     notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all /dev/nvme0n1)"
-    smartctl --all "S.M.A.R.T results weekly scan" "$(/dev/sda)"
+    notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all /dev/sda)"
 elif [check which disks are used]
     smartctl --all /dev/sda
     smartctl --all /dev/sdb
