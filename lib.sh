@@ -1054,9 +1054,8 @@ if ! is_docker_running
 then
     print_text_in_color "$ICyan" "Installing Docker CE..."
     apt update -q4 & spinner_loading
-    install_if_not docker.io
-    #install_if_not curl
-    #curl -fsSL get.docker.com | sh
+    install_if_not curl
+    curl -fsSL get.docker.com | sh
 fi
 # Set overlay2
 cat << OVERLAY2 > /etc/docker/daemon.json
