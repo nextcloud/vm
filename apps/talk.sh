@@ -127,8 +127,9 @@ fi
 check_command install_if_not coturn
 check_command sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
 
-# Just create it just in case
+# Create log for coturn
 mkdir -p "$VMLOGS"
+touch "$VMLOGS"/turnserver.log
 
 # Generate $TURN_CONF
 cat << TURN_CREATE > "$TURN_CONF"
