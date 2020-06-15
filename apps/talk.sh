@@ -132,7 +132,7 @@ mkdir -p "$VMLOGS"
 
 # Generate $TURN_CONF
 cat << TURN_CREATE > "$TURN_CONF"
-tls-listening-port=$TURN_PORT
+listening-port=$TURN_PORT
 fingerprint
 use-auth-secret
 static-auth-secret=$TURN_SECRET
@@ -140,12 +140,7 @@ realm=$TURN_DOMAIN
 total-quota=100
 bps-capacity=0
 stale-nonce
-cert=$CERTFILES/$TURN_DOMAIN/cert.pem
-pkey=$CERTFILES/$TURN_DOMAIN/privkey.pem
-cipher-list="ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AES:RSA+3DES:!ADH:!AECDH:!MD5"
 no-multicast-peers
-no-tlsv1
-no-tlsv1_1
 no-stdout-log
 simple-log
 log-file=$VMLOGS/turnserver.log
