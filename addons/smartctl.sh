@@ -24,15 +24,15 @@ install_if_not smartmontools
 # Add a crontab to check the disk, and post the output with notify_admin_gui ever week (maybe with updatenotification?)
 if home_sme_server
 then
-    notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all /dev/nvme0n1)"
-    notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all /dev/sda)"
+    notify_admin_gui "S.M.A.R.T results weekly scan (nvme0n1)" "$(smartctl --all /dev/nvme0n1)"
+    notify_admin_gui "S.M.A.R.T results weekly scan (sda)" "$(smartctl --all /dev/sda)"
 else
     # get all disks into an array
     disks="$(ls /dev/sd* | grep -v '[0-9]')"
     # loop over disks in array
     for disk in $(echo ${disks[@]}); do
         if [ -n "$disks" ]; then
-             notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all $disk)"
+             notify_admin_gui "S.M.A.R.T results weekly scan ($disk)" "$(smartctl --all $disk)"
         fi
     done
 fi
