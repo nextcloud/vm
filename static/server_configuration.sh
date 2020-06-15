@@ -36,9 +36,14 @@ choice=$(whiptail --title "Server configurations" --checklist "Choose what you w
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" ON \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
+"Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
+    *"Disk Check"*)
+        clear
+        run_script STATIC smartctl
+    ;;&
     *"Security"*)
         clear
         run_script STATIC security
