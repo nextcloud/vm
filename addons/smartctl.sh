@@ -27,6 +27,7 @@ then
     notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all /dev/nvme0n1)"
     notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all /dev/sda)"
 elif [check which disks are used]
+then
     smartctl --all /dev/sda
     smartctl --all /dev/sdb
 fi
