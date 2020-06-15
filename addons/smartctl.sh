@@ -30,7 +30,7 @@ else
     # get all disks into an array
     disks="$(fdisk -l | grep Disk | grep /dev/sd | awk '{print$2}' | cut -d ":" -f1)"
     # loop over disks in array
-    for disk in "$(printf ${disks[@]})"
+    for disk in $(printf "${disks[@]}")
     do
         if [ -n "$disks" ]; then
              notify_admin_gui "S.M.A.R.T results weekly scan ($disk)" "$(smartctl --all \$disk)"
