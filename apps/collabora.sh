@@ -239,6 +239,10 @@ then
   # WOPI discovery URL
   ProxyPass           /hosting/discovery https://127.0.0.1:9980/hosting/discovery retry=0
   ProxyPassReverse    /hosting/discovery https://127.0.0.1:9980/hosting/discovery
+  
+  # Endpoint with information about availability of various features
+  ProxyPass           /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities retry=0
+  ProxyPassReverse    /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities
 
   # Main websocket
   ProxyPassMatch "/lool/(.*)/ws$" wss://127.0.0.1:9980/lool/\$1/ws nocanon
