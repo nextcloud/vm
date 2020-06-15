@@ -26,10 +26,15 @@ if home_sme_server
 then
     notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all /dev/nvme0n1)"
     notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all /dev/sda)"
-elif [check which disks are used]
-then
-    smartctl --all /dev/sda
-    smartctl --all /dev/sdb
+else
+    # get all disks into an array
+    disks="$(ls /dev/sd* | grep -v '[0-9]')"
+    # loop over disks in array
+    for disk in $(echo ${disks[@]}); do
+        if [ -n "$disks" ]; then
+             notify_admin_gui "S.M.A.R.T results weekly scan" "$(smartctl --all $disk)"
+        fi
+    done
 fi
 
 # Add crontab “At 06:12 on Monday.” 
