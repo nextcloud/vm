@@ -73,6 +73,16 @@ then
     rm -f $SCRIPTS/lib.sh
 fi
 
+# Update updatenotification.sh
+if [ -f $SCRIPTS/updatenotification.sh ]
+then
+    download_script STATIC updatenotification
+    chmod +x $SCRIPTS/updatenotification.sh
+fi
+
+# Make sure everyone gets access to menu.sh
+download_script STATIC menu
+
 # Update docker-ce to overlay2 since devicemapper is deprecated
 if [ -f /etc/systemd/system/docker.service ]
 then
