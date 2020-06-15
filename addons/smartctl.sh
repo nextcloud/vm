@@ -37,9 +37,9 @@ else
     done
 fi
 
-# Add crontab “At 06:12 on Monday.” 
-if ! crontab -l | xargs grep -l "$SCRIPTS/smartctl.sh"
+# Add crontab “At 06:12 on Monday.”
+if ! crontab -u root -l | grep -w 'smartctl.sh'
 then
+    print_text_in_color "$ICyan" "Adding weekly crontab..."
     crontab -u root -l | { cat; echo "12 06 * * 1 $SCRIPTS/smartctl.sh"; } | crontab -u root -
 fi
-
