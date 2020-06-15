@@ -33,7 +33,7 @@ else
     for disk in "$(printf ${disks[@]})"
     do
         if [ -n "$disks" ]; then
-             notify_admin_gui "S.M.A.R.T results weekly scan (\$disk)" "$(smartctl --all $disk)"
+             notify_admin_gui "S.M.A.R.T results weekly scan ($disk)" "$(smartctl --all \$disk)"
         fi
     done
 fi
