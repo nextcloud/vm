@@ -148,7 +148,7 @@ no-tlsv1
 no-tlsv1_1
 no-stdout-log
 simple-log
-log-file="$VMLOGS"/turnserver.log
+log-file=$VMLOGS/turnserver.log
 TURN_CREATE
 if [ -f "$TURN_CONF" ];
 then
