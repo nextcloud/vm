@@ -33,6 +33,7 @@ To solve that, we will now delete ZFS snapshots older than 4 weeks
 
 The script will also delete everything in trashbin for all users to free up some space."
             countdown "To abort, please press CTRL+C within 10 seconds." 10
+            print_text_in_color "$IGreen" "Freeing some space... This might take a while, please don't abort."
             # Get the latest prune script
             if [ -f $SCRIPTS/zfs-prune-snapshots ]
             then
