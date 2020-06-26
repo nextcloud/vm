@@ -53,7 +53,7 @@ else
     print_text_in_color "$ICyan" "Installing Fail2ban..."
 fi
 
-# Create missing dir
+# Create $VMLOGS dir
 mkdir -p "$VMLOGS"
 
 ### Local variables ###
@@ -67,8 +67,6 @@ do
         # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
         print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
         xargs rm -f <<< "$NCLOG"
-        # Create $VMLOGS dir
-        mkdir -p "$VMLOGS"
         # Set logging
         occ_command config:system:set log_type --value=file
         occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
