@@ -53,6 +53,9 @@ else
     print_text_in_color "$ICyan" "Installing Fail2ban..."
 fi
 
+# Create missing dir
+mkdir -p "$VMLOGS"
+
 ### Local variables ###
 # location of Nextcloud logs
 print_text_in_color "$ICyan" "Finding nextcloud.log..."
