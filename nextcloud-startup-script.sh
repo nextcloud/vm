@@ -414,6 +414,13 @@ notify_admin_gui \
 "Do you need support?" \
 "If you need support, please visit the shop: https://shop.hanssonit.se, or the forum: https://help.nextcloud.com."
 
+if ! is_this_installed php"$PHPVER"-imagick
+then
+    notify_admin_gui \
+    "Regarding Imagick not being installed" \
+    "As you may have noticed, Imagick is not installed. We care about your security, and here's the reason: https://github.com/nextcloud/server/issues/13>
+fi
+
 # Fixes https://github.com/nextcloud/vm/issues/58
 a2dismod status
 restart_webserver
