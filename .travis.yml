@@ -1,5 +1,5 @@
 language: shell
 dist: focal
-os: linux
+os: ubuntu
 script:
   - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
