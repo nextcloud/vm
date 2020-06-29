@@ -1,4 +1,5 @@
-language: bash
-sudo: false
+language: shell
+dist: focal
+os: linux
 script:
   - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
