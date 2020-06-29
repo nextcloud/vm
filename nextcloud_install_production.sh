@@ -5,6 +5,115 @@
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
 
+#########
+
+IRed='\e[0;91m'         # Red
+IGreen='\e[0;92m'       # Green
+ICyan='\e[0;96m'        # Cyan
+Color_Off='\e[0m'       # Text Reset
+print_text_in_color() {
+	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
+}
+
+print_text_in_color "$ICyan" "Fetching all the variables from lib.sh..."
+
+is_process_running() {
+PROCESS="$1"
+
+while :
+do
+    RESULT=$(pgrep "${PROCESS}")
+
+    if [ "${RESULT:-null}" = null ]; then
+            break
+    else
+            print_text_in_color "$ICyan" "${PROCESS} is running, waiting for it to stop..."
+            sleep 10
+    fi
+done
+}
+
+is_root() {
+    if [[ "$EUID" -ne 0 ]]
+    then
+        return 1
+    else
+        return 0
+    fi
+}
+
+# Check if root
+root_check() {
+if ! is_root
+then
+msg_box "Sorry, you are not root. You now have two options:
+1. With SUDO directly:
+   a) :~$ sudo bash $SCRIPTS/name-of-script.sh
+2. Become ROOT and then type your command:
+   a) :~$ sudo -i
+   b) :~# bash $SCRIPTS/name-of-script.sh
+In both cases above you can leave out $SCRIPTS/ if the script
+is directly in your PATH.
+More information can be found here: https://unix.stackexchange.com/a/3064"
+    exit 1
+fi
+}
+
+network_ok() {
+    print_text_in_color "$ICyan" "Testing if network is OK..."
+    if ! netplan apply
+    then
+        systemctl restart systemd-networkd > /dev/null
+    fi
+    sleep 3 && site_200 github.com
+fi
+
+#########
+
+# Check if root
+root_check
+
+# Check network
+if network_ok
+then
+    print_text_in_color "$IGreen" "Online!"
+else
+    print_text_in_color "$ICyan" "Setting correct interface..."
+    [ -z "$IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+    # Set correct interface
+    cat <<-SETDHCP > "/etc/netplan/01-netcfg.yaml"
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    $IFACE:
+      dhcp4: true
+      dhcp6: true
+SETDHCP
+    check_command netplan apply
+    print_text_in_color "$ICyan" "Checking connection..."
+    sleep 1
+    if ! nslookup github.com
+    then
+msg_box "The script failed to get an address from DHCP.
+You must have a working network connection to run this script.
+You will now be provided with the option to set a static IP manually instead."
+
+        # Run static_ip script
+	bash /var/scripts/static_ip.sh
+    fi
+fi
+
+# Check network again
+if network_ok
+then
+    print_text_in_color "$IGreen" "Online!"
+else
+msg_box "Network NOT OK. You must have a working network connection to run this script.
+Please post this issue on: https://github.com/nextcloud/vm/issues"
+    exit 1
+fi
+
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
@@ -14,14 +123,24 @@ else
     apt install curl -y
 fi
 
-# shellcheck disable=2034,2059
+# When we have internet, fetch the latest lib.sh variables and functions
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NCDB=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NCDB
 
 # Check if dpkg or apt is running
 is_process_running apt
 is_process_running dpkg
+
+# Install curl if not existing
+if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "curl OK"
+else
+    apt update -q4
+    apt install curl -y
+fi
 
 # Install lshw if not existing
 if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
@@ -49,21 +168,6 @@ else
     apt update -q4 & spinner_loading
     apt install whiptail -y
 fi
-
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset FIRST_IFACE
-
-# Check for errors + debug code and abort if something isn't right
-# 1 = ON
-# 0 = OFF
-DEBUG=0
-debug_mode
-
-# Check if root
-root_check
 
 # Set locales
 run_script STATIC locales
@@ -93,39 +197,6 @@ if ! site_200 "$NCREPO"
 then
 msg_box "Nextcloud repo is not available, exiting..."
     exit 1
-fi
-
-# Fix LVM on BASE image
-if grep -q "LVM" /etc/fstab
-then
-    # Resize LVM (live installer is &%¤%/!
-    # VM
-    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-    lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
-
-    # HomeSME Server
-    if home_sme_server
-    then
-        print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-        while :
-        do
-            lvdisplay | grep "Size" | awk '{print $3}'
-            if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-            then
-                if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-                then
-                    if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-                    then
-                        if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-                        then
-                            resize2fs /dev/ubuntu-vg/ubuntu-lv
-                            break
-                        fi
-                    fi
-                fi
-            fi
-        done
-    fi
 fi
 
 # Check if it's a clean server
@@ -160,11 +231,6 @@ install_if_not netplan.io
 # Install build-essentials to get make
 install_if_not build-essential
 
-# Just check if the function works and run disk setup
-if home_sme_server
-then
-    run_script STATIC format-sda-nuc-server
-else
 # Set dual or single drive setup
 msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
 You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
@@ -195,7 +261,6 @@ case "$choice" in
     *)
     ;;
 esac
-fi
 
 # Set DNS resolver
 # https://medium.com/@ahmadb/fixing-dns-issues-in-ubuntu-18-04-lts-bd4f9ca56620
@@ -288,9 +353,9 @@ check_command apt install -y \
     php"$PHPVER"-gmp \
     php"$PHPVER"-bz2 \
     php"$PHPVER"-bcmath \
-    php-pear
-    # php"$PHPVER"-imagick \
-    # libmagickcore-6.q16-3-extra
+    php-pear \
+    php"$PHPVER"-imagick \
+    libmagickcore-6.q16-3-extra
 
 # Enable php-fpm
 a2enconf php"$PHPVER"-fpm
@@ -360,7 +425,7 @@ rm "$HTML/$STABLEVERSION.tar.bz2"
 
 # Secure permissions
 download_script STATIC setup_secure_permissions_nextcloud
-bash $SECURE & spinner_loading
+chown -R www-data:www-data "$HTML"
 
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
@@ -381,13 +446,6 @@ echo
 
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
-
-# Run the updatenotification on a schelude
-occ_command config:system:set upgrade.disable-web --value="true"
-print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
-download_script STATIC updatenotification
-check_command chmod +x "$SCRIPTS"/updatenotification.sh
-crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
@@ -679,103 +737,10 @@ a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
-choice=$(whiptail --title "Install apps or software" --checklist "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Calendar" "" ON \
-"Contacts" "" ON \
-"IssueTemplate" "" ON \
-"PDFViewer" "" ON \
-"Extract" "" ON \
-"Text" "" ON \
-"Mail" "" ON \
-"Deck" "" ON \
-"Group-Folders" "" ON \
-"Webmin" "" ON 3>&1 1>&2 2>&3)
-
-case "$choice" in
-    *"Calendar"*)
-        install_and_enable_app calendar
-    ;;&
-    *"Contacts"*)
-        install_and_enable_app contacts
-    ;;&
-    *"IssueTemplate"*)
-        install_and_enable_app issuetemplate
-    ;;&
-    *"PDFViewer"*)
-        install_and_enable_app files_pdfviewer
-    ;;&
-    *"Extract"*)
-        if install_and_enable_app extract
-        then
-            install_if_not unrar
-            install_if_not p7zip
-            install_if_not p7zip-full
-        fi
-    ;;&
-    *"Text"*)
-        install_and_enable_app text
-    ;;&
-    *"Mail"*)
-        install_and_enable_app mail
-    ;;&
-    *"Deck"*)
-        install_and_enable_app deck
-    ;;&
-    *"Group-Folders"*)
-        install_and_enable_app groupfolders
-    ;;&
-    *"Webmin"*)
-        run_script APP webmin
-    ;;&
-    *)
-    ;;
-esac
-
-# Get needed scripts for first bootup
-check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
-check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
-download_script STATIC instruction
-download_script STATIC history
-download_script STATIC static_ip
-
-if home_sme_server
-then
-    # Change nextcloud-startup-script.sh
-    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
-fi
-
-# Make $SCRIPTS excutable
-chmod +x -R "$SCRIPTS"
-chown root:root -R "$SCRIPTS"
-
-# Prepare first bootup
-check_command run_script STATIC change-ncadmin-profile
-check_command run_script STATIC change-root-profile
-
-# Upgrade
-apt update -q4 & spinner_loading
-apt dist-upgrade -y
-
-# Remove LXD (always shows up as failed during boot)
-apt purge lxd -y
-
 # Cleanup
 apt autoremove -y
 apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
-
-# Install virtual kernels for Hyper-V, (and extra for UTF8 kernel module + Collabora and OnlyOffice)
-# Kernel 5.4
-if ! home_sme_server
-then
-   # Hyper-V
-   apt install -y --install-recommends \
-   linux-virtual \
-   linux-image-virtual \
-   linux-tools-virtual \
-   linux-cloud-tools-virtual
-   # linux-image-extra-virtual only needed for AUFS driver with Docker
-fi
 
 # Add aliases
 if [ -f /root/.bash_aliases ]
@@ -784,25 +749,17 @@ then
     then
 {
 echo "alias nextcloud_occ='sudo -u www-data php /var/www/nextcloud/occ'"
-echo "alias run_update_nextcloud='bash /var/scripts/update.sh'"
 } >> /root/.bash_aliases
     fi
 elif [ ! -f /root/.bash_aliases ]
 then
 {
 echo "alias nextcloud_occ='sudo -u www-data php /var/www/nextcloud/occ'"
-echo "alias run_update_nextcloud='bash /var/scripts/update.sh'"
 } > /root/.bash_aliases
 fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
-
-# Put IP adress in /etc/issue (shown before the login)
-if [ -f /etc/issue ]
-then
-    echo "\4" >> /etc/issue
-fi
 
 # Force MOTD to show correct number of updates
 if is_this_installed update-notifier-common
