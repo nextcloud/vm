@@ -32,7 +32,7 @@ then
             a2disconf adminer.conf
             rm $ADMINER_CONF
             rm $ADMINERDIR/adminer.php
-            check_command apt purge adminer -y
+            check_command apt-get purge adminer -y
             restart_webserver
             msg_box "Adminer was successfully uninstalled and all settings were resetted."
             exit
@@ -44,7 +44,7 @@ then
             a2disconf adminer.conf
             rm $ADMINER_CONF
             rm $ADMINERDIR/adminer.php
-            check_command apt purge adminer -y
+            check_command apt-get purge adminer -y
         ;;
         *)
         ;;

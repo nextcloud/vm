@@ -46,7 +46,7 @@ then
             occ_command_no_check config:app:delete spreed turn_servers
             occ_command_no_check app:remove spreed
             rm $TURN_CONF
-            apt purge coturn -y
+            apt-get purge coturn -y
             msg_box "Nextcloud Talk was successfully uninstalled and all settings were resetted."
             exit
         ;;
@@ -56,7 +56,7 @@ then
             occ_command_no_check config:app:delete spreed turn_servers
             occ_command_no_check app:remove spreed
             rm $TURN_CONF
-            apt purge coturn -y
+            apt-get purge coturn -y
         ;;
         *)
         ;;

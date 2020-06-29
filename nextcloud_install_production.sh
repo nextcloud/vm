@@ -757,7 +757,7 @@ apt update -q4 & spinner_loading
 apt dist-upgrade -y
 
 # Remove LXD (always shows up as failed during boot)
-apt purge lxd -y
+apt-get purge lxd -y
 
 # Cleanup
 apt autoremove -y

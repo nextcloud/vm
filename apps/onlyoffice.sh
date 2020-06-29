@@ -132,7 +132,7 @@ then
     else
         a2dismod evasive
         # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
-        apt purge libapache2-mod-evasive -y
+        apt-get purge libapache2-mod-evasive -y
 	systemctl restart apache2.service
     fi
 fi

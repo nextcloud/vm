@@ -150,12 +150,12 @@ else
     # check if imagick ist installed and remove it
     if is_this_installed php-imagick
     then
-        apt purge php-imagick -y
+        apt-get purge php-imagick -y
     fi
     # check if libmagickcore is installed and remove it
     if is_this_installed libmagickcore-6.q16-3-extra
     then
-        apt purge libmagickcore-6.q16-3-extra -y
+        apt-get purge libmagickcore-6.q16-3-extra -y
     fi
     # Choose file formats fo the case when imagick is not installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
