@@ -33,7 +33,7 @@ then
         ;;
         "Reinstall Webmin")
             print_text_in_color "$ICyan" "Reinstalling Webmin..."
-            check_command apt purge webmin -y
+            check_command apt-get purge webmin -y
         ;;
         *)
         ;;

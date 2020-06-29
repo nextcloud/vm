@@ -35,7 +35,7 @@ then
             fail2ban-client unban --all
             rm /etc/fail2ban/filter.d/nextcloud.conf
             rm /etc/fail2ban/jail.local
-            check_command apt purge fail2ban -y
+            check_command apt-get purge fail2ban -y
             msg_box "Fail2Ban was successfully uninstalled."
             exit
         ;;
@@ -44,7 +44,7 @@ then
             fail2ban-client unban --all
             rm /etc/fail2ban/filter.d/nextcloud.conf
             rm /etc/fail2ban/jail.local
-            check_command apt purge fail2ban -y
+            check_command apt-get purge fail2ban -y
         ;;
         *)
         ;;
