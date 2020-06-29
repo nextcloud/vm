@@ -711,6 +711,89 @@ a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
+<<<<<<< HEAD
+=======
+choice=$(whiptail --title "Install apps or software" --checklist "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Calendar" "" ON \
+"Contacts" "" ON \
+"IssueTemplate" "" ON \
+"PDFViewer" "" ON \
+"Extract" "" ON \
+"Text" "" ON \
+"Mail" "" ON \
+"Deck" "" ON \
+"Group-Folders" "" ON \
+"Webmin" "" ON 3>&1 1>&2 2>&3)
+
+case "$choice" in
+    *"Calendar"*)
+        install_and_enable_app calendar
+    ;;&
+    *"Contacts"*)
+        install_and_enable_app contacts
+    ;;&
+    *"IssueTemplate"*)
+        install_and_enable_app issuetemplate
+    ;;&
+    *"PDFViewer"*)
+        install_and_enable_app files_pdfviewer
+    ;;&
+    *"Extract"*)
+        if install_and_enable_app extract
+        then
+            install_if_not unrar
+            install_if_not p7zip
+            install_if_not p7zip-full
+        fi
+    ;;&
+    *"Text"*)
+        install_and_enable_app text
+    ;;&
+    *"Mail"*)
+        install_and_enable_app mail
+    ;;&
+    *"Deck"*)
+        install_and_enable_app deck
+    ;;&
+    *"Group-Folders"*)
+        install_and_enable_app groupfolders
+    ;;&
+    *"Webmin"*)
+        run_script APP webmin
+    ;;&
+    *)
+    ;;
+esac
+
+# Get needed scripts for first bootup
+check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
+check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
+download_script STATIC instruction
+download_script STATIC history
+download_script STATIC static_ip
+
+if home_sme_server
+then
+    # Change nextcloud-startup-script.sh
+    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
+fi
+
+# Make $SCRIPTS excutable
+chmod +x -R "$SCRIPTS"
+chown root:root -R "$SCRIPTS"
+
+# Prepare first bootup
+check_command run_script STATIC change-ncadmin-profile
+check_command run_script STATIC change-root-profile
+
+# Upgrade
+apt update -q4 & spinner_loading
+apt dist-upgrade -y
+
+# Remove LXD (always shows up as failed during boot)
+apt-get purge lxd -y
+
+>>>>>>> master
 # Cleanup
 apt autoremove -y
 apt autoclean
