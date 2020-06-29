@@ -34,7 +34,7 @@ apt update -q4 & spinner_loading
 apt dist-upgrade -y
 
 # Remove LXD (always shows up as failed during boot)
-apt purge lxd -y
+apt-get purge lxd -y
 
 # Put IP adress in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
