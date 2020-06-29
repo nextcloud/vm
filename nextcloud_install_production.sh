@@ -176,11 +176,6 @@ run_script STATIC locales
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
-# Create new current user
-download_script STATIC adduser
-bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
-rm -f $SCRIPTS/adduser.sh
-
 # Check distribution and version
 if ! version 20.04 "$DISTRO" 20.04.6
 then
@@ -212,12 +207,6 @@ stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
-
-# Create $SCRIPTS dir
-if [ ! -d "$SCRIPTS" ]
-then
-    mkdir -p "$SCRIPTS"
-fi
 
 # Create $VMLOGS dir
 if [ ! -d "$VMLOGS" ]
@@ -470,21 +459,6 @@ occ_command config:system:set log.condition apps 0 --value admin_audit
 
 # Set SMTP mail
 occ_command config:system:set mail_smtpmode --value="smtp"
-
-# Forget login/session after 30 minutes
-occ_command config:system:set remember_login_cookie_lifetime --value="1800"
-
-# Set logrotate (max 10 MB)
-occ_command config:system:set log_rotate_size --value="10485760"
-
-# Set trashbin retention obligation (save it in trahbin for 6 months or delete when space is needed)
-occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
-
-# Set versions retention obligation (save versions for 12 months or delete when space is needed)
-occ_command config:system:set versions_retention_obligation --value="auto, 365"
-
-# Remove simple signup
-occ_command config:system:set simpleSignUpLink.shown --value="false"
 
 # Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
@@ -766,6 +740,118 @@ if is_this_installed update-notifier-common
 then
     sudo /usr/lib/update-notifier/update-motd-updates-available --force
 fi
+
+
+# Fixes https://github.com/nextcloud/vm/issues/58
+a2dismod status
+restart_webserver
+
+# Change passwords
+# CLI USER
+print_text_in_color "$ICyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
+any_key "Press any key to change password for system user..."
+while true
+do
+    sudo passwd "$(getent group sudo | cut -d: -f4 | cut -d, -f1)" && break
+done
+echo
+clear
+# NEXTCLOUD USER
+NCADMIN=$(occ_command user:list | awk '{print $3}')
+print_text_in_color "$ICyan" "The current admin user in Nextcloud GUI is [$NCADMIN]"
+print_text_in_color "$ICyan" "We will now replace this user with your own."
+any_key "Press any key to replace the current (local) admin user for Nextcloud..."
+# Create new user
+while true
+do
+    print_text_in_color "$ICyan" "Please enter the username for your new user:"
+    read -r NEWUSER
+    sudo -u www-data $NCPATH/occ user:add "$NEWUSER" -g admin && break
+done
+# Delete old user
+if [[ "$NCADMIN" ]]
+then
+    print_text_in_color "$ICyan" "Deleting $NCADMIN..."
+    occ_command user:delete "$NCADMIN"
+    sleep 2
+fi
+clear
+
+# Change Timezone
+print_text_in_color "$ICyan" "Current timezone is $(cat /etc/timezone)"
+if [[ "no" == $(ask_yes_or_no "Do you want to change the timezone?") ]]
+then
+    print_text_in_color "$ICyan" "Not changing timezone..."
+    sleep 1
+    clear
+else
+    dpkg-reconfigure tzdata
+fi
+
+# Change timezone in PHP
+sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
+
+# Change timezone for logging
+occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+clear
+
+# Pretty URLs
+print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
+chown -R www-data:www-data $NCPATH
+occ_command config:system:set overwrite.cli.url --value="http://localhost/"
+occ_command config:system:set htaccess.RewriteBase --value="/"
+occ_command maintenance:update:htaccess
+bash $SECURE & spinner_loading
+
+# Generate new SSH Keys
+printf "\nGenerating new SSH keys for the server...\n"
+rm -v /etc/ssh/ssh_host_*
+dpkg-reconfigure openssh-server
+
+# Generate new PostgreSQL password
+print_text_in_color "$ICyan" "Generating new PostgreSQL password..."
+check_command bash "$SCRIPTS/change_db_pass.sh"
+sleep 3
+clear
+
+# Prep for first use
+cat << ROOTNEWPROFILE > "/root/.bash_profile"
+# ~/.profile: executed by Bourne-compatible login shells.
+if [ "/bin/bash" ]
+then
+    if [ -f ~/.bashrc ]
+    then
+        . ~/.bashrc
+    fi
+fi
+mesg n
+ROOTNEWPROFILE
+
+truncate -s 0 \
+    /root/.bash_history \
+    "/home/$UNIXUSER/.bash_history" \
+    /var/spool/mail/root \
+    "/var/spool/mail/$UNIXUSER" \
+    /var/log/apache2/access.log \
+    /var/log/apache2/error.log \
+    /var/log/cronjobs_success.log \
+    "$VMLOGS/nextcloud.log"
+
+sed -i "s|sudo -i||g" "/home/$UNIXUSER/.bash_profile"
+
+# Cleanup 1
+occ_command maintenance:repair
+rm -f "$SCRIPTS/ip.sh"
+rm -f "$SCRIPTS/change_db_pass.sh"
+rm -f "$SCRIPTS/test_connection.sh"
+rm -f "$SCRIPTS/instruction.sh"
+rm -f "$NCDATA/nextcloud.log"
+rm -f "$SCRIPTS/static_ip.sh"
+rm -f "$SCRIPTS/lib.sh"
+rm -f "$SCRIPTS/server_configuration.sh"
+rm -f "$SCRIPTS/nextcloud_configuration.sh"
+rm -f "$SCRIPTS/additional_apps.sh"
+
 
 # Reboot
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
