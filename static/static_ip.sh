@@ -181,7 +181,7 @@ fi
 # Use the updated DNS IP addresses
 DNSs="$NSIP1"
 DNS1="$NSIP1"
-if [[ "none" == $NSIP2 || -z "$NSIP2" ]]
+if [[ "none" == "$NSIP2" || -z "$NSIP2" ]]
 then
     DNS2=
 else
