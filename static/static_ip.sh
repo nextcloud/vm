@@ -160,6 +160,7 @@ ENTERNS1
 +-------------------------------------------------------+
 |    Please enter the local nameserver address you want |
 |    to set. Just hit enter to choose the current NS2.  |
+|    If you only have one nameserver then enter none.   |
 |    Your current NS2 is: $DNS2               |
 +-------------------------------------------------------+
 ENTERNS2
@@ -177,14 +178,14 @@ ENTERNS2
     done
 fi
 
-# Check if DNS is set manaully and set variables accordingly
-if [ -n "$NSIP1" ]
+# Use the updated DNS IP addresses
+DNSs="$NSIP1"
+DNS1="$NSIP1"
+if [[ "none" == $NSIP2 || -z "$NSIP2" ]]
 then
-    DNS1="$NSIP1"
-fi
-
-if [ -n "$NSIP2" ]
-then
+    DNS2=
+else
+    DNSs="$NSIP1,$NSIP2"
     DNS2="$NSIP2"
 fi
 
@@ -201,13 +202,14 @@ network:
          addresses: [$LANIP] # client IP address
          gateway4: $GATEWAYIP # gateway address
          nameservers:
-           addresses: [$DNS1,$DNS2] #name servers
+           addresses: [$DNSs] #name servers
 IPCONFIG
 
 msg_box "These are your settings, please make sure they are correct:
 
 $(cat /etc/netplan/01-netcfg.yaml)"
     netplan try
+    set_systemd_resolved_dns "$IFACE"
 else
     cat <<-IPCONFIGnonvmware > "$INTERFACES"
 network:
@@ -219,12 +221,13 @@ network:
          addresses: [$ADDRESS/24] # client IP address
          gateway4: $GATEWAY # gateway address
          nameservers:
-           addresses: [$DNS1,$DNS2] #name servers
+           addresses: [$DNSs] #name servers
 IPCONFIGnonvmware
 msg_box "These are your settings, please make sure they are correct:
 
 $(cat /etc/netplan/01-netcfg.yaml)"
     netplan try
+    set_systemd_resolved_dns "$IFACE2"
 fi
 
 if test_connection
