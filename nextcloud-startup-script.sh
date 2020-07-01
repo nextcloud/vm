@@ -82,6 +82,7 @@ SETDHCP
     check_command netplan apply
     print_text_in_color "$ICyan" "Checking connection..."
     sleep 1
+    set_systemd_resolved_dns "$IFACE"
     if ! nslookup github.com
     then
 msg_box "The script failed to get an address from DHCP.

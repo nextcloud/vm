@@ -263,6 +263,21 @@ You can always contact us for further support if you wish: https://shop.hanssoni
     fi
 }
 
+# A function to set the systemd-resolved default DNS servers based on the
+# current Internet faceing interface. This is needed for docker interfaces
+# that might not use the same DNS servers otherwise.
+set_systemd_resolved_dns() {
+local iface="$1"
+local pattern="$iface(?:.|\n)*?DNS Servers: ((?:[0-9a-f.: ]|\n)*?)\s*(?=\n\S|\n.+: |$)"
+local dnss=$( systemd-resolve --status | perl -0777 -ne "if ((\$v) = (/$pattern/)) {\$v=~s/(?:\s|\n)+/ /g;print \"\$v\n\";}" )
+if [ -n "$dnss" ]
+then
+    sed -i "s/^DNS=.*$/DNS=${dnss}/" /etc/systemd/resolved.conf
+    systemctl restart systemd-resolved
+    sleep 1
+fi
+}
+
 # A function to fetch a file with curl to a directory
 # 1 = https://example.com
 # 2 = name of file
@@ -1157,12 +1172,11 @@ fi
 
 home_sme_server() {
 # OLD DISKS: "Samsung SSD 860" || ST5000LM000-2AN1  || ST5000LM015-2E81
-# OLD MEMORY: BLS16G4 (Balistix Sport) || 18ASF2G72HZ (ECC)
 if lshw -c system | grep -q NUC8i3BEH
 then
-    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ" 
+    if lshw -c memory | grep -q BLS16G4 || lshw -c memory | grep -q 18ASF2G72HZ
     then
-        if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860"
+        if lshw -c disk | grep -q ST2000LM015-2E81 || lshw -c disk | grep -q WDS400
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
