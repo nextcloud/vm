@@ -269,7 +269,8 @@ You can always contact us for further support if you wish: https://shop.hanssoni
 set_systemd_resolved_dns() {
 local iface="$1"
 local pattern="$iface(?:.|\n)*?DNS Servers: ((?:[0-9a-f.: ]|\n)*?)\s*(?=\n\S|\n.+: |$)"
-local dnss=$( systemd-resolve --status | perl -0777 -ne "if ((\$v) = (/$pattern/)) {\$v=~s/(?:\s|\n)+/ /g;print \"\$v\n\";}" )
+local dnss
+dnss=$( systemd-resolve --status | perl -0777 -ne "if ((\$v) = (/$pattern/)) {\$v=~s/(?:\s|\n)+/ /g;print \"\$v\n\";}" )
 if [ -n "$dnss" ]
 then
     sed -i "s/^DNS=.*$/DNS=${dnss}/" /etc/systemd/resolved.conf
