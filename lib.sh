@@ -273,7 +273,7 @@ local dnss
 dnss=$( systemd-resolve --status | perl -0777 -ne "if ((\$v) = (/$pattern/)) {\$v=~s/(?:\s|\n)+/ /g;print \"\$v\n\";}" )
 if [ -n "$dnss" ]
 then
-    sed -i "s/^DNS=.*$/DNS=${dnss}/" /etc/systemd/resolved.conf
+    sed -i "s/^#\?DNS=.*$/DNS=${dnss}/" /etc/systemd/resolved.conf
     systemctl restart systemd-resolved
     sleep 1
 fi
