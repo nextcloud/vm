@@ -166,7 +166,7 @@ ENTERNS1
 |      nameserver.                                      |
 |    Your current NS2 is: $DNS2               |
 +-------------------------------------------------------+
-EENTERNS2
+ENTERNS2
         echo
         read -r NSIP2
         echo
