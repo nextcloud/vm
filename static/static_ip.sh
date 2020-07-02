@@ -181,15 +181,24 @@ ENTERNS2
     done
 fi
 
-# Use the updated DNS IP addresses
-DNSs="$NSIP1"
-DNS1="$NSIP1"
-if [[ "none" == "$NSIP2" || "'none'" == "$NSIP2" || -z "$NSIP2" ]]
+DNSs="$DNS1,$DNS2"
+
+# Check if DNS is set manaully and set variables accordingly
+if [ -n "$NSIP1" ]
 then
-    DNS2=
-else
-    DNSs="$NSIP1,$NSIP2"
-    DNS2="$NSIP2"
+    DNSs="$NSIP1"
+    DNS1="$NSIP1"
+fi
+
+if [ -n "$NSIP2" ]
+then
+    if [[ "none" == "$NSIP2" || "'none'" == "$NSIP2" ]]
+    then
+        DNS2=
+    else
+        DNSs="$NSIP1,$NSIP2"
+        DNS2="$NSIP2"
+    fi
 fi
 
 # Check if IFACE is empty, if yes, try another method:
