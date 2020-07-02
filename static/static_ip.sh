@@ -159,11 +159,14 @@ ENTERNS1
         cat << ENTERNS2
 +-------------------------------------------------------+
 |    Please enter the local nameserver address you want |
-|    to set. Just hit enter to choose the current NS2.  |
-|    If you only have one nameserver then enter none.   |
+|    to set. The 3 options are:                         |
+|    - Hit enter to choose the current NS2.             |
+|    - Enter a new IP address for NS2.                  |
+|    - Enter the text 'none' if you only have one       |
+|      nameserver.                                      |
 |    Your current NS2 is: $DNS2               |
 +-------------------------------------------------------+
-ENTERNS2
+EENTERNS2
         echo
         read -r NSIP2
         echo
@@ -181,7 +184,7 @@ fi
 # Use the updated DNS IP addresses
 DNSs="$NSIP1"
 DNS1="$NSIP1"
-if [[ "none" == "$NSIP2" || -z "$NSIP2" ]]
+if [[ "none" == "$NSIP2" || "'none'" == "$NSIP2" || -z "$NSIP2" ]]
 then
     DNS2=
 else
