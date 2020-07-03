@@ -162,8 +162,7 @@ ENTERNS1
 |    to set. The 3 options are:                         |
 |    - Hit enter to choose the current NS2.             |
 |    - Enter a new IP address for NS2.                  |
-|    - Enter the text 'none' if you only have one       |
-|      nameserver.                                      |
+|    - Enter the text 'none' if you only have one NS.   |
 |    Your current NS2 is: $DNS2               |
 +-------------------------------------------------------+
 ENTERNS2
