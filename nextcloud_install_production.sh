@@ -198,24 +198,21 @@ esac
 fi
 
 # Set DNS resolver
-# https://medium.com/@ahmadb/fixing-dns-issues-in-ubuntu-18-04-lts-bd4f9ca56620
+# https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f
 choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Quad9" "(https://www.quad9.net/)" ON \
 "Cloudflare" "(https://www.cloudflare.com/dns/)" OFF \
-"Local" "($GATEWAY + 149.112.112.112)" OFF 3>&1 1>&2 2>&3)
+"Local" "($GATEWAY) - DNS on gateway" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Quad9")
-        sed -i "s|#DNS=.*|DNS=9.9.9.9 2620:fe::fe|g" /etc/systemd/resolved.conf
-        sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
+        sed -i "s|#DNS=.*|DNS=9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9|g" /etc/systemd/resolved.conf
     ;;
     "Cloudflare")
-        sed -i "s|#DNS=.*|DNS=1.1.1.1 2606:4700:4700::1111|g" /etc/systemd/resolved.conf
-        sed -i "s|#FallbackDNS=.*|FallbackDNS=1.0.0.1 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
+        sed -i "s|#DNS=.*|DNS=1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
     ;;
     "Local")
         sed -i "s|#DNS=.*|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
-        sed -i "s|#FallbackDNS=.*|FallbackDNS=149.112.112.112 2620:fe::9|g" /etc/systemd/resolved.conf
     ;;
     *)
     ;;
