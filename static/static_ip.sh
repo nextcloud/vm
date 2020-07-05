@@ -199,7 +199,7 @@ ENTERNS2
     if [ -n "$NSIP1" ]
     then
         DNSs="$NSIP1"
-    else
+
         if [[ -n "$NSIP2" && ! ( "none" == "$NSIP2" || "'none'" == "$NSIP2" ) ]]
         then
             DNSs="$NSIP1,$NSIP2"
