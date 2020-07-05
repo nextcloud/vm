@@ -422,6 +422,7 @@ calculate_max_children() {
 }
 
 test_connection() {
+local non_fatal="$1"
 version(){
     local h t v
 
@@ -455,26 +456,26 @@ fi
 print_text_in_color "$ICyan" "Checking connection..."
 netplan apply
 sleep 2
-if nslookup github.com
-then
-    print_text_in_color "$IGreen" "Online!"
-elif ! nslookup github.com
+if ! nslookup github.com
 then
     print_text_in_color "$ICyan" "Trying to restart netplan service..."
     check_command systemctl restart systemd-networkd && sleep 2
-    if nslookup github.com
-    then
-        print_text_in_color "$IGreen" "Online!"
-    fi
-else
     if ! nslookup github.com
     then
-msg_box "Network NOT OK. You must have a working network connection to run this script
+        if [[ ! ("continue" == "$non_fatal") ]]
+        then
+            msg_box "Network NOT OK. You must have a working network connection to run this script.
 If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
-    exit 1
+            exit 1
+        else
+            return 1
+        fi
     fi
 fi
+print_text_in_color "$IGreen" "Online!"
+return 0
 }
+
 
 # Check that the script can see the external IP (apache fails otherwise), used e.g. in the adminer app script.
 check_external_ip() {
