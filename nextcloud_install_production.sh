@@ -219,7 +219,7 @@ do
         *)
         ;;
     esac
-    if [[ test_connection "continue" && network_ok ]]
+    if test_connection "continue" && network_ok
     then
         break
     else
