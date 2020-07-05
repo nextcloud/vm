@@ -46,7 +46,7 @@ INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
-# Use existing global name servers if they exist
+use_global_systemd_dns() {
 if [ -f "/etc/systemd/resolved.conf" ]
 then
     local resolvedDns1
@@ -65,6 +65,8 @@ then
         fi
     fi
 fi
+}
+use_global_systemd_dns
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
