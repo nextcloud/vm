@@ -46,6 +46,25 @@ INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
+# Use existing global name servers if they exist
+if [ -f "/etc/systemd/resolved.conf" ]
+then
+    local resolvedDns1
+    resolvedDns1=$(grep -m 1 -E "^DNS=.+" /etc/systemd/resolved.conf | sed s/^DNS=// | awk '{print $1}')
+    if [ -n "$resolvedDns1" ]
+    then
+        DNS1="$resolvedDns1"
+
+        local resolvedDns2
+        resolvedDns2=$(grep -m 1 -E "^DNS=.+" /etc/systemd/resolved.conf | sed s/^DNS=// | awk '{print $2}')
+        if [ -n "$resolvedDns2" ]
+        then
+            DNS2="$resolvedDns2"
+        else
+            DNS2=
+        fi
+    fi
+fi
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
@@ -274,7 +293,7 @@ dnss=$( systemd-resolve --status | perl -0777 -ne "if ((\$v) = (/$pattern/)) {\$
 if [ -n "$dnss" ]
 then
     sed -i "s/^#\?DNS=.*$/DNS=${dnss}/" /etc/systemd/resolved.conf
-    systemctl restart systemd-resolved
+    systemctl restart systemd-resolved &>/dev/null
     sleep 1
 fi
 }
