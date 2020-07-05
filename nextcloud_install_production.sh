@@ -199,26 +199,43 @@ fi
 
 # Set DNS resolver
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f
-choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Quad9" "(https://www.quad9.net/)" ON \
-"Cloudflare" "(https://www.cloudflare.com/dns/)" OFF \
-"Local" "($GATEWAY) - DNS on gateway" OFF 3>&1 1>&2 2>&3)
+while true
+do
+    choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Quad9" "(https://www.quad9.net/)" ON \
+    "Cloudflare" "(https://www.cloudflare.com/dns/)" OFF \
+    "Local" "($GATEWAY) - DNS on gateway" OFF 3>&1 1>&2 2>&3)
 
-case "$choice" in
-    "Quad9")
-        sed -i "s|^#\?DNS=.*$|DNS=9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9|g" /etc/systemd/resolved.conf
-    ;;
-    "Cloudflare")
-        sed -i "s|^#\?DNS=.*$|DNS=1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
-    ;;
-    "Local")
-        sed -i "s|^#\?DNS=.*$|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
-    ;;
-    *)
-    ;;
-esac
-test_connection
-network_ok
+    case "$choice" in
+        "Quad9")
+            sed -i "s|^#\?DNS=.*$|DNS=9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9|g" /etc/systemd/resolved.conf
+        ;;
+        "Cloudflare")
+            sed -i "s|^#\?DNS=.*$|DNS=1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
+        ;;
+        "Local")
+            sed -i "s|^#\?DNS=.*$|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
+        ;;
+        *)
+        ;;
+    esac
+    if [[ test_connection "continue" && network_ok ]]
+    then
+        break
+    else
+        if [[ "Local" == "$choice" ]]
+        then
+            msg_box "Could not validate the local DNS server. Pick an Internet DNS server and try again."
+        else
+            msg_box "Could not validate the DNS server."
+            if [[ "no" == $(ask_yes_or_no "Try another DNS server?") ]]
+            then
+                print_text_in_color "$IRed" "Network NOT OK. You must have a working network connection to run this script."
+                exit 1
+            fi
+        fi
+    fi
+done
 
 # Check current repo
 run_script STATIC locate_mirror
