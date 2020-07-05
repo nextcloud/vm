@@ -119,12 +119,18 @@ If you're not sure what DNS is, or if you don't have a local DNS server,
 please don't touch this setting.
 
 If something goes wrong here, you will not be
-able to get any deb packages, download files, or reach internet.
+able to get any deb packages, download files, or reach the internet.
 
 The default nameservers are:
 $DNS1
 $DNS2
 "
+
+DNSs="$DNS1"
+if [ -n "$DNS2" ]
+then
+    DNSs="$DNS1,$DNS2"
+fi
 
 if [[ "yes" == $(ask_yes_or_no "Do you want to set your own nameservers?") ]]
 then
@@ -152,6 +158,12 @@ ENTERNS1
         fi
     done
 
+    DISPLAY_DNS2="$DNS2"
+    if [ -z "$DISPLAY_DNS2" ]
+    then
+        DISPLAY_DNS2="'none'"
+    fi
+
     echo
     while true
     do
@@ -163,7 +175,7 @@ ENTERNS1
 |    - Hit enter to choose the current NS2.             |
 |    - Enter a new IP address for NS2.                  |
 |    - Enter the text 'none' if you only have one NS.   |
-|    Your current NS2 is: $DNS2               |
+|    Your current NS2 is: $DISPLAY_DNS2               |
 +-------------------------------------------------------+
 ENTERNS2
         echo
@@ -171,7 +183,7 @@ ENTERNS2
         echo
         if [ -z "$NSIP2" ]
         then
-            NSIP2="$DNS2"
+            NSIP2="$DISPLAY_DNS2"
         fi
         if [[ "yes" == $(ask_yes_or_no "Is this correct? $NSIP2") ]]
         then
@@ -180,23 +192,14 @@ ENTERNS2
     done
 fi
 
-DNSs="$DNS1,$DNS2"
-
 # Check if DNS is set manaully and set variables accordingly
 if [ -n "$NSIP1" ]
 then
     DNSs="$NSIP1"
-    DNS1="$NSIP1"
-fi
-
-if [ -n "$NSIP2" ]
-then
-    if [[ "none" == "$NSIP2" || "'none'" == "$NSIP2" ]]
+else
+    if [[ -n "$NSIP2" && ! ( "none" == "$NSIP2" || "'none'" == "$NSIP2" ) ]]
     then
-        DNS2=
-    else
         DNSs="$NSIP1,$NSIP2"
-        DNS2="$NSIP2"
     fi
 fi
 
