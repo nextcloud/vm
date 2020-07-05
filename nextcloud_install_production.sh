@@ -206,13 +206,13 @@ choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider sho
 
 case "$choice" in
     "Quad9")
-        sed -i "s|#DNS=.*|DNS=9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9|g" /etc/systemd/resolved.conf
+        sed -i "s|^#\?DNS=.*$|DNS=9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9|g" /etc/systemd/resolved.conf
     ;;
     "Cloudflare")
-        sed -i "s|#DNS=.*|DNS=1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
+        sed -i "s|^#\?DNS=.*$|DNS=1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
     ;;
     "Local")
-        sed -i "s|#DNS=.*|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
+        sed -i "s|^#\?DNS=.*$|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
     ;;
     *)
     ;;
