@@ -240,7 +240,6 @@ download_script LETS_ENC activate-tls
 download_script STATIC temporary-fix
 download_script STATIC update
 download_script STATIC trusted
-download_script STATIC test_connection
 download_script STATIC setup_secure_permissions_nextcloud
 download_script STATIC change_db_pass
 download_script STATIC nextcloud
@@ -466,7 +465,6 @@ rm "$SCRIPTS"/temporary-fix.sh
 occ_command maintenance:repair
 rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/change_db_pass.sh"
-rm -f "$SCRIPTS/test_connection.sh"
 rm -f "$SCRIPTS/instruction.sh"
 rm -f "$NCDATA/nextcloud.log"
 rm -f "$SCRIPTS/static_ip.sh"
