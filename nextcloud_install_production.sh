@@ -225,7 +225,7 @@ do
         *)
         ;;
     esac
-    if network_ok
+    if test_connection
     then
         break
     else
