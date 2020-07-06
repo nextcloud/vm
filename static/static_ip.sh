@@ -63,9 +63,11 @@ then
     exit
 fi
 
+# Loop until working network settings are validated or the user asks to quit
 echo
 while true
 do
+    # Loop until user is happy with the IP address and subnet
     echo
     while true
     do
@@ -91,6 +93,7 @@ ENTERIP
         fi
     done
 
+    # Loop until user is happy with the default gateway
     echo
     while true
     do
@@ -129,7 +132,10 @@ $DNS1
 $DNS2
 "
 
+    # Set the variable used to fill in the Netplan nameservers. The existing
+    # values are used if the user does not decides not to update the nameservers.
     DNSs="$DNS1"
+    # Only add a second nameserver to the list if it is defined.
     if [ -n "$DNS2" ]
     then
         DNSs="$DNS1,$DNS2"
@@ -137,6 +143,7 @@ $DNS2
 
     if [[ "yes" == $(ask_yes_or_no "Do you want to set your own nameservers?") ]]
     then
+        # Loop until user is happy with the nameserver 1
         echo
         while true
         do
@@ -161,12 +168,15 @@ ENTERNS1
             fi
         done
 
+        # Nameserver 2 might be empty. As this will not be clear
+        # in prompts, 'none' is used in this case.
         DISPLAY_DNS2="$DNS2"
         if [ -z "$DISPLAY_DNS2" ]
         then
             DISPLAY_DNS2="'none'"
         fi
 
+        # Loop until user is happy with the nameserver 2
         echo
         while true
         do
@@ -199,7 +209,7 @@ ENTERNS2
     if [ -n "$NSIP1" ]
     then
         DNSs="$NSIP1"
-
+        # Only add a second nameserver to the list if it is defined and not 'none'.
         if [[ -n "$NSIP2" && ! ( "none" == "$NSIP2" || "'none'" == "$NSIP2" ) ]]
         then
             DNSs="$NSIP1,$NSIP2"
@@ -248,7 +258,7 @@ $(cat /etc/netplan/01-netcfg.yaml)"
         set_systemd_resolved_dns "$IFACE2"
     fi
 
-    if test_connection "continue"
+    if test_connection
     then
         sleep 1
         msg_box "Static IP sucessfully set!"
