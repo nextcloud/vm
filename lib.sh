@@ -44,6 +44,9 @@ WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
 [ -n "$LOAD_IP6" ] && WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
 INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
+# Internet DNS required when a check needs to be made to a server outside the home/SME
+INTERNET_DNS="9.9.9.9"
+# Default Quad9 DNS servers, overwritten by the systemd global DNS defined servers, if set
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
 use_global_systemd_dns() {
@@ -251,14 +254,14 @@ domain_check_200() {
     install_if_not dnsutils
 
     # Try to resolve the domain with nslookup using $DNS as resolver
-    if nslookup "${1}" 9.9.9.9 >/dev/null 2>&1
+    if nslookup "${1}" "$INTERNET_DNS" >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with nslookup!"
     else
         print_text_in_color "$IRed" "DNS lookup failed with nslookup."
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
         print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
-        nslookup "${1}" 9.9.9.9
+        nslookup "${1}" "$INTERNET_DNS"
         return 1
     fi
 
@@ -285,7 +288,7 @@ You can always contact us for further support if you wish: https://shop.hanssoni
 }
 
 # A function to set the systemd-resolved default DNS servers based on the
-# current Internet faceing interface. This is needed for docker interfaces
+# current Internet facing interface. This is needed for docker interfaces
 # that might not use the same DNS servers otherwise.
 set_systemd_resolved_dns() {
 local iface="$1"
@@ -422,7 +425,6 @@ calculate_max_children() {
 }
 
 test_connection() {
-local non_fatal="$1"
 version(){
     local h t v
 
@@ -453,6 +455,9 @@ if ! dpkg-query -W -f='${Status}' "net-tools" | grep -q "ok installed"
 then
     apt update -q4 & spinner_loading && apt install net-tools -y
 fi
+# After applying Netplan settings, try a DNS lookup.
+# Restart systemd-networkd if this fails and try again.
+# If this second check also fails, consider this a problem.
 print_text_in_color "$ICyan" "Checking connection..."
 netplan apply
 sleep 2
@@ -462,14 +467,9 @@ then
     check_command systemctl restart systemd-networkd && sleep 2
     if ! nslookup github.com
     then
-        if [[ ! ("continue" == "$non_fatal") ]]
-        then
-            msg_box "Network NOT OK. You must have a working network connection to run this script.
+        msg_box "Network NOT OK. You must have a working network connection to run this script.
 If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
-            exit 1
-        else
-            return 1
-        fi
+        return 1
     fi
 fi
 print_text_in_color "$IGreen" "Online!"
