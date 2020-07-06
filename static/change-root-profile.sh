@@ -27,9 +27,14 @@ then
     fi
 fi
 
-if [ -x /var/scripts/nextcloud_install_production.sh ]
+if [ -x /var/scripts/nextcloud-startup-script.sh ]
 then
-    /var/scripts/nextcloud_install_production.sh
+    /var/scripts/nextcloud-startup-script.sh
+fi
+
+if [ -x /var/scripts/history.sh ]
+then
+    /var/scripts/history.sh
 fi
 
 mesg n
