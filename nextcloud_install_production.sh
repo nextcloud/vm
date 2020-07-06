@@ -220,12 +220,13 @@ do
                 break
             else
                 msg_box "Could not validate the local DNS server. Pick an Internet DNS server and try again."
+                continue
             fi
         ;;
         *)
         ;;
     esac
-    if test_connection "$@" | grep -q "Online!"
+    if test_connection
     then
         break
     else
