@@ -225,7 +225,7 @@ do
         *)
         ;;
     esac
-    if test_connection | grep -q "Online!"
+    if test_connection "$@" | grep -q "Online!"
     then
         break
     else
