@@ -82,6 +82,7 @@ Please report any issues you can find. Improvments are welcome!
 * [Lorenzo Faleschini](https://github.com/penzoiders)
 * [Georg Großmann](https://github.com/ggeorgg)
 * [liao20081228](https://github.com/liao20081228)
+* [aaaskew](https://github.com/aaaskew)
 
 [Nextcloud Server]: https://bit.ly/2CHIUkA
 [app store]: https://bit.ly/2HUy4v9

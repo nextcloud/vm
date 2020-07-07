@@ -44,8 +44,32 @@ WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
 [ -n "$LOAD_IP6" ] && WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
 INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
+# Internet DNS required when a check needs to be made to a server outside the home/SME
+INTERNET_DNS="9.9.9.9"
+# Default Quad9 DNS servers, overwritten by the systemd global DNS defined servers, if set
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
+use_global_systemd_dns() {
+if [ -f "/etc/systemd/resolved.conf" ]
+then
+    local resolvedDns1
+    resolvedDns1=$(grep -m 1 -E "^DNS=.+" /etc/systemd/resolved.conf | sed s/^DNS=// | awk '{print $1}')
+    if [ -n "$resolvedDns1" ]
+    then
+        DNS1="$resolvedDns1"
+
+        local resolvedDns2
+        resolvedDns2=$(grep -m 1 -E "^DNS=.+" /etc/systemd/resolved.conf | sed s/^DNS=// | awk '{print $2}')
+        if [ -n "$resolvedDns2" ]
+        then
+            DNS2="$resolvedDns2"
+        else
+            DNS2=
+        fi
+    fi
+fi
+}
+use_global_systemd_dns
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
@@ -230,14 +254,14 @@ domain_check_200() {
     install_if_not dnsutils
 
     # Try to resolve the domain with nslookup using $DNS as resolver
-    if nslookup "${1}" $DNS1 >/dev/null 2>&1
+    if nslookup "${1}" "$INTERNET_DNS" >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with nslookup!"
     else
         print_text_in_color "$IRed" "DNS lookup failed with nslookup."
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
         print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
-        nslookup "${1}" $DNS1
+        nslookup "${1}" "$INTERNET_DNS"
         return 1
     fi
 
@@ -261,6 +285,22 @@ You can always contact us for further support if you wish: https://shop.hanssoni
             exit
         fi
     fi
+}
+
+# A function to set the systemd-resolved default DNS servers based on the
+# current Internet facing interface. This is needed for docker interfaces
+# that might not use the same DNS servers otherwise.
+set_systemd_resolved_dns() {
+local iface="$1"
+local pattern="$iface(?:.|\n)*?DNS Servers: ((?:[0-9a-f.: ]|\n)*?)\s*(?=\n\S|\n.+: |$)"
+local dnss
+dnss=$( systemd-resolve --status | perl -0777 -ne "if ((\$v) = (/$pattern/)) {\$v=~s/(?:\s|\n)+/ /g;print \"\$v\n\";}" )
+if [ -n "$dnss" ]
+then
+    sed -i "s/^#\?DNS=.*$/DNS=${dnss}/" /etc/systemd/resolved.conf
+    systemctl restart systemd-resolved &>/dev/null
+    sleep 1
+fi
 }
 
 # A function to fetch a file with curl to a directory
@@ -415,29 +455,27 @@ if ! dpkg-query -W -f='${Status}' "net-tools" | grep -q "ok installed"
 then
     apt update -q4 & spinner_loading && apt install net-tools -y
 fi
+# After applying Netplan settings, try a DNS lookup.
+# Restart systemd-networkd if this fails and try again.
+# If this second check also fails, consider this a problem.
 print_text_in_color "$ICyan" "Checking connection..."
 netplan apply
 sleep 2
-if nslookup github.com
-then
-    print_text_in_color "$IGreen" "Online!"
-elif ! nslookup github.com
+if ! nslookup github.com
 then
     print_text_in_color "$ICyan" "Trying to restart netplan service..."
     check_command systemctl restart systemd-networkd && sleep 2
-    if nslookup github.com
-    then
-        print_text_in_color "$IGreen" "Online!"
-    fi
-else
     if ! nslookup github.com
     then
-msg_box "Network NOT OK. You must have a working network connection to run this script
+        msg_box "Network NOT OK. You must have a working network connection to run this script.
 If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
-    exit 1
+        return 1
     fi
 fi
+print_text_in_color "$IGreen" "Online!"
+return 0
 }
+
 
 # Check that the script can see the external IP (apache fails otherwise), used e.g. in the adminer app script.
 check_external_ip() {
