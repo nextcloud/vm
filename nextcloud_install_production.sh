@@ -822,5 +822,7 @@ then
 fi
 
 # Reboot
-print_text_in_color "$IGreen" "Installation done, system will now reboot..."
+msg_box "Installation almost done, system will reboot when you hit OK. 
+
+Please log in again once rebooted to run the setup script."
 reboot
