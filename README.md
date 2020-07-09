@@ -15,6 +15,19 @@ Server installation. Simplified. :cloud:
 
 --------------------
 
+## Dependencies:
+(Ubuntu Server 20.04 LTS 64-bit)
+<br>
+(Linux Kernel: 5.14)
+- Apache 2.4
+- PostgreSQL 12
+- PHP-FPM 7.4
+- Redis Memcache (latest stable version from PECL)
+- APCu local cache (latest stable version from PECL)
+- PHP-igbinary (latest stable version from PECL
+- PHP-smbclient (latest stable version from PECL)
+- Nextcloud Server Latest
+
 ## Support the development
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
 * Report [your issue](https://github.com/nextcloud/vm/issues/new)
