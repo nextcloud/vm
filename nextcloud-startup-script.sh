@@ -487,9 +487,9 @@ truncate -s 0 \
     /var/log/cronjobs_success.log \
     "$VMLOGS/nextcloud.log"
 
-sed -i "s|sudo -i||g" "/home/$UNIXUSER/.bash_profile"
+sed -i "s|sudo -i||g" "$UNIXUSER_PROFILE"
 
-cat << ROOTNEWPROFILE > "/root/.bash_profile"
+cat << ROOTNEWPROFILE > "$ROOT_PROFILE"
 # ~/.profile: executed by Bourne-compatible login shells.
 
 if [ "/bin/bash" ]
