@@ -14,13 +14,15 @@ DEBUG=0
 debug_mode
 
 DESCRIPTION="High Performance Backend for Talk"
+
 # Check if root
 root_check
 
 # Check if HPB is already installed
-
+is_process_running dpkg
+is_process_running apt
 print_text_in_color "$ICyan" "Checking if ${DESCRIPTION} is already installed..."
-if dpkg -s nextcloud-spreed-signaling >/dev/null
+if ! is_this_installed nextcloud-spreed-signaling
 then
     choice=$(whiptail --radiolist "It seems like '${DESCRIPTION}' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall ${DESCRIPTION}" "" OFF \
@@ -43,8 +45,6 @@ fi
 
 # Install
 . /etc/lsb-release
-is_process_running dpkg
-is_process_running apt
 for package in nats-server nextcloud-spreed-signaling janus
 do
   curl -sL -o "/etc/apt/trusted.gpg.d/morph027-${key}.asc" "https://packaging.gitlab.io/${key}/gpg.key"
