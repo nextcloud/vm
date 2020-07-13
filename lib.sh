@@ -34,6 +34,9 @@ gen_passwd() {
 # Ubuntu OS
 DISTRO=$(lsb_release -sr)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
+# Hypervisor
+# HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ') TODO
+SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
 [ -n "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
