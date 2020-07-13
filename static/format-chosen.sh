@@ -24,8 +24,6 @@ umount /mnt/* &> /dev/null
 mkdir -p "$MOUNT_"
 
 # Check what Hypervisor disks are available
-# HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ') TODO
-SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 if [ "$SYSVENDOR" == "VMware, Inc." ];
 then
     SYSNAME="VMware"
