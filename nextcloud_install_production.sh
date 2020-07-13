@@ -779,13 +779,16 @@ find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -nam
 # Kernel 5.4
 if ! home_sme_server
 then
-   # Hyper-V
-   apt install -y --install-recommends \
-   linux-virtual \
-   linux-image-virtual \
-   linux-tools-virtual \
-   linux-cloud-tools-virtual
-   # linux-image-extra-virtual only needed for AUFS driver with Docker
+    if [ "$SYSVENDOR" == "Microsoft Corporation" ]
+    then
+        # Hyper-V
+        apt install -y --install-recommends \
+        linux-virtual \
+        linux-image-virtual \
+        linux-tools-virtual \
+        linux-cloud-tools-virtual
+        # linux-image-extra-virtual only needed for AUFS driver with Docker
+    fi
 fi
 
 # Add aliases
