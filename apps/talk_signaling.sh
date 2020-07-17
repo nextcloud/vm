@@ -18,6 +18,28 @@ DESCRIPTION="High Performance Backend for Talk"
 # Check if root
 root_check
 
+# Check if Nextcloud is installed
+print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
+if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
+then
+msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+${NCDOMAIN//\\/}.
+Please install Nextcloud and make sure your domain is reachable, or activate TLS
+on your domain to be able to run this script.
+If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
+When TLS is activated, run these commands from your terminal:
+sudo bash "$SCRIPTS"/menu.sh and choose 'Additional Apps' --> 'Talk Signaling'"
+    exit 1
+fi
+
+# Check if $SUBDOMAIN exists and is reachable
+print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
+domain_check_200 "$SUBDOMAIN"
+
+# Check open ports with NMAP
+check_open_port 80 "$SUBDOMAIN"
+check_open_port 443 "$SUBDOMAIN"
+
 # Check if HPB is already installed
 is_process_running dpkg
 is_process_running apt
@@ -59,6 +81,93 @@ check_command apt-get install -y nextcloud-spreed-signaling nats-server janus
 
 # Apache proxy config
 # TODO: https://github.com/strukturag/nextcloud-spreed-signaling#apache
+a2enmod proxy
+a2enmod proxy_http
+a2enmod proxy_wstunnel
+
+# Enable Apache2 module's
+a2enmod proxy
+a2enmod proxy_wstunnel
+a2enmod proxy_http
+a2enmod ssl
+
+if [ -f "$HTTPS_CONF" ]
+then
+    a2dissite "$SUBDOMAIN.conf"
+    rm -f "$HTTPS_CONF"
+fi
+
+# Create Vhost for Talk Signaling in Apache2
+if [ ! -f "$HTTPS_CONF" ];
+then
+    cat << HTTPS_CREATE > "$HTTPS_CONF"
+<VirtualHost *:443>
+  ServerName $SUBDOMAIN:443
+  <Directory /var/www>
+  Options -Indexes
+  </Directory>
+  # TLS configuration, you may want to take the easy route instead and use Lets Encrypt!
+  SSLEngine on
+  SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
+  SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
+  SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
+  SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
+  SSLProtocol             all -SSLv2 -SSLv3
+  SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
+  SSLHonorCipherOrder     on
+  SSLCompression off
+  # Encoded slashes need to be allowed
+  AllowEncodedSlashes NoDecode
+  # Container uses a unique non-signed certificate
+  SSLProxyEngine On
+  SSLProxyVerify None
+  SSLProxyCheckPeerCN Off
+  SSLProxyCheckPeerName Off
+  # keep the host
+  ProxyPreserveHost On
+
+    # Enable proxying Websocket requests to the standalone signaling server.
+    ProxyPass "/standalone-signaling/"  "ws://127.0.0.1:8080/"
+
+    RewriteEngine On
+    # Websocket connections from the clients.
+    RewriteRule ^/standalone-signaling/spreed$ - [L]
+    # Backend connections from Nextcloud.
+    RewriteRule ^/standalone-signaling/api/(.*) http://127.0.0.1:8080/api/$1 [L,P]
+
+</VirtualHost>
+HTTPS_CREATE
+
+    if [ -f "$HTTPS_CONF" ];
+    then
+        print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
+        sleep 1
+    else
+        print_text_in_color "$IRed" "Unable to create vhost, exiting..."
+        print_text_in_color "$IRed" "Please report this issue here $ISSUES"
+        exit 1
+    fi
+fi
+
+# Install certbot (Let's Encrypt)
+install_certbot
+
+# Generate certs and  auto-configure  if successful
+if generate_cert  "$SUBDOMAIN"
+then
+    # Generate DHparams chifer
+    if [ ! -f "$DHPARAMS_SUB" ]
+    then
+        openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
+    fi
+    printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
+    a2ensite "$SUBDOMAIN.conf"
+    restart_webserver
+    # Install Talk App
+    install_and_enable_app spreed
+else
+    last_fail_tls "$SCRIPTS"/talk_signaling.sh
+fi
 
 # Configuration
 # TODO: create keys, setup config for janus and hpb (get turn server url from coturn app)
