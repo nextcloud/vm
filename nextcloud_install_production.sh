@@ -437,7 +437,7 @@ occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
 occ_command config:system:set versions_retention_obligation --value="auto, 365"
 
 # Remove simple signup
-occ_command config:system:set simpleSignUpLink.shown --value="false"
+occ_command config:system:set simpleSignUpLink.shown --type=bool --value=false
 
 # Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
