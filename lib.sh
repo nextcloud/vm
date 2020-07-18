@@ -1099,6 +1099,8 @@ is_docker_running && is_image_present "$1";
 install_docker() {
 if ! is_docker_running
 then
+    is_process_running dpkg
+    is_process_running apt
     print_text_in_color "$ICyan" "Installing Docker CE..."
     apt update -q4 & spinner_loading
     install_if_not curl
