@@ -263,7 +263,7 @@ check_command apt install -y \
     php"$PHPVER"-bz2 \
     php"$PHPVER"-bcmath \
     php-pear
-    php"$PHPVER"-imagick \
+    # php"$PHPVER"-imagick \
     # libmagickcore-6.q16-3-extra
 
 # Enable php-fpm
