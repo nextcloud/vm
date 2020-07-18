@@ -21,7 +21,7 @@ debug_mode
 root_check
 
 # Nextcloud 13 is required.
-lowest_compatible_nc 13
+lowest_compatible_nc 19
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 FullTextSearch
