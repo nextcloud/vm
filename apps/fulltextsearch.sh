@@ -20,6 +20,9 @@ debug_mode
 # Must be root
 root_check
 
+# Nextcloud 19 is required.
+lowest_compatible_nc 19
+
 # Won't work info
 msg_box "Full Text Search needs to be updated by the developer for it to work. 
 Currently there are issues that blocks it from working in NC 19.
@@ -32,9 +35,6 @@ https://github.com/nextcloud/bookmarks_fulltextsearch
 
 When this is fixed, we will allow installation again."
 exit 1
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 19
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 FullTextSearch
