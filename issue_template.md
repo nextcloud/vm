@@ -1,7 +1,7 @@
 <!--
 Thank you for reporting your issue to us!
 
-Please report only issues corresponding to the VM for Nextcloud 10 or later. If you found a bug that is related to the  server core, you can file your report here: https://github.com/nextcloud/server
+Please report only issues corresponding to the RPi for Nextcloud 10 or later. If you found a bug that is related to the  server core, you can file your report here: https://github.com/nextcloud/server
 
 A general note: 
 This is the **issue tracker of Nextcloud**, please do NOT use this to get answers to your questions or get help for fixing your installation. This is a place to report bugs to developers, after your server has been debugged.
@@ -26,7 +26,7 @@ Tell us what happens instead
 
 **Server OS** (Ubuntu server is default)
 
-**How did you install the VM?** (Scripted install from master **OR** Released version)
+**How did you install the RPi?** (Scripted install from master **OR** Released version)
 
 ## Network
 **Do you use DHCP?**
