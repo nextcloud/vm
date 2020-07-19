@@ -26,7 +26,7 @@ a domain that the TLS certs will be valid for.
 If you don't have a domain yet, get one before
 you run this script!
 
-You also have to open port 80+443 against this VMs
+You also have to open port 80+443 against this RPi
 IP address: $ADDRESS - do this in your router/FW.
 Here is a guide: https://goo.gl/Uyuf65
 
