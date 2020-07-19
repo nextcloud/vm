@@ -479,14 +479,14 @@ run_script STATIC redis-server-ubuntu
  # php"$PHPVER"-smbclient does not yet work in PHP 7.4
  install_if_not libsmbclient-dev
  yes no | pecl install smbclient
- if [ ! -f /etc/php/"$PHPVER"/mods-available/smbclient.ini ]
+ if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
  then
-     touch /etc/php/"$PHPVER"/mods-available/smbclient.ini
+     touch $PHP_MODS_DIR/smbclient.ini
  fi
- if ! grep -qFx extension=smbclient.so /etc/php/"$PHPVER"/mods-available/smbclient.ini
+ if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
  then
-     echo "# PECL smbclient" > /etc/php/"$PHPVER"/mods-available/smbclient.ini
-     echo "extension=smbclient.so" >> /etc/php/"$PHPVER"/mods-available/smbclient.ini
+     echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
+     echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
  fi
 
 # Enable igbinary for PHP
