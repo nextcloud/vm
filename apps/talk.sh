@@ -72,7 +72,7 @@ msg_box "It seems like Nextcloud is not installed or that you don't use https on
 ${TURN_DOMAIN//\\/}
 Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.
-If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
+If you use the Nextcloud RPi you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
 
 When TLS is activated, run these commands from your terminal:
 sudo curl -sLO $APP/talk.sh
