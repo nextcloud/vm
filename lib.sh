@@ -129,6 +129,7 @@ PHPVER=7.4
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
+PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 # Adminer
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
