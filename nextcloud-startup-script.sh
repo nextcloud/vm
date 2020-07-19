@@ -142,7 +142,7 @@ unset NCDB
 DEBUG=0
 debug_mode
 
-# Check that this run on the PostgreSQL VM
+# Check that this run on the PostgreSQL RPi
 if ! is_this_installed postgresql-common
 then
     print_text_in_color "$IRed" "This script is intended to be run using a PostgreSQL database, but PostgreSQL is not installed."
@@ -197,7 +197,7 @@ We will do this for you when you hit OK."
        rm $SCRIPTS/adduser.sh
        else
 msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
-which could be the case if you are running directly from the scripts on Gihub and not the VM.
+which could be the case if you are running directly from the scripts on Gihub and not the RPi.
 
 As long as the user you created have sudo permissions it's safe to continue.
 This would be the case if you created a new user with the script in the previous step.
@@ -218,11 +218,11 @@ msg_box "The Nextcloud startup script that handles the first setup (this one) is
 
 If you feel uncertain about adding some extra features during this setup, then it's best to wait until after the first setup is done. You can always add all the extra features later.
 
-[For the Nextcloud VM:]
-Please delete this VM from your host and reimport it once again, then run this setup like you did the first time.
+[For the Nextcloud RPi:]
+Please reload this RPi with Ubuntu Server again, then run this setup like you did the first time.
 
 [For the Nextcloud Home/SME Server:]
-It's a bit more tricky since you can't revert in the same way as with a VM. The best thing you can do now is to save all the output from the session you ran before this one + write down all the steps you took and send and email to:
+It's a bit more tricky since you can't revert in the same way as with a RPi. The best thing you can do now is to save all the output from the session you ran before this one + write down all the steps you took and send and email to:
 github@hanssonit.se with the subject 'Issues with first setup', and we'll take it from there.
 
 Full documentation can be found here: https://docs.hanssonit.se
