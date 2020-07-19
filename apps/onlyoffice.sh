@@ -140,7 +140,7 @@ fi
 # Check if collabora is installed and remove every trace of it
 if does_this_docker_exist 'collabora/code'
 then
-    msg_box "You can't run both Collabora and OnlyOffice on the same VM. We will now remove Collabora from the server."
+    msg_box "You can't run both Collabora and OnlyOffice on the same RPi. We will now remove Collabora from the server."
     # Remove docker image
     docker_prune_this 'collabora/code'
     # Revoke LE
