@@ -188,7 +188,7 @@ ask_yes_or_no() {
 
 msg_box() {
 local PROMPT="$1"
-    whiptail --title "Nextcloud VM - T&M Hansson IT - $(date +"%Y")" --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+    whiptail --title "Nextcloud RPi - T&M Hansson IT - $(date +"%Y")" --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
 # Check if process is runnnig: is_process_running dpkg
@@ -284,7 +284,7 @@ fi
 # Warn user that HTTP/2 will be disabled if installing app that use Apache2 PHP instead of PHP-FPM
 # E.g: http2_warn Modsecurity
 http2_warn() {
-msg_box "This VM has HTTP/2 enabled by default.
+msg_box "This RPi has HTTP/2 enabled by default.
 
 If you continue with installing $1, HTTP/2 will be disabled since it's not compatible with the mpm module used by $1.
 
@@ -327,12 +327,12 @@ then
 msg_box "The current max_children value available to set is $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
 The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
 
-The absolute minimum amount of RAM required to run the VM is 2 GB, but we recomend 4 GB.
+The absolute minimum amount of RAM required to run the RPi is 2 GB, but we recomend 4 GB.
 
 You now have two choices:
-1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
+1. Use this RPi again, raise the amount of RAM with at least 1 GB, and then run this script again,
    installing it in the same way as you did before.
-2. Import this VM again without raising the RAM, but don't install any of the following apps:
+2. Use this RPi again without raising the RAM, but don't install any of the following apps:
    1) Collabora
    2) OnlyOffice
    3) Full Text Search
@@ -373,7 +373,7 @@ fi
 restart_webserver
 }
 
-# Compatibility with older VMs
+# Compatibility with older RPis
 calculate_max_children() {
     calculate_php_fpm
 }
