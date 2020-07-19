@@ -45,7 +45,7 @@ fi
 check_distro_version
 
 # Hold PHP if Ondrejs PPA is used
-print_text_in_color "$ICyan" "Fetching latest apt packages..."
+print_text_in_color "$ICyan" "Fetching latest packages with apt..."
 apt update -q4 & spinner_loading
 if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
