@@ -487,6 +487,7 @@ run_script STATIC redis-server-ubuntu
  then
      echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
      echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
+     check_command phpenmod -v ALL smbclient
  fi
 
 # Enable igbinary for PHP
