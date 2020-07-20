@@ -395,6 +395,19 @@ fi
 
 countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort." "10"
 
+# Backup app groups
+print_text_in_color "$ICyan" "Getting and backing up all groups for enabled apps for later. This can take a while..."
+ENABLED_APPS="$(occ_command app:list | sed '/Enabled/d' | sed '/Disabled/,$d' | sed 's|^  - ||g' | sed 's|:.*||')"
+declare -Ag APPSTORAGE
+for app in $ENABLED_APPS
+do
+    RESULT="$(occ_command config:app:get $app enabled)"
+    if [ "$RESULT" != "yes" ]
+    then
+        APPSTORAGE[$app]="$RESULT"
+    fi
+done
+
 # Stop Apache2
 check_command systemctl stop apache2.service
 
@@ -551,6 +564,17 @@ fi
 
 # Recover apps that exists in the backed up apps folder
 run_script STATIC recover_apps
+
+# Restore app groups
+print_text_in_color "$ICyan" "Restoring all groups for enabled apps. This can take a while..."
+for app in "${!APPSTORAGE[@]}"
+do 
+    if ! is_app_enabled $app
+    then
+        occ_command_no_check app:enable $app
+    fi
+    occ_command_no_check config:app:set $app enabled --value="${APPSTORAGE[$app]}"
+done
 
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
