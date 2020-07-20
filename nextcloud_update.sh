@@ -559,7 +559,7 @@ then
 fi
 
 # Recover apps that exists in the backed up apps folder
-#run_script STATIC recover_apps
+run_script STATIC recover_apps
 
 # Restore app status
 print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
