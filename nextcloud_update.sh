@@ -565,7 +565,10 @@ fi
 print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
 for app in "${!APPSTORAGE[@]}"
 do 
-    occ_command_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+    if [ -n "${APPSTORAGE[$app]}" ]
+    then
+        occ_command_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+    fi
 done
 
 # Remove header for Nextcloud 14 (already in .htaccess)
