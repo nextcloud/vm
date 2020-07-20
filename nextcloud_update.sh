@@ -397,11 +397,11 @@ countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds.
 
 # Backup app status
 print_text_in_color "$ICyan" "Getting and backing up the status of apps for later. This can take a while..."
-ENABLED_APPS="$(occ_command app:list | sed '/Enabled/d' | sed '/Disabled/d' | sed 's|^  - ||g' | sed 's|:.*||')"
+NC_APPS="$(occ_command app:list | sed '/Enabled/d' | sed '/Disabled/d' | sed 's|^  - ||g' | sed 's|:.*||')"
 declare -Ag APPSTORAGE
-for app in $ENABLED_APPS
+for app in $NC_APPS
 do
-    APPSTORAGE[$app]=$(occ_command config:app:get "$app" enabled)
+    APPSTORAGE[$app]=$(occ_command_no_check config:app:get "$app" enabled)
 done
 
 # Stop Apache2
