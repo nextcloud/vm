@@ -397,7 +397,7 @@ countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds.
 
 # Backup app status
 print_text_in_color "$ICyan" "Getting and backing up the status of apps for later. This can take a while..."
-NC_APPS="$(occ_command app:list | sed '/Enabled/d' | sed '/Disabled/d' | sed 's|^  - ||g' | sed 's|:.*||')"
+NC_APPS="$(occ_command app:list | awk '{print$2}' | tr -d ':' | sed '/^$/d')"
 declare -Ag APPSTORAGE
 for app in $NC_APPS
 do
