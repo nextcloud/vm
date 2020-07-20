@@ -569,10 +569,6 @@ run_script STATIC recover_apps
 print_text_in_color "$ICyan" "Restoring all groups for enabled apps. This can take a while..."
 for app in "${!APPSTORAGE[@]}"
 do 
-    if ! is_app_enabled "$app"
-    then
-        occ_command_no_check app:enable "$app"
-    fi
     occ_command_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
 done
 
