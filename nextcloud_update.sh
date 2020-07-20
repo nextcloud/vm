@@ -401,7 +401,7 @@ ENABLED_APPS="$(occ_command app:list | sed '/Enabled/d' | sed '/Disabled/,$d' | 
 declare -Ag APPSTORAGE
 for app in $ENABLED_APPS
 do
-    RESULT="$(occ_command config:app:get $app enabled)"
+    RESULT="$(occ_command config:app:get "$app" enabled)"
     if [ "$RESULT" != "yes" ]
     then
         APPSTORAGE[$app]="$RESULT"
@@ -569,11 +569,11 @@ run_script STATIC recover_apps
 print_text_in_color "$ICyan" "Restoring all groups for enabled apps. This can take a while..."
 for app in "${!APPSTORAGE[@]}"
 do 
-    if ! is_app_enabled $app
+    if ! is_app_enabled "$app"
     then
-        occ_command_no_check app:enable $app
+        occ_command_no_check app:enable "$app"
     fi
-    occ_command_no_check config:app:set $app enabled --value="${APPSTORAGE[$app]}"
+    occ_command_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
 done
 
 # Remove header for Nextcloud 14 (already in .htaccess)
