@@ -573,7 +573,7 @@ do
     then
         occ_command_no_check app:enable $app
     fi
-    occ_command_no_check config:app:set $app enabled --value="${APPSTORAGE[$app]}"
+        occ_command_no_check config:app:set $app enabled --value="${APPSTORAGE[$app]}"
 done
 
 # Remove header for Nextcloud 14 (already in .htaccess)
