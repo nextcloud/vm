@@ -401,7 +401,7 @@ ENABLED_APPS="$(occ_command app:list | sed '/Enabled/d' | sed '/Disabled/d' | se
 declare -Ag APPSTORAGE
 for app in $ENABLED_APPS
 do
-    APPSTORAGE[$app]="$(occ_command config:app:get '$app' enabled)"
+    APPSTORAGE[$app]=$(occ_command config:app:get "$app" enabled)
 done
 
 # Stop Apache2
