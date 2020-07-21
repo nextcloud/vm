@@ -568,7 +568,7 @@ fi
 run_script STATIC recover_apps
 
 # Restore app status
-if [ "$APPSTORAGE" != "no-export-done" ]
+if [ "${APPSTORAGE[0]}" != "no-export-done" ]
 then
     print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
     for app in "${!APPSTORAGE[@]}"
