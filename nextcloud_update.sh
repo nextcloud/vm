@@ -581,7 +581,7 @@ then
             elif [ "${APPSTORAGE[$app]}" = "no" ]
             then
                 occ_command_no_check app:disable "$app"
-            elif echo "${APPSTORAGE[deck]}" | grep -q "^\[\".*\"\]$"
+            elif echo "${APPSTORAGE[$app]}" | grep -q "^\[\".*\"\]$"
             then
                 if is_app_enabled "$app"
                 then
