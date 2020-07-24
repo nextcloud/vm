@@ -575,7 +575,19 @@ then
     do 
         if [ -n "${APPSTORAGE[$app]}" ]
         then
-            occ_command_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+            if [ "${APPSTORAGE[$app]}" = "yes" ]
+            then
+                occ_command_no_check app:enable "$app"
+            elif [ "${APPSTORAGE[$app]}" = "no" ]
+            then
+                occ_command_no_check app:disable "$app"
+            elif echo "${APPSTORAGE[deck]}" | grep -q "^\[\".*\"\]$"
+            then
+                if is_app_enabled "$app"
+                then
+                    occ_command_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+                fi
+            fi
         fi
     done
 fi
