@@ -129,6 +129,7 @@ PHPVER=7.4
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
+PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 # Adminer
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
@@ -1099,6 +1100,8 @@ is_docker_running && is_image_present "$1";
 install_docker() {
 if ! is_docker_running
 then
+    is_process_running dpkg
+    is_process_running apt
     print_text_in_color "$ICyan" "Installing Docker CE..."
     apt update -q4 & spinner_loading
     install_if_not curl

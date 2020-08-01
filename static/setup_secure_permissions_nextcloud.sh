@@ -51,9 +51,10 @@ find "${VMLOGS}"/ -type d -print0 | xargs -0 chmod 0750
 find "${VMLOGS}"/nextcloud.log -type f -print0 | xargs -0 chmod 0640
 
 print_text_in_color "$ICyan" "chown Directories"
-chown "${htuser}":"${htgroup}" "${VMLOGS}"/
+chown -R "${rootuser}":"${htgroup}" "${VMLOGS}"/
 chown "${htuser}":"${htgroup}" "${VMLOGS}"/nextcloud.log
 chown "${htuser}":"${htgroup}" "${VMLOGS}"/audit.log
+chown "${rootuser}":"${rootuser}" "${VMLOGS}"/update.log
 chown -R "${rootuser}":"${htgroup}" "${NCPATH}"/
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/apps/
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/config/

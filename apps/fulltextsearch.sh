@@ -20,8 +20,8 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
+# Nextcloud 19 is required.
+lowest_compatible_nc 19
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 FullTextSearch
@@ -164,6 +164,10 @@ install_and_enable_app fulltextsearch
 install_and_enable_app fulltextsearch_elasticsearch
 install_and_enable_app files_fulltextsearch
 chown -R www-data:www-data $NC_APPS_PATH
+
+# Temporary fix:
+# https://github.com/nextcloud/fulltextsearch_elasticsearch/pull/107
+git_apply_patch 107 fulltextsearch_elasticsearc 19.0.1
 
 # Final setup
 occ_command fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_ElasticSearch\\Platform\\ElasticSearchPlatform"}'
