@@ -165,10 +165,6 @@ install_and_enable_app fulltextsearch_elasticsearch
 install_and_enable_app files_fulltextsearch
 chown -R www-data:www-data $NC_APPS_PATH
 
-# Temporary fix:
-# https://github.com/nextcloud/fulltextsearch_elasticsearch/pull/107
-git_apply_patch 107 fulltextsearch_elasticsearc 19.0.1
-
 # Final setup
 occ_command fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_ElasticSearch\\Platform\\ElasticSearchPlatform"}'
 occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${ROREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
