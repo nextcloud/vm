@@ -572,16 +572,10 @@ if [ "${APPSTORAGE[0]}" != "no-export-done" ]
 then
     print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
     for app in "${!APPSTORAGE[@]}"
-    do 
+    do
         if [ -n "${APPSTORAGE[$app]}" ]
         then
-            if [ "${APPSTORAGE[$app]}" = "yes" ]
-            then
-                occ_command_no_check app:enable "$app"
-            elif [ "${APPSTORAGE[$app]}" = "no" ]
-            then
-                occ_command_no_check app:disable "$app"
-            elif echo "${APPSTORAGE[$app]}" | grep -q "^\[\".*\"\]$"
+            if echo "${APPSTORAGE[$app]}" | grep -q "^\[\".*\"\]$"
             then
                 if is_app_enabled "$app"
                 then
