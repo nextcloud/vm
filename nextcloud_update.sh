@@ -396,6 +396,7 @@ fi
 countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort." "10"
 
 # Backup app status
+# Fixing https://github.com/nextcloud/server/issues/4538
 print_text_in_color "$ICyan" "Getting and backing up the status of apps for later. This can take a while..."
 NC_APPS="$(occ_command app:list | awk '{print$2}' | tr -d ':' | sed '/^$/d')"
 if [ -z "$NC_APPS" ]
@@ -568,6 +569,7 @@ fi
 run_script STATIC recover_apps
 
 # Restore app status
+# Fixing https://github.com/nextcloud/server/issues/4538
 if [ "${APPSTORAGE[0]}" != "no-export-done" ]
 then
     print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
