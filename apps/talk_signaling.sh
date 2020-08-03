@@ -5,7 +5,9 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 && TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+unset TURN_INSTALL
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -13,10 +15,23 @@ true
 DEBUG=0
 debug_mode
 
-DESCRIPTION="High Performance Backend for Talk"
-
-# Check if root
+# Must be root
 root_check
+
+# Must be 20.04
+if ! version 20.04 "$DISTRO" 20.04.6
+then
+msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to install Talk"
+msg_box "Please contact us to get support for upgrading your server:
+https://www.hanssonit.se/#contact
+https://shop.hanssonit.se/"
+exit
+fi
+
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
+DESCRIPTION="High Performance Backend for Talk"
 
 # Check if Nextcloud is installed
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
@@ -78,6 +93,8 @@ echo "deb [arch=amd64] https://packaging.gitlab.io/nats-server nats main" > /etc
 
 apt update -q4 & spinner_loading
 check_command apt-get install -y nextcloud-spreed-signaling nats-server janus
+check_command systemctl restart janus
+check_command systemctl enable janus
 
 # Apache proxy config
 # TODO: https://github.com/strukturag/nextcloud-spreed-signaling#apache
@@ -170,5 +187,16 @@ else
 fi
 
 # Configuration
+## Janus WebRTC Server
+sed -i "s|turn_rest_api_key|$TURN_SECRETg" /etc/janus/janus.jcfg
+sed -i "s|#full_trickle|full_trickle|g" /etc/janus/janus.jcfg
+sed -i "s|#full_trickle|full_trickle|g" /etc/janus/janus.jcfg
+echo "interface = 'lo'" >> /etc/janus/janus.transport.http.jcfg
+echo "interface = 'lo'" >> /etc/janus/janus.transport.websockets.jcfg
+check_command systemctl restart janus
+
+## Coturn TURN Server
+run_script APP talk
+
 # TODO: create keys, setup config for janus and hpb (get turn server url from coturn app)
 # https://morph027.gitlab.io/blog/nextcloud-spreed-signaling/
