@@ -190,8 +190,8 @@ fi
 ## Janus WebRTC Server
 sed -i "s|turn_rest_api_key|$TURN_SECRET|g" /etc/janus/janus.jcfg
 sed -i "s|#full_trickle|full_trickle|g" /etc/janus/janus.jcfg
-echo "interface = 'lo'" >> /etc/janus/janus.transport.http.jcfg
-echo "interface = 'lo'" >> /etc/janus/janus.transport.websockets.jcfg
+sed -i 's|#interface.*|interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
+sed -i 's|#ws_interface.*|ws_interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
 check_command systemctl restart janus
 
 ## Coturn TURN Server
