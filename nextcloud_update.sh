@@ -395,6 +395,22 @@ fi
 
 countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort." "10"
 
+# Backup app status
+# Fixing https://github.com/nextcloud/server/issues/4538
+print_text_in_color "$ICyan" "Getting and backing up the status of apps for later. This can take a while..."
+NC_APPS="$(occ_command app:list | awk '{print$2}' | tr -d ':' | sed '/^$/d')"
+if [ -z "$NC_APPS" ]
+then
+    print_text_in_color "$IRed" "No apps detected, aborting export of app status... Please report this issue to $ISSUES"
+    APPSTORAGE="no-export-done"
+else
+    declare -Ag APPSTORAGE
+    for app in $NC_APPS
+    do
+        APPSTORAGE[$app]=$(occ_command_no_check config:app:get "$app" enabled)
+    done
+fi
+
 # Stop Apache2
 check_command systemctl stop apache2.service
 
@@ -551,6 +567,26 @@ fi
 
 # Recover apps that exists in the backed up apps folder
 run_script STATIC recover_apps
+
+# Restore app status
+# Fixing https://github.com/nextcloud/server/issues/4538
+if [ "${APPSTORAGE[0]}" != "no-export-done" ]
+then
+    print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
+    for app in "${!APPSTORAGE[@]}"
+    do
+        if [ -n "${APPSTORAGE[$app]}" ]
+        then
+            if echo "${APPSTORAGE[$app]}" | grep -q "^\[\".*\"\]$"
+            then
+                if is_app_enabled "$app"
+                then
+                    occ_command_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+                fi
+            fi
+        fi
+    done
+fi
 
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
