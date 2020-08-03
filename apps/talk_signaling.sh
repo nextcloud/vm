@@ -190,13 +190,16 @@ fi
 ## Janus WebRTC Server
 sed -i "s|turn_rest_api_key|$TURN_SECRETg" /etc/janus/janus.jcfg
 sed -i "s|#full_trickle|full_trickle|g" /etc/janus/janus.jcfg
-sed -i "s|#full_trickle|full_trickle|g" /etc/janus/janus.jcfg
 echo "interface = 'lo'" >> /etc/janus/janus.transport.http.jcfg
 echo "interface = 'lo'" >> /etc/janus/janus.transport.websockets.jcfg
 check_command systemctl restart janus
 
 ## Coturn TURN Server
 run_script APP talk
+
+## NATS server
+
+## nextcloud-spreed-signaling server (HPB)
 
 # TODO: create keys, setup config for janus and hpb (get turn server url from coturn app)
 # https://morph027.gitlab.io/blog/nextcloud-spreed-signaling/
