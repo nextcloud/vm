@@ -43,7 +43,7 @@ Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.
 If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
 When TLS is activated, run these commands from your terminal:
-sudo bash "$SCRIPTS"/menu.sh and choose 'Additional Apps' --> 'Talk Signaling'"
+sudo bash $SCRIPTS/menu.sh and choose 'Additional Apps' --> 'Talk Signaling'"
     exit 1
 fi
 
@@ -188,7 +188,7 @@ fi
 
 # Configuration
 ## Janus WebRTC Server
-sed -i "s|turn_rest_api_key|$TURN_SECRETg" /etc/janus/janus.jcfg
+sed -i "s|turn_rest_api_key|$TURN_SECRET|g" /etc/janus/janus.jcfg
 sed -i "s|#full_trickle|full_trickle|g" /etc/janus/janus.jcfg
 echo "interface = 'lo'" >> /etc/janus/janus.transport.http.jcfg
 echo "interface = 'lo'" >> /etc/janus/janus.transport.websockets.jcfg
