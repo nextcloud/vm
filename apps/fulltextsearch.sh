@@ -171,7 +171,7 @@ occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$
 occ_command files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 if occ_command fulltextsearch:index < /dev/null
 then
-msg_box "Full Text Search was successfully installed!"
+    msg_box "Full Text Search was successfully installed!"
 fi
 
 # Make sure the script exists
