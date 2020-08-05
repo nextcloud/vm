@@ -510,7 +510,7 @@ then
 else
     print_text_in_color "$ICyan" "Installing certbot (Let's Encrypt)..."
     install_if_not snapd
-    snap install --beta certbot --classic
+    snap install certbot --classic
     # Update $PATH in current session (login and logout is required otherwise)
     check_command hash -r
 fi
