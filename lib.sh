@@ -765,8 +765,14 @@ else
     then
         systemctl restart systemd-networkd > /dev/null
     fi
-    # sleep needs to be 30 for some slow networks to restart
-    countdown 'Waiting for network to restart...' 30 && site_200 github.com
+    # Check the connention
+    countdown 'Waiting for network to restart...' 3
+    if ! site_200 github.com
+    then
+        # sleep 40 seconds so that some slow networks have time to restart
+        countdown 'Not online yet, waiting a bit more...' 40
+        site_200 github.com
+    fi
 fi
 }
 
