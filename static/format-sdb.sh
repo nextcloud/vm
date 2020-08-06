@@ -60,11 +60,11 @@ elif [ "$SYSVENDOR" == "UpCloud" ];
 then
     if fdisk -l | grep -q sd
     then
-        SYSNAME="UpCloud"
+        SYSNAME="UpCloud ISCSI/IDE"
         DEVTYPE=sdb
     elif fdisk -l | grep -q vd
     then
-        SYSNAME="UpCloud"
+        SYSNAME="UpCloud VirtiO"
         DEVTYPE=vdb
     fi
 else
