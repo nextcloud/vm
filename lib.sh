@@ -242,7 +242,8 @@ done
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
 print_text_in_color "$ICyan" "Checking connection..."
-        CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
+        # CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
+        CURL_STATUS="$(curl -LI "${1}" -o /dev/null -w '%{http_code}\n' -s)"
         if [[ "$CURL_STATUS" = "200" ]]
         then
             return 0
