@@ -765,6 +765,7 @@ else
     then
         systemctl restart systemd-networkd > /dev/null
     fi
+    # sleep needs to be 5 for some slow networks to restart
     sleep 5 && site_200 github.com
 fi
 }
