@@ -52,6 +52,17 @@ elif [ "$SYSVENDOR" == "Intel(R) Client Systems" ];
 then
     SYSNAME="Intel-NUC"
     DEVTYPE=sda
+elif [ "$SYSVENDOR" == "UpCloud" ];
+then
+    if fdisk -l | grep -q sd
+    then
+        SYSNAME="UpCloud ISCSI/IDE"
+        DEVTYPE=sdb
+    elif fdisk -l | grep -q vd
+    then
+        SYSNAME="UpCloud VirtiO"
+        DEVTYPE=vdb
+    fi
 elif partprobe /dev/sdb &>/dev/null;
 then
     SYSNAME="machines"
