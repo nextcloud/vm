@@ -1,4 +1,4 @@
-# Nextcloud VM with vagrant
+# Nextcloud RPi with vagrant
 This subrepo contains all the Vagrant config to get an Ubuntu 20.04 VM with the latest version of Nextcloud installed.
 
 **Please note that this is __not__ the preferred way to install Nextcloud. It's also untested in the current state.**

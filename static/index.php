@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
     <head>
-        <title>Nextcloud VM</title>
+        <title>Nextcloud RPi</title>
         <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
         <style type="text/css">
             body {
@@ -75,11 +75,11 @@
         <br>
         <div class="logo"></div>
         <div class="logotext">
-            <h2><a href="https://github.com/nextcloud/vm" target="_blank">Nextcloud VM</a> - by <a href="https://www.hanssonit.se/nextcloud-vm/" target="_blank">T&M Hansson IT AB</a></h2>
+            <h2><a href="https://github.com/nextcloud/vm" target="_blank">Nextcloud RPi</a> - by <a href="https://www.hanssonit.se/nextcloud-vm/" target="_blank">T&M Hansson IT AB</a></h2>
         </div>
         <br>
         <div class="information">
-            <p>Thank you for downloading the Nextcloud VM, you made a good choice! If you see this page, you have run the first setup, and you are now ready to start using Nextcloud on your new server. Congratulations! :)</p>
+            <p>Thank you for downloading the Nextcloud RPi, you made a good choice! If you see this page, you have run the first setup, and you are now ready to start using Nextcloud on your new server. Congratulations! :)</p>
             <p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.</p>
             <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels, or <a href="https://shop.hanssonit.se/product/premium-support-per-30-minutes/" target="_blank">buy hands on support</a> from T&M Hansson IT AB. You can also check the <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration" target="_blank">documentation</a>.</p>
         </div>
