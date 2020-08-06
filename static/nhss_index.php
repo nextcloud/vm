@@ -99,7 +99,7 @@
             The easiest way to get a real TLS certificate is to run the Lets' Encrypt script included on this server.<br>
             Just run 'sudo bash /var/scripts/activate-tls.sh' from your terminal and follow the instructions.
             <h3>
-                <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidb0" target="_blank">Login details</a>
+                <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidag" target="_blank">Login details</a>
             </h3>
         </div>
 
