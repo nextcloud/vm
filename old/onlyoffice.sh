@@ -186,7 +186,7 @@ then
     then
         openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
     fi
-    printf "%b" "${IGreen}Certs are generated!\n${Color_Off}"
+    print_text_in_color "$IGreen" "Certs are generated!"
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
     # Install OnlyOffice

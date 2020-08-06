@@ -20,8 +20,9 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 19 is required.
-lowest_compatible_nc 19
+# Nextcloud 18 is required.
+lowest_compatible_nc 18
+
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 FullTextSearch
@@ -171,7 +172,7 @@ occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://$
 occ_command files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 if occ_command fulltextsearch:index < /dev/null
 then
-msg_box "Full Text Search was successfully installed!"
+    msg_box "Full Text Search was successfully installed!"
 fi
 
 # Make sure the script exists

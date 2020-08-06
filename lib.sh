@@ -242,7 +242,8 @@ done
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
 print_text_in_color "$ICyan" "Checking connection..."
-        CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
+        # CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
+        CURL_STATUS="$(curl -LI "${1}" -o /dev/null -w '%{http_code}\n' -s)"
         if [[ "$CURL_STATUS" = "200" ]]
         then
             return 0
@@ -510,7 +511,7 @@ then
 else
     print_text_in_color "$ICyan" "Installing certbot (Let's Encrypt)..."
     install_if_not snapd
-    snap install --beta certbot --classic
+    snap install certbot --classic
     # Update $PATH in current session (login and logout is required otherwise)
     check_command hash -r
 fi
@@ -764,7 +765,8 @@ else
     then
         systemctl restart systemd-networkd > /dev/null
     fi
-    sleep 3 && site_200 github.com
+    # sleep needs to be 30 for some slow networks to restart
+    countdown 'Waiting for network to restart...' 30 && site_200 github.com
 fi
 }
 
