@@ -52,10 +52,6 @@ elif [ "$SYSVENDOR" == "Intel(R) Client Systems" ];
 then
     SYSNAME="Intel-NUC"
     DEVTYPE=sda
-elif partprobe /dev/sdb &>/dev/null;
-then
-    SYSNAME="machines"
-    DEVTYPE=sdb
 elif [ "$SYSVENDOR" == "UpCloud" ];
 then
     if fdisk -l | grep -q sd
@@ -67,6 +63,10 @@ then
         SYSNAME="UpCloud VirtiO"
         DEVTYPE=vdb
     fi
+elif partprobe /dev/sdb &>/dev/null;
+then
+    SYSNAME="machines"
+    DEVTYPE=sdb
 else
 msg_box "It seems like you didn't add a second disk. 
 To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
