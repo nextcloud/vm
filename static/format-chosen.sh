@@ -54,11 +54,11 @@ then
     DEVTYPE=sda
 elif [ "$SYSVENDOR" == "UpCloud" ];
 then
-    if lsblk | grep -q sd
+    if lsblk -e7 -e11 | grep -q sd
     then
         SYSNAME="UpCloud ISCSI/IDE"
         DEVTYPE=sdb
-    elif lsblk | grep -q vd
+    elif lsblk -e7 -e11 | grep -q vd
     then
         SYSNAME="UpCloud VirtiO"
         DEVTYPE=vdb
