@@ -764,7 +764,7 @@ else
     then
         systemctl restart systemd-networkd > /dev/null
     fi
-    sleep 3 && site_200 github.com
+    sleep 3 && site_200 google.com
 fi
 }
 
