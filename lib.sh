@@ -242,7 +242,8 @@ done
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
 print_text_in_color "$ICyan" "Checking connection..."
-        CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
+        # CURL_STATUS="$(curl -sSL -w "%{http_code}" "${1}" | tail -1)"
+        CURL_STATUS="$(curl -LI "${1}" -o /dev/null -w '%{http_code}\n' -s)"
         if [[ "$CURL_STATUS" = "200" ]]
         then
             return 0
@@ -764,7 +765,14 @@ else
     then
         systemctl restart systemd-networkd > /dev/null
     fi
-    sleep 3 && site_200 github.com
+    # Check the connention
+    countdown 'Waiting for network to restart...' 3
+    if ! site_200 github.com
+    then
+        # sleep 40 seconds so that some slow networks have time to restart
+        countdown 'Not online yet, waiting a bit more...' 40
+        site_200 github.com
+    fi
 fi
 }
 
