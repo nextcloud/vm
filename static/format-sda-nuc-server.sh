@@ -16,6 +16,9 @@ check_multiverse
 
 MOUNT_=/mnt/$POOLNAME
 
+# Needed for partprobe
+install_if_not parted
+
 format() {
 # umount if mounted
 umount /mnt/* &> /dev/null
