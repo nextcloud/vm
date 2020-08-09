@@ -42,7 +42,7 @@ choice=$(whiptail --title "Server configurations" --checklist "Choose what you w
 case "$choice" in
     *"Disk Check"*)
         clear
-        run_script ADDONS smartctl
+        run_script DISK smartctl
     ;;&
     *"Security"*)
         clear
