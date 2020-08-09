@@ -163,7 +163,7 @@ install_if_not build-essential
 # Just check if the function works and run disk setup
 if home_sme_server
 then
-    run_script STATIC format-sda-nuc-server
+    run_script DISK format-sda-nuc-server
 else
 # Set dual or single drive setup
 msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
@@ -178,15 +178,15 @@ choice=$(whiptail --title "Choose disk format" --radiolist "How would you like t
 
 case "$choice" in
     "2 Disks Auto")
-        run_script STATIC format-sdb
+        run_script DISK format-sdb
         # Change to zfs-mount-generator
-        run_script STATIC change-to-zfs-mount-generator
+        run_script DISK change-to-zfs-mount-generator
 
     ;;
     "2 Disks Manual")
-        run_script STATIC format-chosen
+        run_script DISK format-chosen
         # Change to zfs-mount-generator
-        run_script STATIC change-to-zfs-mount-generator
+        run_script DISK change-to-zfs-mount-generator
     ;;
     "1 Disk")
         print_text_in_color "$IRed" "1 Disk setup chosen."

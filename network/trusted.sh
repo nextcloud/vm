@@ -13,7 +13,7 @@ true
 DEBUG=0
 debug_mode
 
-download_script STATIC update-config
+download_script NETWORK update-config
 if [ -f $SCRIPTS/update-config.php ]
 then
     # Change config.php

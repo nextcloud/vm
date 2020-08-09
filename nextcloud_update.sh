@@ -235,7 +235,7 @@ if is_this_installed libzfs2linux
 then
     if grep -rq ncdata /etc/mtab
     then
-        run_script ADDONS prune_zfs_snaphots
+        run_script DISK prune_zfs_snaphots
     fi
 fi
 

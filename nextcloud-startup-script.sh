@@ -245,9 +245,13 @@ download_script STATIC change_db_pass
 download_script STATIC nextcloud
 download_script STATIC update-config
 download_script STATIC menu
+# download_script MENU menu
 download_script STATIC server_configuration
+# download_script MENU server_configuration
 download_script STATIC nextcloud_configuration
+# download_script MENU nextcloud_configuration
 download_script STATIC additional_apps
+# download_script MENU additional_apps
 
 if home_sme_server
 then
