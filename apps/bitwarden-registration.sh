@@ -41,8 +41,7 @@ fi
 # Yes or No?
 choice=$(whiptail --title "Bitwarden Registration" --checklist "Do you want to disable Bitwarden User Registration?\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Yes" "(Disable public user registration)" OFF \
-"No" "(Enable public user registration)" OFF \
-"Cancel" "(Exit this menu)" OFF 3>&1 1>&2 2>&3)
+"No" "(Enable public user registration)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Yes"*)
@@ -50,24 +49,25 @@ case "$choice" in
         print_text_in_color "$ICyan" "Disabling Bitwarden User Regitration..."
         # Disable
         sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=true|g" /root/bwdata/env/global.override.env
+        # Restart Bitwarden
+        install_if_not curl
+        cd /root
+        curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
+        chmod +x /root/bitwarden.sh
+        check_command ./bitwarden.sh restart
     ;;&
     *"No"*)
         clear
         print_text_in_color "$ICyan" "Enabling Bitwarden User Registration..."
         # Enable
         sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=false|g" /root/bwdata/env/global.override.env
-    ;;&
-    *"Cancel"*)
-        clear
-        exit 1
+        # Restart Bitwarden
+        install_if_not curl
+        cd /root
+        curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
+        chmod +x /root/bitwarden.sh
+        check_command ./bitwarden.sh restart
     ;;&
     *)
     ;;
 esac
-
-# Restart Bitwarden
-install_if_not curl
-cd /root
-curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
-chmod +x /root/bitwarden.sh
-check_command ./bitwarden.sh restart
