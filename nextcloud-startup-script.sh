@@ -239,11 +239,13 @@ print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the 
 download_script LETS_ENC activate-tls
 download_script STATIC temporary-fix
 download_script STATIC update
-download_script STATIC trusted
 download_script STATIC setup_secure_permissions_nextcloud
 download_script STATIC change_db_pass
 download_script STATIC nextcloud
 download_script STATIC update-config
+# download_script NETWORK update-config
+download_script STATIC trusted
+# download_script NETWORK trusted
 download_script STATIC menu
 # download_script MENU menu
 download_script STATIC server_configuration
