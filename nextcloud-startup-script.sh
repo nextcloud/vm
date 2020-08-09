@@ -172,7 +172,7 @@ then
 fi
 
 # Set locales
-run_script STATIC locales
+run_script ADDONS locales
 
 # Nextcloud 18 is required
 lowest_compatible_nc 18
@@ -210,7 +210,7 @@ please abort this script (CTRL+C) and report this issue to $ISSUES."
 fi
 
 # Upgrade mirrors
-run_script STATIC locate_mirror
+run_script ADDONS locate_mirror
 
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
@@ -247,7 +247,7 @@ download_script STATIC update-config
 download_script STATIC menu
 download_script STATIC server_configuration
 download_script STATIC nextcloud_configuration
-download_script APP additional_apps
+download_script STATIC additional_apps
 
 if home_sme_server
 then

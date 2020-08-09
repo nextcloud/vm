@@ -66,7 +66,7 @@ debug_mode
 root_check
 
 # Set locales
-run_script STATIC locales
+run_script ADDONS locales
 
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
@@ -235,7 +235,7 @@ do
 done
 
 # Check current repo
-run_script STATIC locate_mirror
+run_script ADDONS locate_mirror
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
@@ -473,7 +473,7 @@ echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
 # Install Redis (distrubuted cache)
-run_script STATIC redis-server-ubuntu
+run_script ADDONS redis-server-ubuntu
 
  # Install smbclient
  # php"$PHPVER"-smbclient does not yet work in PHP 7.4
@@ -704,8 +704,7 @@ choice=$(whiptail --title "Install apps or software" --checklist "Automatically 
 "Text" "" ON \
 "Mail" "" ON \
 "Deck" "" ON \
-"Group-Folders" "" ON \
-"Webmin" "" ON 3>&1 1>&2 2>&3)
+"Group-Folders" "" ON 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Calendar"*)
@@ -739,9 +738,6 @@ case "$choice" in
     ;;&
     *"Group-Folders"*)
         install_and_enable_app groupfolders
-    ;;&
-    *"Webmin"*)
-        run_script APP webmin
     ;;&
     *)
     ;;

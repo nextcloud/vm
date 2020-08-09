@@ -46,7 +46,7 @@ case "$choice" in
     ;;&
     *"Security"*)
         clear
-        run_script STATIC security
+        run_script ADDONS security
     ;;&
     *"Static IP"*)
         clear
@@ -54,7 +54,7 @@ case "$choice" in
     ;;&
     *"Automatic updates"*)
         clear
-        run_script STATIC automatic_updates
+        run_script ADDONS automatic_updates
     ;;&
     *"Activate TLS"*)
         clear
