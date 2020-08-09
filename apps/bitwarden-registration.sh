@@ -57,7 +57,6 @@ case "$choice" in
     ;;
 esac
 
-
 # Restart Bitwarden
 check_command ./bitwarden.sh rebuild
 check_command ./bitwarden.sh start
