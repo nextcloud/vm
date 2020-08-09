@@ -22,17 +22,20 @@ if is_docker_running
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
-        if is_this_installed apache2
+        if [ -d /root/bwdata ]
         then
-            if [ -d /root/bwdata ]
-            then
-                sleep 0.1
-            else
-                msg_box "Bitwarden doesn't seem to be installed. You can not run this script."
-                exit 1
-            fi
+            sleep 0.1
+         else
+            msg_box "It seems like 'Bitwarden' isn't installed.\n\nYou cannot run this script."
+            exit 1
         fi
+    else
+        msg_box "It seems like 'Bitwarden' isn't installed.\n\nYou cannot run this script."
+        exit 1
     fi
+else
+    msg_box "It seems like 'Bitwarden' isn't installed.\n\nYou cannot run this script."
+    exit 1
 fi
 
 # Yes or No?
