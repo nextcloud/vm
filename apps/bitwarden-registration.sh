@@ -18,7 +18,7 @@ root_check
 
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
-if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+if [ is_docker_running ]
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
