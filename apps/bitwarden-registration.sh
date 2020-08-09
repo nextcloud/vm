@@ -38,7 +38,8 @@ fi
 # Yes or No?
 choice=$(whiptail --title "Bitwarden Registration" --checklist "Do you want to disable Bitwarden User Registration?\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Yes" "(Disable public user registration)" OFF \
-"No" "Enable public user registration" OFF 3>&1 1>&2 2>&3)
+"No" "(Enable public user registration)" OFF \
+"Cancel" "(Exit this menu)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Yes"*)
@@ -50,8 +51,12 @@ case "$choice" in
     *"No"*)
         clear
         print_text_in_color "$ICyan" "Enabling Bitwarden User Registration..."
-        # Disable
+        # Enable
         sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=false|g" /root/bwdata/env/global.override.env
+    ;;&
+    *"Cancel"*)
+        clear
+        exit 1
     ;;&
     *)
     ;;
