@@ -50,7 +50,7 @@ case "$choice" in
     ;;&
     *"Static IP"*)
         clear
-        run_script STATIC static_ip
+        run_script NETWORK static_ip
     ;;&
     *"Automatic updates"*)
         clear

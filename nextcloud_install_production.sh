@@ -748,7 +748,7 @@ check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
 check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
 download_script STATIC instruction
 download_script STATIC history
-download_script STATIC static_ip
+download_script NETWORK static_ip
 
 if home_sme_server
 then
