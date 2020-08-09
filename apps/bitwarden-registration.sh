@@ -28,7 +28,7 @@ then
             then
                 sleep 0.1
             else
-                msg_box "Bitwarden doesn't seem to be installed. You can not run this script.
+                msg_box "Bitwarden doesn't seem to be installed. You can not run this script."
                 exit 1
             fi
         fi
@@ -43,13 +43,13 @@ choice=$(whiptail --title "Bitwarden Registration" --checklist "Do you want to d
 case "$choice" in
     *"Yes"*)
         clear
-        print_text_in_color "$ICyan" "Disabling Bitwarden User Registrationo..."
+        print_text_in_color "$ICyan" "Disabling Bitwarden User Regitration..."
         # Disable
         sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=true|g" /root/bwdata/env/global.override.env
     ;;&
     *"No"*)
         clear
-        print_text_in_color "$ICyan" "Enabling Bitwarden User Registrationo..."
+        print_text_in_color "$ICyan" "Enabling Bitwarden User Registration..."
         # Disable
         sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=false|g" /root/bwdata/env/global.override.env
     ;;&
