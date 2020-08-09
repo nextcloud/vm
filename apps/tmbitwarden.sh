@@ -22,7 +22,7 @@ cpu_check 2 Bitwarden
 
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
-if [ is_docker_running ]
+if is_docker_running
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
