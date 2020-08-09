@@ -58,4 +58,8 @@ case "$choice" in
 esac
 
 # Restart Bitwarden
+install_if_not curl
+cd /root
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
+chmod +x /root/bitwarden.sh
 check_command ./bitwarden.sh restart
