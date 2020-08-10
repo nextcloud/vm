@@ -18,7 +18,8 @@ root_check
 
 # Install Apps
 choice=$(whiptail --title "Which apps do you want to install?" --checklist "Automatically configure and install selected apps\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Fail2ban" "(Extra Bruteforce protection)" OFF \
+"Fail2ban " "(Extra Bruteforce protection)" OFF \
+"Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring)" OFF \
 "Collabora" "(Online editing [2GB RAM])" OFF \
@@ -32,10 +33,15 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "SMB-mount" "(Connect to SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    *"Fail2ban"*)
+    *"Fail2ban "*)
         clear
         print_text_in_color "$ICyan" "Downloading Fail2ban.sh..."
         run_script APP fail2ban
+    ;;&
+    *"Fail2ban-Statuscheck"*)
+        clear
+        fail2ban-client status nextcloud && fail2ban-client status sshd
+        iptables -L -n
     ;;&
     *"Adminer"*)
         clear
