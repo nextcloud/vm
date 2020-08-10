@@ -61,23 +61,25 @@ mkdir -p "$VMLOGS"
 print_text_in_color "$ICyan" "Finding nextcloud.log..."
 while :
 do
-    NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
-    if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
+    if [ "$(occ_command_no_check config:system:get logfile)" = "$VMLOGS/nextcloud.log" ]
     then
-        # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
-        print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
-        xargs rm -f <<< "$NCLOG"
+        break
+    elif [ "$(occ_command_no_check config:system:get logfile)" != "" ]
+    then
         # Set logging
         occ_command config:system:set log_type --value=file
         occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
         occ_command config:system:set loglevel --value=2
         touch "$VMLOGS/nextcloud.log"
         chown www-data:www-data "$VMLOGS/nextcloud.log"
+        break
     else
-        if [ "$(occ_command config:system:get logfile)" = "$VMLOGS/nextcloud.log" ]
+        NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
+        if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
         then
-            break
-        else
+            # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
+            print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
+            xargs rm -f <<< "$NCLOG"
             # Set logging
             occ_command config:system:set log_type --value=file
             occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
