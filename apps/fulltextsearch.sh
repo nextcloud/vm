@@ -23,7 +23,6 @@ root_check
 # Nextcloud 18 is required.
 lowest_compatible_nc 18
 
-
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 FullTextSearch
 cpu_check 2 FullTextSearch
