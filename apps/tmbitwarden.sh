@@ -59,7 +59,7 @@ if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
 then
 msg_box "OK, please do the necessary preparations before you run this script and then simply run it again once you're done.
 
-To run this script again, execute $SCRIPTS/apps.sh and choose Bitwarden"
+To run this script again, execute $SCRIPTS/menu.sh and choose Additional Apps --> Bitwarden"
     exit
 else
     sleep 0.1
