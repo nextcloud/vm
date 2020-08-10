@@ -36,20 +36,11 @@ choice=$(whiptail --title "Server configurations" --checklist "Choose what you w
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" ON \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF \
-"Fail2ban Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
-"Automatic updates" "(Automatically update your server every week on Sundays)" OFF 3>&1 1>&2 2>&3)
+"Fail2ban Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    *"Fail2ban Statuscheck"*)
-        clear
-	fail2ban-client status nextcloud && fail2ban-client status sshd
-	iptables -L -n
-    ;;&
-    *"Disk Check"*)
-        clear
-        run_script DISK smartctl
-    ;;&
     *"Security"*)
         clear
         run_script ADDONS security
@@ -61,6 +52,15 @@ case "$choice" in
     *"Automatic updates"*)
         clear
         run_script ADDONS automatic_updates
+    ;;&
+    *"Disk Check"*)
+        clear
+        run_script DISK smartctl
+    ;;&
+    *"Fail2ban Statuscheck"*)
+        clear
+	fail2ban-client status nextcloud && fail2ban-client status sshd
+	iptables -L -n
     ;;&
     *"Activate TLS"*)
         clear
