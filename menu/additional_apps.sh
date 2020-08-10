@@ -46,7 +46,7 @@ case "$choice" in
             fail2ban-client status nextcloud && fail2ban-client status sshd
             iptables -L -n
         else
-            msg_box "Fail2ban isn't installed. Please run 'sudo bash /vasr/scripts/menu.sh' to install it."
+            msg_box "Fail2ban isn't installed. Please run 'sudo bash /var/scripts/menu.sh' to install it."
         fi
     ;;&
     *"Adminer"*)
