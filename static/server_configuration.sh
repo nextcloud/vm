@@ -37,14 +37,9 @@ choice=$(whiptail --title "Server configurations" --checklist "Choose what you w
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF \
-"Bitwarden Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    *"Bitwarden Registration"*)
-        clear
-        run_script APP bitwarden-registration
-    ;;&
     *"Disk Check"*)
         clear
         run_script DISK smartctl
