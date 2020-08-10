@@ -14,10 +14,7 @@ root_check
 check_distro_version
 check_multiverse
 
-MOUNT_=/mnt/"$POOLNAME"
-
-# Needed for partprobe
-install_if_not parted
+MOUNT_=/mnt/$POOLNAME
 
 format() {
 # umount if mounted
@@ -26,57 +23,7 @@ umount /mnt/* &> /dev/null
 # mkdir if not existing
 mkdir -p "$MOUNT_"
 
-# Check what Hypervisor disks are available
-if [ "$SYSVENDOR" == "VMware, Inc." ];
-then
-    SYSNAME="VMware"
-    DEVTYPE=sdb
-elif [ "$SYSVENDOR" == "Microsoft Corporation" ];
-then
-    SYSNAME="Hyper-V"
-    DEVTYPE=sdb
-elif [ "$SYSVENDOR" == "innotek GmbH" ];
-then
-    SYSNAME="VirtualBox"
-    DEVTYPE=sdb
-elif [ "$SYSVENDOR" == "Xen" ];
-then
-    SYSNAME="Xen/XCP-NG"
-    DEVTYPE=xvdb
-elif [[ "$SYSVENDOR" == "QEMU" || "$SYSVENDOR" == "Red Hat" ]];
-then
-    SYSNAME="KVM/QEMU"
-    DEVTYPE=vdb
-elif [ "$SYSVENDOR" == "DigitalOcean" ];
-then
-    SYSNAME="DigitalOcean"
-    DEVTYPE=sda
-elif [ "$SYSVENDOR" == "Intel(R) Client Systems" ];
-then
-    SYSNAME="Intel-NUC"
-    DEVTYPE=sda
-elif [ "$SYSVENDOR" == "UpCloud" ];
-then
-    if lsblk -e7 -e11 | grep -q sd
-    then
-        SYSNAME="UpCloud ISCSI/IDE"
-        DEVTYPE=sdb
-    elif lsblk -e7 -e11 | grep -q vd
-    then
-        SYSNAME="UpCloud VirtiO"
-        DEVTYPE=vdb
-    fi
-elif partprobe /dev/sdb &>/dev/null;
-then
-    SYSNAME="machines"
-    DEVTYPE=sdb
-else
-msg_box "It seems like you didn't add a second disk. 
-To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
-
-This script will now exit. Please add a second disk and start over."
-exit 1
-fi
+DEVTYPE=sda
 
 # Get the name of the drive
 DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
@@ -93,7 +40,7 @@ exit 1
 fi
 
 # Check if ZFS utils are installed
-install_if_not zfsutils-linux 
+install_if_not zfsutils-linux
 
 # Check still not mounted
 #These functions return exit codes: 0 = found, 1 = not found

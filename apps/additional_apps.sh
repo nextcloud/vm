@@ -28,7 +28,6 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "PreviewGenerator" "(Pre-generate previews)" OFF \
 "LDAP" "(Windows Active directory)" OFF \
 "Talk" "(Nextcloud Video calls and chat)" OFF \
-"Webmin" "(Server GUI)" OFF \
 "SMB-mount" "(Connect to SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -91,9 +90,6 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading SMB-mount.sh..."
         run_script APP smbmount
-    ;;&
-    *"Webmin"*)
-        run_script APP webmin
     ;;&
     *)
     ;;

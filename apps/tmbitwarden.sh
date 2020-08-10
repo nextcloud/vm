@@ -22,7 +22,7 @@ cpu_check 2 Bitwarden
 
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
-if is_docker_running
+if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
@@ -59,7 +59,7 @@ if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
 then
 msg_box "OK, please do the necessary preparations before you run this script and then simply run it again once you're done.
 
-To run this script again, execute $SCRIPTS/menu.sh and choose Additional Apps --> Bitwarden"
+To run this script again, execute $SCRIPTS/apps.sh and choose Bitwarden"
     exit
 else
     sleep 0.1
@@ -84,10 +84,7 @@ check_command ./bitwarden.sh rebuild
 check_command ./bitwarden.sh start
 if check_command ./bitwarden.sh updatedb
 then
-msg_box "Bitwarden was sucessfully installed! Please visit $(grep 'url:' /root/bwdata/config.yml | awk '{print$2}'):8443 to setup your account.
-
-After the account it setup, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
-Additional Apps --> Bitwarden Registration"
+msg_box "Bitwarden was sucessfully installed! Please visit $(grep 'url:' /root/bwdata/config.yml | awk '{print$2}'):8443 to setup your account."
 else
 msg_box "Bitwarden installation failed! We will now remove necessary configs to be able to run this script again"
     rm -rf /root/bwdata/

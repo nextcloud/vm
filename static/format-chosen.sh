@@ -16,9 +16,6 @@ check_multiverse
 
 MOUNT_=/mnt/$POOLNAME
 
-# Needed for partprobe
-install_if_not parted
-
 format() {
 # umount if mounted
 umount /mnt/* &> /dev/null
@@ -26,10 +23,70 @@ umount /mnt/* &> /dev/null
 # mkdir if not existing
 mkdir -p "$MOUNT_"
 
-DEVTYPE=sda
+# Check what Hypervisor disks are available
+if [ "$SYSVENDOR" == "VMware, Inc." ];
+then
+    SYSNAME="VMware"
+    DEVTYPE=sdb
+elif [ "$SYSVENDOR" == "Microsoft Corporation" ];
+then
+    SYSNAME="Hyper-V"
+    DEVTYPE=sdb
+elif [ "$SYSVENDOR" == "innotek GmbH" ];
+then
+    SYSNAME="VirtualBox"
+    DEVTYPE=sdb
+elif [ "$SYSVENDOR" == "Xen" ];
+then
+    SYSNAME="Xen/XCP-NG"
+    DEVTYPE=xvdb
+elif [[ "$SYSVENDOR" == "QEMU" || "$SYSVENDOR" == "Red Hat" ]];
+then
+    SYSNAME="KVM/QEMU"
+    DEVTYPE=vdb
+elif [ "$SYSVENDOR" == "DigitalOcean" ];
+then
+    SYSNAME="DigitalOcean"
+    DEVTYPE=sda
+elif [ "$SYSVENDOR" == "Intel(R) Client Systems" ];
+then
+    SYSNAME="Intel-NUC"
+    DEVTYPE=sda
+elif partprobe /dev/sdb &>/dev/null;
+then
+    SYSNAME="machines"
+    DEVTYPE=sdb
+else
+msg_box "It seems like you didn't add a second disk. 
+To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
+
+This script will now exit. Please add a second disk and start over."
+exit 1
+fi
+
+msg_box "You will now see a list with available devices. Choose the device where you want to put your nextcloud data.
+Attention, the selected device will be formatted!"
+AVAILABLEDEVICES="$(lsblk | grep 'disk' | awk '{print $1}')"
+# https://github.com/koalaman/shellcheck/wiki/SC2206
+mapfile -t AVAILABLEDEVICES <<< "$AVAILABLEDEVICES"
+
+# Ask for user input
+while
+    lsblk
+    read -r -e -p "Enter the drive for the nextcloud data:" -i "$DEVTYPE" userinput
+    userinput=$(echo "$userinput" | awk '{print $1}')
+        for disk in "${AVAILABLEDEVICES[@]}";
+        do
+            [[ "$userinput" == "$disk" ]] && devtype_present=1 && DEVTYPE="$userinput"
+        done
+    [[ -z "${devtype_present+x}" ]]
+do
+    printf "${BRed}$DEVTYPE is not a valid disk. Please try again.${Color_Off}\n"
+    :
+done
 
 # Get the name of the drive
-DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
+DISKTYPE=$(fdisk -l | grep "$DEVTYPE" | awk '{print $2}' | cut -d ":" -f1 | head -1)
 if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
 then
 msg_box "It seems like your $SYSNAME secondary volume (/dev/$DEVTYPE) does not exist.
@@ -43,7 +100,7 @@ exit 1
 fi
 
 # Check if ZFS utils are installed
-install_if_not zfsutils-linux
+install_if_not zfsutils-linux 
 
 # Check still not mounted
 #These functions return exit codes: 0 = found, 1 = not found

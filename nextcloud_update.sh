@@ -81,7 +81,7 @@ then
 fi
 
 # Make sure everyone gets access to menu.sh
-download_script MENU menu
+download_script STATIC menu
 
 # Update docker-ce to overlay2 since devicemapper is deprecated
 if [ -f /etc/systemd/system/docker.service ]
@@ -235,7 +235,7 @@ if is_this_installed libzfs2linux
 then
     if grep -rq ncdata /etc/mtab
     then
-        run_script DISK prune_zfs_snaphots
+        run_script STATIC prune_zfs_snaphots
     fi
 fi
 

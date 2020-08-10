@@ -22,7 +22,7 @@ print_text_in_color "$ICyan" "Running the main menu script..."
 if network_ok
 then
     # Delete, download, run
-    run_script MENU main_menu
+    run_script STATIC main_menu
 fi
 
 exit

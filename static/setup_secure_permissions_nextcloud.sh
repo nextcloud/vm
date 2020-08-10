@@ -60,11 +60,6 @@ chown -R "${htuser}":"${htgroup}" "${NCPATH}"/apps/
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/config/
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/themes/
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/updater/
-if [ -f "${VMLOGS}"/update.log ]
-then
-    chown "${rootuser}":"${rootuser}" "${VMLOGS}"/update.log
-fi
-
 if ! [ "$(ls -ld "${NCDATA}" | awk '{print$3$4}')" == "${htuser}""${htgroup}" ]
 then
     chown -R "${htuser}":"${htgroup}" "${NCDATA}"/

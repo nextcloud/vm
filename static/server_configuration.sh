@@ -42,19 +42,19 @@ choice=$(whiptail --title "Server configurations" --checklist "Choose what you w
 case "$choice" in
     *"Disk Check"*)
         clear
-        run_script DISK smartctl
+        run_script ADDONS smartctl
     ;;&
     *"Security"*)
         clear
-        run_script ADDONS security
+        run_script STATIC security
     ;;&
     *"Static IP"*)
         clear
-        run_script NETWORK static_ip
+        run_script STATIC static_ip
     ;;&
     *"Automatic updates"*)
         clear
-        run_script ADDONS automatic_updates
+        run_script STATIC automatic_updates
     ;;&
     *"Activate TLS"*)
         clear

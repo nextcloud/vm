@@ -66,7 +66,7 @@ debug_mode
 root_check
 
 # Set locales
-run_script ADDONS locales
+run_script STATIC locales
 
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
@@ -163,7 +163,7 @@ install_if_not build-essential
 # Just check if the function works and run disk setup
 if home_sme_server
 then
-    run_script DISK format-sda-nuc-server
+    run_script STATIC format-sda-nuc-server
 else
 # Set dual or single drive setup
 msg_box "This script is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
@@ -178,15 +178,15 @@ choice=$(whiptail --title "Choose disk format" --radiolist "How would you like t
 
 case "$choice" in
     "2 Disks Auto")
-        run_script DISK format-sdb
+        run_script STATIC format-sdb
         # Change to zfs-mount-generator
-        run_script DISK change-to-zfs-mount-generator
+        run_script STATIC change-to-zfs-mount-generator
 
     ;;
     "2 Disks Manual")
-        run_script DISK format-chosen
+        run_script STATIC format-chosen
         # Change to zfs-mount-generator
-        run_script DISK change-to-zfs-mount-generator
+        run_script STATIC change-to-zfs-mount-generator
     ;;
     "1 Disk")
         print_text_in_color "$IRed" "1 Disk setup chosen."
@@ -235,7 +235,7 @@ do
 done
 
 # Check current repo
-run_script ADDONS locate_mirror
+run_script STATIC locate_mirror
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
@@ -470,7 +470,7 @@ echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
 # Install Redis (distrubuted cache)
-run_script ADDONS redis-server-ubuntu
+run_script STATIC redis-server-ubuntu
 
  # Install smbclient
  # php"$PHPVER"-smbclient does not yet work in PHP 7.4
@@ -701,7 +701,8 @@ choice=$(whiptail --title "Install apps or software" --checklist "Automatically 
 "Text" "" ON \
 "Mail" "" ON \
 "Deck" "" ON \
-"Group-Folders" "" ON 3>&1 1>&2 2>&3)
+"Group-Folders" "" ON \
+"Webmin" "" ON 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Calendar"*)
@@ -736,6 +737,9 @@ case "$choice" in
     *"Group-Folders"*)
         install_and_enable_app groupfolders
     ;;&
+    *"Webmin"*)
+        run_script APP webmin
+    ;;&
     *)
     ;;
 esac
@@ -745,7 +749,7 @@ check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
 check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
 download_script STATIC instruction
 download_script STATIC history
-download_script NETWORK static_ip
+download_script STATIC static_ip
 
 if home_sme_server
 then

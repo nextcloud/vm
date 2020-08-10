@@ -14,10 +14,7 @@ root_check
 check_distro_version
 check_multiverse
 
-MOUNT_=/mnt/$POOLNAME
-
-# Needed for partprobe
-install_if_not parted
+MOUNT_=/mnt/"$POOLNAME"
 
 format() {
 # umount if mounted
@@ -55,17 +52,6 @@ elif [ "$SYSVENDOR" == "Intel(R) Client Systems" ];
 then
     SYSNAME="Intel-NUC"
     DEVTYPE=sda
-elif [ "$SYSVENDOR" == "UpCloud" ];
-then
-    if lsblk -e7 -e11 | grep -q sd
-    then
-        SYSNAME="UpCloud ISCSI/IDE"
-        DEVTYPE=sdb
-    elif lsblk -e7 -e11 | grep -q vd
-    then
-        SYSNAME="UpCloud VirtiO"
-        DEVTYPE=vdb
-    fi
 elif partprobe /dev/sdb &>/dev/null;
 then
     SYSNAME="machines"
@@ -78,29 +64,8 @@ This script will now exit. Please add a second disk and start over."
 exit 1
 fi
 
-msg_box "You will now see a list with available devices. Choose the device where you want to put your nextcloud data.
-Attention, the selected device will be formatted!"
-AVAILABLEDEVICES="$(lsblk | grep 'disk' | awk '{print $1}')"
-# https://github.com/koalaman/shellcheck/wiki/SC2206
-mapfile -t AVAILABLEDEVICES <<< "$AVAILABLEDEVICES"
-
-# Ask for user input
-while
-    lsblk
-    read -r -e -p "Enter the drive for the nextcloud data:" -i "$DEVTYPE" userinput
-    userinput=$(echo "$userinput" | awk '{print $1}')
-        for disk in "${AVAILABLEDEVICES[@]}";
-        do
-            [[ "$userinput" == "$disk" ]] && devtype_present=1 && DEVTYPE="$userinput"
-        done
-    [[ -z "${devtype_present+x}" ]]
-do
-    printf "${BRed}$DEVTYPE is not a valid disk. Please try again.${Color_Off}\n"
-    :
-done
-
 # Get the name of the drive
-DISKTYPE=$(fdisk -l | grep "$DEVTYPE" | awk '{print $2}' | cut -d ":" -f1 | head -1)
+DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
 if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
 then
 msg_box "It seems like your $SYSNAME secondary volume (/dev/$DEVTYPE) does not exist.

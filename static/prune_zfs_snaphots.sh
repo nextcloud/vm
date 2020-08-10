@@ -38,10 +38,10 @@ The script will also delete everything in trashbin for all users to free up some
             if [ -f $SCRIPTS/zfs-prune-snapshots ]
             then
                 rm -f "$SCRIPTS"/zfs-prune-snapshots
-                download_script DISK zfs-prune-snapshots
+                download_script STATIC zfs-prune-snapshots
             elif [ ! -f $SCRIPTS/zfs-prune-snapshots.sh ]
             then
-                download_script DISK zfs-prune-snapshots
+                download_script STATIC zfs-prune-snapshots
             fi
             check_command chmod +x "$SCRIPTS"/zfs-prune-snapshots.sh
             # Prune!
