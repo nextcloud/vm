@@ -40,8 +40,13 @@ case "$choice" in
     ;;&
     *"Fail2ban-Statuscheck"*)
         clear
-        fail2ban-client status nextcloud && fail2ban-client status sshd
-        iptables -L -n
+        if is_this_installed fail2ban
+        then
+            fail2ban-client status nextcloud && fail2ban-client status sshd
+            iptables -L -n
+        else
+            msg_box "Fail2ban isn't installed. Please do that first."
+        fi
     ;;&
     *"Adminer"*)
         clear
