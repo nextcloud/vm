@@ -90,6 +90,8 @@ do
         fi
     fi
 done
+# remove ncdata, else it will be used
+rm -f $NCDATA/nextcloud.log
 # time to ban an IP that exceeded attempts
 BANTIME_=1209600
 # cooldown time for incorrect passwords
