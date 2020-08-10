@@ -80,6 +80,9 @@ LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
 OLD="$GITHUB_REPO/old"
 ADDONS="$GITHUB_REPO/addons"
+MENU="$GITHUB_REPO/menu"
+DISK="$GITHUB_REPO/disk"
+NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
@@ -887,7 +890,7 @@ rm -f releases
 }
 
 # call like: download_script folder_variable name_of_script
-# e.g. download_script APP additional_apps
+# e.g. download_script MENU additional_apps
 # Use it for functions like download_static_script
 download_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
@@ -901,7 +904,7 @@ download_script() {
 }
 
 # call like: run_script folder_variable name_of_script
-# e.g. run_script APP additional_apps
+# e.g. run_script MENU additional_apps
 # Use it for functions like run_script STATIC
 run_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
