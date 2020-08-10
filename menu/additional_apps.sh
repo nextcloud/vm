@@ -87,13 +87,13 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading Talk.sh..."
         run_script APP talk
     ;;&
+    *"Webmin"*)
+        run_script APP webmin
+    ;;&
     *"SMB-mount"*)
         clear
         print_text_in_color "$ICyan" "Downloading SMB-mount.sh..."
         run_script APP smbmount
-    ;;&
-    *"Webmin"*)
-        run_script APP webmin
     ;;&
     *)
     ;;
