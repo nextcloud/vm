@@ -24,7 +24,8 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "Netdata" "(Real-time server monitoring)" OFF \
 "Collabora" "(Online editing [2GB RAM])" OFF \
 "OnlyOffice" "(Online editing [2GB RAM])" OFF \
-"Bitwarden" "(External password manager)" OFF \
+"Bitwarden " "(External password manager)" OFF \
+"Bitwarden-Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" OFF \
 "LDAP" "(Windows Active directory)" OFF \
@@ -68,10 +69,14 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading Collabora.sh..."
         run_script APP collabora
     ;;&
-    *"Bitwarden"*)
+    *"Bitwarden "*)
         clear
         print_text_in_color "$ICyan" "Downloading Bitwarden.sh..."
         run_script APP tmbitwarden
+    ;;&
+    *"Bitwarden-Registration"*)
+        clear
+        run_script APP bitwarden-registration
     ;;&
     *"FullTextSearch"*)
         clear
