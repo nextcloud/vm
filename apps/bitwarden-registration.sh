@@ -44,7 +44,7 @@ choice=$(whiptail --title "Bitwarden Registration" --radiolist "Do you want to d
 "No" "(Enable public user registration)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    *"Yes"*)
+    "Yes")
         clear
         print_text_in_color "$ICyan" "Disabling Bitwarden User Regitration..."
         # Disable
@@ -55,8 +55,8 @@ case "$choice" in
         curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
         chmod +x /root/bitwarden.sh
         check_command ./bitwarden.sh restart
-    ;;&
-    *"No"*)
+    ;;
+    "No")
         clear
         print_text_in_color "$ICyan" "Enabling Bitwarden User Registration..."
         # Enable
@@ -67,7 +67,7 @@ case "$choice" in
         curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
         chmod +x /root/bitwarden.sh
         check_command ./bitwarden.sh restart
-    ;;&
+    ;;
     *)
     ;;
 esac
