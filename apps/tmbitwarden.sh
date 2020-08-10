@@ -87,7 +87,7 @@ then
 msg_box "Bitwarden was sucessfully installed! Please visit $(grep 'url:' /root/bwdata/config.yml | awk '{print$2}'):8443 to setup your account.
 
 After the account it setup, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
-Server Configuration --> Bitwarden Registration"
+Additional Apps --> Bitwarden Registration"
 else
 msg_box "Bitwarden installation failed! We will now remove necessary configs to be able to run this script again"
     rm -rf /root/bwdata/
