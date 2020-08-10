@@ -222,7 +222,7 @@ ask_yes_or_no() {
 
 msg_box() {
 local PROMPT="$1"
-    whiptail --title "Nextcloud VM - $(date +"%Y")" --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+    whiptail --title "Nextcloud RPi - $(date +"%Y")" --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
 # Check if process is runnnig: is_process_running dpkg
@@ -768,6 +768,7 @@ else
     then
         systemctl restart systemd-networkd > /dev/null
     fi
+
     # Check the connention
     countdown 'Waiting for network to restart...' 3
     if ! site_200 github.com

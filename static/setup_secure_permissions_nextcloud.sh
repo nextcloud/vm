@@ -54,6 +54,7 @@ print_text_in_color "$ICyan" "chown Directories"
 chown -R "${rootuser}":"${htgroup}" "${VMLOGS}"/
 chown "${htuser}":"${htgroup}" "${VMLOGS}"/nextcloud.log
 chown "${htuser}":"${htgroup}" "${VMLOGS}"/audit.log
+chown "${rootuser}":"${rootuser}" "${VMLOGS}"/update.log
 chown -R "${rootuser}":"${htgroup}" "${NCPATH}"/
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/apps/
 chown -R "${htuser}":"${htgroup}" "${NCPATH}"/config/

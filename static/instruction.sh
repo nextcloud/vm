@@ -18,7 +18,7 @@ echo -e "|"  "${IGreen}The default sudoer password is: ${BIGreen}nextcloud${IGre
 cat << INST2
 |                                                                       |
 | You can find the complete install instructions here:                  |
-| Nextcloud VM              = https://bit.ly/2S8eGfS                    |
+| Nextcloud RPi              = https://bit.ly/2S8eGfS                    |
 | Nextcloud Home/SME Server = https://bit.ly/2k2TNaM                    |
 |                                                                       |
 | To be 100% sure that all the keystrokes work correctly (like @),      |

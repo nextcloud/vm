@@ -633,7 +633,7 @@ Thank you for using T&M Hansson IT's updater!"
     print_text_in_color "$ICyan" "Sending notification about the successful update to all admins..."
     notify_admin_gui \
     "Nextcloud is now updated!" \
-    "Your Nextcloud is updated to $CURRENTVERSION_after with the update script in the Nextcloud VM."
+    "Your Nextcloud is updated to $CURRENTVERSION_after with the update script in the Nextcloud RPi."
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update.log
     exit 0
 else

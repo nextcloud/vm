@@ -219,7 +219,7 @@ msg_box "The Nextcloud startup script that handles the first setup (this one) is
 
 If you feel uncertain about adding some extra features during this setup, then it's best to wait until after the first setup is done. You can always add all the extra features later.
 
-[For the Nextcloud VM:]
+[For the Nextcloud RPi:]
 Please delete this VM from your host and reimport it once again, then run this setup like you did the first time.
 
 [For the Nextcloud Home/SME Server:]

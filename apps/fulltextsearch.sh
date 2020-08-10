@@ -20,7 +20,7 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 19 is required.
+# Nextcloud 18 is required.
 lowest_compatible_nc 18
 
 # Test RAM size (2GB min) + CPUs (min 2)
