@@ -116,6 +116,8 @@ OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 [ -n "$COLLABORA_INSTALL" ] && NCDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
 # Nextcloud Main Domain (activate-tls.sh)
 [ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(whiptail --title "T&M Hansson IT - Let's Encrypt" --inputbox "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" cloud.yourdomain.com 3>&1 1>&2 2>&3)
+# Bitwarden
+[ -n "$BITWARDEN_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden" --inputbox "Bitwarden subdomain eg: bitwarden.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 # Letsencrypt
 SITES_AVAILABLE="/etc/apache2/sites-available"
 LETSENCRYPTPATH="/etc/letsencrypt"
@@ -156,9 +158,6 @@ APACHE2=/etc/apache2/apache2.conf
 [ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 [ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
 [ -n "$TURN_INSTALL" ] && TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-# Bitwarden
-[ -n "$BITWARDEN_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden" --inputbox "Bitwarden subdomain eg: bitwarden.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-
 
 ## FUNCTIONS
 
