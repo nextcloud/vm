@@ -185,10 +185,10 @@ sed -i "s|https_port.*|https_port: 5179|g" /root/bwdata/config.yml
 sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /root/bwdata/config.yml
 sed -i 's|http://|https://|g' /root/bwdata/env/global.override.env
 
-# Symlink TLS certificates
-ln -s $CERTFILES/$SUBDOMAIN/fullchain.pem /root/bwdata/ssl/$SUBDOMAIN/certificate.crt
-ln -s $CERTFILES/$SUBDOMAIN/privkey.pem /root/bwdata/ssl/$SUBDOMAIN/privkey.crt
-ln -s $CERTFILES/$SUBDOMAIN/dhparam.pem /root/bwdata/ssl/$SUBDOMAIN/dhparam.pem
+# add certificate files to config.yml
+sed -i "s|^ssl_certificate_path:.*|ssl_certificate_path: $CERTFILES/$SUBDOMAIN/fullchain.pem|g" /root/bwdata/config.yml
+sed -i "s|^ssl_key_path:.*|ssl_key_path: $CERTFILES/$SUBDOMAIN/privkey.pem|g" /root/bwdata/config.yml
+sed -i "s|^ssl_diffie_hellman_path:.*|ssl_diffie_hellman_path: $CERTFILES/$SUBDOMAIN/dhparam.pem|g" /root/bwdata/config.yml
 
 # Build and start
 check_command ./bitwarden.sh rebuild
