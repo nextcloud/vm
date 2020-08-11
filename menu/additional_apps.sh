@@ -114,5 +114,4 @@ case "$choice" in
     *)
     ;;
 esac
-clear
 exit
