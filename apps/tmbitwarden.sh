@@ -5,7 +5,8 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+BITWARDEN=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset BITWARDEN
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -62,6 +63,14 @@ To run this script again, execute $SCRIPTS/menu.sh and choose Additional Apps --
     exit
 fi
 
+# Check if $SUBDOMAIN exists and is reachable
+print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
+domain_check_200 "$SUBDOMAIN"
+
+# Check open ports with NMAP
+check_open_port 80 "$SUBDOMAIN"
+check_open_port 443 "$SUBDOMAIN"
+
 msg_box "ATTENTION!
 
 You will see in the next step a setup which is provided by bitwarden.
@@ -77,42 +86,7 @@ And please don't worry: we will create a valid SSL certificate afterwards oursel
 5. You will be asked if you have a SSL certificate which you want to use; Please type in no: 'n'
 6. You will be asked if you want to generate a self-signed SSL certificate; Please type in no: 'n'"
 
-# Install Docker
-install_docker
-install_if_not docker-compose
-
-# Stop Apache to not conflict when LE is run
-check_command systemctl stop apache2.service
-
-# Install Bitwarden 
-install_if_not curl
-cd /root
-curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
-chmod +x /root/bitwarden.sh
-check_command ./bitwarden.sh install
-sed -i "s|http_port.*|http_port: 5178|g" /root/bwdata/config.yml
-sed -i "s|https_port.*|https_port: 5179|g" /root/bwdata/config.yml
-# Get Subdomain from config.yml and change it to https
-SUBDOMAIN=$(grep ^url /root/bwdata/config.yml)
-SUBDOMAIN=${SUBDOMAIN##*url: http://}
-sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /root/bwdata/config.yml
-sed -i 's|http://|https://|g' /root/bwdata/env/global.override.env
-check_command ./bitwarden.sh rebuild
-check_command ./bitwarden.sh start
-check_command ./bitwarden.sh updatedb
-
 # Produce reverse-proxy config and get lets-encrypt certificate
-
-# Curl the lib another time to get the correct HTTPS_CONF
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-
-# Check if $SUBDOMAIN exists and is reachable
-print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
-domain_check_200 "$SUBDOMAIN"
-
-# Check open ports with NMAP
-check_open_port 80 "$SUBDOMAIN"
-check_open_port 443 "$SUBDOMAIN"
 
 # Install Apache2
 install_if_not apache2
@@ -194,6 +168,32 @@ then
 else
     last_fail_tls "$SCRIPTS"/apps/tmbitwarden.sh
 fi
+
+# Install Docker
+install_docker
+install_if_not docker-compose
+
+# Install Bitwarden 
+install_if_not curl
+cd /root
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
+export DOMAIN="$SUBDOMAIN"
+chmod +x /root/bitwarden.sh
+check_command ./bitwarden.sh install
+sed -i "s|http_port.*|http_port: 5178|g" /root/bwdata/config.yml
+sed -i "s|https_port.*|https_port: 5179|g" /root/bwdata/config.yml
+sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /root/bwdata/config.yml
+sed -i 's|http://|https://|g' /root/bwdata/env/global.override.env
+
+# Symlink TLS certificates
+ln -s $CERTFILES/$SUBDOMAIN/fullchain.pem /root/bwdata/ssl/$SUBDOMAIN/certificate.crt
+ln -s $CERTFILES/$SUBDOMAIN/privkey.pem /root/bwdata/ssl/$SUBDOMAIN/privkey.crt
+ln -s $CERTFILES/$SUBDOMAIN/dhparam.pem /root/bwdata/ssl/$SUBDOMAIN/dhparam.pem
+
+# Build and start
+check_command ./bitwarden.sh rebuild
+check_command ./bitwarden.sh start
+check_command ./bitwarden.sh updatedb
 
 # Add prune command
 {
