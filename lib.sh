@@ -156,6 +156,8 @@ APACHE2=/etc/apache2/apache2.conf
 [ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 [ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
 [ -n "$TURN_INSTALL" ] && TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+# Bitwarden
+[ -n "$BITWARDEN_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden" --inputbox "Bitwarden subdomain eg: bitwarden.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 
 
 ## FUNCTIONS
