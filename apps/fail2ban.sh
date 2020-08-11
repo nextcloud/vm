@@ -63,7 +63,13 @@ while :
 do
     if [ "$(occ_command_no_check config:system:get logfile)" = "$VMLOGS/nextcloud.log" ]
     then
-        break
+        if [ -f "$VMLOGS/nextcloud.log" ]
+        then
+            chown www-data:www-data "$VMLOGS/nextcloud.log"
+            occ_command config:system:set log_type --value=file
+            occ_command config:system:set loglevel --value=2
+            break
+        fi
     elif [ "$(occ_command_no_check config:system:get logfile)" != "" ]
     then
         # Set logging
