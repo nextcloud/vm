@@ -96,6 +96,7 @@ sed -i "s|https_port.*|https_port: 5179|g" /root/bwdata/config.yml
 SUBDOMAIN=$(grep ^url /root/bwdata/config.yml)
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
 sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /root/bwdata/config.yml
+sed -i 's|http://|https://|g' /root/bwdata/env/global.override.env
 check_command ./bitwarden.sh rebuild
 check_command ./bitwarden.sh start
 check_command ./bitwarden.sh updatedb
