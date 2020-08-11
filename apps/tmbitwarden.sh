@@ -18,7 +18,7 @@ root_check
 
 # Test RAM size (3 GB min) + CPUs (min 2)
 ram_check 3 Bitwarden
-cpu_check 3 Bitwarden
+cpu_check 2 Bitwarden
 
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
