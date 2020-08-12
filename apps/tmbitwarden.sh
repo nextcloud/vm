@@ -83,6 +83,20 @@ https://i.imgur.com/YPynDAf.png"
 install_docker
 install_if_not docker-compose
 
+# Create bitwarden user and service
+if ! id ncbitwarden >/dev/null 2>&1
+then
+    useradd -r ncbitwarden
+fi
+groupadd docker >/dev/null 2>&1
+sudo usermod -aG docker ncbitwarden
+if [ ! -d /home/ncbitwarden ]
+then
+    mkdir -p /home/ncbitwarden
+    chmod -R ncbitwarden:docker /home/ncbitwarden
+fi
+
+
 # Install Bitwarden 
 install_if_not curl
 cd /home/ncbitwarden
