@@ -83,18 +83,18 @@ https://i.imgur.com/YPynDAf.png"
 if ! id "$BITWARDEN_USER" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
-    useradd -s /bin/bash -d "BITWARDEN_HOME" -m -G docker "$BITWARDEN_USER"
+    useradd -s /bin/bash -d "$BITWARDEN_HOME" -m -G docker "$BITWARDEN_USER"
 else
     userdel "$BITWARDEN_USER"
-    rm -rf "BITWARDEN_HOME"
+    rm -rf "${BITWARDEN_HOME:?}/"
     print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
     useradd -s /bin/bash -d "$BITWARDEN_HOME/" -m -G docker "$BITWARDEN_USER"
 fi
 
-if [ ! -d "BITWARDEN_HOME" ]
+if [ ! -d "$BITWARDEN_HOME" ]
 then
-    mkdir -p "BITWARDEN_HOME"
-    chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" "BITWARDEN_HOME"
+    mkdir -p "$BITWARDEN_HOME"
+    chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"
 fi
 
 # Create the service
@@ -131,15 +131,15 @@ install_if_not docker-compose
 
 # Install Bitwarden
 install_if_not curl
-check_command cd "BITWARDEN_HOME"
-curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "BITWARDEN_HOME"
+check_command cd "$BITWARDEN_HOME"
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
 chmod +x "$BITWARDEN_HOME"/bitwarden.sh
 chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
 check_command systemctl daemon-reload
 
 # Check if all ssl settings were entered correctly
-if grep ^url "BITWARDEN_HOME"/bwdata/config.yml | grep -q https || grep ^url "BITWARDEN_HOME"/bwdata/config.yml | grep -q localhost
+if grep ^url "$BITWARDEN_HOME"/bwdata/config.yml | grep -q https || grep ^url "$BITWARDEN_HOME"/bwdata/config.yml | grep -q localhost
 then
     message "It seems like some of the settings you entered are wrong. We will now remove Bitwarden so that you can start over with the installation."
     check_command systemctl stop bitwarden
@@ -149,16 +149,16 @@ then
 fi
 
 # Continue with the installation
-sed -i "s|http_port.*|http_port: 5178|g" "BITWARDEN_HOME"/bwdata/config.yml
-sed -i "s|https_port.*|https_port: 5179|g" "BITWARDEN_HOME"/bwdata/config.yml
+sed -i "s|http_port.*|http_port: 5178|g" "$BITWARDEN_HOME"/bwdata/config.yml
+sed -i "s|https_port.*|https_port: 5179|g" "$BITWARDEN_HOME"/bwdata/config.yml
 USERID=$(id -u $BITWARDEN_USER)
 USERGROUPID=$(id -g $BITWARDEN_USER)
 sed -i "s|LOCAL_UID=.*|LOCAL_UID=$USERID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
 sed -i "s|LOCAL_GID=.*|LOCAL_GID=$USERGROUPID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
 # Get Subdomain from config.yml and change it to https
-SUBDOMAIN=$(grep ^url "BITWARDEN_HOME"/bwdata/config.yml)
+SUBDOMAIN=$(grep ^url "$BITWARDEN_HOME"/bwdata/config.yml)
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
-sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "BITWARDEN_HOME"/bwdata/config.yml
+sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.yml
 sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
