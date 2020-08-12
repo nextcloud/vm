@@ -91,13 +91,13 @@ https://i.imgur.com/YPynDAf.png"
 # Create bitwarden user and service
 if ! id "$BITWARDEN_USER" >/dev/null 2>&1
 then
-    useradd -r "$BITWARDEN_USER"
+    print_text_in_color "$ICyan" "Specifying a ceratin user for Bitwarden: $BITWARDEN_USER..."
+    useradd -s /bin/bash -d /home/"$BITWARDEN_USER"/ -m -G docker "$BITWARDEN_USER"
 else
     userdel "$BITWARDEN_USER"
     rm -rf /home/"$BITWARDEN_USER"
 fi
-groupadd docker >/dev/null 2>&1
-sudo usermod -aG docker "$BITWARDEN_USER"
+
 if [ ! -d /home/"$BITWARDEN_USER" ]
 then
     mkdir -p /home/"$BITWARDEN_USER"
