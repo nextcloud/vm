@@ -41,8 +41,8 @@ print_text_in_color "$ICyan" "Installing Bitwarden password manager..."
 
 msg_box "Bitwarden is a password manager that is seperate from Nextcloud, though we provide this service because it's self hosted and secure.
 
-If you on the other hand want to run this on a subdomain, then please create a DNS record and point it to this server.
-In the process of setting up Bitwarden you will be asked to generate an TLS cert with Let's Enrypt so no need to get your own prior to this setup.
+To be able to use Bitwarden, you need a seperate subdomain. Please create a DNS record and point it to this server, e.g: bitwarden.yourdomain.com.
+After Bitwarden is setup, we will automatically generate a TLS cert with Let's Enrypt. There's no need to get your own prior to this setup, nor during the Bitwarden setup.
 
 The script is based on this documentation: https://help.bitwarden.com/article/install-on-premise/
 It's a good idea to read that before you start this script.
@@ -62,20 +62,22 @@ To run this script again, execute $SCRIPTS/menu.sh and choose Additional Apps --
     exit
 fi
 
-msg_box "ATTENTION!
+msg_box "IMPORTANT, PLEASE READ!
 
-You will see in the next step a setup which is provided by bitwarden.
-You have to make your choices based on the following instructions, 
-otherwise things can go wrong since we have no influence on those scripts.
-Best is if you take a picture of those instructions so that you remember them later on.
-And please don't worry: we will create a valid SSL certificate afterwards ourselves.
+In the next steps you will be asked to answer some questions.
+The questions are from the Bitwarden setup script, and therefore nothing that we control.
 
-1. Enter your subdomain like e.g. 'bitwarden.example.com'
-2. You will be asked if you want to use 'lets encrypt'; Please type in no: 'n'
-3. Enter your installation ID, which you must get on https://bitwarden.com/host
-4. Enter your installation key, which you will also get there
-5. You will be asked if you have a SSL certificate which you want to use; Please type in no: 'n'
-6. You will be asked if you want to generate a self-signed SSL certificate; Please type in no: 'n'"
+It's important that you answer the questions correclty for the rest of the setup to work properly,
+and to be able to generate a valid TLS certificate automatically with our own (this) script.
+
+Basically:
+1. Enter the domain for Bitwarden
+2. Answer 'no' to the question if you want Let's Encrypt
+3. Enter your installation id and keys
+4. Continue to answer 'no' to everything related to SSL/TLS.
+
+Please have a look at how the questions are answered here if you are uncertain:
+https://i.imgur.com/YPynDAf.png"
 
 # Install Docker
 install_docker
