@@ -203,15 +203,9 @@ then
     occ_command config:app:set onlyoffice DocumentServerUrl --value=https://"$SUBDOMAIN/"
     chown -R www-data:www-data "$NC_APPS_PATH"
     occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
-# Add prune command
-    {
-    echo "#!/bin/bash"
-    echo "docker system prune -a --force"
-    echo "exit"
-    } > "$SCRIPTS/dockerprune.sh"
-    chmod a+x "$SCRIPTS/dockerprune.sh"
-    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
-    print_text_in_color "$ICyan" "Docker automatic prune job added."
+    # Add prune command
+    add_dockerprune
+    # Restart Docker
     service docker restart
     docker restart onlyoffice
     print_text_in_color "$IGreen" "OnlyOffice is now successfully installed."
