@@ -22,7 +22,7 @@ if is_docker_running
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
-        if [ ! -d /root/bwdata ]
+        if [ ! -d /root/bwdata ] [ ! -d "$BITWARDEN_HOME"/bwdata ]
         then
             msg_box "It seems like 'Bitwarden' isn't installed.\n\nYou cannot run this script."
             exit 1
@@ -64,8 +64,7 @@ case "$choice" in
             curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
             chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
             chmod +x "$BITWARDEN_HOME"/bitwarden.sh
-            systemctl stop bitwarden
-            check_command systemctl start bitwarden
+            check_command systemctl restart bitwarden
         fi
     ;;
     "No")
@@ -90,8 +89,7 @@ case "$choice" in
             curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
             chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
             chmod +x "$BITWARDEN_HOME"/bitwarden.sh
-            systemctl stop bitwarden
-            check_command systemctl start bitwarden
+            check_command systemctl restart bitwarden
         fi
     ;;
     *)
