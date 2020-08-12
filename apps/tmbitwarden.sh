@@ -230,7 +230,7 @@ check_command systemctl start apache2.service
 
 msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN to setup your account.
 
-# After the account it setup, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
-# Additional Apps --> Bitwarden Registration"
+After the account it setup, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
+Additional Apps --> Bitwarden Registration"
 
 exit
