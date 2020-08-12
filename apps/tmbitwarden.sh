@@ -96,6 +96,8 @@ then
 else
     userdel "$BITWARDEN_USER"
     rm -rf /home/"$BITWARDEN_USER"
+    print_text_in_color "$ICyan" "Specifying a ceratin user for Bitwarden: $BITWARDEN_USER..."
+    useradd -s /bin/bash -d /home/"$BITWARDEN_USER"/ -m -G docker "$BITWARDEN_USER"
 fi
 
 if [ ! -d /home/"$BITWARDEN_USER" ]
