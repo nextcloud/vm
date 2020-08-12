@@ -107,6 +107,11 @@ then
 fi
 
 # Create the service
+msg_box "We will now create a systemd service for Bitwarden.
+
+To start Bitwarden, simply execute: systemctl start bitwarden
+To stop Bitwarden, simply execute: systemctl stop bitwarden"
+
 cat << BITWARDEN_SERVICE > /etc/systemd/system/bitwarden.service
 [Unit]
 Description=Bitwarden
@@ -165,6 +170,7 @@ SUBDOMAIN=${SUBDOMAIN##*url: http://}
 sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
 sed -i 's|http://|https://|g' /home/"$BITWARDEN_USER"/bwdata/env/global.override.env
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
+print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
 check_command systemctl start bitwarden
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
