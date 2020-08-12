@@ -16,9 +16,6 @@ debug_mode
 # Check if root
 root_check
 
-# User for Bitwarden
-BITWARDEN_USER=ncbitwarden
-
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
 if is_docker_running
