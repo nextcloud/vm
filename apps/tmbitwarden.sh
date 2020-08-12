@@ -92,6 +92,17 @@ cd /root
 curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
 chmod +x /root/bitwarden.sh
 check_command ./bitwarden.sh install
+
+# Check if alls ssl settings were entered correctly
+if grep ^url /root/bwdata/config.yml | grep -q https || grep ^url /root/bwdata/config.yml | grep -q localhost
+then
+    message "It seems like you have entered some wrong settings. We will remove bitwarden now again so that you can start over again."
+    check_command docker rm bitwarden-nginx bitwarden-admin bitwarden-events bitwarden-attachments \
+    bitwarden-identity bitwarden-api bitwarden-web bitwarden-icons bitwarden-notifications bitwarden-mssql
+    rm -rf /root/bwdata
+fi
+
+# Continue with the installation
 sed -i "s|http_port.*|http_port: 5178|g" /root/bwdata/config.yml
 sed -i "s|https_port.*|https_port: 5179|g" /root/bwdata/config.yml
 # Get Subdomain from config.yml and change it to https
