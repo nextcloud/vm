@@ -103,7 +103,7 @@ fi
 if [ ! -d /home/"$BITWARDEN_USER" ]
 then
     mkdir -p /home/"$BITWARDEN_USER"
-    chown -R "$BITWARDEN_USER":docker /home/"$BITWARDEN_USER"
+    chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" /home/"$BITWARDEN_USER"
 fi
 
 # Create the service
@@ -138,7 +138,7 @@ install_if_not curl
 cd /home/"$BITWARDEN_USER"
 curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/home/$BITWARDEN_USER"
 chmod +x /home/"$BITWARDEN_USER"/bitwarden.sh
-chown "$BITWARDEN_USER":docker /home/"$BITWARDEN_USER"/bitwarden.sh
+chown "$BITWARDEN_USER":"$BITWARDEN_USER" /home/"$BITWARDEN_USER"/bitwarden.sh
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
 check_command systemctl daemon-reload
 
