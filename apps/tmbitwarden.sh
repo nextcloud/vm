@@ -83,9 +83,6 @@ https://i.imgur.com/YPynDAf.png"
 install_docker
 install_if_not docker-compose
 
-# Stop Apache to not conflict when LE is run
-check_command systemctl stop apache2.service
-
 # Install Bitwarden 
 install_if_not curl
 cd /root
@@ -216,15 +213,7 @@ else
 fi
 
 # Add prune command
-{
-echo "#!/bin/bash"
-echo "docker system prune -a --force"
-echo "exit"
-} > "$SCRIPTS/dockerprune.sh"
-chmod a+x "$SCRIPTS/dockerprune.sh"
-crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
-print_text_in_color "$ICyan" "Docker automatic prune job added."
-check_command systemctl start apache2.service
+add_dockerprune
 
 msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN to setup your account.
 
