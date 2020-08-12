@@ -82,21 +82,15 @@ Basically:
 Please have a look at how the questions are answered here if you are uncertain:
 https://i.imgur.com/YPynDAf.png"
 
-# Set a specific user for Bitwarden
-#print_text_in_color "$ICyan" "Specifying a ceratin user for Bitwarden: $BITWARDEN_USER..."
-#adduser --disabled-password --gecos "" "$BITWARDEN_USER"
-#sudo usermod -aG docker "$BITWARDEN_USER"
-#usermod -s /bin/bash "$BITWARDEN_USER"
-
 # Create bitwarden user and service
 if ! id "$BITWARDEN_USER" >/dev/null 2>&1
 then
-    print_text_in_color "$ICyan" "Specifying a ceratin user for Bitwarden: $BITWARDEN_USER..."
+    print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
     useradd -s /bin/bash -d /home/"$BITWARDEN_USER"/ -m -G docker "$BITWARDEN_USER"
 else
     userdel "$BITWARDEN_USER"
     rm -rf /home/"$BITWARDEN_USER"
-    print_text_in_color "$ICyan" "Specifying a ceratin user for Bitwarden: $BITWARDEN_USER..."
+    print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
     useradd -s /bin/bash -d /home/"$BITWARDEN_USER"/ -m -G docker "$BITWARDEN_USER"
 fi
 
