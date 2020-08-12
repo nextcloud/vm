@@ -124,8 +124,6 @@ WantedBy=multi-user.target
 BITWARDEN_SERVICE
 
 sudo chmod 644 /etc/systemd/system/bitwarden.service
-systemctl daemon-reload
-sudo systemctl enable bitwarden.service
 
 # Install Docker
 install_docker
@@ -137,6 +135,7 @@ cd /home/"$BITWARDEN_USER"
 curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/home/$BITWARDEN_USER"
 chmod +x /home/"$BITWARDEN_USER"/bitwarden.sh
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
+systemctl daemon-reload
 
 # Check if all ssl settings were entered correctly
 if grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml | grep -q https || grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml | grep -q localhost
