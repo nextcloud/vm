@@ -150,6 +150,10 @@ fi
 # Continue with the installation
 sed -i "s|http_port.*|http_port: 5178|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
 sed -i "s|https_port.*|https_port: 5179|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
+USERID=$(id -u $BITWARDEN_USER)
+USERGROUPID=$(id -g $BITWARDEN_USER)
+sed -i "s|LOCAL_UID=.*|LOCAL_UID=$USERID|g" /home/"$BITWARDEN_USER"/bwdata/env/uid.env
+sed -i "s|LOCAL_GID=.*|LOCAL_GID=$USERGROUPID|g" /home/"$BITWARDEN_USER"/bwdata/env/uid.env
 # Get Subdomain from config.yml and change it to https
 SUBDOMAIN=$(grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml)
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
