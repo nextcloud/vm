@@ -118,8 +118,6 @@ check_command ./bitwarden.sh updatedb
 msg_box "We'll now setup the Apache Proxy that will act as TLS front for your Bitwarden installation."
 
 # Curl the lib another time to get the correct HTTPS_CONF
-# shellcheck disable=2034,2059
-true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
