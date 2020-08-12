@@ -136,6 +136,7 @@ install_if_not curl
 cd /home/"$BITWARDEN_USER"
 curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/home/$BITWARDEN_USER"
 chmod +x /home/"$BITWARDEN_USER"/bitwarden.sh
+chown "$BITWARDEN_USER":docker /home/"$BITWARDEN_USER"/bitwarden.sh
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
 systemctl daemon-reload
 
