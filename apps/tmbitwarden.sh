@@ -207,7 +207,7 @@ then
     restart_webserver
 else
     # remove settings to be able to start over again
-    rm -f $HTTPS_CONF
+    rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/tmbitwarden.sh
     check_command docker stop bitwarden-nginx bitwarden-admin bitwarden-events bitwarden-attachments \
     bitwarden-identity bitwarden-api bitwarden-web bitwarden-icons bitwarden-notifications bitwarden-mssql
