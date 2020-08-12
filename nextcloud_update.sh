@@ -531,7 +531,7 @@ Please check in $BACKUP if the folders exist."
 fi
 
 # Update Bitwarden
-if [ "$(docker ps -a >/dev/null 2>&1 && echo yes || echo no)" == "yes" ]
+if [ s_docker_running ]
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
