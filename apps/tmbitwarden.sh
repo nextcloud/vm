@@ -79,7 +79,7 @@ Basically:
 Please have a look at how the questions are answered here if you are uncertain:
 https://i.imgur.com/YPynDAf.png"
 
-# Create bitwarden user and service
+# Create bitwarden user
 if ! id "$BITWARDEN_USER" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
@@ -100,8 +100,9 @@ fi
 # Create the service
 msg_box "We will now create a systemd service for Bitwarden.
 
-To start Bitwarden, simply execute: systemctl start bitwarden
-To stop Bitwarden, simply execute: systemctl stop bitwarden"
+START Bitwarden, simply execute: systemctl start bitwarden
+STOP Bitwarden, simply execute: systemctl stop bitwarden
+RESTART Bitwarden, simply execute: systemctl restart bitwarden"
 
 cat << BITWARDEN_SERVICE > /etc/systemd/system/bitwarden.service
 [Unit]
