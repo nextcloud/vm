@@ -98,11 +98,7 @@ then
 fi
 
 # Create the service
-msg_box "We will now create a systemd service for Bitwarden.
-
-START Bitwarden, simply execute: systemctl start bitwarden
-STOP Bitwarden, simply execute: systemctl stop bitwarden
-RESTART Bitwarden, simply execute: systemctl restart bitwarden"
+print_text_in_color "$ICyan" "Creating the bitwarden service..."
 
 cat << BITWARDEN_SERVICE > /etc/systemd/system/bitwarden.service
 [Unit]
@@ -272,7 +268,12 @@ add_dockerprune
 
 msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN to setup your account.
 
-After the account it setup, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
-Additional Apps --> Bitwarden Registration"
+After the account is registered, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
+Additional Apps --> Bitwarden Registration
+
+Some notes to the bitwarden service:
+to START Bitwarden, simply execute: 'systemctl start bitwarden'
+to STOP Bitwarden, simply execute: 'systemctl stop bitwarden'
+to RESTART Bitwarden, simply execute: 'systemctl restart bitwarden'"
 
 exit
