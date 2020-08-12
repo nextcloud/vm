@@ -115,17 +115,19 @@ After=docker.service
 
 [Service]
 Type=oneshot
-User="$BITWARDEN_USER"
-Group="$BITWARDEN_USER"
-ExecStart=/home/"$BITWARDEN_USER"/bitwarden.sh start
+User=$BITWARDEN_USER
+Group=$BITWARDEN_USER
+ExecStart=/home/$BITWARDEN_USER/bitwarden.sh start
 RemainAfterExit=true
-ExecStop=/home/"$BITWARDEN_USER"/bitwarden.sh stop
+ExecStop=/home/$BITWARDEN_USER/bitwarden.sh stop
 
 [Install]
 WantedBy=multi-user.target
 BITWARDEN_SERVICE
 
+# Set permissions and enable the service
 sudo chmod 644 /etc/systemd/system/bitwarden.service
+check_command systemctl enable bitwarden
 
 # Install Docker
 install_docker
@@ -138,7 +140,7 @@ curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "b
 chmod +x /home/"$BITWARDEN_USER"/bitwarden.sh
 chown "$BITWARDEN_USER":docker /home/"$BITWARDEN_USER"/bitwarden.sh
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
-systemctl daemon-reload
+check_command systemctl daemon-reload
 
 # Check if all ssl settings were entered correctly
 if grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml | grep -q https || grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml | grep -q localhost
