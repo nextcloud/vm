@@ -89,7 +89,7 @@ https://i.imgur.com/YPynDAf.png"
 #usermod -s /bin/bash "$BITWARDEN_USER"
 
 # Create bitwarden user and service
-if ! id ncbitwarden >/dev/null 2>&1
+if ! id "$BITWARDEN_USER" >/dev/null 2>&1
 then
     useradd -r "$BITWARDEN_USER"
 fi
@@ -97,8 +97,8 @@ groupadd docker >/dev/null 2>&1
 sudo usermod -aG docker "$BITWARDEN_USER"
 if [ ! -d /home/"$BITWARDEN_USER" ]
 then
-    mkdir -p /home/ncbitwarden
-    chmod -R ncbitwarden:docker /home/ncbitwarden
+    mkdir -p /home/"$BITWARDEN_USER"
+    chmod -R "$BITWARDEN_USER"n:docker /home/"$BITWARDEN_USER"
 fi
 
 {
@@ -111,9 +111,9 @@ After=docker.service
 Type=oneshot
 User="$BITWARDEN_USER"
 Group="$BITWARDEN_USER"
-ExecStart={INSTALL_DIR}/bitwarden.sh start
+ExecStart=/home/"$BITWARDEN_USER"/bitwarden.sh start
 RemainAfterExit=true
-ExecStop= {INSTALL_DIR}/bitwarden.sh stop
+ExecStop=/home/"$BITWARDEN_USER"/bitwarden.sh stop
 
 [Install]
 WantedBy=multi-user.target
