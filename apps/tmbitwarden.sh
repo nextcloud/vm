@@ -97,8 +97,7 @@ check_command ./bitwarden.sh install
 if grep ^url /root/bwdata/config.yml | grep -q https || grep ^url /root/bwdata/config.yml | grep -q localhost
 then
     message "It seems like you have entered some wrong settings. We will remove bitwarden now again so that you can start over again."
-    check_command docker rm bitwarden-nginx bitwarden-admin bitwarden-events bitwarden-attachments \
-    bitwarden-identity bitwarden-api bitwarden-web bitwarden-icons bitwarden-notifications bitwarden-mssql
+    ./bitwarden stop && docker system prune -af
     rm -rf /root/bwdata
     exit 1
 fi
@@ -213,10 +212,7 @@ else
     # remove settings to be able to start over again
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/tmbitwarden.sh
-    check_command docker stop bitwarden-nginx bitwarden-admin bitwarden-events bitwarden-attachments \
-    bitwarden-identity bitwarden-api bitwarden-web bitwarden-icons bitwarden-notifications bitwarden-mssql
-    check_command docker rm bitwarden-nginx bitwarden-admin bitwarden-events bitwarden-attachments \
-    bitwarden-identity bitwarden-api bitwarden-web bitwarden-icons bitwarden-notifications bitwarden-mssql
+    ./bitwarden stop && docker system prune -af
     rm -rf /root/bwdata
     exit 1
 fi
