@@ -114,7 +114,7 @@ User="$BITWARDEN_USER"
 Group="$BITWARDEN_USER"
 ExecStart=/home/"$BITWARDEN_USER"/bitwarden.sh start
 RemainAfterExit=true
-ExecStop= /home/"$BITWARDEN_USER"/bitwarden.sh stop
+ExecStop=/home/"$BITWARDEN_USER"/bitwarden.sh stop
 
 [Install]
 WantedBy=multi-user.target
