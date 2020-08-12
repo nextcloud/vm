@@ -100,6 +100,7 @@ then
     check_command docker rm bitwarden-nginx bitwarden-admin bitwarden-events bitwarden-attachments \
     bitwarden-identity bitwarden-api bitwarden-web bitwarden-icons bitwarden-notifications bitwarden-mssql
     rm -rf /root/bwdata
+    exit 1
 fi
 
 # Continue with the installation
