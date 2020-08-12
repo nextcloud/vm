@@ -93,7 +93,7 @@ curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "b
 chmod +x /root/bitwarden.sh
 check_command ./bitwarden.sh install
 
-# Check if alls ssl settings were entered correctly
+# Check if all ssl settings were entered correctly
 if grep ^url /root/bwdata/config.yml | grep -q https || grep ^url /root/bwdata/config.yml | grep -q localhost
 then
     message "It seems like you have entered some wrong settings. We will remove bitwarden now again so that you can start over again."
@@ -206,7 +206,15 @@ then
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
 else
+    # remove settings to be able to start over again
+    rm -f $HTTPS_CONF
     last_fail_tls "$SCRIPTS"/apps/tmbitwarden.sh
+    check_command docker stop bitwarden-nginx bitwarden-admin bitwarden-events bitwarden-attachments \
+    bitwarden-identity bitwarden-api bitwarden-web bitwarden-icons bitwarden-notifications bitwarden-mssql
+    check_command docker rm bitwarden-nginx bitwarden-admin bitwarden-events bitwarden-attachments \
+    bitwarden-identity bitwarden-api bitwarden-web bitwarden-icons bitwarden-notifications bitwarden-mssql
+    rm -rf /root/bwdata
+    exit 1
 fi
 
 # Add prune command
