@@ -16,9 +16,8 @@ debug_mode
 # Check if root
 root_check
 
-# Test RAM size (3 GB min) + CPUs (min 2)
-ram_check 3 Bitwarden
-cpu_check 2 Bitwarden
+# User for Bitwarden
+BITWARDEN_USER=ncbitwarden
 
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
@@ -28,7 +27,7 @@ then
     then
         if is_this_installed apache2
         then
-            if [ -d /root/bwdata ] || [ -d /home/ncbitwarden/bwdata ]
+            if [ -d /root/bwdata ] || [ -d /home/"$BITWARDEN_USER"/bwdata ]
             then
                 msg_box "It seems like 'Bitwarden' is already installed.\n\nYou cannot run this script twice, because you would loose all your passwords."
                 exit 1
@@ -62,6 +61,10 @@ To run this script again, execute $SCRIPTS/menu.sh and choose Additional Apps --
     exit
 fi
 
+# Test RAM size (3 GB min) + CPUs (min 2)
+ram_check 3 Bitwarden
+cpu_check 2 Bitwarden
+
 msg_box "IMPORTANT, PLEASE READ!
 
 In the next steps you will be asked to answer some questions.
@@ -79,52 +82,79 @@ Basically:
 Please have a look at how the questions are answered here if you are uncertain:
 https://i.imgur.com/YPynDAf.png"
 
-# Install Docker
-install_docker
-install_if_not docker-compose
+# Set a specific user for Bitwarden
+#print_text_in_color "$ICyan" "Specifying a ceratin user for Bitwarden: $BITWARDEN_USER..."
+#adduser --disabled-password --gecos "" "$BITWARDEN_USER"
+#sudo usermod -aG docker "$BITWARDEN_USER"
+#usermod -s /bin/bash "$BITWARDEN_USER"
 
 # Create bitwarden user and service
 if ! id ncbitwarden >/dev/null 2>&1
 then
-    useradd -r ncbitwarden
+    useradd -r "$BITWARDEN_USER"
 fi
 groupadd docker >/dev/null 2>&1
-sudo usermod -aG docker ncbitwarden
-if [ ! -d /home/ncbitwarden ]
+sudo usermod -aG docker "$BITWARDEN_USER"
+if [ ! -d /home/"$BITWARDEN_USER" ]
 then
     mkdir -p /home/ncbitwarden
     chmod -R ncbitwarden:docker /home/ncbitwarden
 fi
 
+{
+[Unit]
+Description=Bitwarden
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User="$BITWARDEN_USER"
+Group="$BITWARDEN_USER"
+ExecStart={INSTALL_DIR}/bitwarden.sh start
+RemainAfterExit=true
+ExecStop= {INSTALL_DIR}/bitwarden.sh stop
+
+[Install]
+WantedBy=multi-user.target
+} > /etc/systemd/system/bitwarden.service
+
+sudo chmod 644 /etc/systemd/system/bitwarden.service
+systemctl daemon-reload
+sudo systemctl enable bitwarden.service
+
+# Install Docker
+install_docker
+install_if_not docker-compose
 
 # Install Bitwarden 
 install_if_not curl
-cd /home/ncbitwarden
-curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/home/ncbitwarden"
-chmod +x /home/ncbitwarden/bitwarden.sh
-check_command ./bitwarden.sh install
+cd /home/"$BITWARDEN_USER"
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/home/$BITWARDEN_USER"
+chmod +x /home/"$BITWARDEN_USER"/bitwarden.sh
+check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
 
 # Check if all ssl settings were entered correctly
-if grep ^url /home/ncbitwarden/bwdata/config.yml | grep -q https || grep ^url /home/ncbitwarden/bwdata/config.yml | grep -q localhost
+if grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml | grep -q https || grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml | grep -q localhost
 then
     message "It seems like you have entered some wrong settings. We will remove bitwarden now again so that you can start over again."
     check_command ./bitwarden.sh install
     docker system prune -af
-    rm -rf /home/ncbitwarden/bwdata
+    rm -rf /home/"$BITWARDEN_USER"/bwdata
     exit 1
 fi
 
 # Continue with the installation
-sed -i "s|http_port.*|http_port: 5178|g" /home/ncbitwarden/bwdata/config.yml
-sed -i "s|https_port.*|https_port: 5179|g" /home/ncbitwarden/bwdata/config.yml
+sed -i "s|http_port.*|http_port: 5178|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
+sed -i "s|https_port.*|https_port: 5179|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
 # Get Subdomain from config.yml and change it to https
-SUBDOMAIN=$(grep ^url /home/ncbitwarden/bwdata/config.yml)
+SUBDOMAIN=$(grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml)
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
-sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /home/ncbitwarden/bwdata/config.yml
-sed -i 's|http://|https://|g' /home/ncbitwarden/bwdata/env/global.override.env
-check_command ./bitwarden.sh rebuild
-check_command ./bitwarden.sh start
-check_command ./bitwarden.sh updatedb
+sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
+sed -i 's|http://|https://|g' /home/"$BITWARDEN_USER"/bwdata/env/global.override.env
+check_command sudo -u "$BITWARDEN_USER"./bitwarden.sh rebuild
+check_command systemctl start bitwarden
+check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
 # Produce reverse-proxy config and get lets-encrypt certificate
 msg_box "We'll now setup the Apache Proxy that will act as TLS front for your Bitwarden installation."
@@ -222,8 +252,8 @@ else
     # remove settings to be able to start over again
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/tmbitwarden.sh
-    ./bitwarden stop && docker system prune -af
-    rm -rf /home/ncbitwarden/bwdata
+    systemctl stop bitwarden && docker system prune -af
+    rm -rf /home/"$BITWARDEN_USER"/bwdata
     exit 1
 fi
 
