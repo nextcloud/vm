@@ -94,7 +94,8 @@ check_command ./bitwarden.sh install
 if grep ^url /root/bwdata/config.yml | grep -q https || grep ^url /root/bwdata/config.yml | grep -q localhost
 then
     message "It seems like you have entered some wrong settings. We will remove bitwarden now again so that you can start over again."
-    ./bitwarden stop && docker system prune -af
+    check_command ./bitwarden.sh install
+    docker system prune -af
     rm -rf /root/bwdata
     exit 1
 fi
