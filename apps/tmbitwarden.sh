@@ -161,7 +161,7 @@ SUBDOMAIN=$(grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml)
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
 sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
 sed -i 's|http://|https://|g' /home/"$BITWARDEN_USER"/bwdata/env/global.override.env
-check_command sudo -u "$BITWARDEN_USER"./bitwarden.sh rebuild
+check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 check_command systemctl start bitwarden
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
