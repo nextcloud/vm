@@ -547,16 +547,16 @@ then
                     bash /root/bitwarden.sh updateself
                     bash /root/bitwarden.sh update
                 fi
-            elif [ -d /home/"$BITWARDEN_USER"/bwdata ]
+            elif [ -d "$BITWARDEN_HOME"/bwdata ]
                 then
-                    curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "/home/$BITWARDEN_USER"
-                    chown "$BITWARDEN_USER":"$BITWARDEN_USER" "/home/$BITWARDEN_USER"
-                    if [ -f "/home/$BITWARDEN_USER" ]
+                    curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+                    chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"
+                    if [ -f "$BITWARDEN_HOME"/bitwarden.sh ]
                     then
                         print_text_in_color "$IGreen" "Upgrading Bitwarden..."
                         sleep 2
-                        sudo -u "$BITWARDEN_USER" bash "/home/$BITWARDEN_USER/bitwarden.sh" updateself
-                        sudo -u "$BITWARDEN_USER" bash "/home/$BITWARDEN_USER/bitwarden.sh" update
+                        sudo -u "$BITWARDEN_USER" bash "$BITWARDEN_HOME"/bitwarden.sh updateself
+                        sudo -u "$BITWARDEN_USER" bash "$BITWARDEN_HOME"/bitwarden.sh update
                     fi
             fi
         fi
