@@ -24,7 +24,7 @@ then
     then
         if is_this_installed apache2
         then
-            if [ -d /root/bwdata ] || [ -d /home/"$BITWARDEN_USER"/bwdata ]
+            if [ -d /root/bwdata ] || [ -d "/home/$BITWARDEN_USER/bwdata" ]
             then
                 msg_box "It seems like 'Bitwarden' is already installed.\n\nYou cannot run this script twice, because you would loose all your passwords."
                 exit 1
@@ -83,18 +83,18 @@ https://i.imgur.com/YPynDAf.png"
 if ! id "$BITWARDEN_USER" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
-    useradd -s /bin/bash -d /home/"$BITWARDEN_USER"/ -m -G docker "$BITWARDEN_USER"
+    useradd -s /bin/bash -d /home/"$BITWARDEN_USER/" -m -G docker "$BITWARDEN_USER"
 else
     userdel "$BITWARDEN_USER"
-    rm -rf /home/"$BITWARDEN_USER"
+    rm -rf "/home/$BITWARDEN_USER"
     print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
-    useradd -s /bin/bash -d /home/"$BITWARDEN_USER"/ -m -G docker "$BITWARDEN_USER"
+    useradd -s /bin/bash -d "/home/$BITWARDEN_USER/" -m -G docker "$BITWARDEN_USER"
 fi
 
-if [ ! -d /home/"$BITWARDEN_USER" ]
+if [ ! -d "/home/$BITWARDEN_USER" ]
 then
-    mkdir -p /home/"$BITWARDEN_USER"
-    chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" /home/"$BITWARDEN_USER"
+    mkdir -p "/home/$BITWARDEN_USER"
+    chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" "/home/$BITWARDEN_USER"
 fi
 
 # Create the service
@@ -131,35 +131,35 @@ install_if_not docker-compose
 
 # Install Bitwarden 
 install_if_not curl
-cd /home/"$BITWARDEN_USER"
+check_command cd "/home/$BITWARDEN_USER"
 curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/home/$BITWARDEN_USER"
-chmod +x /home/"$BITWARDEN_USER"/bitwarden.sh
-chown "$BITWARDEN_USER":"$BITWARDEN_USER" /home/"$BITWARDEN_USER"/bitwarden.sh
+chmod +x "/home/$BITWARDEN_USER/bitwarden.sh"
+chown "$BITWARDEN_USER":"$BITWARDEN_USER" "/home/$BITWARDEN_USER/bitwarden.sh"
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
 check_command systemctl daemon-reload
 
 # Check if all ssl settings were entered correctly
-if grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml | grep -q https || grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml | grep -q localhost
+if grep ^url "/home/$BITWARDEN_USER/bwdata/config.yml" | grep -q https || grep ^url "/home/$BITWARDEN_USER/bwdata/config.yml" | grep -q localhost
 then
     message "It seems like some of the settings you entered are wrong. We will now remove Bitwarden so that you can start over with the installation."
     check_command systemctl stop bitwarden
     docker system prune -af
-    rm -rf /home/"$BITWARDEN_USER"/bwdata
+    rm -rf "/home/$BITWARDEN_USER/bwdata"
     exit 1
 fi
 
 # Continue with the installation
-sed -i "s|http_port.*|http_port: 5178|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
-sed -i "s|https_port.*|https_port: 5179|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
+sed -i "s|http_port.*|http_port: 5178|g" "/home/$BITWARDEN_USER/bwdata/config.yml"
+sed -i "s|https_port.*|https_port: 5179|g" "/home/$BITWARDEN_USER/bwdata/config.yml"
 USERID=$(id -u $BITWARDEN_USER)
 USERGROUPID=$(id -g $BITWARDEN_USER)
-sed -i "s|LOCAL_UID=.*|LOCAL_UID=$USERID|g" /home/"$BITWARDEN_USER"/bwdata/env/uid.env
-sed -i "s|LOCAL_GID=.*|LOCAL_GID=$USERGROUPID|g" /home/"$BITWARDEN_USER"/bwdata/env/uid.env
+sed -i "s|LOCAL_UID=.*|LOCAL_UID=$USERID|g" "/home/$BITWARDEN_USER/bwdata/env/uid.env"
+sed -i "s|LOCAL_GID=.*|LOCAL_GID=$USERGROUPID|g" "/home/$BITWARDEN_USER/bwdata/env/uid.env"
 # Get Subdomain from config.yml and change it to https
-SUBDOMAIN=$(grep ^url /home/"$BITWARDEN_USER"/bwdata/config.yml)
+SUBDOMAIN=$(grep ^url "/home/$BITWARDEN_USER/bwdata/config.yml")
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
-sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /home/"$BITWARDEN_USER"/bwdata/config.yml
-sed -i 's|http://|https://|g' /home/"$BITWARDEN_USER"/bwdata/env/global.override.env
+sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "/home/$BITWARDEN_USER/bwdata/config.yml"
+sed -i 's|http://|https://|g' "/home/$BITWARDEN_USER/bwdata/env/global.override.env"
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
 check_command systemctl start bitwarden
@@ -262,7 +262,7 @@ else
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/tmbitwarden.sh
     systemctl stop bitwarden && docker system prune -af
-    rm -rf /home/"$BITWARDEN_USER"/bwdata
+    rm -rf "/home/$BITWARDEN_USER/bwdata"
     exit 1
 fi
 
