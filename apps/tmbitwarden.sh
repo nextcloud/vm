@@ -115,7 +115,7 @@ check_command ./bitwarden.sh start
 check_command ./bitwarden.sh updatedb
 
 # Produce reverse-proxy config and get lets-encrypt certificate
-msg_box "We will not setup the Apache Proxy that will act as TLS front for your Bitwarden installation."
+msg_box "We'll now setup the Apache Proxy that will act as TLS front for your Bitwarden installation."
 
 # Curl the lib another time to get the correct HTTPS_CONF
 # shellcheck disable=2034,2059
