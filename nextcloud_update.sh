@@ -544,8 +544,8 @@ then
                 then
                     print_text_in_color "$IGreen" "Upgrading Bitwarden..."
                     sleep 2
-                    bash /root/bitwarden.sh updateself
-                    bash /root/bitwarden.sh update
+                    yes no | bash /root/bitwarden.sh updateself
+                    yes no | bash /root/bitwarden.sh update
                 fi
             elif [ -d "$BITWARDEN_HOME"/bwdata ]
                 then
@@ -555,8 +555,8 @@ then
                     then
                         print_text_in_color "$IGreen" "Upgrading Bitwarden..."
                         sleep 2
-                        sudo -u "$BITWARDEN_USER" bash "$BITWARDEN_HOME"/bitwarden.sh updateself
-                        sudo -u "$BITWARDEN_USER" bash "$BITWARDEN_HOME"/bitwarden.sh update
+                        yes no | sudo -u "$BITWARDEN_USER" bash "$BITWARDEN_HOME"/bitwarden.sh updateself
+                        yes no | sudo -u "$BITWARDEN_USER" bash "$BITWARDEN_HOME"/bitwarden.sh update
                     fi
             fi
         fi
