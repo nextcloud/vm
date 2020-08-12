@@ -101,7 +101,8 @@ then
     chmod -R "$BITWARDEN_USER"n:docker /home/"$BITWARDEN_USER"
 fi
 
-{
+# Create the service
+cat << BITWARDEN_SERVICE > /etc/systemd/system/bitwarden.service
 [Unit]
 Description=Bitwarden
 Requires=docker.service
@@ -113,11 +114,11 @@ User="$BITWARDEN_USER"
 Group="$BITWARDEN_USER"
 ExecStart=/home/"$BITWARDEN_USER"/bitwarden.sh start
 RemainAfterExit=true
-ExecStop=/home/"$BITWARDEN_USER"/bitwarden.sh stop
+ExecStop= /home/"$BITWARDEN_USER"/bitwarden.sh stop
 
 [Install]
 WantedBy=multi-user.target
-} > /etc/systemd/system/bitwarden.service
+BITWARDEN_SERVICE
 
 sudo chmod 644 /etc/systemd/system/bitwarden.service
 systemctl daemon-reload
