@@ -101,7 +101,7 @@ sudo usermod -aG docker "$BITWARDEN_USER"
 if [ ! -d /home/"$BITWARDEN_USER" ]
 then
     mkdir -p /home/"$BITWARDEN_USER"
-    chown -R "$BITWARDEN_USER"n:docker /home/"$BITWARDEN_USER"
+    chown -R "$BITWARDEN_USER":docker /home/"$BITWARDEN_USER"
 fi
 
 # Create the service
