@@ -76,7 +76,7 @@ print_text_in_color "$ICyan" "chmod/chown .htaccess"
 if [ -f "${NCPATH}"/.htaccess ]
 then
     chmod 0644 "${NCPATH}"/.htaccess
-    chown "${htgroup}":"${htgroup}" "${NCPATH}"/.htaccess
+    chown "${rootuser}":"${htgroup}" "${NCPATH}"/.htaccess
 fi
 if [ -f "${NCDATA}"/.htaccess ]
 then
