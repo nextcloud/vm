@@ -22,7 +22,8 @@ choice=$(whiptail --title "Nextcloud Configuration" --checklist "Which settings 
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
 "Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
 "Disable workspaces" "(disable top notes in GUI)" OFF \
-"Disable user flows" "(Disable user settings for Nextcloud Flow)" OFF 3>&1 1>&2 2>&3)
+"Disable user flows" "(Disable user settings for Nextcloud Flow)" OFF \
+"Enable logrotate" "(Use logrotate to keep more Nextcloud logs)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"CookieLifetime"*)
@@ -66,6 +67,25 @@ case "$choice" in
         else
             msg_box "'Disable user flows' is only available on Nextcloud 18.0.4 and above.\nPlease upgrade by running 'sudo bash /var/scripts/update.sh'"
             sleep 1
+        fi
+    ;;&
+    *"Enable logrotate"*)
+        msg_box "This option enables logrotate for Nextcloud logs to keep all logs for 10 days"
+        if [[ "yes" == $(ask_yes_or_no "Do you want to enable logrotate for Nextcloud logs?") ]]
+        then
+            # Set logrotate (without size restriction)
+            occ_command config:system:set log_rotate_size --value=0
+
+            # Configure logrotate to rotate logs for us (max 10, every day a new one)
+            cat << NEXTCLOUD_CONF > /etc/logrotate.d/nextcloud.log.conf
+            $VMLOGS/nextcloud.log {
+            daily
+            rotate 10
+            }
+            NEXTCLOUD_CONF
+
+            # Set needed ownerchip for the nextcloud log folder to work correctly
+            chown "${htuser}":"${htgroup}" "${VMLOGS}"/
         fi
     ;;&
     *)
