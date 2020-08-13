@@ -78,14 +78,14 @@ case "$choice" in
 
             # Configure logrotate to rotate logs for us (max 10, every day a new one)
             cat << NEXTCLOUD_CONF > /etc/logrotate.d/nextcloud.log.conf
-            $VMLOGS/nextcloud.log {
-            daily
-            rotate 10
-            }
-            NEXTCLOUD_CONF
+$VMLOGS/nextcloud.log {
+daily
+rotate 10
+}
+NEXTCLOUD_CONF
 
             # Set needed ownerchip for the nextcloud log folder to work correctly
-            chown "${htuser}":"${htgroup}" "${VMLOGS}"/
+            chown www-data:www-data "${VMLOGS}"/
         fi
     ;;&
     *)
