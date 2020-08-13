@@ -540,12 +540,25 @@ then
             if [ -d /root/bwdata ]
             then
                 curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "/root"
+                chmod +x /root/bitwarden.sh
                 if [ -f /root/bitwarden.sh ]
                 then
                     print_text_in_color "$IGreen" "Upgrading Bitwarden..."
                     sleep 2
-                    bash /root/bitwarden.sh updateself
-                    bash /root/bitwarden.sh update
+                    yes no | bash /root/bitwarden.sh updateself
+                    yes no | bash /root/bitwarden.sh update
+                fi
+            elif [ -d "$BITWARDEN_HOME"/bwdata ]
+            then
+                curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+                chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
+                chmod +x "$BITWARDEN_HOME"/bitwarden.sh
+                if [ -f "$BITWARDEN_HOME"/bitwarden.sh ]
+                then
+                    print_text_in_color "$IGreen" "Upgrading Bitwarden..."
+                    sleep 2
+                    yes no | sudo -u "$BITWARDEN_USER" bash "$BITWARDEN_HOME"/bitwarden.sh updateself
+                    yes no | sudo -u "$BITWARDEN_USER" bash "$BITWARDEN_HOME"/bitwarden.sh update
                 fi
             fi
         fi
