@@ -91,12 +91,6 @@ else
     useradd -s /bin/bash -d "$BITWARDEN_HOME/" -m -G docker "$BITWARDEN_USER"
 fi
 
-if [ ! -d "$BITWARDEN_HOME" ]
-then
-    mkdir -p "$BITWARDEN_HOME"
-    chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"
-fi
-
 # Create the service
 print_text_in_color "$ICyan" "Creating the bitwarden service..."
 
@@ -131,7 +125,7 @@ install_if_not curl
 check_command cd "$BITWARDEN_HOME"
 curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
 chmod +x "$BITWARDEN_HOME"/bitwarden.sh
-chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
+chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
 check_command systemctl daemon-reload
 
@@ -271,7 +265,7 @@ msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN to setup y
 After the account is registered, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
 Additional Apps --> Bitwarden Registration
 
-Some notes to the bitwarden service:
+Some notes to the Bitwarden service:
 to START Bitwarden, simply execute: 'systemctl start bitwarden'
 to STOP Bitwarden, simply execute: 'systemctl stop bitwarden'
 to RESTART Bitwarden, simply execute: 'systemctl restart bitwarden'"
