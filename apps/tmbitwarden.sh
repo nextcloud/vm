@@ -77,7 +77,7 @@ Basically:
 4. Continue to answer 'no' to everything related to SSL/TLS.
 
 Please have a look at how the questions are answered here if you are uncertain:
-https://i.imgur.com/YPynDAf.png"
+https://imgur.com/a/3ytwvp6"
 
 # Create bitwarden user
 if ! id "$BITWARDEN_USER" >/dev/null 2>&1
