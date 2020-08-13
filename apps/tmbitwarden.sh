@@ -138,7 +138,7 @@ check_command systemctl daemon-reload
 # Check if all ssl settings were entered correctly
 if grep ^url "$BITWARDEN_HOME"/bwdata/config.yml | grep -q https || grep ^url "$BITWARDEN_HOME"/bwdata/config.yml | grep -q localhost
 then
-    message "It seems like some of the settings you entered are wrong. We will now remove Bitwarden so that you can start over with the installation."
+    msg_box "It seems like some of the settings you entered are wrong. We will now remove Bitwarden so that you can start over with the installation."
     check_command systemctl stop bitwarden
     docker system prune -af
     rm -rf "${BITWARDEN_HOME:?}/"bwdata
