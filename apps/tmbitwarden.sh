@@ -153,10 +153,9 @@ sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.ym
 sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
 # The following order was recommended here: https://github.com/bitwarden/server/issues/582#issuecomment-551961505
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
-check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh start
+check_command systemctl start bitwarden
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updateconf
-check_command systemctl start bitwarden
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
 # Produce reverse-proxy config and get lets-encrypt certificate
