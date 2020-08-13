@@ -22,7 +22,7 @@ if is_docker_running
 then
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
-        if [ ! -d /root/bwdata ]
+        if [ ! -d /root/bwdata ] [ ! -d "$BITWARDEN_HOME"/bwdata ]
         then
             msg_box "It seems like 'Bitwarden' isn't installed.\n\nYou cannot run this script."
             exit 1
@@ -46,25 +46,51 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Disabling Bitwarden User Regitration..."
         # Disable
-        sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=true|g" /root/bwdata/env/global.override.env
-        # Restart Bitwarden
-        install_if_not curl
-        cd /root
-        curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
-        chmod +x /root/bitwarden.sh
-        check_command ./bitwarden.sh restart
+        if [ -f /root/bwdata/env/global.override.env ]
+        then
+            sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=true|g" /root/bwdata/env/global.override.env
+            # Restart Bitwarden
+            install_if_not curl
+            cd /root
+            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
+            chmod +x /root/bitwarden.sh
+            check_command ./bitwarden.sh restart
+        elif [ -f "$BITWARDEN_HOME"/bwdata/env/global.override.env ]
+        then
+            sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=true|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
+            # Restart Bitwarden
+            install_if_not curl
+            cd "$BITWARDEN_HOME"
+            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+            chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
+            chmod +x "$BITWARDEN_HOME"/bitwarden.sh
+            check_command systemctl restart bitwarden
+        fi
     ;;
     "No")
         clear
         print_text_in_color "$ICyan" "Enabling Bitwarden User Registration..."
         # Enable
-        sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=false|g" /root/bwdata/env/global.override.env
-        # Restart Bitwarden
-        install_if_not curl
-        cd /root
-        curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
-        chmod +x /root/bitwarden.sh
-        check_command ./bitwarden.sh restart
+        if [ -f /root/bwdata/env/global.override.env ]
+        then
+            sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=false|g" /root/bwdata/env/global.override.env
+            # Restart Bitwarden
+            install_if_not curl
+            cd /root
+            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
+            chmod +x /root/bitwarden.sh
+            check_command ./bitwarden.sh restart
+        elif [ -f "$BITWARDEN_HOME"/bwdata/env/global.override.env ]
+        then
+            sed -i "s|globalSettings__disableUserRegistration=.*|globalSettings__disableUserRegistration=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
+            # Restart Bitwarden
+            install_if_not curl
+            cd "$BITWARDEN_HOME"
+            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+            chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
+            chmod +x "$BITWARDEN_HOME"/bitwarden.sh
+            check_command systemctl restart bitwarden
+        fi
     ;;
     *)
     ;;

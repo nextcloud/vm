@@ -16,10 +16,6 @@ debug_mode
 # Check if root
 root_check
 
-# Test RAM size (3 GB min) + CPUs (min 2)
-ram_check 3 Bitwarden
-cpu_check 2 Bitwarden
-
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
 if is_docker_running
@@ -28,7 +24,7 @@ then
     then
         if is_this_installed apache2
         then
-            if [ -d /root/bwdata ]
+            if [ -d /root/bwdata ] || [ -d "$BITWARDEN_HOME"/bwdata ]
             then
                 msg_box "It seems like 'Bitwarden' is already installed.\n\nYou cannot run this script twice, because you would loose all your passwords."
                 exit 1
@@ -62,6 +58,10 @@ To run this script again, execute $SCRIPTS/menu.sh and choose Additional Apps --
     exit
 fi
 
+# Test RAM size (3 GB min) + CPUs (min 2)
+ram_check 3 Bitwarden
+cpu_check 2 Bitwarden
+
 msg_box "IMPORTANT, PLEASE READ!
 
 In the next steps you will be asked to answer some questions.
@@ -79,38 +79,88 @@ Basically:
 Please have a look at how the questions are answered here if you are uncertain:
 https://i.imgur.com/YPynDAf.png"
 
+# Create bitwarden user
+if ! id "$BITWARDEN_USER" >/dev/null 2>&1
+then
+    print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
+    useradd -s /bin/bash -d "$BITWARDEN_HOME" -m -G docker "$BITWARDEN_USER"
+else
+    userdel "$BITWARDEN_USER"
+    rm -rf "${BITWARDEN_HOME:?}/"
+    print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
+    useradd -s /bin/bash -d "$BITWARDEN_HOME/" -m -G docker "$BITWARDEN_USER"
+fi
+
+if [ ! -d "$BITWARDEN_HOME" ]
+then
+    mkdir -p "$BITWARDEN_HOME"
+    chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"
+fi
+
+# Create the service
+print_text_in_color "$ICyan" "Creating the bitwarden service..."
+
+cat << BITWARDEN_SERVICE > /etc/systemd/system/bitwarden.service
+[Unit]
+Description=Bitwarden
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User=$BITWARDEN_USER
+Group=$BITWARDEN_USER
+ExecStart=$BITWARDEN_HOME/bitwarden.sh start
+RemainAfterExit=true
+ExecStop=$BITWARDEN_HOME/bitwarden.sh stop
+
+[Install]
+WantedBy=multi-user.target
+BITWARDEN_SERVICE
+
+# Set permissions and enable the service
+sudo chmod 644 /etc/systemd/system/bitwarden.service
+check_command systemctl enable bitwarden
+
 # Install Docker
 install_docker
 install_if_not docker-compose
 
-# Install Bitwarden 
+# Install Bitwarden
 install_if_not curl
-cd /root
-curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
-chmod +x /root/bitwarden.sh
-check_command ./bitwarden.sh install
+check_command cd "$BITWARDEN_HOME"
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+chmod +x "$BITWARDEN_HOME"/bitwarden.sh
+chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
+check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
+check_command systemctl daemon-reload
 
 # Check if all ssl settings were entered correctly
-if grep ^url /root/bwdata/config.yml | grep -q https || grep ^url /root/bwdata/config.yml | grep -q localhost
+if grep ^url "$BITWARDEN_HOME"/bwdata/config.yml | grep -q https || grep ^url "$BITWARDEN_HOME"/bwdata/config.yml | grep -q localhost
 then
-    message "It seems like you have entered some wrong settings. We will remove bitwarden now again so that you can start over again."
-    check_command ./bitwarden.sh install
+    msg_box "It seems like some of the settings you entered are wrong. We will now remove Bitwarden so that you can start over with the installation."
+    check_command systemctl stop bitwarden
     docker system prune -af
-    rm -rf /root/bwdata
+    rm -rf "${BITWARDEN_HOME:?}/"bwdata
     exit 1
 fi
 
 # Continue with the installation
-sed -i "s|http_port.*|http_port: 5178|g" /root/bwdata/config.yml
-sed -i "s|https_port.*|https_port: 5179|g" /root/bwdata/config.yml
+sed -i "s|http_port.*|http_port: 5178|g" "$BITWARDEN_HOME"/bwdata/config.yml
+sed -i "s|https_port.*|https_port: 5179|g" "$BITWARDEN_HOME"/bwdata/config.yml
+USERID=$(id -u $BITWARDEN_USER)
+USERGROUPID=$(id -g $BITWARDEN_USER)
+sed -i "s|LOCAL_UID=.*|LOCAL_UID=$USERID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
+sed -i "s|LOCAL_GID=.*|LOCAL_GID=$USERGROUPID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
 # Get Subdomain from config.yml and change it to https
-SUBDOMAIN=$(grep ^url /root/bwdata/config.yml)
+SUBDOMAIN=$(grep ^url "$BITWARDEN_HOME"/bwdata/config.yml)
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
-sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" /root/bwdata/config.yml
-sed -i 's|http://|https://|g' /root/bwdata/env/global.override.env
-check_command ./bitwarden.sh rebuild
-check_command ./bitwarden.sh start
-check_command ./bitwarden.sh updatedb
+sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.yml
+sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
+check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
+print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
+check_command systemctl start bitwarden
+check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
 # Produce reverse-proxy config and get lets-encrypt certificate
 msg_box "We'll now setup the Apache Proxy that will act as TLS front for your Bitwarden installation."
@@ -208,8 +258,8 @@ else
     # remove settings to be able to start over again
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/tmbitwarden.sh
-    ./bitwarden stop && docker system prune -af
-    rm -rf /root/bwdata
+    systemctl stop bitwarden && docker system prune -af
+    rm -rf "${BITWARDEN_HOME:?}/"bwdata
     exit 1
 fi
 
@@ -218,7 +268,12 @@ add_dockerprune
 
 msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN to setup your account.
 
-After the account it setup, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
-Additional Apps --> Bitwarden Registration"
+After the account is registered, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
+Additional Apps --> Bitwarden Registration
+
+Some notes to the bitwarden service:
+to START Bitwarden, simply execute: 'systemctl start bitwarden'
+to STOP Bitwarden, simply execute: 'systemctl stop bitwarden'
+to RESTART Bitwarden, simply execute: 'systemctl restart bitwarden'"
 
 exit
