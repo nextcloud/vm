@@ -431,11 +431,12 @@ occ_command config:system:set remember_login_cookie_lifetime --value="1800"
 occ_command config:system:set log_rotate_size --value=0
 
 # Configure logrotate to rotate logs for us (max 10, every day a new one)
-touch /etc/logrotate.d/nextcloud.log.conf
-"$VMLOGS/nextcloud.log {
+cat << NEXTCLOUD_CONF > /etc/logrotate.d/nextcloud.log.conf
+$VMLOGS/nextcloud.log {
 daily
 rotate 10
-}" > /etc/logrotate.d/nextcloud.log.conf
+}
+NEXTCLOUD_CONF
 
 # Set trashbin retention obligation (save it in trahbin for 6 months or delete when space is needed)
 occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
