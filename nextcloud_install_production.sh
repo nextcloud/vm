@@ -432,7 +432,7 @@ occ_command config:system:set log_rotate_size --value=0
 
 # Configure logrotate to rotate logs for us (max 10, every day a new one)
 touch /etc/logrotate.d/nextcloud.log.conf
-"/var/log/nextcloud/nextcloud.log {
+"$VMLOGS/nextcloud.log {
 daily
 rotate 10
 }" > /etc/logrotate.d/nextcloud.log.conf
