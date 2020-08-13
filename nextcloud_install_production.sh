@@ -427,16 +427,8 @@ occ_command config:system:set mail_smtpmode --value="smtp"
 # Forget login/session after 30 minutes
 occ_command config:system:set remember_login_cookie_lifetime --value="1800"
 
-# Set logrotate (without size restriction)
-occ_command config:system:set log_rotate_size --value=0
-
-# Configure logrotate to rotate logs for us (max 10, every day a new one)
-cat << NEXTCLOUD_CONF > /etc/logrotate.d/nextcloud.log.conf
-$VMLOGS/nextcloud.log {
-daily
-rotate 10
-}
-NEXTCLOUD_CONF
+# Set logrotate (max 10 MB)
+occ_command config:system:set log_rotate_size --value="10485760"
 
 # Set trashbin retention obligation (save it in trahbin for 6 months or delete when space is needed)
 occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
