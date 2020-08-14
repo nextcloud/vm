@@ -1339,6 +1339,7 @@ then
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
     check_command echo "#!/bin/bash" > "$SCRIPTS/dockerprune.sh"
     check_command echo "docker system prune -a --force" >> "$SCRIPTS/dockerprune.sh"
+    mkdir -p "$SCRIPTS"
     check_command echo "exit" >> "$SCRIPTS/dockerprune.sh"
     chmod a+x "$SCRIPTS"/dockerprune.sh
     print_text_in_color "$IGreen" "Docker automatic prune job added."
