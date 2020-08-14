@@ -95,6 +95,18 @@ else
     useradd -s /bin/bash -d "$BITWARDEN_HOME/" -m -G docker "$BITWARDEN_USER"
 fi
 
+# Wait for home to be created
+while :
+do
+    if ! ls "$BITWARDEN_HOME" >/dev/null 2>&1
+    then
+        print_text_in_color "$ICyan" "Waiting for $BITWARDEN_HOME to be created"
+        sleep 1
+    else
+       break
+    fi
+done
+
 # Create the service
 print_text_in_color "$ICyan" "Creating the Bitwarden service..."
 
