@@ -156,6 +156,7 @@ sed -i "s|http_port.*|http_port: 5178|g" "$BITWARDEN_HOME"/bwdata/config.yml
 sed -i "s|https_port.*|https_port: 5179|g" "$BITWARDEN_HOME"/bwdata/config.yml
 USERID=$(id -u $BITWARDEN_USER)
 USERGROUPID=$(id -g $BITWARDEN_USER)
+sed -i "s|database_docker_volume:.*|database_docker_volume: true|g" "$BITWARDEN_HOME"/bwdata/config.yml
 sed -i "s|LOCAL_UID=.*|LOCAL_UID=$USERID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
 sed -i "s|LOCAL_GID=.*|LOCAL_GID=$USERGROUPID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
 # Get Subdomain from config.yml and change it to https
@@ -165,7 +166,7 @@ sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.ym
 sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
-start_if_stopped bitwarden
+check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 # We dont' need this for Bitwarden to start, but it's a great way to find out if the DB is online or not.
 countdown "Waiting for the DB to come online..." 5
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
