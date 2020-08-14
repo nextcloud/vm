@@ -79,6 +79,10 @@ Basically:
 Please have a look at how the questions are answered here if you are uncertain:
 https://imgur.com/a/3ytwvp6"
 
+# Install Docker
+install_docker
+install_if_not docker-compose
+
 # Create bitwarden user
 if ! id "$BITWARDEN_USER" >/dev/null 2>&1
 then
@@ -116,10 +120,6 @@ BITWARDEN_SERVICE
 sudo chmod 644 /etc/systemd/system/bitwarden.service
 check_command systemctl enable bitwarden
 
-# Install Docker
-install_docker
-install_if_not docker-compose
-
 # Install Bitwarden
 install_if_not curl
 check_command cd "$BITWARDEN_HOME"
@@ -153,7 +153,7 @@ sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.ym
 sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
-check_command systemctl start bitwarden
+start_if_stopped bitwarden
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
 # Produce reverse-proxy config and get lets-encrypt certificate
