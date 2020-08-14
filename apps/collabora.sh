@@ -161,6 +161,21 @@ msg_box "Before you start, please make sure that port 80+443 is directly forward
 # Get the latest packages
 apt update -q4 & spinner_loading
 
+# Check if Nextcloud is installed
+print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
+if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
+then
+msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+${NCDOMAIN//\\/}.
+Please install Nextcloud and make sure your domain is reachable, or activate TLS
+on your domain to be able to run this script.
+If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
+When TLS is activated, run these commands from your terminal:
+sudo curl -sLO $APP/collabora.sh
+sudo bash collabora.sh"
+    exit 1
+fi
+
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
 domain_check_200 "$SUBDOMAIN"
