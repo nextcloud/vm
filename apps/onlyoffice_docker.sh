@@ -5,15 +5,7 @@
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-
-# OnlyOffice URL (onlyoffice.sh)
-SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-# Nextcloud Main Domain (onlyoffice.sh)
-NCDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
-
-print_text_in_color "$ICyan" "Installing OnlyOffice..."
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -31,25 +23,129 @@ lowest_compatible_nc 13
 ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
 
-# Notification
-msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
-
-# Get the latest packages
-apt update -q4 & spinner_loading
-
-# Check if Nextcloud is installed
-print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
+# Check if Nextcloud is installed with TLS
+if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
 then
-msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-${NCDOMAIN//\\/}.
-Please install Nextcloud and make sure your domain is reachable, or activate SSL
-on your domain to be able to run this script.
-If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
-When SSL is activated, run these commands from your terminal:
-sudo curl -sLO $APP/onlyoffice.sh
-sudo bash onlyoffice.sh"
-    exit 1
+msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
+You easily activate TLS (HTTPS) by running the Let's Encrypt script found in $SCRIPTS.
+More info here: https://bit.ly/37wRCin
+To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose OnlyOffice Docker."
+    exit
+fi
+
+# remove OnlyOffice-documentserver if activated
+if is_app_enabled documentserver_community
+then
+    any_key "The integrated OnlyOffice Documentserver will get uninstalled. Press any key to continue. Press CTRL+C to abort"
+    occ_command app:remove documentserver_community
+fi
+
+# Check if collabora is already installed
+print_text_in_color "$ICyan" "Checking if Onlyoffice Docker is already installed..."
+if does_this_docker_exist 'onlyoffice/documentserver'
+then
+    choice=$(whiptail --radiolist "It seems like 'Onlyoffice Docker' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Uninstall Onlyoffice Docker" "" OFF \
+    "Reinstall Onlyoffice Docker" "" ON 3>&1 1>&2 2>&3)
+
+    case "$choice" in
+        "Uninstall Onlyoffice Docker")
+            print_text_in_color "$ICyan" "Uninstalling Onlyoffice Docker..."
+            # Check if Collabora is previously installed
+            # If yes, then stop and prune the docker container
+            docker_prune_this 'onlyoffice/documentserver'
+            # Revoke LE
+            SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Onlyoffice Docker" --inputbox "Please enter the subdomain you are using for Onlyoffice Docker, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+            then
+                yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+                REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+                for remove in $REMOVE_OLD
+                    do rm -rf "$remove"
+                done
+            fi
+            # Remove Apache2 config
+            if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+            then
+                a2dissite "$SUBDOMAIN".conf
+                restart_webserver
+                rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+            fi
+            # Disable RichDocuments (Collabora App) if activated
+            if is_app_installed onlyoffice
+            then
+                occ_command app:remove onlyoffice
+            fi
+            # Remove trusted domain
+            count=0
+            while [ "$count" -lt 10 ]
+            do
+                if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+                then
+                    occ_command_no_check config:system:delete trusted_domains "$count"
+                    break
+                else
+                    count=$((count+1))
+                fi
+            done
+            
+            msg_box "Onlyoffice Docker was successfully uninstalled."
+            exit
+        ;;
+        "Reinstall Onlyoffice Docker")
+            print_text_in_color "$ICyan" "Reinstalling Onlyoffice Docker..."
+            
+            # Check if Collabora is previously installed
+            # If yes, then stop and prune the docker container
+            docker_prune_this 'onlyoffice/documentserver'
+        ;;
+        *)
+        ;;
+    esac
+else
+    print_text_in_color "$ICyan" "Installing Onlyoffice Docker..."
+fi
+
+# Check if collabora is installed and remove every trace of it
+if does_this_docker_exist 'collabora/code'
+then
+    msg_box "You can't run both Collabora and OnlyOffice on the same VM. We will now remove Collabora from the server."
+    # Remove docker image
+    docker_prune_this 'collabora/code'
+    # Revoke LE
+    SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice Docker" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+    then
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf "$remove"
+        done
+    fi
+    # Remove Apache2 config
+    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+    then
+        a2dissite "$SUBDOMAIN".conf
+        restart_webserver
+        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+    fi
+    # Disable Collabora App if activated
+    if is_app_installed richdocuments
+    then
+       occ_command app:remove richdocuments
+    fi
+    # Remove trusted domain
+    count=0
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        then
+            occ_command_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
 fi
 
 # Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
@@ -67,6 +163,38 @@ then
     fi
 fi
 
+# OnlyOffice URL (onlyoffice.sh)
+SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice Docker" --inputbox "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+# Nextcloud Main Domain (onlyoffice.sh)
+NCDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice Docker" --inputbox "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com" "$WT_HEIGHT" "$WT_WIDTH" cloud\\.yourdomain\\.com 3>&1 1>&2 2>&3)
+
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NC_UPDATE
+
+# Notification
+msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
+
+# Get the latest packages
+apt update -q4 & spinner_loading
+
+# Check if Nextcloud is installed
+print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
+if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
+then
+msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+${NCDOMAIN//\\/}.
+Please install Nextcloud and make sure your domain is reachable, or activate SSL
+on your domain to be able to run this script.
+If you use the Nextcloud VM you can use the Let's Encrypt script to get SSL and activate your Nextcloud domain.
+When SSL is activated, run these commands from your terminal:
+sudo curl -sLO $APP/onlyoffice_docker.sh
+sudo bash onlyoffice_docker.sh"
+    exit 1
+fi
+
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
 domain_check_200 "$SUBDOMAIN"
@@ -77,23 +205,6 @@ check_open_port 443 "$SUBDOMAIN"
 
 # Install Docker
 install_docker
-
-# Check if OnlyOffice or Collabora is previously installed
-# If yes, then stop and prune the docker container
-docker_prune_this 'onlyoffice/documentserver'
-docker_prune_this 'collabora/code'
-
-# Disable RichDocuments (Collabora App) if activated
-if [ -d "$NC_APPS_PATH"/richdocuments ]
-then
-    occ_command app:remove richdocuments
-fi
-
-# Disable OnlyOffice (Collabora App) if activated
-if [ -d "$NC_APPS_PATH"/onlyoffice ]
-then
-    occ_command app:remove onlyoffice
-fi
 
 # Install Onlyoffice docker
 docker pull onlyoffice/documentserver:latest
@@ -119,7 +230,7 @@ then
     rm -f "$HTTPS_CONF"
 fi
 
-# Create Vhost for OnlyOffice online in Apache2
+# Create Vhost for OnlyOffice Docker online in Apache2
 if [ ! -f "$HTTPS_CONF" ];
 then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
@@ -208,7 +319,7 @@ then
     # Restart Docker
     service docker restart
     docker restart onlyoffice
-    print_text_in_color "$IGreen" "OnlyOffice is now successfully installed."
+    print_text_in_color "$IGreen" "OnlyOffice Docker is now successfully installed."
     any_key "Press any key to continue... "
 fi
 
