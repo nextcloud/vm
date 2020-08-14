@@ -166,7 +166,7 @@ sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.ym
 sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
-check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
+check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh start
 # We dont' need this for Bitwarden to start, but it's a great way to find out if the DB is online or not.
 countdown "Waiting for the DB to come online..." 5
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
