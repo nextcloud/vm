@@ -22,10 +22,6 @@ print_text_in_color "$ICyan" "Running the OnlyOffice install script..."
 # Nextcloud 18 is required.
 lowest_compatible_nc 18
 
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 OnlyOffice
-cpu_check 2 OnlyOffice
-
 # Check if Nextcloud is installed with TLS
 if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
 then
