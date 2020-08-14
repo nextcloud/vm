@@ -118,21 +118,6 @@ You can also buy support directly in our shop: https://shop.hanssonit.se/product
     exit
 fi
 
-# Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
-if [ "$(apache2ctl -M | grep evasive)" != "" ]
-then
-    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and you can now choose to disable it."
-    if [[ "no" == $(ask_yes_or_no "Do you want to disable DDOS protection?")  ]]
-    then
-        print_text_in_color "$ICyan" "Keeping mod_evasive active."
-    else
-        a2dismod evasive
-        # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
-        apt-get purge libapache2-mod-evasive -y
-	systemctl restart apache2.service
-    fi
-fi
-
 # Check if collabora is installed and remove every trace of it
 if does_this_docker_exist 'collabora/code'
 then
@@ -173,6 +158,21 @@ then
             count=$((count+1))
         fi
     done
+fi
+
+# Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
+if [ "$(apache2ctl -M | grep evasive)" != "" ]
+then
+    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and you can now choose to disable it."
+    if [[ "no" == $(ask_yes_or_no "Do you want to disable DDOS protection?")  ]]
+    then
+        print_text_in_color "$ICyan" "Keeping mod_evasive active."
+    else
+        a2dismod evasive
+        # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
+        apt-get purge libapache2-mod-evasive -y
+	systemctl restart apache2.service
+    fi
 fi
 
 # Install OnlyOffice
