@@ -1336,10 +1336,10 @@ add_dockerprune() {
 print_text_in_color "$ICyan" "Adding cronjob for Docker weekly prune..."
 if ! crontab -u root -l | grep -q 'dockerprune.sh'
 then
+    mkdir -p "$SCRIPTS"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
     check_command echo "#!/bin/bash" > "$SCRIPTS/dockerprune.sh"
     check_command echo "docker system prune -a --force" >> "$SCRIPTS/dockerprune.sh"
-    mkdir -p "$SCRIPTS"
     check_command echo "exit" >> "$SCRIPTS/dockerprune.sh"
     chmod a+x "$SCRIPTS"/dockerprune.sh
     print_text_in_color "$IGreen" "Docker automatic prune job added."
