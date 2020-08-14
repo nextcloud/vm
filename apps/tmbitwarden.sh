@@ -59,7 +59,7 @@ To run this script again, execute $SCRIPTS/menu.sh and choose Additional Apps --
 fi
 
 # Test RAM size (3 GB min) + CPUs (min 2)
-ram_check 3 Bitwarden
+ram_check 4 Bitwarden
 cpu_check 2 Bitwarden
 
 msg_box "IMPORTANT, PLEASE READ!
@@ -179,6 +179,7 @@ a2enmod proxy
 a2enmod proxy_wstunnel
 a2enmod proxy_http
 a2enmod ssl
+a2enmod headers
 
 if [ -f "$HTTPS_CONF" ]
 then
