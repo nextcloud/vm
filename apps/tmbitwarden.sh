@@ -48,7 +48,7 @@ Please also report any issues regarding this script setup to $ISSUES"
 msg_box "The necessary preparations to run expose Bitwarden to the internet are:
 1. Please open port 443 and 80 and point to this server.
 2. Please create a DNS record for your subdomain and point that to this server.
-3. Raise the amount of RAM to this server to at least 3 GB."
+3. Raise the amount of RAM to this server to at least 4 GB."
 
 if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
 then
@@ -59,7 +59,7 @@ To run this script again, execute $SCRIPTS/menu.sh and choose Additional Apps --
 fi
 
 # Test RAM size (3 GB min) + CPUs (min 2)
-ram_check 3 Bitwarden
+ram_check 4 Bitwarden
 cpu_check 2 Bitwarden
 
 msg_box "IMPORTANT, PLEASE READ!
@@ -94,6 +94,18 @@ else
     print_text_in_color "$ICyan" "Specifying a certain user for Bitwarden: $BITWARDEN_USER..."
     useradd -s /bin/bash -d "$BITWARDEN_HOME/" -m -G docker "$BITWARDEN_USER"
 fi
+
+# Wait for home to be created
+while :
+do
+    if ! ls "$BITWARDEN_HOME" >/dev/null 2>&1
+    then
+        print_text_in_color "$ICyan" "Waiting for $BITWARDEN_HOME to be created"
+        sleep 1
+    else
+       break
+    fi
+done
 
 # Create the service
 print_text_in_color "$ICyan" "Creating the Bitwarden service..."
@@ -134,6 +146,7 @@ if grep ^url "$BITWARDEN_HOME"/bwdata/config.yml | grep -q https || grep ^url "$
 then
     msg_box "It seems like some of the settings you entered are wrong. We will now remove Bitwarden so that you can start over with the installation."
     check_command systemctl stop bitwarden
+    docker volume prune -f
     docker system prune -af
     rm -rf "${BITWARDEN_HOME:?}/"bwdata
     exit 1
@@ -144,6 +157,7 @@ sed -i "s|http_port.*|http_port: 5178|g" "$BITWARDEN_HOME"/bwdata/config.yml
 sed -i "s|https_port.*|https_port: 5179|g" "$BITWARDEN_HOME"/bwdata/config.yml
 USERID=$(id -u $BITWARDEN_USER)
 USERGROUPID=$(id -g $BITWARDEN_USER)
+sed -i "s|database_docker_volume:.*|database_docker_volume: true|g" "$BITWARDEN_HOME"/bwdata/config.yml
 sed -i "s|LOCAL_UID=.*|LOCAL_UID=$USERID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
 sed -i "s|LOCAL_GID=.*|LOCAL_GID=$USERGROUPID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
 # Get Subdomain from config.yml and change it to https
@@ -153,7 +167,9 @@ sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.ym
 sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
-start_if_stopped bitwarden
+check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh start
+# We dont' need this for Bitwarden to start, but it's a great way to find out if the DB is online or not.
+countdown "Waiting for the DB to come online..." 5
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
 # Produce reverse-proxy config and get lets-encrypt certificate
@@ -179,6 +195,7 @@ a2enmod proxy
 a2enmod proxy_wstunnel
 a2enmod proxy_http
 a2enmod ssl
+a2enmod headers
 
 if [ -f "$HTTPS_CONF" ]
 then
@@ -252,7 +269,9 @@ else
     # remove settings to be able to start over again
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/tmbitwarden.sh
-    systemctl stop bitwarden && docker system prune -af
+    systemctl stop bitwarden
+    docker volume prune -f
+    docker system prune -af
     rm -rf "${BITWARDEN_HOME:?}/"bwdata
     exit 1
 fi
