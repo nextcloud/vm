@@ -23,6 +23,16 @@ lowest_compatible_nc 13
 ram_check 2 Collabora
 cpu_check 2 Collabora
 
+# Check if Nextcloud is installed with TLS
+if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
+then
+msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
+You easily activate TLS (HTTPS) by running the Let's Encrypt script found in $SCRIPTS.
+More info here: https://bit.ly/37wRCin
+To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose Collabora."
+    exit
+fi
+
 # Check if collabora is already installed
 print_text_in_color "$ICyan" "Checking if Collabora is already installed..."
 if does_this_docker_exist 'collabora/code'
@@ -150,22 +160,6 @@ msg_box "Before you start, please make sure that port 80+443 is directly forward
 
 # Get the latest packages
 apt update -q4 & spinner_loading
-
-# Check if Nextcloud is installed
-print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
-then
-msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-${NCDOMAIN//\\/}.
-Please install Nextcloud and make sure your domain is reachable, or activate TLS
-on your domain to be able to run this script.
-
-If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
-When TLS is activated, run these commands from your terminal:
-sudo curl -sLO $APP/collabora.sh
-sudo bash collabora.sh"
-    exit 1
-fi
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
