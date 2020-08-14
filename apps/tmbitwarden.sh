@@ -166,6 +166,8 @@ sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
 start_if_stopped bitwarden
+# We dont' need this for Bitwarden to start, but it's a great way to find out if the DB is online or not.
+countdown "Waiting for the DB to come online..." 5
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
 # Produce reverse-proxy config and get lets-encrypt certificate
