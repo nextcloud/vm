@@ -25,12 +25,15 @@ choice=$(whiptail --title "Main Menu" --radiolist "Choose what you want to do.\n
 
 case "$choice" in
     "Additional Apps")
+        print_text_in_color "$ICyan" "Downloading Additional_Apps.sh..."
         run_script MENU additional_apps
     ;;
     "Nextcloud Configuration")
+        print_text_in_color "$ICyan" "Downloading Nextcloud_Configuration.sh..."
         run_script MENU nextcloud_configuration
     ;;
     "Server Configuration")
+        print_text_in_color "$ICyan" "Downloading Server_Configuration.sh..."
         run_script MENU server_configuration
     ;;
     "Update Nextcloud")
@@ -38,6 +41,7 @@ case "$choice" in
         then
             bash $SCRIPTS/update.sh
         else
+            print_text_in_color "$ICyan" "Downloading Update.sh..."
             download_script STATIC update
             bash $SCRIPTS/update.sh
         fi
