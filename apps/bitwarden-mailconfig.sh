@@ -180,31 +180,31 @@ fi
 if [ "$USE_SSL" = "yes" ]
 then
     USE_SSL="true"
-    sed -i 's|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=$USE_SSL|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
+    sed -i "s|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=$USE_SSL|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 elif [ "$USE_SSL" = "no" ]
 then
     USE_SSL="false"
-    sed -i 's|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=$USE_SSL|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
+    sed -i "s|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=$USE_SSL|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 # SMTP-Port
 if [ -n "$SMTP_PORT" ]
 then
-    sed -i 's|^globalSettings__mail__smtp__port=.*|globalSettings__mail__smtp__port=$SMTP_PORT|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
+    sed -i "s|^globalSettings__mail__smtp__port=.*|globalSettings__mail__smtp__port=$SMTP_PORT|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 # Mail username
 if [ -n "$MAIL_USERNAME" ]
 then
-    sed -i 's|^globalSettings__mail__smtp__username=.*|globalSettings__mail__smtp__username=$MAIL_USERNAME|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
+    sed -i "s|^globalSettings__mail__smtp__username=.*|globalSettings__mail__smtp__username=$MAIL_USERNAME|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 # Mail password
 if [ -n "$MAIL_PASSWORD" ]
 then
-    sed -i 's|^globalSettings__mail__smtp__password=.*|globalSettings__mail__smtp__password=$MAIL_PASSWORD|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
+    sed -i "s|^globalSettings__mail__smtp__password=.*|globalSettings__mail__smtp__password=$MAIL_PASSWORD|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 # Admin account(s)
 if [ -n "$ADMIN_ACCOUNT" ]
 then
-    sed -i 's|^adminSettings__admins=.*|adminSettings__admins=$ADMIN_ACCOUNT|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
+    sed -i "s|^adminSettings__admins=.*|adminSettings__admins=$ADMIN_ACCOUNT|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 
 # Start bitwarden
