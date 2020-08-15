@@ -44,16 +44,23 @@ fi
 
 # Enter Mailserver
 
-# Enter Port
-
 # Enter if you want to use ssl
+
+# Enter Port or just use standard port (defined by usage of ssl)
 
 # Enter your mail username
 
 # Enter your mailuser password
 
+# Enter admin mailadresses
+
 # Present what we gathered, if everything okay, write to files
 
 # Stop bitwarden
-# Write to files
-# Start bitwarden; is this really enough, does it need to get rebuilt?
+systemctl stop bitwarden
+
+# Write to files 
+
+
+# Start bitwarden
+systemctl start bitwarden
