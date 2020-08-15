@@ -128,7 +128,44 @@ do
     fi
 done
 
+# Get results and store in a variable:
+RESULT="You will see now a list of all entered information, that will get changed inside the global.override.env if you are satisfied.\n\n"
+if [ -n "$MAIL_SERVER" ]
+then
+    RESULT+="mail-server=$MAIL_SERVER\n"
+fi
+# SSL
+if [ -n "$USE_SSL" ]
+then
+    RESULT+="Use-SSL=$USE_SSL\n"
+fi
+# SMTP-Port
+if [ -n "$SMTP_PORT" ]
+then
+    RESULT+="SMTP-Port=$SMTP_PORT\n"
+fi
+# Mail username
+if [ -n "$MAIL_USERNAME" ]
+then
+    RESULT+="mail-username=$MAIL_USERNAME\n"
+fi
+# Mail password
+if [ -n "$MAIL_PASSWORD" ]
+then
+    RESULT+="mail-password=$MAIL_PASSWORD\n"
+fi
+# Admin account(s)
+if [ -n "$ADMIN_ACCOUNT" ]
+then
+    RESULT+="admin-account(s)=$ADMIN_ACCOUNT"
+fi
+
 # Present what we gathered, if everything okay, write to files
+msg_box "$RESULT"
+if [[ "no" == $(ask_yes_or_no "Do you want to proceed?") ]]
+then
+    exit
+fi
 
 # Stop bitwarden
 systemctl stop bitwarden
