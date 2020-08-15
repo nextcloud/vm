@@ -165,6 +165,11 @@ SUBDOMAIN=$(grep ^url "$BITWARDEN_HOME"/bwdata/config.yml)
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
 sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.yml
 sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
+# Insert globalSettings__mail__smtp__trustServer to global.override
+if ! grep -q "^globalSettings__mail__smtp__trustServer=" "$BITWARDEN_HOME"/bwdata/env/global.override.env
+then
+    echo "globalSettings__mail__smtp__trustServer=" >> "$BITWARDEN_HOME"/bwdata/env/global.override.env
+fi
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh start
