@@ -23,7 +23,7 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring)" OFF \
-"Bitwarden " "(External password manager [4GB RAM] - subdomain required)" OFF \
+"Bitwarden " "(External password manager)" OFF \
 "Bitwarden-Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" OFF \
