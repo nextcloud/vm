@@ -18,15 +18,11 @@ root_check
 
 # Install Apps
 choice=$(whiptail --title "Which apps do you want to install?" --checklist "Automatically configure and install selected apps\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Documentserver" "(Choose between Onlyoffice, Collabora and Docker, integrated)" OFF \
 "Fail2ban " "(Extra Bruteforce protection)" OFF \
 "Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring)" OFF \
-"Collabora (Docker)" "(Online editing [2GB RAM] - subdomain required)" OFF \
-"Collabora (integrated)" "(Online editing [2GB RAM] - no subdomain required)" OFF \
-"OnlyOffice (Docker)" "(Online editing [2GB RAM] - subdomain required)" OFF \
-"OnlyOffice (integrated)" "(Online editing - no subdomain required)" OFF \
-"Bitwarden " "(External password manager [4GB RAM] - subdomain required)" OFF \
 "Bitwarden-Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" OFF \
@@ -36,6 +32,10 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "SMB-mount" "(Connect to SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
+    *"Documentserver"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading Documentserver.sh..."
+        run_script MENU documentserver
     *"Fail2ban "*)
         clear
         print_text_in_color "$ICyan" "Downloading Fail2ban.sh..."
@@ -61,26 +61,6 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading Netdata.sh..."
         run_script APP netdata
     ;;&    
-    *"Collabora (Docker)"*)
-        clear
-        print_text_in_color "$ICyan" "Downloading collabora_docker.sh..."
-        run_script APP collabora_docker
-    ;;&
-    *"Collabora (integrated)"*)
-        clear
-        print_text_in_color "$ICyan" "Downloading collabora_integrated.sh..."
-        run_script APP collabora_integrated
-    ;;&
-    *"OnlyOffice (Docker)"*)
-        clear
-        print_text_in_color "$ICyan" "Downloading onlyoffice_docker.sh..."
-        run_script APP onlyoffice_docker
-    ;;&
-    *"OnlyOffice (integrated)"*)
-        clear
-        print_text_in_color "$ICyan" "Downloading onlyoffice_integrated.sh..."
-        run_script APP onlyoffice_integrated
-    ;;&
     *"Bitwarden "*)
         clear
         print_text_in_color "$ICyan" "Downloading Bitwarden.sh..."
