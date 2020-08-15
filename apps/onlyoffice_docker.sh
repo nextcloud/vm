@@ -27,13 +27,15 @@ cpu_check 2 OnlyOffice
 if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
 then
 msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
-You easily activate TLS (HTTPS) by running the Let's Encrypt script found in $SCRIPTS.
+You easily activate TLS (HTTPS) by running the Let's Encrypt script.
 More info here: https://bit.ly/37wRCin
-To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose OnlyOffice Docker."
+
+To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
+Additional Apps --> OnlyOffice Docker."
     exit
 fi
 
-# remove OnlyOffice-documentserver if activated
+# Remove OnlyOffice-documentserver if activated
 if is_app_enabled documentserver_community
 then
     any_key "The integrated OnlyOffice Documentserver will get uninstalled. Press any key to continue. Press CTRL+C to abort"
