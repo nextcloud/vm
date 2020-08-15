@@ -119,7 +119,7 @@ done
 # Enter admin mailadresses
 while true
 do
-    ADMIN_ACCOUNTS=$(whiptail --inputbox "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered bitwarden-accounts.\nTo make this setting work, your bitwarden mailserver-settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin-accounts, that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    ADMIN_ACCOUNT=$(whiptail --inputbox "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered bitwarden-accounts.\nTo make this setting work, your bitwarden mailserver-settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin-accounts, that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
     then
         msg_box "It seems like your weren't satisfied by the mailaccounts you entered. Please try again."
@@ -174,7 +174,7 @@ systemctl stop bitwarden
 # Mailserver
 if [ -n "$MAIL_SERVER" ]
 then
-    sed -i 's|^globalSettings__mail__smtp__host=.*|globalSettings__mail__smtp__host=$MAIL_SERVER|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
+    sed -i "s|^globalSettings__mail__smtp__host=.*|globalSettings__mail__smtp__host=$MAIL_SERVER|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 # SSL
 if [ "$USE_SSL" = "yes" ]
