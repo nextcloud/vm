@@ -25,7 +25,7 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "Collabora" "(Online editing [2GB RAM] - subdomain required)" OFF \
 "OnlyOffice (Docker)" "(Online editing [2GB RAM] - subdomain required)" OFF \
 "OnlyOffice (integrated)" "(Online editing - no subdomain required)" OFF \
-"Bitwarden " "(External password manager [3GB RAM] - subdomain required)" OFF \
+"Bitwarden " "(External password manager [4GB RAM] - subdomain required)" OFF \
 "Bitwarden-Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" OFF \
