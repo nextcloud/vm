@@ -22,7 +22,8 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring)" OFF \
-"Collabora" "(Online editing [2GB RAM] - subdomain required)" OFF \
+"Collabora (Docker)" "(Online editing [2GB RAM] - subdomain required)" OFF \
+"Collabora (integrated)" "(Online editing [2GB RAM] - no subdomain required)" OFF \
 "OnlyOffice (Docker)" "(Online editing [2GB RAM] - subdomain required)" OFF \
 "OnlyOffice (integrated)" "(Online editing - no subdomain required)" OFF \
 "Bitwarden " "(External password manager [4GB RAM] - subdomain required)" OFF \
@@ -60,19 +61,24 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading Netdata.sh..."
         run_script APP netdata
     ;;&    
-    *"Collabora"*)
+    *"Collabora (Docker)"*)
         clear
-        print_text_in_color "$ICyan" "Downloading Collabora.sh..."
-        run_script APP collabora
+        print_text_in_color "$ICyan" "Downloading collabora_docker.sh..."
+        run_script APP collabora_docker
+    ;;&
+    *"Collabora (integrated)"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading collabora_integrated.sh..."
+        run_script APP collabora_integrated
     ;;&
     *"OnlyOffice (Docker)"*)
         clear
-        print_text_in_color "$ICyan" "Downloading OnlyOffice.sh..."
+        print_text_in_color "$ICyan" "Downloading onlyoffice_docker.sh..."
         run_script APP onlyoffice_docker
     ;;&
     *"OnlyOffice (integrated)"*)
         clear
-        print_text_in_color "$ICyan" "Downloading OnlyOffice.sh..."
+        print_text_in_color "$ICyan" "Downloading onlyoffice_integrated.sh..."
         run_script APP onlyoffice_integrated
     ;;&
     *"Bitwarden "*)
