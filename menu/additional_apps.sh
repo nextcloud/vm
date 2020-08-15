@@ -36,6 +36,7 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading Documentserver.sh..."
         run_script MENU documentserver
+    ;;&
     *"Fail2ban "*)
         clear
         print_text_in_color "$ICyan" "Downloading Fail2ban.sh..."
@@ -60,7 +61,7 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading Netdata.sh..."
         run_script APP netdata
-    ;;&    
+    ;;&
     *"Bitwarden "*)
         clear
         print_text_in_color "$ICyan" "Downloading Bitwarden.sh..."
