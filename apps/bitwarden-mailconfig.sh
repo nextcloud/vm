@@ -48,6 +48,12 @@ then
     echo "globalSettings__mail__smtp__trustServer=false" >> "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 
+# Insert globalSettings__mail__smtp__startTls to global.override
+if ! grep -q "^globalSettings__mail__smtp__startTls=" "$BITWARDEN_HOME"/bwdata/env/global.override.env
+then
+    echo "globalSettings__mail__smtp__startTls=false" >> "$BITWARDEN_HOME"/bwdata/env/global.override.env
+fi
+
 # Enter Mailserver
 while true
 do
@@ -63,22 +69,26 @@ done
 # Enter if you want to use ssl
 while true
 do
-    USE_SSL=$(whiptail --inputbox "Do you want to use SSL for your Mailserver? If yes: please type in 'yes'.\nPlease note: if your Mailserver only supports Starttls, you cannot use SSL - so please answer in this case here 'no'.\nIf you don't want to change the SSL-setting, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    PROTOCOL=$(whiptail --inputbox "Please type in the encryption Protocol for your mailserver.\nThe available options are 'SSL', 'STARTTLS' or 'none'.\n\nIf you don't want to change the Protocol-setting, that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
     then
         msg_box "It seems like your weren't satisfied by the answer you entered. Please try again."
     else
-        if [ "$USE_SSL" = "yes" ]
+        if [ "$PROTOCOL" = "SSL" ]
         then
             DEFAULT_PORT=465
             break
-        elif [ "$USE_SSL" = "no" ]
+        elif [ "$PROTOCOL" = "none" ]
         then
             DEFAULT_PORT=25
             break
-        elif [ "$USE_SSL" = "" ]
+        elif [ "$PROTOCOL" = "STARTTLS" ]
         then
-            DEFAULT_PORT=
+            DEFAULT_PORT=587
+            break
+        elif [ "$PROTOCOL" = "" ]
+        then
+            DEFAULT_PORT=""
             break
         else
             msg_box "The answer wasn't correct. Please enter 'yes', 'no' or leave the Inputbox empty."
@@ -89,7 +99,7 @@ done
 # Enter Port or just use standard port (defined by usage of ssl)
 while true
 do
-    SMTP_PORT=$(whiptail --inputbox "Please enter the Port for your Mailserver. The Standard-Port is currently $DEFAULT_PORT?\nIf you don't want to change the Port, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SMTP_PORT=$(whiptail --inputbox "Please enter the Port for your Mailserver. The default-Port based on your Protocol-setting is $DEFAULT_PORT?\nPlease type that Port into the inputbox, if you want to use it.\n\nIf you don't want to change the Port, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
     then
         msg_box "It seems like your weren't satisfied by the Port you entered. Please try again."
@@ -141,9 +151,9 @@ then
     RESULT+="mail-server=$MAIL_SERVER\n"
 fi
 # SSL
-if [ -n "$USE_SSL" ]
+if [ -n "$PROTOCOL" ]
 then
-    RESULT+="Use-SSL=$USE_SSL\n"
+    RESULT+="PROTOCOL=$PROTOCOL\n"
 fi
 # SMTP-Port
 if [ -n "$SMTP_PORT" ]
@@ -183,11 +193,17 @@ then
     check_command sed -i "s|^globalSettings__mail__smtp__host=.*|globalSettings__mail__smtp__host=$MAIL_SERVER|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 # SSL
-if [ "$USE_SSL" = "yes" ]
+if [ "$PROTOCOL" = "SSL" ]
 then
     check_command sed -i "s|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=true|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
-elif [ "$USE_SSL" = "no" ]
+    check_command sed -i "s|^globalSettings__mail__smtp__startTls=.*|globalSettings__mail__smtp__startTls=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
+elif [ "$PROTOCOL" = "none" ]
 then
+    check_command sed -i "s|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
+    check_command sed -i "s|^globalSettings__mail__smtp__startTls=.*|globalSettings__mail__smtp__startTls=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env    
+elif [ "$PROTOCOL" = "STARTTLS" ]
+then
+    check_command sed -i "s|^globalSettings__mail__smtp__startTls=.*|globalSettings__mail__smtp__startTls=true|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
     check_command sed -i "s|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 # SMTP-Port
