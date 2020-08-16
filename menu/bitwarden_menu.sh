@@ -24,17 +24,17 @@ choice=$(whiptail --title "Bitwarden" --checklist "Automatically configure and i
 case "$choice" in
     *"Bitwarden "*)
         clear
-        print_text_in_color "$ICyan" "Downloading Bitwarden.sh..."
+        print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
         run_script APP tmbitwarden
     ;;&
     *"Bitwarden-Registration"*)
         clear
-        print_text_in_color "$ICyan" "Downloading Bitwarden-registration.sh..."
+        print_text_in_color "$ICyan" "Downloading the Bitwarden-registration script..."
         run_script APP bitwarden-registration
     ;;&
     *"Bitwarden-Mail-Configuration"*)
         clear
-        print_text_in_color "$ICyan" "Downloading Bitwarden-Mailconfig.sh..."
+        print_text_in_color "$ICyan" "Downloading the Bitwarden-Mailconfig script..."
         run_script APP bitwarden-mailconfig
     ;;&
     *)
