@@ -230,6 +230,12 @@ then
   SSLProxyVerify None
   SSLProxyCheckPeerCN Off
   SSLProxyCheckPeerName Off
+  
+  # Improve security settings
+  Header set X-XSS-Protection "1; mode=block"
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header set X-Content-Type-Options nosniff
+  Header set Content-Security-Policy "frame-ancestors 'self' ${NCDOMAIN//\\/}"
 
   # keep the host
   ProxyPreserveHost On
