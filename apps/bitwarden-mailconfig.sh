@@ -24,7 +24,7 @@ then
     then
         if [ ! -d "$BITWARDEN_HOME"/bwdata ]
         then
-            msg_box "It seems like 'Bitwarden' isn't installed in the new place.\n\nYou cannot run this script."
+            msg_box "It seems like 'Bitwarden' isn't installed in $BITWARDEN_HOME.\n\nYou cannot run this script."
             exit 1
         fi
     else
@@ -69,7 +69,7 @@ done
 # Enter if you want to use ssl
 while true
 do
-    PROTOCOL=$(whiptail --inputbox "Please type in the encryption Protocol for your mailserver.\nThe available options are 'SSL', 'STARTTLS' or 'none'.\n\nIf you don't want to change the Protocol-setting, that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    PROTOCOL=$(whiptail --inputbox "Please type in the encryption protocol for your mailserver.\nThe available options are 'SSL', 'STARTTLS' or 'none'.\n\nIf you don't want to change the protocol setting, that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
     then
         msg_box "It seems like your weren't satisfied by the answer you entered. Please try again."
@@ -91,7 +91,7 @@ do
             DEFAULT_PORT=""
             break
         else
-            msg_box "The answer wasn't correct. Please type in 'SSL', 'STARTTLS', 'none' or leave the Inputbox empty."
+            msg_box "The answer wasn't correct. Please type in 'SSL', 'STARTTLS', 'none' or leave the inputbox empty."
         fi
     fi
 done
@@ -99,10 +99,10 @@ done
 # Enter Port or just use standard port (defined by usage of ssl)
 while true
 do
-    SMTP_PORT=$(whiptail --inputbox "Please enter the Port for your Mailserver. The default-Port based on your Protocol-setting is $DEFAULT_PORT?\nPlease type that Port into the inputbox, if you want to use it.\n\nIf you don't want to change the Port, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SMTP_PORT=$(whiptail --inputbox "Please enter the port for your mailserver. The default-Port based on your protocol setting is $DEFAULT_PORT?\nPlease type that Port into the inputbox, if you want to use it.\n\nIf you don't want to change the port, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
     then
-        msg_box "It seems like your weren't satisfied by the Port you entered. Please try again."
+        msg_box "It seems like your weren't satisfied by the port you entered. Please try again."
     else
         break
     fi
@@ -111,7 +111,7 @@ done
 # Enter your mail username
 while true
 do
-    MAIL_USERNAME=$(whiptail --inputbox "Please enter mail-username. E.g. mail@example.com\nPlease note: the domain used for your mail-username and the mailserver-domain heave to match!\nIf you don't want to change the mail-username, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    MAIL_USERNAME=$(whiptail --inputbox "Please enter the username for your login to your mail provider. E.g. mail@example.com\nPlease note: the domain used for your mail username and the mailserver-domain heave to match!\nIf you don't want to change the mail-username, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
     then
         msg_box "It seems like your weren't satisfied by the mail-username you entered. Please try again."
