@@ -770,9 +770,9 @@ else
     if ! netplan apply
     then
         systemctl restart systemd-networkd > /dev/null
-        countdown 'Waiting for network to restart...' 3
     fi
     # Check the connention
+    countdown 'Waiting for network to restart...' 3
     if ! site_200 github.com
     then
         # sleep 40 seconds so that some slow networks have time to restart
