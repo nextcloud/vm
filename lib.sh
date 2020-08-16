@@ -506,7 +506,7 @@ check_nextcloud_https() {
     You easily activate TLS (HTTPS) by running the Let's Encrypt script.
     More info here: https://bit.ly/37wRCin
     To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
-    Additional Apps --> Documentserver --> $@."
+    Additional Apps --> Documentserver --> $1."
         exit
     fi
 }

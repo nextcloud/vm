@@ -24,7 +24,7 @@ ram_check 2 Collabora
 cpu_check 2 Collabora
 
 # Check if Nextcloud is installed with TLS
-check_nextcloud_https Collabora (Docker)
+check_nextcloud_https "Collabora (Docker)"
 
 # Check if Collabora is already installed
 print_text_in_color "$ICyan" "Checking if Collabora is already installed..."

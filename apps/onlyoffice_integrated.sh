@@ -23,7 +23,7 @@ print_text_in_color "$ICyan" "Running the OnlyOffice install script..."
 lowest_compatible_nc 18
 
 # Check if Nextcloud is installed with TLS
-check_nextcloud_https OnlyOffice (Integrated)
+check_nextcloud_https "OnlyOffice (Integrated)"
 
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'

@@ -24,7 +24,7 @@ ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
 
 # Check if Nextcloud is installed with TLS
-check_nextcloud_https OnlyOffice (Docker)
+check_nextcloud_https "OnlyOffice (Docker)"
 
 # Remove OnlyOffice-documentserver if activated
 if is_app_enabled documentserver_community

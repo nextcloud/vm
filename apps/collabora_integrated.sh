@@ -26,7 +26,7 @@ ram_check 2 Collabora
 cpu_check 2 Collabora
 
 # Check if Nextcloud is installed with TLS
-check_nextcloud_https Collabora (Integrated)
+check_nextcloud_https "Collabora (Integrated)"
 
 # Check if Collabora is installed using the old method
 if does_this_docker_exist 'collabora/code'
