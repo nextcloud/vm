@@ -18,9 +18,9 @@ root_check
 
 choice=$(whiptail --title "Which Documentserver do you want to install?" --radiolist "Automatically configure and install the selected Documentserver.\nSelect by pressing the spacebar and ENTER\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Collabora (Docker)" "(Online editing [2GB RAM] - subdomain required)" OFF \
-"Collabora (integrated)" "(Online editing [2GB RAM] - no subdomain required)" OFF \
+"Collabora (Integrated)" "(Online editing [2GB RAM] - no subdomain required)" OFF \
 "OnlyOffice (Docker)" "(Online editing [2GB RAM] - subdomain required)" OFF \
-"OnlyOffice (integrated)" "(Online editing - no subdomain required)" OFF 3>&1 1>&2 2>&3)
+"OnlyOffice (Integrated)" "(Online editing - no subdomain required)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Collabora (Docker)")
@@ -28,7 +28,7 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Collabora (Docker) script..."
         run_script APP collabora_docker
     ;;
-    "Collabora (integrated)")
+    "Collabora (Integrated)")
         clear
         print_text_in_color "$ICyan" "Downloading the Collabora (Integrated) script..."
         run_script APP collabora_integrated
@@ -38,7 +38,7 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the OnlyOffice (Docker) script..."
         run_script APP onlyoffice_docker
     ;;
-    "OnlyOffice (integrated)")
+    "OnlyOffice (Integrated)")
         clear
         print_text_in_color "$ICyan" "Downloading the OnlyOffice (Integrated) script..."
         run_script APP onlyoffice_integrated
