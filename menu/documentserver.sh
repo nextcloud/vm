@@ -25,22 +25,22 @@ choice=$(whiptail --title "Which Documentserver do you want to install?" --radio
 case "$choice" in
     "Collabora (Docker)")
         clear
-        print_text_in_color "$ICyan" "Downloading Collabora_Docker.sh..."
+        print_text_in_color "$ICyan" "Downloading the Collabora (Docker) script..."
         run_script APP collabora_docker
     ;;
     "Collabora (integrated)")
         clear
-        print_text_in_color "$ICyan" "Downloading Collabora_integrated.sh..."
+        print_text_in_color "$ICyan" "Downloading the Collabora (Integrated) script..."
         run_script APP collabora_integrated
     ;;
     "OnlyOffice (Docker)")
         clear
-        print_text_in_color "$ICyan" "Downloading OnlyOffice_Docker.sh..."
+        print_text_in_color "$ICyan" "Downloading the OnlyOffice (Docker) script..."
         run_script APP onlyoffice_docker
     ;;
     "OnlyOffice (integrated)")
         clear
-        print_text_in_color "$ICyan" "Downloading OnlyOffice_integrated.sh..."
+        print_text_in_color "$ICyan" "Downloading the OnlyOffice (Integrated) script..."
         run_script APP onlyoffice_integrated
     ;;
     *)

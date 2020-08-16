@@ -26,16 +26,7 @@ ram_check 2 Collabora
 cpu_check 2 Collabora
 
 # Check if Nextcloud is installed with TLS
-if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
-then
-msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
-
-You easily activate TLS (HTTPS) by running the Let's Encrypt script found in $SCRIPTS.
-More info here: https://bit.ly/37wRCin
-
-To run this script again, just exectue 'sudo bash $SCRIPTS/apps.sh' and choose Collabora."
-    exit
-fi
+check_nextcloud_https Collabora (Integrated)
 
 # Check if Collabora is installed using the old method
 if does_this_docker_exist 'collabora/code'

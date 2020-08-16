@@ -18,7 +18,7 @@ root_check
 
 # Install Apps
 choice=$(whiptail --title "Which apps do you want to install?" --checklist "Automatically configure and install selected apps\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Documentserver" "(Choose between Onlyoffice, Collabora and Docker, integrated)" OFF \
+"Documentserver" "(OnlyOffice or Collabora - Docker or Integrated)" OFF \
 "Fail2ban " "(Extra Bruteforce protection)" OFF \
 "Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
@@ -35,12 +35,12 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 case "$choice" in
     *"Documentserver"*)
         clear
-        print_text_in_color "$ICyan" "Downloading Documentserver.sh..."
+        print_text_in_color "$ICyan" "Downloading the Documentserver script..."
         run_script MENU documentserver
     ;;&
     *"Fail2ban "*)
         clear
-        print_text_in_color "$ICyan" "Downloading Fail2ban.sh..."
+        print_text_in_color "$ICyan" "Downloading the Fail2ban script..."
         run_script APP fail2ban
     ;;&
     *"Fail2ban-Statuscheck"*)
@@ -55,12 +55,12 @@ case "$choice" in
     ;;&
     *"Adminer"*)
         clear
-        print_text_in_color "$ICyan" "Downloading Adminer.sh..."
+        print_text_in_color "$ICyan" "Downloading the Adminer script..."
         run_script APP adminer
     ;;&
     *"Netdata"*)
         clear
-        print_text_in_color "$ICyan" "Downloading Netdata.sh..."
+        print_text_in_color "$ICyan" "Downloading the Netdata script..."
         run_script APP netdata
     ;;&
     *"Bitwarden "*)
@@ -74,12 +74,12 @@ case "$choice" in
     ;;&
     *"FullTextSearch"*)
         clear
-        print_text_in_color "$ICyan" "Downloading FullTextSearch.sh..."
+        print_text_in_color "$ICyan" "Downloading the FullTextSearch script..."
         run_script APP fulltextsearch
     ;;&
     *"PreviewGenerator"*)
         clear
-        print_text_in_color "$ICyan" "Downloading PreviewGenerator.sh..."
+        print_text_in_color "$ICyan" "Downloading the PreviewGenerator script..."
         run_script APP previewgenerator
     ;;&
     *"LDAP"*)
@@ -94,15 +94,16 @@ case "$choice" in
     ;;&
     *"Talk"*)
         clear
-        print_text_in_color "$ICyan" "Downloading Talk.sh..."
+        print_text_in_color "$ICyan" "Downloading the Talk script..."
         run_script APP talk
     ;;&
     *"Webmin"*)
+        print_text_in_color "$ICyan" "Downloading the Webmin script..."
         run_script APP webmin
     ;;&
     *"SMB-mount"*)
         clear
-        print_text_in_color "$ICyan" "Downloading SMB-mount.sh..."
+        print_text_in_color "$ICyan" "Downloading the SMB-mount script..."
         run_script APP smbmount
     ;;&
     *)
