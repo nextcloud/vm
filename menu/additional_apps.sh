@@ -35,7 +35,7 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 case "$choice" in
     *"Bitwarden "*)
         clear
-        print_text_in_color "$ICyan" "Downloading Bitwarden_Menu.sh..."
+        print_text_in_color "$ICyan" "Downloading script for Bitwarden..."
         run_script MENU bitwarden_menu
     ;;&
     *"Fail2ban "*)
