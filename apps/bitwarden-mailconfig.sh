@@ -45,7 +45,7 @@ fi
 # Insert globalSettings__mail__smtp__trustServer to global.override
 if ! grep -q "^globalSettings__mail__smtp__trustServer=" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 then
-    echo "globalSettings__mail__smtp__trustServer=" >> "$BITWARDEN_HOME"/bwdata/env/global.override.env
+    echo "globalSettings__mail__smtp__trustServer=false" >> "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 
 # Enter Mailserver
