@@ -91,7 +91,7 @@ do
             DEFAULT_PORT=""
             break
         else
-            msg_box "The answer wasn't correct. Please enter 'yes', 'no' or leave the Inputbox empty."
+            msg_box "The answer wasn't correct. Please type in 'SSL', 'STARTTLS', 'none' or leave the Inputbox empty."
         fi
     fi
 done
