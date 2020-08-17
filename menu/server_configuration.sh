@@ -36,24 +36,34 @@ choice=$(whiptail --title "Server configurations" --checklist "Choose what you w
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" ON \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
+"DDclient Configuration" "(Use ddclient for automatic DDNS updates)"
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Security"*)
         clear
+        print_text_in_color "$ICyan" "Downloading the Security script..."
         run_script ADDONS security
     ;;&
     *"Static IP"*)
         clear
+        print_text_in_color "$ICyan" "Downloading the Static IP script..."
         run_script NETWORK static_ip
+    ;;&
+    *"DDclient Configuration"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the DDclient Configuration script..."
+        run_script NETWORK ddclient-configuration
     ;;&
     *"Automatic updates"*)
         clear
+        print_text_in_color "$ICyan" "Downloading the Automatic Updates script..."
         run_script ADDONS automatic_updates
     ;;&
     *"Disk Check"*)
         clear
+        print_text_in_color "$ICyan" "Downloading the Disk Check script..."
         run_script DISK smartctl
     ;;&
     *"Activate TLS"*)
@@ -71,6 +81,7 @@ https://www.techandme.se/open-port-80-443/"
             then
                 bash $SCRIPTS/activate-tls.sh
             else
+                print_text_in_color "$ICyan" "Downloading the activate-tls script..."
                 download_script LETS_ENC activate-tls
                 bash $SCRIPTS/activate-tls.sh
             fi
