@@ -19,11 +19,11 @@ root_check
 # Install Apps
 choice=$(whiptail --title "Which apps do you want to install?" --checklist "Automatically configure and install selected apps\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Documentserver" "(OnlyOffice or Collabora - Docker or Integrated)" OFF \
+"Bitwarden" "(External password manager)" OFF \
 "Fail2ban " "(Extra Bruteforce protection)" OFF \
 "Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring)" OFF \
-"Bitwarden" "(External password manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" OFF \
 "LDAP" "(Windows Active directory)" OFF \
@@ -36,8 +36,12 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading the Documentserver script..."
         run_script MENU documentserver
+   *"Bitwarden "*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
+        run_script MENU bitwarden_menu
     ;;&
-    *"Fail2ban"*)
+    *"Fail2ban "*)
         clear
         print_text_in_color "$ICyan" "Downloading the Fail2ban script..."
         run_script APP fail2ban
@@ -61,11 +65,6 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading the Netdata script..."
         run_script APP netdata
-    ;;&
-    *"Bitwarden "*)
-        clear
-        print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
-        run_script MENU bitwarden_menu
     ;;&
     *"FullTextSearch"*)
         clear
@@ -92,18 +91,15 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Talk script..."
         run_script APP talk
     ;;&
+    *"Webmin"*)
+        run_script APP webmin
+    ;;&
     *"SMB-mount"*)
         clear
         print_text_in_color "$ICyan" "Downloading the SMB-mount script..."
         run_script APP smbmount
     ;;&
-    *"Webmin"*)
-        clear
-        print_text_in_color "$ICyan" "Downloading the Webmin script..."
-        run_script APP webmin
-    ;;&
     *)
     ;;
 esac
-clear
 exit
