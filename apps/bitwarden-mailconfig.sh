@@ -145,7 +145,7 @@ do
 done
 
 # Get results and store in a variable:
-RESULT="You will see now a list of all entered information that will get changed inside the global.override.env. Please check that evrything seems correct.\n\n"
+RESULT="You will see now a list of all entered information that will get changed inside the global.override.env. Please check that everything seems correct.\n\n"
 if [ -n "$MAIL_SERVER" ]
 then
     RESULT+="Mailserver URL=$MAIL_SERVER\n"
@@ -227,10 +227,9 @@ then
     check_command sed -i "s|^adminSettings__admins=.*|adminSettings__admins=$ADMIN_ACCOUNT|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 
-# Rebuild bitwarden
-
-sudo -u "$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh rebuild
+# Start Bitwarden
 systemctl start bitwarden
+msg_box "Your Bitwarden mailserver settings should be successfully changed by now.
 
-msg_box "Your Bitwarden mailserver settings should be successfully changed by now."
+If you experiance any issue, please report them to $ISSUES"
 exit
