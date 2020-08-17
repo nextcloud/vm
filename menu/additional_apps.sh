@@ -18,14 +18,13 @@ root_check
 
 # Install Apps
 choice=$(whiptail --title "Which apps do you want to install?" --checklist "Automatically configure and install selected apps\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Bitwarden" "(External password manager)" OFF \
 "Fail2ban " "(Extra Bruteforce protection)" OFF \
 "Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring)" OFF \
 "Collabora" "(Online editing [2GB RAM])" OFF \
 "OnlyOffice" "(Online editing [2GB RAM])" OFF \
-"Bitwarden " "(External password manager)" OFF \
-"Bitwarden-Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" OFF \
 "LDAP" "(Windows Active directory)" OFF \
@@ -34,6 +33,11 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "SMB-mount" "(Connect to SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
+    *"Bitwarden "*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
+        run_script MENU bitwarden_menu
+    ;;&
     *"Fail2ban "*)
         clear
         print_text_in_color "$ICyan" "Downloading Fail2ban.sh..."
@@ -68,15 +72,6 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading Collabora.sh..."
         run_script APP collabora
-    ;;&
-    *"Bitwarden "*)
-        clear
-        print_text_in_color "$ICyan" "Downloading Bitwarden.sh..."
-        run_script APP tmbitwarden
-    ;;&
-    *"Bitwarden-Registration"*)
-        clear
-        run_script APP bitwarden-registration
     ;;&
     *"FullTextSearch"*)
         clear
