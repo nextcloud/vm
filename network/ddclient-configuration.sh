@@ -36,13 +36,11 @@ do
     HOSTNAME=$(whiptail --inputbox "Please enter the Host that you want to configure DDNS for. E.g. 'example.com'" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $HOSTNAME") ]]
     then
-        print_text_in_color "$ICyan" "OK, please try again."
-        sleep 1
+        msg_box "OK, please try again."
     else
         if [ -z "$HOSTNAME" ]
         then
-            print_text_in_color "$ICyan" "Please don't leave the Inputbox empty."
-            sleep 1
+            msg_box "Please don't leave the Inputbox empty."
         else
             break
         fi
@@ -55,13 +53,11 @@ do
     LOGIN=$(whiptail --inputbox "Please enter the login for your DDNS provider. It will be most likely the Domain, that you want to setup. E.g. 'example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $LOGIN") ]]
     then
-        print_text_in_color "$ICyan" "OK, please try again."
-        sleep 1
+        msg_box "OK, please try again."
     else
         if [ -z "$LOGIN" ]
         then
-            print_text_in_color "$ICyan" "Please don't leave the Inputbox empty."
-            sleep 1
+            msg_box "Please don't leave the Inputbox empty."
         else
             break
         fi
@@ -74,13 +70,11 @@ do
     PASSWORD=$(whiptail --inputbox "Please enter the password that you've got for DynDNS from your DDNS provider.\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $PASSWORD") ]]
     then
-        print_text_in_color "$ICyan" "OK, please try again."
-        sleep 1
+        msg_box "OK, please try again."
     else
         if [ -z "$PASSWORD" ]
         then
-            print_text_in_color "$ICyan" "Please don't leave the Inputbox empty."
-            sleep 1
+            msg_box "Please don't leave the Inputbox empty."
         else
             break
         fi
