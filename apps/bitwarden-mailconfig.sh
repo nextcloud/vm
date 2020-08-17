@@ -231,5 +231,5 @@ fi
 systemctl start bitwarden
 msg_box "Your Bitwarden mailserver settings should be successfully changed by now.
 
-If you experiance any issue, please report them to $ISSUES"
+If you experience any issues, please report them to $ISSUES"
 exit
