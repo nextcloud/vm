@@ -16,7 +16,7 @@ debug_mode
 # Check if root
 root_check
 
-choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the ddclient application.\nYou have to setup an account before you can start.\nPlease choose your DynDNS-Provider.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the ddclient application.\nYou have to setup an account before you can start.\nPlease choose your DynDNS-Provider.\nSelect by pressing the spacebar and ENTER\n\nIf your DDNS-Provider isn't already supported, pleae open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Strato" "(strato.de)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -133,10 +133,14 @@ password=$PASSWORD
 $HOSTNAME
 DDCLIENT_CONF
 
+clear
+
 # Test connection
 msg_box "Everything is setup by now and we will check the connection."
-clear
 ddclient -verbose
 
 # Inform user 
 any_key "Please check the logs above if everything looks good. If not, just run this script again."
+any_key "If you are certain, that you entered all things correctly, please report this to $ISSUES"
+echo "exiting..."
+exit
