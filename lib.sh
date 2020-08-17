@@ -92,6 +92,9 @@ NCUSER=ncadmin
 UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
+# User for Bitwarden
+BITWARDEN_USER=bitwarden
+BITWARDEN_HOME=/home/"$BITWARDEN_USER"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
 PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
@@ -1327,6 +1330,20 @@ export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
 export PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
 
 print_text_in_color "$IGreen" PHPVER="$PHPVER"
+}
+
+add_dockerprune() {
+print_text_in_color "$ICyan" "Adding cronjob for Docker weekly prune..."
+if ! crontab -u root -l | grep -q 'dockerprune.sh'
+then
+    mkdir -p "$SCRIPTS"
+    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
+    check_command echo "#!/bin/bash" > "$SCRIPTS/dockerprune.sh"
+    check_command echo "docker system prune -a --force" >> "$SCRIPTS/dockerprune.sh"
+    check_command echo "exit" >> "$SCRIPTS/dockerprune.sh"
+    chmod a+x "$SCRIPTS"/dockerprune.sh
+    print_text_in_color "$IGreen" "Docker automatic prune job added."
+fi
 }
 
 ## bash colors

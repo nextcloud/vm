@@ -294,14 +294,8 @@ then
     chown -R www-data:www-data "$NC_APPS_PATH"
     occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
     # Add prune command
-    {
-    echo "#!/bin/bash"
-    echo "docker system prune -a --force"
-    echo "exit"
-    } > "$SCRIPTS/dockerprune.sh"
-    chmod a+x "$SCRIPTS/dockerprune.sh"
-    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
-    print_text_in_color "$ICyan" "Docker automatic prune job added."
+    add_dockerprune
+    # Restart Docker
     systemctl restart docker.service
     docker restart code
     print_text_in_color "$IGreen" "Collabora is now successfully installed."
