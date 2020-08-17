@@ -23,8 +23,7 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring)" OFF \
-"Bitwarden " "(External password manager)" OFF \
-"Bitwarden-Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
+"Bitwarden" "(External password manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" OFF \
 "LDAP" "(Windows Active directory)" OFF \
@@ -38,7 +37,7 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Documentserver script..."
         run_script MENU documentserver
     ;;&
-    *"Fail2ban "*)
+    *"Fail2ban"*)
         clear
         print_text_in_color "$ICyan" "Downloading the Fail2ban script..."
         run_script APP fail2ban
@@ -65,12 +64,8 @@ case "$choice" in
     ;;&
     *"Bitwarden "*)
         clear
-        print_text_in_color "$ICyan" "Downloading Bitwarden.sh..."
-        run_script APP tmbitwarden
-    ;;&
-    *"Bitwarden-Registration"*)
-        clear
-        run_script APP bitwarden-registration
+        print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
+        run_script MENU bitwarden_menu
     ;;&
     *"FullTextSearch"*)
         clear
@@ -97,16 +92,18 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Talk script..."
         run_script APP talk
     ;;&
-    *"Webmin"*)
-        print_text_in_color "$ICyan" "Downloading the Webmin script..."
-        run_script APP webmin
-    ;;&
     *"SMB-mount"*)
         clear
         print_text_in_color "$ICyan" "Downloading the SMB-mount script..."
         run_script APP smbmount
     ;;&
+    *"Webmin"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the Webmin script..."
+        run_script APP webmin
+    ;;&
     *)
     ;;
 esac
+clear
 exit
