@@ -54,10 +54,10 @@ then
     echo "globalSettings__mail__smtp__startTls=false" >> "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 
-# Enter Mailserver
+# Enter mailserver
 while true
 do
-    MAIL_SERVER=$(whiptail --inputbox "Please enter the mailserver URL that you want to use.\nE.g. smtp.mail.de\nIf you don't want to change the Mailserver, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    MAIL_SERVER=$(whiptail --inputbox "Please enter the mailserver URL that you want to use.\nE.g. smtp.mail.de\nIf you don't want to change the mailserver, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $MAIL_SERVER") ]]
     then
         print_text_in_color "$ICyan" "OK, please try again."
@@ -99,7 +99,7 @@ done
 # Enter Port or just use standard port (defined by usage of ssl)
 while true
 do
-    SMTP_PORT=$(whiptail --inputbox "Please enter the port for your mailserver. The default-Port based on your protocol setting is $DEFAULT_PORT?\nPlease type that Port into the inputbox, if you want to use it.\n\nIf you don't want to change the port, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SMTP_PORT=$(whiptail --inputbox "Please enter the port for your mailserver. The default port based on your protocol setting is $DEFAULT_PORT?\nPlease type that port into the inputbox, if you want to use it.\n\nIf you don't want to change the port, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $SMTP_PORT") ]]
     then
         print_text_in_color "$ICyan" "OK, please try again."
@@ -111,7 +111,7 @@ done
 # Enter your mail username
 while true
 do
-    MAIL_USERNAME=$(whiptail --inputbox "Please enter the username for your login to your mail provider. E.g. mail@example.com\nPlease note: the domain used for your mail username and the mailserver-domain heave to match!\nIf you don't want to change the mail-username, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    MAIL_USERNAME=$(whiptail --inputbox "Please enter the username for the login to your mail provider. E.g. mail@example.com\nPlease note: the domain used for your mail username and the mailserver domain have to match!\nIf you don't want to change the mail username that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $MAIL_USERNAME") ]]
     then
         print_text_in_color "$ICyan" "OK, please try again."
@@ -123,7 +123,7 @@ done
 # Enter your mailuser password
 while true
 do
-    MAIL_PASSWORD=$(whiptail --inputbox "Please enter the password for your mail-username.\nIf you don't want to change the password, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    MAIL_PASSWORD=$(whiptail --inputbox "Please enter the password for your mailserver user.\nIf you don't want to change the password, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $MAIL_PASSWORD") ]]
     then
         print_text_in_color "$ICyan" "OK, please try again."
@@ -135,7 +135,7 @@ done
 # Enter admin mailadresses
 while true
 do
-    ADMIN_ACCOUNT=$(whiptail --inputbox "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered bitwarden-accounts.\nTo make this setting work, your bitwarden mailserver-settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin-accounts, that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    ADMIN_ACCOUNT=$(whiptail --inputbox "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered Bitwarden accounts.\nTo make this setting work, your Bitwarden mailserver settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin accounts that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $MAIL_ACCOUNT") ]]
     then
         print_text_in_color "$ICyan" "OK, please try again."
@@ -145,10 +145,10 @@ do
 done
 
 # Get results and store in a variable:
-RESULT="You will see now a list of all entered information, that will get changed inside the global.override.env if you are satisfied.\n\n"
+RESULT="You will see now a list of all entered information that will get changed inside the global.override.env. Please check that evrything seems correct.\n\n"
 if [ -n "$MAIL_SERVER" ]
 then
-    RESULT+="mail-server=$MAIL_SERVER\n"
+    RESULT+="Mailserver URL=$MAIL_SERVER\n"
 fi
 # SSL
 if [ -n "$PROTOCOL" ]
@@ -158,22 +158,22 @@ fi
 # SMTP-Port
 if [ -n "$SMTP_PORT" ]
 then
-    RESULT+="SMTP-Port=$SMTP_PORT\n"
+    RESULT+="SMTP port=$SMTP_PORT\n"
 fi
 # Mail username
 if [ -n "$MAIL_USERNAME" ]
 then
-    RESULT+="mail-username=$MAIL_USERNAME\n"
+    RESULT+="SMTP Username=$MAIL_USERNAME\n"
 fi
 # Mail password
 if [ -n "$MAIL_PASSWORD" ]
 then
-    RESULT+="mail-password=$MAIL_PASSWORD\n"
+    RESULT+="SMTP Password=$MAIL_PASSWORD\n"
 fi
 # Admin account(s)
 if [ -n "$ADMIN_ACCOUNT" ]
 then
-    RESULT+="admin-account(s)=$ADMIN_ACCOUNT"
+    RESULT+="Admin account(s)=$ADMIN_ACCOUNT"
 fi
 
 # Present what we gathered, if everything okay, write to files
@@ -187,7 +187,7 @@ fi
 systemctl stop bitwarden
 
 # Write to files
-# Mailserver
+# mailserver
 if [ -n "$MAIL_SERVER" ]
 then
     check_command sed -i "s|^globalSettings__mail__smtp__host=.*|globalSettings__mail__smtp__host=$MAIL_SERVER|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
@@ -227,7 +227,9 @@ then
     check_command sed -i "s|^adminSettings__admins=.*|adminSettings__admins=$ADMIN_ACCOUNT|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 
-# Start bitwarden
+# Rebuild bitwarden
+
+sudo -u "$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh rebuild
 systemctl start bitwarden
 
 msg_box "Your Bitwarden mailserver settings should be successfully changed by now."
