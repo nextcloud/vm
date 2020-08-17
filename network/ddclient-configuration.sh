@@ -140,7 +140,7 @@ msg_box "Everything is setup by now and we will check the connection."
 ddclient -verbose
 
 # Inform user 
-any_key "Please check the logs above if everything looks good. If not, just run this script again."
-any_key "If you are certain, that you entered all things correctly, please report this to $ISSUES"
+any_key "Please check the logs above if everything looks good. If not, just run this script again.
+If you are certain, that you entered all things correctly and it didn't work, please report this to\n$ISSUES"
 echo "exiting..."
 exit
