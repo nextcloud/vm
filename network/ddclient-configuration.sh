@@ -17,7 +17,7 @@ debug_mode
 root_check
 
 choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the ddclient application.\nYou have to setup an account before you can start.\nPlease choose your DynDNS-Provider.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Strato" "" OFF 3>&1 1>&2 2>&3)
+"Strato" "(strato.de)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Strato")
