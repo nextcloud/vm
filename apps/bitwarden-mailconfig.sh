@@ -57,10 +57,10 @@ fi
 # Enter Mailserver
 while true
 do
-    MAIL_SERVER=$(whiptail --inputbox "Please enter the Mailserver, that you want to use.\nE.g. smtp.mail.de\nIf you don't want to change the Mailserver, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
+    MAIL_SERVER=$(whiptail --inputbox "Please enter the mailserver URL that you want to use.\nE.g. smtp.mail.de\nIf you don't want to change the Mailserver, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    if [[ "no" == $(ask_yes_or_no "Is this correct? $MAIL_SERVER") ]]
     then
-        msg_box "It seems like your weren't satisfied by the Mailserver you entered. Please try again."
+        print_text_in_color "$ICyan" "OK, please try again."
     else
         break
     fi
@@ -70,9 +70,9 @@ done
 while true
 do
     PROTOCOL=$(whiptail --inputbox "Please type in the encryption protocol for your mailserver.\nThe available options are 'SSL', 'STARTTLS' or 'none'.\n\nIf you don't want to change the protocol setting, that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
+    if [[ "no" == $(ask_yes_or_no "Is this correct? $PROTOCOL") ]]
     then
-        msg_box "It seems like your weren't satisfied by the answer you entered. Please try again."
+        print_text_in_color "$ICyan" "OK, please try again."
     else
         if [ "$PROTOCOL" = "SSL" ]
         then
@@ -100,9 +100,9 @@ done
 while true
 do
     SMTP_PORT=$(whiptail --inputbox "Please enter the port for your mailserver. The default-Port based on your protocol setting is $DEFAULT_PORT?\nPlease type that Port into the inputbox, if you want to use it.\n\nIf you don't want to change the port, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
+    if [[ "no" == $(ask_yes_or_no "Is this correct? $SMTP_PORT") ]]
     then
-        msg_box "It seems like your weren't satisfied by the port you entered. Please try again."
+        print_text_in_color "$ICyan" "OK, please try again."
     else
         break
     fi
@@ -112,9 +112,9 @@ done
 while true
 do
     MAIL_USERNAME=$(whiptail --inputbox "Please enter the username for your login to your mail provider. E.g. mail@example.com\nPlease note: the domain used for your mail username and the mailserver-domain heave to match!\nIf you don't want to change the mail-username, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
+    if [[ "no" == $(ask_yes_or_no "Is this correct? $MAIL_USERNAME") ]]
     then
-        msg_box "It seems like your weren't satisfied by the mail-username you entered. Please try again."
+        print_text_in_color "$ICyan" "OK, please try again."
     else
         break
     fi
@@ -124,9 +124,9 @@ done
 while true
 do
     MAIL_PASSWORD=$(whiptail --inputbox "Please enter the password for your mail-username.\nIf you don't want to change the password, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
+    if [[ "no" == $(ask_yes_or_no "Is this correct? $MAIL_PASSWORD") ]]
     then
-        msg_box "It seems like your weren't satisfied by the password you entered. Please try again."
+        print_text_in_color "$ICyan" "OK, please try again."
     else
         break
     fi
@@ -136,9 +136,9 @@ done
 while true
 do
     ADMIN_ACCOUNT=$(whiptail --inputbox "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered bitwarden-accounts.\nTo make this setting work, your bitwarden mailserver-settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin-accounts, that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Are your sure about your answer?") ]]
+    if [[ "no" == $(ask_yes_or_no "Is this correct? $MAIL_ACCOUNT") ]]
     then
-        msg_box "It seems like your weren't satisfied by the mailaccounts you entered. Please try again."
+        print_text_in_color "$ICyan" "OK, please try again."
     else
         break
     fi
@@ -186,7 +186,7 @@ fi
 # Stop bitwarden
 systemctl stop bitwarden
 
-# Write to files 
+# Write to files
 # Mailserver
 if [ -n "$MAIL_SERVER" ]
 then
@@ -200,7 +200,7 @@ then
 elif [ "$PROTOCOL" = "none" ]
 then
     check_command sed -i "s|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
-    check_command sed -i "s|^globalSettings__mail__smtp__startTls=.*|globalSettings__mail__smtp__startTls=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env    
+    check_command sed -i "s|^globalSettings__mail__smtp__startTls=.*|globalSettings__mail__smtp__startTls=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 elif [ "$PROTOCOL" = "STARTTLS" ]
 then
     check_command sed -i "s|^globalSettings__mail__smtp__startTls=.*|globalSettings__mail__smtp__startTls=true|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
