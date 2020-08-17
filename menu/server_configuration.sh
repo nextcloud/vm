@@ -81,7 +81,7 @@ https://www.techandme.se/open-port-80-443/"
             then
                 bash $SCRIPTS/activate-tls.sh
             else
-                print_text_in_color "$ICyan" "Downloading the activate-tls script..."
+                print_text_in_color "$ICyan" "Downloading the Let's Encrypt script..."
                 download_script LETS_ENC activate-tls
                 bash $SCRIPTS/activate-tls.sh
             fi
