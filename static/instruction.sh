@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-VMLOGS=/var/log/nextcloud
 BIGreen='\e[1;92m'      # Green
 IGreen='\e[0;92m'       # Green
 Color_Off='\e[0m'       # Text Reset
