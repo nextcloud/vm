@@ -193,6 +193,7 @@ a2enmod proxy
 a2enmod proxy_wstunnel
 a2enmod proxy_http
 a2enmod ssl
+a2enmod headers
 
 if [ -f "$HTTPS_CONF" ]
 then
