@@ -106,6 +106,8 @@ then
     exit
 fi
 
+clear
+
 # Install ddclient
 if ! is_this_installed ddclient
 then
@@ -143,8 +145,6 @@ password=$PASSWORD
 # Hostname follows:
 $HOSTNAME
 DDCLIENT_CONF
-
-clear
 
 # Test connection
 msg_box "Everything is setup by now and we will check the connection."
