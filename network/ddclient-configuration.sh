@@ -44,7 +44,7 @@ esac
 # Enter your Hostname
 while true
 do
-    HOSTNAME=$(whiptail --inputbox "Please enter the Host that you want to configure DDNS for. E.g. 'example.com'" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    HOSTNAME=$(whiptail --inputbox "Please enter the Host that you want to configure DDNS for.\nE.g. 'example.com'" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $HOSTNAME") ]]
     then
         msg_box "OK, please try again."
@@ -61,7 +61,7 @@ done
 # Enter your login
 while true
 do
-    LOGIN=$(whiptail --inputbox "Please enter the login for your DDNS provider. It will be most likely the Domain, that you want to setup. E.g. 'example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    LOGIN=$(whiptail --inputbox "Please enter the login for your DDNS provider.\nIt will be most likely the Domain, that you want to setup. E.g. 'example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $LOGIN") ]]
     then
         msg_box "OK, please try again."
