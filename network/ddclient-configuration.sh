@@ -108,14 +108,15 @@ fi
 
 clear
 
+# needed for cloudflare to work
+install_if_not libjson-any-perl
+
 # Install ddclient
 if ! is_this_installed ddclient
 then
     print_text_in_color "$ICyan" "Installing ddclient..."
     # This creates a ddclient service, creates a /etc/default/ddclient file and a /etc/ddclient.conf file
     DEBIAN_FRONTEND=noninteractive apt install ddclient -y
-    # needed for cloudflare to work
-    apt install libjson-any-perl -y
 fi
 
 if [ ! -f /etc/ddclient.conf ]
