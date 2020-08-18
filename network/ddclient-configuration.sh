@@ -130,7 +130,7 @@ cat << DDCLIENT_CONF > "/etc/ddclient.conf"
 
 # Default system settings
 use=if, if=ens32
-use=web, web=checkip.dyndns.com, web-skip='Current IP Address: '
+use=web, web=https://ipv4bot.whatismyipaddress.com
 
 # DDNS-service specific setting
 # Provider="$PROVIDER"
