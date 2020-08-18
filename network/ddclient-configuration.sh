@@ -114,6 +114,8 @@ then
     print_text_in_color "$ICyan" "Installing ddclient..."
     # This creates a ddclient service, creates a /etc/default/ddclient file and a /etc/ddclient.conf file
     DEBIAN_FRONTEND=noninteractive apt install ddclient -y
+    # needed for cloudflare to work
+    apt install libjson-any-perl -y
 fi
 
 if [ ! -f /etc/ddclient.conf ]
@@ -133,16 +135,17 @@ use=if, if=ens32
 use=web, web=https://ipv4bot.whatismyipaddress.com
 
 # DDNS-service specific setting
-# Provider="$PROVIDER"
-protocol="$PROTOCOL"
-server="$SERVER"
-ssl="$USE_SSL"
+# Provider=$PROVIDER
+protocol=$PROTOCOL
+server=$SERVER
+ssl=$USE_SSL
 
 # user specific setting
 login=$LOGIN
 password=$PASSWORD
 
 # Hostname follows:
+zone=$HOSTNAME
 $HOSTNAME
 DDCLIENT_CONF
 
