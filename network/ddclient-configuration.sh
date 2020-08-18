@@ -33,6 +33,10 @@ case "$choice" in
         SERVER="dyndns.strato.com"
         USE_SSL="yes"
     ;;
+    "")
+        msg_box "You haven't selected any option. Exiting!"
+        exit 1
+    ;;
     *)
     ;;
 esac
