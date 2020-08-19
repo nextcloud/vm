@@ -95,6 +95,15 @@ msg_box "Nextcloud repo is not available, exiting..."
     exit 1
 fi
 
+# Test Home/SME function
+if home_sme_server
+then
+    msg_box "This is the Home/SME server, function works!"
+else
+    msg_box "Home/SME Server not detected. No worries, just testing the function."
+    sleep 1
+fi
+
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
@@ -159,14 +168,6 @@ install_if_not netplan.io
 
 # Install build-essentials to get make
 install_if_not build-essential
-
-# Test Home/SME function
-if home_sme_server
-then
-    msg_box "This is the Home/SME server, function works!"
-else
-    print_text_in_color "ICyan" "Home/SME Server not detected. No worries, just testing the function."
-fi
 
 # Set dual or single drive setup
 msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
