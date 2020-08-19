@@ -34,6 +34,16 @@ then
     msg_box "Your server is compatible with the new way of installing Collabora. We will now remove the old docker and install the app from Nextcloud instead."
     # Remove docker image
     docker_prune_this 'collabora/code'
+    # Disable RichDocuments (Collabora App) if activated
+    if [ is_app_installed richdocuments
+    then
+        occ_command app:remove richdocuments
+    fi
+    # Disable OnlyOffice (Collabora App) if activated
+    if is_app_installed onlyoffice
+    then
+        occ_command app:remove onlyoffice
+    fi
     # Revoke LE
     SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
@@ -128,6 +138,12 @@ then
             count=$((count+1))
         fi
     done
+else
+    # Remove OnlyOffice app
+    if [ is_app_installed onlyoffice
+    then
+        occ_command app:remove onlyoffice
+    fi
 fi
 
 # remove OnlyOffice-documentserver if activated
