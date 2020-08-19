@@ -22,12 +22,14 @@ choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the dd
 
 case "$choice" in
     "Cloudflare")
+        msg_box "Before you can continue, you have to access Cloudflare and register an email-address for your domain and get an api-key from Cloudflare.\nHere is a guide:\nhttps://www.techandme.se/setup-multiple-accounts-with-ddclient-and-cloudflare/"
         PROVIDER="Cloudflare"
         PROTOCOL="cloudflare"
         SERVER="www.cloudflare.com"
         USE_SSL="yes"
     ;;
     "Strato")
+        msg_box "Before you can continue, you have to access Strato and activate DynDNS for your Domain.\nHere is a guide:\nhttps://www.strato.de/faq/domains/so-einfach-richten-sie-dyndns-fuer-ihre-domains-ein/"
         PROVIDER="Strato"
         PROTOCOL="dyndns2"
         SERVER="dyndns.strato.com"
@@ -41,21 +43,10 @@ case "$choice" in
     ;;
 esac
 
-# Some instructions
-if [ "$PROVIDER" = "Cloudflare" ]
+# Ask if everything is prepared
+if [[ "no" == $(ask_yes_or_no "Are you ready to continue?") ]]
 then
-    msg_box "Before you can continue, you have to access Cloudflare and register an email-address for your domain and get an api-key from Cloudflare.\nHere is a guide:\nhttps://www.techandme.se/setup-multiple-accounts-with-ddclient-and-cloudflare/"
-    if [[ "no" == $(ask_yes_or_no "Are you ready to continue?") ]]
-    then
-        exit
-    fi
-elif [ "PROVIDER" = "STRATO" ]
-then
-    msg_box "Before you can continue, you have to access Strato and activate DynDNS for your Domain.\nHere is a guide:\nhttps://www.strato.de/faq/domains/so-einfach-richten-sie-dyndns-fuer-ihre-domains-ein/"
-    if [[ "no" == $(ask_yes_or_no "Are you ready to continue?") ]]
-    then
-        exit
-    fi
+    exit
 fi
 
 # Enter your Hostname
