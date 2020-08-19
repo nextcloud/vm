@@ -41,6 +41,23 @@ case "$choice" in
     ;;
 esac
 
+# Some instructions
+if [ "$PROVIDER" = "Cloudflare" ]
+then
+    msg_box "Before you can continue, you have to access Cloudflare and register an email-address for your domain and get an api-key from Cloudflare.\nHere is a guide:\nhttps://www.techandme.se/setup-multiple-accounts-with-ddclient-and-cloudflare/"
+    if [[ "no" == $(ask_yes_or_no "Are you ready to continue?") ]]
+    then
+        exit
+    fi
+elif [ "PROVIDER" = "STRATO" ]
+then
+    msg_box "Before you can continue, you have to access Strato and activate DynDNS for your Domain.\nHere is a guide:\nhttps://www.strato.de/faq/domains/so-einfach-richten-sie-dyndns-fuer-ihre-domains-ein/"
+    if [[ "no" == $(ask_yes_or_no "Are you ready to continue?") ]]
+    then
+        exit
+    fi
+fi
+
 # Enter your Hostname
 while true
 do
@@ -61,7 +78,7 @@ done
 # Enter your login
 while true
 do
-    LOGIN=$(whiptail --inputbox "Please enter the login for your DDNS provider.\nIt will be most likely the Domain, that you want to setup. E.g. 'example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    LOGIN=$(whiptail --inputbox "Please enter the login for your DDNS provider.\nIt will be most likely the Domain or registered email-address depending on your DDNS-Provider.\nE.g. 'example.com' or 'mail@example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $LOGIN") ]]
     then
         msg_box "OK, please try again."
@@ -78,7 +95,7 @@ done
 # Enter your password
 while true
 do
-    PASSWORD=$(whiptail --inputbox "Please enter the password that you've got for DynDNS from your DDNS provider.\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    PASSWORD=$(whiptail --inputbox "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $PASSWORD") ]]
     then
         msg_box "OK, please try again."
