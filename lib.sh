@@ -502,11 +502,12 @@ fi
 check_nextcloud_https() {
     if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
     then
-    msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
-    You easily activate TLS (HTTPS) by running the Let's Encrypt script.
-    More info here: https://bit.ly/37wRCin
-    To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
-    Additional Apps --> Documentserver --> $1."
+msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
+You easily activate TLS (HTTPS) by running the Let's Encrypt script.
+More info here: https://bit.ly/37wRCin
+
+To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
+Additional Apps --> Documentserver --> $1."
         exit
     fi
 }
