@@ -140,7 +140,7 @@ then
     done
 else
     # Remove OnlyOffice app
-    if [ is_app_installed onlyoffice
+    if is_app_installed onlyoffice
     then
         occ_command app:remove onlyoffice
     fi
