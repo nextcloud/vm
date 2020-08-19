@@ -35,7 +35,7 @@ then
         # Remove docker image
         docker_prune_this 'onlyoffice/documentserver'
         # Disable RichDocuments (Collabora App) if activated
-        if [ is_app_installed richdocuments
+        if is_app_installed richdocuments
         then
             occ_command app:remove richdocuments
         fi
