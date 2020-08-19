@@ -136,7 +136,7 @@ done
 while true
 do
     ADMIN_ACCOUNT=$(whiptail --inputbox "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered Bitwarden accounts.\nTo make this setting work, your Bitwarden mailserver settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin accounts that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Is this correct? $MAIL_ACCOUNT") ]]
+    if [[ "no" == $(ask_yes_or_no "Is this correct? $ADMIN_ACCOUNT") ]]
     then
         msg_box "OK, please try again."
     else
@@ -145,7 +145,7 @@ do
 done
 
 # Get results and store in a variable:
-RESULT="You will see now a list of all entered information that will get changed inside the global.override.env. Please check that everything seems correct.\n\n"
+RESULT="These are the settings that will be changed in global.override.env. Please check that everything seems correct.\n\n"
 if [ -n "$MAIL_SERVER" ]
 then
     RESULT+="Mailserver URL=$MAIL_SERVER\n"

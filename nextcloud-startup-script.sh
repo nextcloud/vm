@@ -472,6 +472,7 @@ rm -f "$SCRIPTS/lib.sh"
 rm -f "$SCRIPTS/server_configuration.sh"
 rm -f "$SCRIPTS/nextcloud_configuration.sh"
 rm -f "$SCRIPTS/additional_apps.sh"
+rm -f "$SCRIPTS/adduser.sh"
 
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
 find "$NCPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete

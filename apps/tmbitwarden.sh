@@ -235,12 +235,12 @@ then
     ProxyPass / "http://127.0.0.1:5178/"
     ProxyPassReverse / "http://127.0.0.1:5178/"
     # Extra (remote) headers
-#    RemoteIPHeader X-Forwarded-For
-#    RemoteIPHeader X-Real-IP
-#    RemoteIPHeader X-Forwarded-Proto
-#    Header set X-XSS-Protection "1; mode=block"
-#    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-#    Header set X-Content-Type-Options nosniff
+    RemoteIPHeader X-Forwarded-For
+    RemoteIPHeader X-Real-IP
+    RemoteIPHeader X-Forwarded-Proto
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set X-Content-Type-Options nosniff
     <Location />
         ProxyPassReverse /
     </Location>
@@ -289,7 +289,7 @@ add_dockerprune
 msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN to setup your account.
 
 After the account is registered, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
-Additional Apps --> Bitwarden Registration
+Additional Apps --> Bitwarden --> Bitwarden Registration
 
 Some notes to the Bitwarden service:
 to START Bitwarden, simply execute: 'systemctl start bitwarden'

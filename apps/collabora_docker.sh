@@ -23,7 +23,10 @@ lowest_compatible_nc 13
 ram_check 2 Collabora
 cpu_check 2 Collabora
 
-# Check if collabora is already installed
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "Collabora (Docker)"
+
+# Check if Collabora is already installed
 print_text_in_color "$ICyan" "Checking if Collabora is already installed..."
 if does_this_docker_exist 'collabora/code'
 then
@@ -190,6 +193,7 @@ a2enmod proxy
 a2enmod proxy_wstunnel
 a2enmod proxy_http
 a2enmod ssl
+a2enmod headers
 
 if [ -f "$HTTPS_CONF" ]
 then
@@ -227,6 +231,12 @@ then
   SSLProxyVerify None
   SSLProxyCheckPeerCN Off
   SSLProxyCheckPeerName Off
+  
+  # Improve security settings
+  Header set X-XSS-Protection "1; mode=block"
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header set X-Content-Type-Options nosniff
+  Header set Content-Security-Policy "frame-ancestors 'self' ${NCDOMAIN//\\/}"
 
   # keep the host
   ProxyPreserveHost On
