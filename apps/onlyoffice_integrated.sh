@@ -161,7 +161,7 @@ then
     done
 else
     # Remove Collabora app
-    if [ is_app_installed richdocuments
+    if is_app_installed richdocuments
     then
         occ_command app:remove richdocuments
     fi
