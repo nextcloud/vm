@@ -30,7 +30,7 @@ cat << INST2
 | This server could be made maintenace free by using automatic updates  |
 | with the built in update script. If you want automatic updates on     |
 | a weekly schelude, choose to configure it later during this setup.    |
-|
+|                                                                       |
 |  ###################### T&M Hansson IT - $(date +"%Y") ######################  |
 +-----------------------------------------------------------------------+
 INST2

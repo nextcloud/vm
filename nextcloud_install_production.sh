@@ -95,6 +95,15 @@ msg_box "Nextcloud repo is not available, exiting..."
     exit 1
 fi
 
+# Test Home/SME function
+if home_sme_server
+then
+    msg_box "This is the Home/SME server, function works!"
+else
+    msg_box "Home/SME Server not detected. No worries, just testing the function."
+    sleep 1
+fi
+
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
@@ -160,11 +169,6 @@ install_if_not netplan.io
 # Install build-essentials to get make
 install_if_not build-essential
 
-# Just check if the function works and run disk setup
-if home_sme_server
-then
-    run_script DISK format-sda-nuc-server
-else
 # Set dual or single drive setup
 msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
 You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
@@ -195,7 +199,6 @@ case "$choice" in
     *)
     ;;
 esac
-fi
 
 # Set DNS resolver
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
