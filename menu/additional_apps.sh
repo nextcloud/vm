@@ -33,7 +33,7 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "SMB-mount" "(Connect to SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    *"Bitwarden "*)
+    *"Bitwarden"*)
         clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
         run_script MENU bitwarden_menu
