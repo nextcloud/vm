@@ -20,7 +20,7 @@ choice=$(whiptail --title "Which Documentserver do you want to install?" --radio
 "Collabora (Docker)" "(Online editing [2GB RAM] - subdomain required)" OFF \
 "Collabora (Integrated)" "(Online editing [2GB RAM] - no subdomain required)" OFF \
 "OnlyOffice (Docker)" "(Online editing [2GB RAM] - subdomain required)" OFF \
-"OnlyOffice (Integrated)" "(Online editing - no subdomain required)" OFF 3>&1 1>&2 2>&3)
+"OnlyOffice (Integrated)" "(Online editing [2GB RAM] - subdomain required)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Collabora (Docker)")
