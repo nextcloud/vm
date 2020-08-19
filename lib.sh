@@ -523,7 +523,7 @@ else
 fi
 }
 
-#generate certs and auto-configure
+# Generate certs and configure it automatically
 # https://certbot.eff.org/docs/using.html#certbot-command-line-options
 generate_cert() {
 uir_hsts=""
@@ -566,8 +566,7 @@ done
 last_fail_tls() {
 msg_box "All methods failed. :/
 
-The script is located in ${1}
-You can also run it by executing: sudo bash $SCRIPTS/menu.sh
+You can run the script again by executing: sudo bash $SCRIPTS/menu.sh
 Please try to run it again some other time with other settings.
 
 There are different configs you can try in Let's Encrypt's user guide:
