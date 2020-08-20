@@ -23,7 +23,7 @@ choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the dd
 case "$choice" in
     "Cloudflare")
         PROVIDER="Cloudflare"
-        INSTRUCTIONS="register an email-address for your domain and get an Cloudflare api-key"
+        INSTRUCTIONS="Register an email address for your domain and get an Cloudflare API-key"
         GUIDE="https://www.techandme.se/setup-multiple-accounts-with-ddclient-and-cloudflare/"
         PROTOCOL="cloudflare"
         SERVER="www.cloudflare.com"
@@ -64,7 +64,7 @@ do
     else
         if [ -z "$HOSTNAME" ]
         then
-            msg_box "Please don't leave the Inputbox empty."
+            msg_box "Please don't leave the inputbox empty."
         else
             break
         fi
@@ -74,14 +74,14 @@ done
 # Enter your login
 while true
 do
-    LOGIN=$(whiptail --inputbox "Please enter the login for your DDNS provider.\nIt will be most likely the Domain or registered email-address depending on your DDNS-Provider.\nE.g. 'example.com' or 'mail@example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    LOGIN=$(whiptail --inputbox "Please enter the login for your DDNS provider.\nIt will be most likely the domain or registered email address depending on your DDNS Provider.\nE.g. 'example.com' or 'mail@example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     if [[ "no" == $(ask_yes_or_no "Is this correct? $LOGIN") ]]
     then
         msg_box "OK, please try again."
     else
         if [ -z "$LOGIN" ]
         then
-            msg_box "Please don't leave the Inputbox empty."
+            msg_box "Please don't leave the inputbox empty."
         else
             break
         fi
@@ -98,7 +98,7 @@ do
     else
         if [ -z "$PASSWORD" ]
         then
-            msg_box "Please don't leave the Inputbox empty."
+            msg_box "Please don't leave the inputbox empty."
         else
             break
         fi
@@ -122,7 +122,10 @@ fi
 clear
 
 # needed for cloudflare to work
-install_if_not libjson-any-perl
+if [ "$PROVIDER" = "Cloudflare" ]
+then
+    install_if_not libjson-any-perl
+fi
 
 # Install ddclient
 if ! is_this_installed ddclient
@@ -168,7 +171,7 @@ msg_box "Everything is setup by now and we will check the connection."
 ddclient -verbose
 
 # Inform user 
-any_key "Please check the logs above if everything looks good. If not, just run this script again.
+any_key "Please check the logs above and make sure that everything looks good. If not, just run this script again.
 If you are certain, that you entered all things correctly and it didn't work, please report this to\n$ISSUES"
-echo "exiting..."
+print_text_in_color "$ICyan" "exiting..."
 exit
