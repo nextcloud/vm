@@ -22,15 +22,17 @@ choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the dd
 
 case "$choice" in
     "Cloudflare")
-        msg_box "Before you can continue, you have to access Cloudflare and register an email-address for your domain and get an api-key from Cloudflare.\nHere is a guide:\nhttps://www.techandme.se/setup-multiple-accounts-with-ddclient-and-cloudflare/"
         PROVIDER="Cloudflare"
+        INSTRUCTIONS="register an email-address for your domain and get an Cloudflare api-key"
+        GUIDE="https://www.techandme.se/setup-multiple-accounts-with-ddclient-and-cloudflare/"
         PROTOCOL="cloudflare"
         SERVER="www.cloudflare.com"
         USE_SSL="yes"
     ;;
     "Strato")
-        msg_box "Before you can continue, you have to access Strato and activate DynDNS for your Domain.\nHere is a guide:\nhttps://www.strato.de/faq/domains/so-einfach-richten-sie-dyndns-fuer-ihre-domains-ein/"
         PROVIDER="Strato"
+        INSTRUCTIONS="activate DynDNS for your Domain"
+        GUIDE="https://www.strato.de/faq/domains/so-einfach-richten-sie-dyndns-fuer-ihre-domains-ein/"
         PROTOCOL="dyndns2"
         SERVER="dyndns.strato.com"
         USE_SSL="yes"
@@ -42,6 +44,9 @@ case "$choice" in
     *)
     ;;
 esac
+
+# Instructions
+msg_box "Before you can continue, you have to access $PROVIDER and $INSTRUCTIONS.\nHere is a guide:\n$GUIDE"
 
 # Ask if everything is prepared
 if [[ "no" == $(ask_yes_or_no "Are you ready to continue?") ]]
