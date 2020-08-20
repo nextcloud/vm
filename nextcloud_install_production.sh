@@ -184,13 +184,13 @@ case "$choice" in
     "2 Disks Auto")
         run_script DISK format-sdb
         # Change to zfs-mount-generator
-        run_script DISK zfs-prune-snapshots.sh
+        run_script DISK zfs-prune-snapshots
 
     ;;
     "2 Disks Manual")
         run_script DISK format-chosen
         # Change to zfs-mount-generator
-        run_script DISK zfs-prune-snapshots.sh
+        run_script DISK zfs-prune-snapshots
     ;;
     "1 Disk")
         print_text_in_color "$IRed" "1 Disk setup chosen."
