@@ -96,6 +96,11 @@ human() {
 	echo '0 seconds'
 }
 
+if ! type -P zfs &>/dev/null; then
+	echo "Error! zfs command not found. Are you on the right machine?"
+	exit 1
+fi
+
 dryrun=false
 verbosity=0
 prefix=
