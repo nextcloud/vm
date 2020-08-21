@@ -100,8 +100,8 @@ if home_sme_server
 then
     msg_box "This is the Home/SME server, function works!"
 else
-    msg_box "Home/SME Server not detected. No worries, just testing the function."
-    sleep 1
+    print_text_in_color "$ICyan" "Home/SME Server not detected. No worries, just testing the function."
+    sleep 3
 fi
 
 # Fix LVM on BASE image
@@ -112,29 +112,26 @@ then
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
     lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
 
-    # HomeSME Server
-    if home_sme_server
-    then
-        print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-        while :
-        do
-            lvdisplay | grep "Size" | awk '{print $3}'
-            if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+    # Run it again manually just to be sure it's done
+    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
+    while :
+    do
+        lvdisplay | grep "Size" | awk '{print $3}'
+        if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+        then
+            if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
             then
-                if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                 then
-                    if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                    if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                     then
-                        if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-                        then
-                            resize2fs /dev/ubuntu-vg/ubuntu-lv
-                            break
-                        fi
+                        resize2fs /dev/ubuntu-vg/ubuntu-lv
+                        break
                     fi
                 fi
             fi
-        done
-    fi
+        fi
+    done
 fi
 
 # Check if it's a clean server
