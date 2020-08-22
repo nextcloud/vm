@@ -251,6 +251,7 @@ BWA_JAIL_CONF
 check_command update-rc.d fail2ban defaults
 check_command update-rc.d fail2ban enable
 check_command systemctl restart fail2ban.service
+check_command fail2ban-client reload
 
 msg_box "Bitwarden and fail2ban was sucessfully installed! Please visit $SUBDOMAIN/admin to manage all your settings.
 
