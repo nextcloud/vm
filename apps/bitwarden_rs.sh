@@ -235,7 +235,7 @@ ignoreregex =
 BWA_CONF
 
 # bitwarden_rs-admin jail
-cat << BWA_JAIL_CONF > /etc/fail2ban/jail.d/bitwarden_rs.local
+cat << BWA_JAIL_CONF > /etc/fail2ban/jail.d/bitwarden_rs-admin.local
 [bitwarden_rs-admin]
 enabled = true
 port = 80,443
