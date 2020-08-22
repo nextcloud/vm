@@ -195,9 +195,8 @@ sudo fail2ban-client set bitwarden_rs unbanip XX.XX.XX.XX
 sudo fail2ban-client set bitwarden_rs-admin unbanip XX.XX.XX.XX"
 
 # Install fail2ban
-apt update -q4 & spinner_loading
-check_command apt install fail2ban -y
-check_command update-rc.d fail2ban disable
+install_if_not fail2ban
+systemctl stop fail2ban
 
 # Create all needed files
 # bitwarden_rs conf
@@ -248,10 +247,9 @@ findtime = 14400
 ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 BWA_JAIL_CONF
 
-check_command update-rc.d fail2ban defaults
-check_command update-rc.d fail2ban enable
+check_command systemctl start fail2ban
+countdown "Waiting for fail2ban to start... " 5
 check_command fail2ban-client reload
-check_command systemctl restart fail2ban.service
 
 msg_box "Bitwarden and fail2ban was sucessfully installed! Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
