@@ -235,12 +235,11 @@ then
     ProxyPass / "http://127.0.0.1:5178/"
     ProxyPassReverse / "http://127.0.0.1:5178/"
     # Extra (remote) headers
-    RemoteIPHeader X-Forwarded-For
-    RemoteIPHeader X-Real-IP
-    RemoteIPHeader X-Forwarded-Proto
+    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
     Header set X-XSS-Protection "1; mode=block"
     Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     Header set X-Content-Type-Options nosniff
+    Header set Content-Security-Policy "frame-ancestors 'self'
     <Location />
         ProxyPassReverse /
     </Location>
