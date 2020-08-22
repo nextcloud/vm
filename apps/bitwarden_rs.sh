@@ -1,0 +1,173 @@
+#!/bin/bash
+
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+
+# shellcheck disable=2034,2059
+true
+
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
+# Check if root
+root_check
+
+SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden_RS" --inputbox "Please enter the Domain that you want to use for Bitwarden_RS." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+msg_box "Please make sure that you have you have edited the dns-settings of your domain and open ports 80 and 443."
+
+if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
+then
+    exit
+fi
+
+# Check if $SUBDOMAIN exists and is reachable
+print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
+domain_check_200 "$SUBDOMAIN"
+
+# Check open ports with NMAP
+check_open_port 80 "$SUBDOMAIN"
+check_open_port 443 "$SUBDOMAIN"
+
+# Install Apache2
+install_if_not apache2
+
+# Enable Apache2 module's
+a2enmod proxy
+a2enmod proxy_wstunnel
+a2enmod proxy_http
+a2enmod ssl
+a2enmod headers
+a2enmod remoteip
+
+if [ -f "$HTTPS_CONF" ]
+then
+    a2dissite "$SUBDOMAIN.conf"
+    rm -f "$HTTPS_CONF"
+fi
+
+if [ ! -f "$HTTPS_CONF" ];
+then
+    cat << HTTPS_CREATE > "$HTTPS_CONF"
+<VirtualHost *:443>
+    ServerName $SUBDOMAIN:443
+    SSLEngine on
+    ServerSignature On
+    SSLHonorCipherOrder on
+    SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
+    SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
+    SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
+    SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
+
+    SSLProtocol TLSv1.2
+    SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    # Just in case - see below
+    SSLProxyEngine On
+    SSLProxyVerify None
+    SSLProxyCheckPeerCN Off
+    SSLProxyCheckPeerName Off
+    # contra mixed content warnings
+    RequestHeader set X-Forwarded-Proto "https"
+    RewriteEngine On
+    RewriteCond %{HTTP:Upgrade} =websocket [NC]
+    RewriteRule /notifications/hub(.*) ws://127.0.0.1:3012/$1 [P,L]
+    # basic proxy settings
+    # basic proxy settings
+    ProxyRequests off
+    ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.1:5178/$1$2"
+    ProxyPass / "http://127.0.0.1:5178/"
+    ProxyPassReverse / "http://127.0.0.1:5178/"
+    # Extra (remote) headers
+    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set X-Content-Type-Options nosniff
+    Header set Content-Security-Policy "frame-ancestors 'self'
+    <Location />
+        ProxyPassReverse /
+    </Location>
+</VirtualHost>
+HTTPS_CREATE
+
+    if [ -f "$HTTPS_CONF" ];
+    then
+        print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
+        sleep 1
+    else
+        print_text_in_color "$IRed" "Unable to create vhost, exiting..."
+        print_text_in_color "$IRed" "Please report this issue here $ISSUES"
+        exit 1
+    fi
+fi
+
+# Install certbot (Let's Encrypt)
+install_certbot
+
+# Generate certs and  auto-configure  if successful
+if generate_cert  "$SUBDOMAIN"
+then
+    # Generate DHparams chifer
+    if [ ! -f "$DHPARAMS_SUB" ]
+    then
+        openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
+    fi
+    print_text_in_color "$IGreen" "Certs are generated!"
+    a2ensite "$SUBDOMAIN.conf"
+    restart_webserver
+else
+    # remove settings to be able to start over again
+    rm -f "$HTTPS_CONF"
+    last_fail_tls "$SCRIPTS"/apps/tmbitwarden.sh
+    exit 1
+fi
+
+# Add prune command
+add_dockerprune
+
+# create dir for bitwarden_rs
+mkdir -p /home/bitwarden_rs
+chown nobody -R /home/bitwarden_rs
+chmod -R 0770 /home/bitwarden_rs
+
+# generate admin password
+ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
+
+install_docker
+
+docker pull bitwardenrs/server:latest
+docker run -d -it --name bitwarden_rs \
+  --user nobody \
+  -e ADMIN_TOKEN=$ADMIN_PASS \
+  -e DOMAIN=https://$SUBDOMAIN \
+  -e SIGNUPS_ALLOWED=false \
+  -p 5178:1024 \
+  -e ROCKET_PORT=1024 \
+  -e WEBSOCKET_ENABLED=true \
+  -p 3012:3012 \
+  -v /home/bitwarden_rs/:/data/ \
+  --restart always \
+  bitwardenrs/server:latest
+
+msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN/admin to manage all your settings.
+
+Attention! Please note down the password for the admin panel: $ADMIN_PASS
+Otherwise you will not have access to your bitwarden_rs installation and have to reinstall it completely!
+
+It is highly recommended to configure and test the smtp settings for mails first.
+
+Then, if it works you can easily invite all your user with an e-mail address from this admin-panel.
+(You have to click on users in the top-panel)"
+
+exit
