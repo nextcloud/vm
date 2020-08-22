@@ -170,8 +170,9 @@ TIME_ZONE=$(cat /etc/timezone)
 docker pull bitwardenrs/server:latest
 docker run -d -it --name bitwarden_rs \
   --user nobody \
-  -e ADMIN_TOKEN=$ADMIN_PASS \
-  -e DOMAIN=https://$SUBDOMAIN \
+  -e ADMIN_TOKEN="$ADMIN_PASS" \
+  -e SIGNUPS_VERIFY=true \
+  -e DOMAIN="https://$SUBDOMAIN" \
   -e SIGNUPS_ALLOWED=false \
   -p 1024:1024 \
   -e ROCKET_PORT=1024 \
@@ -180,7 +181,7 @@ docker run -d -it --name bitwarden_rs \
   -e LOG_FILE=/data/bitwarden.log \
   -e LOG_LEVEL=warn \
   -e EXTENDED_LOGGING=true \
-  -e TZ=$TIME_ZONE \
+  -e TZ="$TIME_ZONE" \
   -v /home/bitwarden_rs/:/data/ \
   --restart always \
   bitwardenrs/server:latest
@@ -253,7 +254,7 @@ check_command update-rc.d fail2ban enable
 check_command fail2ban-client reload
 check_command systemctl restart fail2ban.service
 
-msg_box "Bitwarden and fail2ban was sucessfully installed! Please visit $SUBDOMAIN/admin to manage all your settings.
+msg_box "Bitwarden and fail2ban was sucessfully installed! Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
 Attention! Please note down the password for the admin panel: $ADMIN_PASS
 Otherwise you will not have access to your bitwarden_rs installation and have to reinstall it completely!
