@@ -180,7 +180,6 @@ docker run -d -it --name bitwarden_rs \
   -p 3012:3012 \
   -e LOG_FILE=/data/bitwarden.log \
   -e LOG_LEVEL=warn \
-  -e EXTENDED_LOGGING=true \
   -e TZ="$TIME_ZONE" \
   -v /home/bitwarden_rs/:/data/ \
   --restart always \
