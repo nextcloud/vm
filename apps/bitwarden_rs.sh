@@ -20,6 +20,7 @@ root_check
 msg_box "Bitwarden_rs is an unofficial Bitwarden api Implementation in Rust.
 
 It has less hardware requirements and runs on nearly any hardware.
+For company usecase it is recommended to install the official Bitwarden.
 
 Please report any issues that you find directly to https://github.com/dani-garcia/bitwarden_rs"
 
@@ -140,9 +141,6 @@ else
     exit 1
 fi
 
-# Add prune command
-add_dockerprune
-
 # Create dir for bitwarden_rs
 mkdir -p /home/bitwarden_rs
 chown nobody -R /home/bitwarden_rs
@@ -168,6 +166,9 @@ docker run -d -it --name bitwarden_rs \
   -v /home/bitwarden_rs/:/data/ \
   --restart always \
   bitwardenrs/server:latest
+
+# Add prune command
+add_dockerprune
 
 msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN/admin to manage all your settings.
 
