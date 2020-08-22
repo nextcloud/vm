@@ -17,6 +17,19 @@ debug_mode
 # Check if root
 root_check
 
+# Check if bitwarden_rs is already installed
+if [ -d /home/bitwarden_rs ]
+then
+    msg_box "It seems like you have already installed bitwarden_rs.
+You cannot install it again because you would loose all your data.
+
+If you are sure that you definitely want to delete bitwarden_rs and all its data to be able to 
+reinstall it, you can execute the following command:
+'sudo docker stop bitwarden_rs && sudo docker rm bitwarden_rs && sudo rm -r /home/bitwarden_rs'"
+    exit 1
+fi
+
+# Inform what bitwarden_rs is
 msg_box "Bitwarden_rs is an unofficial Bitwarden api Implementation in Rust.
 
 It has less hardware requirements and runs on nearly any hardware.
@@ -141,13 +154,13 @@ else
     exit 1
 fi
 
+# Install docker
+install_docker
+
 # Create dir for bitwarden_rs
 mkdir -p /home/bitwarden_rs
 chown nobody -R /home/bitwarden_rs
 chmod -R 0770 /home/bitwarden_rs
-
-# Install docker
-install_docker
 
 # Generate admin password
 ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
