@@ -23,9 +23,12 @@ then
     msg_box "It seems like you have already installed Bitwarden_rs.
 You cannot install it again because you would loose all your data.
 
-If you are sure that you definitely want to delete Bitwarden_rs and all its data to be able to 
-reinstall it, you can execute the following command:
-'sudo docker stop bitwarden_rs && sudo docker rm bitwarden_rs && sudo rm -r /home/bitwarden_rs'"
+If you are certain that you definitely want to delete Bitwarden_rs and all 
+its data to be able to reinstall it, you can execute the following commands:
+
+'sudo docker stop bitwarden_rs'
+'sudo docker rm bitwarden_rs'
+'sudo rm -r /home/bitwarden_rs'"
     exit 1
 fi
 
