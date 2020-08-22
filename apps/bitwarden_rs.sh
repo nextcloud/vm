@@ -216,7 +216,7 @@ cat << BW_JAIL_CONF > /etc/fail2ban/jail.d/bitwarden_rs.local
 enabled = true
 port = 80,443,8081
 filter = bitwarden_rs
-action = iptables-allports[name=bitwarden]
+action = iptables-allports[name=bitwarden_rs]
 logpath = /home/bitwarden_rs/bitwarden.log
 maxretry = 3
 bantime = 14400
@@ -240,7 +240,7 @@ cat << BWA_JAIL_CONF > /etc/fail2ban/jail.d/bitwarden_rs-admin.local
 enabled = true
 port = 80,443
 filter = bitwarden_rs-admin
-action = iptables-allports[name=bitwarden]
+action = iptables-allports[name=bitwarden_rs]
 logpath = /home/bitwarden_rs/bitwarden.log
 maxretry = 3
 bantime = 14400
