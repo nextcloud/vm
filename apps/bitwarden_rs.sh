@@ -177,7 +177,7 @@ docker run -d -it --name bitwarden_rs \
   -e WEBSOCKET_ENABLED=true \
   -p 3012:3012 \
   -e LOG_FILE=/data/bitwarden.log \
-  -e LOG_LEVEL=warn 
+  -e LOG_LEVEL=warn \
   -e EXTENDED_LOGGING=true \
   -v /home/bitwarden_rs/:/data/ \
   --restart always \
