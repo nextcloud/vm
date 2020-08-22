@@ -18,6 +18,17 @@ debug_mode
 # Check if root
 root_check
 
+msg_box "Bitwarden_rs is an unofficial Bitwarden api Implementation in Rust.
+
+It has less hardware requirements and runs on nearly any hardware.
+
+Please report any issues that you find directly to https://github.com/dani-garcia/bitwarden_rs"
+
+if [[ "no" == $(ask_yes_or_no "Do you want to install Bitwarden_rs?") ]]
+then
+    exit
+fi
+
 SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden_RS" --inputbox "Please enter the Domain that you want to use for Bitwarden_RS." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 
 # shellcheck source=lib.sh
@@ -84,11 +95,10 @@ then
     RewriteCond %{HTTP:Upgrade} =websocket [NC]
     RewriteRule /notifications/hub(.*) ws://127.0.0.1:3012/$1 [P,L]
     # basic proxy settings
-    # basic proxy settings
     ProxyRequests off
-    ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.1:5178/$1$2"
-    ProxyPass / "http://127.0.0.1:5178/"
-    ProxyPassReverse / "http://127.0.0.1:5178/"
+    ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.1:1024/$1$2"
+    ProxyPass / "http://127.0.0.1:1024/"
+    ProxyPassReverse / "http://127.0.0.1:1024/"
     # Extra (remote) headers
     RequestHeader set X-Real-IP %{REMOTE_ADDR}s
     Header set X-XSS-Protection "1; mode=block"
@@ -136,23 +146,25 @@ fi
 # Add prune command
 add_dockerprune
 
-# create dir for bitwarden_rs
+# Create dir for bitwarden_rs
 mkdir -p /home/bitwarden_rs
 chown nobody -R /home/bitwarden_rs
 chmod -R 0770 /home/bitwarden_rs
 
-# generate admin password
-ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
-
+# Install docker
 install_docker
 
+# Generate admin password
+ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
+
+# Install docker-container
 docker pull bitwardenrs/server:latest
 docker run -d -it --name bitwarden_rs \
   --user nobody \
   -e ADMIN_TOKEN=$ADMIN_PASS \
   -e DOMAIN=https://$SUBDOMAIN \
   -e SIGNUPS_ALLOWED=false \
-  -p 5178:1024 \
+  -p 1024:1024 \
   -e ROCKET_PORT=1024 \
   -e WEBSOCKET_ENABLED=true \
   -p 3012:3012 \
