@@ -20,29 +20,29 @@ root_check
 # Check if bitwarden_rs is already installed
 if [ -d /home/bitwarden_rs ]
 then
-    msg_box "It seems like you have already installed bitwarden_rs.
+    msg_box "It seems like you have already installed Bitwarden_rs.
 You cannot install it again because you would loose all your data.
 
-If you are sure that you definitely want to delete bitwarden_rs and all its data to be able to 
+If you are sure that you definitely want to delete Bitwarden_rs and all its data to be able to 
 reinstall it, you can execute the following command:
 'sudo docker stop bitwarden_rs && sudo docker rm bitwarden_rs && sudo rm -r /home/bitwarden_rs'"
     exit 1
 fi
 
 # Inform what bitwarden_rs is
-msg_box "Bitwarden_rs is an unofficial Bitwarden api Implementation in Rust.
+msg_box "Bitwarden_rs is an unofficial Bitwarden server API implementation in Rust.
 
 It has less hardware requirements and runs on nearly any hardware.
 For company usecase it is recommended to install the official Bitwarden.
 
-Please report any issues that you find directly to https://github.com/dani-garcia/bitwarden_rs"
+Please report issues only to https://github.com/dani-garcia/bitwarden_rs"
 
 if [[ "no" == $(ask_yes_or_no "Do you want to install Bitwarden_rs?") ]]
 then
     exit
 fi
 
-SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden_RS" --inputbox "Please enter the Domain that you want to use for Bitwarden_RS." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden_rs" --inputbox "Please enter the Domain that you want to use for Bitwarden_rs." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
@@ -251,14 +251,17 @@ check_command systemctl start fail2ban
 countdown "Waiting for fail2ban to start... " 5
 check_command fail2ban-client reload
 
-msg_box "Bitwarden and fail2ban was sucessfully installed! Please visit https://$SUBDOMAIN/admin to manage all your settings.
+msg_box "Bitwarden_rs with fail2ban have been sucessfully installed! 
+Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
 Attention! Please note down the password for the admin panel: $ADMIN_PASS
-Otherwise you will not have access to your bitwarden_rs installation and have to reinstall it completely!
+Otherwise you will not have access to your Bitwarden_rs installation and have to reinstall it completely!
 
 It is highly recommended to configure and test the smtp settings for mails first.
 
-Then, if it works you can easily invite all your user with an e-mail address from this admin-panel.
-(You have to click on users in the top-panel)"
+Then, if it works, you can easily invite all your user with an e-mail address from this admin-panel.
+(You have to click on users in the top-panel)
+
+Please remember to report issues only to https://github.com/dani-garcia/bitwarden_rs"
 
 exit
