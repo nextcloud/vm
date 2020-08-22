@@ -8,7 +8,6 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -31,6 +30,7 @@ fi
 
 SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden_RS" --inputbox "Please enter the Domain that you want to use for Bitwarden_RS." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
 
+# curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -104,10 +104,7 @@ then
     Header set X-XSS-Protection "1; mode=block"
     Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     Header set X-Content-Type-Options nosniff
-    Header set Content-Security-Policy "frame-ancestors 'self'
-    <Location />
-        ProxyPassReverse /
-    </Location>
+    Header set Content-Security-Policy "frame-ancestors 'self'"
 </VirtualHost>
 HTTPS_CREATE
 
