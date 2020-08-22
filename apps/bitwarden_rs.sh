@@ -258,10 +258,11 @@ Attention! Please note down the password for the admin panel: $ADMIN_PASS
 Otherwise you will not have access to your Bitwarden_rs installation and have to reinstall it completely!
 
 It is highly recommended to configure and test the smtp settings for mails first.
-
 Then, if it works, you can easily invite all your user with an e-mail address from this admin-panel.
 (You have to click on users in the top-panel)
 
 Please remember to report issues only to https://github.com/dani-garcia/bitwarden_rs"
+
+any_key "Press any key if you are certain to exit the script..."
 
 exit
