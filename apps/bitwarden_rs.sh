@@ -176,6 +176,9 @@ docker run -d -it --name bitwarden_rs \
   -e ROCKET_PORT=1024 \
   -e WEBSOCKET_ENABLED=true \
   -p 3012:3012 \
+  -e LOG_FILE=/data/bitwarden.log \
+  -e LOG_LEVEL=warn 
+  -e EXTENDED_LOGGING=true \
   -v /home/bitwarden_rs/:/data/ \
   --restart always \
   bitwardenrs/server:latest
@@ -183,7 +186,71 @@ docker run -d -it --name bitwarden_rs \
 # Add prune command
 add_dockerprune
 
-msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN/admin to manage all your settings.
+# Inform about fail2ban
+msg_box "We will now set up fail2ban for you.
+You can unban ip addresses by executing the following command:
+sudo fail2ban-client set bitwarden_rs unbanip XX.XX.XX.XX
+sudo fail2ban-client set bitwarden_rs-admin unbanip XX.XX.XX.XX"
+
+# Install fail2ban
+apt update -q4 & spinner_loading
+check_command apt install fail2ban -y
+check_command update-rc.d fail2ban disable
+
+# Create all needed files
+# bitwarden_rs conf
+cat << BW_CONF > /etc/fail2ban/filter.d/bitwarden_rs.local
+[INCLUDES]
+before = common.conf
+
+[Definition]
+failregex = ^.*Username or password is incorrect\. Try again\. IP: <ADDR>\. Username:.*$
+ignoreregex =
+BW_CONF
+
+# bitwarden_rs jail
+cat << BW_JAIL_CONF > /etc/fail2ban/jail.d/bitwarden_rs.local
+[bitwarden_rs]
+enabled = true
+port = 80,443,8081
+filter = bitwarden
+action = iptables-allports[name=bitwarden]
+logpath = /home/bitwarden_rs/bitwarden.log
+maxretry = 3
+bantime = 14400
+findtime = 14400
+ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
+BW_JAIL_CONF
+
+# bitwarden_rs-admin conf
+cat << BWA_CONF > /etc/fail2ban/filter.d/bitwarden_rs-admin.local
+[INCLUDES]
+before = common.conf
+
+[Definition]
+failregex = ^.*Invalid admin token\. IP: <ADDR>.*$
+ignoreregex =
+BWA_CONF
+
+# bitwarden_rs-admin jail
+cat << BWA_JAIL_CONF > /etc/fail2ban/jail.d/bitwarden_rs.local
+[bitwarden_rs-admin]
+enabled = true
+port = 80,443
+filter = bitwarden-admin
+action = iptables-allports[name=bitwarden]
+logpath = /home/bitwarden_rs/bitwarden.log
+maxretry = 3
+bantime = 14400
+findtime = 14400
+ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
+BWA_JAIL_CONF
+
+check_command update-rc.d fail2ban defaults
+check_command update-rc.d fail2ban enable
+check_command systemctl restart fail2ban.service
+
+msg_box "Bitwarden and fail2ban was sucessfully installed! Please visit $SUBDOMAIN/admin to manage all your settings.
 
 Attention! Please note down the password for the admin panel: $ADMIN_PASS
 Otherwise you will not have access to your bitwarden_rs installation and have to reinstall it completely!
