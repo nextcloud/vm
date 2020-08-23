@@ -18,7 +18,7 @@ debug_mode
 root_check
 
 # Check if bitwarden_rs is already installed
-if [ -d /home/bitwarden_rs ]
+if [ -d /home/bitwarden_rs ] || docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
 then
     msg_box "It seems like you have already installed Bitwarden_rs.
 You cannot install it again because you would loose all your data.
