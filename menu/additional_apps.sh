@@ -23,7 +23,8 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "Fail2ban " "(Extra Bruteforce protection)" OFF \
 "Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
-"Netdata" "(Real-time server monitoring)" OFF \
+"Netdata" "(Real-time server monitoring via Web GUI)" OFF \
+"BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" OFF \
 "LDAP" "(Windows Active directory)" OFF \
@@ -66,6 +67,24 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading the Netdata script..."
         run_script APP netdata
+    ;;&
+    *"BPYTOP"*)
+        clear
+        print_text_in_color "$ICyan" "Installing BPYTOP..."
+        install_if_not snapd
+        if snap install bpytop
+        then
+            snap connect bpytop:mount-observe
+            snap connect bpytop:network-control
+            snap connect bpytop:hardware-observe
+            snap connect bpytop:system-observe
+            snap connect bpytop:process-control
+            snap connect bpytop:physical-memory-observe
+            hash -r
+            msg_box "BPYTOP is now installed! Check out the amazing stats by runnning 'bpytop' from your CLI.\n\nYou can check out their Gihub repo here: https://github.com/aristocratos/bpytop/blob/master/README.md"
+        else
+            msg_box "It seems like the installation failed. Please try again."
+        fi
     ;;&
     *"FullTextSearch"*)
         clear
