@@ -220,9 +220,9 @@ port = 80,443,8081
 filter = bitwarden_rs
 action = iptables-allports[name=bitwarden_rs]
 logpath = /home/bitwarden_rs/bitwarden.log
-maxretry = 3
-bantime = 14400
-findtime = 14400
+maxretry = 20
+bantime = 1209600
+findtime = 1800
 ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 BW_JAIL_CONF
 
@@ -244,9 +244,9 @@ port = 80,443
 filter = bitwarden_rs-admin
 action = iptables-allports[name=bitwarden_rs]
 logpath = /home/bitwarden_rs/bitwarden.log
-maxretry = 3
-bantime = 14400
-findtime = 14400
+maxretry = 5
+bantime = 1209600
+findtime = 1800
 ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 BWA_JAIL_CONF
 
