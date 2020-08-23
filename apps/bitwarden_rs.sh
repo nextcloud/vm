@@ -171,7 +171,7 @@ TIME_ZONE=$(cat /etc/timezone)
 
 # Install docker-container
 docker pull bitwardenrs/server:latest
-docker run -d -it --name bitwarden_rs \
+docker run -d --name bitwarden_rs \
   --user nobody \
   -e ADMIN_TOKEN="$ADMIN_PASS" \
   -e SIGNUPS_VERIFY=true \
