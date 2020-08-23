@@ -38,6 +38,7 @@ choice=$(whiptail --title "Server configurations" --checklist "Choose what you w
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
+"BPYTOP" "(Check server status in your CLI: https://github.com/aristocratos/bpytop)" OFF \
 "Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -60,6 +61,24 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading the Automatic Updates script..."
         run_script ADDONS automatic_updates
+    ;;&
+    *"BPYTOP"*)
+        clear
+        print_text_in_color "$ICyan" "Installing BPYTOP..."
+        install_if_not snapd
+        if snap install bpytop
+        then
+            snap connect bpytop:mount-observe
+            snap connect bpytop:network-control
+            snap connect bpytop:hardware-observe
+            snap connect bpytop:system-observe
+            snap connect bpytop:process-control
+            snap connect bpytop:physical-memory-observe
+            hash -r
+            msg_box "BPYTOP is now installed! Check out the amazing stats by runnning 'bpytop' from your CLI."
+        else
+            msg_box "It seems like the installation failed. Please try again."
+        fi
     ;;&
     *"Disk Check"*)
         clear
