@@ -16,7 +16,7 @@ debug_mode
 # Check if root
 root_check
 
-choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the ddclient application.\nYou have to setup an account before you can start.\nPlease choose your DynDNS-Provider.\nSelect by pressing the spacebar and ENTER\n\nIf your DDNS-Provider isn't already supported, pleae open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the ddclient application.\nYou have to setup an account before you can start.\n\nPlease choose your DynDNS-Provider.\nSelect by pressing the spacebar and ENTER\n\nIf your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" OFF \
 "Strato" "(strato.de)" OFF 3>&1 1>&2 2>&3)
 
