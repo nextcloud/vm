@@ -167,7 +167,6 @@ chmod -R 0770 /home/bitwarden_rs
 
 # Generate admin password
 ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
-TIME_ZONE=$(cat /etc/timezone)
 
 # Install docker-container
 docker pull bitwardenrs/server:latest
@@ -185,6 +184,8 @@ docker run -d --name bitwarden_rs \
   -e LOG_LEVEL=warn \
   -e TZ="$TIME_ZONE" \
   -v /home/bitwarden_rs/:/data/ \
+  -v /etc/timezone:/etc/timezone:ro \
+  -v /etc/localtime:/etc/localtime:ro \
   --restart always \
   bitwardenrs/server:latest
 
