@@ -182,7 +182,6 @@ docker run -d --name bitwarden_rs \
   -p 3012:3012 \
   -e LOG_FILE=/data/bitwarden.log \
   -e LOG_LEVEL=warn \
-  -e TZ="$TIME_ZONE" \
   -v /home/bitwarden_rs/:/data/ \
   -v /etc/timezone:/etc/timezone:ro \
   -v /etc/localtime:/etc/localtime:ro \
