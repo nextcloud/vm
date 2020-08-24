@@ -33,19 +33,8 @@ lowest_compatible_nc 13
 
 DESCRIPTION="High Performance Backend for Talk"
 
-# Check if Nextcloud is installed
-print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
-then
-msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-${NCDOMAIN//\\/}.
-Please install Nextcloud and make sure your domain is reachable, or activate TLS
-on your domain to be able to run this script.
-If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
-When TLS is activated, run these commands from your terminal:
-sudo bash $SCRIPTS/menu.sh and choose 'Additional Apps' --> 'Talk Signaling'"
-    exit 1
-fi
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "$DESCRIPTION"
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
