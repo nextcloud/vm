@@ -62,7 +62,10 @@ then
               /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
               /etc/apt/sources.list.d/morph027-janus.list \
               /etc/apt/sources.list.d/morph027-nats-server.list
-            apt-get purge coturn nats-server janus nextcloud-spreed-signaling -y
+            apt-get purge coturn -y
+            apt-get purge nats-server -y
+            apt-get purge janus -y
+            apt-get purge nextcloud-spreed-signaling -y
             apt autoremove -y
             msg_box "Nextcloud Talk was successfully uninstalled and all settings were reverted."
             exit
@@ -84,7 +87,10 @@ then
               /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
               /etc/apt/sources.list.d/morph027-janus.list \
               /etc/apt/sources.list.d/morph027-nats-server.list
-            apt-get purge coturn nats-server janus nextcloud-spreed-signaling -y
+            apt-get purge coturn -y
+            apt-get purge nats-server -y
+            apt-get purge janus -y
+            apt-get purge nextcloud-spreed-signaling -y
             apt autoremove -y
         ;;
         *)
