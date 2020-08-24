@@ -46,6 +46,7 @@ then
             print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
             occ_command_no_check config:app:delete spreed stun_servers
             occ_command_no_check config:app:delete spreed turn_servers
+            occ_command_no_check config:app:delete spreed signaling_servers
             occ_command_no_check app:remove spreed
             rm $TURN_CONF
             apt-get purge coturn -y
@@ -56,6 +57,7 @@ then
             print_text_in_color "$ICyan" "Reinstalling Nextcloud Talk..."
             occ_command_no_check config:app:delete spreed stun_servers
             occ_command_no_check config:app:delete spreed turn_servers
+            occ_command_no_check config:app:delete spreed signaling_servers
             occ_command_no_check app:remove spreed
             rm $TURN_CONF
             apt-get purge coturn -y
@@ -171,11 +173,13 @@ check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 # Enable Spreed (Talk)
 STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
 TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
+SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$HPB_DOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
 if ! is_app_installed spreed
 then
     install_and_enable_app spreed
     occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
     occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
+    occ_command config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 
@@ -396,6 +400,7 @@ secret = ${TURN_SECRET}
 # looks like: turn:example.com:3478?transport=tcp
 servers = ${TURN_SERVER}
 SIGNALING_CONF_CREATE
+fi
 
 sed -i 's,#turn_rest_api_key\s*=.*,turn_rest_api_key = "'"${JANUS_API_KEY}"'",' /etc/janus/janus.jcfg.dpkg-dist
 systemctl restart janus
