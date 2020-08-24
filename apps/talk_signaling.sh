@@ -34,7 +34,7 @@ lowest_compatible_nc 19
 ####################### TALK (COTURN)
 
 # Check if Nextcloud is installed with TLS
-check_nextcloud_https "$DESCRIPTION"
+check_nextcloud_https "Nextclod Talk"
 
 # Check if talk/spreed is already installed
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
@@ -55,6 +55,7 @@ then
               "$TURN_CONF" \
               "$SIGNALING_SERVER_CONF" \
               /etc/nats \
+              /etc/janus \
               /etc/apt/trusted.gpg.d/morph027-janus.asc \
               /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
               /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
@@ -76,6 +77,7 @@ then
               "$TURN_CONF" \
               "$SIGNALING_SERVER_CONF" \
               /etc/nats \
+              /etc/janus \
               /etc/apt/trusted.gpg.d/morph027-janus.asc \
               /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
               /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
