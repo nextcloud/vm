@@ -692,7 +692,7 @@ fi
 install_if_not() {
 if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install "${1}" -y
+    RUNLEVEL=1 apt update -q4 & spinner_loading && apt install "${1}" -y
 fi
 }
 
