@@ -159,7 +159,10 @@ APACHE2=/etc/apache2/apache2.conf
 [ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 [ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
 [ -n "$TURN_INSTALL" ] && TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-
+[ -n "$TURN_INSTALL" ] && SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Talk Signaling Server" --inputbox "Talk Signaling Server subdomain eg: talk.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+[ -n "$TURN_INSTALL" ] && JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+[ -n "$TURN_INSTALL" ] && NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+[ -n "$TURN_INSTALL" ] && SIGNALING_SERVER_CONF=/etc/signaling/server.conf
 
 ## FUNCTIONS
 
@@ -689,7 +692,7 @@ fi
 install_if_not() {
 if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install "${1}" -y
+    apt update -q4 & spinner_loading && RUNLEVEL=1 apt install "${1}" -y
 fi
 }
 
