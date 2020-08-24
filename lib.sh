@@ -498,6 +498,20 @@ then
 fi
 }
 
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https() {
+    if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
+    then
+msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
+You easily activate TLS (HTTPS) by running the Let's Encrypt script.
+More info here: https://bit.ly/37wRCin
+
+To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
+Additional Apps --> Documentserver --> $1."
+        exit
+    fi
+}
+
 restart_webserver() {
 check_command systemctl restart apache2.service
 if is_this_installed php"$PHPVER"-fpm
@@ -523,7 +537,7 @@ else
 fi
 }
 
-#generate certs and auto-configure
+# Generate certs and configure it automatically
 # https://certbot.eff.org/docs/using.html#certbot-command-line-options
 generate_cert() {
 uir_hsts=""
@@ -566,8 +580,7 @@ done
 last_fail_tls() {
 msg_box "All methods failed. :/
 
-The script is located in ${1}
-You can also run it by executing: sudo bash $SCRIPTS/menu.sh
+You can run the script again by executing: sudo bash $SCRIPTS/menu.sh
 Please try to run it again some other time with other settings.
 
 There are different configs you can try in Let's Encrypt's user guide:
@@ -1209,19 +1222,18 @@ fi
 
 # Check if it's the Home/SME Server
 
-#if home_sme_server
-#then
+# if home_sme_server
+# then
 #    do something
-#fi
-
+# fi
 home_sme_server() {
 # OLD DISKS: "Samsung SSD 860" || ST5000LM000-2AN1  || ST5000LM015-2E81
 # OLD MEMORY: BLS16G4 (Balistix Sport) || 18ASF2G72HZ (ECC)
-if lshw -c system | grep -q NUC8i3BEH
+if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH"
 then
-    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ" 
+    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ"
     then
-        if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860"
+        if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B"
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi

@@ -1,186 +1,67 @@
-#!/usr/bin/env bash
-#
-# script to prune zfs snapshots over a given age
-#
-# Author: Dave Eddy <dave@daveeddy.com>
-# Date: November 20, 2015
-# License: MIT
-# https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/zfs-prune-snapshots
+#!/bin/bash
 
-VERSION='v1.1.0'
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-usage() {
-	local prog=${0##*/}
-	cat <<-EOF
-	usage: $prog [-hnv] [-p <prefix>] [-s <suffix>] <time> [[dataset1] ...]
+# https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
+# Tested on Ubuntu 20.04
 
-	remove snapshots from one or more zpools that match given criteria
+# This script came to life when we were having issues with importing the ZFS pool (ncdata) on Ubuntu 20.04.
+# After some forum reading and some digging on Github, this is the result.
+# The intention here is to make the import process more robust, and less prune to fail
+# Esentially, changing from źfs-mount.service' to 'zfs-mount-generator' which by many has been working better.
 
-	examples
-	    # $prog 1w
-	    remove snapshots older than a week across all zpools
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-	    # $prog -vn 1w
-	    same as above, but with increased verbosity and without
-	    actually deleting any snapshots (dry-run)
+# Check if root
+root_check
 
-	    # $prog 3w tank1 tank2/backup
-	    remove snapshots older than 3 weeks on tank1 and tank2/backup.
-	    note that this script will recurse through *all* of tank1 and
-	    *all* datasets below tank2/backup
+# Needs to be Ubuntu 20.04 and Multiverse
+check_distro_version
+check_multiverse
 
-	    # $prog -p 'autosnap_' 1M zones
-	    remove snapshots older than a month on the zones pool that start
-	    with the string "autosnap_"
+# Import if missing and export again to import it with UUID
+# https://github.com/nextcloud/vm/blob/master/lib.sh#L1233
+# Set a different name for the pool (if used outside of this repo)
+# export POOLNAME=ncdata
+zpool_import_if_missing
 
-	    # $prog -s '_frequent' 2M tank
-	    remove snapshots older than two months on the tank pool that end
-	    with the string "_frequent"
+# Make sure the correct packages are installed
+install_if_not zfs-zed
 
-	timespec
-	    the first argument denotes how old a snapshot must be for it to
-	    be considered for deletion - possible specifiers are
+# Create the dir for this to work
+mkdir -p /etc/zfs/zfs-list.cache
 
-	        s seconds
-	        m minutes
-	        h hours
-	        d days
-	        w weeks
-	        M months
-	        y years
-
-	options
-	    -h             print this message and exit
-	    -n             dry-run, don't actually delete snapshots
-	    -p <prefix>    snapshot prefix string to match
-	    -s <suffix>    snapshot suffix string to match
-	    -q             quiet, do not printout removed snapshots
-	    -v             increase verbosity
-	    -V             print the version number and exit
-	EOF
-}
-
-debug() {
-	((verbosity >= 1)) && echo "$@"
-	return 0
-}
-
-# given a time in seconds, return the "human readable" string
-human() {
-	local seconds=$1
-	if ((seconds < 0)); then
-		((seconds *= -1))
-	fi
-
-	local times=(
-	$((seconds / 60 / 60 / 24 / 365)) # years
-	$((seconds / 60 / 60 / 24 / 30))  # months
-	$((seconds / 60 / 60 / 24 / 7))   # weeks
-	$((seconds / 60 / 60 / 24))       # days
-	$((seconds / 60 / 60))            # hours
-	$((seconds / 60))                 # minutes
-	$((seconds))                      # seconds
-	)
-	local names=(year month week day hour minute second)
-
-	local i
-	for ((i = 0; i < ${#names[@]}; i++)); do
-		if ((${times[$i]} > 1)); then
-			echo "${times[$i]} ${names[$i]}s"
-			return
-		elif ((${times[$i]} == 1)); then
-			echo "${times[$i]} ${names[$i]}"
-			return
-		fi
-	done
-	echo '0 seconds'
-}
-
-dryrun=false
-verbosity=0
-prefix=
-suffix=
-quiet=false
-while getopts 'hnqp:s:vV' option; do
-	case "$option" in
-		h) usage; exit 0;;
-		n) dryrun=true;;
-		p) prefix=$OPTARG;;
-		s) suffix=$OPTARG;;
-		q) quiet=true;;
-		v) ((verbosity++));;
-		V) echo "$VERSION"; exit 0;;
-		*) usage; exit 1;;
-	esac
-done
-shift "$((OPTIND - 1))"
-
-# extract the first argument - the timespec - and
-# convert it to seconds
-t=$1
-time_re='^([0-9]+)([smhdwMy])$'
-seconds=
-if [[ $t =~ $time_re ]]; then
-	# ex: "21d" becomes num=21 spec=d
-	num=${BASH_REMATCH[1]}
-	spec=${BASH_REMATCH[2]}
-
-	case "$spec" in
-		s) seconds=$((num));;
-		m) seconds=$((num * 60));;
-		h) seconds=$((num * 60 * 60));;
-		d) seconds=$((num * 60 * 60 * 24));;
-		w) seconds=$((num * 60 * 60 * 24 * 7));;
-		M) seconds=$((num * 60 * 60 * 24 * 30));;
-		y) seconds=$((num * 60 * 60 * 24 * 365));;
-		*) echo "error: unknown spec '$spec'" >&2; exit 1;;
-	esac
-elif [[ -z $t ]]; then
-	echo 'error: timespec must be specified as the first argument' >&2
-	exit 1
+# Enable ZFS Event Daemon(ZED) aka ZEDLET
+if [ -f /usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh ]
+then
+    if [ ! -L /etc/zfs/zed.d/history_event-zfs-list-cacher.sh ]
+    then
+        check_command ln -s /usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh /etc/zfs/zed.d
+    fi
 else
-	echo "error: failed to parse timespec '$t'" >&2
-	exit 1
+    msg_box "/usr/lib/zfs-linux/zed.d/history_event-zfs-list-cacher.sh is missing, aborting!"
+    exit 1
 fi
 
-shift
-pools=("$@")
+# Enable and disable services
+# NEEDED:
+systemctl enable zfs-import-cache
+# DISABLE OLD METHOD
+systemctl disable zfs-mount
+# FOR ZEDLET
+check_command systemctl enable zfs-zed.service
+check_command systemctl enable zfs.target
+check_command systemctl start zfs-zed.service
 
-now=$(date +%s)
-code=0
-while read -r creation snapshot; do
-	# ensure optional prefix matches
-	snapname=${snapshot#*@}
-	if [[ -n $prefix && $prefix != "${snapname:0:${#prefix}}" ]]; then
-		debug "skipping $snapshot: doesn't match prefix $prefix"
-		continue
-	fi
-
-	# ensure optional suffix matches
-	if [[ -n $suffix && $suffix != "${snapname: -${#suffix}}" ]]; then
-		debug "skipping $snapshot: doesn't match suffix $suffix"
-		continue
-	fi
-
-	# ensure snapshot is older than the cutoff time
-	delta=$((now - creation))
-	human=$(human "$delta")
-	if ((delta <= seconds)); then
-		debug "skipping $snapshot: $human old"
-		continue
-	fi
-
-	# remove the snapshot
-	if ! $quiet || $dryrun; then
-		echo -n "removing $snapshot: $human old"
-	fi
-	if $dryrun; then
-		echo ' <dry-run: no action taken>'
-	else
-		if ! $quiet; then
-			echo
-		fi
-		zfs destroy "$snapshot" || code=1
-	fi
-done < <(zfs list -Hpo creation,name -t snapshot -r "${pools[@]}")
-exit "$code"
+# Activate config
+touch /etc/zfs/zfs-list.cache/"$POOLNAME"
+zfs set canmount=on "$POOLNAME"
+sleep 1
+if [ -s /etc/zfs/zfs-list.cache/"$POOLNAME" ]
+then
+    print_text_in_color "$ICyan" "/etc/zfs/zfs-list.cache/$POOLNAME is emtpy, setting values manually instead."
+    zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand,encroot,keylocation > /etc/zfs/zfs-list.cache/"$POOLNAME"
+fi

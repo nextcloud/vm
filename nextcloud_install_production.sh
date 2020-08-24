@@ -95,6 +95,15 @@ msg_box "Nextcloud repo is not available, exiting..."
     exit 1
 fi
 
+# Test Home/SME function
+if home_sme_server
+then
+    msg_box "This is the Home/SME server, function works!"
+else
+    print_text_in_color "$ICyan" "Home/SME Server not detected. No worries, just testing the function."
+    sleep 3
+fi
+
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
@@ -103,29 +112,26 @@ then
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
     lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
 
-    # HomeSME Server
-    if home_sme_server
-    then
-        print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-        while :
-        do
-            lvdisplay | grep "Size" | awk '{print $3}'
-            if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+    # Run it again manually just to be sure it's done
+    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
+    while :
+    do
+        lvdisplay | grep "Size" | awk '{print $3}'
+        if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+        then
+            if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
             then
-                if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                 then
-                    if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                    if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                     then
-                        if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-                        then
-                            resize2fs /dev/ubuntu-vg/ubuntu-lv
-                            break
-                        fi
+                        resize2fs /dev/ubuntu-vg/ubuntu-lv
+                        break
                     fi
                 fi
             fi
-        done
-    fi
+        fi
+    done
 fi
 
 # Check if it's a clean server
@@ -160,11 +166,6 @@ install_if_not netplan.io
 # Install build-essentials to get make
 install_if_not build-essential
 
-# Just check if the function works and run disk setup
-if home_sme_server
-then
-    run_script DISK format-sda-nuc-server
-else
 # Set dual or single drive setup
 msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
 You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
@@ -195,7 +196,6 @@ case "$choice" in
     *)
     ;;
 esac
-fi
 
 # Set DNS resolver
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    

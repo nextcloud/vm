@@ -22,21 +22,8 @@ print_text_in_color "$ICyan" "Running the OnlyOffice install script..."
 # Nextcloud 18 is required.
 lowest_compatible_nc 18
 
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 OnlyOffice
-cpu_check 2 OnlyOffice
-
 # Check if Nextcloud is installed with TLS
-if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
-then
-msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
-
-You easily activate TLS (HTTPS) by running the Let's Encrypt script found in $SCRIPTS.
-More info here: https://bit.ly/37wRCin
-
-To run this script again, just exectue 'sudo bash $SCRIPTS/apps.sh' and choose OnlyOffice."
-    exit
-fi
+check_nextcloud_https "OnlyOffice (Integrated)"
 
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
@@ -47,6 +34,16 @@ then
         msg_box "Your server is compatible with the new way of installing OnlyOffice. We will now remove the old docker and install the app from Nextcloud instead."
         # Remove docker image
         docker_prune_this 'onlyoffice/documentserver'
+        # Disable RichDocuments (Collabora App) if activated
+        if is_app_installed richdocuments
+        then
+            occ_command app:remove richdocuments
+        fi
+        # Disable OnlyOffice (Collabora App) if activated
+        if is_app_installed onlyoffice
+        then
+            occ_command app:remove onlyoffice
+        fi
         # Revoke LE
         SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
@@ -122,21 +119,6 @@ You can also buy support directly in our shop: https://shop.hanssonit.se/product
     exit
 fi
 
-# Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
-if [ "$(apache2ctl -M | grep evasive)" != "" ]
-then
-    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and you can now choose to disable it."
-    if [[ "no" == $(ask_yes_or_no "Do you want to disable DDOS protection?")  ]]
-    then
-        print_text_in_color "$ICyan" "Keeping mod_evasive active."
-    else
-        a2dismod evasive
-        # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
-        apt-get purge libapache2-mod-evasive -y
-	systemctl restart apache2.service
-    fi
-fi
-
 # Check if collabora is installed and remove every trace of it
 if does_this_docker_exist 'collabora/code'
 then
@@ -177,6 +159,27 @@ then
             count=$((count+1))
         fi
     done
+else
+    # Remove Collabora app
+    if is_app_installed richdocuments
+    then
+        occ_command app:remove richdocuments
+    fi
+fi
+
+# Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
+if [ "$(apache2ctl -M | grep evasive)" != "" ]
+then
+    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and you can now choose to disable it."
+    if [[ "no" == $(ask_yes_or_no "Do you want to disable DDOS protection?")  ]]
+    then
+        print_text_in_color "$ICyan" "Keeping mod_evasive active."
+    else
+        a2dismod evasive
+        # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
+        apt-get purge libapache2-mod-evasive -y
+	systemctl restart apache2.service
+    fi
 fi
 
 # Install OnlyOffice
@@ -190,7 +193,7 @@ sleep 2
 if install_and_enable_app documentserver_community
 then
     chown -R www-data:www-data "$NC_APPS_PATH"
-    occ_command config:app:set onlyoffice DocumentServerUrl --value="$(occ_command_no_check config:system:get overwrite.cli.url)apps/documentserver_community/"
+    occ_command config:app:set onlyoffice DocumentServerUrl --value="$(occ_command_no_check config:system:get overwrite.cli.url)/index.php/apps/documentserver_community/"
     msg_box "OnlyOffice was successfully installed."
 else
     msg_box "The documentserver_community app failed to install. Please try again later.\n\nIf the error presist, please report the issue to https://github.com/nextcloud/documentserver_community\n\n'sudo -u www-data php ./occ app:install documentserver_community failed!'"

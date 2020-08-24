@@ -235,12 +235,11 @@ then
     ProxyPass / "http://127.0.0.1:5178/"
     ProxyPassReverse / "http://127.0.0.1:5178/"
     # Extra (remote) headers
-#    RemoteIPHeader X-Forwarded-For
-#    RemoteIPHeader X-Real-IP
-#    RemoteIPHeader X-Forwarded-Proto
-#    Header set X-XSS-Protection "1; mode=block"
-#    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-#    Header set X-Content-Type-Options nosniff
+    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set X-Content-Type-Options nosniff
+    Header set Content-Security-Policy "frame-ancestors 'self'"
     <Location />
         ProxyPassReverse /
     </Location>
@@ -289,11 +288,17 @@ add_dockerprune
 msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN to setup your account.
 
 After the account is registered, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
-Additional Apps --> Bitwarden Registration
+Additional Apps --> Bitwarden --> Bitwarden Registration
 
 Some notes to the Bitwarden service:
 to START Bitwarden, simply execute: 'systemctl start bitwarden'
 to STOP Bitwarden, simply execute: 'systemctl stop bitwarden'
 to RESTART Bitwarden, simply execute: 'systemctl restart bitwarden'"
+
+msg_box "In case you want to backup Bitwarden, you should know that the MSSQL files are stored here:
+/var/lib/docker/volumes/docker_mssql_data/_data
+
+This is beacuse we run the database as a Docker container, and not directly on the filesystem - which otherwise would be the default.
+Reason? We found it to be more stable running in a container, several sources in their issue tracker also confirms the same thing."
 
 exit
