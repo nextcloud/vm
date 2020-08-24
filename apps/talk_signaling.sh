@@ -29,7 +29,7 @@ exit
 fi
 
 # Nextcloud 13 is required.
-lowest_compatible_nc 13
+lowest_compatible_nc 19
 
 DESCRIPTION="High Performance Backend for Talk"
 
