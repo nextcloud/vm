@@ -64,6 +64,9 @@ then
               /etc/apt/sources.list.d/morph027-nats-server.list
             apt-get purge coturn nats-server janus nextcloud-spreed-signaling -y
             apt autoremove -y
+            check_command systemctl disable signaling
+            check_command systemctl disable nats-server
+            check_command systemctl disable nextcloud-spreed-signaling
             msg_box "Nextcloud Talk was successfully uninstalled and all settings were reverted."
             exit
         ;;
