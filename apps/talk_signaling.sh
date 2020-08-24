@@ -235,17 +235,16 @@ check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
 
 # NATS
+## Pre-Configuration
+mkdir -p /etc/nats
+echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf
 ## Installation
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nats-server.asc" "https://packaging.gitlab.io/nats-server/gpg.key"
 echo "deb [arch=amd64] https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list
 apt update -q4 & spinner_loading
 install_if_not nats-server
-## Configuration
-mkdir -p /etc/nats
-install -d -o nats -g nats /etc/nats
-echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf
 chown nats:nats /etc/nats/nats.conf
-check_command systemctl restart nats-server
+start_if_stopped nats-server
 check_command systemctl enable nats-server
 
 # Janus WebRTC Server
