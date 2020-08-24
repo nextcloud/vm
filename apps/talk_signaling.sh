@@ -204,7 +204,7 @@ check_command systemctl restart janus
 ## NATS server
 mkdir -p /etc/nats
 sudo install -d -o nats -g nats /etc/nats
-sudo -u nats echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf
+sudo -u nats echo "listen: 127.0.0.1:4222" | sudo tee -a /etc/nats/nats.conf
 install_if_not nats-server
 start_if_stopped nats-server
 check_command systemctl enable nats-server
