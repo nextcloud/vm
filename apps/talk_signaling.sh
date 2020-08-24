@@ -33,6 +33,9 @@ lowest_compatible_nc 19
 
 ####################### TALK (COTURN)
 
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "$DESCRIPTION"
+
 # Check if talk/spreed is already installed
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
 if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] || is_this_installed coturn
@@ -48,9 +51,10 @@ then
             occ_command_no_check config:app:delete spreed turn_servers
             occ_command_no_check config:app:delete spreed signaling_servers
             occ_command_no_check app:remove spreed
-            rm "$TURN_CONF" "$SIGNALING_SERVER_CONF"
+            rm -f "$TURN_CONF" "$SIGNALING_SERVER_CONF"
             apt-get purge coturn nats-server janus nextcloud-spreed-signaling -y
-            msg_box "Nextcloud Talk was successfully uninstalled and all settings were resetted."
+            apt autoremove -y
+            msg_box "Nextcloud Talk was successfully uninstalled and all settings were reverted."
             exit
         ;;
         "Reinstall Nextcloud Talk")
@@ -59,8 +63,9 @@ then
             occ_command_no_check config:app:delete spreed turn_servers
             occ_command_no_check config:app:delete spreed signaling_servers
             occ_command_no_check app:remove spreed
-            rm "$TURN_CONF" "$SIGNALING_SERVER_CONF"
+            rm -f "$TURN_CONF" "$SIGNALING_SERVER_CONF"
             apt-get purge coturn nats-server janus nextcloud-spreed-signaling -y
+            apt autoremove -y
         ;;
         *)
         ;;
@@ -69,23 +74,8 @@ else
     print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
 fi
 
-# Check if Nextcloud is installed
-print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-if ! curl -s https://"${TURN_DOMAIN//\\/}"/status.php | grep -q 'installed":true'
-then
-msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-${TURN_DOMAIN//\\/}
-Please install Nextcloud and make sure your domain is reachable, or activate TLS
-on your domain to be able to run this script.
-If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
-When TLS is activated, run these commands from your terminal:
-sudo curl -sLO $APP/talk_signaling.sh
-sudo bash talk_signaling.sh"
-    exit 1
-fi
-
 # Let the user choose port. TURN_PORT in msg_box is taken from lib.sh and later changed if user decides to.
-NONO_PORTS=(22 25 53 80 443 3306 5178 5179 5432 7983 8983 10000)
+NONO_PORTS=(22 25 53 80 443 3306 5178 5179 5432 7983 8983 10000 8081)
 msg_box "The default port for Talk used in this script is port $TURN_PORT.
 You can read more about that port here: https://www.speedguide.net/port.php?port=$TURN_PORT
 You will now be given the option to change this port to something of your own. 
@@ -194,13 +184,10 @@ fi
 DESCRIPTION="Talk Signaling Server"
 
 # Ask the user if he/she wants the HPB server as well
-if [[ "no" == $(ask_yes_or_no "Do you want to install the DESCRIPTION?") ]]
+if [[ "no" == $(ask_yes_or_no "Do you want to install the $DESCRIPTION?") ]]
 then
     exit 1
 fi
-
-# Check if Nextcloud is installed with TLS
-check_nextcloud_https "$DESCRIPTION"
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
