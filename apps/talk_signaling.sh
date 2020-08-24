@@ -398,6 +398,6 @@ else
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
     
-    msg_box "Please run this script again to uninstall if you want clean system or reinstall if you want to try again."
+    msg_box "Please run this script again to uninstall if you want clean system, or reinstall if you want to try again."
     exit 1
 fi
