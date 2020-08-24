@@ -156,7 +156,6 @@ APACHE2=/etc/apache2/apache2.conf
 # Talk
 [ -n "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
 [ -n "$TURN_INSTALL" ] && TURN_PORT=3478
-[ -n "$TURN_INSTALL" ] && STUN_PORT=5349
 [ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 [ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
 [ -n "$TURN_INSTALL" ] && TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
