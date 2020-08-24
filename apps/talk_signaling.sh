@@ -48,7 +48,16 @@ then
             occ_command_no_check config:app:delete spreed turn_servers
             occ_command_no_check config:app:delete spreed signaling_servers
             occ_command_no_check app:remove spreed
-            rm "$TURN_CONF" "$SIGNALING_SERVER_CONF"
+            rm -rf \
+              "$TURN_CONF" \
+              "$SIGNALING_SERVER_CONF" \
+              /etc/nats \
+              /etc/apt/trusted.gpg.d/morph027-janus.asc \
+              /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
+              /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
+              /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
+              /etc/apt/sources.list.d/morph027-janus.list \
+              /etc/apt/sources.list.d/morph027-nats-server.list
             apt-get purge coturn nats-server janus nextcloud-spreed-signaling -y
             msg_box "Nextcloud Talk was successfully uninstalled and all settings were resetted."
             exit
@@ -59,7 +68,16 @@ then
             occ_command_no_check config:app:delete spreed turn_servers
             occ_command_no_check config:app:delete spreed signaling_servers
             occ_command_no_check app:remove spreed
-            rm "$TURN_CONF" "$SIGNALING_SERVER_CONF"
+            rm -rf \
+              "$TURN_CONF" \
+              "$SIGNALING_SERVER_CONF" \
+              /etc/nats \
+              /etc/apt/trusted.gpg.d/morph027-janus.asc \
+              /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
+              /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
+              /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
+              /etc/apt/sources.list.d/morph027-janus.list \
+              /etc/apt/sources.list.d/morph027-nats-server.list
             apt-get purge coturn nats-server janus nextcloud-spreed-signaling -y
         ;;
         *)
