@@ -210,9 +210,13 @@ start_if_stopped nats-server
 check_command systemctl enable nats-server
 
 ## nextcloud-spreed-signaling server (HPB)
-
 # TODO: create keys, setup config for janus and hpb (get turn server url from coturn app)
-# https://morph027.gitlab.io/blog/nextcloud-spreed-signaling/
+
+# Install with apt: https://morph027.gitlab.io/blog/nextcloud-spreed-signaling/
+install_if_not nextcloud-spreed-signaling-proxy
+install_if_not nextcloud-spreed-signaling
+cp -f /usr/share/signaling/server.conf /etc/signaling/server.conf
+cp -f /usr/share/signaling/proxy.conf /etc/signaling/proxy.conf
 
 
 ## Coturn TURN Server
