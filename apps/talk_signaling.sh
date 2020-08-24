@@ -360,7 +360,7 @@ then
     # Websocket connections from the clients.
     RewriteRule ^/spreed$ - [L]
     # Backend connections from Nextcloud.
-    RewriteRule ^/api/(.*) http://127.0.0.1:8081/api/$1 [L,P]
+    RewriteRule ^/api/(.*) http://127.0.0.1:8081/api/\$1 [L,P]
     # Extra (remote) headers
     RequestHeader set X-Real-IP %{REMOTE_ADDR}s
     Header set X-XSS-Protection "1; mode=block"
