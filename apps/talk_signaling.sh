@@ -31,7 +31,7 @@ fi
 # Nextcloud 13 is required.
 lowest_compatible_nc 19
 
-DESCRIPTION="High Performance Backend for Talk"
+DESCRIPTION="Talk Signaling Server"
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https "$DESCRIPTION"
@@ -71,9 +71,10 @@ fi
 
 # Install
 . /etc/lsb-release
-for package in nats-server nextcloud-spreed-signaling janus
+for repo in nats-server nextcloud-spreed-signaling janus
 do
-  curl -sL -o "/etc/apt/trusted.gpg.d/morph027-${key}.asc" "https://packaging.gitlab.io/${key}/gpg.key"
+  # curl_to_dir doesn't fit here as the name of the fetched file and output differs
+  curl -sL -o "/etc/apt/trusted.gpg.d/morph027-${repo}.asc" "https://packaging.gitlab.io/${repo}/gpg.key"
 done
 
 echo "deb [arch=amd64] https://packaging.gitlab.io/nextcloud-spreed-signaling signaling main" > /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list
@@ -200,12 +201,16 @@ sed -i 's|#interface.*|interface = "lo"|g' /etc/janus/janus.transport.websockets
 sed -i 's|#ws_interface.*|ws_interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
 check_command systemctl restart janus
 
-## Coturn TURN Server
-run_script APP talk
-
 ## NATS server
 
 ## nextcloud-spreed-signaling server (HPB)
 
 # TODO: create keys, setup config for janus and hpb (get turn server url from coturn app)
 # https://morph027.gitlab.io/blog/nextcloud-spreed-signaling/
+
+
+## Coturn TURN Server
+if ping -c 2 https://"$SUBDOMAIN"/standalone-signaling
+then
+    run_script APP talk
+fi
