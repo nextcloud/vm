@@ -96,17 +96,27 @@ check_command apt-get install -y nextcloud-spreed-signaling nats-server janus
 check_command systemctl restart janus
 check_command systemctl enable janus
 
-# Apache proxy config
-# TODO: https://github.com/strukturag/nextcloud-spreed-signaling#apache
-a2enmod proxy
-a2enmod proxy_http
-a2enmod proxy_wstunnel
+### PROXY ###
+# https://github.com/strukturag/nextcloud-spreed-signaling#apache
+
+# Check if $SUBDOMAIN exists and is reachable
+print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
+domain_check_200 "$SUBDOMAIN"
+
+# Check open ports with NMAP
+check_open_port 80 "$SUBDOMAIN"
+check_open_port 443 "$SUBDOMAIN"
+
+# Install Apache2
+install_if_not apache2
 
 # Enable Apache2 module's
 a2enmod proxy
 a2enmod proxy_wstunnel
 a2enmod proxy_http
 a2enmod ssl
+a2enmod headers
+a2enmod remoteip
 
 if [ -f "$HTTPS_CONF" ]
 then
@@ -114,44 +124,47 @@ then
     rm -f "$HTTPS_CONF"
 fi
 
-# Create Vhost for Talk Signaling in Apache2
 if [ ! -f "$HTTPS_CONF" ];
 then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
-  ServerName $SUBDOMAIN:443
-  <Directory /var/www>
-  Options -Indexes
-  </Directory>
-  # TLS configuration, you may want to take the easy route instead and use Lets Encrypt!
-  SSLEngine on
-  SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
-  SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
-  SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
-  SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
-  SSLProtocol             all -SSLv2 -SSLv3
-  SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
-  SSLHonorCipherOrder     on
-  SSLCompression off
-  # Encoded slashes need to be allowed
-  AllowEncodedSlashes NoDecode
-  # Container uses a unique non-signed certificate
-  SSLProxyEngine On
-  SSLProxyVerify None
-  SSLProxyCheckPeerCN Off
-  SSLProxyCheckPeerName Off
-  # keep the host
-  ProxyPreserveHost On
-
+    ServerName $SUBDOMAIN:443
+    SSLEngine on
+    ServerSignature On
+    SSLHonorCipherOrder on
+    SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
+    SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
+    SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
+    SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
+    SSLProtocol TLSv1.2
+    SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    # Just in case - see below
+    SSLProxyEngine On
+    SSLProxyVerify None
+    SSLProxyCheckPeerCN Off
+    SSLProxyCheckPeerName Off
+    # contra mixed content warnings
+    RequestHeader set X-Forwarded-Proto "https"
+    # basic proxy settings
     # Enable proxying Websocket requests to the standalone signaling server.
     ProxyPass "/standalone-signaling/"  "ws://127.0.0.1:8080/"
-
     RewriteEngine On
     # Websocket connections from the clients.
     RewriteRule ^/standalone-signaling/spreed$ - [L]
     # Backend connections from Nextcloud.
     RewriteRule ^/standalone-signaling/api/(.*) http://127.0.0.1:8080/api/$1 [L,P]
-
+    # Extra (remote) headers
+    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set X-Content-Type-Options nosniff
+    Header set Content-Security-Policy "frame-ancestors 'self'"
+    <Location />
+        ProxyPassReverse /
+    </Location>
 </VirtualHost>
 HTTPS_CREATE
 
@@ -181,8 +194,14 @@ then
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
 else
-    last_fail_tls "$SCRIPTS"/talk_signaling.sh
+    # remove settings to be able to start over again
+    rm -f "$HTTPS_CONF"
+    last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
+    exit 1
 fi
+
+# Add prune command
+add_dockerprune
 
 # Configuration
 ## Janus WebRTC Server
