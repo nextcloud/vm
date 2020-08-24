@@ -259,7 +259,7 @@ sed -i "s|#turn_rest_api_key\s*=.*|$JANUS_API_KEY|" /etc/janus/janus.jcfg
 sed -i "s|#full_trickle|full_trickle|g" /etc/janus/janus.jcfg
 sed -i 's|#interface.*|interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
 sed -i 's|#ws_interface.*|ws_interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
-check_command systemctl restart janus
+start_if_stopped janus
 check_command systemctl enable janus
 
 # HPB
@@ -295,10 +295,10 @@ url = ws://127.0.0.1:8188
 [turn]
 apikey = ${JANUS_API_KEY}
 secret = ${TURN_SECRET}
-servers = turn:$TURN_DOMAIN:$TURN_PORT?transport=tcp
+servers = turn:$TURN_DOMAIN:$TURN_PORT?transport=tcp,turn:$TURN_DOMAIN:$TURN_PORT?transport=udp
 SIGNALING_CONF_CREATE
 fi
-check_command systemctl restart signaling
+start_if_stopped signaling
 check_command systemctl enable signaling
 
 ### PROXY ###
@@ -344,8 +344,8 @@ then
     SSLProtocol TLSv1.2
     SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
     LogLevel warn
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-    ErrorLog ${APACHE_LOG_DIR}/error.log
+#    CustomLog $VMLOGS/talk_apache_access.log
+#    ErrorLog $VMLOGS/talk_apache_error.log
     # Just in case - see below
     SSLProxyEngine On
     SSLProxyVerify None
@@ -399,7 +399,13 @@ else
     # remove settings to be able to start over again
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
-    
-    msg_box "Please run this script again to uninstall if you want clean system, or reinstall if you want to try again."
     exit 1
+fi
+
+# Check that everything is working
+if ! curl -L https://"$SUBDOMAIN"/api/v1/welcome
+then
+    msg_box "Installationn failed. :/\n\nPlease run this script again to uninstall if you want clean system, or reinstall if you want to try again."
+else
+   msg_box "Congratulations, everything is working as intended! The installation succeeded."
 fi
