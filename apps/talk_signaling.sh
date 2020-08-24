@@ -190,12 +190,7 @@ SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"ve
 
 if ! is_app_installed spreed
 then
-    occ_command app:install spreed
-fi
-
-if ! is_app_enabled spreed
-then
-    occ_command app:enable spreed
+    install_and_enable_app spreed
 fi
 
 occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
@@ -209,6 +204,18 @@ msg_box "Nextcloud Talk is now installed. For more information about Nextcloud T
 ####################### SIGNALING
 
 DESCRIPTION="Talk Signaling Server"
+
+msg_box "You will now be presented with the option to install the Talk Signaling (Stun) server. 
+This aims to give you greater performance and ability to have more users in a call at the same time.
+
+You can read more here: 
+https://github.com/strukturag/nextcloud-spreed-signaling/blob/master/README.md
+
+We will use apt packages from https://gitlab.com/morph027 which is a trusted contributor to this repository.
+
+The exact sources can be found here:
+https://gitlab.com/packaging/nextcloud-spreed-signaling
+https://gitlab.com/packaging/janus/"
 
 # Ask the user if he/she wants the HPB server as well
 if [[ "no" == $(ask_yes_or_no "Do you want to install the $DESCRIPTION?") ]]
@@ -390,5 +397,7 @@ else
     # remove settings to be able to start over again
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
+    
+    msg_box "Please run this script again to uninstall if you want clean system or reinstall if you want to try again."
     exit 1
 fi
