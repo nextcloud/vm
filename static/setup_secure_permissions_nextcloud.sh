@@ -30,7 +30,8 @@ print_text_in_color "$IGreen" "Setting secure permissions..."
 print_text_in_color "$ICyan" "Creating possible missing Directories"
 mkdir -p "$NCPATH"/data
 mkdir -p "$NCPATH"/updater
-mkdir -p "$VMLOGS"
+install -d -m 777 "$VMLOGS"
+install -o www-data -g www-data -m 660 /dev/null /var/log
 mkdir -p "$NCDATA"
 
 if ! [ -f "$VMLOGS/nextcloud.log" ]
