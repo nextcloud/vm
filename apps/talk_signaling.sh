@@ -195,8 +195,11 @@ fi
 
 if is_app_installed spreed
 then
-msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:
-https://nextcloud.com/talk/"
+    if ! is_app_enabled spreed
+    then
+        occ_command app:enable spreed
+        msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
+    fi
 fi
 
 ####################### SIGNALING
