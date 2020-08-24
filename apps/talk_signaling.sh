@@ -201,6 +201,47 @@ sed -i 's|#interface.*|interface = "lo"|g' /etc/janus/janus.transport.websockets
 sed -i 's|#ws_interface.*|ws_interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
 check_command systemctl restart janus
 
+nc_secret="$(openssl rand -hex 16)"
+janus_api_key="$(openssl rand -base64 16)"
+
+if [ ! -f "$SIGNALING_SERVER_CONF" ];
+then
+    cat << SIGNALING_CONF_CREATE > "$SIGNALING_SERVER_CONF"
+[http]
+listen = 127.0.0.1:8081
+[app]
+debug = false
+[sessions]
+hashkey = $(openssl rand -hex 16)
+blockkey = $(openssl rand -hex 16)
+[clients]
+internalsecret = $(openssl rand -hex 16)
+[backend]
+allowed = ${TURN_DOMAIN}
+allowall = false
+secret = ${NC_SECRET}
+timeout = 10
+connectionsperhost = 8
+[nats]
+url = nats://localhost:4222
+[mcu]
+type = janus
+url = ws://127.0.0.1:8188
+[turn]
+apikey = ${JANUS_API_KEY}
+secret = ${TURN_SECRET}
+# do we know about the domain and the endpoint in some variable?
+# looks like: turn:example.com:3478?transport=tcp
+servers = ${TURN_SERVER}
+SIGNALING_CONF_CREATE
+
+sed -i 's,#turn_rest_api_key\s*=.*,turn_rest_api_key = "'"${JANUS_API_KEY}"'",' /etc/janus/janus.jcfg.dpkg-dist
+systemctl restart janus
+# We could just add this in there instead:
+msg_box "Please enter nc secret into your Talk settings: ${NC_SECRET}"
+
+
+
 ## NATS server
 mkdir -p /etc/nats
 sudo install -d -o nats -g nats /etc/nats
