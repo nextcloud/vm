@@ -187,23 +187,24 @@ check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
 TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
 SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
+
 if ! is_app_installed spreed
 then
-    install_and_enable_app spreed
-    occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
-    occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
-    occ_command config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
-    chown -R www-data:www-data "$NC_APPS_PATH"
+    occ_command app:install spreed
 fi
 
-if is_app_installed spreed
+if ! is_app_enabled spreed
 then
-    if ! is_app_enabled spreed
-    then
-        occ_command app:enable spreed
-        msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
-    fi
+    occ_command app:enable spreed
 fi
+
+occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
+occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
+occ_command config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
+chown -R www-data:www-data "$NC_APPS_PATH"
+
+msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
+
 
 ####################### SIGNALING
 
