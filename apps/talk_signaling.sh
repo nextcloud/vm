@@ -236,7 +236,7 @@ check_open_port 443 "$SUBDOMAIN"
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nats-server.asc" "https://packaging.gitlab.io/nats-server/gpg.key"
 echo "deb [arch=amd64] https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list
 apt update -q4 & spinner_loading
-RUNLEVEL=1 install_if_not nats-server
+install_if_not nats-server
 ## Configuration
 mkdir -p /etc/nats
 install -d -o nats -g nats /etc/nats
