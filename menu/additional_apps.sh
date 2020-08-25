@@ -109,7 +109,7 @@ case "$choice" in
     *"Talk"*)
         clear
         print_text_in_color "$ICyan" "Downloading the Talk script..."
-        run_script APP talk
+        run_script APP talk_signaling
     ;;&
     *"Webmin"*)
         clear
