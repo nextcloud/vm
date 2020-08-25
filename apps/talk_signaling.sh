@@ -369,6 +369,7 @@ then
     ProxyPass /error/ !
     ErrorDocument 404 /error/404_proxy.html
     # Enable proxying Websocket requests to the standalone signaling server.
+    # https://httpd.apache.org/docs/2.4/mod/mod_proxy_wstunnel.html
     ProxyPass / "http://127.0.0.1:8081/"
     RewriteEngine on
     RewriteCond %{HTTP:Upgrade} websocket [NC]
