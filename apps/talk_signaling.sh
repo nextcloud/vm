@@ -361,12 +361,11 @@ then
     RequestHeader set X-Forwarded-Proto "https"
     # basic proxy settings
     # Enable proxying Websocket requests to the standalone signaling server.
-    ProxyPass "/"  "ws://127.0.0.1:8081/"
-    RewriteEngine On
-    # Websocket connections from the clients.
-    RewriteRule ^/spreed$ - [L]
-    # Backend connections from Nextcloud.
-    RewriteRule ^/api/(.*) http://127.0.0.1:8081/api/\$1 [L,P]
+    ProxyPass / "http://127.0.0.1:8081/"
+    RewriteEngine on
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteCond %{HTTP:Connection} upgrade [NC]
+    RewriteRule ^/?(.*) "ws://127.0.0.1:8081/\$1" [P,L]
     # Extra (remote) headers
     RequestHeader set X-Real-IP %{REMOTE_ADDR}s
     Header set X-XSS-Protection "1; mode=block"
