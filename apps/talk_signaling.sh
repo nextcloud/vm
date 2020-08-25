@@ -331,7 +331,7 @@ a2enmod remoteip
 
 # Prep the error page
 mkdir -p /var/www/html/error
-echo "hi there! :)" > /error/404_proxy.html
+echo "hi there! :)" > /var/www/html/error/404_proxy.html
 
 if [ -f "$HTTPS_CONF" ]
 then
