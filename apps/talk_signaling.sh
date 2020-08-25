@@ -205,7 +205,6 @@ chown -R www-data:www-data "$NC_APPS_PATH"
 
 msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
 
-
 ####################### SIGNALING
 
 DESCRIPTION="Talk Signaling Server"
@@ -309,7 +308,7 @@ fi
 start_if_stopped signaling
 check_command systemctl enable signaling
 
-### PROXY ###
+# Apache Proxy
 # https://github.com/strukturag/nextcloud-spreed-signaling#apache
 
 # Check if $SUBDOMAIN exists and is reachable
@@ -430,7 +429,7 @@ occ_command config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_
 # Check that everything is working
 if ! curl -L https://"$SUBDOMAIN"/api/v1/welcome
 then
-    msg_box "Installationn failed./\n\nPlease run this script again to uninstall if you want to clean the system, or choose to reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
+    msg_box "Installation failed. :/\n\nPlease run this script again to uninstall if you want to clean the system, or choose to reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 1
 else
     msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
