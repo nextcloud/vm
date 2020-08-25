@@ -61,7 +61,10 @@ then
               /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
               /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
               /etc/apt/sources.list.d/morph027-janus.list \
-              /etc/apt/sources.list.d/morph027-nats-server.list
+              /etc/apt/sources.list.d/morph027-nats-server.list \
+              $VMLOGS/talk_apache_error.log \
+              $VMLOGS/talk_apache_access.log \
+              /var/www/html/error
             apt-get purge coturn -y
             apt-get purge nats-server -y
             apt-get purge janus -y
