@@ -336,8 +336,8 @@ chown www-data:www-data $VMLOGS/talk_apache_error.log $VMLOGS/talk_apache_access
 
 # Prep the error page
 mkdir -p /var/www/html/error
-chown -R www-data:www-data /var/www/html/error
 echo "Hi there! :) If you see this page, the Apache2 proxy for $DESCRIPTION is up and running." > /var/www/html/error/404_proxy.html
+chown -R www-data:www-data /var/www/html/error
 
 if [ -f "$HTTPS_CONF" ]
 then
