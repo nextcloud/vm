@@ -212,7 +212,7 @@ msg_box "Nextcloud Talk is now installed. For more information about Nextcloud T
 
 DESCRIPTION="Talk Signaling Server"
 
-msg_box "You will now be presented with the option to install the Talk Signaling (Stun) server. 
+msg_box "You will now be presented with the option to install the Talk Signaling (STUN) server. 
 This aims to give you greater performance and ability to have more users in a call at the same time.
 
 You can read more here: 
@@ -423,13 +423,14 @@ else
     # remove settings to be able to start over again
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
-    exit 1
 fi
 
 # Check that everything is working
 if ! curl -L https://"$SUBDOMAIN"/api/v1/welcome
 then
     msg_box "Installationn failed. :/\n\nPlease run this script again to uninstall if you want clean system, or reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
+    exit 1
 else
-   msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
+    msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
+    exit 0
 fi
