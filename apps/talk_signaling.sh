@@ -193,7 +193,6 @@ check_open_port "$TURN_PORT" "$TURN_DOMAIN"
 # Enable Spreed (Talk)
 STUN_SERVERS_STRING="[\"$TURN_DOMAIN:$TURN_PORT\"]"
 TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN_SECRET\",\"protocols\":\"udp,tcp\"}]"
-SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
 
 if ! is_app_enabled spreed
 then
@@ -202,7 +201,6 @@ fi
 
 occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
 occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
-occ_command config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
 chown -R www-data:www-data "$NC_APPS_PATH"
 
 msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
@@ -425,10 +423,14 @@ else
     last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
 fi
 
+# Set signaling server strings
+SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
+occ_command config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
+
 # Check that everything is working
 if ! curl -L https://"$SUBDOMAIN"/api/v1/welcome
 then
-    msg_box "Installationn failed. :/\n\nPlease run this script again to uninstall if you want clean system, or reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
+    msg_box "Installationn failed./\n\nPlease run this script again to uninstall if you want to clean the system, or choose to reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 1
 else
     msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
