@@ -64,6 +64,7 @@ then
               /etc/apt/sources.list.d/morph027-nats-server.list \
               $VMLOGS/talk_apache_error.log \
               $VMLOGS/talk_apache_access.log \
+              $VMLOGS/turnserver.log \
               /var/www/html/error
             apt-get purge coturn -y
             apt-get purge nats-server -y
