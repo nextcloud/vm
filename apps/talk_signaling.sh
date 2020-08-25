@@ -425,7 +425,7 @@ fi
 # Check that everything is working
 if ! curl -L https://"$SUBDOMAIN"/api/v1/welcome
 then
-    msg_box "Installationn failed. :/\n\nPlease run this script again to uninstall if you want clean system, or reinstall if you want to try again."
+    msg_box "Installationn failed. :/\n\nPlease run this script again to uninstall if you want clean system, or reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
 else
-   msg_box "Congratulations, everything is working as intended! The installation succeeded."
+   msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
 fi
