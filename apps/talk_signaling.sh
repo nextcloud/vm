@@ -329,6 +329,11 @@ a2enmod ssl
 a2enmod headers
 a2enmod remoteip
 
+# Allow CustomLog
+touch $VMLOGS/talk_apache_access.log
+touch $VMLOGS/talk_apache_error.log
+chown www-data:www-data $VMLOGS/talk_apache_error.log $VMLOGS/talk_apache_access.log
+
 # Prep the error page
 mkdir -p /var/www/html/error
 echo "hi there! :)" > /var/www/html/error/404_proxy.html
@@ -354,8 +359,8 @@ then
     SSLProtocol TLSv1.2
     SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
     LogLevel warn
-#    CustomLog $VMLOGS/talk_apache_access.log
-#    ErrorLog $VMLOGS/talk_apache_error.log
+    CustomLog $VMLOGS/talk_apache_access.log combined
+    ErrorLog $VMLOGS/talk_apache_error.log
     # Just in case - see below
     SSLProxyEngine On
     SSLProxyVerify None
