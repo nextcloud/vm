@@ -329,6 +329,10 @@ a2enmod ssl
 a2enmod headers
 a2enmod remoteip
 
+# Prep the error page
+mkdir -p /var/www/html/error
+echo "hi there! :)" > /error/404_proxy.html
+
 if [ -f "$HTTPS_CONF" ]
 then
     a2dissite "$SUBDOMAIN.conf"
@@ -359,7 +363,11 @@ then
     SSLProxyCheckPeerName Off
     # contra mixed content warnings
     RequestHeader set X-Forwarded-Proto "https"
-    # basic proxy settings
+    # Custom error page
+    ProxyErrorOverride On
+    DocumentRoot "/var/www/html"
+    ProxyPass /error/ !
+    ErrorDocument 404 /error/404_proxy.html
     # Enable proxying Websocket requests to the standalone signaling server.
     ProxyPass / "http://127.0.0.1:8081/"
     RewriteEngine on
