@@ -48,7 +48,7 @@ In some cases we do pre-releases of the VM as well. Those can be found in the [T
 
 If you want to try the latest version yourself, there are two variables that you could use:
 
-1. For latest **beta** version: `sudo bash /var/scripts/update.sh beta`
+1. For latest **beta** or **RC** version: `sudo bash /var/scripts/update.sh beta`
 
 2. For specific **RC** version: `sudo bash /var/scripts/update.sh 19.0.0RC1`
 
