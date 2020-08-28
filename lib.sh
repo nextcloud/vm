@@ -774,14 +774,8 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 18.04 "$DISTRO" 20.04.6
+if version 18.04 "$DISTRO" 20.04.6
 then
-    print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
-    print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
-    print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
-    print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
-    sleep 300
-else
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if ! netplan apply
     then
@@ -795,6 +789,11 @@ else
         countdown 'Not online yet, waiting a bit more...' 40
         site_200 github.com
     fi
+else
+msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.6 to run this script."
+msg_box "Please contact us to get support for upgrading your server:
+https://www.hanssonit.se/#contact
+https://shop.hanssonit.se/"
 fi
 }
 
