@@ -794,6 +794,8 @@ msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.0
 msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
+msg_box "We will now pause for 60 seconds. Please press CTRL+C when prompted to do so."
+countdown "Please press CTRL+C to abort..." 60
 fi
 }
 
