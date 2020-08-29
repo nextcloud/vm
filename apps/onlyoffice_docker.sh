@@ -301,7 +301,7 @@ then
     a2ensite "$SUBDOMAIN.conf"
     restart_webserver
     # Install OnlyOffice
-    occ_command app:install onlyoffice
+    install_and_enable_app onlyoffice
 else
     print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
     any_key "Press any key to continue... "

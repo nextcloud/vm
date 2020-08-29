@@ -23,7 +23,7 @@ choice=$(whiptail --title "Which apps do you want to install?" --checklist "Auto
 "Fail2ban " "(Extra Bruteforce protection)" OFF \
 "Fail2ban-Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
-"Netdata" "(Real-time server monitoring via Web GUI)" OFF \
+"Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" OFF \

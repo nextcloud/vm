@@ -397,7 +397,7 @@ countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds.
 
 # Backup app status
 # Fixing https://github.com/nextcloud/server/issues/4538
-print_text_in_color "$ICyan" "Getting and backing up the status of apps for later. This can take a while..."
+print_text_in_color "$ICyan" "Getting and backing up the status of apps for later, this might take a while..."
 NC_APPS="$(occ_command app:list | awk '{print$2}' | tr -d ':' | sed '/^$/d')"
 if [ -z "$NC_APPS" ]
 then
