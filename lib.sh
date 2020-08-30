@@ -279,8 +279,7 @@ domain_check_200() {
     fi
 
     # Is the DNS record same as the external IP address of the server?
-    DIG="$(dig +short "${1}" @resolver1.opendns.com)"
-    if print_text_in_color "$IWhite" "$DIG" | grep -q "$WANIP4"
+    if dig +short "${1}" @resolver1.opendns.com | grep -q "$WANIP4"
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
     else
