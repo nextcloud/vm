@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner
+# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=2034,2059
 true
@@ -32,6 +32,16 @@ then
     msg_box "The MAX_COUNT variable has to be a positive integer, greater than 0. Please change it accordingly. Recommended is MAX_COUNT=16, because not all menus work reliably with a higher count."
     exit
 fi
+
+# Inform the user
+msg_box "This script automates mounting SMB-shares locally in your system and adds them automatically as external storage to your Nextcloud."
+if [[ "no" == $(ask_yes_or_no "Do you want to continue?") ]]
+then
+    exit 1
+fi
+
+# Needed for DFS-shares to work
+install_if_not keyutils
 
 # Install cifs-utils
 install_if_not cifs-utils
