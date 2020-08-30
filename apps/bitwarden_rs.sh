@@ -21,7 +21,7 @@ root_check
 if [ -d /home/bitwarden_rs ] || docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
 then
     msg_box "It seems like you have already installed Bitwarden_rs.
-You cannot install it again because you would loose all your data.
+You cannot install it again because you would loose all your data and passwords.
 
 If you are certain that you definitely want to delete Bitwarden_rs and all 
 its data to be able to reinstall it, you can execute the following commands:
@@ -34,13 +34,25 @@ fi
 
 # Inform what bitwarden_rs is
 msg_box "Bitwarden_rs is an unofficial Bitwarden server API implementation in Rust.
+It has less hardware requirements and therefore runs on nearly any hardware.
 
-It has less hardware requirements and runs on nearly any hardware.
-For company usecase it is recommended to install the official Bitwarden.
+Since it's unofficial, you need to really trust the maintainer of the project to install it:
+https://github.com/dani-garcia/bitwarden_rs
+You never know what could hide in an unofficial release.
+
+It's always is recommended to install the official Bitwarden by running:
+sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden
 
 Please report issues only to https://github.com/dani-garcia/bitwarden_rs"
 
-if [[ "no" == $(ask_yes_or_no "Do you want to install Bitwarden_rs?") ]]
+msg_box "Are you really sure?
+
+It's always is recommended to install the official Bitwarden by running:
+sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden
+
+You will be offered to abort in the next step"
+
+if [[ "no" == $(ask_yes_or_no "Are you sure you want to install Bitwarden_rs?") ]]
 then
     exit
 fi
