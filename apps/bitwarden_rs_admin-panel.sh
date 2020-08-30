@@ -35,6 +35,7 @@ choice=$(whiptail --title "Bitwarden_rs admin-panel" --radiolist "Do you want to
 case "$choice" in
     "Yes")
         clear
+        print_text_in_color "$ICyan" "Stopping bitwarden_rs..."
         docker stop bitwarden_rs
         if grep -q '"admin_token":' /home/bitwarden_rs/config.json
         then
@@ -47,6 +48,7 @@ case "$choice" in
     ;;
     "No")
         clear
+        print_text_in_color "$ICyan" "Stopping bitwarden_rs..."
         docker stop bitwarden_rs
         ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
         if grep -q '"admin_token":' /home/bitwarden_rs/config.json
