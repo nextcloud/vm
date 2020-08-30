@@ -58,12 +58,9 @@ case "$choice" in
             sed -i "0,/{/a \ \ \"admin_token\": \"$ADMIN_PASS\"," /home/bitwarden_rs/config.json
         fi
         docker start bitwarden_rs
-msg_box "The admin-panel for Bitwarden_rs is now enabled.
-
-Please note down the new admin-panel password: $ADMIN_PASS
-
-Otherwise you will not be able to login to the admin-panel.
-
+msg_box "The admin-panel for Bitwarden_rs is now enabled.\n
+Please note down the new admin-panel password: $ADMIN_PASS\n
+Otherwise you will not be able to login to the admin-panel.\n
 To change the password again, you can simply run this option (enable admin-panel) again."
     ;;
     *)
