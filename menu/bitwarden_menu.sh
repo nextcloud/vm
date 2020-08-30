@@ -18,6 +18,7 @@ root_check
 
 choice=$(whiptail --title "Bitwarden" --checklist "Automatically configure and install the Bitwarden or configure some aspects of it.\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitwarden " "(External password manager [4GB RAM] - subdomain required)" OFF \
+"Bitwarden_rs" "(Unofficial Bitwarden password manager - subdomain required)" OFF \
 "Bitwarden-Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "Bitwarden-Mail-Configuration" "(Configure the mailserver settings for Bitwarden)" OFF 3>&1 1>&2 2>&3)
 
@@ -26,6 +27,11 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
         run_script APP tmbitwarden
+    ;;&
+    *"Bitwarden_rs"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the Bitwarden_rs script..."
+        run_script APP bitwarden_rs
     ;;&
     *"Bitwarden-Registration"*)
         clear

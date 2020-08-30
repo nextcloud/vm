@@ -105,7 +105,7 @@ else
 fi
 
 # Let the user choose port. TURN_PORT in msg_box is taken from lib.sh and later changed if user decides to.
-NONO_PORTS=(22 25 53 80 443 3306 5178 5179 5432 7983 8983 10000 8081)
+NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7983 8983 10000 8081)
 msg_box "The default port for Talk used in this script is port $TURN_PORT.
 You can read more about that port here: https://www.speedguide.net/port.php?port=$TURN_PORT
 You will now be given the option to change this port to something of your own. 
