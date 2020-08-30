@@ -43,6 +43,7 @@ case "$choice" in
         else
             sed -i '0,/{/a \ \ "admin_token": "",' /home/bitwarden_rs/config.json
         fi
+        print_text_in_color "$ICyan" "Starting bitwarden_rs..."
         docker start bitwarden_rs
         msg_box "The admin-panel for Bitwarden_rs is now disabled."
     ;;
@@ -57,6 +58,7 @@ case "$choice" in
         else
             sed -i "0,/{/a \ \ \"admin_token\": \"$ADMIN_PASS\"," /home/bitwarden_rs/config.json
         fi
+        print_text_in_color "$ICyan" "Starting bitwarden_rs..."
         docker start bitwarden_rs
 msg_box "The admin-panel for Bitwarden_rs is now enabled.\n
 Please note down the new admin-panel password: $ADMIN_PASS\n
