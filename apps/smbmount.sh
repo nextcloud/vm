@@ -33,6 +33,16 @@ then
     exit
 fi
 
+# Inform the user
+msg_box "This script automates mounting SMB-shares locally in your system and adds them automatically as external storage to your Nextcloud."
+if [[ "no" == $(ask_yes_or_no "Do you want to continue?") ]]
+then
+    exit 1
+fi
+
+# Needed for DFS-shares to work
+install_if_not keyutils
+
 # Install cifs-utils
 install_if_not cifs-utils
 
