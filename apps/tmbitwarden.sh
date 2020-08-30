@@ -29,13 +29,13 @@ then
 msg_box "It seems like Bitwarden is already installed.
 You cannot install it again because you would loose all your data and passwords.
 
-If you are certain that you definitely want to delete Bitwarden and all 
+If you are certain that you definitely want to delete Bitwarden and all
 its data to be able to reinstall it, you can execute the following commands:
 
 systemctl stop bitwarden
 docker volume prune -f
 docker system prune -af
-rm -rf "${BITWARDEN_HOME:?}/"bwdata   
+rm -rf "${BITWARDEN_HOME:?}/"bwdata"
                 exit 1
             fi
         fi
