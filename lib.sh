@@ -279,12 +279,10 @@ domain_check_200() {
     fi
 
     # Is the DNS record same as the external IP address of the server?
-    DIG="$(dig +short "${1}" @resolver1.opendns.com)"
-    if [[ "$DIG" = "$WANIP4" ]]
+    if dig +short "${1}" @resolver1.opendns.com | grep -q "$WANIP4"
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
-    elif [[ "$DIG" != "$WANIP4" ]]
-    then
+    else
 msg_box "DNS lookup failed with dig. The external IP ($WANIP4) address of this server is not the same as the A-record ($DIG).
 Please check your DNS settings! Maybe the domain isn't propagated?
 Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
