@@ -20,8 +20,8 @@ choice=$(whiptail --title "Bitwarden" --checklist "Automatically configure and i
 "Bitwarden " "(External password manager [4GB RAM] - subdomain required)" OFF \
 "Bitwarden-Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "Bitwarden-Mail-Configuration" "(Configure the mailserver settings for Bitwarden)" OFF \
-"Bitwarden_rs " "(Unofficial Bitwarden password manager - subdomain required)" OFF \
-"Bitwarden_rs_admin-panel" "(Enable or disable the admin-panel for Bitwarden_rs)" OFF 3>&1 1>&2 2>&3)
+"Bitwarden RS " "(Unofficial Bitwarden password manager - subdomain required)" OFF \
+"Bitwarden RS Admin-panel" "(Enable or disable the admin-panel for Bitwarden RS)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Bitwarden "*)
@@ -39,12 +39,12 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Bitwarden-Mailconfig script..."
         run_script APP bitwarden-mailconfig
     ;;&
-    *"Bitwarden_rs "*)
+    *"Bitwarden RS "*)
         clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden_rs script..."
         run_script APP bitwarden_rs
     ;;&
-    *"Bitwarden_rs_admin-panel"*)
+    *"Bitwarden RS Admin-panel"*)
         clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden_rs admin-panel script..."
         run_script APP bitwarden_rs_admin-panel
