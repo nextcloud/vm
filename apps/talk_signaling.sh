@@ -422,6 +422,11 @@ else
     last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
 fi
 
+## TODO
+# Add to /etc/hosts
+# Based on https://help.nextcloud.com/t/nextcloud-talk-signaling-server-now-automated-installation/90567/17?u=enoch85
+# echo "127.0.1.1    $SUBDOMAIN" >> /etc/hosts
+
 # Set signaling server strings
 SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
 occ_command config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
