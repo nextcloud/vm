@@ -31,23 +31,23 @@ case "$choice" in
     ;;&
     *"Bitwarden Registration"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Bitwarden-registration script..."
-        run_script APP bitwarden-registration
+        print_text_in_color "$ICyan" "Downloading the Bitwarden Registration script..."
+        run_script APP bitwarden_registration
     ;;&
     *"Bitwarden Mail-Configuration"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Bitwarden-Mailconfig script..."
-        run_script APP bitwarden-mailconfig
+        print_text_in_color "$ICyan" "Downloading the Bitwarden Mailconfig script..."
+        run_script APP bitwarden_mailconfig
     ;;&
     *"Bitwarden-RS  "*)
         clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden-RS script..."
-        run_script APP bitwarden_rs
+        run_script APP bitwarden-rs
     ;;&
     *"Bitwarden-RS Admin-panel"*)
         clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden-RS Admin-panel script..."
-        run_script APP bitwarden_rs_admin-panel
+        run_script APP bitwarden-rs_admin-panel
     ;;&
     *)
     ;;
