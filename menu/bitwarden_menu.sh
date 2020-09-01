@@ -17,31 +17,37 @@ debug_mode
 root_check
 
 choice=$(whiptail --title "Bitwarden" --checklist "Automatically configure and install the Bitwarden or configure some aspects of it.\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Bitwarden " "(External password manager [4GB RAM] - subdomain required)" OFF \
-"Bitwarden_rs" "(Unofficial Bitwarden password manager - subdomain required)" OFF \
-"Bitwarden-Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
-"Bitwarden-Mail-Configuration" "(Configure the mailserver settings for Bitwarden)" OFF 3>&1 1>&2 2>&3)
+"Bitwarden  " "(External password manager [4GB RAM] - subdomain required)" OFF \
+"Bitwarden Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
+"Bitwarden Mail-Configuration" "(Configure the mailserver settings for Bitwarden)" OFF \
+"Bitwarden-RS  " "(Unofficial Bitwarden password manager - subdomain required)" OFF \
+"Bitwarden-RS Admin-panel" "(Enable or disable the admin-panel for Bitwarden-RS)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    *"Bitwarden "*)
+    *"Bitwarden  "*)
         clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
         run_script APP tmbitwarden
     ;;&
-    *"Bitwarden_rs"*)
+    *"Bitwarden Registration"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Bitwarden_rs script..."
-        run_script APP bitwarden_rs
+        print_text_in_color "$ICyan" "Downloading the Bitwarden Registration script..."
+        run_script APP bitwarden_registration
     ;;&
-    *"Bitwarden-Registration"*)
+    *"Bitwarden Mail-Configuration"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Bitwarden-registration script..."
-        run_script APP bitwarden-registration
+        print_text_in_color "$ICyan" "Downloading the Bitwarden Mailconfig script..."
+        run_script APP bitwarden_mailconfig
     ;;&
-    *"Bitwarden-Mail-Configuration"*)
+    *"Bitwarden-RS  "*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Bitwarden-Mailconfig script..."
-        run_script APP bitwarden-mailconfig
+        print_text_in_color "$ICyan" "Downloading the Bitwarden-RS script..."
+        run_script APP bitwarden-rs
+    ;;&
+    *"Bitwarden-RS Admin-panel"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the Bitwarden-RS Admin-panel script..."
+        run_script APP bitwarden-rs_admin-panel
     ;;&
     *)
     ;;
