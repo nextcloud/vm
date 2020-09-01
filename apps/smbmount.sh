@@ -5,6 +5,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="SMB-mount"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -34,8 +35,7 @@ then
 fi
 
 # Inform the user
-msg_box "This script automates mounting SMB-shares locally in your system and adds them automatically as external storage to your Nextcloud."
-if [[ "no" == $(ask_yes_or_no "Do you want to continue?") ]]
+if ! yesno_box "This script automates mounting SMB-shares locally in your system and adds them automatically as external storage to your Nextcloud.\n\nDo you want to continue?"
 then
     exit 1
 fi
@@ -56,6 +56,8 @@ fi
 # Functions
 add_mount() {
 
+local SUBTITLE="Add a SMB-mount"
+
 # Check if mounting slots are available
 count=1
 while [ $count -le $MAX_COUNT ]
@@ -69,17 +71,21 @@ do
 done
 if [ $count -gt $MAX_COUNT ]
 then
-    msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.\nIf you really want to mount more, you can simply download the smb-mount script directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:\n'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh /var/scripts'\n'sudo nano /var/scripts/smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file\n'sudo bash /var/scripts/smbmount.sh' # Execute the script."
+msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.
+If you really want to mount more, you can simply download the smb-mount script directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:
+'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh /var/scripts'
+'sudo nano /var/scripts/smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file
+'sudo bash /var/scripts/smbmount.sh' # Execute the script." "$SUBTITLE"
     return
 fi
 
 # Enter SMB-server and Share-name
 while true
 do
-    SERVER_SHARE_NAME=$(whiptail --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
+    SERVER_SHARE_NAME=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    if ! yesno_box "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
     then
-        msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again."
+        msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again." "$SUBTITLE"
     else
         SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
         break
@@ -89,10 +95,10 @@ done
 # Enter the SMB-user
 while true
 do
-    SMB_USER=$(whiptail --inputbox "Please enter the username of the SMB-user" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_USER") ]]
+    SMB_USER=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the username of the SMB-user" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    if ! yesno_box "Is this correct? $SMB_USER" "$SUBTITLE"
     then
-        msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again."
+        msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again." "$SUBTITLE"
     else
         break
     fi
@@ -101,10 +107,10 @@ done
 # Enter the password of the SMB-user
 while true
 do
-    SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER.\nPlease note, that comma as a character in the password is not supported." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-    if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_PASSWORD") ]]
+    SMB_PASSWORD=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the password of the SMB-user $SMB_USER." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    if ! yesno_box "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
     then
-        msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again."
+        msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again." "$SUBTITLE"
     else
         break
     fi
@@ -133,7 +139,11 @@ do
         if ! mountpoint -q $SMBSHARES/$count
         then
             # If not remove this line from fstab
-            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.\nAs a hint:\n- you might fix the connection problem by enabling SMB3 on your SMB-server.\n- You could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.\n- Please also make sure, that 'ping IP-address' of your SMB-Server from your Nextcloud-instance works."
+msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.
+As a hint:
+- you might fix the connection problem by enabling SMB3 on your SMB-server.
+- You could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.
+- Please also make sure, that 'ping IP-address' of your SMB-Server from your Nextcloud-instance works." "$SUBTITLE"
             sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
             if [ -f $SMB_CREDENTIALS/SMB$count ]
             then
@@ -157,11 +167,15 @@ do
                 occ_command files_external:option "$MOUNT_ID" filesystem_check_changes 1
 
                 # Inform the user that mounting was successful
-                msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count.\nYou are now using the Nextcloud external storage app to access files there. The Share has been mounted to the Nextcloud admin-group.\nYou can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing."
+msg_box "Your mount was successful, congratulations!
+It's now accessible in your root directory under $SMBSHARES/$count.
+You are now using the Nextcloud external storage app to access files there.
+The Share has been mounted to the Nextcloud admin-group.
+You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing." "$SUBTITLE"
                 break
             else
                 # Inform the user that mounting was successful
-                msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count."
+                msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
                 break
             fi
         fi
@@ -173,10 +187,12 @@ return
 
 mount_shares() {
 
+local SUBTITLE="Mount SMB-shares"
+
 # Check if any SMB-share is created
 if ! grep -q "$SMBSHARES" /etc/fstab
 then
-    msg_box "It seems like you have not created any SMB-share."
+    msg_box "It seems like you have not created any SMB-share." "$SUBTITLE"
     return
 fi
 count=1
@@ -196,11 +212,11 @@ do
 done
 if [ $count -gt $MAX_COUNT ]
 then
-    msg_box "No existing SMB-mount-entry is unmounted. So nothing to mount."
+    msg_box "No existing SMB-mount-entry is unmounted. So nothing to mount." "$SUBTITLE"
     return
 fi
 
-args=(whiptail --title "Mount SMB-shares" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 
 # Find out which SMB-shares are available
@@ -225,9 +241,9 @@ do
         mount "$SMBSHARES/$count"
         if ! mountpoint -q $SMBSHARES/$count
         then
-            msg_box "It seems like the mount of $SMBSHARES/$count wasn't successful. Please try again."
+            msg_box "It seems like the mount of $SMBSHARES/$count wasn't successful. Please try again." "$SUBTITLE"
         else
-            msg_box "Your mount was successful, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count\nYou can use the Nextcloud external storage app to access files there."
+            msg_box "Your mount was successful, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count\nYou can use the Nextcloud external storage app to access files there." "$SUBTITLE"
         fi
     fi
     count=$((count+1))
@@ -237,15 +253,17 @@ return
 
 show_all_mounts() {
 
+local SUBTITLE="Show all SMB-mounts"
+
 # If no entry created, nothing to show
 if ! grep -q "$SMBSHARES" /etc/fstab
 then
-    msg_box "You haven't created any SMB-mount. So nothing to show."
+    msg_box "You haven't created any SMB-mount. So nothing to show." "$SUBTITLE"
     return
 fi
 
 # Find out which SMB-shares are available
-args=(whiptail --title "List SMB-shares" --checklist "This option let you show detailed information about your SMB-shares.\nChoose which one you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you show detailed information about your SMB-shares.\nChoose which one you want to see.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -267,9 +285,9 @@ do
     then
         if [ -f $SMB_CREDENTIALS/SMB$count ]
         then
-            msg_box "$(grep "$SMBSHARES/$count " /etc/fstab)\n$(cat $SMB_CREDENTIALS/SMB$count)"
+            msg_box "$(grep "$SMBSHARES/$count " /etc/fstab)\n$(cat $SMB_CREDENTIALS/SMB$count)" "$SUBTITLE"
         else
-            msg_box "$(grep "$SMBSHARES/$count " /etc/fstab)"
+            msg_box "$(grep "$SMBSHARES/$count " /etc/fstab)" "$SUBTITLE"
         fi
     fi
     count=$((count+1))
@@ -279,15 +297,17 @@ return
 
 change_mount() {
 
+local SUBTITLE="Change a SMB-mount"
+
 # If no entry created, nothing to show
 if ! grep -q "$SMBSHARES" /etc/fstab
 then
-    msg_box "You haven't created any SMB-mount. So nothing to change."
+    msg_box "You haven't created any SMB-mount. So nothing to change." "$SUBTITLE"
     return
 fi
 
 # Find out which SMB-shares are available
-args=(whiptail --title "Change a SMB-mount" --radiolist "This option let you change the password, the username and/or the network-share of one of your SMB-mounts.\nChoose which one you want to show.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --radiolist "This option let you change the password, the username and/or the network-share of one of your SMB-mounts.\nChoose which one you want to show.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -316,7 +336,7 @@ then
     was_mounted=yes
     if mountpoint -q "$SMBSHARES/$count"
     then
-        msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful while trying to change the mount. Please try again."
+        msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful while trying to change the mount. Please try again." "$SUBTITLE"
         return
     fi
 fi
@@ -341,7 +361,7 @@ else
 fi
 
 # Let the user choose which entries he wants to change
-choice=$(whiptail --title "Change a SMB-mount" --checklist "$fstab_entry\n$old_credentials\nChoose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "$fstab_entry\n$old_credentials\nChoose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Password" "(change the password of the SMB-user)" OFF \
 "Username" "(change the username of the SMB-user)" OFF \
 "Share" "(change the SMB-share to use the same mount directory)" OFF 3>&1 1>&2 2>&3)
@@ -352,10 +372,10 @@ case "$choice" in
         # Enter SMB-server and Share-name
         while true
         do
-            SERVER_SHARE_NAME=$(whiptail --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-            if [[ "no" == $(ask_yes_or_no "Is this correct? $SERVER_SHARE_NAME") ]]
+            SERVER_SHARE_NAME=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            if ! yesno_box "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
             then
-                msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again."
+                msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again." "$SUBTITLE"
             else
                 SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
                 break
@@ -367,10 +387,10 @@ case "$choice" in
         # Enter the SMB-user
         while true
         do
-            SMB_USER=$(whiptail --inputbox "Please enter the username of the SMB-user" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-            if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_USER") ]]
+            SMB_USER=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the username of the SMB-user" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            if ! yesno_box "Is this correct? $SMB_USER" "$SUBTITLE"
             then
-                msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again."
+                msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again." "$SUBTITLE"
             else
                 break
             fi
@@ -381,10 +401,10 @@ case "$choice" in
         # Enter the password of the SMB-user
         while true
         do
-            SMB_PASSWORD=$(whiptail --inputbox "Please enter the password of the SMB-user $SMB_USER.\nPlease note, that comma as a character in the password is not supported." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
-            if [[ "no" == $(ask_yes_or_no "Is this correct? $SMB_PASSWORD") ]]
+            SMB_PASSWORD=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the password of the SMB-user $SMB_USER." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            if ! yesno_box "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
             then
-                msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again."
+                msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again." "$SUBTITLE"
             else
                 break
             fi
@@ -423,7 +443,7 @@ mount "$SMBSHARES/$count"
 if ! mountpoint -q "$SMBSHARES/$count"
 then
     # If not remove this line from fstab
-    msg_box "It seems like the mount of the changed configuration wasn't successful. It will get deleted now. The old config will get restored now. Please try again to change the mount."
+    msg_box "It seems like the mount of the changed configuration wasn't successful. It will get deleted now. The old config will get restored now. Please try again to change the mount." "$SUBTITLE"
     sed -i "/$selected_option_sed/d" /etc/fstab
     echo "$fstab_entry" >> /etc/fstab
     unset fstab_entry
@@ -438,7 +458,7 @@ then
         mount "$SMBSHARES/$count"
         if ! mountpoint -q "$SMBSHARES/$count"
         then
-            msg_box "Your old configuration couldn't get mounted but is restored to /etc/fstab."
+            msg_box "Your old configuration couldn't get mounted but is restored to /etc/fstab." "$SUBTITLE"
         fi
     fi
 else
@@ -449,12 +469,14 @@ else
     fi
     
     # Inform the user that mounting was successful
-    msg_box "Your change of the mount was successful, congratulations!"
+    msg_box "Your change of the mount was successful, congratulations!" "$SUBTITLE"
 fi
 
 }
 
 unmount_shares() {
+
+local SUBTITLE="Unmount SMB-shares"
 
 # Check if any SMB-shares are available for unmounting
 count=1
@@ -469,12 +491,12 @@ do
 done
 if [ $count -gt $MAX_COUNT ]
 then
-    msg_box "You haven't mounted any SMB-mount. So nothing to unmount"
+    msg_box "You haven't mounted any SMB-mount. So nothing to unmount" "$SUBTITLE"
     return
 fi
 
 # Find out which SMB-shares are available
-args=(whiptail --title "Unmount SMB-shares" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -495,9 +517,9 @@ do
         umount "$SMBSHARES/$count"
         if mountpoint -q $SMBSHARES/$count
         then
-            msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful. Please try again."
+            msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful. Please try again." "$SUBTITLE"
         else
-            msg_box "Your unmount of $SMBSHARES/$count was successful!"
+            msg_box "Your unmount of $SMBSHARES/$count was successful!" "$SUBTITLE"
         fi
     fi
     count=$((count+1))
@@ -507,15 +529,17 @@ return
 
 delete_mounts() {
 
+local SUBTITLE="Delete SMB-mounts"
+
 # Check if any SMB-share is available
 if ! grep -q "$SMBSHARES" /etc/fstab
 then
-    msg_box "You haven't created any SMB-mount, nothing to delete."
+    msg_box "You haven't created any SMB-mount, nothing to delete." "$SUBTITLE"
     return
 fi
 
 # Check which SMB-shares are available
-args=(whiptail --title "Delete SMB-mounts" --checklist "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -540,14 +564,14 @@ do
             umount "$SMBSHARES/$count"
             if mountpoint -q $SMBSHARES/$count
             then
-                msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful during the deletion. Please try again."
+                msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful during the deletion. Please try again." "$SUBTITLE"
             else
                 sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
                 if [ -f $SMB_CREDENTIALS/SMB$count ]
                 then
                     check_command rm $SMB_CREDENTIALS/SMB$count
                 fi
-                msg_box "Your deletion of $SMBSHARES/$count was successful!"
+                msg_box "Your deletion of $SMBSHARES/$count was successful!" "$SUBTITLE"
             fi
         else
             sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
@@ -555,7 +579,7 @@ do
             then
                 check_command rm $SMB_CREDENTIALS/SMB$count
             fi
-            msg_box "Your deletion of $SMBSHARES/$count was successful!"
+            msg_box "Your deletion of $SMBSHARES/$count was successful!" "$SUBTITLE"
         fi
     fi
     count=$((count+1))
@@ -567,7 +591,7 @@ return
 while true
 do
     # Main menu
-    choice=$(whiptail --title "SMB-share" --radiolist "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --radiolist "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Add a SMB-mount" "(and mount/connect it)" ON \
     "Mount SMB-shares" "(connect SMB-shares)" OFF \
     "Show all SMB-mounts" "(show detailed information about the SMB-mounts)" OFF \

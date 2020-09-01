@@ -73,6 +73,9 @@ then
 fi
 }
 use_global_systemd_dns
+# Common
+TITLE="Nextcloud VM - $(date +%Y)"
+[ -n "$SCRIPT_NAME" ] && TITLE+=" - $SCRIPT_NAME"
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
@@ -226,8 +229,18 @@ ask_yes_or_no() {
 }
 
 msg_box() {
-local PROMPT="$1"
-    whiptail --title "Nextcloud VM - $(date +"%Y")" --msgbox "${PROMPT}" "$WT_HEIGHT" "$WT_WIDTH"
+    [ -n "$2" ] && local SUBTITLE=" - $2"
+    whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH"
+}
+
+yesno_box() {
+    [ -n "$2" ] && local SUBTITLE=" - $2"
+    if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
+    then
+        return 0
+    else
+        return 1
+    fi
 }
 
 # Check if process is runnnig: is_process_running dpkg
