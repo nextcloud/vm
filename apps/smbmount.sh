@@ -36,7 +36,7 @@ fi
 
 # Inform the user
 msg_box "This script automates mounting SMB-shares locally in your system and adds them automatically as external storage to your Nextcloud."
-if ! yesno_box "Do you want to continue?"
+if ! yesno_box "Do you want to proceed with this script?"
 then
     exit 1
 fi
