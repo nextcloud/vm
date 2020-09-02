@@ -83,7 +83,7 @@ fi
 # Enter SMB-server and Share-name
 while true
 do
-    SERVER_SHARE_NAME=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SERVER_SHARE_NAME=$(input_box "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
     if ! yesno_box "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
     then
         msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again." "$SUBTITLE"
@@ -96,7 +96,7 @@ done
 # Enter the SMB-user
 while true
 do
-    SMB_USER=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the username of the SMB-user" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SMB_USER=$(input_box "Please enter the username of the SMB-user" "$SUBTITLE")
     if ! yesno_box "Is this correct? $SMB_USER" "$SUBTITLE"
     then
         msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again." "$SUBTITLE"
@@ -108,7 +108,7 @@ done
 # Enter the password of the SMB-user
 while true
 do
-    SMB_PASSWORD=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the password of the SMB-user $SMB_USER." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SMB_PASSWORD=$(input_box "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
     if ! yesno_box "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
     then
         msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again." "$SUBTITLE"
@@ -373,7 +373,7 @@ case "$choice" in
         # Enter SMB-server and Share-name
         while true
         do
-            SERVER_SHARE_NAME=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            SERVER_SHARE_NAME=$(input_box "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
             if ! yesno_box "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
             then
                 msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again." "$SUBTITLE"
@@ -388,7 +388,7 @@ case "$choice" in
         # Enter the SMB-user
         while true
         do
-            SMB_USER=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the username of the SMB-user" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            SMB_USER=$(input_box "Please enter the username of the SMB-user" "$SUBTITLE")
             if ! yesno_box "Is this correct? $SMB_USER" "$SUBTITLE"
             then
                 msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again." "$SUBTITLE"
@@ -402,7 +402,7 @@ case "$choice" in
         # Enter the password of the SMB-user
         while true
         do
-            SMB_PASSWORD=$(whiptail --title "$TITLE - $SUBTITLE" --inputbox "Please enter the password of the SMB-user $SMB_USER." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            SMB_PASSWORD=$(input_box "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
             if ! yesno_box "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
             then
                 msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again." "$SUBTITLE"

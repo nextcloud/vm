@@ -243,6 +243,12 @@ yesno_box() {
     fi
 }
 
+input_box() {
+    [ -n "$2" ] && local SUBTITLE=" - $2"
+    local RESULT=$(whiptail --title "$TITLE$SUBTITLE" --inputbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    echo "$RESULT"
+}
+
 # Check if process is runnnig: is_process_running dpkg
 is_process_running() {
 PROCESS="$1"
