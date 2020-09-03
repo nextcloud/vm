@@ -25,7 +25,7 @@ This is the method used: https://github.com/jblakeman/apt-select"
 print_text_in_color "$ICyan" "Checking current mirror..."
 print_text_in_color "$ICyan" "Your current server repository is: $REPO"
 
-if [[ "no" == $(ask_yes_or_no "Do you want to try to find a better mirror?") ]]
+if ! yesno_box "Do you want to try to find a better mirror?"
 then
     print_text_in_color "$ICyan" "Keeping $REPO as mirror..."
     sleep 1
