@@ -97,7 +97,7 @@ then
 
     # Choose file formats fo the case when imagick is installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    choice=$(whiptail --title "Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" "" ON \
     "JPEG" "" ON \
     "GIF" "" ON \
@@ -160,7 +160,7 @@ else
     fi
     # Choose file formats fo the case when imagick is not installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    choice=$(whiptail --title "Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" "" ON \
     "JPEG" "" ON \
     "GIF" "" ON \

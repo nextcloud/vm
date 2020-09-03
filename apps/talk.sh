@@ -36,7 +36,7 @@ lowest_compatible_nc 13
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
 if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] || is_this_installed coturn
 then
-    choice=$(whiptail --radiolist "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --radiolist "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall Nextcloud Talk" "" OFF \
     "Reinstall Nextcloud Talk" "" ON 3>&1 1>&2 2>&3)
     

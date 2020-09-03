@@ -31,7 +31,7 @@ check_nextcloud_https "Collabora (Docker)"
 print_text_in_color "$ICyan" "Checking if Collabora is already installed..."
 if does_this_docker_exist 'collabora/code'
 then
-    choice=$(whiptail --radiolist "It seems like 'Collabora' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --radiolist "It seems like 'Collabora' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall Collabora" "" OFF \
     "Reinstall Collabora" "" ON 3>&1 1>&2 2>&3)
 
