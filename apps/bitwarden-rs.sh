@@ -57,7 +57,7 @@ then
     exit
 fi
 
-SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden_rs" --inputbox "Please enter the Domain that you want to use for Bitwarden_rs." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+SUBDOMAIN=$(input_box "Please enter the Domain that you want to use for Bitwarden_rs.")
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
