@@ -52,7 +52,7 @@ sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden
 
 You will be offered to abort in the next step"
 
-if [[ "no" == $(ask_yes_or_no "Are you sure you want to install Bitwarden_rs?") ]]
+if ! yesno_box "Are you sure you want to install Bitwarden_rs?"
 then
     exit
 fi
@@ -65,7 +65,7 @@ SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden_rs" --inputbox "Please 
 
 msg_box "Please make sure that you have you have edited the dns-settings of your domain and open ports 80 and 443."
 
-if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
+if ! yesno_box "Have you made the necessary preparations?"
 then
     exit
 fi

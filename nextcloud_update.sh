@@ -304,7 +304,7 @@ elif [ -f /tmp/prerelease.version ]
 then
     PRERELEASE_VERSION=yes
     msg_box "WARNING! You are about to update to a Beta/RC version of Nextcloud.\nThere's no turning back, because it's not possible to downgrade.\n\nPlease only continue if you have made a backup, or took a snapshot."
-    if [[ "no" == $(ask_yes_or_no "Do you really want to do this?") ]]
+    if ! yesno_box "Do you really want to do this?"
     then
         rm -f /tmp/prerelease.version
         unset PRERELEASE_VERSION

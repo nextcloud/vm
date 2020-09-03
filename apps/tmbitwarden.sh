@@ -59,7 +59,7 @@ msg_box "The necessary preparations to run expose Bitwarden to the internet are:
 2. Please create a DNS record for your subdomain and point that to this server.
 3. Raise the amount of RAM to this server to at least 4 GB."
 
-if [[ "no" == $(ask_yes_or_no "Have you made the necessary preparations?") ]]
+if ! yesno_box "Have you made the necessary preparations?"
 then
 msg_box "OK, please do the necessary preparations before you run this script and then simply run it again once you're done.
 
