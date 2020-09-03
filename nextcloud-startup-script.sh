@@ -41,6 +41,7 @@ if [ -f /var/scripts/lib.sh ]
 then
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Nextcloud startup script"
 # shellcheck source=lib.sh
 NCDB=1 && FIRST_IFACE=1 source /var/scripts/lib.sh
 unset NCDB

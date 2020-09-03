@@ -14,6 +14,7 @@ if [ -f /var/scripts/lib.sh ]
 then
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Static IP"
 # shellcheck source=lib.sh
 FIRST_IFACE=1 source /var/scripts/lib.sh
 unset FIRST_IFACE
