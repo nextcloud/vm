@@ -48,7 +48,7 @@ then
             # If yes, then stop and prune the docker container
             docker_prune_this 'onlyoffice/documentserver'
             # Revoke LE
-            SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Onlyoffice Docker, eg: office.yourdomain.com")
+            SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Onlyoffice Docker, e.g: office.yourdomain.com")
             if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
             then
                 yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -106,7 +106,7 @@ then
     # Remove docker image
     docker_prune_this 'collabora/code'
     # Revoke LE
-    SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com")
+    SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -157,7 +157,7 @@ then
 fi
 
 # OnlyOffice URL (onlyoffice.sh)
-SUBDOMAIN=$(input_box "OnlyOffice subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
+SUBDOMAIN=$(input_box "OnlyOffice subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
 # Nextcloud Main Domain (onlyoffice.sh)
 NCDOMAIN=$(input_box "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com")
 

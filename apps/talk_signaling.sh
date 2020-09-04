@@ -227,7 +227,7 @@ then
     exit 1
 fi
 
-SUBDOMAIN=$(input_box "Talk Signaling Server subdomain eg: talk.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
+SUBDOMAIN=$(input_box "Talk Signaling Server subdomain e.g: talk.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh

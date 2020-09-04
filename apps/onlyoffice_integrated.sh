@@ -45,7 +45,7 @@ then
             occ_command app:remove onlyoffice
         fi
         # Revoke LE
-        SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com")
+        SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -126,7 +126,7 @@ then
     # Remove docker image
     docker_prune_this 'collabora/code'
     # Revoke LE
-    SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com")
+    SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
