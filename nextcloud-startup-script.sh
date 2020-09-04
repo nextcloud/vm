@@ -371,6 +371,7 @@ bash $SCRIPTS/nextcloud_configuration.sh
 # Install apps
 bash $SCRIPTS/additional_apps.sh
 
+clear
 # Change passwords
 # CLI USER
 print_text_in_color "$ICyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
