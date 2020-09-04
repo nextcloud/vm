@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="OnlyOffice (Integrated)"
 # shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
@@ -45,7 +46,7 @@ then
             occ_command app:remove onlyoffice
         fi
         # Revoke LE
-        SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -86,7 +87,7 @@ elif version_gt "$CURRENTVERSION" "18.0.1" && ! does_this_docker_exist 'onlyoffi
 then
     if is_app_enabled documentserver_community
     then
-        choice=$(whiptail --radiolist "It seems like 'OnlyOffice' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+        choice=$(whiptail --title "$TITLE" --radiolist "It seems like 'OnlyOffice' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         "Uninstall OnlyOffice" "" OFF \
         "Reinstall OnlyOffice" "" ON 3>&1 1>&2 2>&3)
 
@@ -126,7 +127,7 @@ then
     # Remove docker image
     docker_prune_this 'collabora/code'
     # Revoke LE
-    SUBDOMAIN=$(whiptail --title "T&M Hansson IT - OnlyOffice" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"

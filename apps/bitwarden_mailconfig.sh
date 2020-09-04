@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Bitwarden Mail Configuration"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -57,7 +58,7 @@ fi
 # Enter mailserver
 while true
 do
-    MAIL_SERVER=$(whiptail --inputbox "Please enter the mailserver URL that you want to use.\nE.g. smtp.mail.de\nIf you don't want to change the mailserver, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    MAIL_SERVER=$(input_box "Please enter the mailserver URL that you want to use.\nE.g. smtp.mail.de\nIf you don't want to change the mailserver, that is already configured inside the global.override.env-file, just leave the box empty.")
     if ! yesno_box "Is this correct? $MAIL_SERVER"
     then
         msg_box "OK, please try again."
@@ -69,7 +70,7 @@ done
 # Enter if you want to use ssl
 while true
 do
-    PROTOCOL=$(whiptail --inputbox "Please type in the encryption protocol for your mailserver.\nThe available options are 'SSL', 'STARTTLS' or 'none'.\n\nIf you don't want to change the protocol setting, that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    PROTOCOL=$(input_box "Please type in the encryption protocol for your mailserver.\nThe available options are 'SSL', 'STARTTLS' or 'none'.\n\nIf you don't want to change the protocol setting, that are already configured inside the global.override.env-file, just leave the box empty.")
     if ! yesno_box "Is this correct? $PROTOCOL"
     then
         msg_box "OK, please try again."
@@ -99,7 +100,7 @@ done
 # Enter Port or just use standard port (defined by usage of ssl)
 while true
 do
-    SMTP_PORT=$(whiptail --inputbox "Please enter the port for your mailserver. The default port based on your protocol setting is $DEFAULT_PORT?\nPlease type that port into the inputbox, if you want to use it.\n\nIf you don't want to change the port, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SMTP_PORT=$(input_box "Please enter the port for your mailserver. The default port based on your protocol setting is $DEFAULT_PORT?\nPlease type that port into the inputbox, if you want to use it.\n\nIf you don't want to change the port, that is already configured inside the global.override.env-file, just leave the box empty.")
     if ! yesno_box "Is this correct? $SMTP_PORT"
     then
         msg_box "OK, please try again."
@@ -111,7 +112,7 @@ done
 # Enter your mail username
 while true
 do
-    MAIL_USERNAME=$(whiptail --inputbox "Please enter the username for the login to your mail provider. E.g. mail@example.com\nPlease note: the domain used for your mail username and the mailserver domain have to match!\nIf you don't want to change the mail username that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    MAIL_USERNAME=$(input_box "Please enter the username for the login to your mail provider. E.g. mail@example.com\nPlease note: the domain used for your mail username and the mailserver domain have to match!\nIf you don't want to change the mail username that is already configured inside the global.override.env-file, just leave the box empty.")
     if ! yesno_box "Is this correct? $MAIL_USERNAME"
     then
         msg_box "OK, please try again."
@@ -123,7 +124,7 @@ done
 # Enter your mailuser password
 while true
 do
-    MAIL_PASSWORD=$(whiptail --inputbox "Please enter the password for your mailserver user.\nIf you don't want to change the password, that is already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    MAIL_PASSWORD=$(input_box "Please enter the password for your mailserver user.\nIf you don't want to change the password, that is already configured inside the global.override.env-file, just leave the box empty.")
     if ! yesno_box "Is this correct? $MAIL_PASSWORD"
     then
         msg_box "OK, please try again."
@@ -135,7 +136,7 @@ done
 # Enter admin mailadresses
 while true
 do
-    ADMIN_ACCOUNT=$(whiptail --inputbox "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered Bitwarden accounts.\nTo make this setting work, your Bitwarden mailserver settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin accounts that are already configured inside the global.override.env-file, just leave the box empty." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    ADMIN_ACCOUNT=$(input_box "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered Bitwarden accounts.\nTo make this setting work, your Bitwarden mailserver settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin accounts that are already configured inside the global.override.env-file, just leave the box empty.")
     if ! yesno_box "Is this correct? $ADMIN_ACCOUNT"
     then
         msg_box "OK, please try again."

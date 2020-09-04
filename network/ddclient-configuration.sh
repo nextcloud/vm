@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Setup DDclient"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -16,7 +17,7 @@ debug_mode
 # Check if root
 root_check
 
-choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the ddclient application.\nYou have to setup an account before you can start.\n\nPlease choose your DynDNS-Provider.\nSelect by pressing the spacebar and ENTER\n\nIf your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --radiolist "This script lets you setup DynDNS by using the ddclient application.\nYou have to setup an account before you can start.\n\nPlease choose your DynDNS-Provider.\nSelect by pressing the spacebar and ENTER\n\nIf your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" OFF \
 "Strato" "(strato.de)" OFF 3>&1 1>&2 2>&3)
 
@@ -57,7 +58,7 @@ fi
 # Enter your Hostname
 while true
 do
-    HOSTNAME=$(whiptail --inputbox "Please enter the Host that you want to configure DDNS for.\nE.g. 'example.com'" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    HOSTNAME=$(input_box "Please enter the Host that you want to configure DDNS for.\nE.g. 'example.com'")
     if ! yesno_box "Is this correct? $HOSTNAME"
     then
         msg_box "OK, please try again."
@@ -74,7 +75,7 @@ done
 # Enter your login
 while true
 do
-    LOGIN=$(whiptail --inputbox "Please enter the login for your DDNS provider.\nIt will be most likely the domain or registered email address depending on your DDNS Provider.\nE.g. 'example.com' or 'mail@example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    LOGIN=$(input_box "Please enter the login for your DDNS provider.\nIt will be most likely the domain or registered email address depending on your DDNS Provider.\nE.g. 'example.com' or 'mail@example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider.")
     if ! yesno_box "Is this correct? $LOGIN"
     then
         msg_box "OK, please try again."
@@ -91,7 +92,7 @@ done
 # Enter your password
 while true
 do
-    PASSWORD=$(whiptail --inputbox "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.\nIf you are not sure, please refer to the documentation of your DDNS provider." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    PASSWORD=$(input_box "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.\nIf you are not sure, please refer to the documentation of your DDNS provider.")
     if ! yesno_box "Is this correct? $PASSWORD"
     then
         msg_box "OK, please try again."

@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Preview Generator"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -58,7 +59,7 @@ then
         occ_command config:system:delete "enabledPreviewProviders"
 
         # reset the cronjob
-        print_text_in_color "$ICyan" "Resetting the cronjob for the preview-generation"
+        print_text_in_color "$ICyan" "Resetting the cronjob for the Preview Generation"
         crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
     else
         exit
@@ -96,7 +97,7 @@ then
 
     # Choose file formats fo the case when imagick is installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    choice=$(whiptail --title "Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" "" ON \
     "JPEG" "" ON \
     "GIF" "" ON \
@@ -159,7 +160,7 @@ else
     fi
     # Choose file formats fo the case when imagick is not installed.
     # for additional previews please look at the nextcloud documentation. But these probably won't work.
-    choice=$(whiptail --title "Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - Choose file formats" --checklist "Now you can choose for which file formats you would like to generate previews for\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "PNG" "" ON \
     "JPEG" "" ON \
     "GIF" "" ON \
@@ -208,9 +209,9 @@ occ_command config:system:set preview_max_y --value="2048"
 occ_command config:system:set jpeg_quality --value="60"
 occ_command config:app:set preview jpeg_quality --value="60"
 
-msg_box "In the last step you can define a specific Nextcloud user for which will be the user that runs the preview-generation. 
+msg_box "In the last step you can define a specific Nextcloud user for which will be the user that runs the Preview Generation.
 
-The default behaviour (just hit [ENTER]) is to run with the system user 'www-data' which will generate previews for all users. 
+The default behaviour (just hit [ENTER]) is to run with the system user 'www-data' which will generate previews for all users.
 
 If you on the other hand choose to use a specific user, previews will ONLY be generated for that specific user."
 if ! yesno_box "Do you want to choose a specific Nextcloud user to generate previews?"
@@ -226,7 +227,7 @@ then
 else
     while true
     do
-        PREVIEW_USER=$(whiptail --inputbox "Enter the Nextcloud user for which you want to run the preview-generation" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+        PREVIEW_USER=$(input_box "Enter the Nextcloud user for which you want to run the Preview Generation (as a scheluded task)")
         if [ -z "$(occ_command user:list | grep "$PREVIEW_USER" | awk '{print $3}')" ]
         then
             msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."

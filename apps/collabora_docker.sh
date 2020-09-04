@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Collabora (Docker)"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -30,7 +31,7 @@ check_nextcloud_https "Collabora (Docker)"
 print_text_in_color "$ICyan" "Checking if Collabora is already installed..."
 if does_this_docker_exist 'collabora/code'
 then
-    choice=$(whiptail --radiolist "It seems like 'Collabora' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --radiolist "It seems like 'Collabora' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall Collabora" "" OFF \
     "Reinstall Collabora" "" ON 3>&1 1>&2 2>&3)
 
@@ -41,7 +42,7 @@ then
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
             # Revoke LE
-            SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for Collabora, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+            SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
             if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
             then
                 yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -98,7 +99,7 @@ if does_this_docker_exist 'onlyoffice/documentserver'
 then
     docker_prune_this 'onlyoffice/documentserver'
     # Revoke LE
-    SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Collabora" --inputbox "Please enter the subdomain you are using for OnlyOffice, eg: office.yourdomain.com" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"

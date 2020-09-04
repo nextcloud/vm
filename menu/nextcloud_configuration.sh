@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Nextcloud Configuration Menu"
 # shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
@@ -18,7 +19,7 @@ debug_mode
 root_check
 
 # Configure Nextcloud
-choice=$(whiptail --title "Nextcloud Configuration" --checklist "Which settings do you want to configure?\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist "Which settings do you want to configure?\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
 "Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
 "Disable workspaces" "(disable top notes in GUI)" OFF \

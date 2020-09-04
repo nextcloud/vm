@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Bitwarden Menu"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -16,7 +17,7 @@ debug_mode
 # Must be root
 root_check
 
-choice=$(whiptail --title "Bitwarden" --checklist "Automatically configure and install the Bitwarden or configure some aspects of it.\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist "Automatically configure and install the Bitwarden or configure some aspects of it.\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitwarden  " "(External password manager [4GB RAM] - subdomain required)" OFF \
 "Bitwarden Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "Bitwarden Mail-Configuration" "(Configure the mailserver settings for Bitwarden)" OFF \

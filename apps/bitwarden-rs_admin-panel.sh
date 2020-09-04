@@ -4,7 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
-
+SCRIPT_NAME="Bitwarden RS Admin"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -28,7 +28,7 @@ then
 fi
 
 # Yes or No?
-choice=$(whiptail --title "Bitwarden_rs admin-panel" --radiolist "Do you want to disable the Bitwarden_rs admin-panel?\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --radiolist "Do you want to disable the Bitwarden_rs admin-panel?\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Yes" "(Disable the admin-panel)" OFF \
 "No" "(Enable the admin-panel and change the password for the admin-panel)" OFF 3>&1 1>&2 2>&3)
 
