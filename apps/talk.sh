@@ -96,14 +96,7 @@ then
     while true
     do
     # Ask for port
-cat << ENTERDOMAIN
-+---------------------------------------------------------------+
-|    Please enter the port you will use for Nextcloud Talk:     |
-+---------------------------------------------------------------+
-ENTERDOMAIN
-    echo
-    read -r TURN_PORT
-    echo
+    TURN_PORT=$(input_box "Please enter the port you will use for Nextcloud Talk")
     if yesno_box "Is this correct? $TURN_PORT"
     then
         break
