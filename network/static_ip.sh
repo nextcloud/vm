@@ -73,16 +73,7 @@ do
     while true
     do
         # Ask for IP address
-        cat << ENTERIP
-+----------------------------------------------------------+
-|    Please enter the static IP address you want to set,   |
-|    including the subnet. Example: 192.168.1.100/24       |
-+----------------------------------------------------------+
-ENTERIP
-        echo
-        read -r LANIP
-        echo
-
+    	LANIP=$(input_box "Please enter the static IP address you want to set, including the subnet.\nExample: 192.168.1.100/24")
         if [[ $LANIP == *"/"* ]]
         then
             if yesno_box "Is this correct? $LANIP"
@@ -99,16 +90,7 @@ ENTERIP
     while true
     do
         # Ask for domain name
-        cat << ENTERGATEWAY
-+-------------------------------------------------------+
-|    Please enter the gateway address you want to set.  |
-|    Just hit enter to choose the current gateway.      |
-|    Your current gateway is: $GATEWAY               |
-+-------------------------------------------------------+
-ENTERGATEWAY
-        echo
-        read -r GATEWAYIP
-        echo
+        GATEWAYIP=$(input_box "Please enter the gateway address you want to set.\nJust hit enter to choose the current gateway.\nYour current gateway is: $GATEWAY")
         if [ -z "$GATEWAYIP" ]
         then
             GATEWAYIP="$GATEWAY"
@@ -149,16 +131,7 @@ $DNS2
         while true
         do
             # Ask for nameserver
-            cat << ENTERNS1
-+-------------------------------------------------------+
-|    Please enter the local nameserver address you want |
-|    to set. Just hit enter to choose the current NS1.  |
-|    Your current NS1 is: $DNS1                       |
-+-------------------------------------------------------+
-ENTERNS1
-            echo
-            read -r NSIP1
-            echo
+            NSIP1=$(input_box "Please enter the local nameserver address you want to set.\nJust hit enter to choose the current NS1.\nYour current NS1 is: $DNS1")
             if [ -z "$NSIP1" ]
             then
                 NSIP1="$DNS1"
@@ -182,19 +155,7 @@ ENTERNS1
         while true
         do
             # Ask for nameserver
-            cat << ENTERNS2
-+-------------------------------------------------------+
-|    Please enter the local nameserver address you want |
-|    to set. The 3 options are:                         |
-|    - Hit enter to choose the current NS2.             |
-|    - Enter a new IP address for NS2.                  |
-|    - Enter the text 'none' if you only have one NS.   |
-|    Your current NS2 is: $DISPLAY_DNS2               |
-+-------------------------------------------------------+
-ENTERNS2
-            echo
-            read -r NSIP2
-            echo
+            NSIP2=$(input_box "Please enter the local nameserver address you want to set. The 3 options are:\n- Hit enter to choose the current NS2.\n- Enter a new IP address for NS2.\n- Enter the text 'none' if you only have one NS.\nYour current NS2 is: $DISPLAY_DNS2")
             if [ -z "$NSIP2" ]
             then
                 NSIP2="$DISPLAY_DNS2"
