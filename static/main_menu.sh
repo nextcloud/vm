@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Main Menu"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -17,7 +18,7 @@ debug_mode
 root_check
 
 # Main menu
-choice=$(whiptail --title "Main Menu" --radiolist "Choose what you want to do.\nSelect by pressing the spacebar and ENTER\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --radiolist "Choose what you want to do.\nSelect by pressing the spacebar and ENTER\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Additional Apps" "(Choose which apps to install)" OFF \
 "Nextcloud Configuration" "(Choose between available Nextcloud configurations)" OFF \
 "Server Configuration" "(Choose between available server configurations)" OFF \

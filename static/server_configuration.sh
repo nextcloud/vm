@@ -7,6 +7,7 @@ if printf "Testing internet connection..." && ping github.com -c 2
 then
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Server configuration"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 # Use local lib file in case there is no internet connection
@@ -32,7 +33,7 @@ debug_mode
 root_check
 
 # Server configurations
-choice=$(whiptail --title "Server configurations" --checklist "Choose what you want to configure\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to configure\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" ON \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \

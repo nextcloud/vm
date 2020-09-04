@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059,2086
 true
+SCRIPT_NAME="Setup smartctl"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

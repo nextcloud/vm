@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Documentserver Menu"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -16,7 +17,7 @@ debug_mode
 # Must be root
 root_check
 
-choice=$(whiptail --title "Which Documentserver do you want to install?" --radiolist "Automatically configure and install the selected Documentserver.\nSelect by pressing the spacebar and ENTER\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --radiolist "Which Documentserver do you want to install?\n\nAutomatically configure and install the selected Documentserver.\nSelect by pressing the spacebar and ENTER\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Collabora (Docker)" "(Online editing - Extra Subdomain required)" OFF \
 "Collabora (Integrated)" "(Online editing - No Subdomain required)" OFF \
 "OnlyOffice (Docker)" "(Online editing - Extra Subdomain required)" OFF \
