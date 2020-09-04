@@ -526,8 +526,7 @@ apt autoremove -y
 apt autoclean
 
 # Set trusted domain in config.php
-bash $SCRIPTS/trusted.sh
-rm -f $SCRIPTS/trusted.sh
+run_script NETWORK trusted
 
 # Success!
 msg_box "The installation process is *almost* done.
