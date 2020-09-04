@@ -173,10 +173,10 @@ You could still choose to only run on one disk though, which is not recommended,
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
 
-choice=$(whiptail --title "$TITLE - Choose disk format" --radiolist "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"2 Disks Auto" "(Automatically configured)" ON \
-"2 Disks Manual" "(Choose by yourself)" OFF \
-"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" OFF 3>&1 1>&2 2>&3)
+choice=$(whiptail --title "$TITLE - Choose disk format" --menu "How would you like to configure your disks?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"2 Disks Auto" "(Automatically configured)" \
+"2 Disks Manual" "(Choose by yourself)" \
+"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "2 Disks Auto")
@@ -202,10 +202,10 @@ esac
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
 while :
 do
-    choice=$(whiptail --title "$TITLE - Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Quad9" "(https://www.quad9.net/)" ON \
-    "Cloudflare" "(https://www.cloudflare.com/dns/)" OFF \
-    "Local" "($GATEWAY) - DNS on gateway" OFF 3>&1 1>&2 2>&3)
+    choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu "Which DNS provider should this Nextcloud box use?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Quad9" "(https://www.quad9.net/)" \
+    "Cloudflare" "(https://www.cloudflare.com/dns/)" \
+    "Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Quad9")

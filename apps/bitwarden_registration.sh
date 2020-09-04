@@ -38,9 +38,9 @@ else
 fi
 
 # Yes or No?
-choice=$(whiptail --title "$TITLE" --radiolist "Do you want to disable Bitwarden User Registration?\nSelect by pressing the spacebar\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Yes" "(Disable public user registration)" OFF \
-"No" "(Enable public user registration)" OFF 3>&1 1>&2 2>&3)
+choice=$(whiptail --title "$TITLE" --menu "Do you want to disable Bitwarden User Registration?\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Yes" "(Disable public user registration)" \
+"No" "(Enable public user registration)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Yes")

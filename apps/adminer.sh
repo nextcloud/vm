@@ -21,9 +21,9 @@ root_check
 print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
 then
-    choice=$(whiptail --title "$TITLE" --radiolist "It seems like 'Adminer' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Uninstall Adminer" "" OFF \
-    "Reinstall Adminer" "" ON 3>&1 1>&2 2>&3)
+    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Adminer' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Reinstall Adminer" "" \
+    "Uninstall Adminer" "" 3>&1 1>&2 2>&3)
     
     case "$choice" in
         "Uninstall Adminer")
