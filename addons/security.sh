@@ -5,7 +5,7 @@
 # REMOVE disable of SC2154 WHEN PUTTING SPAMHAUS IN PRODUCTION (it's just to fixing travis for now)
 # shellcheck disable=2034,2059,SC2154
 true
-SCRIPT_NAME="Security"
+SCRIPT_NAME="Setup Extra Security"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
