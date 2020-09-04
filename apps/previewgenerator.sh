@@ -58,7 +58,7 @@ then
         occ_command config:system:delete "enabledPreviewProviders"
 
         # reset the cronjob
-        print_text_in_color "$ICyan" "Resetting the cronjob for the preview-generation"
+        print_text_in_color "$ICyan" "Resetting the cronjob for the Preview Generation"
         crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
     else
         exit
@@ -208,9 +208,9 @@ occ_command config:system:set preview_max_y --value="2048"
 occ_command config:system:set jpeg_quality --value="60"
 occ_command config:app:set preview jpeg_quality --value="60"
 
-msg_box "In the last step you can define a specific Nextcloud user for which will be the user that runs the preview-generation. 
+msg_box "In the last step you can define a specific Nextcloud user for which will be the user that runs the Preview Generation.
 
-The default behaviour (just hit [ENTER]) is to run with the system user 'www-data' which will generate previews for all users. 
+The default behaviour (just hit [ENTER]) is to run with the system user 'www-data' which will generate previews for all users.
 
 If you on the other hand choose to use a specific user, previews will ONLY be generated for that specific user."
 if ! yesno_box "Do you want to choose a specific Nextcloud user to generate previews?"
@@ -226,7 +226,7 @@ then
 else
     while true
     do
-        PREVIEW_USER=$(input_box "Enter the Nextcloud user for which you want to run the preview-generation")
+        PREVIEW_USER=$(input_box "Enter the Nextcloud user for which you want to run the Preview Generation (as a scheluded task)")
         if [ -z "$(occ_command user:list | grep "$PREVIEW_USER" | awk '{print $3}')" ]
         then
             msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
