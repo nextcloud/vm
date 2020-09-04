@@ -26,9 +26,9 @@ lowest_compatible_nc 13
 print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
 if is_this_installed fail2ban
 then
-    choice=$(whiptail --title "$TITLE" --radiolist "It seems like 'Fail2Ban' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Uninstall Fail2Ban" "" OFF \
-    "Reinstall Fail2Ban" "" ON 3>&1 1>&2 2>&3)
+    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Fail2Ban' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Reinstall Fail2Ban" "" \
+    "Uninstall Fail2Ban" "" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Uninstall Fail2Ban")

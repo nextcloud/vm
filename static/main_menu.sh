@@ -18,11 +18,11 @@ debug_mode
 root_check
 
 # Main menu
-choice=$(whiptail --title "$TITLE" --radiolist "Choose what you want to do.\nSelect by pressing the spacebar and ENTER\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Additional Apps" "(Choose which apps to install)" OFF \
-"Nextcloud Configuration" "(Choose between available Nextcloud configurations)" OFF \
-"Server Configuration" "(Choose between available server configurations)" OFF \
-"Update Nextcloud" "(Update Nextcloud to the latest release)" OFF 3>&1 1>&2 2>&3)
+choice=$(whiptail --title "$TITLE" --menu "Choose what you want to do.\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Additional Apps" "(Choose which apps to install)" \
+"Nextcloud Configuration" "(Choose between available Nextcloud configurations)" \
+"Server Configuration" "(Choose between available server configurations)" \
+"Update Nextcloud" "(Update Nextcloud to the latest release)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Additional Apps")

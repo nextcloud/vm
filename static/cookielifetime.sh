@@ -19,14 +19,14 @@ debug_mode
 # Check if root
 root_check
 
-choice=$(whiptail --title "$TITLE" --radiolist  "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\n\nSelect one with the [ARROW] keys and select with the [SPACE] key. Confirm by pressing [ENTER]" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"1800s" "30 minutes" ON \
-"7200s" "2 hours" OFF \
-"43200s" "12 hours" OFF \
-"172800s" "2 days" OFF \
-"604800s" "1 week" OFF \
-"2419200s" "4 weeks" OFF \
-"Custom" "setup a custom time" OFF 3>&1 1>&2 2>&3)
+choice=$(whiptail --title "$TITLE" --menu "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"1800s" "30 minutes" \
+"7200s" "2 hours" \
+"43200s" "12 hours" \
+"172800s" "2 days" \
+"604800s" "1 week" \
+"2419200s" "4 weeks" \
+"Custom" "setup a custom time" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "1800s")
