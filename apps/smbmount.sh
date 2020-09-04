@@ -217,7 +217,7 @@ then
     return
 fi
 
-args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\n$WT_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 
 # Find out which SMB-shares are available
@@ -264,7 +264,7 @@ then
 fi
 
 # Find out which SMB-shares are available
-args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you show detailed information about your SMB-shares.\nChoose which one you want to see.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you show detailed information about your SMB-shares.\nChoose which one you want to see.\n$WT_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -362,7 +362,7 @@ else
 fi
 
 # Let the user choose which entries he wants to change
-choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "$fstab_entry\n$old_credentials\nChoose which option you want to change.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "$fstab_entry\n$old_credentials\nChoose which option you want to change.\n$WT_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Password" "(change the password of the SMB-user)" OFF \
 "Username" "(change the username of the SMB-user)" OFF \
 "Share" "(change the SMB-share to use the same mount directory)" OFF 3>&1 1>&2 2>&3)
@@ -497,7 +497,7 @@ then
 fi
 
 # Find out which SMB-shares are available
-args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n$WT_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -540,7 +540,7 @@ then
 fi
 
 # Check which SMB-shares are available
-args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\nSelect or unselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\n$WT_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do

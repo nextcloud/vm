@@ -17,7 +17,7 @@ debug_mode
 # Must be root
 root_check
 
-choice=$(whiptail --title "$TITLE" --menu "Which Documentserver do you want to install?\n\nAutomatically configure and install the selected Documentserver.\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --menu "Which Documentserver do you want to install?\n\nAutomatically configure and install the selected Documentserver.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Collabora (Docker)" "(Online editing - Extra Subdomain required)" \
 "Collabora (Integrated)" "(Online editing - No Subdomain required)" \
 "OnlyOffice (Docker)" "(Online editing - Extra Subdomain required)" \

@@ -76,6 +76,8 @@ use_global_systemd_dns
 # Common
 TITLE="Nextcloud VM - $(date +%Y)"
 [ -n "$SCRIPT_NAME" ] && TITLE+=" - $SCRIPT_NAME"
+WT_GUIDE="Navigate with the [ARROW] keys and (de)select with the [SPACE] key. Confirm by pressing [ENTER]"
+MENU_GUIDE="You can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'"
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
