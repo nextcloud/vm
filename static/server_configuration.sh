@@ -66,7 +66,7 @@ Please open port 80 and 443 to this servers IP before you continue.
 More information can be found here:
 https://www.techandme.se/open-port-80-443/"
 
-        if [[ "yes" == $(ask_yes_or_no "Do you want to install TLS?") ]]
+        if yesno_box "Do you want to install TLS?"
         then
             if [ -f $SCRIPTS/activate-tls.sh ]
             then

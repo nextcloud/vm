@@ -57,7 +57,7 @@ fi
 msg_box "Please note that if the IP address changes during an (remote) SSH connection (via Putty, or terminal for example), the connection will break and the IP will reset to DHCP or the IP you had before you started this script.
 
 To avoid issues with lost connectivity, please use the VM Console directly, and not SSH."
-if [[ "yes" == $(ask_yes_or_no "Are you connected via SSH?") ]]
+if yesno_box "Are you connected via SSH?"
 then
     print_text_in_color "$IRed" "Please use the VM Console instead."
     sleep 1
@@ -85,7 +85,7 @@ ENTERIP
 
         if [[ $LANIP == *"/"* ]]
         then
-            if [[ "yes" == $(ask_yes_or_no "Is this correct? $LANIP") ]]
+            if yesno_box "Is this correct? $LANIP"
             then
                 break
             fi
@@ -113,7 +113,7 @@ ENTERGATEWAY
         then
             GATEWAYIP="$GATEWAY"
         fi
-        if [[ "yes" == $(ask_yes_or_no "Is this correct? $GATEWAYIP") ]]
+        if yesno_box "Is this correct? $GATEWAYIP"
         then
             break
         fi
@@ -142,7 +142,7 @@ $DNS2
         DNSs="$DNS1,$DNS2"
     fi
 
-    if [[ "yes" == $(ask_yes_or_no "Do you want to set your own nameservers?") ]]
+    if yesno_box "Do you want to set your own nameservers?"
     then
         # Loop until user is happy with the nameserver 1
         echo
@@ -163,7 +163,7 @@ ENTERNS1
             then
                 NSIP1="$DNS1"
             fi
-            if [[ "yes" == $(ask_yes_or_no "Is this correct? $NSIP1") ]]
+            if yesno_box "Is this correct? $NSIP1"
             then
                 break
             fi
@@ -199,7 +199,7 @@ ENTERNS2
             then
                 NSIP2="$DISPLAY_DNS2"
             fi
-            if [[ "yes" == $(ask_yes_or_no "Is this correct? $NSIP2") ]]
+            if yesno_box "Is this correct? $NSIP2"
             then
                 break
             fi
@@ -273,7 +273,7 @@ servers are not reachable. Unless Wi-Fi is required and still to be configured
 proceeding will not succeed.
 
 BADNETWORKTEXT
-    if [[ "no" == $(ask_yes_or_no "Try new network settings?") ]]
+    if ! yesno_box "Try new network settings?"
     then
         break
     fi

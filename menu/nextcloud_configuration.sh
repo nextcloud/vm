@@ -33,7 +33,7 @@ case "$choice" in
     *"Share-folder"*)
         clear
         msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour."
-        if [[ "yes" == $(ask_yes_or_no "Do you want to enable this option?") ]]
+        if yesno_box "Do you want to enable this option?"
         then
             occ_command config:system:set share_folder --value="/Shared"
             msg_box "All new Nextcloud shares from other users will appear in the 'Shared' folder from now on."
@@ -41,7 +41,7 @@ case "$choice" in
     ;;&
     *"Disable workspaces"*)
         msg_box "This option will will disable a feature named 'rich workspaces'. It will disable the top notes in GUI."
-        if [[ "yes" == $(ask_yes_or_no "Do you want to disable rich workspaces?") ]]
+        if yesno_box "Do you want to disable rich workspaces?"
         then
             # Check if text is enabled
             if ! is_app_enabled text
@@ -60,7 +60,7 @@ case "$choice" in
         if version_gt "$CURRENTVERSION" "18.0.3"
         then
             msg_box "This option will disable the with Nextcloud 18 introduced user flows. It will disable the user flow settings. Admin flows will continue to work."
-            if [[ "yes" == $(ask_yes_or_no "Do you want to disable user flows?") ]]
+            if yesno_box "Do you want to disable user flows?"
             then
                 occ_command config:app:set workflowengine user_scope_disabled --value yes
                 msg_box "User flow settings are now disabled."
@@ -72,7 +72,7 @@ case "$choice" in
     ;;&
     *"Enable logrotate"*)
         msg_box "This option enables logrotate for Nextcloud logs to keep all logs for 10 days"
-        if [[ "yes" == $(ask_yes_or_no "Do you want to enable logrotate for Nextcloud logs?") ]]
+        if yesno_box "Do you want to enable logrotate for Nextcloud logs?"
         then
             # Set logrotate (without size restriction)
             occ_command config:system:set log_rotate_size --value=0
