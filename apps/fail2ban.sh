@@ -5,6 +5,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Fail2ban"
 # shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
@@ -25,7 +26,7 @@ lowest_compatible_nc 13
 print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
 if is_this_installed fail2ban
 then
-    choice=$(whiptail --radiolist "It seems like 'Fail2Ban' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --radiolist "It seems like 'Fail2Ban' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall Fail2Ban" "" OFF \
     "Reinstall Fail2Ban" "" ON 3>&1 1>&2 2>&3)
 

@@ -16,6 +16,7 @@ fi
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Nextcloud Install Script (part 1)"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -172,7 +173,7 @@ You could still choose to only run on one disk though, which is not recommended,
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
 
-choice=$(whiptail --title "Choose disk format" --radiolist "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE - Choose disk format" --radiolist "How would you like to configure your disks?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)" ON \
 "2 Disks Manual" "(Choose by yourself)" OFF \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" OFF 3>&1 1>&2 2>&3)
@@ -201,7 +202,7 @@ esac
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
 while :
 do
-    choice=$(whiptail --title "Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - Set DNS Resolver" --radiolist "Which DNS provider should this Nextcloud box use?\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Quad9" "(https://www.quad9.net/)" ON \
     "Cloudflare" "(https://www.cloudflare.com/dns/)" OFF \
     "Local" "($GATEWAY) - DNS on gateway" OFF 3>&1 1>&2 2>&3)
@@ -695,7 +696,7 @@ a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
-choice=$(whiptail --title "Install apps or software" --checklist "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE - Install apps or software" --checklist "Automatically configure and install selected apps or software\nDeselect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "" ON \
 "Contacts" "" ON \
 "IssueTemplate" "" ON \

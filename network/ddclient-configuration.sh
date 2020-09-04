@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Setup DDclient"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -16,7 +17,7 @@ debug_mode
 # Check if root
 root_check
 
-choice=$(whiptail --radiolist "This script lets you setup DynDNS by using the ddclient application.\nYou have to setup an account before you can start.\n\nPlease choose your DynDNS-Provider.\nSelect by pressing the spacebar and ENTER\n\nIf your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --radiolist "This script lets you setup DynDNS by using the ddclient application.\nYou have to setup an account before you can start.\n\nPlease choose your DynDNS-Provider.\nSelect by pressing the spacebar and ENTER\n\nIf your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" OFF \
 "Strato" "(strato.de)" OFF 3>&1 1>&2 2>&3)
 

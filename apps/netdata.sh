@@ -4,6 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Netdata"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -20,7 +21,7 @@ root_check
 print_text_in_color "$ICyan" "Checking if Netdata is already installed..."
 if [ -d /etc/netdata ]
 then
-    choice=$(whiptail --radiolist "It seems like 'Netdata' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --radiolist "It seems like 'Netdata' is already installed.\nChoose what you want to do.\nSelect by pressing the spacebar and ENTER" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Uninstall Netdata" "" OFF \
     "Reinstall Netdata" "" ON 3>&1 1>&2 2>&3)
 

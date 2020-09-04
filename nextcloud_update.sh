@@ -6,6 +6,7 @@
 
 # shellcheck disable=2034,2059
 true
+SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
 NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
