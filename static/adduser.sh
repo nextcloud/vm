@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Add user"
+SCRIPT_NAME="Add User"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

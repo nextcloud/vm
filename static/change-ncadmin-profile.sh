@@ -4,7 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Change ncadmin profile"
+SCRIPT_NAME="Change ncadmin Profile"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

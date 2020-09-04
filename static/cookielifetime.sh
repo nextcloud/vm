@@ -4,7 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Cookie lifetime"
+SCRIPT_NAME="Set Cookie Lifetime"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

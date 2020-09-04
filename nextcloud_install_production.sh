@@ -16,7 +16,7 @@ fi
 
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Nextcloud install production"
+SCRIPT_NAME="Nextcloud Install Script (part 1)"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

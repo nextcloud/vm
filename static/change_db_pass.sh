@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Change db pass"
+SCRIPT_NAME="Change Database Password"
 # shellcheck source=lib.sh
 NCDBPASS=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NCDBPASS

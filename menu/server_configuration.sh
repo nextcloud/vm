@@ -7,7 +7,7 @@ if printf "Testing internet connection..." && ping github.com -c 2
 then
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Server configuration"
+SCRIPT_NAME="Server Configuration Menu"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 # Use local lib file in case there is no internet connection

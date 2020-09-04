@@ -4,7 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Bitwarden-RS admin-panel"
+SCRIPT_NAME="Bitwarden RS Admin"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

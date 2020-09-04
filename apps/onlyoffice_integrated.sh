@@ -4,7 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="OnlyOffice (integrated)"
+SCRIPT_NAME="OnlyOffice (Integrated)"
 # shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE

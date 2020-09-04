@@ -4,7 +4,7 @@
 
 # shellcheck disable=2034,2059,2012
 true
-SCRIPT_NAME="Setup secure permissions for Nextcloud"
+SCRIPT_NAME="Setup Secure Permissions for Nextcloud"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
