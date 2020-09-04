@@ -22,8 +22,8 @@ print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
 then
     choice=$(whiptail --title "$TITLE" --menu "It seems like 'Adminer' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Uninstall Adminer" "" \
-    "Reinstall Adminer" "" 3>&1 1>&2 2>&3)
+    "Reinstall Adminer" "" \
+    "Uninstall Adminer" "" 3>&1 1>&2 2>&3)
     
     case "$choice" in
         "Uninstall Adminer")
