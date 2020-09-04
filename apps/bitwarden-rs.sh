@@ -57,7 +57,7 @@ then
     exit
 fi
 
-SUBDOMAIN=$(whiptail --title "T&M Hansson IT - Bitwarden_rs" --inputbox "Please enter the Domain that you want to use for Bitwarden_rs." "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+SUBDOMAIN=$(input_box "Please enter the Domain that you want to use for Bitwarden RS.")
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
@@ -172,7 +172,7 @@ fi
 # Install docker
 install_docker
 
-# Create dir for bitwarden_rs
+# Create dir for Bitwarden RS
 mkdir -p /home/bitwarden_rs
 chown nobody -R /home/bitwarden_rs
 chmod -R 0770 /home/bitwarden_rs
@@ -214,7 +214,7 @@ install_if_not fail2ban
 systemctl stop fail2ban
 
 # Create all needed files
-# bitwarden_rs conf
+# Bitwarden RS conf
 cat << BW_CONF > /etc/fail2ban/filter.d/bitwarden_rs.local
 [INCLUDES]
 before = common.conf
@@ -224,7 +224,7 @@ failregex = ^.*Username or password is incorrect\. Try again\. IP: <ADDR>\. User
 ignoreregex =
 BW_CONF
 
-# bitwarden_rs jail
+# Bitwarden RS jail
 cat << BW_JAIL_CONF > /etc/fail2ban/jail.d/bitwarden_rs.local
 [bitwarden_rs]
 enabled = true
