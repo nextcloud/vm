@@ -555,7 +555,9 @@ msg_box "Congratulations! You have successfully installed Nextcloud!
 LOGIN:
 Login to Nextcloud in your browser:
 - IP: $ADDRESS
-- Hostname: $(hostname -f)"
+- Hostname: $(hostname -f)
+
+PLEASE HIT OK TO REBOOT"
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
