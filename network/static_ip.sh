@@ -2,13 +2,6 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-IRed='\e[0;91m'         # Red
-ICyan='\e[0;96m'        # Cyan
-Color_Off='\e[0m'       # Text Reset
-print_text_in_color() {
-	printf "%b%s%b\n" "$1" "$2" "$Color_Off"
-}
-
 # Use local lib file in case there is no internet connection
 if [ -f /var/scripts/lib.sh ]
 then
@@ -59,7 +52,7 @@ msg_box "Please note that if the IP address changes during an (remote) SSH conne
 To avoid issues with lost connectivity, please use the VM Console directly, and not SSH."
 if yesno_box "Are you connected via SSH?"
 then
-    print_text_in_color "$IRed" "Please use the VM Console instead."
+    msg_box "Please use the VM Console instead."
     sleep 1
     exit
 fi
@@ -81,7 +74,7 @@ do
                 break
             fi
         else
-            print_text_in_color "$IRed" "Did you forget the /subnet?"
+            msg_box "Did you forget the /subnet?"
         fi
     done
 
