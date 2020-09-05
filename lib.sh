@@ -73,7 +73,8 @@ then
 fi
 }
 use_global_systemd_dns
-# Common
+
+# Whiptails
 TITLE="Nextcloud VM - $(date +%Y)"
 [ -n "$SCRIPT_NAME" ] && TITLE+=" - $SCRIPT_NAME"
 CHECKLIST_GUIDE="Navigate with the [ARROW] keys and (de)select with the [SPACE] key. Confirm by pressing [ENTER]"
