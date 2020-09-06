@@ -157,10 +157,10 @@ apt update -q4 & spinner_loading
 
 # Check if Nextcloud is installed
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
+if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
 then
 msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-${NCDOMAIN//\\/}.
+$NCDOMAIN.
 Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.
 
@@ -184,7 +184,7 @@ install_docker
 
 # Install Collabora docker
 docker pull collabora/code:latest
-docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN" --restart always --name code --cap-add MKNOD collabora/code
+docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN_ESCAPED" --restart always --name code --cap-add MKNOD collabora/code
 
 # Install Apache2
 install_if_not apache2
@@ -237,7 +237,7 @@ then
   Header set X-XSS-Protection "1; mode=block"
   Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
   Header set X-Content-Type-Options nosniff
-  Header set Content-Security-Policy "frame-ancestors 'self' ${NCDOMAIN//\\/}"
+  Header set Content-Security-Policy "frame-ancestors 'self' $NCDOMAIN"
 
   # keep the host
   ProxyPreserveHost On

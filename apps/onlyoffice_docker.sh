@@ -160,7 +160,7 @@ fi
 # OnlyOffice URL (onlyoffice.sh)
 SUBDOMAIN=$(input_box "OnlyOffice subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
 # Nextcloud Main Domain (onlyoffice.sh)
-NCDOMAIN=$(input_box "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com")
+NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 
 # shellcheck disable=2034,2059
 true
@@ -176,10 +176,10 @@ apt update -q4 & spinner_loading
 
 # Check if Nextcloud is installed
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-if ! curl -s https://"${NCDOMAIN//\\/}"/status.php | grep -q 'installed":true'
+if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
 then
 msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-${NCDOMAIN//\\/}.
+$NCDOMAIN.
 Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.
 If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
@@ -258,7 +258,7 @@ then
     Header set X-XSS-Protection "1; mode=block"
     Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     Header set X-Content-Type-Options nosniff
-    Header set Content-Security-Policy "frame-ancestors 'self' ${NCDOMAIN//\\/}"
+    Header set Content-Security-Policy "frame-ancestors 'self' $NCDOMAIN"
 
     # contra mixed content warnings
     RequestHeader set X-Forwarded-Proto "https"
