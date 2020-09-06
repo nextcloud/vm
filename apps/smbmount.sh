@@ -36,7 +36,7 @@ fi
 
 # Inform the user
 msg_box "This script automates mounting SMB-shares locally in your system and adds them automatically as external storage to your Nextcloud."
-if ! yesno_box "Do you want to proceed with this script?"
+if ! yesno_box_yes "Do you want to proceed with this script?"
 then
     exit 1
 fi
@@ -84,7 +84,7 @@ fi
 while true
 do
     SERVER_SHARE_NAME=$(input_box "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
-    if ! yesno_box "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
+    if ! yesno_box_yes "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
     then
         msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again." "$SUBTITLE"
     else
@@ -97,7 +97,7 @@ done
 while true
 do
     SMB_USER=$(input_box "Please enter the username of the SMB-user" "$SUBTITLE")
-    if ! yesno_box "Is this correct? $SMB_USER" "$SUBTITLE"
+    if ! yesno_box_yes "Is this correct? $SMB_USER" "$SUBTITLE"
     then
         msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again." "$SUBTITLE"
     else
@@ -109,7 +109,7 @@ done
 while true
 do
     SMB_PASSWORD=$(input_box "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
-    if ! yesno_box "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
+    if ! yesno_box_yes "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
     then
         msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again." "$SUBTITLE"
     else
@@ -374,7 +374,7 @@ case "$choice" in
         while true
         do
             SERVER_SHARE_NAME=$(input_box "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
-            if ! yesno_box "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
+            if ! yesno_box_yes "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
             then
                 msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again." "$SUBTITLE"
             else
@@ -389,7 +389,7 @@ case "$choice" in
         while true
         do
             SMB_USER=$(input_box "Please enter the username of the SMB-user" "$SUBTITLE")
-            if ! yesno_box "Is this correct? $SMB_USER" "$SUBTITLE"
+            if ! yesno_box_yes "Is this correct? $SMB_USER" "$SUBTITLE"
             then
                 msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again." "$SUBTITLE"
             else
@@ -403,7 +403,7 @@ case "$choice" in
         while true
         do
             SMB_PASSWORD=$(input_box "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
-            if ! yesno_box "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
+            if ! yesno_box_yes "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
             then
                 msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again." "$SUBTITLE"
             else

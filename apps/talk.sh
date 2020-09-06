@@ -97,7 +97,7 @@ then
     do
     # Ask for port
     TURN_PORT=$(input_box "Please enter the port you will use for Nextcloud Talk")
-    if yesno_box "Is this correct? $TURN_PORT"
+    if yesno_box_yes "Is this correct? $TURN_PORT"
     then
         break
     fi

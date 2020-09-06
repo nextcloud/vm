@@ -236,7 +236,18 @@ msg_box() {
     whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
+# TODO: delete in a few releases (e.g. NC20) since not needed anymore
 yesno_box() {
+    [ -n "$2" ] && local SUBTITLE=" - $2"
+    if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+yesno_box_yes() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
     if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
     then
@@ -380,7 +391,7 @@ The mpm determines how things are processed in your server.
 HTTP/2 has more demands in this regard and the currently selected mpm will just not do.
 This is an advisory warning. Your server will continue to work, but the HTTP/2 protocol will be inactive.'"
 
-if ! yesno_box "Do you really want to enable $1 anyway?"
+if ! yesno_box_yes "Do you really want to enable $1 anyway?"
 then
     exit 1
 fi

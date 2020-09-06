@@ -107,7 +107,7 @@ msg_box "It seems like the last try failed as well using LAN ethernet.
 Since the Home/SME server is equipped with a WIFI module, you will now be asked to enable it to get connectivity.
 
 Please note: It's not recomended to run a server on WIFI. Using an ethernet cable is always the best."
-    if yesno_box "Do you want to enable WIFI on this server?"
+    if yesno_box_yes "Do you want to enable WIFI on this server?"
     then
         nmtui
     fi
@@ -160,7 +160,7 @@ if [ "$KEYBOARD_LAYOUT" = "us" ]
 then
     clear
     print_text_in_color "$ICyan" "Current keyboard layout is English (United States)."
-    if ! yesno_box "Do you want to change keyboard layout?"
+    if ! yesno_box_yes "Do you want to change keyboard layout?"
     then
         print_text_in_color "$ICyan" "Not changing keyboard layout..."
         sleep 1
@@ -327,7 +327,7 @@ clear
 
 # Change Timezone
 print_text_in_color "$ICyan" "Current timezone is $(cat /etc/timezone)"
-if ! yesno_box "Do you want to change the timezone?"
+if ! yesno_box_yes "Do you want to change the timezone?"
 then
     print_text_in_color "$ICyan" "Not changing timezone..."
     sleep 1

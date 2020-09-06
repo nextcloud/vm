@@ -119,7 +119,7 @@ then
     do
     # Ask for port
     TURN_PORT=$(input_box "Please enter the port you will use for Nextcloud Talk")
-    if yesno_box "Is this correct? $TURN_PORT"
+    if yesno_box_yes "Is this correct? $TURN_PORT"
     then
         break
     fi
@@ -216,7 +216,7 @@ https://gitlab.com/packaging/nextcloud-spreed-signaling
 https://gitlab.com/packaging/janus/"
 
 # Ask the user if he/she wants the HPB server as well
-if ! yesno_box "Do you want to install the $DESCRIPTION?"
+if ! yesno_box_yes "Do you want to install the $DESCRIPTION?"
 then
     exit 1
 fi

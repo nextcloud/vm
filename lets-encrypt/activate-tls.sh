@@ -38,21 +38,21 @@ Please don't run this script if you don't have
 a domain yet. You can get one for a fair price here:
 https://store.binero.se/?lang=en-US"
 
-if ! yesno_box "Are you sure you want to continue?"
+if ! yesno_box_yes "Are you sure you want to continue?"
 then
 msg_box "OK, but if you want to run this script later,
 just type: sudo bash $SCRIPTS/activate-tls.sh"
     exit
 fi
 
-if ! yesno_box "Have you forwarded port 80+443 in your router?"
+if ! yesno_box_yes "Have you forwarded port 80+443 in your router?"
 then
 msg_box "OK, but if you want to run this script later,
 just type: sudo bash /var/scripts/activate-tls.sh"
     exit
 fi
 
-if yesno_box "Do you have a domain that you will use?"
+if yesno_box_yes "Do you have a domain that you will use?"
 then
     sleep 1
 else
@@ -72,7 +72,7 @@ unset TLS_INSTALL
 
 # Ask for domain name
 echo
-if yesno_box "Is this correct? $TLSDOMAIN"
+if yesno_box_yes "Is this correct? $TLSDOMAIN"
 then
     break
 fi

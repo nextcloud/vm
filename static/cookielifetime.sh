@@ -57,7 +57,7 @@ case "$choice" in
             elif [ "$COOKIE_LIFETIME" -lt "1800" ]
             then
                 msg_box "Please choose a value more than 1800 seconds."
-            elif ! yesno_box "Is this correct? $COOKIE_LIFETIME seconds"
+            elif ! yesno_box_yes "Is this correct? $COOKIE_LIFETIME seconds"
             then
                 msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. Please try again."
             else
