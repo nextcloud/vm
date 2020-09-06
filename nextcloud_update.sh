@@ -84,6 +84,9 @@ fi
 # Make sure everyone gets access to menu.sh
 download_script MENU menu
 
+# Make sure get.sh is available
+download_script STATIC get
+
 # Update docker-ce to overlay2 since devicemapper is deprecated
 if [ -f /etc/systemd/system/docker.service ]
 then

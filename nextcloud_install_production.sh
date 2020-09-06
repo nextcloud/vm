@@ -745,11 +745,12 @@ case "$choice" in
 esac
 
 # Get needed scripts for first bootup
-check_command curl_to_dir "$GITHUB_REPO" nextcloud-startup-script.sh "$SCRIPTS"
-check_command curl_to_dir "$GITHUB_REPO" lib.sh "$SCRIPTS"
+download_script GITHUB_REPO nextcloud-startup-script
+download_script GITHUB_REPO lib
 download_script STATIC instruction
 download_script STATIC history
 download_script NETWORK static_ip
+download_script STATIC get
 
 if home_sme_server
 then
