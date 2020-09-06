@@ -147,7 +147,7 @@ SUBDOMAIN=$(input_box "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: Th
 # Nextcloud Main Domain (collabora.sh)
 NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
 # Nextcloud Main Domain dot-escaped
-NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\.}
+NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 
 # shellcheck source=lib.sh
 NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
