@@ -142,12 +142,16 @@ then
     occ_command app:remove onlyoffice
 fi
 
-# shellcheck disable=2034,2059
-true
+# Collabora Docker URL (collabora.sh
+SUBDOMAIN=$(input_box "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
+# Nextcloud Main Domain (collabora.sh)
+NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
+# Nextcloud Main Domain dot-escaped
+NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\.}
+
 # shellcheck source=lib.sh
-NC_UPDATE=1 && COLLABORA_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
-unset COLLABORA_INSTALL
 
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
