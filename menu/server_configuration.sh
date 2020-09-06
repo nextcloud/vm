@@ -2,26 +2,11 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# If we have internet, then use the latest variables from the lib remote file
-if printf "Testing internet connection..." && ping github.com -c 2
-then
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Server Configuration Menu"
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-# Use local lib file in case there is no internet connection
-elif [ -f /var/scripts/lib.sh ]
-then
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-source /var/scripts/lib.sh
-else
-    printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
-    printf "Please report this to https://github.com/nextcloud/vm/issues/"
-    exit 1
-fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
