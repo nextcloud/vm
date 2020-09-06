@@ -214,7 +214,7 @@ msg_box "In the last step you can define a specific Nextcloud user for which wil
 The default behaviour (just hit [ENTER]) is to run with the system user 'www-data' which will generate previews for all users.
 
 If you on the other hand choose to use a specific user, previews will ONLY be generated for that specific user."
-if ! yesno_box_defaultno "Do you want to choose a specific Nextcloud user to generate previews?"
+if ! yesno_box_no "Do you want to choose a specific Nextcloud user to generate previews?"
 then
     print_text_in_color "$ICyan" "Using www-data (all Nextcloud users) for generating previews..."
     # Add crontab for www-data
