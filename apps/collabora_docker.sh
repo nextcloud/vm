@@ -145,7 +145,7 @@ fi
 # Collabora Docker URL (collabora.sh
 SUBDOMAIN=$(input_box "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
 # Nextcloud Main Domain (collabora.sh)
-NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
+NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 # Nextcloud Main Domain dot-escaped
 NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 
