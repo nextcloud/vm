@@ -37,21 +37,23 @@ is_process_running apt
 is_process_running dpkg
 
 # Use local lib file in case there is no internet connection
-if [ -f /var/scripts/lib.sh ]
+if printf "Testing internet connection..." && ping github.com -c 2 >/dev/null 2>&1
+then
+# shellcheck disable=2034,2059
+true
+SCRIPT_NAME="Nextcloud First Startup Script"
+# shellcheck source=lib.sh
+NCDB=1 && FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+unset NCDB
+unset FIRST_IFACE
+ # If we have internet, then use the latest variables from the lib remote file
+elif [ -f /var/scripts/lib.sh ]
 then
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Nextcloud First Startup Script"
 # shellcheck source=lib.sh
 NCDB=1 && FIRST_IFACE=1 source /var/scripts/lib.sh
-unset NCDB
-unset FIRST_IFACE
- # If we have internet, then use the latest variables from the lib remote file
-elif printf "Testing internet connection..." && ping github.com -c 2
-then
-true
-# shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset FIRST_IFACE
 unset NCDB
 else

@@ -119,10 +119,6 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 AUT_UPDATES_TIME="18"
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
-# Collabora Docker URL (collabora.sh
-[ -n "$COLLABORA_INSTALL" ] && SUBDOMAIN=$(input_box "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
-# Nextcloud Main Domain (collabora.sh)
-[ -n "$COLLABORA_INSTALL" ] && NCDOMAIN=$(input_box "Nextcloud domain, make sure it looks like this: cloud\\.yourdomain\\.com")
 # Nextcloud Main Domain (activate-tls.sh)
 [ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(input_box "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
 # Letsencrypt
