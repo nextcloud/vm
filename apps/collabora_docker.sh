@@ -142,10 +142,20 @@ then
     occ_command app:remove onlyoffice
 fi
 
-# Collabora Docker URL (collabora.sh
-SUBDOMAIN=$(input_box "Collabora subdomain eg: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
-# Nextcloud Main Domain (collabora.sh)
+# Ask for the domain for OnlyOffice
+while true
+do
+    # OnlyOffice URL (onlyoffice.sh)
+    SUBDOMAIN=$(input_box "Collabora subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
+    if yesno_box_yes "Is this correct? $SUBDOMAIN"
+    then
+        break
+    fi
+done
+
+# Nextcloud Main Domain
 NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+
 # Nextcloud Main Domain dot-escaped
 NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 
@@ -311,6 +321,7 @@ then
     # Add prune command
     add_dockerprune
     # Restart Docker
+    print_text_in_color "$ICyan" "Restarting Docker..."
     systemctl restart docker.service
     docker restart code
     print_text_in_color "$IGreen" "Collabora is now successfully installed."
