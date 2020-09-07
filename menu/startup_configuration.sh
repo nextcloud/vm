@@ -46,10 +46,10 @@ else
 fi
 
 # Startup configurations
-choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Keyboard Layout" "Change the keyboard layout" "$KEYBOARD_LAYOUT_SWITCH" \
-"Locate Mirror" "Change the apt-mirror for faster udpates" "$LOCATE_MIRROR_SWITCH" \
-"Timezone" "Change the timezone" "$TIMEZONE_SWITCH" 3>&1 1>&2 2>&3)
+choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Keyboard Layout" "(Change the keyboard layout)" "$KEYBOARD_LAYOUT_SWITCH" \
+"Locate Mirror" "(Change the apt-mirror for faster udpates)" "$LOCATE_MIRROR_SWITCH" \
+"Timezone" "(Change the timezone)" "$TIMEZONE_SWITCH" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Keyboard Layout"*)
