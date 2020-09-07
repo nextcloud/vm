@@ -161,7 +161,7 @@ zpool_import_if_missing
 if [ "$KEYBOARD_LAYOUT" = "us" ]
 then
     clear
-    print_text_in_color "$ICyan" "Current keyboard layout is English (United States)."
+    msg_box "Current keyboard layout is English (United States)."
     if ! yesno_box_yes "Do you want to change keyboard layout?"
     then
         print_text_in_color "$ICyan" "Not changing keyboard layout..."
