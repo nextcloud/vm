@@ -31,7 +31,7 @@ The preferred user is 'ncadmin'."
         adduser --disabled-password --gecos "" "$NEWUSER"
         sudo usermod -aG sudo "$NEWUSER"
         usermod -s /bin/bash "$NEWUSER"
-        while true
+        while :
         do
             sudo passwd "$NEWUSER" && break
         done

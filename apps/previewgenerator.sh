@@ -225,7 +225,7 @@ then
     # Pre generate everything
     occ_command preview:generate-all
 else
-    while true
+    while :
     do
         PREVIEW_USER=$(input_box "Enter the Nextcloud user for which you want to run the Preview Generation (as a scheluded task)")
         if [ -z "$(occ_command user:list | grep "$PREVIEW_USER" | awk '{print $3}')" ]
