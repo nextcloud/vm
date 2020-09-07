@@ -749,22 +749,6 @@ case "$choice" in
     ;;
 esac
 
-# Get needed scripts for first bootup
-download_script GITHUB_REPO nextcloud-startup-script
-download_script STATIC instruction
-download_script STATIC history
-download_script NETWORK static_ip
-
-if home_sme_server
-then
-    # Change nextcloud-startup-script.sh
-    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
-fi
-
-# Make $SCRIPTS excutable
-chmod +x -R "$SCRIPTS"
-chown root:root -R "$SCRIPTS"
-
 # Prepare first bootup
 check_command run_script STATIC change-ncadmin-profile
 check_command run_script STATIC change-root-profile
@@ -829,6 +813,22 @@ if is_this_installed update-notifier-common
 then
     sudo /usr/lib/update-notifier/update-motd-updates-available --force
 fi
+
+# Get needed scripts for first bootup
+download_script GITHUB_REPO nextcloud-startup-script
+download_script STATIC instruction
+download_script STATIC history
+download_script NETWORK static_ip
+
+if home_sme_server
+then
+    # Change nextcloud-startup-script.sh
+    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
+fi
+
+# Make $SCRIPTS excutable
+chmod +x -R "$SCRIPTS"
+chown root:root -R "$SCRIPTS"
 
 # Reboot
 msg_box "Installation almost done, system will reboot when you hit OK. 
