@@ -118,7 +118,7 @@ $DNS2
         DNSs="$DNS1,$DNS2"
     fi
 
-    if yesno_box_yes "Do you want to set your own nameservers?"
+    if yesno_box_no "Do you want to set your own nameservers?"
     then
         # Loop until user is happy with the nameserver 1
         echo
