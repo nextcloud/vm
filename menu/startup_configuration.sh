@@ -63,7 +63,10 @@ case "$choice" in
             dpkg-reconfigure keyboard-configuration
             setupcon --force
             # Set locales
-            run_script ADDONS locales
+            if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+            then
+                run_script ADDONS locales
+            fi
             # test the keyboard settings
             input_box "Please try out all buttons to find out if the keyboard settings were correctly applied.\nIf this isn't the case, you will have the chance to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" >/dev/null
             if yesno_box_no "Do you want to reboot the server?\nPlease only choose 'Yes' if the keyboard settings weren't correctly applied.\n\nIf you choose 'Yes' and the server is rebooted, please login as usual and run this script again."

@@ -195,6 +195,9 @@ please abort this script (CTRL+C) and report this issue to $ISSUES."
     fi
 fi
 
+# Set locales
+run_script ADDONS locales
+
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
 then
