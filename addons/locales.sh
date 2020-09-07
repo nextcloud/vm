@@ -4,10 +4,10 @@
 
 # shellcheck disable=2034,2059
 true
-# Curl get.sh to be able to use it. This is currently the first script during the startup-script the gets downloaded and executed from Github
-if ! [ -f /var/scripts/get.sh ]
+# Curl fetch_lib.sh to be able to use it. This is currently the first script during the startup-script the gets downloaded and executed from Github
+if ! [ -f /var/scripts/fetch_lib.sh ]
 then
-    curl -so /var/scripts/get.sh https://raw.githubusercontent.com/nextcloud/vm/master/static/get.sh
+    curl -so /var/scripts/fetch_lib.sh https://raw.githubusercontent.com/nextcloud/vm/master/static/fetch_lib.sh
 fi
 SCRIPT_NAME="Locales"
 # shellcheck source=lib.sh

@@ -750,7 +750,7 @@ download_script GITHUB_REPO lib
 download_script STATIC instruction
 download_script STATIC history
 download_script NETWORK static_ip
-download_script STATIC get
+download_script STATIC fetch_lib
 
 if home_sme_server
 then
