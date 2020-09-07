@@ -157,9 +157,18 @@ then
     fi
 fi
 
-# OnlyOffice URL (onlyoffice.sh)
-SUBDOMAIN=$(input_box "OnlyOffice subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
-# Nextcloud Main Domain (onlyoffice.sh)
+# Ask for the domain for OnlyOffice
+while true
+do
+    # OnlyOffice URL (onlyoffice.sh)
+    SUBDOMAIN=$(input_box "OnlyOffice subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
+    if yesno_box_yes "Is this correct? $SUBDOMAIN"
+    then
+        break
+    fi
+done
+
+# Nextcloud Main Domain
 NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
 # shellcheck disable=2034,2059
@@ -318,6 +327,7 @@ then
     # Add prune command
     add_dockerprune
     # Restart Docker
+    print_text_in_color "$ICyan" "Restaring Docker..."
     systemctl restart docker.service
     docker restart onlyoffice
     print_text_in_color "$IGreen" "OnlyOffice Docker is now successfully installed."
