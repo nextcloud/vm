@@ -56,7 +56,7 @@ then
 fi
 
 # Enter your Hostname
-while true
+while :
 do
     HOSTNAME=$(input_box "Please enter the Host that you want to configure DDNS for.\nE.g. 'example.com'")
     if ! yesno_box_yes "Is this correct? $HOSTNAME"
@@ -73,7 +73,7 @@ do
 done
 
 # Enter your login
-while true
+while :
 do
     LOGIN=$(input_box "Please enter the login for your DDNS provider.\nIt will be most likely the domain or registered email address depending on your DDNS Provider.\nE.g. 'example.com' or 'mail@example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider.")
     if ! yesno_box_yes "Is this correct? $LOGIN"
@@ -90,7 +90,7 @@ do
 done
 
 # Enter your password
-while true
+while :
 do
     PASSWORD=$(input_box "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.\nIf you are not sure, please refer to the documentation of your DDNS provider.")
     if ! yesno_box_yes "Is this correct? $PASSWORD"

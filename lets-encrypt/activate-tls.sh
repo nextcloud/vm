@@ -61,7 +61,7 @@ just type: sudo bash /var/scripts/activate-tls.sh"
     exit
 fi
 
-while true
+while :
 do
 print_text_in_color "$ICyan" "Updating lib.sh..."
 # shellcheck disable=2034,2059

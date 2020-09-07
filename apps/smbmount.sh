@@ -81,7 +81,7 @@ If you really want to mount more, you can simply download the smb-mount script d
 fi
 
 # Enter SMB-server and Share-name
-while true
+while :
 do
     SERVER_SHARE_NAME=$(input_box "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
     if ! yesno_box_yes "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
@@ -94,7 +94,7 @@ do
 done
 
 # Enter the SMB-user
-while true
+while :
 do
     SMB_USER=$(input_box "Please enter the username of the SMB-user" "$SUBTITLE")
     if ! yesno_box_yes "Is this correct? $SMB_USER" "$SUBTITLE"
@@ -106,7 +106,7 @@ do
 done
 
 # Enter the password of the SMB-user
-while true
+while :
 do
     SMB_PASSWORD=$(input_box "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
     if ! yesno_box_yes "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
@@ -371,7 +371,7 @@ case "$choice" in
     *"Share"*)
         clear
         # Enter SMB-server and Share-name
-        while true
+        while :
         do
             SERVER_SHARE_NAME=$(input_box "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
             if ! yesno_box_yes "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
@@ -386,7 +386,7 @@ case "$choice" in
     *"Username"*)
         clear
         # Enter the SMB-user
-        while true
+        while :
         do
             SMB_USER=$(input_box "Please enter the username of the SMB-user" "$SUBTITLE")
             if ! yesno_box_yes "Is this correct? $SMB_USER" "$SUBTITLE"
@@ -400,7 +400,7 @@ case "$choice" in
     *"Password"*)
         clear
         # Enter the password of the SMB-user
-        while true
+        while :
         do
             SMB_PASSWORD=$(input_box "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
             if ! yesno_box_yes "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
@@ -589,7 +589,7 @@ return
 }
 
 # Loop main menu until exited
-while true
+while :
 do
     # Main menu
     choice=$(whiptail --title "$TITLE" --menu "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
