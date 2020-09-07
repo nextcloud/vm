@@ -115,7 +115,7 @@ ${NONO_PORTS[*]}"
 
 if yesno_box_no "Do you want to change port?"
 then
-    while true
+    while :
     do
     # Ask for port
     TURN_PORT=$(input_box "Please enter the port you will use for Nextcloud Talk")
@@ -222,7 +222,7 @@ then
 fi
 
 # Ask for the domain for Talk
-while true
+while :
 do
     # Talk Proxy URL
     SUBDOMAIN=$(input_box "Talk Signaling Server subdomain e.g: talk.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
