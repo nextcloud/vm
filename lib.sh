@@ -824,7 +824,10 @@ then
     then
         # sleep 40 seconds so that some slow networks have time to restart
         countdown 'Not online yet, waiting a bit more...' 40
-        site_200 github.com
+        if ! site_200 github.com
+        then
+            return 1
+        fi
     fi
 else
 msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.6 to run this script."
