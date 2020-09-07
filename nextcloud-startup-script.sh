@@ -332,7 +332,7 @@ Please report any issues to: $ISSUES"
 clear
 
 # Change Timezone
-print_text_in_color "$ICyan" "Current timezone is $(cat /etc/timezone)"
+msg_box "Current timezone is $(cat /etc/timezone)"
 if ! yesno_box_yes "Do you want to change the timezone?"
 then
     print_text_in_color "$ICyan" "Not changing timezone..."
