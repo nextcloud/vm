@@ -44,7 +44,7 @@ then
             # Revoke LE
             while :
             do
-                SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
+                SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
                 if yesno_box_yes "Is this correct? $SUBDOMAIN"
                 then
                     break
