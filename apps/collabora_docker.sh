@@ -142,10 +142,10 @@ then
     occ_command app:remove onlyoffice
 fi
 
-# Ask for the domain for OnlyOffice
+# Ask for the domain for Collabora
 while true
 do
-    # OnlyOffice URL (onlyoffice.sh)
+    # Collabora URL
     SUBDOMAIN=$(input_box "Collabora subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
     if yesno_box_yes "Is this correct? $SUBDOMAIN"
     then
