@@ -66,11 +66,11 @@ fi
 
 # Loop until working network settings are validated or the user asks to quit
 echo
-while true
+while :
 do
     # Loop until user is happy with the IP address and subnet
     echo
-    while true
+    while :
     do
         # Ask for IP address
     	LANIP=$(input_box "Please enter the static IP address you want to set, including the subnet.\nExample: 192.168.1.100/24")
@@ -87,7 +87,7 @@ do
 
     # Loop until user is happy with the default gateway
     echo
-    while true
+    while :
     do
         # Ask for domain name
         GATEWAYIP=$(input_box "Please enter the gateway address you want to set.\nJust hit enter to choose the current gateway.\nYour current gateway is: $GATEWAY")
@@ -128,7 +128,7 @@ $DNS2
     then
         # Loop until user is happy with the nameserver 1
         echo
-        while true
+        while :
         do
             # Ask for nameserver
             NSIP1=$(input_box "Please enter the local nameserver address you want to set.\nJust hit enter to choose the current NS1.\nYour current NS1 is: $DNS1")
@@ -152,7 +152,7 @@ $DNS2
 
         # Loop until user is happy with the nameserver 2
         echo
-        while true
+        while :
         do
             # Ask for nameserver
             NSIP2=$(input_box "Please enter the local nameserver address you want to set. The 3 options are:\n- Hit enter to choose the current NS2.\n- Enter a new IP address for NS2.\n- Enter the text 'none' if you only have one NS.\nYour current NS2 is: $DISPLAY_DNS2")

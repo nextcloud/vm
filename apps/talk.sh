@@ -93,7 +93,7 @@ ${NONO_PORTS[*]}"
 
 if yesno_box_no "Do you want to change port?"
 then
-    while true
+    while :
     do
     # Ask for port
     TURN_PORT=$(input_box "Please enter the port you will use for Nextcloud Talk")
