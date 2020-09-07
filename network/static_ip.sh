@@ -51,7 +51,7 @@ fi
 msg_box "Please note that if the IP address changes during an (remote) SSH connection (via Putty, or terminal for example), the connection will break and the IP will reset to DHCP or the IP you had before you started this script.
 
 To avoid issues with lost connectivity, please use the VM Console directly, and not SSH."
-if yesno_box "Are you connected via SSH?"
+if yesno_box_yes "Are you connected via SSH?"
 then
     msg_box "Please use the VM Console instead."
     sleep 1
@@ -70,7 +70,7 @@ do
     	LANIP=$(input_box "Please enter the static IP address you want to set, including the subnet.\nExample: 192.168.1.100/24")
         if [[ $LANIP == *"/"* ]]
         then
-            if yesno_box "Is this correct? $LANIP"
+            if yesno_box_yes "Is this correct? $LANIP"
             then
                 break
             fi
@@ -89,7 +89,7 @@ do
         then
             GATEWAYIP="$GATEWAY"
         fi
-        if yesno_box "Is this correct? $GATEWAYIP"
+        if yesno_box_yes "Is this correct? $GATEWAYIP"
         then
             break
         fi
@@ -118,7 +118,7 @@ $DNS2
         DNSs="$DNS1,$DNS2"
     fi
 
-    if yesno_box "Do you want to set your own nameservers?"
+    if yesno_box_yes "Do you want to set your own nameservers?"
     then
         # Loop until user is happy with the nameserver 1
         echo
@@ -130,7 +130,7 @@ $DNS2
             then
                 NSIP1="$DNS1"
             fi
-            if yesno_box "Is this correct? $NSIP1"
+            if yesno_box_yes "Is this correct? $NSIP1"
             then
                 break
             fi
@@ -154,7 +154,7 @@ $DNS2
             then
                 NSIP2="$DISPLAY_DNS2"
             fi
-            if yesno_box "Is this correct? $NSIP2"
+            if yesno_box_yes "Is this correct? $NSIP2"
             then
                 break
             fi
@@ -228,7 +228,7 @@ servers are not reachable. Unless Wi-Fi is required and still to be configured
 proceeding will not succeed.
 
 BADNETWORKTEXT
-    if ! yesno_box "Try new network settings?"
+    if ! yesno_box_yes "Try new network settings?"
     then
         break
     fi

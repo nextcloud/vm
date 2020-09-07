@@ -91,13 +91,13 @@ You will now be given the option to change this port to something of your own.
 Please keep in mind NOT to use the following ports as they are likley to be in use already: 
 ${NONO_PORTS[*]}"
 
-if yesno_box "Do you want to change port?"
+if yesno_box_no "Do you want to change port?"
 then
     while true
     do
     # Ask for port
     TURN_PORT=$(input_box "Please enter the port you will use for Nextcloud Talk")
-    if yesno_box "Is this correct? $TURN_PORT"
+    if yesno_box_yes "Is this correct? $TURN_PORT"
     then
         break
     fi
