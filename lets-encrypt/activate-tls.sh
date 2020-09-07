@@ -71,7 +71,6 @@ TLS_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master
 unset TLS_INSTALL
 
 # Ask for domain name
-echo
 if yesno_box_yes "Is this correct? $TLSDOMAIN"
 then
     break
