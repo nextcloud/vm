@@ -46,7 +46,14 @@ then
             occ_command app:remove onlyoffice
         fi
         # Revoke LE
-        SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
+        while :
+        do
+            SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
+            if yesno_box_yes "Is this correct? $SUBDOMAIN"
+            then
+                break
+            fi
+        done
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -172,7 +179,7 @@ fi
 if [ "$(apache2ctl -M | grep evasive)" != "" ]
 then
     msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and you can now choose to disable it."
-    if ! yesno_box "Do you want to disable DDOS protection?"
+    if ! yesno_box_yes "Do you want to disable DDOS protection?"
     then
         print_text_in_color "$ICyan" "Keeping mod_evasive active."
     else

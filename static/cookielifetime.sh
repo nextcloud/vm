@@ -48,7 +48,7 @@ case "$choice" in
         occ_command config:system:set remember_login_cookie_lifetime --value="2419200"
     ;;
     "Custom")
-        while true
+        while :
         do
             COOKIE_LIFETIME=$(input_box "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\n\nPlease enter the Cookie Lifetime in seconds, so e.g. 1800 for 30 minutes or 3600 for 1 hour\n\n You can not set a value below 30 minutes (1800 seconds).")
             if ! check_if_number "$COOKIE_LIFETIME"
@@ -57,7 +57,7 @@ case "$choice" in
             elif [ "$COOKIE_LIFETIME" -lt "1800" ]
             then
                 msg_box "Please choose a value more than 1800 seconds."
-            elif ! yesno_box "Is this correct? $COOKIE_LIFETIME seconds"
+            elif ! yesno_box_yes "Is this correct? $COOKIE_LIFETIME seconds"
             then
                 msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. Please try again."
             else

@@ -49,7 +49,14 @@ then
             # If yes, then stop and prune the docker container
             docker_prune_this 'onlyoffice/documentserver'
             # Revoke LE
-            SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Onlyoffice Docker, e.g: office.yourdomain.com")
+            while :
+            do
+                SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
+                if yesno_box_yes "Is this correct? $SUBDOMAIN"
+                then
+                    break
+                fi
+            done
             if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
             then
                 yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -146,7 +153,7 @@ fi
 if [ "$(apache2ctl -M | grep evasive)" != "" ]
 then
     msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and you can now choose to disable it."
-    if ! yesno_box "Do you want to disable DDOS protection?"
+    if ! yesno_box_yes "Do you want to disable DDOS protection?"
     then
         print_text_in_color "$ICyan" "Keeping mod_evasive active."
     else
@@ -157,9 +164,18 @@ then
     fi
 fi
 
-# OnlyOffice URL (onlyoffice.sh)
-SUBDOMAIN=$(input_box "OnlyOffice subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
-# Nextcloud Main Domain (onlyoffice.sh)
+# Ask for the domain for OnlyOffice
+while :
+do
+    # OnlyOffice URL (onlyoffice.sh)
+    SUBDOMAIN=$(input_box "OnlyOffice subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
+    if yesno_box_yes "Is this correct? $SUBDOMAIN"
+    then
+        break
+    fi
+done
+
+# Nextcloud Main Domain
 NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
 # shellcheck disable=2034,2059
@@ -318,6 +334,7 @@ then
     # Add prune command
     add_dockerprune
     # Restart Docker
+    print_text_in_color "$ICyan" "Restaring Docker..."
     systemctl restart docker.service
     docker restart onlyoffice
     print_text_in_color "$IGreen" "OnlyOffice Docker is now successfully installed."

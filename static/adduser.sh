@@ -22,7 +22,7 @@ It's possible to install with root, but there will be minor errors.
 
 Please create a user with sudo permissions if you want an optimal installation.
 The preferred user is 'ncadmin'."
-    if ! yesno_box "Do you want to create a new user?"
+    if ! yesno_box_yes "Do you want to create a new user?"
     then
         print_text_in_color "$ICyan" "Not adding another user..."
         sleep 1
@@ -31,7 +31,7 @@ The preferred user is 'ncadmin'."
         adduser --disabled-password --gecos "" "$NEWUSER"
         sudo usermod -aG sudo "$NEWUSER"
         usermod -s /bin/bash "$NEWUSER"
-        while true
+        while :
         do
             sudo passwd "$NEWUSER" && break
         done

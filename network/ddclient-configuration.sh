@@ -50,16 +50,16 @@ esac
 msg_box "Before you can continue, you have to access $PROVIDER and $INSTRUCTIONS.\nHere is a guide:\n$GUIDE"
 
 # Ask if everything is prepared
-if ! yesno_box "Are you ready to continue?"
+if ! yesno_box_yes "Are you ready to continue?"
 then
     exit
 fi
 
 # Enter your Hostname
-while true
+while :
 do
     HOSTNAME=$(input_box "Please enter the Host that you want to configure DDNS for.\nE.g. 'example.com'")
-    if ! yesno_box "Is this correct? $HOSTNAME"
+    if ! yesno_box_yes "Is this correct? $HOSTNAME"
     then
         msg_box "OK, please try again."
     else
@@ -73,10 +73,10 @@ do
 done
 
 # Enter your login
-while true
+while :
 do
     LOGIN=$(input_box "Please enter the login for your DDNS provider.\nIt will be most likely the domain or registered email address depending on your DDNS Provider.\nE.g. 'example.com' or 'mail@example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider.")
-    if ! yesno_box "Is this correct? $LOGIN"
+    if ! yesno_box_yes "Is this correct? $LOGIN"
     then
         msg_box "OK, please try again."
     else
@@ -90,10 +90,10 @@ do
 done
 
 # Enter your password
-while true
+while :
 do
     PASSWORD=$(input_box "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.\nIf you are not sure, please refer to the documentation of your DDNS provider.")
-    if ! yesno_box "Is this correct? $PASSWORD"
+    if ! yesno_box_yes "Is this correct? $PASSWORD"
     then
         msg_box "OK, please try again."
     else
@@ -115,7 +115,7 @@ RESULT+="password=$PASSWORD\n"
 
 # Present what we gathered, if everything okay, write to file
 msg_box "$RESULT"
-if ! yesno_box "Do you want to proceed?"
+if ! yesno_box_yes "Do you want to proceed?"
 then
     exit
 fi

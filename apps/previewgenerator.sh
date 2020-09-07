@@ -40,7 +40,7 @@ msg_box "This script will install the Preview Generator.
 It can speedup the loading of previews in Nextcloud a lot.
 
 Please note: If you continue, all your current Preview Generator settings will be lost, if any."
-if yesno_box "Do you want to install the Preview Generator?"
+if yesno_box_yes "Do you want to install the Preview Generator?"
 then
     # Install preview generator
      print_text_in_color "$ICyan" "Installing the Preview Generator..."
@@ -89,7 +89,7 @@ Imagick will put your server at risk as it's is known to have several flaws.
 You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743
 
 Please note: If you choose not to install imagick, it will get removed now."
-if yesno_box "Do you want to install imagick?"
+if yesno_box_yes "Do you want to install imagick?"
 then
     # Install imagick
     install_if_not php-imagick
@@ -214,7 +214,7 @@ msg_box "In the last step you can define a specific Nextcloud user for which wil
 The default behaviour (just hit [ENTER]) is to run with the system user 'www-data' which will generate previews for all users.
 
 If you on the other hand choose to use a specific user, previews will ONLY be generated for that specific user."
-if ! yesno_box "Do you want to choose a specific Nextcloud user to generate previews?"
+if ! yesno_box_no "Do you want to choose a specific Nextcloud user to generate previews?"
 then
     print_text_in_color "$ICyan" "Using www-data (all Nextcloud users) for generating previews..."
     # Add crontab for www-data
@@ -225,7 +225,7 @@ then
     # Pre generate everything
     occ_command preview:generate-all
 else
-    while true
+    while :
     do
         PREVIEW_USER=$(input_box "Enter the Nextcloud user for which you want to run the Preview Generation (as a scheluded task)")
         if [ -z "$(occ_command user:list | grep "$PREVIEW_USER" | awk '{print $3}')" ]

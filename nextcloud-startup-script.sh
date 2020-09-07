@@ -109,7 +109,7 @@ msg_box "It seems like the last try failed as well using LAN ethernet.
 Since the Home/SME server is equipped with a WIFI module, you will now be asked to enable it to get connectivity.
 
 Please note: It's not recomended to run a server on WIFI. Using an ethernet cable is always the best."
-    if yesno_box "Do you want to enable WIFI on this server?"
+    if yesno_box_yes "Do you want to enable WIFI on this server?"
     then
         nmtui
     fi
@@ -162,15 +162,19 @@ if [ "$KEYBOARD_LAYOUT" = "us" ]
 then
     clear
     print_text_in_color "$ICyan" "Current keyboard layout is English (United States)."
-    if ! yesno_box "Do you want to change keyboard layout?"
+    if ! yesno_box_yes "Do you want to change keyboard layout?"
     then
         print_text_in_color "$ICyan" "Not changing keyboard layout..."
         sleep 1
         clear
     else
         dpkg-reconfigure keyboard-configuration
-        msg_box "We will now set the new keyboard layout directly in this session and reboot the server to apply the new keyboard settings.\n\nWhen the server are rebooted, please login as usual and run this script again."
-	setupcon --force && reboot
+        setupcon --force
+        input_box "Please try out all buttons to find out if the keyboard settings were correctly applied.\nIf this isn't the case, you will have the chance to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" >/dev/null
+        if yesno_box_no "Do you want to reboot the server?\nPlease only choose 'Yes' if the keyboard settings weren't correctly applied.\n\nIf you choose 'Yes' and the server is rebooted, please login as usual and run this script again."
+        then
+            reboot
+        fi
     fi
 fi
 
@@ -328,7 +332,7 @@ clear
 
 # Change Timezone
 print_text_in_color "$ICyan" "Current timezone is $(cat /etc/timezone)"
-if ! yesno_box "Do you want to change the timezone?"
+if ! yesno_box_yes "Do you want to change the timezone?"
 then
     print_text_in_color "$ICyan" "Not changing timezone..."
     sleep 1
@@ -377,7 +381,7 @@ clear
 # CLI USER
 print_text_in_color "$ICyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
 any_key "Press any key to change password for system user..."
-while true
+while :
 do
     sudo passwd "$(getent group sudo | cut -d: -f4 | cut -d, -f1)" && break
 done
@@ -389,7 +393,7 @@ print_text_in_color "$ICyan" "The current admin user in Nextcloud GUI is [$NCADM
 print_text_in_color "$ICyan" "We will now replace this user with your own."
 any_key "Press any key to replace the current (local) admin user for Nextcloud..."
 # Create new user
-while true
+while :
 do
     print_text_in_color "$ICyan" "Please enter the username for your new user:"
     read -r NEWUSER

@@ -52,12 +52,20 @@ sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden
 
 You will be offered to abort in the next step"
 
-if ! yesno_box "Are you sure you want to install Bitwarden_rs?"
+if ! yesno_box_yes "Are you sure you want to install Bitwarden_rs?"
 then
     exit
 fi
 
-SUBDOMAIN=$(input_box "Please enter the Domain that you want to use for Bitwarden RS.")
+# Ask for domain
+while :
+do
+    SUBDOMAIN=$(input_box "Please enter the Domain that you want to use for Bitwarden RS.")
+    if yesno_box_yes "Is this correct? $SUBDOMAIN"
+    then
+        break
+    fi
+done
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
@@ -65,7 +73,7 @@ SUBDOMAIN=$(input_box "Please enter the Domain that you want to use for Bitwarde
 
 msg_box "Please make sure that you have you have edited the dns-settings of your domain and open ports 80 and 443."
 
-if ! yesno_box "Have you made the necessary preparations?"
+if ! yesno_box_yes "Have you made the necessary preparations?"
 then
     exit
 fi

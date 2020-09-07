@@ -232,9 +232,30 @@ msg_box() {
     whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH"
 }
 
+# TODO: delete in a few releases (e.g. NC20) since not needed anymore
 yesno_box() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
     if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+yesno_box_yes() {
+    [ -n "$2" ] && local SUBTITLE=" - $2"
+    if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+yesno_box_no() {
+    [ -n "$2" ] && local SUBTITLE=" - $2"
+    if (whiptail --title "$TITLE$SUBTITLE" --defaultno --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
     then
         return 0
     else
@@ -309,7 +330,7 @@ msg_box "As you noticed your WAN IP and DNS record doesn't match. This can happe
 If you feel brave, or are sure that everything is setup correctly, then you can choose to skip this test in the next step.
 
 You can always contact us for further support if you wish: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
-        if ! yesno_box "Do you feel brave and want to continue?"
+        if ! yesno_box_no "Do you feel brave and want to continue?"
             then
             exit
         fi
@@ -366,7 +387,7 @@ The mpm determines how things are processed in your server.
 HTTP/2 has more demands in this regard and the currently selected mpm will just not do.
 This is an advisory warning. Your server will continue to work, but the HTTP/2 protocol will be inactive.'"
 
-if ! yesno_box "Do you really want to enable $1 anyway?"
+if ! yesno_box_yes "Do you really want to enable $1 anyway?"
 then
     exit 1
 fi
@@ -641,7 +662,7 @@ If you are 100% sure the port ${1} is open you can now choose to
 continue. There are no guarantees that it will work anyway though,
 since the service depend on that the port ${1} is open and
 accessible from outside your network."
-    if ! yesno_box "Are you 100% sure the port ${1} is open?"
+    if ! yesno_box_no "Are you 100% sure the port ${1} is open?"
     then
         msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
         any_key "Press any key to exit..."
