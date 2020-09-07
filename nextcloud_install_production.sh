@@ -73,6 +73,11 @@ run_script ADDONS locales
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
 
+# Download needed libraries before execution of the first script
+mkdir -p "$SCRIPTS"
+download_script STATIC fetch_lib
+download_script GITHUB_REPO lib
+
 # Create new current user
 download_script STATIC adduser
 bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
@@ -746,11 +751,9 @@ esac
 
 # Get needed scripts for first bootup
 download_script GITHUB_REPO nextcloud-startup-script
-download_script GITHUB_REPO lib
 download_script STATIC instruction
 download_script STATIC history
 download_script NETWORK static_ip
-download_script STATIC fetch_lib
 
 if home_sme_server
 then
