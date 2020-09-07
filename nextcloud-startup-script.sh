@@ -154,35 +154,14 @@ then
     exit 1
 fi
 
+# Nextcloud 18 is required
+lowest_compatible_nc 18
+
 # Import if missing and export again to import it with UUID
 zpool_import_if_missing
 
-# Set keyboard layout, important when changing passwords and such
-if [ "$KEYBOARD_LAYOUT" = "us" ]
-then
-    clear
-    print_text_in_color "$ICyan" "Current keyboard layout is English (United States)."
-    if ! yesno_box_yes "Do you want to change keyboard layout?"
-    then
-        print_text_in_color "$ICyan" "Not changing keyboard layout..."
-        sleep 1
-        clear
-    else
-        dpkg-reconfigure keyboard-configuration
-        setupcon --force
-        input_box "Please try out all buttons to find out if the keyboard settings were correctly applied.\nIf this isn't the case, you will have the chance to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" >/dev/null
-        if yesno_box_no "Do you want to reboot the server?\nPlease only choose 'Yes' if the keyboard settings weren't correctly applied.\n\nIf you choose 'Yes' and the server is rebooted, please login as usual and run this script again."
-        then
-            reboot
-        fi
-    fi
-fi
-
-# Set locales
-run_script ADDONS locales
-
-# Nextcloud 18 is required
-lowest_compatible_nc 18
+# Run the startup menu
+run_script MENU startup_configuration
 
 # Is this run as a pure root user?
 if is_root
@@ -215,9 +194,6 @@ please abort this script (CTRL+C) and report this issue to $ISSUES."
         fi
     fi
 fi
-
-# Upgrade mirrors
-run_script ADDONS locate_mirror
 
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
@@ -330,17 +306,6 @@ When the setup is done, the server will automatically reboot.
 
 Please report any issues to: $ISSUES"
 clear
-
-# Change Timezone
-print_text_in_color "$ICyan" "Current timezone is $(cat /etc/timezone)"
-if ! yesno_box_yes "Do you want to change the timezone?"
-then
-    print_text_in_color "$ICyan" "Not changing timezone..."
-    sleep 1
-    clear
-else
-    dpkg-reconfigure tzdata
-fi
 
 # Change timezone in PHP
 sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
