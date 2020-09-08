@@ -7,12 +7,12 @@
 true
 SCRIPT_NAME="Full Text Search"
 # shellcheck source=lib.sh
-ES_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset ES_INSTALL
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 ncdb
 nc_update
+es_install
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
