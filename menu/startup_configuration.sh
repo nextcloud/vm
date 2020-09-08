@@ -25,18 +25,6 @@ else
     KEYBOARD_LAYOUT_SWITCH="OFF"
 fi
 
-# Get the correct locate mirror switch
-if [ -z "$REPO" ]
-then
-    REPO=$(apt update -q4 && apt-cache policy | grep http | tail -1 | awk '{print $2}')
-fi
-if [ "$REPO" = "http://se.archive.ubuntu.com/ubuntu" ]
-then
-    LOCATE_MIRROR_SWITCH="ON"
-else
-    LOCATE_MIRROR_SWITCH="OFF"
-fi
-
 # Get the correct timezone switch
 if [ "$(cat /etc/timezone)" = "Etc/UTC" ]
 then
@@ -48,8 +36,8 @@ fi
 # Startup configurations
 choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Keyboard Layout" "(Change the keyboard layout)" "$KEYBOARD_LAYOUT_SWITCH" \
-"Locate Mirror" "(Change the apt-mirror for faster udpates)" "$LOCATE_MIRROR_SWITCH" \
-"Timezone" "(Change the timezone)" "$TIMEZONE_SWITCH" 3>&1 1>&2 2>&3)
+"Timezone" "(Change the timezone)" "$TIMEZONE_SWITCH" \
+"Locate Mirror" "(Change the apt-mirror for faster udpates)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Keyboard Layout"*)
@@ -75,11 +63,6 @@ case "$choice" in
             fi
         fi
     ;;&
-    *"Locate Mirror"*)
-        clear
-        print_text_in_color "$ICyan" "Downloading the Locate Mirror script..."
-        run_script ADDONS locate_mirror
-    ;;&
     *"Timezone"*)
         clear
         msg_box "Current timezone is $(cat /etc/timezone)"
@@ -101,6 +84,11 @@ case "$choice" in
             occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
             clear
         fi
+    ;;&
+    *"Locate Mirror"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the Locate Mirror script..."
+        run_script ADDONS locate_mirror
     ;;&
     *)
     ;;
