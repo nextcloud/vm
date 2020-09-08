@@ -119,8 +119,6 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 AUT_UPDATES_TIME="18"
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
-# Nextcloud Main Domain (activate-tls.sh)
-[ -n "$TLS_INSTALL" ] && TLSDOMAIN=$(input_box "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
 # Letsencrypt
 SITES_AVAILABLE="/etc/apache2/sites-available"
 LETSENCRYPTPATH="/etc/letsencrypt"

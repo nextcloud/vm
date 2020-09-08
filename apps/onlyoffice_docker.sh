@@ -114,7 +114,14 @@ then
     # Remove docker image
     docker_prune_this 'collabora/code'
     # Revoke LE
-    SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
+    while :
+    do
+        SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
+        if yesno_box_yes "Is this correct? $SUBDOMAIN"
+        then
+            break
+        fi
+    done
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
