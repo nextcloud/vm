@@ -42,7 +42,7 @@ choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change\n
 case "$choice" in
     *"Keyboard Layout"*)
         clear
-        msg_box "Current keyboard layout is English (United States)."
+        msg_box "Current keyboard layout is $KEYBOARD_LAYOUT."
         if ! yesno_box_yes "Do you want to change keyboard layout?"
         then
             print_text_in_color "$ICyan" "Not changing keyboard layout..."
