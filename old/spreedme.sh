@@ -6,8 +6,10 @@
 true
 SCRIPT_NAME="Spreedme"
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+nc_update
 
 print_text_in_color "$ICyan" "Installing Spreed.ME..."
 

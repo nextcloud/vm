@@ -8,11 +8,11 @@
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 ncdb
+nc_update
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
