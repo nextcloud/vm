@@ -1072,7 +1072,7 @@ any_key() {
 }
 
 lowest_compatible_nc() {
-if [ -z "$NCVERSION" ]
+if [ -z "$CURRENTVERSION" ]
 then
     nc_update
 fi
@@ -1110,7 +1110,7 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
-if [ -z "$NCVERSION" ]
+if [ -z "$CURRENTVERSION" ]
 then
     nc_update
 fi
@@ -1252,7 +1252,7 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 # 2 = repository
 # Nextcloud version
 git_apply_patch() {
-if [ -z "$NCVERSION" ]
+if [ -z "$CURRENTVERSION" ]
 then
     nc_update
 fi
