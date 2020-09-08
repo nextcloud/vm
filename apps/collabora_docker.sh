@@ -173,6 +173,7 @@ NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|htt
 # Nextcloud Main Domain dot-escaped
 NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 
+# Curl the library another time to get the correct https_conf
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
