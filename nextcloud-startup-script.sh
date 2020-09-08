@@ -43,8 +43,7 @@ then
 true
 SCRIPT_NAME="Nextcloud First Startup Script"
 # shellcheck source=lib.sh
-NCDB=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NCDB
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
  # If we have internet, then use the latest variables from the lib remote file
 elif [ -f /var/scripts/lib.sh ]
 then
@@ -52,8 +51,7 @@ then
 true
 SCRIPT_NAME="Nextcloud First Startup Script"
 # shellcheck source=lib.sh
-NCDB=1 source /var/scripts/lib.sh
-unset NCDB
+source /var/scripts/lib.sh
 else
     printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
     printf "Please report this to https://github.com/nextcloud/vm/issues/"
@@ -62,6 +60,7 @@ fi
 
 # Get all needed variables from the library
 first_iface
+ncdb
 
 # Check if root
 root_check
@@ -137,9 +136,11 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
 fi
 
 # shellcheck source=lib.sh
-NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 unset NC_UPDATE
-unset NCDB
+
+# Get all needed variables from the library
+ncdb
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
