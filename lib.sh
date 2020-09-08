@@ -1072,11 +1072,9 @@ any_key() {
 }
 
 lowest_compatible_nc() {
-if [ -z "$NC_UPDATE" ]
+if [ -z "$NCVERSION" ]
 then
-# shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
-unset NC_UPDATE
+    nc_update
 fi
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
@@ -1112,11 +1110,9 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
-if [ -z "$NC_UPDATE" ]
+if [ -z "$NCVERSION" ]
 then
-# shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
-unset NC_UPDATE
+    nc_update
 fi
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
@@ -1256,11 +1252,9 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 # 2 = repository
 # Nextcloud version
 git_apply_patch() {
-if [ -z "$NC_UPDATE" ]
+if [ -z "$NCVERSION" ]
 then
-# shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
-unset NC_UPDATE
+    nc_update
 fi
 if [[ "$CURRENTVERSION" = "$3" ]]
 then
