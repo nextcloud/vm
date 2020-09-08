@@ -54,8 +54,10 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset FIRST_IFACE
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+first_iface
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
