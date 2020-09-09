@@ -25,22 +25,14 @@ else
     ACTIVATE_TLS_SWITCH="OFF"
 fi
 
-# Set the startup switch
-if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
-then
-    STARTUP_SWITCH="ON"
-else
-    STARTUP_SWITCH="OFF"
-fi
-
 # Server configurations
 choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to configure\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
-"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" "$STARTUP_SWITCH" \
+"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
-"Automatic updates" "(Automatically update your server every week on Sundays)" "$STARTUP_SWITCH" \
-"Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" "$STARTUP_SWITCH" 3>&1 1>&2 2>&3)
+"Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
+"Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Static IP"*)

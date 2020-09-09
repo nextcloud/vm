@@ -38,7 +38,7 @@ choice=$(whiptail --title "$TITLE" --checklist "Which apps do you want to instal
 "PreviewGenerator" "(Pre-generate previews)" "$STARTUP_SWITCH" \
 "LDAP" "(Windows Active directory)" OFF \
 "Talk" "(Nextcloud Video calls and chat)" OFF \
-"Webmin" "(Server GUI)" OFF \
+"Webmin" "(Server GUI)" "$STARTUP_SWITCH" \
 "SMB-mount" "(Connect to SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
