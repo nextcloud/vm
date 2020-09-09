@@ -17,40 +17,38 @@ debug_mode
 # Must be root
 root_check
 
+# Set the correct switch for activate_tls
+if [ -f $SCRIPTS/activate-tls.sh ]
+then
+    ACTIVATE_TLS_SWITCH="ON"
+else
+    ACTIVATE_TLS_SWITCH="OFF"
+fi
+
 # Server configurations
 choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to configure\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Activate TLS" "(Enable HTTPS with Let's Encrypt)" ON \
-"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
+"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \
+"Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    *"Security"*)
-        clear
-        print_text_in_color "$ICyan" "Downloading the Security script..."
-        run_script ADDONS security
-    ;;&
     *"Static IP"*)
         clear
         print_text_in_color "$ICyan" "Downloading the Static IP script..."
         run_script NETWORK static_ip
     ;;&
+    *"Security"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the Security script..."
+        run_script ADDONS security
+    ;;&
     *"DDclient Configuration"*)
         clear
         print_text_in_color "$ICyan" "Downloading the DDclient Configuration script..."
         run_script NETWORK ddclient-configuration
-    ;;&
-    *"Automatic updates"*)
-        clear
-        print_text_in_color "$ICyan" "Downloading the Automatic Updates script..."
-        run_script ADDONS automatic_updates
-    ;;&
-    *"Disk Check"*)
-        clear
-        print_text_in_color "$ICyan" "Downloading the Disk Check script..."
-        run_script DISK smartctl
     ;;&
     *"Activate TLS"*)
         clear
@@ -76,11 +74,20 @@ https://www.techandme.se/open-port-80-443/"
             print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
             any_key "Press any key to continue..."
         fi
-
-        # Just make sure they are gone
+        
+        # Just make sure it is gone
         rm -f "$SCRIPTS/test-new-config.sh"
-        rm -f "$SCRIPTS/activate-tls.sh"
         clear
+    ;;&
+    *"Automatic updates"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the Automatic Updates script..."
+        run_script ADDONS automatic_updates
+    ;;&
+    *"Disk Check"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the Disk Check script..."
+        run_script DISK smartctl
     ;;&
     *)
     ;;
