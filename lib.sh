@@ -230,6 +230,7 @@ then
 fi
 }
 
+# TODO: delete in a few releases (e.g. NC20) since not needed anymore
 ask_yes_or_no() {
     read -r -p "$1 ([y]es or [N]o): "
     case ${REPLY,,} in
@@ -282,6 +283,31 @@ input_box() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
     local RESULT && RESULT=$(whiptail --title "$TITLE$SUBTITLE" --inputbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     echo "$RESULT"
+}
+
+explainer_popup() {
+    msg_box "$SCRIPT_EXPLAINER"
+    if ! yesno_box_yes "Do you want to proceed with this script?"
+    then
+        exit 1
+    fi
+}
+
+removal_popup() {
+    msg_box "It seems like $SCRIPT_NAME is already installed.\nIf you proceed, $SCRIPT_NAME will get removed from your system and you will be asked if you want to reinstall it afterwards."
+    if ! yesno_box_yes "Do you want to remove $SCRIPT_NAME?"
+    then 
+        exit 1
+    fi
+    print_text_in_color "$ICyan" "Uninstalling $SCRIPT_NAME and resetting all settings..."
+}
+
+reinstall_popup() {
+    msg_box "$SCRIPT_NAME was successfully removed and all settings have been reset.\nIf you proceed, $SCRIPT_NAME will get reinstalled."
+    if ! yesno_box_yes "Do you want to reinstall $SCRIPT_NAME?"
+    then
+        exit 1
+    fi
 }
 
 # Check if process is runnnig: is_process_running dpkg

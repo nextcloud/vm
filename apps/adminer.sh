@@ -5,6 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Adminer"
+SCRIPT_EXPLAINER="Adminer is a tool that lets you see the content of your database."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -17,45 +18,31 @@ debug_mode
 # Check if root
 root_check
 
+# Show explainer
+explainer_popup
+
 # Check if adminer is already installed
 print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
 then
-    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Adminer' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall Adminer" "" \
-    "Uninstall Adminer" "" 3>&1 1>&2 2>&3)
-    
-    case "$choice" in
-        "Uninstall Adminer")
-            # Check that the script can see the external IP (apache fails otherwise)
-            check_external_ip
-            print_text_in_color "$ICyan" "Uninstalling Adminer and resetting all settings..."
-            a2disconf adminer.conf
-            rm $ADMINER_CONF
-            rm $ADMINERDIR/adminer.php
-            check_command apt-get purge adminer -y
-            restart_webserver
-            msg_box "Adminer was successfully uninstalled and all settings were resetted."
-            exit
-        ;;
-        "Reinstall Adminer")
-            # Check that the script can see the external IP (apache fails otherwise)
-            check_external_ip
-            print_text_in_color "$ICyan" "Reinstalling and securing Adminer..."
-            a2disconf adminer.conf
-            rm $ADMINER_CONF
-            rm $ADMINERDIR/adminer.php
-            check_command apt-get purge adminer -y
-        ;;
-        *)
-        ;;
-    esac
-else
-    print_text_in_color "$ICyan" "Installing and securing Adminer..."
+    # Ask for removal
+    removal_popup
+    # Removal
+    check_external_ip # Check that the script can see the external IP (apache fails otherwise)
+    a2disconf adminer.conf
+    rm -f $ADMINER_CONF
+    rm -f $ADMINERDIR/adminer.php
+    check_command apt-get purge adminer -y
+    restart_webserver
+    # Ask for reinstalling
+    reinstall_popup
 fi
 
 # Warn user about HTTP/2
 http2_warn Adminer
+
+# Inform users
+print_text_in_color "$ICyan" "Installing and securing Adminer..."
 
 # Check that the script can see the external IP (apache fails otherwise)
 check_external_ip
