@@ -6,16 +6,10 @@
 true
 SCRIPT_NAME="Main Menu"
 
-#############################################################################################
-if [ -f /var/scripts/fetch_lib.sh ]
-then
-# shellcheck source=fetch_lib.sh
-source /var/scripts/fetch_lib.sh &>/dev/null
-else
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
-fi
-#############################################################################################
+source /var/scripts/fetch_lib.sh &>/dev/null || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
+
+###################################
 
 ### TODO Remove this after some releases
 # Download fetch_lib.sh to be able to use it
