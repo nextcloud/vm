@@ -23,7 +23,7 @@ download_cache_lib() {
 }
 
 # Run the script
-if [ -f /var/scripts/nextcloud-startup-script.sh ] && ! [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
+if [ -f /var/scripts/nextcloud-startup-script.sh ] && ! [ -f /var/scripts/you-can-not-run-the-startup-script-several-times ]
 then
     if printf "Testing internet connection..." && ping github.com -c 2 >/dev/null 2>&1
     then
