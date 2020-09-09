@@ -26,8 +26,8 @@ root_check
 choice=$(whiptail --title "$TITLE" --menu "Choose what you want to do.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Additional Apps" "(Choose which apps to install)" \
 "Nextcloud Configuration" "(Choose between available Nextcloud configurations)" \
-"Server Configuration" "(Choose between available server configurations)" \
 "Startup Configuration" "(Choose between available startup configurations)" \
+"Server Configuration" "(Choose between available server configurations)" \
 "Update Nextcloud" "(Update Nextcloud to the latest release)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -39,13 +39,13 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Nextcloud Configuration script..."
         run_script MENU nextcloud_configuration
     ;;
-    "Server Configuration")
-        print_text_in_color "$ICyan" "Downloading the Server Configuration script..."
-        run_script MENU server_configuration
-    ;;
     "Startup Configuration")
         print_text_in_color "$ICyan" "Downloading the Startup Configuration script..."
         run_script MENU startup_configuration
+    ;;
+    "Server Configuration")
+        print_text_in_color "$ICyan" "Downloading the Server Configuration script..."
+        run_script MENU server_configuration
     ;;
     "Update Nextcloud")
         if [ -f $SCRIPTS/update.sh ]
