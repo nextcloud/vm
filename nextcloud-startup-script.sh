@@ -37,7 +37,7 @@ is_process_running apt
 is_process_running dpkg
 
 # Use local lib file in case there is no internet connection
-if printf "Testing internet connection..." && ping github.com -c 2 >/dev/null 2>&1
+if print_text_in_color "$ICyan" "Testing internet connection..." && ping github.com -c 2 >/dev/null 2>&1
 then
 # shellcheck disable=2034,2059
 true
@@ -53,8 +53,8 @@ SCRIPT_NAME="Nextcloud First Startup Script"
 # shellcheck source=lib.sh
 source /var/scripts/lib.sh
 else
-    printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
-    printf "Please report this to https://github.com/nextcloud/vm/issues/"
+    print_text_in_color "$IRed" "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
+    print_text_in_color "$IRed" "Please report this to https://github.com/nextcloud/vm/issues/"
     exit 1
 fi
 
