@@ -7,7 +7,15 @@ true
 SCRIPT_NAME="Main Menu"
 
 #############################################################################################
-source /var/scripts/fetch_lib.sh &>/dev/null || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
+if [ -f /var/scripts/fetch_lib.sh ]
+then
+# shellcheck source=fetch_lib.sh
+source /var/scripts/fetch_lib.sh &>/dev/null
+else
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
+fi
 #############################################################################################
 
 ### TODO Remove this after some releases
