@@ -160,13 +160,6 @@ lowest_compatible_nc 18
 # Import if missing and export again to import it with UUID
 zpool_import_if_missing
 
-msg_box "Running a server, it's important that certain things are correct. You want the timezone to match your location,
-you want the keyboard setup to match your keyboard, and you want mirrors to be as close to you as possible.
-
-In the following menu you will be asked to setup the most basic stuff of your server. 
-
-The script is smart, and have already pre-selected the values that you'd want to change based on the current settings."
-
 # Run the startup menu
 run_script MENU startup_configuration
 

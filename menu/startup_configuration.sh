@@ -33,6 +33,17 @@ else
     TIMEZONE_SWITCH="OFF"
 fi
 
+# Show a msg_box during the startup script
+if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+then
+msg_box "Running a server, it's important that certain things are correct. You want the timezone to match your location,
+you want the keyboard setup to match your keyboard, and you want mirrors to be as close to you as possible.
+
+In the following menu you will be asked to setup the most basic stuff of your server. 
+
+The script is smart, and have already pre-selected the values that you'd want to change based on the current settings."
+fi
+
 # Startup configurations
 choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change.\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Keyboard Layout" "(Change the keyboard layout from '$KEYBOARD_LAYOUT')" "$KEYBOARD_LAYOUT_SWITCH" \
