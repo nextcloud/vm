@@ -2,16 +2,25 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
-true
+SCRIPT_NAME="Main Menu"
+
+### TODO Remove this after some releases
 # Curl fetch_lib.sh to be able to use it
 if ! [ -f /var/scripts/fetch_lib.sh ]
 then
     curl -so /var/scripts/fetch_lib.sh https://raw.githubusercontent.com/nextcloud/vm/master/static/fetch_lib.sh
 fi
-SCRIPT_NAME="Main Menu"
+
+###########################################################################
+# shellcheck disable=2034,2059
+true
+# shellcheck source=fetch_lib.sh
+if ! source /var/scripts/fetch_lib.sh >/dev/null 2>&1
+then
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+fi
+###########################################################################
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
