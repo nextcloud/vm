@@ -16,21 +16,22 @@ then
 true
 SCRIPT_NAME="Static IP"
 # shellcheck source=lib.sh
-FIRST_IFACE=1 source /var/scripts/lib.sh
-unset FIRST_IFACE
+source /var/scripts/lib.sh
  # If we have internet, then use the latest variables from the lib remote file
 elif printf "Testing internet connection..." && ping github.com -c 2
 then
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset FIRST_IFACE
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 else
     printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
     printf "Please report this to https://github.com/nextcloud/vm/issues/"
     exit 1
 fi
+
+# Get all needed variables from the library
+first_iface
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
