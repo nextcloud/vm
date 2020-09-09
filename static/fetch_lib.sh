@@ -39,4 +39,4 @@ else
 fi
 
 # shellcheck source=lib.sh
-source /var/scripts/lib.sh
+source /var/scripts/lib.sh &>/dev/null
