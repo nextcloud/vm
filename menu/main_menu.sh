@@ -2,11 +2,21 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
+# shellcheck disable=2034,2059,1091
 true
 SCRIPT_NAME="Main Menu"
+
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh &>/dev/null || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
+
+###################################
+
+### TODO Remove this after some releases
+# Download fetch_lib.sh to be able to use it
+if ! [ -f "$SCRIPTS"/fetch_lib.sh ]
+then
+    download_script STATIC fetch_lib
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -43,13 +53,13 @@ case "$choice" in
         run_script MENU server_configuration
     ;;
     "Update Nextcloud")
-        if [ -f $SCRIPTS/update.sh ]
+        if [ -f "$SCRIPTS"/update.sh ]
         then
-            bash $SCRIPTS/update.sh
+            bash "$SCRIPTS"/update.sh
         else
             print_text_in_color "$ICyan" "Downloading the Update script..."
             download_script STATIC update
-            bash $SCRIPTS/update.sh
+            bash "$SCRIPTS"/update.sh
         fi
     ;;
     *)
