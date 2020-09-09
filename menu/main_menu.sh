@@ -53,13 +53,13 @@ case "$choice" in
         run_script MENU server_configuration
     ;;
     "Update Nextcloud")
-        if [ -f $SCRIPTS/update.sh ]
+        if [ -f "$SCRIPTS"/update.sh ]
         then
-            bash $SCRIPTS/update.sh
+            bash "$SCRIPTS"/update.sh
         else
             print_text_in_color "$ICyan" "Downloading the Update script..."
             download_script STATIC update
-            bash $SCRIPTS/update.sh
+            bash "$SCRIPTS"/update.sh
         fi
     ;;
     *)
