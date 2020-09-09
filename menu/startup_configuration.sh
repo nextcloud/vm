@@ -36,9 +36,7 @@ fi
 # Show a msg_box during the startup script
 if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
 then
-msg_box "Running a server, it's important that certain things are correct. You want the timezone to match your location,
-you want the keyboard setup to match your keyboard, and you want mirrors to be as close to you as possible.
-
+msg_box "Running a server, it's important that certain things are correct. 
 In the following menu you will be asked to setup the most basic stuff of your server. 
 
 The script is smart, and have already pre-selected the values that you'd want to change based on the current settings."
