@@ -13,7 +13,6 @@ download_cache_lib() {
     # Cache the lib for half an hour
     if ! [ -f /var/scripts/lib.sh ] || test "$(find /var/scripts/lib.sh -mmin +30)"
     then
-        rm -f /var/scripts/lib.sh
         mkdir -p /var/scripts
         if ! curl -so /var/scripts/lib.sh https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh
         then
