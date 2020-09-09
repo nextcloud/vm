@@ -38,13 +38,15 @@ KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ') TODO
 SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
-[ -n "$FIRST_IFACE" ] && IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+first_iface() {
+    IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+}
+[ -n "$FIRST_IFACE" ] && first_iface # TODO: remove this line someday
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
 REPO=$(grep deb-src /etc/apt/sources.list | grep http | awk '{print $3}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
 WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
-[ -n "$LOAD_IP6" ] && WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
 INTERFACES="/etc/netplan/01-netcfg.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 # Internet DNS required when a check needs to be made to a server outside the home/SME
@@ -105,16 +107,25 @@ BITWARDEN_HOME=/home/"$BITWARDEN_USER"
 SHUF=$(shuf -i 25-29 -n 1)
 PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-[ -n "$NCDB" ] && NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-[ -n "$NCDBPASS" ] && NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+ncdb() {
+    NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+}
+[ -n "$NCDB" ] && ncdb # TODO: remove this line someday
+ncdbpass() {
+    NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+}
+[ -n "$NCDBPASS" ] && ncdbpass # TODO: remove this line someday
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Nextcloud version
-[ -n "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-[ -n "$NC_UPDATE" ] && NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
-[ -n "$NC_UPDATE" ] && STABLEVERSION="nextcloud-$NCVERSION"
-[ -n "$NC_UPDATE" ] && NCMAJOR="${NCVERSION%%.*}"
-[ -n "$NC_UPDATE" ] && NCBAD=$((NCMAJOR-2))
+nc_update() {
+    CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+    STABLEVERSION="nextcloud-$NCVERSION"
+    NCMAJOR="${NCVERSION%%.*}"
+    NCBAD=$((NCMAJOR-2))
+}
+[ -n "$NC_UPDATE" ] && nc_update # TODO: remove this line someday
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
 # Keys
@@ -149,19 +160,25 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-[ -n "$ES_INSTALL" ] && INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
-[ -n "$ES_INSTALL" ] && ROREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
-[ -n "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
-[ -n "$ES_INSTALL" ] && fts_es_name="fts_esror"
+es_install() {
+    INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
+    ROREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
+    nc_fts="ark74/nc_fts"
+    fts_es_name="fts_esror"
+}
+[ -n "$ES_INSTALL" ] && es_install # TODO: remove this line someday
 # Talk
-[ -n "$TURN_INSTALL" ] && TURN_CONF="/etc/turnserver.conf"
-[ -n "$TURN_INSTALL" ] && TURN_PORT=3478
-[ -n "$TURN_INSTALL" ] && TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's#https://##;s#/##')
-[ -n "$TURN_INSTALL" ] && SHUF=$(shuf -i 25-29 -n 1)
-[ -n "$TURN_INSTALL" ] && TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-[ -n "$TURN_INSTALL" ] && JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-[ -n "$TURN_INSTALL" ] && NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-[ -n "$TURN_INSTALL" ] && SIGNALING_SERVER_CONF=/etc/signaling/server.conf
+turn_install() {
+    TURN_CONF="/etc/turnserver.conf"
+    TURN_PORT=3478
+    TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+    SHUF=$(shuf -i 25-29 -n 1)
+    TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+    JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+    NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+    SIGNALING_SERVER_CONF=/etc/signaling/server.conf
+}
+[ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
 
 ## FUNCTIONS
 
@@ -1055,11 +1072,9 @@ any_key() {
 }
 
 lowest_compatible_nc() {
-if [ -z "$NC_UPDATE" ]
+if [ -z "$NCVERSION" ]
 then
-# shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
-unset NC_UPDATE
+    nc_update
 fi
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
@@ -1095,11 +1110,9 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
-if [ -z "$NC_UPDATE" ]
+if [ -z "$NCVERSION" ]
 then
-# shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
-unset NC_UPDATE
+    nc_update
 fi
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
@@ -1239,11 +1252,9 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 # 2 = repository
 # Nextcloud version
 git_apply_patch() {
-if [ -z "$NC_UPDATE" ]
+if [ -z "$NCVERSION" ]
 then
-# shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL $GITHUB_REPO/lib.sh)
-unset NC_UPDATE
+    nc_update
 fi
 if [[ "$CURRENTVERSION" = "$3" ]]
 then

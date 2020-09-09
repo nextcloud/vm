@@ -173,9 +173,12 @@ NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|htt
 # Nextcloud Main Domain dot-escaped
 NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 
+# Curl the library another time to get the correct https_conf
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+nc_update
 
 # Notification
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"

@@ -3,8 +3,10 @@
 true
 SCRIPT_NAME="Change Database Password"
 # shellcheck source=lib.sh
-NCDBPASS=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NCDBPASS
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+ncdbpass
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
