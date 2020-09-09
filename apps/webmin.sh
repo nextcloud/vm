@@ -72,6 +72,6 @@ msg_box "Webmin is now installed and can be accessed from this address:
 
 https://$ADDRESS:10000
 
-You can logg in with your ubuntu-server ncadmin-account and password."
+You can log in with your Ubuntu CLI user: $UNIXUSER."
 
 exit
