@@ -81,18 +81,20 @@ case "$choice" in
             sleep 1
             clear
         else
-            dpkg-reconfigure tzdata
-        fi
-        # Change timezone in php and logging if the startup script not exists
-        if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
-        then
-            # Change timezone in PHP
-            sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
+            if dpkg-reconfigure tzdata
+            then
+                # Change timezone in php and logging if the startup script not exists
+                if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+                then
+                    # Change timezone in PHP
+                    sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 
-            # Change timezone for logging
-            occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
-            msg_box "The timezone was changed successfully." "$SUBTITLE"
-            clear
+                    # Change timezone for logging
+                    occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+                    clear
+                    msg_box "The timezone was changed successfully." "$SUBTITLE"
+                fi
+            fi
         fi
     ;;&
     *"Locate Mirror"*)
