@@ -33,15 +33,8 @@ else
     TIMEZONE_SWITCH="OFF"
 fi
 
-msg_box "Running a server, it's important that certain things are correct. You want the timezone to match your location,
-you want the keyboard setup to match your keyboard, and you want mirrors to be as close to you as possible.
-
-In the following menu you will be asked to setup the most basic stuff of your server. 
-
-The script is smart, and have already pre-selected the values that you'd want to change based on the current settings."
-
 # Startup configurations
-choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change.\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Keyboard Layout" "(Change the keyboard layout from '$KEYBOARD_LAYOUT')" "$KEYBOARD_LAYOUT_SWITCH" \
 "Timezone" "(Change the timezone from $(cat /etc/timezone))" "$TIMEZONE_SWITCH" \
 "Locate Mirror" "(Change the apt-mirror for faster updates)" OFF 3>&1 1>&2 2>&3)

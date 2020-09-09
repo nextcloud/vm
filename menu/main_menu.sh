@@ -22,6 +22,7 @@ choice=$(whiptail --title "$TITLE" --menu "Choose what you want to do.\n$MENU_GU
 "Additional Apps" "(Choose which apps to install)" \
 "Nextcloud Configuration" "(Choose between available Nextcloud configurations)" \
 "Server Configuration" "(Choose between available server configurations)" \
+"Startup Configuration" "(Choose between available startup configurations)" \
 "Update Nextcloud" "(Update Nextcloud to the latest release)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -36,6 +37,10 @@ case "$choice" in
     "Server Configuration")
         print_text_in_color "$ICyan" "Downloading the Server Configuration script..."
         run_script MENU server_configuration
+    ;;
+    "Startup Configuration")
+        print_text_in_color "$ICyan" "Downloading the Startup Configuration script..."
+        run_script MENU startup_configuration
     ;;
     "Update Nextcloud")
         if [ -f $SCRIPTS/update.sh ]
