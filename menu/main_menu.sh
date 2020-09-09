@@ -13,7 +13,6 @@ then
 source /var/scripts/fetch_lib.sh &>/dev/null
 else
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
 fi
 #############################################################################################
