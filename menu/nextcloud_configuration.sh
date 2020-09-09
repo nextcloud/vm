@@ -38,51 +38,59 @@ choice=$(whiptail --title "$TITLE" --checklist "Which settings do you want to co
 
 case "$choice" in
     *"CookieLifetime"*)
+        print_text_in_color "$ICyan" "Downloading the CookieLifetime script..."
         run_script STATIC cookielifetime
     ;;&
     *"Share-folder"*)
         clear
-        msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour."
-        if yesno_box_yes "Do you want to enable this option?"
+        SUBTITLE="Share-folder"
+        msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour." "$SUBTITLE"
+        if yesno_box_yes "Do you want to enable this option?" "$SUBTITLE"
         then
             occ_command config:system:set share_folder --value="/Shared"
-            msg_box "All new Nextcloud shares from other users will appear in the 'Shared' folder from now on."
+            msg_box "All new Nextcloud shares from other users will appear in the 'Shared' folder from now on." "$SUBTITLE"
         fi
     ;;&
     *"Disable workspaces"*)
-        msg_box "This option will will disable a feature named 'rich workspaces'. It will disable the top notes in GUI."
-        if yesno_box_yes "Do you want to disable rich workspaces?"
+        clear
+        SUBTITLE="Disable workspaces"
+        msg_box "This option will will disable a feature named 'rich workspaces'. It will disable the top notes in GUI." "$SUBTITLE"
+        if yesno_box_yes "Do you want to disable rich workspaces?" "$SUBTITLE"
         then
             # Check if text is enabled
             if ! is_app_enabled text
                 then
-                msg_box "The text app isn't enabled - unable to disable rich workspaces."
+                msg_box "The text app isn't enabled - unable to disable rich workspaces." "$SUBTITLE"
                 sleep 1
             else
                 # Disable workspaces
                 occ_command config:app:set text workspace_available --value=0
-                msg_box "Rich workspaces are now disabled."
+                msg_box "Rich workspaces are now disabled." "$SUBTITLE"
             fi
         fi
     ;;&
     *"Disable user flows"*)
+        clear
+        SUBTITLE="Disable user flows"
         # Greater than 18.0.3 is 18.0.4 which is required
         if version_gt "$CURRENTVERSION" "18.0.3"
         then
-            msg_box "This option will disable the with Nextcloud 18 introduced user flows. It will disable the user flow settings. Admin flows will continue to work."
-            if yesno_box_yes "Do you want to disable user flows?"
+            msg_box "This option will disable the with Nextcloud 18 introduced user flows. It will disable the user flow settings. Admin flows will continue to work." "$SUBTITLE"
+            if yesno_box_yes "Do you want to disable user flows?" "$SUBTITLE"
             then
                 occ_command config:app:set workflowengine user_scope_disabled --value yes
-                msg_box "User flow settings are now disabled."
+                msg_box "User flow settings are now disabled." "$SUBTITLE"
             fi
         else
-            msg_box "'Disable user flows' is only available on Nextcloud 18.0.4 and above.\nPlease upgrade by running 'sudo bash /var/scripts/update.sh'"
+            msg_box "'Disable user flows' is only available on Nextcloud 18.0.4 and above.\nPlease upgrade by running 'sudo bash /var/scripts/update.sh'" "$SUBTITLE"
             sleep 1
         fi
     ;;&
     *"Enable logrotate"*)
-        msg_box "This option enables logrotate for Nextcloud logs to keep all logs for 10 days"
-        if yesno_box_yes "Do you want to enable logrotate for Nextcloud logs?"
+        clear
+        SUBTITLE="Enable logrotate"
+        msg_box "This option enables logrotate for Nextcloud logs to keep all logs for 10 days" "$SUBTITLE"
+        if yesno_box_yes "Do you want to enable logrotate for Nextcloud logs?" "$SUBTITLE"
         then
             # Set logrotate (without size restriction)
             occ_command config:system:set log_rotate_size --value=0
@@ -97,6 +105,8 @@ NEXTCLOUD_CONF
 
             # Set needed ownerchip for the nextcloud log folder to work correctly
             chown www-data:www-data "${VMLOGS}"/
+            
+            msg_box "Logrotate was successfully enabled." "$SUBTITLE"
         fi
     ;;&
     *)
