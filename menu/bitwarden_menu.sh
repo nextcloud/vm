@@ -17,6 +17,14 @@ debug_mode
 # Must be root
 root_check
 
+# Set the startup switch
+if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+then
+    STARTUP_SWITCH="ON"
+else
+    STARTUP_SWITCH="OFF"
+fi
+
 choice=$(whiptail --title "$TITLE" --checklist "Automatically configure and install the Bitwarden or configure some aspects of it.\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitwarden  " "(External password manager [4GB RAM] - subdomain required)" OFF \
 "Bitwarden Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
