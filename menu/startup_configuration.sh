@@ -51,7 +51,7 @@ choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change.\
 case "$choice" in
     *"Keyboard Layout"*)
         clear
-        local SUBTITLE="Keyboard Layout"
+        SUBTITLE="Keyboard Layout"
         msg_box "Current keyboard layout is $KEYBOARD_LAYOUT." "$SUBTITLE"
         if ! yesno_box_yes "Do you want to change keyboard layout?" "$SUBTITLE"
         then
@@ -75,7 +75,7 @@ case "$choice" in
     ;;&
     *"Timezone"*)
         clear
-        local SUBTITLE="Timezone"
+        SUBTITLE="Timezone"
         msg_box "Current timezone is $(cat /etc/timezone)" "$SUBTITLE"
         if ! yesno_box_yes "Do you want to change the timezone?" "$SUBTITLE"
         then

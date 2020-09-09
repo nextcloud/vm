@@ -59,8 +59,8 @@ case "$choice" in
     ;;&
     *"Fail2ban Statuscheck"*)
         clear
-        local SUBTITLE="Fail2ban Statuscheck"
-        if is_this_installed fail2ban
+        SUBTITLE="Fail2ban Statuscheck"
+        if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
         then
             msg_box "$(fail2ban-client status nextcloud && fail2ban-client status sshd && iptables -L -n)" "$SUBTITLE"
         else
@@ -79,7 +79,7 @@ case "$choice" in
     ;;&
     *"BPYTOP"*)
         clear
-        local SUBTITLE="BPYTOP"
+        SUBTITLE="BPYTOP"
         msg_box "BPYTOP is an amazing alternative to ressource-monitor software like htop." "$SUBTITLE"
         if yesno_box_yes "Do you want to install BPYTOP?" "$SUBTITLE"
         then

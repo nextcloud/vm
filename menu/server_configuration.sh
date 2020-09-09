@@ -60,7 +60,7 @@ case "$choice" in
     ;;&
     *"Activate TLS"*)
         clear
-        local SUBTITLE="Activate TLS"
+        SUBTITLE="Activate TLS"
 msg_box "The following script will install a trusted
 TLS certificate through Let's Encrypt.
 It's recommended to use TLS (https) together with Nextcloud.

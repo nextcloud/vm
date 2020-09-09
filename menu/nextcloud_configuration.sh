@@ -43,7 +43,7 @@ case "$choice" in
     ;;&
     *"Share-folder"*)
         clear
-        local SUBTITLE="Share-folder"
+        SUBTITLE="Share-folder"
         msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour." "$SUBTITLE"
         if yesno_box_yes "Do you want to enable this option?" "$SUBTITLE"
         then
@@ -53,7 +53,7 @@ case "$choice" in
     ;;&
     *"Disable workspaces"*)
         clear
-        local SUBTITLE="Disable workspaces"
+        SUBTITLE="Disable workspaces"
         msg_box "This option will will disable a feature named 'rich workspaces'. It will disable the top notes in GUI." "$SUBTITLE"
         if yesno_box_yes "Do you want to disable rich workspaces?" "$SUBTITLE"
         then
@@ -71,7 +71,7 @@ case "$choice" in
     ;;&
     *"Disable user flows"*)
         clear
-        local SUBTITLE="Disable user flows"
+        SUBTITLE="Disable user flows"
         # Greater than 18.0.3 is 18.0.4 which is required
         if version_gt "$CURRENTVERSION" "18.0.3"
         then
@@ -88,7 +88,7 @@ case "$choice" in
     ;;&
     *"Enable logrotate"*)
         clear
-        local SUBTITLE="Enable logrotate"
+        SUBTITLE="Enable logrotate"
         msg_box "This option enables logrotate for Nextcloud logs to keep all logs for 10 days" "$SUBTITLE"
         if yesno_box_yes "Do you want to enable logrotate for Nextcloud logs?" "$SUBTITLE"
         then
