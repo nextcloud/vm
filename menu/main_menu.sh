@@ -13,7 +13,7 @@ fi
 true
 SCRIPT_NAME="Main Menu"
 # shellcheck source=fetch_lib.sh
-source /var/scripts/fetch_lib.sh &>/dev/null || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/lib.sh) &>/dev/null
+source /var/scripts/fetch_lib.sh &>/dev/null || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

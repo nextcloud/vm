@@ -13,7 +13,7 @@ fi
 true
 SCRIPT_NAME="Locales"
 # shellcheck source=fetch_lib.sh
-source /var/scripts/fetch_lib.sh &>/dev/null || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/lib.sh) &>/dev/null
+source /var/scripts/fetch_lib.sh &>/dev/null || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
 
 # Must be root
 root_check
