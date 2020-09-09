@@ -227,8 +227,6 @@ download_script STATIC update
 download_script STATIC setup_secure_permissions_nextcloud
 download_script STATIC change_db_pass
 download_script STATIC nextcloud
-download_script NETWORK update-config
-download_script NETWORK trusted
 download_script MENU menu
 download_script MENU server_configuration
 download_script MENU nextcloud_configuration
