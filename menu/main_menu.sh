@@ -15,6 +15,7 @@ else
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
 #############################################################################################
+fi
 
 ### TODO Remove this after some releases
 # Download fetch_lib.sh to be able to use it
