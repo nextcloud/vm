@@ -63,7 +63,7 @@ case "$choice" in
             else
                 if occ_command config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
                 then
-                    msg_box "Cookie Lifetime is now successfully set to "$COOKIE_LIFETIME" seconds."
+                    msg_box "Cookie Lifetime is now successfully set to $COOKIE_LIFETIME seconds."
                 fi
                 break
             fi
