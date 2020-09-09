@@ -14,6 +14,7 @@ source /var/scripts/fetch_lib.sh &>/dev/null
 else
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
+fi
 #############################################################################################
 
 ### TODO Remove this after some releases
