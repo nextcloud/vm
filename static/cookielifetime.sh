@@ -61,7 +61,10 @@ case "$choice" in
             then
                 msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. Please try again."
             else
-                occ_command config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
+                if occ_command config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
+                then
+                    msg_box "Cookie Lifetime is now successfully set to "$COOKIE_LIFETIME" seconds."
+                fi
                 break
             fi
         done
