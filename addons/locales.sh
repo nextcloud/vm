@@ -2,18 +2,18 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-### TODO Remove this after some releases
-# Curl fetch_lib.sh to be able to use it
-if ! [ -f /var/scripts/fetch_lib.sh ]
-then
-    curl -so /var/scripts/fetch_lib.sh https://raw.githubusercontent.com/nextcloud/vm/master/static/fetch_lib.sh
-fi
-
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Locales"
 # shellcheck source=fetch_lib.sh
 source /var/scripts/fetch_lib.sh &>/dev/null || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
+
+### TODO Remove this after some releases
+# Download fetch_lib.sh to be able to use it
+if ! [ -f "$SCRIPTS"/fetch_lib.sh ]
+then
+    download_script STATIC fetch_lib
+fi
 
 # Must be root
 root_check
