@@ -93,9 +93,9 @@ case "$choice" in
 
             # Change timezone for logging
             occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+            msg_box "The timezone was changed successfully." "$SUBTITLE"
             clear
         fi
-        msg_box "The timezone was changed successfully." "$SUBTITLE"
     ;;&
     *"Locate Mirror"*)
         clear
