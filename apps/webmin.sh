@@ -70,7 +70,7 @@ check_command systemctl start webmin
 
 msg_box "Webmin is now installed and can be accessed from this address:
 
-$ADDRESS:10000
+https://$ADDRESS:10000
 
 You can logg in with your ubuntu-server ncadmin-account and password."
 
