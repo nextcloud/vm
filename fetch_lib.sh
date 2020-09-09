@@ -17,6 +17,7 @@ print_text_in_color() {
 # If we have internet, then use the latest variables from the lib remote file
 if ping github.com -c 2 >/dev/null 2>&1
 then
+    print_text_in_color "$ICyan" "Updating lib..."
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
@@ -25,6 +26,7 @@ true
 # Use local lib file in case there is no internet connection
 elif [ -f /var/scripts/lib.sh ]
 then
+print_text_in_color "$ICyan" "Updating lib..."
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
