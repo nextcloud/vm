@@ -60,14 +60,15 @@ case "$choice" in
     ;;&
     *"Activate TLS"*)
         clear
+        local SUBTITLE="Activate TLS"
 msg_box "The following script will install a trusted
 TLS certificate through Let's Encrypt.
 It's recommended to use TLS (https) together with Nextcloud.
 Please open port 80 and 443 to this servers IP before you continue.
 More information can be found here:
-https://www.techandme.se/open-port-80-443/"
+https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
 
-        if yesno_box_yes "Do you want to install TLS?"
+        if yesno_box_yes "Do you want to install TLS?" "$SUBTITLE"
         then
             if [ -f $SCRIPTS/activate-tls.sh ]
             then
