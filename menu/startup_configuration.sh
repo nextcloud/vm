@@ -51,8 +51,9 @@ choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change.\
 case "$choice" in
     *"Keyboard Layout"*)
         clear
-        msg_box "Current keyboard layout is $KEYBOARD_LAYOUT."
-        if ! yesno_box_yes "Do you want to change keyboard layout?"
+        SUBTITLE="Keyboard Layout"
+        msg_box "Current keyboard layout is $KEYBOARD_LAYOUT." "$SUBTITLE"
+        if ! yesno_box_yes "Do you want to change keyboard layout?" "$SUBTITLE"
         then
             print_text_in_color "$ICyan" "Not changing keyboard layout..."
             sleep 1
@@ -65,8 +66,8 @@ case "$choice" in
             then
                 run_script ADDONS locales
             fi
-            input_box "Please try out all buttons (e.g: @ # \$ : y n) to find out if the keyboard settings were correctly applied.\nIf the keyboard is still wrong, you will be offered to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" >/dev/null
-            if ! yesno_box_yes "Did the keyboard work as expected??\n\nIf you choose 'No' the server will be rebooted. After the reboot, please login as usual and run this script again."
+            input_box "The Keyboard Layout was changed.\nPlease try out all buttons (e.g: @ # \$ : y n) to find out if the keyboard settings were correctly applied.\nIf the keyboard is still wrong, you will be offered to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" "$SUBTITLE" >/dev/null
+            if ! yesno_box_yes "Did the keyboard work as expected??\n\nIf you choose 'No' the server will be rebooted. After the reboot, please login as usual and run this script again." "$SUBTITLE"
             then
                 reboot
             fi
@@ -74,8 +75,9 @@ case "$choice" in
     ;;&
     *"Timezone"*)
         clear
-        msg_box "Current timezone is $(cat /etc/timezone)"
-        if ! yesno_box_yes "Do you want to change the timezone?"
+        SUBTITLE="Timezone"
+        msg_box "Current timezone is $(cat /etc/timezone)" "$SUBTITLE"
+        if ! yesno_box_yes "Do you want to change the timezone?" "$SUBTITLE"
         then
             print_text_in_color "$ICyan" "Not changing timezone..."
             sleep 1
@@ -91,6 +93,7 @@ case "$choice" in
 
             # Change timezone for logging
             occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+            msg_box "The timezone was changed successfully." "$SUBTITLE"
             clear
         fi
     ;;&
