@@ -25,6 +25,14 @@ else
     ACTIVATE_TLS_SWITCH="OFF"
 fi
 
+# Set the startup switch
+if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+then
+    STARTUP_SWITCH="ON"
+else
+    STARTUP_SWITCH="OFF"
+fi
+
 # Server configurations
 choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to configure\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \

@@ -6,8 +6,10 @@
 true
 SCRIPT_NAME="Nextcloud Configuration Menu"
 # shellcheck source=lib.sh
-NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+nc_update
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -17,6 +19,14 @@ debug_mode
 
 # Must be root
 root_check
+
+# Set the startup switch
+if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+then
+    STARTUP_SWITCH="ON"
+else
+    STARTUP_SWITCH="OFF"
+fi
 
 # Configure Nextcloud
 choice=$(whiptail --title "$TITLE" --checklist "Which settings do you want to configure?\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \

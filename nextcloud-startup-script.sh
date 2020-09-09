@@ -43,9 +43,7 @@ then
 true
 SCRIPT_NAME="Nextcloud First Startup Script"
 # shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NCDB
-unset FIRST_IFACE
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
  # If we have internet, then use the latest variables from the lib remote file
 elif [ -f /var/scripts/lib.sh ]
 then
@@ -53,14 +51,16 @@ then
 true
 SCRIPT_NAME="Nextcloud First Startup Script"
 # shellcheck source=lib.sh
-NCDB=1 && FIRST_IFACE=1 source /var/scripts/lib.sh
-unset FIRST_IFACE
-unset NCDB
+source /var/scripts/lib.sh
 else
     printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
     printf "Please report this to https://github.com/nextcloud/vm/issues/"
     exit 1
 fi
+
+# Get all needed variables from the library
+first_iface
+ncdb
 
 # Check if root
 root_check
@@ -136,9 +136,11 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
 fi
 
 # shellcheck source=lib.sh
-NCDB=1 && NC_UPDATE=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset NCDB
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+ncdb
+nc_update
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -154,35 +156,14 @@ then
     exit 1
 fi
 
+# Nextcloud 18 is required
+lowest_compatible_nc 18
+
 # Import if missing and export again to import it with UUID
 zpool_import_if_missing
 
-# Set keyboard layout, important when changing passwords and such
-if [ "$KEYBOARD_LAYOUT" = "us" ]
-then
-    clear
-    msg_box "Current keyboard layout is English (United States)."
-    if ! yesno_box_yes "Do you want to change keyboard layout?"
-    then
-        print_text_in_color "$ICyan" "Not changing keyboard layout..."
-        sleep 1
-        clear
-    else
-        dpkg-reconfigure keyboard-configuration
-        setupcon --force
-        input_box "Please try out all buttons to find out if the keyboard settings were correctly applied.\nIf this isn't the case, you will have the chance to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" >/dev/null
-        if yesno_box_no "Do you want to reboot the server?\nPlease only choose 'Yes' if the keyboard settings weren't correctly applied.\n\nIf you choose 'Yes' and the server is rebooted, please login as usual and run this script again."
-        then
-            reboot
-        fi
-    fi
-fi
-
-# Set locales
-run_script ADDONS locales
-
-# Nextcloud 18 is required
-lowest_compatible_nc 18
+# Run the startup menu
+run_script MENU startup_configuration
 
 # Is this run as a pure root user?
 if is_root
@@ -215,9 +196,6 @@ please abort this script (CTRL+C) and report this issue to $ISSUES."
         fi
     fi
 fi
-
-# Upgrade mirrors
-run_script ADDONS locate_mirror
 
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
@@ -329,16 +307,8 @@ When the setup is done, the server will automatically reboot.
 Please report any issues to: $ISSUES"
 clear
 
-# Change Timezone
-msg_box "Current timezone is $(cat /etc/timezone)"
-if ! yesno_box_yes "Do you want to change the timezone?"
-then
-    print_text_in_color "$ICyan" "Not changing timezone..."
-    sleep 1
-    clear
-else
-    dpkg-reconfigure tzdata
-fi
+# Set locales
+run_script ADDONS locales
 
 # Change timezone in PHP
 sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"

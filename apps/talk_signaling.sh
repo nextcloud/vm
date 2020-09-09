@@ -6,9 +6,11 @@
 true
 SCRIPT_NAME="Talk with Signaling Server"
 # shellcheck source=lib.sh
-NC_UPDATE=1 && TURN_INSTALL=1 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-unset NC_UPDATE
-unset TURN_INSTALL
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+nc_update
+turn_install
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
