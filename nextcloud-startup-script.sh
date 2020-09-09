@@ -309,9 +309,6 @@ When the setup is done, the server will automatically reboot.
 Please report any issues to: $ISSUES"
 clear
 
-# Set locales
-run_script ADDONS locales
-
 # Change timezone in PHP
 sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 

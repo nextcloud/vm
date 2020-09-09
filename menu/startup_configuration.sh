@@ -59,15 +59,13 @@ case "$choice" in
             sleep 1
             clear
         else
+            # Change layout
             dpkg-reconfigure keyboard-configuration
             setupcon --force
             # Set locales
-            if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
-            then
-                run_script ADDONS locales
-            fi
-            input_box "The Keyboard Layout was changed.\nPlease try out all buttons (e.g: @ # \$ : y n) to find out if the keyboard settings were correctly applied.\nIf the keyboard is still wrong, you will be offered to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" "$SUBTITLE" >/dev/null
-            if ! yesno_box_yes "Did the keyboard work as expected??\n\nIf you choose 'No' the server will be rebooted. After the reboot, please login as usual and run this script again." "$SUBTITLE"
+            run_script ADDONS locales
+            input_box "Please try out all buttons (e.g: @ # \$ : y n) to find out if the keyboard settings were correctly applied.\nIf the keyboard is still wrong, you will be offered to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" >/dev/null
+            if ! yesno_box_yes "Did the keyboard work as expected??\n\nIf you choose 'No' the server will be rebooted. After the reboot, please login as usual and run this script again."
             then
                 reboot
             fi
