@@ -18,6 +18,14 @@ debug_mode
 # Must be root
 root_check
 
+# Set the startup switch
+if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+then
+    STARTUP_SWITCH="ON"
+else
+    STARTUP_SWITCH="OFF"
+fi
+
 # Configure Nextcloud
 choice=$(whiptail --title "$TITLE" --checklist "Which settings do you want to configure?\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
