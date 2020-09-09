@@ -62,4 +62,16 @@ then
     install_if_not webmin
 fi
 
+print_text_in_color "$ICyan" "Configuring Webmin..."
+# redirect access on http to https
+check_command systemctl stop webmin
+check_command sed -i '/^ssl=.*/a ssl_redirect=1' /etc/webmin/miniserv.conf
+check_command systemctl start webmin
+
+msg_box "Webmin is now installed and can be accessed from this address:
+
+https://$ADDRESS:10000
+
+You can log in with your Ubuntu CLI user: $UNIXUSER."
+
 exit

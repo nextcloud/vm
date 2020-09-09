@@ -51,8 +51,9 @@ choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change.\
 case "$choice" in
     *"Keyboard Layout"*)
         clear
-        msg_box "Current keyboard layout is $KEYBOARD_LAYOUT."
-        if ! yesno_box_yes "Do you want to change keyboard layout?"
+        SUBTITLE="Keyboard Layout"
+        msg_box "Current keyboard layout is $KEYBOARD_LAYOUT." "$SUBTITLE"
+        if ! yesno_box_yes "Do you want to change keyboard layout?" "$SUBTITLE"
         then
             print_text_in_color "$ICyan" "Not changing keyboard layout..."
             sleep 1
@@ -70,8 +71,9 @@ case "$choice" in
     ;;&
     *"Timezone"*)
         clear
-        msg_box "Current timezone is $(cat /etc/timezone)"
-        if ! yesno_box_yes "Do you want to change the timezone?"
+        SUBTITLE="Timezone"
+        msg_box "Current timezone is $(cat /etc/timezone)" "$SUBTITLE"
+        if ! yesno_box_yes "Do you want to change the timezone?" "$SUBTITLE"
         then
             print_text_in_color "$ICyan" "Not changing timezone..."
             sleep 1
@@ -87,6 +89,7 @@ case "$choice" in
 
             # Change timezone for logging
             occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+            msg_box "The timezone was changed successfully." "$SUBTITLE"
             clear
         fi
     ;;&
