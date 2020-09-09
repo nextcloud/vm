@@ -33,11 +33,18 @@ else
     TIMEZONE_SWITCH="OFF"
 fi
 
+msg_box "Running a server, it's important that certain things are correct. You want the timezone to match your location,
+you want the keyboard setup to match your keyboard, and you want mirrors to be as close to you as possible.
+
+In the following menu you will be asked to setup the most basic stuff of your server. 
+
+The script is smart, and have already pre-selected the values that you'd want to change based on the current settings."
+
 # Startup configurations
-choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Keyboard Layout" "(Change the keyboard layout)" "$KEYBOARD_LAYOUT_SWITCH" \
-"Timezone" "(Change the timezone)" "$TIMEZONE_SWITCH" \
-"Locate Mirror" "(Change the apt-mirror for faster udpates)" OFF 3>&1 1>&2 2>&3)
+choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to change.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Keyboard Layout" "(Change the keyboard layout from '$KEYBOARD_LAYOUT')" "$KEYBOARD_LAYOUT_SWITCH" \
+"Timezone" "(Change the timezone from $(cat /etc/timezone))" "$TIMEZONE_SWITCH" \
+"Locate Mirror" "(Change the apt-mirror for faster updates)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Keyboard Layout"*)
@@ -56,8 +63,8 @@ case "$choice" in
             then
                 run_script ADDONS locales
             fi
-            input_box "Please try out all buttons to find out if the keyboard settings were correctly applied.\nIf this isn't the case, you will have the chance to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" >/dev/null
-            if yesno_box_no "Do you want to reboot the server?\nPlease only choose 'Yes' if the keyboard settings weren't correctly applied.\n\nIf you choose 'Yes' and the server is rebooted, please login as usual and run this script again."
+            input_box "Please try out all buttons (e.g: @ # \$ : y n) to find out if the keyboard settings were correctly applied.\nIf the keyboard is still wrong, you will be offered to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" >/dev/null
+            if ! yesno_box_no "Did the keyboard work as expected??\n\nIf you choose 'No' the server will be rebooted. After the reboot, please login as usual and run this script again."
             then
                 reboot
             fi
