@@ -2,16 +2,25 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
-true
-# Curl fetch_lib.sh to be able to use it. This is currently the first script during the startup-script the gets downloaded and executed from Github
+SCRIPT_NAME="Locales"
+
+### TODO Remove this after some releases
+# Curl fetch_lib.sh to be able to use it
 if ! [ -f /var/scripts/fetch_lib.sh ]
 then
     curl -so /var/scripts/fetch_lib.sh https://raw.githubusercontent.com/nextcloud/vm/master/static/fetch_lib.sh
 fi
-SCRIPT_NAME="Locales"
+
+###########################################################################
+# shellcheck disable=2034,2059
+true
+# shellcheck source=fetch_lib.sh
+if ! source /var/scripts/fetch_lib.sh >/dev/null 2>&1
+then
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+fi
+###########################################################################
 
 # Must be root
 root_check
