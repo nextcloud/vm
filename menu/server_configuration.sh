@@ -74,6 +74,9 @@ https://www.techandme.se/open-port-80-443/"
             print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
             any_key "Press any key to continue..."
         fi
+        
+        # Just make sure it is gone
+        rm -f "$SCRIPTS/test-new-config.sh"
         clear
     ;;&
     *"Automatic updates"*)
