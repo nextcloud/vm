@@ -327,6 +327,7 @@ then
     install_and_enable_app richdocuments
 else
     last_fail_tls "$SCRIPTS"/apps/collabora.sh
+    exit 1
 fi
 
 # Set config for RichDocuments (Collabora App)
@@ -341,8 +342,7 @@ then
     print_text_in_color "$ICyan" "Restarting Docker..."
     systemctl restart docker.service
     docker restart code
-    print_text_in_color "$IGreen" "Collabora is now successfully installed."
-    any_key "Press any key to continue... "
+    msg_box "Collabora is now successfully installed."
 fi
 
 # Make sure the script exits

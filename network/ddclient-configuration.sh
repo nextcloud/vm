@@ -174,5 +174,4 @@ ddclient -verbose
 # Inform user 
 any_key "Please check the logs above and make sure that everything looks good. If not, just run this script again.
 If you are certain, that you entered all things correctly and it didn't work, please report this to\n$ISSUES"
-print_text_in_color "$ICyan" "exiting..."
 exit

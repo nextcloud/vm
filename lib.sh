@@ -645,11 +645,9 @@ do
         return 0
     elif [ "$f" != "${methods[$((${#methods[*]} - 1))]}" ]
     then
-        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We will do more tries."
-        any_key "Press any key to continue..."
+        msg_box "It seems like no certs were generated when trying to validate them with the $f method. We will do more tries."
     else
-        print_text_in_color "${ICyan}" "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
-        any_key "Press any key to continue..."
+        msg_box "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
         return 1;
     fi
 done
@@ -671,8 +669,7 @@ https://github.com/nextcloud/vm"
 
 if [ -n "$2" ]
 then
-    print_text_in_color "$ICyan" "The script will now do some cleanup and revert the settings."
-    any_key "Press any key to start the cleanup..."
+    msg_box "The script will now do some cleanup and revert the settings."
     # Cleanup
     snap remove certbot
     rm -f "$SCRIPTS"/test-new-config.sh
