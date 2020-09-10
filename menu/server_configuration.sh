@@ -79,9 +79,7 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
                 bash $SCRIPTS/activate-tls.sh
             fi
         else
-            echo
-            print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
-            any_key "Press any key to continue..."
+            msg_box "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh" "$SUBTITLE"
         fi
         
         # Just make sure it is gone

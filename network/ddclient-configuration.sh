@@ -169,10 +169,7 @@ DDCLIENT_CONF
 
 # Test connection
 msg_box "Everything is setup by now and we will check the connection."
-ddclient -verbose
-
-# Inform user 
-any_key "Please check the logs above and make sure that everything looks good. If not, just run this script again.
-If you are certain, that you entered all things correctly and it didn't work, please report this to\n$ISSUES"
-print_text_in_color "$ICyan" "exiting..."
+OUTPUT="$(ddclient -verbose)"
+msg_box "Please check the logs below and make sure that everything looks good. If not, just run this script again.
+If you are certain, that you entered all things correctly and it didn't work, please report this to\n$ISSUES\n\n$OUTPUT"
 exit

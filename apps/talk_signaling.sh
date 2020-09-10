@@ -425,6 +425,7 @@ else
     # remove settings to be able to start over again
     rm -f "$HTTPS_CONF"
     last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
+    exit 1
 fi
 
 ## TODO
