@@ -26,4 +26,4 @@ then
 fi
 
 # shellcheck source=lib.sh
-source /var/scripts/lib.sh &>/dev/null
+source /var/scripts/lib.sh
