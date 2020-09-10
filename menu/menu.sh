@@ -17,6 +17,8 @@ debug_mode
 # Must be root
 root_check
 
+##################################################################
+
 mkdir -p "$SCRIPTS"
 print_text_in_color "$ICyan" "Running the main menu script..."
 

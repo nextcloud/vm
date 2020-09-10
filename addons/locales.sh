@@ -15,8 +15,16 @@ then
     download_script STATIC fetch_lib
 fi
 
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
 # Must be root
 root_check
+
+##################################################################
 
 # Set locales
 print_text_in_color "$ICyan" "Setting locales..."
