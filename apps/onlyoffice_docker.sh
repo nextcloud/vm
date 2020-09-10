@@ -329,7 +329,7 @@ then
     # Install OnlyOffice
     install_and_enable_app onlyoffice
 else
-    last_fail_tls "$SCRIPTS"/apps/collabora.sh
+    last_fail_tls "$SCRIPTS"/apps/onlyoffice.sh
     exit 1
 fi
 
