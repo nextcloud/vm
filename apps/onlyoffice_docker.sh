@@ -329,9 +329,8 @@ then
     # Install OnlyOffice
     install_and_enable_app onlyoffice
 else
-    print_text_in_color "$IRed" "It seems like no certs were generated, please report this issue here: $ISSUES"
-    any_key "Press any key to continue... "
-    restart_webserver
+    last_fail_tls "$SCRIPTS"/apps/onlyoffice.sh
+    exit 1
 fi
 
 # Set config for OnlyOffice
@@ -346,8 +345,7 @@ then
     print_text_in_color "$ICyan" "Restaring Docker..."
     systemctl restart docker.service
     docker restart onlyoffice
-    print_text_in_color "$IGreen" "OnlyOffice Docker is now successfully installed."
-    any_key "Press any key to continue... "
+    msg_box "OnlyOffice Docker is now successfully installed."
 fi
 
 exit

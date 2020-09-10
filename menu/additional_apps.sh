@@ -112,12 +112,13 @@ case "$choice" in
     ;;&
     *"LDAP"*)
         clear
+        SUBTITLE="LDAP"
         print_text_in_color "$ICyan" "Installing LDAP..."
         if install_and_enable_app user_ldap
         then
-            msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done."
+            msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done." "$SUBTITLE"
         else
-            msg_box "LDAP installation failed."
+            msg_box "LDAP installation failed." "$SUBTITLE"
         fi
     ;;&
     *"Talk"*)

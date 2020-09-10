@@ -14,8 +14,7 @@ DEBUG=0
 debug_mode
 
 # Activate the new config
-printf "${Color_Off}We will now test that everything is OK\n"
-any_key "Press any key to continue... "
+msg_box "We will now test that everything is OK"
 a2ensite "$1"
 a2dissite "$TLS_CONF"
 a2dissite "$HTTP_CONF"
@@ -85,7 +84,6 @@ else
     a2ensite "$HTTP_CONF"
     a2ensite 000-default.conf
     restart_webserver
-    printf "${ICyan}Couldn't load new config, reverted to old settings. Self-signed TLS is OK!${Color_Off}\n"
-    any_key "Press any key to continue... "
+    msg_box "Couldn't load new config, reverted to old settings. Self-signed TLS is OK!"
     exit 1
 fi

@@ -274,6 +274,8 @@ check_command systemctl start fail2ban
 countdown "Waiting for fail2ban to start... " 5
 check_command fail2ban-client reload
 
+while :
+do
 msg_box "Bitwarden_rs with fail2ban have been sucessfully installed! 
 Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
@@ -285,7 +287,10 @@ Then, if it works, you can easily invite all your user with an e-mail address fr
 (You have to click on users in the top-panel)
 
 Please remember to report issues only to https://github.com/dani-garcia/bitwarden_rs"
-
-any_key "Press any key if you are certain to exit the script..."
+    if yesno_box_no "Do you have the admin password now and know how to access the admin-panel?"
+    then
+        break
+    fi
+done
 
 exit
