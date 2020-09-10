@@ -20,6 +20,7 @@ then
         exit 1
     fi
 elif test "$(find /var/scripts/lib.sh -mmin +30)"
+then
     print_text_in_color "$ICyan" "Updating lib..."
     curl -sfL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh -o /var/scripts/lib.sh
 fi
