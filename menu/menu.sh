@@ -5,11 +5,8 @@
 # shellcheck disable=2034,2059,1091
 true
 SCRIPT_NAME="Main Menu"
-
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh &>/dev/null || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
-
-###################################
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -19,6 +16,8 @@ debug_mode
 
 # Must be root
 root_check
+
+##################################################################
 
 mkdir -p "$SCRIPTS"
 print_text_in_color "$ICyan" "Running the main menu script..."

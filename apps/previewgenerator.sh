@@ -89,7 +89,7 @@ Imagick will put your server at risk as it's is known to have several flaws.
 You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743
 
 Please note: If you choose not to install imagick, it will get removed now."
-if yesno_box_yes "Do you want to install imagick?"
+if yesno_box_no "Do you want to install imagick?"
 then
     # Install imagick
     install_if_not php-imagick

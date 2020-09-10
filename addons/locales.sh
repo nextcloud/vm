@@ -5,11 +5,8 @@
 # shellcheck disable=2034,2059,1091
 true
 SCRIPT_NAME="Locales"
-
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh &>/dev/null || . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh) &>/dev/null
-
-###################################
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 ### TODO Remove this after some releases
 # Download fetch_lib.sh to be able to use it
@@ -18,8 +15,16 @@ then
     download_script STATIC fetch_lib
 fi
 
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
 # Must be root
 root_check
+
+##################################################################
 
 # Set locales
 print_text_in_color "$ICyan" "Setting locales..."
