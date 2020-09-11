@@ -13,7 +13,8 @@ print_text_in_color() {
 
 if [[ "$EUID" -ne 0 ]]
 then
-    print_text_in_color "$IRed" "You must run this script with sudo privileges, or directly as root!"
+    print_text_in_color "$IRed" "You must run fetch_lib with sudo privileges, or directly as root!"
+    print_text_in_color "$ICyan" "Please report this to https://github.com/nextcloud/vm/issues if you think it's a bug"
     exit 1
 fi
 
