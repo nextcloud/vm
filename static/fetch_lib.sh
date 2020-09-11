@@ -13,7 +13,7 @@ print_text_in_color() {
 
 if [[ "$EUID" -ne 0 ]]
 then
-    print_text_in_color "$IRed" "You must run this script as root!"
+    print_text_in_color "$IRed" "You must run this script with sudo privileges, or directly as root!"
     exit 1
 fi
 
