@@ -13,6 +13,7 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 if ! [ -f "$SCRIPTS"/fetch_lib.sh ]
 then
     download_script STATIC fetch_lib
+    chmod 777 "$SCRIPTS"/fetch_lib.sh
 fi
 
 # Check for errors + debug code and abort if something isn't right

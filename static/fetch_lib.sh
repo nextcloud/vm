@@ -11,6 +11,12 @@ print_text_in_color() {
     printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
+if [[ "$EUID" -ne 0 ]]
+then
+    print_text_in_color "$IRed" "You must run this script as root!"
+    exit 1
+fi
+
 mkdir -p /var/scripts
 if ! [ -f /var/scripts/lib.sh ]
 then
