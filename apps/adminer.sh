@@ -99,7 +99,7 @@ The script will exit."
     exit 1
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
-https://$ADDRESS/adminer:8443
+https://$ADDRESS:8443
 
 You can download more plugins and get more information here: 
 https://www.adminer.org
