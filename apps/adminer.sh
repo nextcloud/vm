@@ -54,6 +54,7 @@ check_distro_version
 apt update -q4 & spinner_loading
 install_if_not adminer
 curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
+curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
 ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
