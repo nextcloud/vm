@@ -26,8 +26,8 @@ else
 fi
 
 choice=$(whiptail --title "$TITLE" --checklist "Automatically install and configure Talk.\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Talk" "(Install Talk standalone, without the Signaling Server - no subdomain required)" OFF \
-"Talk-Signaling" "(Install Talk with a proxied Signaling Server - subdomain required)" OFF 3>&1 1>&2 2>&3)
+"Talk" "(Install Talk standalone - no subdomain required)" OFF \
+"Talk-Signaling" "(Install Talk + Signaling Server - subdomain required)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Talk"*)
