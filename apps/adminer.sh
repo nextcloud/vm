@@ -31,7 +31,7 @@ then
     check_external_ip # Check that the script can see the external IP (apache fails otherwise)
     a2disconf adminer.conf
     rm -f $ADMINER_CONF
-    rm -f $ADMINERDIR/adminer.php
+    rm -rf $ADMINERDIR
     check_command apt-get purge adminer -y
     restart_webserver
     # Ask for reinstalling
