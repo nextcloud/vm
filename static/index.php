@@ -122,7 +122,7 @@
         <h2>Access Adminer</h2>
 
         <div class="information">
-            <p>Use one of the following addresses, HTTPS is preffered:
+            <p>Use the following address:
             <h3>
                 <ul>
                     <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:8443">https://<?=$_SERVER['SERVER_NAME'];?>:8443</a> (HTTPS)</li>
