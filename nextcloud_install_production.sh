@@ -636,14 +636,18 @@ if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
     touch "$SITES_AVAILABLE/$TLS_CONF"
     cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
+# <VirtualHost *:80>
+#     RewriteEngine On
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+# </VirtualHost>
+
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
 
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
-#    ServerName example.com
-#    ServerAlias subdomain.example.com
+#    ServerName cloud.example.com
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
