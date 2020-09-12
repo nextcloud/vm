@@ -26,8 +26,8 @@ else
 fi
 
 choice=$(whiptail --title "$TITLE" --checklist "Automatically install and configure Fail2ban.\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Install-Fail2ban" "(Install Fail2ban and protect Nextcloud + SSH against bruteforce attacks)" "$STARTUP_SWITCH" \
-"Fail2ban-Statuscheck" "(Check status of Fail2ban, banned IPs, attempts, and currently blocked attacks)" OFF 3>&1 1>&2 2>&3)
+"Install-Fail2ban" "(Install Fail2ban and protect Nextcloud + SSH)" "$STARTUP_SWITCH" \
+"Fail2ban-Statuscheck" "(Check status of currently blocked attacks)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Install-Fail2ban"*)
