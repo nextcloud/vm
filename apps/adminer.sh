@@ -38,9 +38,6 @@ then
     reinstall_popup
 fi
 
-# Warn user about HTTP/2
-http2_warn Adminer
-
 # Inform users
 print_text_in_color "$ICyan" "Installing and securing Adminer..."
 
