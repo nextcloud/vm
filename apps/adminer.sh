@@ -104,7 +104,13 @@ https://$ADDRESS:8443
 You can download more plugins and get more information here: 
 https://www.adminer.org
 
-Your PostgreSQL connection information can be found in $NCPATH/config/config.php
+Your PostgreSQL connection information can be found in $NCPATH/config/config.php.
+These are the current values:
+
+$(grep dbhost /var/www/nextcloud/config/config.php)
+$(grep dbuser /var/www/nextcloud/config/config.php)
+$(grep dbpassword /var/www/nextcloud/config/config.php)
+$(grep dbname /var/www/nextcloud/config/config.php) 
 
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
