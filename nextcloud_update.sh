@@ -80,7 +80,6 @@ fi
 if [ -f $SCRIPTS/updatenotification.sh ]
 then
     download_script STATIC updatenotification
-    chmod +x $SCRIPTS/updatenotification.sh
 fi
 
 # Make sure everyone gets access to menu.sh
@@ -88,7 +87,6 @@ download_script MENU menu
 
 # Make sure fetch_lib.sh is available
 download_script STATIC fetch_lib
-chmod 777 "$SCRIPTS"/fetch_lib.sh
 
 # Update docker-ce to overlay2 since devicemapper is deprecated
 if [ -f /etc/systemd/system/docker.service ]

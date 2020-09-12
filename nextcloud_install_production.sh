@@ -79,7 +79,6 @@ cpu_check 1 Nextcloud
 mkdir -p "$SCRIPTS"
 download_script GITHUB_REPO lib
 download_script STATIC fetch_lib
-chmod 777 "$SCRIPTS"/fetch_lib.sh
 
 # Create new current user
 download_script STATIC adduser

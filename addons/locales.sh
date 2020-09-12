@@ -11,7 +11,6 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 ### TODO Remove this after some releases
 # Download fetch_lib.sh to be able to use it
 download_script STATIC fetch_lib
-chmod 777 "$SCRIPTS"/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
