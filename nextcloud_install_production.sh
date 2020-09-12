@@ -68,9 +68,6 @@ debug_mode
 # Check if root
 root_check
 
-# Set locales
-run_script ADDONS locales
-
 # Test RAM size (2GB min) + CPUs (min 1)
 ram_check 2 Nextcloud
 cpu_check 1 Nextcloud
@@ -79,6 +76,9 @@ cpu_check 1 Nextcloud
 mkdir -p "$SCRIPTS"
 download_script STATIC fetch_lib
 download_script GITHUB_REPO lib
+
+# Set locales
+run_script ADDONS locales
 
 # Create new current user
 download_script STATIC adduser
