@@ -90,7 +90,7 @@
             <p>Use the following address:
             <h3>
                 <ul>
-                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/nextcloud">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
+                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
@@ -125,8 +125,7 @@
             <p>Use one of the following addresses, HTTPS is preffered:
             <h3>
                 <ul>
-                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>/adminer.php">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)</li>
-                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/adminer.php">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)</li>
+                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/adminer:8443">https://<?=$_SERVER['SERVER_NAME'];?>:8443</a> (HTTPS)</li>
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
