@@ -80,6 +80,7 @@ fi
 if [ -f $SCRIPTS/updatenotification.sh ]
 then
     download_script STATIC updatenotification
+    chmod +x $SCRIPTS/updatenotification.sh
 fi
 
 # Make sure everyone gets access to menu.sh
