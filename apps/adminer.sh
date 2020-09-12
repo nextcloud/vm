@@ -58,19 +58,36 @@ curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Admine
 ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
-Alias /adminer.php $ADMINERDIR/adminer.php
+<VirtualHost *:443>
+    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+    SSLEngine on
+    
+### YOUR SERVER ADDRESS ###
+#    ServerAdmin admin@example.com
+#    ServerName adminer.example.com
+
+### SETTINGS ###
+    <FilesMatch "\.php$">
+        SetHandler "proxy:unix:/run/php/php7.4-fpm.nextcloud.sock|fcgi://localhost"
+    </FilesMatch>
+
+    DocumentRoot $ADMINERDIR
 
 <Directory $ADMINERDIR>
+    <IfModule mod_dir.c>
+        DirectoryIndex adminer.php
+    </IfModule>
+    AllowOverride None
 
-<IfModule mod_dir.c>
-DirectoryIndex adminer.php
-</IfModule>
-AllowOverride None
-
-# Only allow connections from localhost:
-Require ip $GATEWAY/24
-
+    # Only allow connections from localhost:
+    Require ip $GATEWAY/24
 </Directory>
+
+### LOCATION OF CERT FILES ###
+    SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+    SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+</VirtualHost>
 ADMINER_CREATE
 
 # Enable config
@@ -83,7 +100,7 @@ The script will exit."
     exit 1
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
-http://$ADDRESS/adminer.php
+https://$ADDRESS/adminer.php
 
 You can download more plugins and get more information here: 
 https://www.adminer.org
