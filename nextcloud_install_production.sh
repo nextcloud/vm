@@ -74,8 +74,8 @@ cpu_check 1 Nextcloud
 
 # Download needed libraries before execution of the first script
 mkdir -p "$SCRIPTS"
-download_script STATIC fetch_lib
 download_script GITHUB_REPO lib
+download_script STATIC fetch_lib
 
 # Set locales
 run_script ADDONS locales

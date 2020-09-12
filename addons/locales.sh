@@ -10,10 +10,7 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 
 ### TODO Remove this after some releases
 # Download fetch_lib.sh to be able to use it
-if ! [ -f "$SCRIPTS"/fetch_lib.sh ]
-then
-    download_script STATIC fetch_lib
-fi
+download_script STATIC fetch_lib
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
