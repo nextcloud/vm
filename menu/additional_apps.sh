@@ -30,7 +30,6 @@ choice=$(whiptail --title "$TITLE" --checklist "Which apps do you want to instal
 "Documentserver" "(OnlyOffice or Collabora - Docker or Integrated)" OFF \
 "Bitwarden" "(External password manager)" OFF \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
-"Fail2ban Statuscheck" "(Check status of banned IPs in iptables and Fail2ban)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
@@ -55,17 +54,7 @@ case "$choice" in
     *"Fail2ban  "*)
         clear
         print_text_in_color "$ICyan" "Downloading the Fail2ban script..."
-        run_script APP fail2ban
-    ;;&
-    *"Fail2ban Statuscheck"*)
-        clear
-        SUBTITLE="Fail2ban Statuscheck"
-        if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
-        then
-            msg_box "$(fail2ban-client status nextcloud && fail2ban-client status sshd && iptables -L -n)" "$SUBTITLE"
-        else
-            msg_box "Fail2ban isn't installed. Please run 'sudo bash /var/scripts/menu.sh' to install it." "$SUBTITLE"
-        fi
+        run_script MENU fail2ban_menu
     ;;&
     *"Adminer"*)
         clear
@@ -124,7 +113,7 @@ case "$choice" in
     *"Talk"*)
         clear
         print_text_in_color "$ICyan" "Downloading the Talk script..."
-        run_script APP talk_signaling
+        run_script MENU talk_menu
     ;;&
     *"Webmin"*)
         clear
