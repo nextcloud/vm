@@ -55,12 +55,9 @@ curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Admine
 ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
-<VirtualHost *:80>
-    RewriteEngine On
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
-</VirtualHost>
+Listen 8443
 
-<VirtualHost *:443>
+<VirtualHost *:8443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
     
@@ -102,7 +99,7 @@ The script will exit."
     exit 1
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
-https://$ADDRESS/adminer.php
+https://$ADDRESS/adminer
 
 You can download more plugins and get more information here: 
 https://www.adminer.org
