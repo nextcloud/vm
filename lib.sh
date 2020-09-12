@@ -149,7 +149,7 @@ PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
 PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 # Adminer
 ADMINERDIR=/usr/share/adminer
-ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
+ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
