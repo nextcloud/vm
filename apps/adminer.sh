@@ -107,10 +107,10 @@ https://www.adminer.org
 Your PostgreSQL connection information can be found in $NCPATH/config/config.php.
 These are the current values:
 
-$(grep dbhost /var/www/nextcloud/config/config.php)
-$(grep dbuser /var/www/nextcloud/config/config.php)
-$(grep dbpassword /var/www/nextcloud/config/config.php)
-$(grep dbname /var/www/nextcloud/config/config.php) 
+$(grep dbhost $NCPATH/config/config.php)
+$(grep dbuser $NCPATH/config/config.php)
+$(grep dbpassword $NCPATH/config/config.php)
+$(grep dbname $NCPATH/config/config.php)
 
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
