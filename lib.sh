@@ -312,20 +312,19 @@ explainer_popup() {
     fi
 }
 
-removal_popup() {
-    msg_box "It seems like $SCRIPT_NAME is already installed.\nIf you proceed, $SCRIPT_NAME will get removed from your system and you will be asked if you want to reinstall it afterwards."
-    if ! yesno_box_yes "Do you want to remove $SCRIPT_NAME?"
-    then 
-        exit 1
-    fi
-    print_text_in_color "$ICyan" "Uninstalling $SCRIPT_NAME and resetting all settings..."
+reinstall_remove_menu() {
+    choice=$(whiptail --title "$TITLE" --menu "It seems like '$SCRIPT_NAME' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Reinstall $SCRIPT_NAME" "" \
+    "Uninstall $SCRIPT_NAME" "" 3>&1 1>&2 2>&3)
 }
 
-reinstall_popup() {
-    msg_box "$SCRIPT_NAME was successfully removed and all settings have been reset.\nIf you proceed, $SCRIPT_NAME will get reinstalled."
-    if ! yesno_box_yes "Do you want to reinstall $SCRIPT_NAME?"
+removal_popup() {
+    if [ "$choice" = "Uninstall $SCRIPT_NAME" ]
     then
-        exit 1
+        msg_box "$SCRIPT_NAME was successfully removed and all settings have been reset."
+        exit
+    else
+        print_text_in_color "$ICyan" "Reinstalling $SCRIPT_NAME..."
     fi
 }
 

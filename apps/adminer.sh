@@ -25,8 +25,8 @@ explainer_popup
 print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
 then
-    # Ask for removal
-    removal_popup
+    # Ask for removal or reinstallation
+    reinstall_remove_menu
     # Removal
     check_external_ip # Check that the script can see the external IP (apache fails otherwise)
     a2disconf adminer.conf
@@ -34,12 +34,11 @@ then
     rm -rf $ADMINERDIR
     check_command apt-get purge adminer -y
     restart_webserver
-    # Ask for reinstalling
-    reinstall_popup
+    # Show successful uninstall if applicable
+    removal_popup
+else
+    print_text_in_color "$ICyan" "Installing and securing Adminer..."
 fi
-
-# Inform users
-print_text_in_color "$ICyan" "Installing and securing Adminer..."
 
 # Check that the script can see the external IP (apache fails otherwise)
 check_external_ip
