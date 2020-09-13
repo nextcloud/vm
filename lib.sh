@@ -246,7 +246,7 @@ ask_yes_or_no() {
 
 msg_box() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
-    whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH"
+    whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3
 }
 
 # TODO: delete in a few releases (e.g. NC20) since not needed anymore
@@ -262,7 +262,7 @@ yesno_box() {
 
 yesno_box_yes() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
-    if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
+    if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     then
         return 0
     else
@@ -272,7 +272,7 @@ yesno_box_yes() {
 
 yesno_box_no() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
-    if (whiptail --title "$TITLE$SUBTITLE" --defaultno --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
+    if (whiptail --title "$TITLE$SUBTITLE" --defaultno --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     then
         return 0
     else
@@ -283,6 +283,24 @@ yesno_box_no() {
 input_box() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
     local RESULT && RESULT=$(whiptail --title "$TITLE$SUBTITLE" --inputbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    echo "$RESULT"
+}
+
+input_box_flow() {
+    local RESULT
+    while :
+    do
+        RESULT=$(input_box "$1" "$2")
+        if [ -z "$RESULT" ]
+        then
+            msg_box "Input is empty, please try again."
+        elif ! yesno_box_yes "Is this correct? $RESULT" "$2"
+        then
+            msg_box "OK, please try again." "$2"
+        else
+            break
+        fi
+    done
     echo "$RESULT"
 }
 

@@ -58,14 +58,7 @@ then
 fi
 
 # Ask for domain
-while :
-do
-    SUBDOMAIN=$(input_box "Please enter the Domain that you want to use for Bitwarden RS.")
-    if yesno_box_yes "Is this correct? $SUBDOMAIN"
-    then
-        break
-    fi
-done
+SUBDOMAIN=$(input_box_flow "Please enter the Domain that you want to use for Bitwarden RS.")
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh

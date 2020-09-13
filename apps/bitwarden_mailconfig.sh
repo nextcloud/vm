@@ -56,16 +56,7 @@ then
 fi
 
 # Enter mailserver
-while :
-do
-    MAIL_SERVER=$(input_box "Please enter the mailserver URL that you want to use.\nE.g. smtp.mail.de\nIf you don't want to change the mailserver, that is already configured inside the global.override.env-file, just leave the box empty.")
-    if ! yesno_box_yes "Is this correct? $MAIL_SERVER"
-    then
-        msg_box "OK, please try again."
-    else
-        break
-    fi
-done
+MAIL_SERVER=$(input_box_flow "Please enter the mailserver URL that you want to use.\nE.g. smtp.mail.de\nIf you don't want to change the mailserver, that is already configured inside the global.override.env-file, just leave the box empty.")
 
 # Enter if you want to use ssl
 while :
@@ -98,52 +89,16 @@ do
 done
 
 # Enter Port or just use standard port (defined by usage of ssl)
-while :
-do
-    SMTP_PORT=$(input_box "Please enter the port for your mailserver. The default port based on your protocol setting is $DEFAULT_PORT?\nPlease type that port into the inputbox, if you want to use it.\n\nIf you don't want to change the port, that is already configured inside the global.override.env-file, just leave the box empty.")
-    if ! yesno_box_yes "Is this correct? $SMTP_PORT"
-    then
-        msg_box "OK, please try again."
-    else
-        break
-    fi
-done
+SMTP_PORT=$(input_box_flow "Please enter the port for your mailserver. The default port based on your protocol setting is $DEFAULT_PORT?\nPlease type that port into the inputbox, if you want to use it.\n\nIf you don't want to change the port, that is already configured inside the global.override.env-file, just leave the box empty.")
 
 # Enter your mail username
-while :
-do
-    MAIL_USERNAME=$(input_box "Please enter the username for the login to your mail provider. E.g. mail@example.com\nPlease note: the domain used for your mail username and the mailserver domain have to match!\nIf you don't want to change the mail username that is already configured inside the global.override.env-file, just leave the box empty.")
-    if ! yesno_box_yes "Is this correct? $MAIL_USERNAME"
-    then
-        msg_box "OK, please try again."
-    else
-        break
-    fi
-done
+MAIL_USERNAME=$(input_box_flow "Please enter the username for the login to your mail provider. E.g. mail@example.com\nPlease note: the domain used for your mail username and the mailserver domain have to match!\nIf you don't want to change the mail username that is already configured inside the global.override.env-file, just leave the box empty.")
 
 # Enter your mailuser password
-while :
-do
-    MAIL_PASSWORD=$(input_box "Please enter the password for your mailserver user.\nIf you don't want to change the password, that is already configured inside the global.override.env-file, just leave the box empty.")
-    if ! yesno_box_yes "Is this correct? $MAIL_PASSWORD"
-    then
-        msg_box "OK, please try again."
-    else
-        break
-    fi
-done
+MAIL_PASSWORD=$(input_box_flow "Please enter the password for your mailserver user.\nIf you don't want to change the password, that is already configured inside the global.override.env-file, just leave the box empty.")
 
 # Enter admin mailadresses
-while :
-do
-    ADMIN_ACCOUNT=$(input_box "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered Bitwarden accounts.\nTo make this setting work, your Bitwarden mailserver settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin accounts that are already configured inside the global.override.env-file, just leave the box empty.")
-    if ! yesno_box_yes "Is this correct? $ADMIN_ACCOUNT"
-    then
-        msg_box "OK, please try again."
-    else
-        break
-    fi
-done
+ADMIN_ACCOUNT=$(input_box_flow "Please enter mailaccounts, that should have access to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.\nThey don't have to be registered Bitwarden accounts.\nTo make this setting work, your Bitwarden mailserver settings have to be correct.\nYou can enter just one e-mailaddress or enter more than one like so:\n'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'\nIf you want to keep the admin accounts that are already configured inside the global.override.env-file, just leave the box empty.")
 
 # Get results and store in a variable:
 RESULT="These are the settings that will be changed in global.override.env. Please check that everything seems correct.\n\n"
