@@ -125,7 +125,7 @@
             <p>Use the following address:
             <h3>
                 <ul>
-                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:8443">https://<?=$_SERVER['SERVER_NAME'];?>:8443</a> (HTTPS)</li>
+                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:9443">https://<?=$_SERVER['SERVER_NAME'];?>:9443</a> (HTTPS)</li>
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
