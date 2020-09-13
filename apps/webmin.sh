@@ -65,7 +65,7 @@ fi
 print_text_in_color "$ICyan" "Configuring Webmin..."
 # redirect access on http to https
 check_command systemctl stop webmin
-## TODO: This will cause Webmin to redirect to the hostname 'nextcloud' and not the IP address if on LAN
+# Redirect http to https on the LAN IP
 check_command sed -i '/^ssl=.*/a ssl_redirect=1' /etc/webmin/miniserv.conf
 check_command sed -i "/^port=.*/a host=$ADDRESS" /etc/webmin/miniserv.conf
 check_command systemctl start webmin
