@@ -90,7 +90,7 @@
             <p>Use the following address:
             <h3>
                 <ul>
-                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/nextcloud">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
+                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
@@ -122,18 +122,17 @@
         <h2>Access Adminer</h2>
 
         <div class="information">
-            <p>Use one of the following addresses, HTTPS is preffered:
+            <p>Use the following address:
             <h3>
                 <ul>
-                    <li><a href="http://<?=$_SERVER['SERVER_NAME'];?>/adminer.php">http://<?=$_SERVER['SERVER_NAME'];?></a> (HTTP)</li>
-                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>/adminer.php">https://<?=$_SERVER['SERVER_NAME'];?></a> (HTTPS)</li>
+                    <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:8443">https://<?=$_SERVER['SERVER_NAME'];?>:8443</a> (HTTPS)</li>
                 </ul>
             </h3>
             <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
             <h3>
                 <a href="https://docs.hanssonit.se/s/blkkp2qhv0jgrltpicl0/nextcloud-homesme-server/d/blkkp2qhv0jgrltpid50/server-installation-instructions?currentPageId=blkkp2qhv0jgrltpidcg" target="_blank">Login details</a>
             </h3>
-            <p>Note: Your LAN IP is set as approved in /etc/apache2/conf-available/adminer.conf, all other access is forbidden.</p>
+            <p>Note: Your LAN IP is set as approved in /etc/apache2/sites-available/adminer.conf, all other access is forbidden.</p>
         </div>
 
         <h2>Follow us on Social Media</h2>

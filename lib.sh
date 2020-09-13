@@ -149,7 +149,7 @@ PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
 PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 # Adminer
 ADMINERDIR=/usr/share/adminer
-ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
+ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
@@ -177,6 +177,7 @@ turn_install() {
     JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
+    NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7983 8983 10000 8081 8443)
 }
 [ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
 
