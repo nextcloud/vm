@@ -324,7 +324,7 @@ removal_popup() {
         msg_box "$SCRIPT_NAME was successfully removed and all settings have been reset."
         exit
     else
-        print_text_in_color "$ICyan" "Reinstalling and securing $SCRIPT_NAME..."
+        print_text_in_color "$ICyan" "Reinstalling $SCRIPT_NAME..."
     fi
 }
 
