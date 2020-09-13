@@ -5,6 +5,8 @@ Check the latest commits here: https://github.com/nextcloud/vm/commits/master
 Documentation can be found here: https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration
 
 ### Small changelog:
+- Standarlize input_box flow
+- Automatically rewrite Webmin to HTTPS
 - Add default dark mode theme to Adminer
 - Make Adminer work on HTTP/2
 - Introduce fetch_liband chain libaries - this is now the new way of fetching the libs
