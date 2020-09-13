@@ -293,7 +293,7 @@ input_box_flow() {
         RESULT=$(input_box "$1" "$2")
         if [ -z "$RESULT" ]
         then
-            msg_box "Input is empty, please try again."
+            msg_box "Input is empty, please try again." "$2"
         elif ! yesno_box_yes "Is this correct? $RESULT" "$2"
         then
             msg_box "OK, please try again." "$2"
