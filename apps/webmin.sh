@@ -5,6 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Webmin"
+SCRIPT_EXPLAINER="Webmin is a graphical user-interface admin-tool for linux-servers."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -17,28 +18,19 @@ debug_mode
 # Check if root
 root_check
 
+# Show explainer
+explainer_popup
+
 # Check if webmin is already installed
 print_text_in_color "$ICyan" "Checking if Webmin is already installed..."
 if is_this_installed webmin
 then
-    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Webmin' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall Webmin" "" \
-    "Uninstall Webmin" "" 3>&1 1>&2 2>&3)
-    
-    case "$choice" in
-        "Uninstall Webmin")
-            print_text_in_color "$ICyan" "Uninstalling Webmin..."
-            check_command apt --purge autoremove -y webmin
-            msg_box "Webmin was successfully uninstalled."
-            exit
-        ;;
-        "Reinstall Webmin")
-            print_text_in_color "$ICyan" "Reinstalling Webmin..."
-            check_command apt-get purge webmin -y
-        ;;
-        *)
-        ;;
-    esac
+    # Ask for removal or reinstallation
+    reinstall_remove_menu
+    # Removal
+    check_command apt --purge autoremove -y webmin
+    # Show successful uninstall if applicable
+    removal_popup
 else
     print_text_in_color "$ICyan" "Installing Webmin..."
 fi

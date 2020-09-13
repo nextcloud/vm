@@ -321,7 +321,7 @@ reinstall_remove_menu() {
 removal_popup() {
     if [ "$choice" = "Uninstall $SCRIPT_NAME" ]
     then
-        msg_box "$SCRIPT_NAME was successfully removed and all settings have been reset."
+        msg_box "$SCRIPT_NAME was successfully uninstalled."
         exit
     else
         print_text_in_color "$ICyan" "Reinstalling $SCRIPT_NAME..."
