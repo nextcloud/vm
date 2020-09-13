@@ -90,7 +90,7 @@ Listen 8443
 ADMINER_CREATE
 
 # Enable config
-check_command a2enconf adminer.conf
+check_command a2ensite adminer.conf
 
 if ! restart_webserver
 then
