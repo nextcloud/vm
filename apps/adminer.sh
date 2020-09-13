@@ -66,6 +66,9 @@ Listen 9443
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
     
+    # This is needed to redirect access on http://$ADDRESS:9443/ to https://$ADDRESS:9443/
+    ErrorDocument 400 https://$ADDRESS:9443/
+    
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
 #    ServerName adminer.example.com
