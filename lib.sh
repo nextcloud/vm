@@ -316,6 +316,10 @@ reinstall_remove_menu() {
     choice=$(whiptail --title "$TITLE" --menu "It seems like '$SCRIPT_NAME' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall $SCRIPT_NAME" "" \
     "Uninstall $SCRIPT_NAME" "" 3>&1 1>&2 2>&3)
+    if [ -z "$choice" ]
+    then
+        exit 1
+    fi
 }
 
 removal_popup() {
