@@ -116,15 +116,8 @@ ${NONO_PORTS[*]}"
 
 if yesno_box_no "Do you want to change port?"
 then
-    while :
-    do
     # Ask for port
-    TURN_PORT=$(input_box "Please enter the port you will use for Nextcloud Talk")
-    if yesno_box_yes "Is this correct? $TURN_PORT"
-    then
-        break
-    fi
-    done
+    TURN_PORT=$(input_box_flow "Please enter the port you will use for Nextcloud Talk")
 fi
 
 containsElement () {
@@ -223,15 +216,7 @@ then
 fi
 
 # Ask for the domain for Talk
-while :
-do
-    # Talk Proxy URL
-    SUBDOMAIN=$(input_box "Talk Signaling Server subdomain e.g: talk.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
-    if yesno_box_yes "Is this correct? $SUBDOMAIN"
-    then
-        break
-    fi
-done
+SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh

@@ -42,13 +42,7 @@ then
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
             # Revoke LE
-            while :
-            do
-                SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
-                if yesno_box_yes "Is this correct? $SUBDOMAIN"
-                then
-                    break
-                fi
+            SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
             done
             if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
             then
@@ -106,14 +100,7 @@ if does_this_docker_exist 'onlyoffice/documentserver'
 then
     docker_prune_this 'onlyoffice/documentserver'
     # Revoke LE
-    while :
-    do
-        SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
-        if yesno_box_yes "Is this correct? $SUBDOMAIN"
-        then
-            break
-        fi
-    done
+    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -157,15 +144,7 @@ then
 fi
 
 # Ask for the domain for Collabora
-while :
-do
-    # Collabora URL
-    SUBDOMAIN=$(input_box "Collabora subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
-    if yesno_box_yes "Is this correct? $SUBDOMAIN"
-    then
-        break
-    fi
-done
+ SUBDOMAIN=$(input_box_flow "Collabora subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # Nextcloud Main Domain
 NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')

@@ -61,15 +61,8 @@ just type: sudo bash /var/scripts/activate-tls.sh"
     exit
 fi
 
-while :
-do
 # Nextcloud Main Domain (activate-tls.sh)
-TLSDOMAIN=$(input_box "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
-if yesno_box_yes "Is this correct? $TLSDOMAIN"
-then
-    break
-fi
-done
+TLSDOMAIN=$(input_box_flow "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
 
 # Curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
