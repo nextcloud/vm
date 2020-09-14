@@ -97,7 +97,7 @@
 
             <p>It's recomended to <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a>
             The easiest way to get a real TLS certificate is to run the Lets' Encrypt script included on this server.<br>
-            Just run 'sudo bash /var/scripts/activate-tls.sh' from your terminal and follow the instructions.
+            Just run 'sudo bash /var/scripts/menu.sh' from your CLI and choose Server Configuration --> Activate TLS.
             <h3>
                 <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6yo9OPiqQz3_Mpy" target="_blank">Login details</a>
             </h3>
