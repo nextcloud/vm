@@ -180,7 +180,7 @@ You could still choose to only run on one disk though, which is not recommended,
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
 
-choice=$(whiptail --title "$TITLE - Choose disk format" --menu "How would you like to configure your disks?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu "How would you like to configure your disks?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)" \
 "2 Disks Manual" "(Choose by yourself)" \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" 3>&1 1>&2 2>&3)

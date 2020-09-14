@@ -32,7 +32,7 @@ then
     a2disconf adminer.conf
     rm -f $ADMINER_CONF
     rm -rf $ADMINERDIR
-    check_command apt --purge autoremove -y adminer
+    check_command apt-get purge adminer -y
     restart_webserver
     # Show successful uninstall if applicable
     removal_popup

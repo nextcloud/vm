@@ -86,6 +86,9 @@ then
             # If yes, then stop and prune the docker container
             docker_prune_this 'collabora/code'
         ;;
+        "")
+            exit 1
+        ;;
         *)
         ;;
     esac

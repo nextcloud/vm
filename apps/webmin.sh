@@ -31,7 +31,8 @@ then
     # Ask for removal or reinstallation
     reinstall_remove_menu
     # Removal
-    check_command apt --purge autoremove -y webmin
+    check_command apt-get purge webmin -y
+    rm -rf /etc/apt/sources.list.d/webmin.list
     # Show successful uninstall if applicable
     removal_popup
 else

@@ -70,6 +70,9 @@ then
                 rm -rf /var/lib/netdata
             fi
         ;;
+        "")
+            exit 1
+        ;;
         *)
         ;;
     esac
