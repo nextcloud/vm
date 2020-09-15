@@ -364,24 +364,18 @@ do
 done
 while :
 do
-    OC_PASS=$(input_box_flow "The current admin user in Nextcloud GUI is [$NCADMIN]\nPlease type in the new password for the nextcloud-admin user")
-    if [[ "$NEWUSER" == *" "* ]]
+    OC_PASS=$(input_box_flow "Please type in the new password for the new nextcloud-admin user $NEWUSER")
+    if [[ "$OC_PASS" == *" "* ]]
     then
         msg_box "Please don't use spaces."
     else
         break
     fi
 done
+# Create new user
 export OC_PASS
 occ_command user:add "$NEWUSER" --password-from-env -g admin
 unset OC_PASS
-# Create new user
-while :
-do
-    print_text_in_color "$ICyan" "Please enter the username for your new user:"
-    read -r NEWUSER
-    sudo -u www-data $NCPATH/occ user:add "$NEWUSER" -g admin && break
-done
 # Delete old user
 if [[ "$NCADMIN" ]]
 then
