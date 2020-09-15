@@ -100,6 +100,9 @@ then
             apt-get purge nextcloud-spreed-signaling -y
             apt autoremove -y
         ;;
+        "")
+            exit 1
+        ;;
         *)
         ;;
     esac
@@ -108,7 +111,6 @@ else
 fi
 
 # Let the user choose port. TURN_PORT in msg_box is taken from lib.sh and later changed if user decides to.
-NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7983 8983 10000 8081)
 msg_box "The default port for Talk used in this script is port $TURN_PORT.
 You can read more about that port here: https://www.speedguide.net/port.php?port=$TURN_PORT
 You will now be given the option to change this port to something of your own. 
@@ -117,15 +119,8 @@ ${NONO_PORTS[*]}"
 
 if yesno_box_no "Do you want to change port?"
 then
-    while :
-    do
     # Ask for port
-    TURN_PORT=$(input_box "Please enter the port you will use for Nextcloud Talk")
-    if yesno_box_yes "Is this correct? $TURN_PORT"
-    then
-        break
-    fi
-    done
+    TURN_PORT=$(input_box_flow "Please enter the port you will use for Nextcloud Talk")
 fi
 
 containsElement () {
@@ -224,15 +219,7 @@ then
 fi
 
 # Ask for the domain for Talk
-while :
-do
-    # Talk Proxy URL
-    SUBDOMAIN=$(input_box "Talk Signaling Server subdomain e.g: talk.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
-    if yesno_box_yes "Is this correct? $SUBDOMAIN"
-    then
-        break
-    fi
-done
+SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh

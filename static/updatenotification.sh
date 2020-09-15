@@ -75,5 +75,5 @@ then
     sed -i "s|^REPORTEDMAJ.*|REPORTEDMAJ=$NCVERSION|" $SCRIPTS/updatenotification.sh
     notify_admin_gui \
     "New major Nextcloud Update!" \
-    "Nextcloud $NCVERSION just became available. Please run 'sudo bash /var/scripts/update.sh' from your CLI to update your server to Nextcloud $NCVERSION."
+    "Nextcloud $NCVERSION just became available. Please run 'sudo bash /var/scripts/update.sh' from your CLI to update your server to Nextcloud $NCVERSION. Before updating though, you should visit https://your-nc-domain/settings/admin/overview and make sure that all apps are compatible with the new version."
 fi

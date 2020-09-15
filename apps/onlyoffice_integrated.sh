@@ -48,14 +48,7 @@ then
             occ_command app:remove onlyoffice
         fi
         # Revoke LE
-        while :
-        do
-            SUBDOMAIN=$(input_box "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
-            if yesno_box_yes "Is this correct? $SUBDOMAIN"
-            then
-                break
-            fi
-        done
+        SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -116,6 +109,9 @@ then
                 print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
                 occ_command app:remove documentserver_community
             ;;
+            "")
+                exit 1
+            ;;
             *)
             ;;
         esac
@@ -136,14 +132,7 @@ then
     # Remove docker image
     docker_prune_this 'collabora/code'
     # Revoke LE
-    while :
-    do
-        SUBDOMAIN=$(input_box "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
-        if yesno_box_yes "Is this correct? $SUBDOMAIN"
-        then
-            break
-        fi
-    done
+    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"

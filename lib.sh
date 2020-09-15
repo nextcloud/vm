@@ -149,7 +149,7 @@ PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
 PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 # Adminer
 ADMINERDIR=/usr/share/adminer
-ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
+ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
@@ -177,6 +177,7 @@ turn_install() {
     JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
+    NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7983 8983 10000 8081 8443 9443)
 }
 [ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
 
@@ -245,7 +246,7 @@ ask_yes_or_no() {
 
 msg_box() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
-    whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH"
+    whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3
 }
 
 # TODO: delete in a few releases (e.g. NC20) since not needed anymore
@@ -261,7 +262,7 @@ yesno_box() {
 
 yesno_box_yes() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
-    if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
+    if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     then
         return 0
     else
@@ -271,7 +272,7 @@ yesno_box_yes() {
 
 yesno_box_no() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
-    if (whiptail --title "$TITLE$SUBTITLE" --defaultno --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
+    if (whiptail --title "$TITLE$SUBTITLE" --defaultno --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     then
         return 0
     else
@@ -285,6 +286,24 @@ input_box() {
     echo "$RESULT"
 }
 
+input_box_flow() {
+    local RESULT
+    while :
+    do
+        RESULT=$(input_box "$1" "$2")
+        if [ -z "$RESULT" ]
+        then
+            msg_box "Input is empty, please try again." "$2"
+        elif ! yesno_box_yes "Is this correct? $RESULT" "$2"
+        then
+            msg_box "OK, please try again." "$2"
+        else
+            break
+        fi
+    done
+    echo "$RESULT"
+}
+
 explainer_popup() {
     msg_box "$SCRIPT_EXPLAINER"
     if ! yesno_box_yes "Do you want to proceed with this script?"
@@ -293,20 +312,23 @@ explainer_popup() {
     fi
 }
 
-removal_popup() {
-    msg_box "It seems like $SCRIPT_NAME is already installed.\nIf you proceed, $SCRIPT_NAME will get removed from your system and you will be asked if you want to reinstall it afterwards."
-    if ! yesno_box_yes "Do you want to remove $SCRIPT_NAME?"
-    then 
-        exit 1
-    fi
-    print_text_in_color "$ICyan" "Uninstalling $SCRIPT_NAME and resetting all settings..."
-}
-
-reinstall_popup() {
-    msg_box "$SCRIPT_NAME was successfully removed and all settings have been reset.\nIf you proceed, $SCRIPT_NAME will get reinstalled."
-    if ! yesno_box_yes "Do you want to reinstall $SCRIPT_NAME?"
+reinstall_remove_menu() {
+    choice=$(whiptail --title "$TITLE" --menu "It seems like $SCRIPT_NAME is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Reinstall $SCRIPT_NAME" "" \
+    "Uninstall $SCRIPT_NAME" "" 3>&1 1>&2 2>&3)
+    if [ -z "$choice" ]
     then
         exit 1
+    fi
+}
+
+removal_popup() {
+    if [ "$choice" = "Uninstall $SCRIPT_NAME" ]
+    then
+        msg_box "$SCRIPT_NAME was successfully uninstalled."
+        exit
+    else
+        print_text_in_color "$ICyan" "Reinstalling $SCRIPT_NAME..."
     fi
 }
 
@@ -1302,7 +1324,7 @@ home_sme_server() {
 # OLD MEMORY: BLS16G4 (Balistix Sport) || 18ASF2G72HZ (ECC)
 if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH"
 then
-    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ"
+    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266"
     then
         if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B"
         then

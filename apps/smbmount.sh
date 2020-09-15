@@ -81,41 +81,14 @@ If you really want to mount more, you can simply download the smb-mount script d
 fi
 
 # Enter SMB-server and Share-name
-while :
-do
-    SERVER_SHARE_NAME=$(input_box "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
-    if ! yesno_box_yes "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
-    then
-        msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again." "$SUBTITLE"
-    else
-        SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
-        break
-    fi
-done
+SERVER_SHARE_NAME=$(input_box_flow "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
+SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
 
 # Enter the SMB-user
-while :
-do
-    SMB_USER=$(input_box "Please enter the username of the SMB-user" "$SUBTITLE")
-    if ! yesno_box_yes "Is this correct? $SMB_USER" "$SUBTITLE"
-    then
-        msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again." "$SUBTITLE"
-    else
-        break
-    fi
-done
+SMB_USER=$(input_box_flow "Please enter the username of the SMB-user" "$SUBTITLE")
 
 # Enter the password of the SMB-user
-while :
-do
-    SMB_PASSWORD=$(input_box "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
-    if ! yesno_box_yes "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
-    then
-        msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again." "$SUBTITLE"
-    else
-        break
-    fi
-done
+SMB_PASSWORD=$(input_box_flow "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
 
 # Write everything to /etc/fstab, mount and connect external storage
 count=1
@@ -371,45 +344,18 @@ case "$choice" in
     *"Share"*)
         clear
         # Enter SMB-server and Share-name
-        while :
-        do
-            SERVER_SHARE_NAME=$(input_box "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
-            if ! yesno_box_yes "Is this correct? $SERVER_SHARE_NAME" "$SUBTITLE"
-            then
-                msg_box "It seems like your weren't satisfied by the PATH you entered. Please try again." "$SUBTITLE"
-            else
-                SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
-                break
-            fi
-        done
+        SERVER_SHARE_NAME=$(input_box_flow "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
+        SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
     ;;&
     *"Username"*)
         clear
         # Enter the SMB-user
-        while :
-        do
-            SMB_USER=$(input_box "Please enter the username of the SMB-user" "$SUBTITLE")
-            if ! yesno_box_yes "Is this correct? $SMB_USER" "$SUBTITLE"
-            then
-                msg_box "It seems like your weren't satisfied by the SMB-user you entered. Please try again." "$SUBTITLE"
-            else
-                break
-            fi
-        done
+        SMB_USER=$(input_box_flow "Please enter the username of the SMB-user" "$SUBTITLE")
     ;;&
     *"Password"*)
         clear
         # Enter the password of the SMB-user
-        while :
-        do
-            SMB_PASSWORD=$(input_box "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
-            if ! yesno_box_yes "Is this correct? $SMB_PASSWORD" "$SUBTITLE"
-            then
-                msg_box "It seems like your weren't satisfied by the password for the SMB-user you entered. Please try again." "$SUBTITLE"
-            else
-                break
-            fi
-        done
+        SMB_PASSWORD=$(input_box_flow "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
     ;;&
     "")
         return

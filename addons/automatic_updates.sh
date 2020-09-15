@@ -33,6 +33,7 @@ In the next step you will be able to choose to proceed or exit."
 
 if yesno_box_yes "Do you want to enable automatic updates?"
 then
+    # TODO: delete the following line after a few releases. It was copied to the install-script.
     occ_command config:app:set updatenotification notify_groups --value="[]"
     touch $VMLOGS/update.log
     crontab -u root -l | { cat; echo "0 $AUT_UPDATES_TIME * * 6 $SCRIPTS/update.sh minor >> $VMLOGS/update.log"; } | crontab -u root -

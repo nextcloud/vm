@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Adminer"
-SCRIPT_EXPLAINER="Adminer is a tool that lets you see the content of your database."
+SCRIPT_EXPLAINER="Adminer is a full-featured database management tool written in PHP."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -25,24 +25,20 @@ explainer_popup
 print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
 if is_this_installed adminer
 then
-    # Ask for removal
-    removal_popup
+    # Ask for removal or reinstallation
+    reinstall_remove_menu
     # Removal
     check_external_ip # Check that the script can see the external IP (apache fails otherwise)
     a2disconf adminer.conf
     rm -f $ADMINER_CONF
-    rm -f $ADMINERDIR/adminer.php
+    rm -rf $ADMINERDIR
     check_command apt-get purge adminer -y
     restart_webserver
-    # Ask for reinstalling
-    reinstall_popup
+    # Show successful uninstall if applicable
+    removal_popup
+else
+    print_text_in_color "$ICyan" "Installing and securing Adminer..."
 fi
-
-# Warn user about HTTP/2
-http2_warn Adminer
-
-# Inform users
-print_text_in_color "$ICyan" "Installing and securing Adminer..."
 
 # Check that the script can see the external IP (apache fails otherwise)
 check_external_ip
@@ -54,26 +50,54 @@ check_distro_version
 apt update -q4 & spinner_loading
 install_if_not adminer
 curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
+curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
 ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
-Alias /adminer.php $ADMINERDIR/adminer.php
+ <VirtualHost *:80>
+     RewriteEngine On
+     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1:9443 [R=301,L]
+ </VirtualHost>
+
+Listen 9443
+
+<VirtualHost *:9443>
+    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+    SSLEngine on
+    
+    # This is needed to redirect access on http://$ADDRESS:9443/ to https://$ADDRESS:9443/
+    ErrorDocument 400 https://$ADDRESS:9443/
+    
+### YOUR SERVER ADDRESS ###
+#    ServerAdmin admin@example.com
+#    ServerName adminer.example.com
+
+### SETTINGS ###
+    <FilesMatch "\.php$">
+        SetHandler "proxy:unix:/run/php/php7.4-fpm.nextcloud.sock|fcgi://localhost"
+    </FilesMatch>
+
+    DocumentRoot $ADMINERDIR
 
 <Directory $ADMINERDIR>
+    <IfModule mod_dir.c>
+        DirectoryIndex adminer.php
+    </IfModule>
+    AllowOverride None
 
-<IfModule mod_dir.c>
-DirectoryIndex adminer.php
-</IfModule>
-AllowOverride None
-
-# Only allow connections from localhost:
-Require ip $GATEWAY/24
-
+    # Only allow connections from localhost:
+    Require ip $GATEWAY/24
 </Directory>
+
+### LOCATION OF CERT FILES ###
+    SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+    SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+</VirtualHost>
 ADMINER_CREATE
 
 # Enable config
-check_command a2enconf adminer.conf
+check_command a2ensite adminer.conf
 
 if ! restart_webserver
 then
@@ -82,12 +106,18 @@ The script will exit."
     exit 1
 else
 msg_box "Adminer was sucessfully installed and can be reached here:
-http://$ADDRESS/adminer.php
+https://$ADDRESS:9443
 
 You can download more plugins and get more information here: 
 https://www.adminer.org
 
-Your PostgreSQL connection information can be found in $NCPATH/config/config.php
+Your PostgreSQL connection information can be found in $NCPATH/config/config.php.
+These are the current values:
+
+$(grep dbhost $NCPATH/config/config.php)
+$(grep dbuser $NCPATH/config/config.php)
+$(grep dbpassword $NCPATH/config/config.php)
+$(grep dbname $NCPATH/config/config.php)
 
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"

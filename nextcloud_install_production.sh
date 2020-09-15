@@ -180,7 +180,7 @@ You could still choose to only run on one disk though, which is not recommended,
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
 
-choice=$(whiptail --title "$TITLE - Choose disk format" --menu "How would you like to configure your disks?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu "How would you like to configure your disks?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)" \
 "2 Disks Manual" "(Choose by yourself)" \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" 3>&1 1>&2 2>&3)
@@ -403,6 +403,7 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 
 # Run the updatenotification on a schelude
 occ_command config:system:set upgrade.disable-web --value="true"
+occ_command config:app:set updatenotification notify_groups --value="[]"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_script STATIC updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
@@ -635,14 +636,18 @@ if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
     touch "$SITES_AVAILABLE/$TLS_CONF"
     cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
+# <VirtualHost *:80>
+#     RewriteEngine On
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+# </VirtualHost>
+
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
     SSLEngine on
 
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
-#    ServerName example.com
-#    ServerAlias subdomain.example.com
+#    ServerName cloud.example.com
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
