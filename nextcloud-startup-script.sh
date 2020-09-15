@@ -345,19 +345,49 @@ bash $SCRIPTS/additional_apps.sh
 clear
 # Change passwords
 # CLI USER
-print_text_in_color "$ICyan" "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"
-any_key "Press any key to change password for system user..."
+msg_box "For better security, we will now change the password for the unix-user"
 while :
 do
-    sudo passwd "$(getent group sudo | cut -d: -f4 | cut -d, -f1)" && break
+    UNIX_PASSWORD=$(input_box_flow "Please type in the new password for the unix-user [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]")
+    if [[ "$UNIX_PASSWORD" == *" "* ]]
+    then
+        msg_box "Please don't use spaces"
+    else
+        break
+    fi
 done
-echo
+check_command echo -e "$UNIX_PASSWORD\n$UNIX_PASSWORD" | (passwd --stdin "$(getent group sudo | cut -d: -f4 | cut -d, -f1)")
+unset UNIX_PASSWORD
 clear
 # NEXTCLOUD USER
 NCADMIN=$(occ_command user:list | awk '{print $3}')
-print_text_in_color "$ICyan" "The current admin user in Nextcloud GUI is [$NCADMIN]"
-print_text_in_color "$ICyan" "We will now replace this user with your own."
-any_key "Press any key to replace the current (local) admin user for Nextcloud..."
+msg_box "We will now change the username and password for the nextcloud-admin user"
+while :
+do
+    NEWUSER=$(input_box_flow "Please type in the name of the nextcloud-admin user. It must differ from [$NCADMIN].\nThe only allowed character are: 'a-z', 'A-Z', '0-9', and '_.@-'")
+    if [[ "$NEWUSER" == *" "* ]]
+    then
+        msg_box "Please don't use spaces."
+    elif [ "$NEWUSER" = "$NCADMIN" ]
+    then
+        msg_box "This username is already in use. Please choose a different one."
+    else
+        break
+    fi
+done
+while :
+do
+    OC_PASS=$(input_box_flow "The current admin user in Nextcloud GUI is [$NCADMIN]\nPlease type in the new password for the nextcloud-admin user")
+    if [[ "$NEWUSER" == *" "* ]]
+    then
+        msg_box "Please don't use spaces."
+    else
+        break
+    fi
+done
+export OC_PASS
+occ_command user:add "$NEWUSER" --password-from-env -g admin
+unset OC_PASS
 # Create new user
 while :
 do
