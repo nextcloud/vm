@@ -64,11 +64,11 @@ SUBDOMAIN=$(input_box_flow "Please enter the Domain that you want to use for Bit
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-msg_box "Please make sure that you have you have edited the dns-settings of your domain and open ports 80 and 443."
-
-if ! yesno_box_yes "Have you made the necessary preparations?"
+msg_box "Please make sure before continuing, that you have you have edited the dns-settings of your domain and open ports 80 and 443.\nAn alternative is opening those ports via UPNP automatically, which you can do in the next step."
+if yesno_box_no "Do you want to use UPNP to open those ports?"
 then
-    exit
+    open_port 80 TCP
+    open_port 443 TCP
 fi
 
 # Check if $SUBDOMAIN exists and is reachable

@@ -56,9 +56,15 @@ It's a good idea to read that before you start this script.
 Please also report any issues regarding this script setup to $ISSUES"
 
 msg_box "The necessary preparations to run expose Bitwarden to the internet are:
-1. Please open port 443 and 80 and point to this server.
+1. Please open port 443 and 80 and point to this server. (You will be asked if you want to use UPNP to open those ports automatically in the next step.)
 2. Please create a DNS record for your subdomain and point that to this server.
 3. Raise the amount of RAM to this server to at least 4 GB."
+
+if yesno_box_no "Do you want to use UPNP to open those ports?"
+then
+    open_port 80 TCP
+    open_port 443 TCP
+fi
 
 if ! yesno_box_yes "Have you made the necessary preparations?"
 then
