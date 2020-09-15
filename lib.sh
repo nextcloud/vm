@@ -709,6 +709,8 @@ open_port() {
     if ! upnpc -a "$ADDRESS" "$1" "$1" "$2" &>/dev/null
     then
         msg_box "Failed to open port $1 $2 automatically. You have to do this manually."
+        apt-get purge miniupnpc -y
+        apt autoremove -y
         return 1
     fi
 }
