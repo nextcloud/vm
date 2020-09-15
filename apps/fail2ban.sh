@@ -49,6 +49,9 @@ then
             rm /etc/fail2ban/jail.local
             check_command apt-get purge fail2ban -y
         ;;
+        "")
+            exit 1
+        ;;
         *)
         ;;
     esac

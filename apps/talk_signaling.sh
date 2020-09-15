@@ -100,6 +100,9 @@ then
             apt-get purge nextcloud-spreed-signaling -y
             apt autoremove -y
         ;;
+        "")
+            exit 1
+        ;;
         *)
         ;;
     esac

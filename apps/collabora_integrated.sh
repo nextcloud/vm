@@ -101,6 +101,9 @@ then
             print_text_in_color "$ICyan" "Reinstalling Collabora..."
             occ_command app:remove richdocumentscode
         ;;
+        "")
+            exit 1
+        ;;
         *)
         ;;
     esac

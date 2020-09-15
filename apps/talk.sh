@@ -61,6 +61,9 @@ then
             rm $TURN_CONF
             apt-get purge coturn -y
         ;;
+        "")
+            exit 1
+        ;;
         *)
         ;;
     esac

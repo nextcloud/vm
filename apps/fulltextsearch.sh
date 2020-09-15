@@ -89,6 +89,9 @@ then
             # Remove nc_fts docker if installed
             docker_prune_this "$nc_fts"
         ;;
+        "")
+            exit 1
+        ;;
         *)
         ;;
     esac

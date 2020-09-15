@@ -109,6 +109,9 @@ then
                 print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
                 occ_command app:remove documentserver_community
             ;;
+            "")
+                exit 1
+            ;;
             *)
             ;;
         esac

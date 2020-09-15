@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Adminer"
-SCRIPT_EXPLAINER="Adminer is a tool that lets you see the content of your database."
+SCRIPT_EXPLAINER="Adminer is a full-featured database management tool written in PHP."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
