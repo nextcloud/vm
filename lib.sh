@@ -39,7 +39,7 @@ KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
 first_iface() {
-    IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
+    IFACE=$(ip r | grep "default via" | awk '{print $5}')
 }
 [ -n "$FIRST_IFACE" ] && first_iface # TODO: remove this line someday
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
