@@ -373,9 +373,9 @@ do
     then
         msg_box "Please don't use spaces."
     fi
-# Create new user
-export OC_PASS
-    if su -s /bin/sh www-data -c "php /var/www/nextcloud/occ user:add $NEWUSER --password-from-env"
+    # Create new user
+    export OC_PASS
+    if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWUSER --password-from-env -g admin"
     then
         unset OC_PASS
         break
