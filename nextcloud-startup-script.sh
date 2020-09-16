@@ -332,11 +332,11 @@ bash $SCRIPTS/additional_apps.sh
 clear
 ### Change passwords
 # CLI USER
-msg_box "For better security, we will now change the password for the UNIX-user (Ubuntu)"
+msg_box "For better security, we will now change the password for the UNIX-user for Ubuntu"
 UNIXUSER="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
 while :
 do
-    UNIX_PASSWORD=$(input_box_flow "Please type in the new password for the UNIX-user [$UNIXUSER]")
+    UNIX_PASSWORD=$(input_box_flow "Please type in the new password for the UNIX-user: [$UNIXUSER]")
     if [[ "$UNIX_PASSWORD" == *" "* ]]
     then
         msg_box "Please don't use spaces"
@@ -372,16 +372,17 @@ do
     if [[ "$OC_PASS" == *" "* ]]
     then
         msg_box "Please don't use spaces."
-    else
-        break
     fi
-done
 # Create new user
 export OC_PASS
-echo "$OC_PASS"
-sleep 5
-occ_command user:add "$NEWUSER" --password-from-env -g admin
-unset OC_PASS
+    if su -s /bin/sh www-data -c "php /var/www/nextcloud/occ user:add $NEWUSER --password-from-env"
+    then
+        unset OC_PASS
+        break
+    else
+        any_key "Press any key to choose a different password."
+    fi
+done
 # Delete old user
 if [[ "$NCADMIN" ]]
 then
