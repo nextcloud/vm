@@ -7,7 +7,7 @@
 true
 SCRIPT_NAME="Full Text Search"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Get all needed variables from the library
 ncdb

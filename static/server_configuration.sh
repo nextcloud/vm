@@ -9,7 +9,7 @@ then
 true
 SCRIPT_NAME="Server configuration"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 # Use local lib file in case there is no internet connection
 elif [ -f /var/scripts/lib.sh ]
 then

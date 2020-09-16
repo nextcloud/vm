@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Bitwarden RS Admin"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Talk with Signaling Server"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Get all needed variables from the library
 nc_update
@@ -223,7 +223,7 @@ SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."

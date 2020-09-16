@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Bitwarden RS"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -62,7 +62,7 @@ SUBDOMAIN=$(input_box_flow "Please enter the Domain that you want to use for Bit
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 msg_box "Please make sure that you have you have edited the dns-settings of your domain and open ports 80 and 443."
 

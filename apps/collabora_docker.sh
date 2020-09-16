@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Collabora (Docker)"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -156,7 +156,7 @@ NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 
 # Curl the library another time to get the correct https_conf
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Get all needed variables from the library
 nc_update

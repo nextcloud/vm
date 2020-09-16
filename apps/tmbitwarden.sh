@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Bitwarden"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -187,7 +187,7 @@ msg_box "We'll now setup the Apache Proxy that will act as TLS front for your Bi
 
 # Curl the lib another time to get the correct HTTPS_CONF
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."

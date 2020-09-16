@@ -14,7 +14,7 @@
 true
 SCRIPT_NAME="Change to ZFS Mount Generator"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Check if root
 root_check

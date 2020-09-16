@@ -10,7 +10,7 @@ Using any modern web browser, you can setup user accounts, Apache, DNS, file sha
 Webmin removes the need to manually edit Unix configuration files like /etc/passwd, and lets you manage a system from the console or remotely.
 See the following page with standard modules for a list of all the functions built into Webmin: https://webmin.com/standard.html"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
