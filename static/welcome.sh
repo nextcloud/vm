@@ -23,4 +23,4 @@ WAN IPv6: $WANIP6
 If you need support, please visit https://help.nextcloud.com/
 If you want the full and extended version of this VM (including TLS, automated apps configuration, and more), please download it here: https://github.com/nextcloud/vm/releases
 
-To remove this prompt, please remove 'bash /home/ncadmin/welcome.sh' in /home/ncadmin/.bash_profile"
+To remove this prompt, please remove 'bash /var/scripts/welcome.sh' in /home/ncadmin/.bash_profile"
