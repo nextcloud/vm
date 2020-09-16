@@ -611,8 +611,8 @@ true
 
 # Get needed scripts for first bootup
 download_script GITHUB_REPO nextcloud-startup-script
+download_script GITHUB_REPO lib
 download_script STATIC instruction
-download_script STATIC lib
 
 # Reboot
 msg_box "Installation almost done, system will reboot when you hit OK.
