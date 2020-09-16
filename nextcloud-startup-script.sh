@@ -137,6 +137,9 @@ check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
 clear
 
+# Set trusted domain
+sudo bash $SCRIPTS/trusted.sh
+
 ### Change passwords
 # CLI USER
 msg_box "For better security, we will now change the password for the UNIX-user for Ubuntu"
@@ -276,6 +279,8 @@ rm -f $SCRIPTS/trusted.sh
 rm -f $SCRIPTS/history.sh
 rm -f $SCRIPTS/locate_mirror.sh
 rm -f $SCRIPTS/locales.sh
+rm -f $SCRIPTS/change_db_pass.sh
+rm -f $SCRIPTS/instruction.sh
 
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
