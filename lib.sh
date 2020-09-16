@@ -82,7 +82,7 @@ TITLE="Nextcloud VM - $(date +%Y)"
 CHECKLIST_GUIDE="Navigate with the [ARROW] keys and (de)select with the [SPACE] key. Confirm by pressing [ENTER]"
 MENU_GUIDE="You can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'"
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm"
 STATIC="$GITHUB_REPO/static"
 LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
@@ -1146,9 +1146,7 @@ or experience other issues then please report this to $ISSUES"
     # Do the upgrade
     chown -R www-data:www-data "$NCPATH"
     rm -rf "$NCPATH"/assets
-    yes | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
-    download_script STATIC setup_secure_permissions_nextcloud -P $SCRIPTS
-    bash $SECURE
+    yes no | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
     occ_command maintenance:mode --off
 fi
 
