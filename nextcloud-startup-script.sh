@@ -274,6 +274,8 @@ rm -f "$NCDATA/nextcloud.log"
 rm -f $SCRIPTS/startup_configuration.sh
 rm -f $SCRIPTS/trusted.sh
 rm -f $SCRIPTS/history.sh
+rm -f $SCRIPTS/locate_mirror.sh
+rm -f $SCRIPTS/locales.sh
 
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
