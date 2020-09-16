@@ -185,7 +185,7 @@ do
     fi
 # Create new user
 export OC_PASS
-    if su -s /bin/sh www-data -c "php /var/www/nextcloud/occ user:add $NEWUSER --password-from-env"
+    if su -s /bin/sh www-data -c "php /var/www/nextcloud/occ user:add $NEWUSER --password-from-env -g admin"
     then
         unset OC_PASS
         break
