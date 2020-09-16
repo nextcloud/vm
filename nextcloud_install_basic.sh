@@ -574,6 +574,7 @@ download_script STATIC change_db_pass
 download_script STATIC history
 download_script STATIC welcome
 download_script ADDONS locales
+download_script ADDONS locate_mirror
 chown $UNIXUSER:$UNIXUSER welcome
 download_script NETWORK trusted
 download_script MENU startup_configuration
