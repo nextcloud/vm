@@ -77,7 +77,7 @@ if network_ok
 then
     print_text_in_color "$IGreen" "Online!"
 else
-    print_text_in_color "$IGreen" "Still offline, but no worries we can continue anyway!!"
+    print_text_in_color "$IGreen" "Still offline, but no worries we can continue anyway!"
 fi
 
 # shellcheck disable=2034,2059,1091
