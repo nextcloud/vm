@@ -533,10 +533,6 @@ a2dissite default-ssl
 a2dissite 000-default
 restart_webserver
 
-# Prepare first bootup
-check_command run_script STATIC change-ncadmin-profile
-check_command run_script STATIC change-root-profile
-
 # Cleanup
 apt autoremove -y
 apt autoclean
@@ -574,11 +570,14 @@ true
 download_script GITHUB_REPO nextcloud-startup-script
 download_script GITHUB_REPO lib
 download_script STATIC instruction
-download_script STATIC change-db_pass
+download_script STATIC change_db_pass
 download_script STATIC history
 download_script NETWORK trusted
-download_script menu startup_configuration
+download_script MENU startup_configuration
 
+# Prepare first bootup
+check_command run_script STATIC change-ncadmin-profile
+check_command run_script STATIC change-root-profile
 
 # Reboot
 msg_box "Installation almost done, system will reboot when you hit OK.
