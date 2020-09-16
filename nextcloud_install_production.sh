@@ -756,10 +756,6 @@ case "$choice" in
     ;;
 esac
 
-# Prepare first bootup
-check_command run_script STATIC change-ncadmin-profile
-check_command run_script STATIC change-root-profile
-
 # Upgrade
 apt update -q4 & spinner_loading
 apt dist-upgrade -y
@@ -826,6 +822,10 @@ download_script GITHUB_REPO nextcloud-startup-script
 download_script STATIC instruction
 download_script STATIC history
 download_script NETWORK static_ip
+
+# Prepare first bootup
+check_command run_script STATIC change-ncadmin-profile
+check_command run_script STATIC change-root-profile
 
 if home_sme_server
 then
