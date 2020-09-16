@@ -103,14 +103,17 @@ msg_box "Nextcloud repo is not available, exiting..."
     exit 1
 fi
 
-# Test Home/SME function
-if home_sme_server
-then
-    msg_box "This is the Home/SME server, function works!"
-else
-    print_text_in_color "$ICyan" "Home/SME Server not detected. No worries, just testing the function."
-    sleep 3
-fi
+# Make it obvius regarding the differences
+msg_box "This is the install script for the Official Nextcloud VM.
+
+The intention with this is just to get a working Nextcloud without any extras at all, really - none.
+
+The Official VM is just a test VM, and is not an example of how th original VM is built.
+The original VM is years of development, and much richer and advanced in it's possibilites.
+Though, we will use some of the basics from the original VM to be able to run Nextcloud.
+
+In the full-version you can automatically install Nextcloud apps like e.g: OnlyOffice, Collabora, Talk (with signaling), get a valid TLS cert, and much much more.
+You can check out the original full-version VM here: https://github.com/nextcloud/vm/releases."
 
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
@@ -155,12 +158,6 @@ stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
-
-# Create $SCRIPTS dir
-if [ ! -d "$SCRIPTS" ]
-then
-    mkdir -p "$SCRIPTS"
-fi
 
 # Create $VMLOGS dir
 if [ ! -d "$VMLOGS" ]
@@ -378,8 +375,7 @@ tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML" & spinner_loading
 rm "$HTML/$STABLEVERSION.tar.bz2"
 
 # Secure permissions
-download_script STATIC setup_secure_permissions_nextcloud
-bash $SECURE & spinner_loading
+run_script STATIC setup_secure_permissions_nextcloud
 
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
@@ -400,14 +396,6 @@ echo
 
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
-
-# Run the updatenotification on a schelude
-occ_command config:system:set upgrade.disable-web --value="true"
-occ_command config:app:set updatenotification notify_groups --value="[]"
-print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
-download_script STATIC updatenotification
-check_command chmod +x "$SCRIPTS"/updatenotification.sh
-crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
@@ -432,21 +420,6 @@ occ_command config:system:set log.condition apps 0 --value admin_audit
 
 # Set SMTP mail
 occ_command config:system:set mail_smtpmode --value="smtp"
-
-# Forget login/session after 30 minutes
-occ_command config:system:set remember_login_cookie_lifetime --value="1800"
-
-# Set logrotate (max 10 MB)
-occ_command config:system:set log_rotate_size --value="10485760"
-
-# Set trashbin retention obligation (save it in trahbin for 6 months or delete when space is needed)
-occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
-
-# Set versions retention obligation (save versions for 12 months or delete when space is needed)
-occ_command config:system:set versions_retention_obligation --value="auto, 365"
-
-# Remove simple signup
-occ_command config:system:set simpleSignUpLink.shown --type=bool --value=false
 
 # Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
@@ -481,74 +454,6 @@ echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
-# Install Redis (distrubuted cache)
-run_script ADDONS redis-server-ubuntu
-
-# Install smbclient
-# php"$PHPVER"-smbclient does not yet work in PHP 7.4
-install_if_not libsmbclient-dev
-yes no | pecl install smbclient
-if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
-then
-    touch $PHP_MODS_DIR/smbclient.ini
-fi
-if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
-then
-    echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
-    echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
-    check_command phpenmod -v ALL smbclient
-fi
-
-# Enable igbinary for PHP
-# https://github.com/igbinary/igbinary
-if is_this_installed "php$PHPVER"-dev
-then
-    if ! yes no | pecl install -Z igbinary
-    then
-        msg_box "igbinary PHP module installation failed"
-        exit
-    else
-        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
-    fi
-{
-echo "# igbinary for PHP"
-echo "extension=igbinary.so"
-echo "session.serialize_handler=igbinary"
-echo "igbinary.compact_strings=On"
-} >> "$PHP_INI"
-restart_webserver
-fi
-
-# APCu (local cache)
-if is_this_installed "php$PHPVER"-dev
-then
-    if ! yes no | pecl install -Z apcu
-    then
-        msg_box "APCu PHP module installation failed"
-        exit
-    else
-        print_text_in_color "$IGreen" "APCu PHP module installation OK!"
-    fi
-{
-echo "# APCu settings for Nextcloud"
-echo "extension=apcu.so"
-echo "apc.enabled=1"
-echo "apc.max_file_size=5M"
-echo "apc.shm_segments=1"
-echo "apc.shm_size=128M"
-echo "apc.entries_hint=4096"
-echo "apc.ttl=3600"
-echo "apc.gc_ttl=7200"
-echo "apc.mmap_file_mask=NULL"
-echo "apc.slam_defense=1"
-echo "apc.enable_cli=1"
-echo "apc.use_request_time=1"
-echo "apc.serializer=igbinary"
-echo "apc.coredump_unmap=0"
-echo "apc.preload_path"
-} >> "$PHP_INI"
-restart_webserver
-fi
 
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
@@ -636,10 +541,10 @@ if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
     touch "$SITES_AVAILABLE/$TLS_CONF"
     cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
-# <VirtualHost *:80>
-#     RewriteEngine On
-#     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
-# </VirtualHost>
+ <VirtualHost *:80>
+     RewriteEngine On
+     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+ </VirtualHost>
 
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
@@ -704,115 +609,31 @@ fi
 
 # Enable new config
 a2ensite "$TLS_CONF"
-a2ensite "$HTTP_CONF"
 a2dissite default-ssl
+a2dissite 000-default
 restart_webserver
-
-choice=$(whiptail --title "$TITLE - Install apps or software" --checklist "Automatically configure and install selected apps or software\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Calendar" "" ON \
-"Contacts" "" ON \
-"IssueTemplate" "" ON \
-"PDFViewer" "" ON \
-"Extract" "" ON \
-"Text" "" ON \
-"Mail" "" ON \
-"Deck" "" ON \
-"Group-Folders" "" ON 3>&1 1>&2 2>&3)
-
-case "$choice" in
-    *"Calendar"*)
-        install_and_enable_app calendar
-    ;;&
-    *"Contacts"*)
-        install_and_enable_app contacts
-    ;;&
-    *"IssueTemplate"*)
-        install_and_enable_app issuetemplate
-    ;;&
-    *"PDFViewer"*)
-        install_and_enable_app files_pdfviewer
-    ;;&
-    *"Extract"*)
-        if install_and_enable_app extract
-        then
-            install_if_not unrar
-            install_if_not p7zip
-            install_if_not p7zip-full
-        fi
-    ;;&
-    *"Text"*)
-        install_and_enable_app text
-    ;;&
-    *"Mail"*)
-        install_and_enable_app mail
-    ;;&
-    *"Deck"*)
-        install_and_enable_app deck
-    ;;&
-    *"Group-Folders"*)
-        install_and_enable_app groupfolders
-    ;;&
-    *)
-    ;;
-esac
 
 # Prepare first bootup
 check_command run_script STATIC change-ncadmin-profile
 check_command run_script STATIC change-root-profile
-
-# Upgrade
-apt update -q4 & spinner_loading
-apt dist-upgrade -y
-
-# Remove LXD (always shows up as failed during boot)
-apt-get purge lxd -y
 
 # Cleanup
 apt autoremove -y
 apt autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
-# Install virtual kernels for Hyper-V, (and extra for UTF8 kernel module + Collabora and OnlyOffice)
-# Kernel 5.4
-if ! home_sme_server
-then
-    if [ "$SYSVENDOR" == "Microsoft Corporation" ]
-    then
-        # Hyper-V
-        apt install -y --install-recommends \
-        linux-virtual \
-        linux-image-virtual \
-        linux-tools-virtual \
-        linux-cloud-tools-virtual
-        # linux-image-extra-virtual only needed for AUFS driver with Docker
-    fi
-fi
-
-# Add aliases
-if [ -f /root/.bash_aliases ]
-then
-    if ! grep -q "nextcloud" /root/.bash_aliases
-    then
-{
-echo "alias nextcloud_occ='sudo -u www-data php /var/www/nextcloud/occ'"
-echo "alias run_update_nextcloud='bash /var/scripts/update.sh'"
-} >> /root/.bash_aliases
-    fi
-elif [ ! -f /root/.bash_aliases ]
-then
-{
-echo "alias nextcloud_occ='sudo -u www-data php /var/www/nextcloud/occ'"
-echo "alias run_update_nextcloud='bash /var/scripts/update.sh'"
-} > /root/.bash_aliases
-fi
-
-# Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
-bash $SECURE & spinner_loading
+# Set permissions final
+run_script STATIC setup_secure_permissions_nextcloud
+chown -R www-data:www-data "$NCPATH"
 
 # Put IP adress in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
 then
-    echo "\4" >> /etc/issue
+{
+echo "\4"
+echo "DEFAULT USER: ncadmin"
+echo "DEFAULT PASS: nextcloud"
+} >> /etc/issue
 fi
 
 # Force MOTD to show correct number of updates
@@ -821,24 +642,22 @@ then
     sudo /usr/lib/update-notifier/update-motd-updates-available --force
 fi
 
+
+####### OFFICIAL (custom scripts) #######
+
+# shellcheck disable=2034,2059
+true
+# shellcheck source=lib.sh
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
+
 # Get needed scripts for first bootup
 download_script GITHUB_REPO nextcloud-startup-script
 download_script STATIC instruction
-download_script STATIC history
-download_script NETWORK static_ip
-
-if home_sme_server
-then
-    # Change nextcloud-startup-script.sh
-    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
-fi
-
-# Make $SCRIPTS excutable
-chmod +x -R "$SCRIPTS"
-chown root:root -R "$SCRIPTS"
+download_script STATIC lib
 
 # Reboot
-msg_box "Installation almost done, system will reboot when you hit OK. 
+msg_box "Installation almost done, system will reboot when you hit OK.
 
 Please log in again once rebooted to run the setup script."
 reboot
+
