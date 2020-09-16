@@ -17,13 +17,9 @@ echo -e "|"  "${IGreen}To run the startup script type the sudoer password, then 
 echo -e "|"  "${IGreen}The default sudoer password is: ${BIGreen}nextcloud${IGreen}${Color_Off}                             |"
 cat << INST2
 |                                                                       |
-| To be 100% sure that all the keystrokes work correctly (like @),      |
-| please use an SSH terminal like Putty. You can download it here:      |
-| https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html        |
-|                                                                       |
-| If you are running Windows 10 1809 or later, you can simply use SSH   |
-| from the command prompt. Connect like this:                           |
-| ssh ncadmin@local.IP.of.this.server                                   |
+| You will now setup the basics of the server.                          |
+| A working internet connection if recomended, but not needed for the   |
+| setup to finish properly.                                             |
 |                                                                       |
 | To choose the defaults during installation, just hit [ENTER].         |
 |                                                                       |
