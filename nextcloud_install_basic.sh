@@ -76,11 +76,6 @@ cpu_check 1 Nextcloud
 mkdir -p "$SCRIPTS"
 download_script GITHUB_REPO lib
 
-# Create new current user
-download_script STATIC adduser
-bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
-rm -f $SCRIPTS/adduser.sh
-
 # Check distribution and version
 if ! version 20.04 "$DISTRO" 20.04.6
 then
@@ -166,37 +161,6 @@ install_if_not netplan.io
 
 # Install build-essentials to get make
 install_if_not build-essential
-
-# Set dual or single drive setup
-msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
-You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
-
-You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
-
-choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu "How would you like to configure your disks?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"2 Disks Auto" "(Automatically configured)" \
-"2 Disks Manual" "(Choose by yourself)" \
-"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" 3>&1 1>&2 2>&3)
-
-case "$choice" in
-    "2 Disks Auto")
-        run_script DISK format-sdb
-        # Change to zfs-mount-generator
-        run_script DISK change-to-zfs-mount-generator
-
-    ;;
-    "2 Disks Manual")
-        run_script DISK format-chosen
-        # Change to zfs-mount-generator
-        run_script DISK change-to-zfs-mount-generator
-    ;;
-    "1 Disk")
-        print_text_in_color "$IRed" "1 Disk setup chosen."
-        sleep 2
-    ;;
-    *)
-    ;;
-esac
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
