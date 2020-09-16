@@ -238,7 +238,7 @@ if [ -d "/root/bin" ]
 then
     PATH="/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
 fi
-bash /home/"$UNIXUSER"/welcome.sh
+bash $SCRIPTS/welcome.sh
 UNIXUSERNEWPROFILE
 
 cat << ROOTNEWPROFILE > "$ROOT_PROFILE"
