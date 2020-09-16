@@ -575,6 +575,9 @@ download_script STATIC history
 download_script NETWORK trusted
 download_script MENU startup_configuration
 
+# Make $SCRIPTS excutable
+chmod +x -R "$SCRIPTS"
+
 # Prepare first bootup
 check_command run_script STATIC change-ncadmin-profile
 check_command run_script STATIC change-root-profile
