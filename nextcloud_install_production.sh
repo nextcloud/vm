@@ -76,9 +76,6 @@ cpu_check 1 Nextcloud
 mkdir -p "$SCRIPTS"
 download_script GITHUB_REPO lib
 
-# Set locales
-run_script ADDONS locales
-
 # Create new current user
 download_script STATIC adduser
 bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
