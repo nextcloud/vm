@@ -56,9 +56,6 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-# Get all needed variables from the library
-first_iface
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
