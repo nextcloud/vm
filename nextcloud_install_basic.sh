@@ -572,6 +572,8 @@ download_script GITHUB_REPO lib
 download_script STATIC instruction
 download_script STATIC change_db_pass
 download_script STATIC history
+download_script STATIC welcome
+chown $UNIXUSER:UNIXUSER welcome
 download_script NETWORK trusted
 download_script MENU startup_configuration
 
