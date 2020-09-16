@@ -135,7 +135,6 @@ dpkg-reconfigure openssh-server
 print_text_in_color "$ICyan" "Generating new PostgreSQL password..."
 check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
-clear
 
 # Set trusted domain
 sudo bash $SCRIPTS/trusted.sh
