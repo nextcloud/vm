@@ -611,6 +611,7 @@ download_script GITHUB_REPO nextcloud-startup-script
 download_script GITHUB_REPO lib
 download_script STATIC instruction
 download_script STATIC change-db_pass
+download_script STATIC history
 download_script NETWORK trusted
 download_script menu startup_configuration
 
