@@ -817,11 +817,20 @@ then
     sudo /usr/lib/update-notifier/update-motd-updates-available --force
 fi
 
+# It has to be this order:
+# Download scripts
+# chmod +x
+# Set permissions for ncadmin in the change scripts
+
 # Get needed scripts for first bootup
 download_script GITHUB_REPO nextcloud-startup-script
 download_script STATIC instruction
 download_script STATIC history
 download_script NETWORK static_ip
+
+# Make $SCRIPTS excutable
+chmod +x -R "$SCRIPTS"
+chown root:root -R "$SCRIPTS"
 
 # Prepare first bootup
 check_command run_script STATIC change-ncadmin-profile
@@ -832,10 +841,6 @@ then
     # Change nextcloud-startup-script.sh
     check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
 fi
-
-# Make $SCRIPTS excutable
-chmod +x -R "$SCRIPTS"
-chown root:root -R "$SCRIPTS"
 
 # Reboot
 msg_box "Installation almost done, system will reboot when you hit OK. 
