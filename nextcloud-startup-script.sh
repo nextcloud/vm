@@ -214,19 +214,32 @@ fi
 # Cleanup 1
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
 find "$NCPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
-sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
 
-truncate -s 0 \
-    /root/.bash_history \
-    "/home/$UNIXUSER/.bash_history" \
-    /var/spool/mail/root \
-    "/var/spool/mail/$UNIXUSER" \
-    /var/log/apache2/access.log \
-    /var/log/apache2/error.log \
-    /var/log/cronjobs_success.log \
-    "$VMLOGS/nextcloud.log"
-
-sed -i "s|sudo -i||g" "$UNIXUSER_PROFILE"
+cat << UNIXUSERNEWPROFILE > "$UNIXUSER_PROFILE"
+# ~/.profile: executed by the command interpreter for login shells.
+# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
+# exists.
+# see /usr/share/doc/bash/examples/startup-files for examples.
+# the files are located in the bash-doc package.
+# the default umask is set in /etc/profile; for setting the umask
+# for ssh logins, install and configure the libpam-umask package.
+#umask 022
+# if running bash
+if [ -n "5.0.16(1)-release" ]
+then
+    # include .bashrc if it exists
+    if [ -f "/root/.bashrc" ]
+    then
+        . "/root/.bashrc"
+    fi
+fi
+# set PATH so it includes user's private bin if it exists
+if [ -d "/root/bin" ]
+then
+    PATH="/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+fi
+bash /home/"$UNIXUSER"/welcome.sh
+UNIXUSERNEWPROFILE
 
 cat << ROOTNEWPROFILE > "$ROOT_PROFILE"
 # ~/.profile: executed by Bourne-compatible login shells.
@@ -243,6 +256,16 @@ mesg n
 
 ROOTNEWPROFILE
 
+truncate -s 0 \
+    /root/.bash_history \
+    "/home/$UNIXUSER/.bash_history" \
+    /var/spool/mail/root \
+    "/var/spool/mail/$UNIXUSER" \
+    /var/log/apache2/access.log \
+    /var/log/apache2/error.log \
+    /var/log/cronjobs_success.log \
+    "$VMLOGS/nextcloud.log"
+
 # Cleanup 2
 apt autoremove -y
 apt autoclean
@@ -250,6 +273,7 @@ occ_command maintenance:repair
 rm -f "$NCDATA/nextcloud.log"
 rm -f $SCRIPTS/startup_configuration.sh
 rm -f $SCRIPTS/trusted.sh
+rm -f $SCRIPTS/history.sh
 
 # Success!
 msg_box "Congratulations! You have successfully installed Nextcloud!
