@@ -75,7 +75,6 @@ cpu_check 1 Nextcloud
 # Download needed libraries before execution of the first script
 mkdir -p "$SCRIPTS"
 download_script GITHUB_REPO lib
-download_script STATIC fetch_lib
 
 # Set locales
 run_script ADDONS locales
@@ -201,46 +200,6 @@ case "$choice" in
     *)
     ;;
 esac
-
-# Set DNS resolver
-# https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
-while :
-do
-    choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu "Which DNS provider should this Nextcloud box use?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Quad9" "(https://www.quad9.net/)" \
-    "Cloudflare" "(https://www.cloudflare.com/dns/)" \
-    "Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
-
-    case "$choice" in
-        "Quad9")
-            sed -i "s|^#\?DNS=.*$|DNS=9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9|g" /etc/systemd/resolved.conf
-        ;;
-        "Cloudflare")
-            sed -i "s|^#\?DNS=.*$|DNS=1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
-        ;;
-        "Local")
-            sed -i "s|^#\?DNS=.*$|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
-            if network_ok
-            then
-                break
-            else
-                msg_box "Could not validate the local DNS server. Pick an Internet DNS server and try again."
-                continue
-            fi
-        ;;
-        *)
-        ;;
-    esac
-    if test_connection
-    then
-        break
-    else
-        msg_box "Could not validate the DNS server. Please try again."
-    fi
-done
-
-# Check current repo
-run_script ADDONS locate_mirror
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
