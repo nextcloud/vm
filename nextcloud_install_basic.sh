@@ -610,6 +610,10 @@ true
 download_script GITHUB_REPO nextcloud-startup-script
 download_script GITHUB_REPO lib
 download_script STATIC instruction
+download_script STATIC change-db_pass
+download_script NETWORK trusted
+download_script menu startup_configuration
+
 
 # Reboot
 msg_box "Installation almost done, system will reboot when you hit OK.
