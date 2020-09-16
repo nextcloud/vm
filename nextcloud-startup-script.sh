@@ -199,18 +199,19 @@ then
 fi
 clear
 
-# Cleanup 1
-occ_command maintenance:repair
-rm -f "$SCRIPTS/ip.sh"
-rm -f "$SCRIPTS/change_db_pass.sh"
-rm -f "$SCRIPTS/instruction.sh"
-rm -f "$NCDATA/nextcloud.log"
-rm -f "$SCRIPTS/static_ip.sh"
-rm -f "$SCRIPTS/server_configuration.sh"
-rm -f "$SCRIPTS/nextcloud_configuration.sh"
-rm -f "$SCRIPTS/additional_apps.sh"
-rm -f "$SCRIPTS/adduser.sh"
+# Check if user got internet once more, and then do the Nextcloud upgrade
+msg_box "We will no try to upgrade Nextcloud to the latest version.
+Please press OK to continue."
+if network_ok
+then
+    # Do the upgrade
+    chown -R www-data:www-data "$NCPATH"
+    rm -rf "$NCPATH"/assets
+    yes no | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
+    occ_command maintenance:mode --off
+fi
 
+# Cleanup 1
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
 find "$NCPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
 sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
@@ -242,41 +243,15 @@ mesg n
 
 ROOTNEWPROFILE
 
-# Upgrade system
-if test_connection
-then
-    print_text_in_color "$ICyan" "System will now upgrade..."
-    bash $SCRIPTS/update.sh
-fi
-
 # Cleanup 2
 apt autoremove -y
 apt autoclean
-
-# Set trusted domain in config.php
-bash $SCRIPTS/trusted.sh
+occ_command maintenance:repair
+rm -f "$NCDATA/nextcloud.log"
+rm -f $SCRIPTS/startup_configuration.sh
+rm -f $SCRIPTS/trusted.sh
 
 # Success!
-msg_box "The installation process is *almost* done.
-
-Please hit OK in all the following prompts and let the server reboot to complete the installation process."
-
-msg_box "TIPS & TRICKS:
-1. Publish your server online: https://goo.gl/iUGE2U
-2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
-3. To update this server just type: sudo bash /var/scripts/update.sh
-4. Install apps, configure Nextcloud, and server: sudo bash $SCRIPTS/menu.sh"
-
-msg_box "SUPPORT:
-Please ask for help in the forums, visit our shop to buy support,
-or buy a yearly subscription from Nextcloud:
-- SUPPORT: https://shop.hanssonit.se/product/premium-support-per-30-minutes/
-- FORUM: https://help.nextcloud.com/
-- SUBSCRIPTION: https://nextcloud.com/pricing/ (Please refer to @enoch85)
-
-BUGS:
-Please report any bugs here: https://github.com/nextcloud/vm/issues"
-
 msg_box "Congratulations! You have successfully installed Nextcloud!
 
 LOGIN:
@@ -284,7 +259,7 @@ Login to Nextcloud in your browser:
 - IP: $ADDRESS
 - Hostname: $(hostname -f)
 
-PLEASE HIT OK TO REBOOT"
+## PLEASE PRESS OK TO REBOOT. ##"
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
