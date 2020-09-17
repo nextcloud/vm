@@ -125,33 +125,134 @@ As a hint:
             fi
             break
         else
+            # Inform the user that mounting was successful
+            msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
             # Check if Nextcloud is existing
-            if [ -f $NCPATH/occ ]
+            NEWNAME="SMB$count"
+            if ! [ -f $NCPATH/occ ]
             then
-                # Install and enable files_external
-                if ! is_app_enabled files_external
-                then
-                    install_and_enable_app files_external
-                fi
-
-                # Create and mount external storage to the admin group
-                MOUNT_ID=$(occ_command files_external:create "SMB$count" local null::null -c datadir="$SMBSHARES/$count" )
-                MOUNT_ID=${MOUNT_ID//[!0-9]/}
-                occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
-                occ_command files_external:option "$MOUNT_ID" filesystem_check_changes 1
-
-                # Inform the user that mounting was successful
-msg_box "Your mount was successful, congratulations!
-It's now accessible in your root directory under $SMBSHARES/$count.
-You are now using the Nextcloud external storage app to access files there.
-The Share has been mounted to the Nextcloud admin-group.
-You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to rename 'SMB$count' to whatever you like or e.g. enable sharing." "$SUBTITLE"
                 break
-            else
-                # Inform the user that mounting was successful
-                msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
+            # Ask for mounting via the external storage app if existing
+            elif ! yesno_box_yes "Do you want to mount the directory to Nextcloud as local external storage?" "$SUBTITLE"
+            then
                 break
             fi
+            NEWPATH="$SMBSHARES/$count"
+            # Install and enable files_external
+            if ! is_app_enabled files_external
+            then
+                install_and_enable_app files_external
+            fi
+            # Choose the name for the external storage
+            NEWNAME_BACKUP="$NEWNAME"
+            if yesno_box_yes "Do you want to use a different name for this external storage inside Nextcloud or just use the default $NEWNAME?" "$SUBTITLE"
+            then
+                while :
+                do
+                    NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this share.\nYou can type in exit to use the default $NEWNAME_BACKUP\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'and spaces. It has to start with a letter." "$SUBTITLE")
+                    if ! [[ "$NEWNAME" =~ ^[a-zA-Z][-._a-zA-Z0-9\ ]+$ ]]
+                    then
+                        msg_box "Please only use those characters. 'a-z' 'A-Z' '.-_' and '0-9'and spaces. It has to start with a letter." "$SUBTITLE"
+                    elif [ "$NEWNAME" = "exit" ]
+                    then
+                        NEWNAME="$NEWNAME_BACKUP"
+                        break
+                    else
+                        break
+                    fi
+                done
+            fi
+            # Choose if readonly
+            if ! yesno_box_yes "Do you want to mount this external storage as writeable in your Nextcloud?" "$SUBTITLE"
+            then
+                READONLY="true"
+            else
+                READONLY="false"
+            fi
+            # Choose if sharing shall be enabled
+            if yesno_box_yes "Do you want to enable sharing for this external storage?" "$SUBTITLE"
+            then
+                SHARING="true"
+            else
+                SHARING="false"
+            fi
+            # Groups and User Menu
+            choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose enable the share for specific users or groups.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+            "Choose some Nextcloud groups" "" ON \
+            "Choose some Nextcloud users" "" ON 3>&1 1>&2 2>&3)
+            unset SELECTED_USER
+            unset SELECTED_GROUPS
+            # Select Nextcloud groups
+            if [[ "$choice" == *"Choose some Nextcloud groups"* ]]
+            then
+                args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which groups shall get access to the share.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+                IFS_BACKUP="$IFS"
+                IFS="|||"
+                NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g' | tr "\n" "|||" )
+                NC_GROUPS=($NC_GROUPS)
+                for GROUP in "${NC_GROUPS[@]}"
+                do
+                    args+=("$GROUP  " "" OFF)
+                done
+                SELECTED_GROUPS=$("${args[@]}" 3>&1 1>&2 2>&3)
+                IFS="$IFS_BACKUP"
+            fi
+            # Select Nextcloud users
+            if [[ "$choice" == *"Choose some Nextcloud users"* ]]
+            then
+                args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which users shall get access to the share.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+                IFS_BACKUP="$IFS"
+                IFS="|||"
+                NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | tr "\n" "|||" )
+                NC_USER=($NC_USER)
+                for USER in "${NC_USER[@]}"
+                do
+                    args+=("$USER  " "" OFF)
+                done
+                SELECTED_USER=$("${args[@]}" 3>&1 1>&2 2>&3)
+                IFS="$IFS_BACKUP"
+            fi
+            # Create and mount external storage to the admin group
+            MOUNT_ID=$(occ_command files_external:create "$NEWNAME" local null::null -c datadir="$NEWPATH" )
+            MOUNT_ID=${MOUNT_ID//[!0-9]/}
+            # Mount to admin group if no group or user chosen
+            if [ -z "$SELECTED_GROUPS" ] && [ -z "$SELECTED_USER" ]
+            then
+                occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
+            fi
+            # Mount to chosen Nextcloud groups
+            if [ -n "$SELECTED_GROUPS" ]
+            then
+                occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||' | while read -r NC_GROUPS
+                do
+                    if [[ "$SELECTED_GROUPS" = *"$NC_GROUPS  "* ]]
+                    then
+                        occ_command files_external:applicable --add-group="$NC_GROUPS" "$MOUNT_ID" -q
+                    fi
+                done
+            fi
+            # Mount to chosen Nextcloud users
+            if [ -n "$SELECTED_USER" ]
+            then
+                occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r NC_USER
+                do
+                    if [[ "$SELECTED_USER" = *"$NC_USER  "* ]]
+                    then
+                        occ_command files_external:applicable --add-user="$NC_USER" "$MOUNT_ID" -q
+                    fi
+                done
+            fi
+            # Enable all other options
+            occ_command files_external:option "$MOUNT_ID" filesystem_check_changes 1
+            occ_command files_external:option "$MOUNT_ID" readonly "$READONLY"
+            occ_command files_external:option "$MOUNT_ID" enable_sharing "$SHARING"
+
+# Inform the user that mounting was successful
+msg_box "Your mount $NEWNAME was successful, congratulations!
+You are now using the Nextcloud external storage app to access files there.
+The Share has been mounted to the Nextcloud admin-group if not specifically changed to users or groups.
+You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to edit external storages in Nextcloud."
+            break
         fi
     fi
     count=$((count+1))
