@@ -6,7 +6,9 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="SMB Server"
-SCRIPT_EXPLAINER="This script allows you to create and manage a Linux SMB-server."
+SCRIPT_EXPLAINER="This script allows you to create a SMB-server from your Nextcloud-VM.
+It helps you manage all SMB-users and SMB-shares.
+As bonus feature you can automatically mount the chosen directories to Nextcloud and create Nextcloud users with the same credentials like your SMB-users."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -785,11 +787,11 @@ EOF
     occ_command files_external:option "$MOUNT_ID" readonly "$READONLY"
     occ_command files_external:option "$MOUNT_ID" enable_sharing "$SHARING"
 
-    # Inform the user that mounting was successful
-    msg_box "Your mount $NEWNAME was successful, congratulations!
-    You are now using the Nextcloud external storage app to access files there.
-    The Share has been mounted to the Nextcloud admin-group if not specifically changed to users or groups.
-    You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to edit external storages in Nextcloud." "$SUBTITLE"
+# Inform the user that mounting was successful
+msg_box "Your mount $NEWNAME was successful, congratulations!
+You are now using the Nextcloud external storage app to access files there.
+The Share has been mounted to the Nextcloud admin-group if not specifically changed to users or groups.
+You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to edit external storages in Nextcloud." "$SUBTITLE"
 }
 
 # Show SMB-shares
