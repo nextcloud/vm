@@ -172,8 +172,13 @@ fi
 check_command systemctl restart coturn.service
 
 # Warn user to open port
-msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
-After you hit OK the script will check for the firewall and eventually exit on failure.
+msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!\nAn alternative is opening those ports via UPNP automatically, which you can do in the next step."
+if yesno_box_no "Do you want to use UPNP to open those ports?"
+then
+    open_port "$TURN_PORT" TCP
+    open_port "$TURN_PORT" UDP
+fi
+msg_box "After you hit OK the script will check for the firewall and eventually exit on failure.
 To run again the setup, after fixing your firewall:
 sudo -sLO $APP/talk_signaling.sh
 sudo bash talk_signaling.sh"
@@ -224,6 +229,14 @@ SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Notification
+msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!\nAn alternative is opening those ports via UPNP automatically, which you can do in the next step."
+if yesno_box_no "Do you want to use UPNP to open those ports?"
+then
+    open_port 80 TCP
+    open_port 443 TCP
+fi
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
@@ -302,14 +315,6 @@ check_command systemctl enable signaling
 
 # Apache Proxy
 # https://github.com/strukturag/nextcloud-spreed-signaling#apache
-
-# Check if $SUBDOMAIN exists and is reachable
-print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
-domain_check_200 "$SUBDOMAIN"
-
-# Check open ports with NMAP
-check_open_port 80 "$SUBDOMAIN"
-check_open_port 443 "$SUBDOMAIN"
 
 # Install Apache2
 install_if_not apache2

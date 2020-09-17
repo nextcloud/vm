@@ -64,6 +64,13 @@ fi
 # Nextcloud Main Domain (activate-tls.sh)
 TLSDOMAIN=$(input_box_flow "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
 
+msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!\nAn alternative is opening those ports via UPNP automatically, which you can do in the next step."
+if yesno_box_no "Do you want to use UPNP to open those ports?"
+then
+    open_port 80 TCP
+    open_port 443 TCP
+fi
+
 # Curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
