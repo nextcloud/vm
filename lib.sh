@@ -354,7 +354,7 @@ print_text_in_color "$ICyan" "Checking connection..."
         then
             return 0
         else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is "${1}" reachable?"
+            print_text_in_color "$IRed" "curl didn't produce a 200 status, is ${1} reachable?"
             return 1
         fi
 }
