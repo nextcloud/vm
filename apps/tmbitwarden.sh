@@ -62,8 +62,10 @@ msg_box "The necessary preparations to run expose Bitwarden to the internet are:
 
 if yesno_box_no "Do you want to use UPNP to open those ports?"
 then
+    unset FAIL
     open_port 80 TCP
     open_port 443 TCP
+    cleanup_open_port
 fi
 
 if ! yesno_box_yes "Have you made the necessary preparations?"

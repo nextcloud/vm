@@ -175,8 +175,10 @@ check_command systemctl restart coturn.service
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!\nAn alternative is opening those ports via UPNP automatically, which you can do in the next step."
 if yesno_box_no "Do you want to use UPNP to open those ports?"
 then
+    unset FAIL
     open_port "$TURN_PORT" TCP
     open_port "$TURN_PORT" UDP
+    cleanup_open_port
 fi
 msg_box "After you hit OK the script will check for the firewall and eventually exit on failure.
 To run again the setup, after fixing your firewall:
@@ -234,8 +236,10 @@ SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!\nAn alternative is opening those ports via UPNP automatically, which you can do in the next step."
 if yesno_box_no "Do you want to use UPNP to open those ports?"
 then
+    unset FAIL
     open_port 80 TCP
     open_port 443 TCP
+    cleanup_open_port
 fi
 
 # Check if $SUBDOMAIN exists and is reachable
