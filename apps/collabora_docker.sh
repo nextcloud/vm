@@ -162,7 +162,10 @@ NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 nc_update
 
 # Notification
-msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!"
+msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!
+
+Using other ports than the default 80+443 is not supported, though possible with some custom modification:
+https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
 
 # Get the latest packages
 apt update -q4 & spinner_loading
