@@ -55,6 +55,7 @@ case "$choice" in
         else
             print_text_in_color "$ICyan" "Downloading the Update script..."
             download_script STATIC update
+            chmod +x "$SCRIPTS"/update.sh
             bash "$SCRIPTS"/update.sh
         fi
     ;;
