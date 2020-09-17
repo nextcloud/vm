@@ -42,13 +42,6 @@ fi
 # Show explainer
 explainer_popup
 
-DIRECTORIES=$(find /mnt -maxdepth 3 -type d -not -path "/mnt/ncdata*" | grep -v "^/mnt$")
-if [ -z "$DIRECTORIES" ]
-then
-    msg_box "No directories found that can be used. Please make sure to mount them in '/mnt'."
-    exit 1
-fi
-
 # Install all needed tools
 install_if_not samba
 install_if_not members
@@ -101,34 +94,34 @@ selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 choose_password() {
 while :
 do
-    PASSWORD=$(input_box_flow "$1\nThe password has to be at least 12 digits long and contain at least three of those characters each: 'a-z' 'A-Z' '0-9' and ',.-+#'\nYou can cancel by typing in 'exit'.")
+    PASSWORD=$(input_box_flow "$1\nThe password has to be at least 12 digits long.\nIt also has to contain at least one hyphen '-' and one of those characters each: 'a-z' 'A-Z' and '0-9'.\nYou can cancel by typing in 'exit'." "$2")
     if [ "$PASSWORD" = "exit" ]
     then
         return 1
     elif [ "${#PASSWORD}" -lt 12 ]
     then
-        msg_box "Please enter a password with at least 12 digits."
+        msg_box "Please enter a password with at least 12 digits." "$2"
     elif [[ "$PASSWORD" = *" "* ]]
     then
-        msg_box "Please don't use spaces."
+        msg_box "Please don't use spaces." "$2"
     elif [[ "$PASSWORD" = *"\\"* ]]
     then
-        msg_box "Please don't use backslashes."
-    elif ! [[ "$PASSWORD" =~ [a-z].*[a-z].*[a-z] ]]
+        msg_box "Please don't use backslashes." "$2"
+    elif ! [[ "$PASSWORD" =~ [-] ]]
     then
-        msg_box "The password has to contain at least three of those letters: 'a-z'"
-    elif ! [[ "$PASSWORD" =~ [A-Z].*[A-Z].*[A-Z] ]]
+        msg_box "The password has to contain at least one hyphen '-'" "$2"
+    elif ! [[ "$PASSWORD" =~ [a-z] ]]
     then
-        msg_box "The password has to contain at least three of those capital letters: 'A-Z'"
-    elif ! [[ "$PASSWORD" =~ [0-9].*[0-9].*[0-9] ]]
+        msg_box "The password has to contain at least one lowercase letter: 'a-z'" "$2"
+    elif ! [[ "$PASSWORD" =~ [A-Z] ]]
     then
-        msg_box "The password has to contain at least three of those numbers: '0-9'"
-    elif ! [[ "$PASSWORD" =~ [-,\.+\#].*[-,\.+\#].*[-,\.+\#] ]]
+        msg_box "The password has to contain at least one capital letters: 'A-Z'" "$2"
+    elif ! [[ "$PASSWORD" =~ [0-9] ]]
     then
-        msg_box "The password has to contain at least three of those characters: ',.-+#'"
+        msg_box "The password has to contain at least one number: '0-9'" "$2"
     elif grep -q $(echo -n "$PASSWORD" | sha256sum | awk '{print $1}') "$HASH_HISTORY"
     then
-        msg_box "The password was already used. Please use a different one."
+        msg_box "The password was already used. Please use a different one." "$2"
     else
         break
     fi
@@ -139,25 +132,25 @@ choose_username() {
 local NEWNAME_TRANSLATED
 while :
 do
-    NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '-' and '0-9'. It has to start with a letter.\nIf you want to cancel, just type in 'exit' to exit.")
+    NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '-' and '0-9'. It has to start with a letter.\nIf you want to cancel, just type in 'exit' to exit." "$2")
     if [[ "$NEWNAME" == *" "* ]]
     then
-        msg_box "Please don't use spaces"
+        msg_box "Please don't use spaces" "$2"
     elif ! [[ "$NEWNAME" =~ ^[a-zA-Z][-a-zA-Z0-9]+$ ]]
     then
-        msg_box "Allowed characters are only 'a-z' 'A-Z '-' and '0-9'. It has to start with a letter."
+        msg_box "Allowed characters are only 'a-z' 'A-Z '-' and '0-9'. It has to start with a letter." "$2"
     elif [ "$NEWNAME" = "exit" ]
     then
         return 1
     elif id "$NEWNAME" &>/dev/null
     then
-        msg_box "The user already exists. Please try again."
+        msg_box "The user already exists. Please try again." "$2"
     elif grep -q "^$NEWNAME:" /etc/group
     then
-        msg_box "There is already a group with this name. Please try another one."
+        msg_box "There is already a group with this name. Please try another one." "$2"
     elif echo "${PROHIBITED_NAMES[@]}" | grep -q "$NEWNAME "
     then
-        msg_box "Please don't use this name."
+        msg_box "Please don't use this name." "$2"
     else
         break
     fi
@@ -284,7 +277,7 @@ do
     then
         if ! choose_password "Please type in the new password for $user"
         then
-            return
+            continue
         fi
         check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$user"
         echo $(echo -n "$PASSWORD" | sha256sum | awk '{print $1}') >> "$HASH_HISTORY"
@@ -292,19 +285,21 @@ do
         if ! [ -f $NCPATH/occ ]
         then
             unset PASSWORD
-            return
-        elif ! yesno_box_no "Do you want to change the password of a Nextcloud account with the same name $user to the same password?\nThis most likely only applies, if you created your Nextcloud users with this script.\nPlease not that this will forcefully log out all devices from this user, so it should only be used in case."
+            continue
+        elif yesno_box_no "Do you want to change the password of a Nextcloud account with the same name $user to the same password?\nThis most likely only applies, if you created your Nextcloud users with this script.\nPlease not that this will forcefully log out all devices from this user, so it should only be used in case."
         then
             if ! yesno_box_no "Do you really want to do this? It will forcefully log out all devices from this user $user"
             then
-                return
+                continue
             fi
+        else
+            continue
         fi
         NEXTCLOUD_USERS=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
         if ! echo "$NEXTCLOUD_USERS" | grep -q "^$user$"
         then
             msg_box "This user $user doesn't exist in Nextcloud. No chance to change the password of the Nextcloud account."
-            return
+            continue
         fi 
         OC_PASS="$PASSWORD"
         unset PASSWORD
@@ -324,7 +319,7 @@ do
     then
         if ! choose_username "Please enter the new username for $user"
         then
-            return
+            continue
         fi
         samba_stop
         check_command usermod -l "$NEWNAME" "$user"
@@ -332,7 +327,7 @@ do
         check_command sed -i "/valid users = /s/$user, /$NEWNAME, /" "$SMB_CONF"
         samba_start
         msg_box "The username for $user was successfully changed to $NEWNAME."
-        break
+        continue
     fi
 done
 }
@@ -394,30 +389,39 @@ done
 }
 
 choose_path() {
-if [ -z "$DIRECTORIES" ]
-then
-    msg_box "No directories found that can be used. Please make sure to mount them in '/mnt'."
-    return 1
-fi
+local DIRECTORIES
+DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d -not -path "/mnt/ncdata*")
 while :
 do
-    msg_box "Next step you will need to type in the directoy that you want to use.\nHere you can see a certain list of options that you can type in.\n\n$DIRECTORIES"
-    NEWPATH=$(input_box_flow "$1.\nIt has to be a directory beginning with '/mnt/'.\nPlease note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' to exit.")
+    if [ -n "$DIRECTORIES" ]
+    then
+        msg_box "In the following step you will need to type in the directoy that you want to use.\nHere you can see a certain list of options that you can type in.\n\n$DIRECTORIES" "$2"
+    fi
+    NEWPATH=$(input_box_flow "$1.\nIt has to be a directory beginning with '/mnt/'.\nPlease note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' to exit." "$2")
     if [[ "$NEWPATH" = *"\\"* ]]
     then
-        msg_box "Please don't use backslashes."
+        msg_box "Please don't use backslashes." "$2"
     elif [ "$NEWPATH" = "exit" ]
     then
         return 1
     elif ! echo "$NEWPATH" | grep -q "^/mnt/..*"
     then
-        msg_box "The path has to be a directory beginning with '/mnt/'."
+        msg_box "The path has to be a directory beginning with '/mnt/'." "$2"
     elif echo "$NEWPATH" | grep -q "^/mnt/ncdata"
     then
-        msg_box "The path isn't allowed to start with '/mnt/ncdata'."
+        msg_box "The path isn't allowed to start with '/mnt/ncdata'." "$2"
     elif ! [ -d "$NEWPATH" ]
     then
-        msg_box "The path doesn't exist. Please try again with a directory that exists."
+        if yesno_box_no "The path doesn't exist. Do you want to create it?" "$2"
+        then
+            if echo "$NEWPATH" | grep -q "^/mnt/smbshares"
+            then
+                msg_box "Please don't use /mnt/smbshares to create a new directory" "$2"
+            else
+                mkdir -p "$NEWPATH"
+                break
+            fi
+        fi
     # elif grep -q "path = $NEWPATH$" "$SMB_CONF"
     # then
     #     # TODO: think about if this is really needed.
@@ -430,7 +434,7 @@ done
 
 choose_users() {
 VALID_USERS=""
-smb_user_menu "$1\nPlease select at least one user."
+smb_user_menu "$1\nPlease select at least one user." "$2"
 if [ -z "$selected_options" ]
 then
     return 1
@@ -448,17 +452,17 @@ choose_sharename() {
 CACHE=$(grep "\[.*\]" "$SMB_CONF" | tr [:upper:] [:lower:])
 while :
 do
-    NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'. It has to start with a letter.")
+    NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'. It has to start with a letter." "$2")
     NEWNAME_TRANSLATED=$(echo "$NEWNAME" | tr [:upper:] [:lower:])
     if ! [[ "$NEWNAME" =~ ^[a-zA-Z][-._a-zA-Z0-9]+$ ]]
     then
-        msg_box "Allowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'. It has to start with a letter."
+        msg_box "Allowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'. It has to start with a letter." "$2"
     elif echo "$CACHE" | grep -q "\[$NEWNAME_TRANSLATED\]"
     then
-        msg_box "The name is already used. Please try another one."
+        msg_box "The name is already used. Please try another one." "$2"
     elif echo "${PROHIBITED_NAMES[@]}" | grep -q "$NEWNAME_TRANSLATED "
     then
-        msg_box "Please don't use this name."
+        msg_box "Please don't use this name." "$2"
     else
         break
     fi
@@ -466,7 +470,7 @@ done
 }
 
 choose_writeable() {
-if yesno_box_yes "$1"
+if yesno_box_yes "$1" "$2"
 then
     WRITEABLE="yes"
 else
@@ -557,7 +561,7 @@ then
         NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this share.\nYou can type in exit to use the default $NEWNAME_BACKUP\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'and spaces. It has to start with a letter.")
         if ! [[ "$NEWNAME" =~ ^[a-zA-Z][-._a-zA-Z0-9\ ]+$ ]]
         then
-            msg_box "Please only use those characters. 'a-z' 'A-Z' '.-_' and '0-9'and spaces. It has to start with a letter."
+            msg_box "Please only use those characters. 'a-z' 'A-Z' '.-_' and '0-9' and spaces. It has to start with a letter."
         elif [ "$NEWNAME" = "exit" ]
         then
             NEWNAME="$NEWNAME_BACKUP"
