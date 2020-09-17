@@ -101,8 +101,11 @@ selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
 choose_password() {
 while :
 do
-    PASSWORD=$(input_box_flow "$1\nThe password has to be at least 12 digits long and contain at least three of those characters each: 'a-z' 'A-Z' '0-9' and ',.-+#'")
-    if [ "${#PASSWORD}" -lt 12 ]
+    PASSWORD=$(input_box_flow "$1\nThe password has to be at least 12 digits long and contain at least three of those characters each: 'a-z' 'A-Z' '0-9' and ',.-+#'\nYou can cancel by typing in 'exit'.")
+    if [ "$PASSWORD" = "exit" ]
+    then
+        return 1
+    elif [ "${#PASSWORD}" -lt 12 ]
     then
         msg_box "Please enter a password with at least 12 digits."
     elif [[ "$PASSWORD" = *" "* ]]
@@ -172,7 +175,10 @@ if ! choose_username "Please enter the name of the new SMB-user."
 then
     return
 fi
-choose_password "Please type in the password for the new smb-user $NEWNAME"
+if ! choose_password "Please type in the password for the new smb-user $NEWNAME"
+then
+    return
+fi
 check_command adduser --disabled-password --force-badname --gecos "" "$NEWNAME"
 check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$NEWNAME"
 echo $(echo -n "$PASSWORD" | sha256sum | awk '{print $1}') >> "$HASH_HISTORY"
@@ -276,7 +282,10 @@ for user in "${USERS[@]}"
 do
     if [[ "$selected_options" == *"$user  "* ]]
     then
-        choose_password "Please type in the new password for $user"
+        if ! choose_password "Please type in the new password for $user"
+        then
+            return
+        fi
         check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$user"
         echo $(echo -n "$PASSWORD" | sha256sum | awk '{print $1}') >> "$HASH_HISTORY"
         msg_box "The password for $user was successfully changed."
