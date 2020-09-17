@@ -274,7 +274,7 @@ local NEXTCLOUD_USERS
 smb_user_menu "Please choose for which user you want to change the password."
 for user in "${USERS[@]}"
 do
-    if [[ "${selected_options[@]}" == *"$user  "* ]]
+    if [[ "${selected_options[*]}" == *"$user  "* ]]
     then
         if ! choose_password "Please type in the new password for $user"
         then
@@ -316,7 +316,7 @@ change_username() {
 smb_user_menu "Please choose for which user you want to change the username."
 for user in "${USERS[@]}"
 do
-    if [[ "${selected_options[@]}" == *"$user  "* ]]
+    if [[ "${selected_options[*]}" == *"$user  "* ]]
     then
         if ! choose_username "Please enter the new username for $user"
         then
@@ -337,7 +337,7 @@ delete_user() {
 smb_user_menu "Please choose which users you want to delete.\nPlease note: we will also delete the home of this user (in the '/home' directory). If you don't want to continue just choose none or cancel."
 for user in "${USERS[@]}"
 do
-    if [[ "${selected_options[@]}" == *"$user  "* ]]
+    if [[ "${selected_options[*]}" == *"$user  "* ]]
     then
         samba_stop
         deluser --remove-home "$user"
@@ -436,13 +436,13 @@ done
 choose_users() {
 VALID_USERS=""
 smb_user_menu "$1\nPlease select at least one user." "$2"
-if [ -z "${selected_options[@]}" ]
+if [ -z "${selected_options[*]}" ]
 then
     return 1
 fi
 for user in "${USERS[@]}"
 do
-    if [[ "${selected_options[@]}" == *"$user  "* ]]
+    if [[ "${selected_options[*]}" == *"$user  "* ]]
     then
         VALID_USERS+="$user, "
     fi
