@@ -186,31 +186,25 @@ As a hint:
             if [[ "$choice" == *"Choose some Nextcloud groups"* ]]
             then
                 args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which groups shall get access to the share.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
-                IFS_BACKUP="$IFS"
-                IFS="|||"
-                NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g' | tr "\n" "|||" )
-                NC_GROUPS=($NC_GROUPS)
+                NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
+                mapfile -t NC_GROUPS <<< "$NC_GROUPS"
                 for GROUP in "${NC_GROUPS[@]}"
                 do
                     args+=("$GROUP  " "" OFF)
                 done
                 SELECTED_GROUPS=$("${args[@]}" 3>&1 1>&2 2>&3)
-                IFS="$IFS_BACKUP"
             fi
             # Select Nextcloud users
             if [[ "$choice" == *"Choose some Nextcloud users"* ]]
             then
                 args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which users shall get access to the share.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
-                IFS_BACKUP="$IFS"
-                IFS="|||"
-                NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | tr "\n" "|||" )
-                NC_USER=($NC_USER)
+                NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+                mapfile -t NC_USER <<< "$NC_USER"
                 for USER in "${NC_USER[@]}"
                 do
                     args+=("$USER  " "" OFF)
                 done
                 SELECTED_USER=$("${args[@]}" 3>&1 1>&2 2>&3)
-                IFS="$IFS_BACKUP"
             fi
             # Create and mount external storage to the admin group
             MOUNT_ID=$(occ_command files_external:create "$NEWNAME" local null::null -c datadir="$NEWPATH" )
