@@ -882,7 +882,7 @@ then
     if ! site_200 github.com
     then
         # sleep 40 seconds so that some slow networks have time to restart
-        countdown 'Not online yet, waiting a bit more...' 40
+        countdown 'Not online yet, waiting a bit more...' 10
         site_200 github.com
     fi
 else
