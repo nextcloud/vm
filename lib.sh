@@ -354,7 +354,7 @@ print_text_in_color "$ICyan" "Checking connection..."
         then
             return 0
         else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is the site reachable?"
+            print_text_in_color "$IRed" "curl didn't produce a 200 status, is ${1} reachable?"
             return 1
         fi
 }
@@ -892,9 +892,14 @@ then
     countdown 'Waiting for network to restart...' 3
     if ! site_200 github.com
     then
-        # sleep 40 seconds so that some slow networks have time to restart
-        countdown 'Not online yet, waiting a bit more...' 40
-        site_200 github.com
+        # sleep 10 seconds so that some slow networks have time to restart
+        countdown 'Not online yet, waiting a bit more...' 10
+        if ! site_200 github.com
+        then
+            # sleep 30 seconds so that some REALLY slow networks have time to restart
+            countdown 'Not online yet, waiting a bit more (last try)...' 30
+            site_200 github.com
+        fi
     fi
 else
 msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.6 to run this script."
