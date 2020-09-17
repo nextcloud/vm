@@ -67,7 +67,7 @@ TLSDOMAIN=$(input_box_flow "Please enter the domain name you will use for Nextcl
 msg_box "Before you start, please make sure that port 80+443 is directly forwarded to this machine!\nAn alternative is opening those ports via UPNP automatically, which you can do in the next step."
 if yesno_box_no "Do you want to use UPNP to open those ports?"
 then
-    usnet FAIL
+    unset FAIL
     open_port 80 TCP
     open_port 443 TCP
     cleanup_open_port
