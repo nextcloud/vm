@@ -24,7 +24,7 @@ SMB_CONF="/etc/samba/smb.conf"
 HASH_DIRECTORY="/root/.smbserver"
 HASH_HISTORY="$HASH_DIRECTORY/hash-history"
 SMB_GROUP="smb-users"
-PROHIBITED_NAMES=(global homes netlogon profiles printers print$ root ncadmin $SMB_GROUP placeholder_for_last_space)
+PROHIBITED_NAMES=(global homes netlogon profiles printers print$ root ncadmin "$SMB_GROUP" placeholder_for_last_space)
 WEB_GROUP="www-data"
 WEB_USER="www-data"
 MAX_COUNT=16
@@ -119,7 +119,7 @@ do
     elif ! [[ "$PASSWORD" =~ [0-9] ]]
     then
         msg_box "The password has to contain at least one number: '0-9'" "$2"
-    elif grep -q $(echo -n "$PASSWORD" | sha256sum | awk '{print $1}') "$HASH_HISTORY"
+    elif grep -q "$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')" "$HASH_HISTORY"
     then
         msg_box "The password was already used. Please use a different one." "$2"
     else
@@ -174,7 +174,7 @@ then
 fi
 check_command adduser --disabled-password --force-badname --gecos "" "$NEWNAME"
 check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$NEWNAME"
-echo $(echo -n "$PASSWORD" | sha256sum | awk '{print $1}') >> "$HASH_HISTORY"
+echo "$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')" >> "$HASH_HISTORY"
 check_command usermod -aG "$WEB_USER","$SMB_GROUP" "$NEWNAME"
 msg_box "The smb-user $NEWNAME was successfully created."
 if ! [ -f $NCPATH/occ ]
@@ -185,8 +185,8 @@ elif ! yesno_box_no "Do you want to create a Nextcloud user with the same creden
 then
     return
 fi
-NEWNAME_TRANSLATED=$(echo "$NEWNAME" | tr [:upper:] [:lower:])
-NEXTCLOUD_USERS=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | tr [:upper:] [:lower:])
+NEWNAME_TRANSLATED=$(echo "$NEWNAME" | tr "[:upper:]" "[:lower:]")
+NEXTCLOUD_USERS=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | tr "[:upper:]" "[:lower:]")
 if echo "$NEXTCLOUD_USERS" | grep -q "^$NEWNAME_TRANSLATED$"
 then
     msg_box "This Nextcloud user already exists. No chance to add it as a user to Nextcloud."
@@ -210,7 +210,8 @@ local RESULT=""
 local SMB_NAME
 local SMB_PATH
 local TEST=""
-local args=""
+local args
+unset args
 USERS=$(members "$SMB_GROUP")
 USERS=($USERS)
 args=(whiptail --title "$TITLE" --menu "Please choose for which user you want to show all shares." "$WT_HEIGHT" "$WT_WIDTH" 4)
@@ -273,14 +274,14 @@ local NEXTCLOUD_USERS
 smb_user_menu "Please choose for which user you want to change the password."
 for user in "${USERS[@]}"
 do
-    if [[ "$selected_options" == *"$user  "* ]]
+    if [[ "${selected_options[@]}" == *"$user  "* ]]
     then
         if ! choose_password "Please type in the new password for $user"
         then
             continue
         fi
         check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$user"
-        echo $(echo -n "$PASSWORD" | sha256sum | awk '{print $1}') >> "$HASH_HISTORY"
+        echo "$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')" >> "$HASH_HISTORY"
         msg_box "The password for $user was successfully changed."
         if ! [ -f $NCPATH/occ ]
         then
@@ -315,7 +316,7 @@ change_username() {
 smb_user_menu "Please choose for which user you want to change the username."
 for user in "${USERS[@]}"
 do
-    if [[ "$selected_options" == *"$user  "* ]]
+    if [[ "${selected_options[@]}" == *"$user  "* ]]
     then
         if ! choose_username "Please enter the new username for $user"
         then
@@ -336,7 +337,7 @@ delete_user() {
 smb_user_menu "Please choose which users you want to delete.\nPlease note: we will also delete the home of this user (in the '/home' directory). If you don't want to continue just choose none or cancel."
 for user in "${USERS[@]}"
 do
-    if [[ "$selected_options" == *"$user  "* ]]
+    if [[ "${selected_options[@]}" == *"$user  "* ]]
     then
         samba_stop
         deluser --remove-home "$user"
@@ -435,13 +436,13 @@ done
 choose_users() {
 VALID_USERS=""
 smb_user_menu "$1\nPlease select at least one user." "$2"
-if [ -z "$selected_options" ]
+if [ -z "${selected_options[@]}" ]
 then
     return 1
 fi
 for user in "${USERS[@]}"
 do
-    if [[ "$selected_options" == *"$user  "* ]]
+    if [[ "${selected_options[@]}" == *"$user  "* ]]
     then
         VALID_USERS+="$user, "
     fi
@@ -449,11 +450,11 @@ done
 }
 
 choose_sharename() {
-CACHE=$(grep "\[.*\]" "$SMB_CONF" | tr [:upper:] [:lower:])
+CACHE=$(grep "\[.*\]" "$SMB_CONF" | tr "[:upper:]" "[:lower:]")
 while :
 do
     NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'. It has to start with a letter." "$2")
-    NEWNAME_TRANSLATED=$(echo "$NEWNAME" | tr [:upper:] [:lower:])
+    NEWNAME_TRANSLATED=$(echo "$NEWNAME" | tr "[:upper:]" "[:lower:]")
     if ! [[ "$NEWNAME" =~ ^[a-zA-Z][-._a-zA-Z0-9]+$ ]]
     then
         msg_box "Allowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'. It has to start with a letter." "$2"
