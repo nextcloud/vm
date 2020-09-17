@@ -150,16 +150,12 @@ fi
 check_command systemctl restart coturn.service
 
 # Warn user to open port
-msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!\nAn alternative is opening those ports via UPNP automatically, which you can do in the next step."
-if yesno_box_no "Do you want to use UPNP to open those ports?"
-then
-    open_port "$TURN_PORT" TCP
-    open_port "$TURN_PORT" UDP
-fi
-msg_box "After you hit OK the script will check for the firewall and eventually exit on failure.
+msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
+After you hit OK the script will check for the firewall and eventually exit on failure.
+
 To run again the setup, after fixing your firewall:
-sudo -sLO $APP/talk_signaling.sh
-sudo bash talk_signaling.sh"
+sudo -sLO $APP/talk.sh
+sudo bash talk.sh"
 
 # Check if the port is open
 check_open_port "$TURN_PORT" "$TURN_DOMAIN"
