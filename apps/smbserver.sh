@@ -251,9 +251,9 @@ then
     msg_box "No share for $SELECTED_USER created. Please create a share first."
     return
 fi
-selected_options=""
+unset selected_options
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-selected_options=($selected_options)
+mapfile -t selected_options <<< "$selected_options"
 for element in "${selected_options[@]}"
 do
 count=1
@@ -688,7 +688,7 @@ then
     return
 fi
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-selected_options=($selected_options)
+mapfile -t selected_options <<< "$selected_options"
 for element in "${selected_options[@]}"
 do
 count=1
@@ -845,7 +845,7 @@ then
     return
 fi
 selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
-selected_options=($selected_options)
+mapfile -t selected_options <<< "$selected_options"
 for element in "${selected_options[@]}"
 do
 count=1
