@@ -331,45 +331,49 @@ bash $SCRIPTS/additional_apps.sh
 clear
 ### Change passwords
 # CLI USER
-msg_box "For better security, we will now change the password for the UNIX-user for Ubuntu"
+msg_box "For better security, we will now change the password for the CLI user in Ubuntu."
 UNIXUSER="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
 while :
 do
-    UNIX_PASSWORD=$(input_box_flow "Please type in the new password for the UNIX-user: [$UNIXUSER]")
+    UNIX_PASSWORD=$(input_box_flow "Please type in the new password for the current CLI user in Ubuntu: $UNIXUSER.")
     if [[ "$UNIX_PASSWORD" == *" "* ]]
     then
-        msg_box "Please don't use spaces"
+        msg_box "Please don't use spaces."
     else
         break
     fi
 done
-check_command echo "$UNIXUSER:$UNIX_PASSWORD" | sudo chpasswd
+if check_command echo "$UNIXUSER:$UNIX_PASSWORD" | sudo chpasswd
+then
+    msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD\n\nThis is used when you login to the Ubuntu Server console."
+fi
 unset UNIX_PASSWORD
+clear
 
 # NEXTCLOUD USER
 NCADMIN=$(occ_command user:list | awk '{print $3}')
-msg_box "We will now change the username and password for the Nextcloud admin user"
+msg_box "We will now change the username and password for the Web Admin in Nextcloud."
 while :
 do
-    NEWUSER=$(input_box_flow "Please type in the name of the Nextcloud admin user. It must differ from [$NCADMIN].\nThe only allowed character are: 'a-z', 'A-Z', '0-9', and '_.@-'")
+    NEWUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.\nIt must differ from the current one: $NCADMIN.\n\nThe only allowed characters for the username are:\n 'a-z', 'A-Z', '0-9', and '_.@-'")
     if [[ "$NEWUSER" == *" "* ]]
     then
         msg_box "Please don't use spaces."
     elif [ "$NEWUSER" = "$NCADMIN" ]
     then
-        msg_box "This username is already in use. Please choose a different one."
+        msg_box "This username ($NCADMIN) is already in use. Please choose a different one."
     # - has to be espacaped otherwise it won't work.
     # Inspired by: https://unix.stackexchange.com/a/498731/433213
     elif [ "${NEWUSER//[A-Za-z0-9_.\-@]}" ]
     then
-        msg_box "Allowed characters are: a-z', 'A-Z', '0-9', and '_.@-'\nPlease try again."
+        msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
     else
         break
     fi
 done
 while :
 do
-    OC_PASS=$(input_box_flow "Please type in the new password for the new nextcloud-admin user $NEWUSER")
+    OC_PASS=$(input_box_flow "Please type in the new password for the new Web Admin ($NEWUSER) in Nextcloud.")
     if [[ "$OC_PASS" == *" "* ]]
     then
         msg_box "Please don't use spaces."
@@ -378,6 +382,7 @@ do
     export OC_PASS
     if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWUSER --password-from-env -g admin"
     then
+        msg_box "The new Web Admin in Nextcloud is now: $NEWUSER\nThe password is set to: $OC_PASS\n\nThis is used when you login to Nextcloud itself, i.e. on the web."
         unset OC_PASS
         break
     else
