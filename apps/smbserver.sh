@@ -168,6 +168,7 @@ add_user() {
     local NEWNAME_TRANSLATED
     local NEXTCLOUD_USERS
     local HASH
+    local SUBTITLE="Add a SMB-user"
 
     # Add the SMB-group as soon as trying to create a SMB-user
     if ! grep -q "^$SMB_GROUP:" /etc/group
@@ -176,13 +177,13 @@ add_user() {
     fi
 
     # Choose the username
-    if ! choose_username "Please enter the name of the new SMB-user."
+    if ! choose_username "Please enter the name of the new SMB-user." "$SUBTITLE"
     then
         return
     fi
 
     # Choose the password
-    if ! choose_password "Please type in the password for the new smb-user $NEWNAME"
+    if ! choose_password "Please type in the password for the new smb-user $NEWNAME" "$SUBTITLE"
     then
         return
     fi
@@ -199,7 +200,7 @@ add_user() {
     check_command usermod -aG "$WEB_USER","$SMB_GROUP" "$NEWNAME"
 
     # Inform the user
-    msg_box "The smb-user $NEWNAME was successfully created."
+    msg_box "The smb-user $NEWNAME was successfully created." "$SUBTITLE"
 
     # Test if NC exists
     if ! [ -f $NCPATH/occ ]
@@ -207,7 +208,7 @@ add_user() {
         unset PASSWORD
         return
     # If NC exists, offer to create a NC  user
-    elif ! yesno_box_no "Do you want to create a Nextcloud user with the same credentials?"
+    elif ! yesno_box_no "Do you want to create a Nextcloud user with the same credentials?" "$SUBTITLE"
     then
         return
     fi
@@ -217,7 +218,7 @@ add_user() {
     NEXTCLOUD_USERS=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | tr "[:upper:]" "[:lower:]")
     if echo "$NEXTCLOUD_USERS" | grep -q "^$NEWNAME_TRANSLATED$"
     then
-        msg_box "This Nextcloud user already exists. No chance to add it as a user to Nextcloud."
+        msg_box "This Nextcloud user already exists. No chance to add it as a user to Nextcloud." "$SUBTITLE"
         return
     fi 
 
@@ -229,7 +230,7 @@ add_user() {
     unset OC_PASS
 
     # Inform the user
-    msg_box "The new Nextcloud user $NEWNAME was successfully created."
+    msg_box "The new Nextcloud user $NEWNAME was successfully created." "$SUBTITLE"
 }
 
 # Show all SMB-shares from a SMB-user
@@ -247,9 +248,10 @@ show_user() {
     unset args
     USERS=$(members "$SMB_GROUP")
     read -r -a USERS <<< "$USERS"
+    local SUBTITLE="Show all SMB-shares from a SMB-user"
 
     # Choose from a list of SMB-users
-    args=(whiptail --title "$TITLE" --menu "Please choose for which SMB-user you want to show all SMB-shares." "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --menu "Please choose for which SMB-user you want to show all SMB-shares." "$WT_HEIGHT" "$WT_WIDTH" 4)
     for user in "${USERS[@]}"
     do
         args+=("$user  " "")
@@ -272,7 +274,7 @@ show_user() {
 
     # Show if list with SMB-shares of the chosen SMB-user
     count=1
-    args=(whiptail --title "$TITLE" --separate-output --checklist "Please choose which shares of $SELECTED_USER you want to show.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please choose which shares of $SELECTED_USER you want to show.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     while [ $count -le $MAX_COUNT ]
     do 
         CACHE=$(sed -n "/^#SMB$count-start/,/^#SMB$count-end/p" "$SMB_CONF" | grep -v "^#SMB$count-start" | grep -v "^#SMB$count-end" )
@@ -289,7 +291,7 @@ show_user() {
     # Return if no share for that user created
     if [ -z "$TEST" ]
     then
-        msg_box "No share for $SELECTED_USER created. Please create a share first."
+        msg_box "No share for $SELECTED_USER created. Please create a share first." "$SUBTITLE"
         return
     fi
 
@@ -305,7 +307,7 @@ show_user() {
             CACHE=$(sed -n "/^#SMB$count-start/,/^#SMB$count-end/p" "$SMB_CONF" | grep -v "^#SMB$count-start" | grep -v "^#SMB$count-end")
             if echo "$CACHE" | grep -q "\[$element\]"
             then
-                msg_box "The shares of $SELECTED_USER:\n\n$CACHE"
+                msg_box "The shares of $SELECTED_USER:\n\n$CACHE" "$SUBTITLE"
             fi
             count=$((count+1))
         done
@@ -316,15 +318,16 @@ show_user() {
 change_password() {
 local NEXTCLOUD_USERS
 local HASH
+local SUBTITLE="Change the password of SMB-users"
 
 # Show a list with SMB-users
-smb_user_menu "Please choose for which user you want to change the password."
+smb_user_menu "Please choose for which user you want to change the password." "$SUBTITLE"
 for user in "${USERS[@]}"
 do
     if [[ "${selected_options[*]}" == *"$user  "* ]]
     then
         # Type in the new password of the chosen SMB-user
-        if ! choose_password "Please type in the new password for $user"
+        if ! choose_password "Please type in the new password for $user" "$SUBTITLE"
         then
             continue
         fi
@@ -335,16 +338,16 @@ do
         echo "$HASH" >> "$HASH_HISTORY"
 
         # Inform the user
-        msg_box "The password for $user was successfully changed."
+        msg_box "The password for $user was successfully changed." "$SUBTITLE"
         if ! [ -f $NCPATH/occ ]
         then
             unset PASSWORD
             continue
         # Offer the possibility to change the password of the same NC user, if existing, too
-        elif yesno_box_no "Do you want to change the password of a Nextcloud account with the same name $user to the same password?\nThis most likely only applies, if you created your Nextcloud users with this script.\nPlease not that this will forcefully log out all devices from this user, so it should only be used in case."
+        elif yesno_box_no "Do you want to change the password of a Nextcloud account with the same name $user to the same password?\nThis most likely only applies, if you created your Nextcloud users with this script.\nPlease not that this will forcefully log out all devices from this user, so it should only be used in case." "$SUBTITLE"
         then
             # Warn about consequences
-            if ! yesno_box_no "Do you really want to do this? It will forcefully log out all devices from this Nextcloud user $user"
+            if ! yesno_box_no "Do you really want to do this? It will forcefully log out all devices from this Nextcloud user $user" "$SUBTITLE"
             then
                 continue
             fi
@@ -356,7 +359,7 @@ do
         NEXTCLOUD_USERS=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
         if ! echo "$NEXTCLOUD_USERS" | grep -q "^$user$"
         then
-            msg_box "There doesn't exist any user with this name $user in Nextcloud. No chance to change the password of the Nextcloud account."
+            msg_box "There doesn't exist any user with this name $user in Nextcloud. No chance to change the password of the Nextcloud account." "$SUBTITLE"
             continue
         fi 
 
@@ -368,21 +371,22 @@ do
         unset OC_PASS
 
         # Inform the user
-        msg_box "The password for the Nextcloud account $user was successful changed."
+        msg_box "The password for the Nextcloud account $user was successful changed." "$SUBTITLE"
     fi
 done
 }
 
 # Change the username of a SMB-user
 change_username() {
+local SUBTITLE="Change the username of a SMB-user"
 # Show a list with SMB-user
-smb_user_menu "Please choose for which SMB-user you want to change the username."
+smb_user_menu "Please choose for which SMB-user you want to change the username." "$SUBTITLE"
 for user in "${USERS[@]}"
 do
     if [[ "${selected_options[*]}" == *"$user  "* ]]
     then
         # Ask for a new username for the chosen SMB-user
-        if ! choose_username "Please enter the new username for $user"
+        if ! choose_username "Please enter the new username for $user" "$SUBTITLE"
         then
             continue
         fi
@@ -395,16 +399,17 @@ do
         samba_start
 
         # Inform the user
-        msg_box "The username for $user was successfully changed to $NEWNAME."
+        msg_box "The username for $user was successfully changed to $NEWNAME." "$SUBTITLE"
         continue
     fi
 done
 }
 
-# Delete SMB-user
+# Delete SMB-users
 delete_user() {
+local SUBTITLE="Delete SMB-users"
 # Show a list with SMB-user
-smb_user_menu "Please choose which SMB-users you want to delete.\nPlease note: we will also delete the home of this user (in the Linux '/home' directory). If you don't want to continue just choose none or cancel."
+smb_user_menu "Please choose which SMB-users you want to delete.\nPlease note: we will also delete the home of this user (in the Linux '/home' directory). If you don't want to continue just choose none or cancel." "$SUBTITLE"
 for user in "${USERS[@]}"
 do
     if [[ "${selected_options[*]}" == *"$user  "* ]]
@@ -416,7 +421,7 @@ do
         samba_start
 
         # Inform the user
-        msg_box "$user was successfully deleted."
+        msg_box "$user was successfully deleted." "$SUBTITLE"
     fi
 done
 }
@@ -575,22 +580,23 @@ create_share() {
     local GROUP
     local USER
     local NEWNAME_BACKUP
+    local SUBTITLE="Create a SMB-share"
 
     # Choose the path
-    if ! choose_path "Please type in the path you want to create a SMB-share for."
+    if ! choose_path "Please type in the path you want to create a SMB-share for." "$SUBTITLE"
     then
         return
     # Choose the valid SMB-users
-    elif ! choose_users "Please choose the SMB-users you want to share the directory $NEWPATH with."
+    elif ! choose_users "Please choose the SMB-users you want to share the directory $NEWPATH with." "$SUBTITLE"
     then
         return
     fi
 
     # Choose a sharename
-    choose_sharename "Please enter a name for the new SMB-share $NEWNAME."
+    choose_sharename "Please enter a name for the new SMB-share $NEWNAME." "$SUBTITLE"
 
     # Choose if it shall be writeable
-    choose_writeable "Shall the new SMB-share $NEWNAME be writeable?"
+    choose_writeable "Shall the new SMB-share $NEWNAME be writeable?" "$SUBTITLE"
 
     # Apply that setting for an empty space
     count=1
@@ -634,19 +640,19 @@ EOF
     # Test if all slots are used
     if [ $count -gt $MAX_COUNT ]
     then
-        msg_box "All slots are already used."
+        msg_box "All slots are already used." "$SUBTITLE"
         return
     fi
 
     # Inform the user
-    msg_box "The SMB-share $NEWNAME for $NEWPATH was successfully created."
+    msg_box "The SMB-share $NEWNAME for $NEWPATH was successfully created." "$SUBTITLE"
 
     # Test if NC exists
     if ! [ -f $NCPATH/occ ]
     then
         return
     # Ask if the same directory shall get mounted as external storage to NC
-    elif ! yesno_box_no "Do you want to mount the directory $NEWPATH to Nextcloud as local external storage?"
+    elif ! yesno_box_no "Do you want to mount the directory $NEWPATH to Nextcloud as local external storage?" "$SUBTITLE"
     then
         return
     fi
@@ -661,15 +667,15 @@ EOF
     NEWNAME_BACKUP="$NEWNAME"
 
     # Ask if the default name can be used
-    if yesno_box_no "Do you want to use a different name for this external storage inside Nextcloud or just use the default sharename $NEWNAME?\nThis time spaces are possible."
+    if yesno_box_no "Do you want to use a different name for this external storage inside Nextcloud or just use the default sharename $NEWNAME?\nThis time spaces are possible." "$SUBTITLE"
     then
         while :
         do
             # Type in the new mountname that will be used in NC
-            NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this path $NEWPATH.\nYou can type in exit and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'and spaces. It has to start with a letter.")
+            NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this path $NEWPATH.\nYou can type in exit and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'and spaces. It has to start with a letter."  "$SUBTITLE")
             if ! [[ "$NEWNAME" =~ ^[a-zA-Z][-._a-zA-Z0-9\ ]+$ ]]
             then
-                msg_box "Please only use those characters: 'a-z' 'A-Z' '.-_' and '0-9' and spaces. It has to start with a letter."
+                msg_box "Please only use those characters: 'a-z' 'A-Z' '.-_' and '0-9' and spaces. It has to start with a letter." "$SUBTITLE"
             elif [ "$NEWNAME" = "exit" ]
             then
                 NEWNAME="$NEWNAME_BACKUP"
@@ -683,7 +689,7 @@ EOF
     # Choose if it shall be writeable in NC
     if [ "$WRITEABLE" = "yes" ]
     then
-        if ! yesno_box_yes "Do you want to mount this new external storage $NEWNAME as writeable in your Nextcloud?"
+        if ! yesno_box_yes "Do you want to mount this new external storage $NEWNAME as writeable in your Nextcloud?" "$SUBTITLE"
         then
             READONLY="true"
         else
@@ -691,7 +697,7 @@ EOF
         fi
     elif [ "$WRITEABLE" = "no" ]
     then
-        if ! yesno_box_no "Do you want to mount this new external storage $NEWNAME as writeable in your Nextcloud?"
+        if ! yesno_box_no "Do you want to mount this new external storage $NEWNAME as writeable in your Nextcloud?" "$SUBTITLE"
         then
             READONLY="true"
         else
@@ -700,7 +706,7 @@ EOF
     fi
 
     # Choose if sharing shall get enabled for that mount
-    if yesno_box_yes "Do you want to enable sharing for this external storage $NEWNAME?"
+    if yesno_box_yes "Do you want to enable sharing for this external storage $NEWNAME?" "$SUBTITLE"
     then
         SHARING="true"
     else
@@ -708,7 +714,7 @@ EOF
     fi
 
     # Select NC groups and/or users
-    choice=$(whiptail --title "$TITLE" --checklist "You can now choose enable the this external storage $NEWNAME for specific Nextcloud users or groups.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose enable the this external storage $NEWNAME for specific Nextcloud users or groups.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Choose some Nextcloud groups" "" ON \
     "Choose some Nextcloud users" "" ON 3>&1 1>&2 2>&3)
     unset SELECTED_USER
@@ -717,7 +723,7 @@ EOF
     # Choose from NC groups
     if [[ "$choice" == *"Choose some Nextcloud groups"* ]]
     then
-        args=(whiptail --title "$TITLE" --checklist "Please select which groups shall get access to the new external storage $NEWNAME .\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+        args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which groups shall get access to the new external storage $NEWNAME .\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
         mapfile -t NC_GROUPS <<< "$NC_GROUPS"
         for GROUP in "${NC_GROUPS[@]}"
@@ -730,7 +736,7 @@ EOF
     # Choose from NC users
     if [[ "$choice" == *"Choose some Nextcloud users"* ]]
     then
-        args=(whiptail --title "$TITLE" --separate-output --checklist "Please select which users shall get access to the new external storage $NEWNAME .\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+        args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which users shall get access to the new external storage $NEWNAME .\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
         mapfile -t NC_USER <<< "$NC_USER"
         for USER in "${NC_USER[@]}"
@@ -783,10 +789,10 @@ EOF
     msg_box "Your mount $NEWNAME was successful, congratulations!
     You are now using the Nextcloud external storage app to access files there.
     The Share has been mounted to the Nextcloud admin-group if not specifically changed to users or groups.
-    You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to edit external storages in Nextcloud."
+    You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to edit external storages in Nextcloud." "$SUBTITLE"
 }
 
-# Show all SMB-shares
+# Show SMB-shares
 show_shares() {
     local count
     local selected_options
@@ -794,9 +800,10 @@ show_shares() {
     local TEST=""
     local SMB_NAME
     local SMB_PATH
+    local SUBTITLE="Show SMB-shares"
 
     # Show a list with available SMB-shares
-    args=(whiptail --title "$TITLE" --separate-output --checklist "Please select which SMB-shares you want to show.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which SMB-shares you want to show.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=1
     while [ $count -le $MAX_COUNT ]
     do
@@ -814,7 +821,7 @@ show_shares() {
     # Return if none created
     if [ -z "$TEST" ]
     then
-        msg_box "No SMB-share created. Please create a SMB-share first."
+        msg_box "No SMB-share created. Please create a SMB-share first." "$SUBTITLE"
         return
     fi
 
@@ -829,14 +836,14 @@ show_shares() {
             CACHE=$(sed -n "/^#SMB$count-start/,/^#SMB$count-end/p" "$SMB_CONF" | grep -v "^#SMB$count-start" | grep -v "^#SMB$count-end")
             if echo "$CACHE" | grep -q "\[$element\]"
             then
-                msg_box "$CACHE"
+                msg_box "$CACHE" "$SUBTITLE"
             fi
             count=$((count+1))
         done
     done
 }
 
-# Edit SMB-shares
+# Edit a SMB-share
 edit_share() {
     local count
     local selected_options
@@ -848,9 +855,10 @@ edit_share() {
     local STORAGE=""
     local CLEAN_STORAGE
     local MOUNT_ID
+    local SUBTITLE="Edit a SMB-share"
 
     # Show a list of SMB-shares
-    args=(whiptail --title "$TITLE" --menu "Please select which SMB-share you want to change." "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --menu "Please select which SMB-share you want to change." "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=1
     while [ $count -le $MAX_COUNT ]
     do
@@ -868,7 +876,7 @@ edit_share() {
     # Return if no share created
     if [ -z "$TEST" ]
     then
-        msg_box "No SMB-shares created. Please create a SMB-share first."
+        msg_box "No SMB-shares created. Please create a SMB-share first." "$SUBTITLE"
         return
     fi
 
@@ -894,10 +902,10 @@ edit_share() {
 
     # Show the current settings
     CLEAN_STORAGE=$(echo "$STORAGE" | grep -v "\#SMB")
-    msg_box "Those are the current values for that SMB-share.\nIn the next step you will be asked what you want to change.\n\n$CLEAN_STORAGE"
+    msg_box "Those are the current values for that SMB-share.\nIn the next step you will be asked what you want to change.\n\n$CLEAN_STORAGE" "$SUBTITLE"
 
     # Show a list of options that can get changed for the selected SMB-share
-    choice=$(whiptail --title "$TITLE" --checklist "Please choose which options you want to change for $SELECTED_SHARE\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please choose which options you want to change for $SELECTED_SHARE\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Change the sharename" "(Change the name of the SMB-share)" OFF \
     "Change the path" "(Change the path of the SMB-share)" OFF \
     "Change valid SMB-users" "(Change which users have access to the SMB-share)" OFF \
@@ -906,11 +914,11 @@ edit_share() {
     # Execute the chosen options
     case "$choice" in
         *"Change the sharename"*)
-            choose_sharename "Please enter the new name of the share."
+            choose_sharename "Please enter the new name of the share." "$SUBTITLE"
             STORAGE=$(echo "$STORAGE" | sed "/^\[.*\]$/s/^\[.*\]$/\[$NEWNAME\]/")
         ;;&
         *"Change the path"*)
-            if ! choose_path "Please type in the new directory that you want to use for that SMB-share $SELECTED_SHARE."
+            if ! choose_path "Please type in the new directory that you want to use for that SMB-share $SELECTED_SHARE." "$SUBTITLE"
             then
                 return
             fi
@@ -920,14 +928,14 @@ edit_share() {
             STORAGE=$(echo "$STORAGE" | sed "/path = /s/path.*/path = $NEWPATH/")
         ;;&
         *"Change valid SMB-users"*)
-            if ! choose_users "Please choose the SMB-users that shall have access to the share $SELECTED_SHARE."
+            if ! choose_users "Please choose the SMB-users that shall have access to the share $SELECTED_SHARE." "$SUBTITLE"
             then
                 return
             fi
             STORAGE=$(echo "$STORAGE" | sed "/valid users = /s/valid users.*/valid users = $VALID_USERS/")
         ;;&
         *"Change writeable mode"*)
-            choose_writeable "Shall the SMB-share $SELECTED_SHARE be writeable?"
+            choose_writeable "Shall the SMB-share $SELECTED_SHARE be writeable?" "$SUBTITLE"
             STORAGE=$(echo "$STORAGE" | sed "/writeable = /s/writeable.*/writeable = $WRITEABLE/")
         ;;&
         "")
@@ -940,13 +948,13 @@ edit_share() {
     # Return if the STORAGE variable is empty now
     if [ -z "$STORAGE" ]
     then
-        msg_box "Something is wrong. Plese try again."
+        msg_box "Something is wrong. Plese try again." "$SUBTITLE"
         return
     fi
 
     # Show how the SMB-share will look after applying all changed options and let decide if the user wants to continue
     CLEAN_STORAGE=$(echo "$STORAGE" | grep -v "\#SMB")
-    if ! yesno_box_yes "This is how the SMB-share $SELECTED_SHARE will look like from now on.\nIs everything correct?\n\n$CLEAN_STORAGE"
+    if ! yesno_box_yes "This is how the SMB-share $SELECTED_SHARE will look like from now on.\nIs everything correct?\n\n$CLEAN_STORAGE" "$SUBTITLE"
     then
         return
     fi
@@ -968,7 +976,7 @@ edit_share() {
     samba_start
 
     # Inform the user
-    msg_box "The SMB-share $SELECTED_SHARE was changed successfully."
+    msg_box "The SMB-share $SELECTED_SHARE was changed successfully." "$SUBTITLE"
 }
 
 # Delete SMB-shares
@@ -980,9 +988,10 @@ delete_share() {
     local SMB_PATH
     local count
     local TEST=""
+    local SUBTITLE="Delete SMB-shares"
 
     # Choose which SMB-share shall get deleted
-    args=(whiptail --title "$TITLE" --separate-output --checklist "Please select which SMB-shares you want to delete.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which SMB-shares you want to delete.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=1
     while [ $count -le $MAX_COUNT ]
     do 
@@ -1000,7 +1009,7 @@ delete_share() {
     # Return if no SMB-share was created
     if [ -z "$TEST" ]
     then
-        msg_box "No SMB-share created. Please create a SMB-share first."
+        msg_box "No SMB-share created. Please create a SMB-share first." "$SUBTITLE"
         return
     fi
 
@@ -1018,7 +1027,7 @@ delete_share() {
                 samba_stop
                 sed -i "/^#SMB$count-start/,/^#SMB$count-end/d" "$SMB_CONF"
                 samba_start
-                msg_box "The SMB-share $element was succesfully deleted."
+                msg_box "The SMB-share $element was succesfully deleted." "$SUBTITLE"
                 break
             fi
             count=$((count+1))
