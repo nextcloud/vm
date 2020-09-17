@@ -43,7 +43,6 @@ SCRIPT_NAME="Nextcloud Startup Script"
 source /var/scripts/fetch_lib.sh
 
 # Get all needed variables from the library
-first_iface
 ncdb
 
 # Check if root
