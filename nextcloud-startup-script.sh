@@ -358,7 +358,9 @@ do
     elif [ "$NEWUSER" = "$NCADMIN" ]
     then
         msg_box "This username is already in use. Please choose a different one."
-    elif [[ $NEWUSER == *[!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_.-@] ]]
+    # - has to be espacaped otherwise it won't work.
+    # Inspired by: https://unix.stackexchange.com/a/498731/433213
+    elif [ "${NEWUSER//[A-Za-z0-9_.\-@]}" ]
     then
         msg_box "Allowed characters are: a-z', 'A-Z', '0-9', and '_.@-'\nPlease try again."
     else
