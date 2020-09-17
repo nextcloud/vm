@@ -107,7 +107,7 @@ cat << DDCLIENT_CONF > "/etc/ddclient.conf"
 # /etc/ddclient.conf
 
 # Default system settings
-use=if, if=ens32
+use=if, if=$IFACE
 use=web, web=https://ipv4bot.whatismyipaddress.com
 
 # DDNS-service specific setting

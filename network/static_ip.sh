@@ -24,9 +24,6 @@ else
     exit 1
 fi
 
-# Get all needed variables from the library
-first_iface
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF

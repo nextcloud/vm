@@ -38,10 +38,7 @@ KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ') TODO
 SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
-first_iface() {
-    IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
-}
-[ -n "$FIRST_IFACE" ] && first_iface # TODO: remove this line someday
+IFACE=$(ip r | grep "default via" | awk '{print $5}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
 REPO=$(grep deb-src /etc/apt/sources.list | grep http | awk '{print $3}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
