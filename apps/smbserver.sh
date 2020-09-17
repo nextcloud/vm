@@ -83,7 +83,7 @@ service nmbd restart
 smb_user_menu() {
 args=(whiptail --title "$TITLE - $2" --checklist "$1\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 USERS=$(members "$SMB_GROUP")
-USERS=($USERS)
+read -r -a USERS <<< "$USERS"
 for user in "${USERS[@]}"
 do
     args+=("$user  " "" OFF)
@@ -160,6 +160,7 @@ done
 add_user() {
 local NEWNAME_TRANSLATED
 local NEXTCLOUD_USERS
+local HASH
 if ! grep -q "^$SMB_GROUP:" /etc/group
 then
     groupadd "$SMB_GROUP"
@@ -174,7 +175,8 @@ then
 fi
 check_command adduser --disabled-password --force-badname --gecos "" "$NEWNAME"
 check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$NEWNAME"
-echo "$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')" >> "$HASH_HISTORY"
+HASH="$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')"
+echo "$HASH" >> "$HASH_HISTORY"
 check_command usermod -aG "$WEB_USER","$SMB_GROUP" "$NEWNAME"
 msg_box "The smb-user $NEWNAME was successfully created."
 if ! [ -f $NCPATH/occ ]
@@ -213,7 +215,7 @@ local TEST=""
 local args
 unset args
 USERS=$(members "$SMB_GROUP")
-USERS=($USERS)
+read -r -a USERS <<< "$USERS"
 args=(whiptail --title "$TITLE" --menu "Please choose for which user you want to show all shares." "$WT_HEIGHT" "$WT_WIDTH" 4)
 for user in "${USERS[@]}"
 do
@@ -271,6 +273,7 @@ done
 
 change_password() {
 local NEXTCLOUD_USERS
+local HASH
 smb_user_menu "Please choose for which user you want to change the password."
 for user in "${USERS[@]}"
 do
@@ -281,7 +284,8 @@ do
             continue
         fi
         check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$user"
-        echo "$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')" >> "$HASH_HISTORY"
+        HASH="$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')"
+        echo "$HASH" >> "$HASH_HISTORY"
         msg_box "The password for $user was successfully changed."
         if ! [ -f $NCPATH/occ ]
         then
