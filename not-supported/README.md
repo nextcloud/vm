@@ -9,4 +9,4 @@ So please report back! 🚀
 
 ### How to run this inside my NcVM?
 Currently there is only one script inside this folder. The command to get and run this script is the following:<br>
-`wget https://raw.githubusercontent.com/nextcloud/vm/szaimen-patch-1/not-supported/smbserver.sh && sudo bash smbserver.sh`
+`wget https://raw.githubusercontent.com/nextcloud/vm/master/not-supported/smbserver.sh && sudo bash smbserver.sh`
