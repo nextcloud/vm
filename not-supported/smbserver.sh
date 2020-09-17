@@ -595,7 +595,7 @@ create_share() {
     fi
 
     # Choose a sharename
-    choose_sharename "Please enter a name for the new SMB-share $NEWNAME." "$SUBTITLE"
+    choose_sharename "Please enter a name for the new SMB-share $NEWPATH." "$SUBTITLE"
 
     # Choose if it shall be writeable
     choose_writeable "Shall the new SMB-share $NEWNAME be writeable?" "$SUBTITLE"
