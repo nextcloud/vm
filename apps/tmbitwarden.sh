@@ -56,7 +56,7 @@ It's a good idea to read that before you start this script.
 Please also report any issues regarding this script setup to $ISSUES"
 
 msg_box "The necessary preparations to run expose Bitwarden to the internet are:
-1. Please open port 443 and 80 and point to this server.
+1. Please open port 443 and 80 and point to this server. (You will be asked if you want to use UPNP to open those ports automatically in the next step.)
 2. Please create a DNS record for your subdomain and point that to this server.
 3. Raise the amount of RAM to this server to at least 4 GB."
 
@@ -184,6 +184,23 @@ check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
 # Produce reverse-proxy config and get lets-encrypt certificate
 msg_box "We'll now setup the Apache Proxy that will act as TLS front for your Bitwarden installation."
+
+msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
+https://www.techandme.se/open-port-80-443
+
+This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+
+PLEASE NOTE:
+Using other ports than the default 80 and 443 is not supported, though it may be possible with some custom modification:
+https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
+
+if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
+then
+    unset FAIL
+    open_port 80 TCP
+    open_port 443 TCP
+    cleanup_open_port
+fi
 
 # Curl the lib another time to get the correct HTTPS_CONF
 # shellcheck source=lib.sh
