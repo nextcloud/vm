@@ -23,9 +23,9 @@ msg_box "Before we begin the installation of your TLS certificate you need to:
 1. Have a domain like: cloud.example.com
 If you want to get a domain at a fair price, please check this out: https://store.binero.se/?lang=en-US
 
-2. Open port 80 and 443 against this VMs IP address: $ADDRESS.
-Here is a guide: https://goo.gl/Uyuf65
-It's also possible automatically open ports with UPNP, if you have that enabled in your firewall/router.
+2. Open port 80 and 443 against this servers IP address: $ADDRESS.
+Here is a guide: https://www.techandme.se/open-port-80-443
+It's also possible to automatically open ports with UPNP, if you have that enabled in your firewall/router.
 
 PLEASE NOTE:
 This script can be run again by executing: sudo bash $SCRIPTS/menu.sh, and choose 'Server Configuration' --> 'Activate TLS'"
