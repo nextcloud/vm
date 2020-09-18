@@ -41,7 +41,7 @@ then
     choice=$(whiptail --title "$TITLE" --menu "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall Nextcloud Talk" "" \
     "Uninstall Nextcloud Talk" "" 3>&1 1>&2 2>&3)
-    
+
     case "$choice" in
         "Uninstall Nextcloud Talk")
             print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
@@ -150,8 +150,11 @@ fi
 check_command systemctl restart coturn.service
 
 # Warn user to open port
-msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!\nAn alternative is opening those ports via UPNP automatically, which you can do in the next step."
-if yesno_box_no "Do you want to use UPNP to open those ports?"
+msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
+
+This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step."
+
+if yesno_box_no "Do you want to use UPNP to open port $TURN_PORT?"
 then
     unset FAIL
     open_port "$TURN_PORT" TCP
