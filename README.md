@@ -89,6 +89,7 @@ Please report any issues you can find. Improvments are welcome!
 ![Stability Status](https://img.shields.io/badge/stability-stable-brightgreen.svg)
 
 ## Current [maintainers](https://github.com/nextcloud/vm/graphs/contributors)
+(Most of the commit history is gone, since Github decided to remove it when an account email address is removed.)
 * [Daniel Hanson](https://github.com/enoch85) @ [T&M Hansson IT AB](https://www.hanssonit.se)
 * [szaimen](https://github.com/szaimen)
 * You? :)
