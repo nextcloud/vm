@@ -422,7 +422,7 @@ do
     then
         # Delete all chosen SMB-user
         samba_stop
-        deluser --quiet "$user"
+        check_command deluser --quiet "$user"
         check_command sed -i "/valid users = /s/$user, //" "$SMB_CONF"
         samba_start
 
