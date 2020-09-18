@@ -41,7 +41,7 @@ then
     choice=$(whiptail --title "$TITLE" --menu "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall Nextcloud Talk" "" \
     "Uninstall Nextcloud Talk" "" 3>&1 1>&2 2>&3)
-    
+
     case "$choice" in
         "Uninstall Nextcloud Talk")
             print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
@@ -151,11 +151,19 @@ check_command systemctl restart coturn.service
 
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
-After you hit OK the script will check for the firewall and eventually exit on failure.
 
-To run again the setup, after fixing your firewall:
-sudo -sLO $APP/talk.sh
-sudo bash talk.sh"
+This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+
+After you hit OK, the script will check if the port is open or not. If it fails and you want to run this script again, just execute this in your CLI:
+sudo bash /var/scripts/menu.sh, and choose 'Talk'."
+
+if yesno_box_no "Do you want to use UPNP to open port $TURN_PORT?"
+then
+    unset FAIL
+    open_port "$TURN_PORT" TCP
+    open_port "$TURN_PORT" UDP
+    cleanup_open_port
+fi
 
 # Check if the port is open
 check_open_port "$TURN_PORT" "$TURN_DOMAIN"

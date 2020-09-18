@@ -173,10 +173,19 @@ check_command systemctl restart coturn.service
 
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
-After you hit OK the script will check for the firewall and eventually exit on failure.
-To run again the setup, after fixing your firewall:
-sudo -sLO $APP/talk_signaling.sh
-sudo bash talk_signaling.sh"
+
+This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+
+After you hit OK, the script will check if the port is open or not. If it fails and you want to run this script again, just execute this in your CLI:
+sudo bash /var/scripts/menu.sh, and choose 'Talk'."
+
+if yesno_box_no "Do you want to use UPNP to open port $TURN_PORT?"
+then
+    unset FAIL
+    open_port "$TURN_PORT" TCP
+    open_port "$TURN_PORT" UDP
+    cleanup_open_port
+fi
 
 # Check if the port is open
 check_open_port "$TURN_PORT" "$TURN_DOMAIN"
@@ -224,6 +233,24 @@ SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Notification
+msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
+https://www.techandme.se/open-port-80-443
+
+This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+
+PLEASE NOTE:
+Using other ports than the default 80 and 443 is not supported, though it may be possible with some custom modification:
+https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
+
+if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
+then
+    unset FAIL
+    open_port 80 TCP
+    open_port 443 TCP
+    cleanup_open_port
+fi
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
@@ -302,14 +329,6 @@ check_command systemctl enable signaling
 
 # Apache Proxy
 # https://github.com/strukturag/nextcloud-spreed-signaling#apache
-
-# Check if $SUBDOMAIN exists and is reachable
-print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
-domain_check_200 "$SUBDOMAIN"
-
-# Check open ports with NMAP
-check_open_port 80 "$SUBDOMAIN"
-check_open_port 443 "$SUBDOMAIN"
 
 # Install Apache2
 install_if_not apache2

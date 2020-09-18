@@ -64,11 +64,21 @@ SUBDOMAIN=$(input_box_flow "Please enter the Domain that you want to use for Bit
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-msg_box "Please make sure that you have you have edited the dns-settings of your domain and open ports 80 and 443."
+msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
+https://www.techandme.se/open-port-80-443
 
-if ! yesno_box_yes "Have you made the necessary preparations?"
+This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+
+PLEASE NOTE:
+Using other ports than the default 80 and 443 is not supported, though it may be possible with some custom modification:
+https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
+
+if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
 then
-    exit
+    unset FAIL
+    open_port 80 TCP
+    open_port 443 TCP
+    cleanup_open_port
 fi
 
 # Check if $SUBDOMAIN exists and is reachable

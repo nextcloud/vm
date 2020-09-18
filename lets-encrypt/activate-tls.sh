@@ -17,52 +17,52 @@ debug_mode
 root_check
 
 # Information
-msg_box "Important! Please read this:
+# Information
+msg_box "Before we begin the installation of your TLS certificate you need to:
 
-This script will install TLS from Let's Encrypt.
-It's free of charge, and very easy to maintain.
+1. Have a domain like: cloud.example.com
+If you want to get a domain at a fair price, please check this out: https://store.binero.se/?lang=en-US
 
-Before we begin the installation you need to have
-a domain that the TLS certs will be valid for.
-If you don't have a domain yet, get one before
-you run this script!
+2. Open port 80 and 443 against this servers IP address: $ADDRESS.
+Here is a guide: https://www.techandme.se/open-port-80-443
+It's also possible to automatically open ports with UPNP, if you have that enabled in your firewall/router.
 
-You also have to open port 80+443 against this VMs
-IP address: $ADDRESS - do this in your router/FW.
-Here is a guide: https://goo.gl/Uyuf65
-
-You can find the script here: $SCRIPTS/activate-tls.sh
-and you can run it after you got a domain.
-
-Please don't run this script if you don't have
-a domain yet. You can get one for a fair price here:
-https://store.binero.se/?lang=en-US"
+PLEASE NOTE:
+This script can be run again by executing: sudo bash $SCRIPTS/menu.sh, and choose 'Server Configuration' --> 'Activate TLS'"
 
 if ! yesno_box_yes "Are you sure you want to continue?"
 then
-msg_box "OK, but if you want to run this script later,
-just type: sudo bash $SCRIPTS/activate-tls.sh"
+msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
     exit
 fi
 
-if ! yesno_box_yes "Have you forwarded port 80+443 in your router?"
+if ! yesno_box_yes "Have you opened port 80 and 443 in your router, or are you using UPNP?"
 then
-msg_box "OK, but if you want to run this script later,
-just type: sudo bash /var/scripts/activate-tls.sh"
+msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
     exit
 fi
 
-if yesno_box_yes "Do you have a domain that you will use?"
+if ! yesno_box_yes "Do you have a domain that you will use?"
 then
-    sleep 1
-else
-msg_box "OK, but if you want to run this script later,
-just type: sudo bash /var/scripts/activate-tls.sh"
+msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
     exit
 fi
 
 # Nextcloud Main Domain (activate-tls.sh)
 TLSDOMAIN=$(input_box_flow "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
+
+msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $TLSDOMAIN, and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
+https://www.techandme.se/open-port-80-443
+
+This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step."
+
+if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
+then
+    unset FAIL
+    open_port 80 TCP
+    open_port 443 TCP
+    cleanup_open_port
+fi
 
 # Curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
