@@ -163,8 +163,8 @@ then
 fi
 msg_box "After you hit OK the script will check for the firewall and eventually exit on failure.
 To run again the setup, after fixing your firewall:
-sudo -sLO $APP/talk_signaling.sh
-sudo bash talk_signaling.sh"
+sudo -sLO $APP/talk.sh
+sudo bash talk.sh"
 
 # Check if the port is open
 check_open_port "$TURN_PORT" "$TURN_DOMAIN"
