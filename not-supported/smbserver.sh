@@ -636,6 +636,7 @@ create_share() {
     recycle:repository = .recycle
     recycle:keeptree = yes
     recycle:versions = yes
+    recycle:directory_mode = 0770
 #SMB$count-end - Please don't remove or change this line
 EOF
             samba_start
