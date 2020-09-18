@@ -25,7 +25,7 @@ If you want to get a domain at a fair price, please check this out: https://stor
 
 2. Open port 80 and 443 against this VMs IP address: $ADDRESS.
 Here is a guide: https://goo.gl/Uyuf65
-It's also possible automatically open ports with UPNP, if you have that enabled in your firewall/router.
+It's also possible to automatically open ports with UPNP, if you have that enabled in your firewall/router.
 
 PLEASE NOTE:
 This script can be run again by executing: sudo bash $SCRIPTS/menu.sh, and choose 'Server Configuration' --> 'Activate TLS'"
