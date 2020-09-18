@@ -25,7 +25,7 @@ then
     then
         print_text_in_color "$IRed" "You don't seem to have an internet connection and the local lib isn't available. Hence you cannot run this script."
         exit 1
-
+    fi
 elif ! [ -f /var/scripts/nextcloud-startup-script.sh ]
 then
     print_text_in_color "$ICyan" "Updating lib..."
