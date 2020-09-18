@@ -55,7 +55,11 @@ then
 fi
 
 # Disable the [homes] share by default only if active
-sed -i /^\[homes\]$/s/homes/homes_are_disabled_by_NcVM/ "$SMB_CONF"
+if grep -q "^\[homes\]" "$SMB_CONF"
+then
+    msg_box "We will disable the SMB-users home-shares since they are not existing."
+    sed -i 's|^\[homes\]|\;\[homes\]|' "$SMB_CONF"
+fi
 
 # Create a history file for storing password hashes
 if ! [ -f "$HASH_HISTORY" ]
@@ -191,7 +195,7 @@ add_user() {
     fi
 
     # Create the user if everything is correct
-    check_command adduser --disabled-password --force-badname --gecos "" "$NEWNAME"
+    check_command adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "$NEWNAME"
     check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$NEWNAME"
 
     # Store the hash of the password in the Hash-history file
@@ -199,7 +203,7 @@ add_user() {
     echo "$HASH" >> "$HASH_HISTORY"
 
     # Modify the groups of the SMB-user
-    check_command usermod -aG "$WEB_USER","$SMB_GROUP" "$NEWNAME"
+    check_command usermod --append --groups "$SMB_GROUP","$WEB_USER" "$NEWNAME"
 
     # Inform the user
     msg_box "The smb-user $NEWNAME was successfully created." "$SUBTITLE"
@@ -411,14 +415,14 @@ done
 delete_user() {
 local SUBTITLE="Delete SMB-users"
 # Show a list with SMB-user
-smb_user_menu "Please choose which SMB-users you want to delete.\nPlease note: we will also delete the home of this user (in the Linux '/home' directory). If you don't want to continue just choose none or cancel." "$SUBTITLE"
+smb_user_menu "Please choose which SMB-users you want to delete." "$SUBTITLE"
 for user in "${USERS[@]}"
 do
     if [[ "${selected_options[*]}" == *"$user  "* ]]
     then
         # Delete all chosen SMB-user
         samba_stop
-        deluser --remove-home "$user"
+        deluser --quiet "$user"
         check_command sed -i "/valid users = /s/$user, //" "$SMB_CONF"
         samba_start
 
@@ -588,14 +592,16 @@ create_share() {
     if ! choose_path "Please type in the path you want to create a SMB-share for." "$SUBTITLE"
     then
         return
-    # Choose the valid SMB-users
-    elif ! choose_users "Please choose the SMB-users you want to share the directory $NEWPATH with." "$SUBTITLE"
-    then
-        return
     fi
 
     # Choose a sharename
     choose_sharename "Please enter a name for the new SMB-share $NEWPATH." "$SUBTITLE"
+
+    # Choose the valid SMB-users
+    if ! choose_users "Please choose the SMB-users you want to share the new SMB-share $NEWNAME with." "$SUBTITLE"
+    then
+        return
+    fi
 
     # Choose if it shall be writeable
     choose_writeable "Shall the new SMB-share $NEWNAME be writeable?" "$SUBTITLE"
