@@ -176,6 +176,9 @@ msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN 
 
 This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step."
 
+After you hit OK, the script will check if the port is open or not. If it should fail and you want to run this script again, just execute this in your CLI:
+sudo bash /var/scripts/menu.sh, and choose 'Talk'.
+
 if yesno_box_no "Do you want to use UPNP to open port $TURN_PORT?"
 then
     unset FAIL
@@ -183,10 +186,6 @@ then
     open_port "$TURN_PORT" UDP
     cleanup_open_port
 fi
-msg_box "After you hit OK the script will check for the firewall and eventually exit on failure.
-To run again the setup, after fixing your firewall:
-sudo -sLO $APP/talk_signaling.sh
-sudo bash talk_signaling.sh"
 
 # Check if the port is open
 check_open_port "$TURN_PORT" "$TURN_DOMAIN"
