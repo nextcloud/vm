@@ -54,6 +54,12 @@ then
     sed -i '/\[global\]/a protocol = SMB3' "$SMB_CONF"
 fi
 
+# Hide SMB-shares from SMB-users that have no read permission
+if ! grep -q "access based share enum" "$SMB_CONF"
+then
+    sed -i '/\[global\]/a access based share enum = yes' "$SMB_CONF"
+fi
+
 # Disable the [homes] share by default only if active
 if grep -q "^\[homes\]" "$SMB_CONF"
 then
@@ -624,14 +630,14 @@ create_share() {
 [$NEWNAME]
     path = $NEWPATH
     writeable = $WRITEABLE
-;   browseable = yes
     valid users = $VALID_USERS
     force user = $WEB_USER
     force group = $WEB_GROUP
     create mask = 0770
-    directory mask = 0771
-    force create mode = 0660
+    directory mask = 0770
+    force create mode = 0770
     force directory mode = 0770
+    hide unreadable = yes 
     vfs objects = recycle
     recycle:repository = .recycle
     recycle:keeptree = yes
