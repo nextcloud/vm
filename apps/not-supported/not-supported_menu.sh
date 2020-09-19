@@ -18,7 +18,7 @@ debug_mode
 root_check
 
 # Main menu
-choice=$(whiptail --title "$TITLE" --menu "This is the not-supported Menu of the Nextcloud VM!\nPlease note that all options that get offered to you are not part of the release version and thus not 100% ready.\nSo Please run them on your own risk. Feedback is more than welcome, though!\nChoose which one you want to execute.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist "This is the not-supported Menu of the Nextcloud VM!\nPlease note that all options that get offered to you are not part of the release version and thus not 100% ready.\nSo Please run them on your own risk. Feedback is more than welcome, though!\nChoose which one you want to execute.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "SMB-server" "(Create and manage a SMB-server on OS level)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
