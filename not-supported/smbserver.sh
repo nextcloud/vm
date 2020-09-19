@@ -115,7 +115,7 @@ smb_user_menu() {
 choose_password() {
 while :
 do
-    PASSWORD=$(input_box_flow "$1\nThe password has to be at least 12 digits long.\nIt also has to contain at least one hyphen '-' and one of those characters each: 'a-z' 'A-Z' and '0-9'.\nYou can cancel by typing in 'exit' and pressing [ENTER]." "$2")
+    PASSWORD=$(input_box_flow "$1\nThe password needs to be at least 12 digits long to be valid.\nIt also needs to contain at least one hyphen '-' and one of those characters each: 'a-z' 'A-Z' and '0-9' to be valid.\nYou can cancel by typing in 'exit' and pressing [ENTER]." "$2")
     if [ "$PASSWORD" = "exit" ]
     then
         return 1
@@ -130,16 +130,16 @@ do
         msg_box "Please don't use backslashes." "$2"
     elif ! [[ "$PASSWORD" =~ [-] ]]
     then
-        msg_box "The password has to contain at least one hyphen '-'" "$2"
+        msg_box "The password needs to contain at least one hyphen '-' to be valid." "$2"
     elif ! [[ "$PASSWORD" =~ [a-z] ]]
     then
-        msg_box "The password has to contain at least one lowercase letter: 'a-z'" "$2"
+        msg_box "The password needs to contain at least one lowercase letter 'a-z' to be valid." "$2"
     elif ! [[ "$PASSWORD" =~ [A-Z] ]]
     then
-        msg_box "The password has to contain at least one capital letter: 'A-Z'" "$2"
+        msg_box "The password needs to contain at least one capital letter 'A-Z' to be valid." "$2"
     elif ! [[ "$PASSWORD" =~ [0-9] ]]
     then
-        msg_box "The password has to contain at least one number: '0-9'" "$2"
+        msg_box "The password needs to contain at least one number '0-9' to be valid." "$2"
     elif grep -q "$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')" "$HASH_HISTORY"
     then
         msg_box "The password was already used. Please use a different one." "$2"
@@ -154,13 +154,13 @@ choose_username() {
 local NEWNAME_TRANSLATED
 while :
 do
-    NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '-' and '0-9'. It has to start with a letter.\nIf you want to cancel, just type in 'exit' and press [ENTER]." "$2")
+    NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '-' and '0-9'.\nAlso, the username needs to start with a letter to be valid.\nIf you want to cancel, just type in 'exit' and press [ENTER]." "$2")
     if [[ "$NEWNAME" == *" "* ]]
     then
         msg_box "Please don't use spaces." "$2"
     elif ! [[ "$NEWNAME" =~ ^[a-zA-Z][-a-zA-Z0-9]+$ ]]
     then
-        msg_box "Allowed characters are only 'a-z' 'A-Z '-' and '0-9'. It has to start with a letter." "$2"
+        msg_box "Allowed characters are only 'a-z' 'A-Z '-' and '0-9'.\nAlso, the username needs to start with a letter to be valid." "$2"
     elif [ "$NEWNAME" = "exit" ]
     then
         return 1
@@ -451,9 +451,10 @@ do
     "Show all SMB-shares from a SMB-user" "" \
     "Change the password of SMB-users" "" \
     "Change the username of SMB-users" "" \
-    "Delete SMB-users" "" 3>&1 1>&2 2>&3)
+    "Delete SMB-users" "" \
+    "Return to the Main Menu" "" 3>&1 1>&2 2>&3)
 
-    if [ -n "$choice" ] && [ "$choice" != "Add a SMB-user" ] && [ -z "$(members "$SMB_GROUP")" ]
+    if [ -n "$choice" ] && [ "$choice" != "Add a SMB-user" ] && [ "$choice" != "Return to the Main Menu" ] && [ -z "$(members "$SMB_GROUP")" ]
     then
         msg_box "Please create at least one SMB-user before doing anything else."
     else
@@ -472,6 +473,9 @@ do
             ;;
             "Delete SMB-users")
                 delete_user
+            ;;
+            "Return to the Main Menu")
+                break
             ;;
             "")
                 break
@@ -496,7 +500,7 @@ do
     fi
 
     # Type in the new path
-    NEWPATH=$(input_box_flow "$1.\nIt has to be a directory beginning with '/mnt/'.\nPlease note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
+    NEWPATH=$(input_box_flow "$1.\nIt needs to be a directory beginning with '/mnt/' to be valid.\nPlease note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
     if [[ "$NEWPATH" = *"\\"* ]]
     then
         msg_box "Please don't use backslashes." "$2"
@@ -505,7 +509,7 @@ do
         return 1
     elif ! echo "$NEWPATH" | grep -q "^/mnt/..*"
     then
-        msg_box "The path has to be a directory beginning with '/mnt/'." "$2"
+        msg_box "The path needs to be a directory beginning with '/mnt/' to be valid." "$2"
     elif echo "$NEWPATH" | grep -q "^/mnt/ncdata"
     then
         msg_box "The path isn't allowed to start with '/mnt/ncdata'." "$2"
@@ -554,11 +558,20 @@ CACHE=$(grep "\[.*\]" "$SMB_CONF" | tr "[:upper:]" "[:lower:]")
 while :
 do
     # Type in the new sharename
-    NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'. It has to start with a letter." "$2")
+    NEWNAME=$(input_box_flow "$1\nAllowed characters are only those three special characters '.-_' and 'a-z' 'A-Z' '0-9'.\nAlso, the sharename needs to start with a letter 'a-z' or 'A-Z' to be valid.\nIf you want to cancel, just type in 'exit' and press [ENTER]." "$2")
     NEWNAME_TRANSLATED=$(echo "$NEWNAME" | tr "[:upper:]" "[:lower:]")
-    if ! [[ "$NEWNAME" =~ ^[a-zA-Z][-._a-zA-Z0-9]+$ ]]
+    if [[ "$NEWNAME" = *" "* ]]
     then
-        msg_box "Allowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'. It has to start with a letter." "$2"
+        msg_box "Please don't use spaces." "$2"
+    elif ! echo "$NEWNAME" | grep -q "^[a-zA-Z]"
+    then
+        msg_box "The sharename has to start with a letter 'a-z' or 'A-Z' to be valid." "$2"
+    elif [ "$NEWNAME" = "exit" ]
+    then
+        return 1
+    elif ! [[ "$NEWNAME" =~ ^[-._a-zA-Z0-9]+$ ]]
+    then
+        msg_box "Allowed characters are only those three special characters '.-_' and 'a-z' 'A-Z' '0-9'." "$2"
     elif echo "$CACHE" | grep -q "\[$NEWNAME_TRANSLATED\]"
     then
         msg_box "This sharename is already used. Please try another one." "$2"
@@ -605,7 +618,10 @@ create_share() {
     fi
 
     # Choose a sharename
-    choose_sharename "Please enter a name for the new SMB-share $NEWPATH." "$SUBTITLE"
+    if ! choose_sharename "Please enter a name for the new SMB-share $NEWPATH." "$SUBTITLE"
+    then
+        return
+    fi
 
     # Choose the valid SMB-users
     if ! choose_users "Please choose the SMB-users you want to share the new SMB-share $NEWNAME with." "$SUBTITLE"
@@ -732,21 +748,26 @@ EOF
     fi
 
     # Select NC groups and/or users
-    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose enable the this external storage $NEWNAME for specific Nextcloud users or groups.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose enable the this external storage $NEWNAME for specific Nextcloud users or groups.\nIf you choose no group or user, the external storage will be visible to all users of your instance.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Choose some Nextcloud groups" "" ON \
-    "Choose some Nextcloud users" "" ON 3>&1 1>&2 2>&3)
+    "Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
     unset SELECTED_USER
     unset SELECTED_GROUPS
 
     # Choose from NC groups
     if [[ "$choice" == *"Choose some Nextcloud groups"* ]]
     then
-        args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which groups shall get access to the new external storage $NEWNAME .\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+        args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which groups shall get access to the new external storage $NEWNAME.\nIf you choose no group or user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
         mapfile -t NC_GROUPS <<< "$NC_GROUPS"
         for GROUP in "${NC_GROUPS[@]}"
         do
-            args+=("$GROUP  " "" OFF)
+            if [ "$GROUP" = "admin" ]
+            then
+                args+=("$GROUP  " "" ON)
+            else
+                args+=("$GROUP  " "" OFF)
+            fi
         done
         SELECTED_GROUPS=$("${args[@]}" 3>&1 1>&2 2>&3)
     fi
@@ -754,7 +775,7 @@ EOF
     # Choose from NC users
     if [[ "$choice" == *"Choose some Nextcloud users"* ]]
     then
-        args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which users shall get access to the new external storage $NEWNAME .\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+        args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which users shall get access to the new external storage $NEWNAME.\nIf you choose no group or user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
         mapfile -t NC_USER <<< "$NC_USER"
         for USER in "${NC_USER[@]}"
@@ -771,7 +792,10 @@ EOF
     # Mount it to the admin group if no group or user chosen
     if [ -z "$SELECTED_GROUPS" ] && [ -z "$SELECTED_USER" ]
     then
-        occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
+        if ! yesno_box_no "Attention! You haven't selected any Nextcloud group or user.\nIs this correct?\nIf you select 'yes', it will be visible to all users of your Nextcloud instance.\nIf you select 'no', it will be only visible to Nextcloud users in the admin group." "$SUBTITLE"
+        then
+            occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
+        fi
     fi
 
     # Mount it to selected groups
@@ -932,7 +956,10 @@ edit_share() {
     # Execute the chosen options
     case "$choice" in
         *"Change the sharename"*)
-            choose_sharename "Please enter the new name of the share." "$SUBTITLE"
+            if ! choose_sharename "Please enter the new name of the share." "$SUBTITLE"
+            then
+                return
+            fi
             STORAGE=$(echo "$STORAGE" | sed "/^\[.*\]$/s/^\[.*\]$/\[$NEWNAME\]/")
         ;;&
         *"Change the path"*)
@@ -1066,7 +1093,8 @@ do
     "Create a SMB-share" "" \
     "Show SMB-shares" "" \
     "Edit a SMB-share" "" \
-    "Delete SMB-shares" "" 3>&1 1>&2 2>&3)
+    "Delete SMB-shares" "" \
+    "Return to the Main Menu" "" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Create a SMB-share")
@@ -1080,6 +1108,9 @@ do
         ;;
         "Delete SMB-shares")
             delete_share
+        ;;
+        "Return to the Main Menu")
+            break
         ;;
         "")
             break
@@ -1095,14 +1126,18 @@ while :
 do
     choice=$(whiptail --title "$TITLE - Main Menu" --menu "Choose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Open the SMB-user Menu" "(manage SMB-users)" \
-    "Open the SMB-share Menu" "(manage SMB-shares)" 3>&1 1>&2 2>&3)
+    "Open the SMB-share Menu  " "(manage SMB-shares)" \
+    "Exit" "(exit this script)" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Open the SMB-user Menu")
             user_menu
         ;;
-        "Open the SMB-share Menu")
+        "Open the SMB-share Menu  ")
             share_menu
+        ;;
+        "Exit")
+            break
         ;;
         "")
             break
