@@ -22,10 +22,10 @@ choice=$(whiptail --title "$TITLE" --checklist "This is the not-supported Menu o
 "SMB-server" "(Create and manage a SMB-server on OS level)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    "SMB-server")
+    *"SMB-server"*)
         print_text_in_color "$ICyan" "Downloading the SMB Server script..."
         run_script NOT_SUPPORTED smbserver
-    ;;
+    ;;&
     *)
     ;;
 esac
