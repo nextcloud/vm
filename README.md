@@ -46,6 +46,8 @@ No problem, brave explorer! We made it simple.
 
 In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://cloud.hanssonit.se/s/zjsqkrSpzqJGE9N?path=%2FTESTING) folder on the download server. 
 
+Since recently we have a new subfolder in the repo with new scripts, that aren't ready for the release version. You are very welcome to test them out and report feedback! Please look at [this subfolder](https://github.com/nextcloud/vm/master/not-supported) for more infos.
+
 If you want to try the latest version yourself, there are two variables that you could use:
 
 1. For latest **beta** or **RC** version: `sudo bash /var/scripts/update.sh beta`
@@ -53,7 +55,6 @@ If you want to try the latest version yourself, there are two variables that you
 2. For specific **RC** version: `sudo bash /var/scripts/update.sh 19.0.0RC1`
 
 Please keep in mind that this is only intended for testing and might crash your Nextcloud. Please keep backups!
-
 
 ## Vagrant example (Beta)
 
