@@ -34,7 +34,7 @@ else
 fi
 
 # Server configurations
-choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to configure\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to configure\n$CHECKLIST_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \

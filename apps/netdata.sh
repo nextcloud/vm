@@ -21,7 +21,7 @@ root_check
 print_text_in_color "$ICyan" "Checking if Netdata is already installed..."
 if [ -d /etc/netdata ]
 then
-    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Netdata' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Netdata' is already installed.\nChoose what you want to do.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall Netdata" "" \
     "Uninstall Netdata" "" 3>&1 1>&2 2>&3)
 

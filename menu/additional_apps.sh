@@ -26,7 +26,7 @@ else
 fi
 
 # Install Apps
-choice=$(whiptail --title "$TITLE" --checklist "Which apps do you want to install?\n\nAutomatically configure and install selected apps\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist "Which apps do you want to install?\n\nAutomatically configure and install selected apps\n$CHECKLIST_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Documentserver" "(OnlyOffice or Collabora - Docker or Integrated)" OFF \
 "Bitwarden" "(External password manager)" OFF \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \

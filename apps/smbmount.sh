@@ -376,7 +376,7 @@ then
 fi
 
 # Find out which SMB-shares are available
-args=(whiptail --title "$TITLE - $SUBTITLE" --menu "This option let you change the password, the username and/or the network-share of one of your SMB-mounts.\nChoose which one you want to show." "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --menu "This option let you change the password, the username and/or the network-share of one of your SMB-mounts.\nChoose which one you want to show.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -633,7 +633,7 @@ return
 while :
 do
     # Main menu
-    choice=$(whiptail --title "$TITLE" --menu "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --menu "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Add a SMB-mount" "(and mount/connect it)" \
     "Mount SMB-shares" "(connect SMB-shares)" \
     "Show all SMB-mounts" "(show detailed information about the SMB-mounts)" \

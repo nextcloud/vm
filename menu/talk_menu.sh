@@ -25,7 +25,7 @@ else
     STARTUP_SWITCH="OFF"
 fi
 
-choice=$(whiptail --title "$TITLE" --checklist "Automatically install and configure Talk.\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist "Automatically install and configure Talk.\n$CHECKLIST_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Talk " "(Install Talk standalone - no subdomain required)" OFF \
 "Talk-Signaling" "(Install Talk + Signaling Server - subdomain required)" OFF 3>&1 1>&2 2>&3)
 

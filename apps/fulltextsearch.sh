@@ -34,7 +34,7 @@ cpu_check 2 FullTextSearch
 print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
 if does_this_docker_exist "$nc_fts"
 then
-    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Fulltextsearch' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Fulltextsearch' is already installed.\nChoose what you want to do.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall Fulltextsearch" "" \
     "Uninstall Fulltextsearch" "" 3>&1 1>&2 2>&3)
 

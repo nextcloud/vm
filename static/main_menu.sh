@@ -18,7 +18,7 @@ debug_mode
 root_check
 
 # Main menu
-choice=$(whiptail --title "$TITLE" --menu "Choose what you want to do.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --menu "Choose what you want to do.\n$MENU_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Additional Apps" "(Choose which apps to install)" \
 "Nextcloud Configuration" "(Choose between available Nextcloud configurations)" \
 "Server Configuration" "(Choose between available server configurations)" \
