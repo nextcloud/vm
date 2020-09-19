@@ -216,7 +216,7 @@ add_user() {
     check_command usermod --append --groups "$SMB_GROUP","$WEB_USER" "$NEWNAME"
 
     # Inform the user
-    msg_box "The smb-user $NEWNAME was successfully created." "$SUBTITLE"
+    msg_box "The smb-user $NEWNAME was successfully created.\n\nIf this is the first SMB-user, that you have created, you should be able to create a new SMB-share now by returning to the Main Menu of this script and choosing from there 'SMB-share Menu' -> 'create a SMB-share'.\nSuggested is though, creating all needed SMB-users first." "$SUBTITLE"
 
     # Test if NC exists
     if ! [ -f $NCPATH/occ ]
@@ -678,8 +678,13 @@ EOF
         return
     fi
 
-    # Inform the user
-    msg_box "The SMB-share $NEWNAME for $NEWPATH was successfully created." "$SUBTITLE"
+# Inform the user
+msg_box "The SMB-share $NEWNAME for $NEWPATH was successfully created.
+
+You should be able to connect with the chosen SMB-user to the server:
+- On Linux in a file manager using this address: 'smb://$(hostname)' or 'smb://$ADDRESS'
+- On Windows in the Windows Explorer using this address: '\\\\ $(hostname)' or '\\\\$ADDRESS'
+- On macOS in the Finder (press 'cmd + K') using this address: 'smb://$(hostname)' or 'smb://$ADDRESS'" "$SUBTITLE"
 
     # Test if NC exists
     if ! [ -f $NCPATH/occ ]
