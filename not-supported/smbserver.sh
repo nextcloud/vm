@@ -681,7 +681,7 @@ EOF
 # Inform the user
 msg_box "The SMB-share $NEWNAME for $NEWPATH was successfully created.
 
-You should be able to connect with the credentials of the chosen SMB-user(s) to the server now
+You should be able to connect with the credentials of the chosen SMB-user(s) to the SMB-server now
 to see all for the specific SMB-user available SMB-shares:
 - On Linux in a file manager using this address: 'smb://$(hostname)' or 'smb://$ADDRESS'
 - On Windows in the Windows Explorer using this address: '\\\\ $(hostname)' or '\\\\$ADDRESS'
