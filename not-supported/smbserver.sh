@@ -49,7 +49,7 @@ install_if_not samba
 install_if_not members
 
 # Use SMB3
-if ! grep -q "^protocol = " /etc/samba/smb.conf
+if ! grep -q "^protocol" /etc/samba/smb.conf
 then
     sed -i '/\[global\]/a protocol = SMB3' "$SMB_CONF"
 else
