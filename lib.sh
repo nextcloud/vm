@@ -279,7 +279,7 @@ yesno_box_no() {
 
 input_box() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
-    local RESULT && RESULT=$(whiptail --title "$TITLE$SUBTITLE" --inputbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    local RESULT && RESULT=$(whiptail --title "$TITLE$SUBTITLE" --nocancel --inputbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     echo "$RESULT"
 }
 
