@@ -754,7 +754,7 @@ to see all for the specific SMB-user available SMB-shares:
     fi
 
     # Select NC groups and/or users
-    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose enable the this external storage $NEWNAME for specific Nextcloud users or groups.\nIf you choose no group or user, the external storage will be visible to all users of your instance.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose to enable the this external storage $NEWNAME for specific Nextcloud users or groups.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Choose some Nextcloud groups" "" ON \
     "Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
     unset SELECTED_USER
@@ -763,7 +763,7 @@ to see all for the specific SMB-user available SMB-shares:
     # Choose from NC groups
     if [[ "$choice" == *"Choose some Nextcloud groups"* ]]
     then
-        args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which groups shall get access to the new external storage $NEWNAME.\nIf you choose no group or user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+        args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which Nextcloud groups shall get access to the new external storage $NEWNAME.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
         mapfile -t NC_GROUPS <<< "$NC_GROUPS"
         for GROUP in "${NC_GROUPS[@]}"
@@ -781,7 +781,7 @@ to see all for the specific SMB-user available SMB-shares:
     # Choose from NC users
     if [[ "$choice" == *"Choose some Nextcloud users"* ]]
     then
-        args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which users shall get access to the new external storage $NEWNAME.\nIf you choose no group or user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+        args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which Nextcloud users shall get access to the new external storage $NEWNAME.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
         mapfile -t NC_USER <<< "$NC_USER"
         for USER in "${NC_USER[@]}"
