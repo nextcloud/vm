@@ -49,15 +49,19 @@ install_if_not samba
 install_if_not members
 
 # Use SMB3
-if ! grep -q SMB3 /etc/samba/smb.conf
+if ! grep -q "^protocol = " /etc/samba/smb.conf
 then
     sed -i '/\[global\]/a protocol = SMB3' "$SMB_CONF"
+else
+    sed -i 's|^protocol =.*|protocol = SMB3|' "$SMB_CONF"
 fi
 
 # Hide SMB-shares from SMB-users that have no read permission
 if ! grep -q "access based share enum" "$SMB_CONF"
 then
     sed -i '/\[global\]/a access based share enum = yes' "$SMB_CONF"
+else
+    sed -i 's|.*access based share enum =.*|access based share enum = yes|' "$SMB_CONF"
 fi
 
 # Disable the [homes] share by default only if active
@@ -637,7 +641,6 @@ create_share() {
     directory mask = 0770
     force create mode = 0770
     force directory mode = 0770
-    hide unreadable = yes 
     vfs objects = recycle
     recycle:repository = .recycle
     recycle:keeptree = yes
