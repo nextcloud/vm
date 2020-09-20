@@ -683,9 +683,9 @@ msg_box "The SMB-share $NEWNAME for $NEWPATH was successfully created.
 
 You should be able to connect with the credentials of the chosen SMB-user(s) to the SMB-server now
 to see all for the specific SMB-user available SMB-shares:
-- On Linux in a file manager using this address: 'smb://$(hostname)' or 'smb://$ADDRESS'
-- On Windows in the Windows Explorer using this address: '\\\\ $(hostname)' or '\\\\$ADDRESS'
-- On macOS in the Finder (press 'cmd + K') using this address: 'smb://$(hostname)' or 'smb://$ADDRESS'" "$SUBTITLE"
+- On Linux in a file manager using this address: 'smb://$ADDRESS'
+- On Windows in the Windows Explorer using this address: '\\\\$ADDRESS'
+- On macOS in the Finder (press 'cmd + K') using this address: 'smb://$ADDRESS'" "$SUBTITLE"
 
     # Test if NC exists
     if ! [ -f $NCPATH/occ ]
