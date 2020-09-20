@@ -33,6 +33,7 @@ Server installation. Simplified. :cloud:
 * Report [your issue](https://github.com/nextcloud/vm/issues/new)
 * Help us with [existing issues](https://github.com/nextcloud/vm/issues)
 * Write scripts so that the release process becomes automated with [Vagrant](https://www.vagrantup.com/docs/getting-started/), [Terraform](https://www.terraform.io/) or similar
+* Help us testing scripts, that aren't ready for the release version, yet. Please look at [this subfolder](https://github.com/nextcloud/vm/master/not-supported) for more infos.
 * **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB for both VMware, Hyper-V and [more](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration?currentPageId=bls17dahv0jgrltpif20)**
   
 ## Full documentation
@@ -46,8 +47,6 @@ No problem, brave explorer! We made it simple.
 
 In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://cloud.hanssonit.se/s/zjsqkrSpzqJGE9N?path=%2FTESTING) folder on the download server. 
 
-Since recently we have a new subfolder in the repo with new scripts, that aren't ready for the release version. You are very welcome to test them out and report feedback! Please look at [this subfolder](https://github.com/nextcloud/vm/master/not-supported) for more infos.
-
 If you want to try the latest version yourself, there are two variables that you could use:
 
 1. For latest **beta** or **RC** version: `sudo bash /var/scripts/update.sh beta`
@@ -55,6 +54,7 @@ If you want to try the latest version yourself, there are two variables that you
 2. For specific **RC** version: `sudo bash /var/scripts/update.sh 19.0.0RC1`
 
 Please keep in mind that this is only intended for testing and might crash your Nextcloud. Please keep backups!
+
 
 ## Vagrant example (Beta)
 
