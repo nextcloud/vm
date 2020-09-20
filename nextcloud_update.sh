@@ -188,9 +188,25 @@ then
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
-# Update docker containers specified below
+# Update docker containers and remove Watchtower if Bitwarden is preseent due to compatibility issue
+# If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
+# If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates individually dependning on which docker 
+# containers that exist.
 if is_docker_running
 then
+    # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower to avoid updating Bitwarden again, and only update the specified docker images above
+    if does_this_docker_exist containrrr/watchtower
+    then
+        if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
+        then
+            if [ -d /root/bwdata ] || [ -d "$BITWARDEN_HOME"/bwdata ]
+            then
+                docker_prune_this containrrr/watchtower
+                notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower we have removed Watchtower from this server. Updates will now happen for each container seperatly instead"
+            fi
+        fi
+    fi
+    # Update selected images
     if ! does_this_docker_exist containrrr/watchtower
     then
         # Bitwarden RS
@@ -201,10 +217,6 @@ then
         docker_update_specific 'onlyoffice/documentserver' 'OnlyOffice'
         # Full Text Search
         docker_update_specific 'ark74/nc_fts' 'Full Text Search'
-    # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower to avoid updating Bitwarden again, and only update the specified docker images above
-    elif does_this_docker_exist containrrr/watchtower
-    then
-        docker_prune_this watchtower
     fi
 fi
 
