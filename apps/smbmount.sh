@@ -177,27 +177,32 @@ As a hint:
                 SHARING="false"
             fi
             # Groups and User Menu
-            choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose enable the share for specific users or groups.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+            choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose to enable this external storage $NEWNAME for specific Nextcloud users or groups.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             "Choose some Nextcloud groups" "" ON \
-            "Choose some Nextcloud users" "" ON 3>&1 1>&2 2>&3)
+            "Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
             unset SELECTED_USER
             unset SELECTED_GROUPS
             # Select Nextcloud groups
             if [[ "$choice" == *"Choose some Nextcloud groups"* ]]
             then
-                args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which groups shall get access to the share.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+                args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which Nextcloud groups shall get access to the new external storage $NEWNAME.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
                 NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
                 mapfile -t NC_GROUPS <<< "$NC_GROUPS"
                 for GROUP in "${NC_GROUPS[@]}"
                 do
-                    args+=("$GROUP  " "" OFF)
+                    if [ "$GROUP" = "admin" ]
+                    then
+                        args+=("$GROUP  " "" ON)
+                    else
+                        args+=("$GROUP  " "" OFF)
+                    fi
                 done
                 SELECTED_GROUPS=$("${args[@]}" 3>&1 1>&2 2>&3)
             fi
             # Select Nextcloud users
             if [[ "$choice" == *"Choose some Nextcloud users"* ]]
             then
-                args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which users shall get access to the share.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+                args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which Nextcloud users shall get access to the share.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
                 NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
                 mapfile -t NC_USER <<< "$NC_USER"
                 for USER in "${NC_USER[@]}"
@@ -212,7 +217,10 @@ As a hint:
             # Mount to admin group if no group or user chosen
             if [ -z "$SELECTED_GROUPS" ] && [ -z "$SELECTED_USER" ]
             then
-                occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
+                if ! yesno_box_no "Attention! You haven't selected any Nextcloud group or user.\nIs this correct?\nIf you select 'yes', it will be visible to all users of your Nextcloud instance.\nIf you select 'no', it will be only visible to Nextcloud users in the admin group." "$SUBTITLE"
+                then
+                    occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
+                fi
             fi
             # Mount to chosen Nextcloud groups
             if [ -n "$SELECTED_GROUPS" ]
