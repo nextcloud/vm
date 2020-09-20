@@ -194,7 +194,7 @@ then
     if ! does_this_docker_exist containrrr/watchtower
     then
         # Bitwarden RS
-        docker_update_specific "bitwarden_rs" "Bitwarden RS"
+        docker_update_specific 'bitwardenrs/server' "Bitwarden RS"
         # Collabora CODE
         docker_update_specific 'collabora/code' 'Collabora'
         # OnlyOffice
