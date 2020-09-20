@@ -202,7 +202,8 @@ then
             if [ -d /root/bwdata ] || [ -d "$BITWARDEN_HOME"/bwdata ]
             then
                 docker_prune_this containrrr/watchtower
-                notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower we have removed Watchtower from this server. Updates will now happen for each container seperatly instead"
+                docker_prune_this v2tec/watchtower
+                notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead"
             fi
         fi
     fi
