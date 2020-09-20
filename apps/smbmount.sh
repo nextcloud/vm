@@ -145,11 +145,11 @@ As a hint:
             fi
             # Choose the name for the external storage
             NEWNAME_BACKUP="$NEWNAME"
-            if yesno_box_no "Do you want to use a different name for this external storage inside Nextcloud or just use the default name $NEWNAME?" "$SUBTITLE"
+            if yesno_box_yes "Do you want to use a different name for this external storage inside Nextcloud or just use the default name $NEWNAME?" "$SUBTITLE"
             then
                 while :
                 do
-                    NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this path $NEWPATH.\nYou can type in exit and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.\nAlso, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.\nAdvice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
+                    NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this mount.\nYou can type in exit and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.\nAlso, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.\nAdvice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
                     if ! echo "$NEWNAME" | grep -q "^[a-zA-Z/]"
                     then
                         msg_box "The name has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid." "$SUBTITLE"
