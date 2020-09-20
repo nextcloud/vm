@@ -195,19 +195,21 @@ fi
 if is_docker_running
 then
     # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower to avoid updating Bitwarden again, and only update the specified docker images above
-    if does_this_docker_exist containrrr/watchtower
+    if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
-        if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
+        if [ -d /root/bwdata ] || [ -d "$BITWARDEN_HOME"/bwdata ]
         then
-            if [ -d /root/bwdata ] || [ -d "$BITWARDEN_HOME"/bwdata ]
+            if does_this_docker_exist 'containrrr/watchtower'
             then
-                docker stop "$(docker container ls | grep 'containrrr/watchtower' | awk '{print $1}' | tail -1)"
-                docker stop "$(docker container ls | grep 'v2tec/watchtower' | awk '{print $1}' | tail -1)"
-                docker container prune -f
-                docker image prune -a -f
-                docker volume prune -f
-                notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
+                docker stop watchtower
+            elif does_this_docker_exist 'v2tec/watchtower'
+            then
+                docker stop watchtower
             fi
+            docker container prune -f
+            docker image prune -a -f
+            docker volume prune -f
+            notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
         fi
     fi
     # Update selected images
