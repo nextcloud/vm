@@ -145,14 +145,17 @@ As a hint:
             fi
             # Choose the name for the external storage
             NEWNAME_BACKUP="$NEWNAME"
-            if yesno_box_yes "Do you want to use a different name for this external storage inside Nextcloud or just use the default $NEWNAME?" "$SUBTITLE"
+            if yesno_box_yes "Do you want to use a different name for this external storage inside Nextcloud or just use the default name $NEWNAME?" "$SUBTITLE"
             then
                 while :
                 do
-                    NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this share.\nYou can type in exit to use the default $NEWNAME_BACKUP\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'and spaces. It has to start with a letter." "$SUBTITLE")
-                    if ! [[ "$NEWNAME" =~ ^[a-zA-Z][-._a-zA-Z0-9\ ]+$ ]]
+                    NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this mount.\nYou can type in exit and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.\nAlso, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.\nAdvice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
+                    if ! echo "$NEWNAME" | grep -q "^[a-zA-Z/]"
                     then
-                        msg_box "Please only use those characters. 'a-z' 'A-Z' '.-_' and '0-9'and spaces. It has to start with a letter." "$SUBTITLE"
+                        msg_box "The name has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid." "$SUBTITLE"
+                    elif ! [[ "$NEWNAME" =~ ^[-._a-zA-Z0-9\ /]+$ ]]
+                    then
+                        msg_box "Allowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
                     elif [ "$NEWNAME" = "exit" ]
                     then
                         NEWNAME="$NEWNAME_BACKUP"
@@ -170,11 +173,21 @@ As a hint:
                 READONLY="false"
             fi
             # Choose if sharing shall be enabled
-            if yesno_box_yes "Do you want to enable sharing for this external storage?" "$SUBTITLE"
+            if [ "$NEWNAME" != "/" ]
             then
-                SHARING="true"
+                if yesno_box_yes "Do you want to enable sharing for this external storage $NEWNAME?" "$SUBTITLE"
+                then
+                    SHARING="true"
+                else
+                    SHARING="false"
+                fi
             else
-                SHARING="false"
+                if yesno_box_no "Do you want to enable sharing for this external storage $NEWNAME?" "$SUBTITLE"
+                then
+                    SHARING="true"
+                else
+                    SHARING="false"
+                fi
             fi
             # Groups and User Menu
             choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose to enable this external storage $NEWNAME for specific Nextcloud users or groups.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
