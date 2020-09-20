@@ -712,10 +712,13 @@ to see all for the specific SMB-user available SMB-shares:
         while :
         do
             # Type in the new mountname that will be used in NC
-            NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this path $NEWPATH.\nYou can type in exit and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only 'a-z' 'A-Z' '.-_' and '0-9'and spaces. It has to start with a letter."  "$SUBTITLE")
-            if ! [[ "$NEWNAME" =~ ^[a-zA-Z][-._a-zA-Z0-9\ ]+$ ]]
+            NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this path $NEWPATH.\nYou can type in exit and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.\nAlso, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.\nAdvice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
+            if ! echo "$NEWNAME" | grep -q "^[a-zA-Z/]"
             then
-                msg_box "Please only use those characters: 'a-z' 'A-Z' '.-_' and '0-9' and spaces. It has to start with a letter." "$SUBTITLE"
+                msg_box "The name has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid." "$SUBTITLE"
+            elif ! [[ "$NEWNAME" =~ ^[-._a-zA-Z0-9\ /]+$ ]]
+            then
+                msg_box "Allowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
             elif [ "$NEWNAME" = "exit" ]
             then
                 NEWNAME="$NEWNAME_BACKUP"
@@ -746,11 +749,21 @@ to see all for the specific SMB-user available SMB-shares:
     fi
 
     # Choose if sharing shall get enabled for that mount
-    if yesno_box_yes "Do you want to enable sharing for this external storage $NEWNAME?" "$SUBTITLE"
+    if [ "$NEWNAME" != "/" ]
     then
-        SHARING="true"
+        if yesno_box_yes "Do you want to enable sharing for this external storage $NEWNAME?" "$SUBTITLE"
+        then
+            SHARING="true"
+        else
+            SHARING="false"
+        fi
     else
-        SHARING="false"
+        if yesno_box_no "Do you want to enable sharing for this external storage $NEWNAME?" "$SUBTITLE"
+        then
+            SHARING="true"
+        else
+            SHARING="false"
+        fi
     fi
 
     # Select NC groups and/or users
