@@ -206,22 +206,19 @@ then
                 docker container prune -f
                 docker image prune -a -f
                 docker volume prune -f
-                notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead"
+                notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
             fi
         fi
     fi
     # Update selected images
-    if ! does_this_docker_exist containrrr/watchtower
-    then
-        # Bitwarden RS
-        docker_update_specific 'bitwardenrs/server' "Bitwarden RS"
-        # Collabora CODE
-        docker_update_specific 'collabora/code' 'Collabora'
-        # OnlyOffice
-        docker_update_specific 'onlyoffice/documentserver' 'OnlyOffice'
-        # Full Text Search
-        docker_update_specific 'ark74/nc_fts' 'Full Text Search'
-    fi
+    # Bitwarden RS
+    docker_update_specific 'bitwardenrs/server' "Bitwarden RS"
+    # Collabora CODE
+    docker_update_specific 'collabora/code' 'Collabora'
+    # OnlyOffice
+    docker_update_specific 'onlyoffice/documentserver' 'OnlyOffice'
+    # Full Text Search
+    docker_update_specific 'ark74/nc_fts' 'Full Text Search'
 fi
 
 # Cleanup un-used packages
