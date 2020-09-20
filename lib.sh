@@ -1301,9 +1301,9 @@ fi
 # Update specific Docker image
 # docker_update_specific bitwarden_rs Bitwarden RS (actual docker image = $1, the name in text = $2
 docker_update_specific() {
-if does_this_docker_exist $1 $2
+if does_this_docker_exist "$1" "$2"
 then
-    docker run --rm --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once $1
+    docker run --rm --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
     print_text_in_color "$IGreen" "$2 docker image just got updated!"
     notify_admin_gui "Docker image just got updated!" "We just updated $2 docker image automatically!"
 fi
