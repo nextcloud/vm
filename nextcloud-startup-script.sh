@@ -217,7 +217,6 @@ download_script MENU menu
 download_script MENU server_configuration
 download_script MENU nextcloud_configuration
 download_script MENU additional_apps
-download_script NOT_SUPPORTED not-supported
 
 if home_sme_server
 then
