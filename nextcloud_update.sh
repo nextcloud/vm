@@ -190,24 +190,11 @@ fi
 
 # Update docker containers and remove Watchtower if Bitwarden is preseent due to compatibility issue
 # If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
-# If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates individually 
-# dependning on which docker containers that exist.
+# If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates individually dependning on which docker 
+# containers that exist.
 if is_docker_running
 then
-    # Begin with updating all docker images below
-    # Watchtower itself
-    docker_update_specific 'containrrr/watchtower' 'Watchtower'
-    # Update selected images
-    # Bitwarden RS
-    docker_update_specific 'bitwardenrs/server' "Bitwarden RS"
-    # Collabora CODE
-    docker_update_specific 'collabora/code' 'Collabora'
-    # OnlyOffice
-    docker_update_specific 'onlyoffice/documentserver' 'OnlyOffice'
-    # Full Text Search
-    docker_update_specific 'ark74/nc_fts' 'Full Text Search'
-    
-    # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower to avoid updating Bitwarden again, and only update the specified docker images above.
+    # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower to avoid updating Bitwarden again, and only update the specified docker images above
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
         if [ -d /root/bwdata ] || [ -d "$BITWARDEN_HOME"/bwdata ]
@@ -225,6 +212,15 @@ then
             notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
         fi
     fi
+    # Update selected images
+    # Bitwarden RS
+    docker_update_specific 'bitwardenrs/server' "Bitwarden RS"
+    # Collabora CODE
+    docker_update_specific 'collabora/code' 'Collabora'
+    # OnlyOffice
+    docker_update_specific 'onlyoffice/documentserver' 'OnlyOffice'
+    # Full Text Search
+    docker_update_specific 'ark74/nc_fts' 'Full Text Search'
 fi
 
 # Cleanup un-used packages
