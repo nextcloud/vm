@@ -149,7 +149,7 @@ As a hint:
             then
                 while :
                 do
-                    NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this mount.\nYou can type in exit and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.\nAlso, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.\nAdvice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
+                    NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this mount.\nYou can type in 'exit' and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.\nAlso, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.\nAdvice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
                     if ! echo "$NEWNAME" | grep -q "^[a-zA-Z/]"
                     then
                         msg_box "The name has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid." "$SUBTITLE"
@@ -262,11 +262,109 @@ As a hint:
             occ_command files_external:option "$MOUNT_ID" readonly "$READONLY"
             occ_command files_external:option "$MOUNT_ID" enable_sharing "$SHARING"
 
-# Inform the user that mounting was successful
-msg_box "Your mount $NEWNAME was successful, congratulations!
+            # Inform the user that mounting was successful
+            msg_box "Your mount $NEWNAME was successful, congratulations!
 You are now using the Nextcloud external storage app to access files there.
 The Share has been mounted to the Nextcloud admin-group if not specifically changed to users or groups.
 You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to edit external storages in Nextcloud."
+
+            # Inform the user that he can setup inotify for this external storage
+            if ! yesno_box_no "Do you want to enable inotify for this external storage in Nextcloud?
+It is only recommended if the content can get changed externally and will let Nextcloud track if this external storage was externally changed.
+If you choose 'yes', we will install a needed PHP-plugin, the files_inotify app and create a cronjob for you."
+            then
+                break
+            fi
+
+            # Warn a second time
+            if ! yesno_box_no "Are you sure, that you want to enable inotify for this external storage?
+Please note, that this will need around 1 KB additonal RAM per folder.
+We will set the max folder variable to 524288 which will be around 500 MB of additionally needed RAM if you have so many folders.
+If you have more folders, you will need to raise this value manually inside '/etc/sysctl.conf'.
+Please also note, that this max folder variable counts for all external storages for which the inotify option gets activated.
+We please you to do the math yourself if the number is high enough for your setup."
+            then
+                break
+            fi
+
+            # Install the inotify PHP extension
+            # https://github.com/icewind1991/files_inotify/blob/master/README.md
+            if ! pecl list | grep -q inotify
+            then 
+                print_text_in_color "$ICyan" "Installing the PHP inotify extension..."
+                yes no | pecl install inotify
+                local INOTIFY_INSTALL=1
+            fi
+            if [ ! -f $PHP_MODS_DIR/inotify.ini ]
+            then
+                touch $PHP_MODS_DIR/inotify.ini
+            fi
+            if ! grep -qFx extension=inotify.so $PHP_MODS_DIR/inotify.ini
+            then
+                echo "# PECL inotify" > $PHP_MODS_DIR/inotify.ini
+                echo "extension=inotify.so" >> $PHP_MODS_DIR/inotify.ini
+                check_command phpenmod -v ALL inotify
+            fi
+
+            # Set fs.inotify.max_user_watches to 524288
+            # https://unix.stackexchange.com/questions/13751/kernel-inotify-watch-limit-reached
+            # https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers
+            if ! grep -q "fs.inotify.max_user_watches" /etc/sysctl.conf
+            then
+                print_text_in_color "$ICyan" "Setting the max folder variable to 524288..."
+                echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+                sudo sysctl -p
+            fi
+
+            # Create syslog for files_inotify
+            touch "$VMLOGS"/files_inotify.log
+            chown www-data:www-data "$VMLOGS"/files_inotify.log
+
+            # Inform the user
+            if [ -n "$INOTIFY_INSTALL" ]
+            then
+                if ! yesno_box_yes "The inotify PHP extension was successfully installed, the max folder variable was set to 524288 and $VMLOGS/files_inotify.log was created.
+Just press [ENTER] (on the default 'yes') to install the needed files_inotify app and setup the cronjob for this external storage."
+                then
+                    break
+                fi
+            fi
+
+            # Install files_inotify
+            if ! is_app_installed files_inotify
+            then
+                # This check is needed to check if the app is compatible with the current NC version
+                print_text_in_color "$ICyan" "Installing the files_inotify app..."
+                if ! occ_command_no_check app:install files_inotify
+                then
+                    # Inform the user if the app couldn't get installed
+                    msg_box "It seems like the files_inotify app isn't compatible with the current NC version. Cannot proceed."
+                    # Remove the app to be able to install it again in another try
+                    occ_command_no_check app:remove files_inotify
+                    break
+                fi
+            fi
+            
+            # Make sure that the app is enabled, too
+            if ! is_app_enabled files_inotify
+            then
+                occ_command_no_check app:enable files_inotify
+            fi
+
+            # Add crontab for this external storage
+            print_text_in_color "$ICyan" "Generating crontab..."
+            crontab -u www-data -l | { cat; echo "@reboot sleep 20 && php -f $NCPATH/occ files_external:notify -v $MOUNT_ID >> $VMLOGS/files_inotify.log"; } | crontab -u www-data -
+
+            # Run the command in a subshell and don't exit if the smbmount script exits
+            nohup sudo -u www-data php "$NCPATH"/occ files_external:notify -v "$MOUNT_ID" >> $VMLOGS/files_inotify.log &
+            
+            # Inform the user
+            msg_box "Congratulations, everything was successfully installed and setup.
+
+Please note that there are some known issues with this inotify option.
+It could happen that it doesn't work as expected.
+Please look at this issue for further information:
+https://github.com/icewind1991/files_inotify/issues/16"
             break
         fi
     fi
