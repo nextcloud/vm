@@ -158,7 +158,7 @@ then
                 echo "extension=igbinary.so" >> "$PHP_INI"
             fi
         fi
-        if pecl list | grep smbclient >/dev/null 2>&1
+        if pecl list | grep -q smbclient
         then
             yes no | pecl upgrade smbclient
             # Check if igbinary.so is enabled
@@ -167,13 +167,22 @@ then
                 echo "extension=smbclient.so" >> "$PHP_INI"
             fi
         fi
-        if pecl list | grep apcu >/dev/null 2>&1
+        if pecl list | grep -q apcu
         then
             yes no | pecl upgrade apcu
             # Check if apcu.so is enabled
             if ! grep -qFx extension=apcu.so "$PHP_INI"
             then
                 echo "extension=apcu.so" >> "$PHP_INI"
+            fi
+        fi
+        if pecl list | grep -q inotify
+        then 
+            yes no | pecl upgrade inotify
+            # Check if inotify.so is enabled
+            if ! grep -qFx extension=inotify.so "$PHP_INI"
+            then
+                echo "extension=inotify.so" >> "$PHP_INI"
             fi
         fi
     fi
