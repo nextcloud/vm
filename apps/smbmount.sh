@@ -280,7 +280,7 @@ If you choose 'yes', we will install a needed PHP-plugin, the files_inotify app 
             if ! yesno_box_no "Are you sure, that you want to enable inotify for this external storage?
 Please note, that this will need around 1 KB additonal RAM per folder in this external storage.
 We will set the max folder variable to 524288 which will be around 500 MB of additionally needed RAM if you have so many folders.
-If you have more folders in this external storage, you will need to raise this value manually inside '/etc/sysctl.conf'.
+If you have more folders, you will need to raise this value manually inside '/etc/sysctl.conf'.
 Please also note, that this max folder variable counts for all external storages for which the inotify option gets activated.
 We please you to do the math yourself if the number is high enough for your setup."
             then
