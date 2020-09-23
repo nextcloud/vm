@@ -90,7 +90,7 @@ RECIPIENT=$(input_box_flow "Please enter the recipient mail-address that shall r
 msg_box "These are the settings that will be used. Please check that everything seems correct.
 
 Mailserver URL=$MAIL_SERVER
-Protocol=$PROTOCOL
+Encryption=$PROTOCOL
 SMTP-port=$SMTP_PORT
 SMTP-username=$MAIL_USERNAME
 SMTP-password=$MAIL_PASSWORD
