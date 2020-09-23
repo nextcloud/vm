@@ -40,7 +40,8 @@ choice=$(whiptail --title "$TITLE" --checklist "Choose what you want to configur
 "DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
-"Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF 3>&1 1>&2 2>&3)
+"Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF \
+"SMTP Mail" "(Enable beeing notified by mail from your server)" "$STARTUP_SWITCH" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Static IP"*)
@@ -96,6 +97,10 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
         print_text_in_color "$ICyan" "Downloading the Disk Check script..."
         run_script DISK smartctl
     ;;&
+    *"SMTP Mail"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the SMTP Mail script..."
+        run_script ADDONS smtp-mail
     *)
     ;;
 esac

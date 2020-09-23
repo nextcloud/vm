@@ -1409,6 +1409,22 @@ do
 done
 }
 
+# Use this to send system mails
+# e.g.: send_mail "subject" "text"
+send_mail() {
+    local RECIPIENT
+    if [ -f /etc/msmtprc ]
+    then
+        RECIPIENT=$(grep "recipient=" /etc/msmtprc)
+        RECIPIENT="${RECIPIENT##*recipient=}"
+        if [ -n "$RECIPIENT" ]
+        then
+            print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
+            echo -e "$2" | mail --subject "$1" "$RECIPIENT"
+        fi
+    fi
+}
+
 zpool_import_if_missing() {
 # ZFS needs to be installed
 if ! is_this_installed zfsutils-linux
