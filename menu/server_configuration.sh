@@ -101,6 +101,7 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
         clear
         print_text_in_color "$ICyan" "Downloading the SMTP Mail script..."
         run_script ADDONS smtp-mail
+    ;;&
     *)
     ;;
 esac
