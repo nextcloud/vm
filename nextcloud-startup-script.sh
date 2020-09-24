@@ -101,6 +101,16 @@ fi
 # Nextcloud 18 is required
 lowest_compatible_nc 18
 
+msg_box "Welcome to the first setup of the Nextcloud appliance!
+
+This version of the VM is not the full version, it's meant for testing purposes only.
+The installation will be local, without TLS or any advanced functions.
+
+If you want to get the full version VM with everything that's missing here, you can download it directly from our provider.
+
+To do so, please visit:
+https://www.hanssonit.se/nextcloud-vm/"
+
 # Run the startup menu
 bash $SCRIPTS/startup_configuration.sh
 
