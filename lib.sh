@@ -1420,7 +1420,7 @@ send_mail() {
         if [ -n "$RECIPIENT" ]
         then
             print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
-            echo -e "$2" | mail --subject "$1" "$RECIPIENT"
+            echo -e "$2" | mail --subject "NcVM - $1" "$RECIPIENT"
         fi
     fi
 }
