@@ -47,9 +47,9 @@ msg_box "Welcome to the first setup of your Nextcloud appliance!
 This version of the VM is not the full version, it's meant for testing purposes only.
 The installation will be local, without valid TLS or any advanced functions e.g: Collabora, Talk, or OnlyOffice.
 
-If you want to get the full version VM with everything that's missing here, you can download it directly from our partner.
+If you rather want to get the full version VM with everything that's missing here, you can download it directly from our partner.
 
-If you rather want the full version, please visit:
+To download the full version, please visit:
 https://www.hanssonit.se/nextcloud-vm/"
 
 # Get all needed variables from the library
