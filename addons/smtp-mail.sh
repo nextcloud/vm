@@ -5,7 +5,8 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="SMTP Mail"
-SCRIPT_EXPLAINER="This script helps setting up a SMTP client for the OS, that will be used to send Mails about failed Cronjob's and such."
+SCRIPT_EXPLAINER="This script helps setting up a SMTP client for the OS, \
+that will be used to send Mails about failed Cronjob's and such."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -77,14 +78,16 @@ The default port based on your protocol setting is '$DEFAULT_PORT'.
 Please type the port that you want to use into the inputbox.")
 
 # Enter your mail username
-MAIL_USERNAME=$(input_box_flow "Please enter the username for the login to your mail provider.\nE.g. mail@example.com
+MAIL_USERNAME=$(input_box_flow "Please enter the username for the login to your mail provider.
+E.g. mail@example.com
 Please note: the domain used for your mail username and the mailserver domain have to match!")
 
 # Enter your mailuser password
 MAIL_PASSWORD=$(input_box_flow "Please enter the password for your mailserver user.")
 
 # Enter the recipient
-RECIPIENT=$(input_box_flow "Please enter the recipient mail-address that shall receive all mails.\nE.g. mail@example.com")
+RECIPIENT=$(input_box_flow "Please enter the recipient mail-address that shall receive all mails.
+E.g. mail@example.com")
 
 # Present what we gathered, if everything okay, write to files
 msg_box "These are the settings that will be used. Please check that everything seems correct.
@@ -158,7 +161,8 @@ set sendmail="/usr/bin/msmtp -t"
 DEFINE_MAIL
 
 # Test sending of mails
-if ! echo -e "Congratulations!\nThis testmail has reached you, so it seems like everything was setup correctly." | mail -s "Testmail from your NcVM" "$RECIPIENT" &>/dev/null
+if ! echo -e "Congratulations!\nThis testmail has reached you, \
+so it seems like everything was setup correctly." | mail -s "Testmail from your NcVM" "$RECIPIENT" &>/dev/null
 then
     # Fail message
     msg_box "It seems like something has failed.
