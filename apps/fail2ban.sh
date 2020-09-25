@@ -31,8 +31,8 @@ then
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'Fail2Ban' is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall Fail2Ban" "" \
-    "Uninstall Fail2Ban" "" 3>&1 1>&2 2>&3)
+"Reinstall Fail2Ban" "" \
+"Uninstall Fail2Ban" "" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Uninstall Fail2Ban")
@@ -92,7 +92,8 @@ do
         if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
         then
             # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
-            print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
+            print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - \
+deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
             xargs rm -f <<< "$NCLOG"
             # Set logging
             occ_command config:system:set log_type --value=file

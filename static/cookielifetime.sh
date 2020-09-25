@@ -53,7 +53,12 @@ case "$choice" in
     "Custom")
         while :
         do
-            COOKIE_LIFETIME=$(input_box "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\n\nPlease enter the Cookie Lifetime in seconds, so e.g. 1800 for 30 minutes or 3600 for 1 hour\n\n You can not set a value below 30 minutes (1800 seconds).")
+            COOKIE_LIFETIME=$(input_box "Configure the logout time (in seconds) which \
+will forcefully logout the Nextcloud user from the web browser when the timeout is reached.
+
+Please enter the Cookie Lifetime in seconds, so e.g. 1800 for 30 minutes or 3600 for 1 hour
+
+You can not set a value below 30 minutes (1800 seconds).")
             if ! check_if_number "$COOKIE_LIFETIME"
             then
                 msg_box "The value you entered doesn't seem to be a number between 0-9, please enter a valid number."

@@ -85,7 +85,8 @@ case "$choice" in
                 snap connect bpytop:process-control
                 snap connect bpytop:physical-memory-observe
                 hash -r
-                msg_box "BPYTOP is now installed! Check out the amazing stats by runnning 'bpytop' from your CLI.\n\nYou can check out their Gihub repo here: https://github.com/aristocratos/bpytop/blob/master/README.md" "$SUBTITLE"
+                msg_box "BPYTOP is now installed! Check out the amazing stats by runnning 'bpytop' from your CLI.
+You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/blob/master/README.md" "$SUBTITLE"
             else
                 msg_box "It seems like the installation of BPYTOP failed. Please try again." "$SUBTITLE"
             fi
@@ -107,7 +108,8 @@ case "$choice" in
         print_text_in_color "$ICyan" "Installing LDAP..."
         if install_and_enable_app user_ldap
         then
-            msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done." "$SUBTITLE"
+            msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap \
+to finish the setup once this script is done." "$SUBTITLE"
         else
             msg_box "LDAP installation failed." "$SUBTITLE"
         fi

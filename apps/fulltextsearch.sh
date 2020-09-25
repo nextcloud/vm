@@ -37,8 +37,8 @@ then
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'Fulltextsearch' is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall Fulltextsearch" "" \
-    "Uninstall Fulltextsearch" "" 3>&1 1>&2 2>&3)
+"Reinstall Fulltextsearch" "" \
+"Uninstall Fulltextsearch" "" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Uninstall Fulltextsearch")

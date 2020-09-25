@@ -31,7 +31,7 @@ mkdir -p "$DOCKERBACKUP"
 # Check if aufs and don't run
 if grep -q "aufs" /etc/default/docker
 then
-msg_box "This script doesn't support images that uses the AUFS driver, sorry
+  msg_box "This script doesn't support images that uses the AUFS driver, sorry
 
 You are welcome to send a PR, or report an issue here: $ISSUES"
     exit 1

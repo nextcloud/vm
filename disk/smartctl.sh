@@ -45,5 +45,7 @@ if ! crontab -u root -l | grep -w 'smartctl.sh'
 then
     print_text_in_color "$ICyan" "Adding weekly crontab..."
     crontab -u root -l | { cat; echo "12 06 * * 1 $SCRIPTS/smartctl.sh"; } | crontab -u root -
-    msg_box "S.M.A.R.T is now configured scheluded to run every Monday at 06:12.\n\nYou will be notified with the results each time."
+    msg_box "S.M.A.R.T is now configured scheluded to run every Monday at 06:12.
+    
+You will be notified with the results each time."
 fi

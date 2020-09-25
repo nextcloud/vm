@@ -46,17 +46,23 @@ case "$choice" in
     *"Share-folder"*)
         clear
         SUBTITLE="Share-folder"
-        msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour." "$SUBTITLE"
+        msg_box "This option will make all Nextcloud shares from \
+other users appear in a folder named 'Shared' in the Nextcloud GUI.
+
+If you don't enable this option, all shares will appear directly in \
+the Nextcloud GUI root folder, which is the default behaviour." "$SUBTITLE"
         if yesno_box_yes "Do you want to enable this option?" "$SUBTITLE"
         then
             occ_command config:system:set share_folder --value="/Shared"
-            msg_box "All new Nextcloud shares from other users will appear in the 'Shared' folder from now on." "$SUBTITLE"
+            msg_box "All new Nextcloud shares from other \
+users will appear in the 'Shared' folder from now on." "$SUBTITLE"
         fi
     ;;&
     *"Disable workspaces"*)
         clear
         SUBTITLE="Disable workspaces"
-        msg_box "This option will will disable a feature named 'rich workspaces'. It will disable the top notes in GUI." "$SUBTITLE"
+        msg_box "This option will will disable a feature named 'rich workspaces'. \
+It will disable the top notes in GUI." "$SUBTITLE"
         if yesno_box_yes "Do you want to disable rich workspaces?" "$SUBTITLE"
         then
             # Check if text is enabled
@@ -77,14 +83,16 @@ case "$choice" in
         # Greater than 18.0.3 is 18.0.4 which is required
         if version_gt "$CURRENTVERSION" "18.0.3"
         then
-            msg_box "This option will disable the with Nextcloud 18 introduced user flows. It will disable the user flow settings. Admin flows will continue to work." "$SUBTITLE"
+            msg_box "This option will disable the with Nextcloud 18 introduced user flows. \
+It will disable the user flow settings. Admin flows will continue to work." "$SUBTITLE"
             if yesno_box_yes "Do you want to disable user flows?" "$SUBTITLE"
             then
                 occ_command config:app:set workflowengine user_scope_disabled --value yes
                 msg_box "User flow settings are now disabled." "$SUBTITLE"
             fi
         else
-            msg_box "'Disable user flows' is only available on Nextcloud 18.0.4 and above.\nPlease upgrade by running 'sudo bash /var/scripts/update.sh'" "$SUBTITLE"
+            msg_box "'Disable user flows' is only available on Nextcloud 18.0.4 and above.
+Please upgrade by running 'sudo bash /var/scripts/update.sh'" "$SUBTITLE"
             sleep 1
         fi
     ;;&

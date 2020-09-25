@@ -30,12 +30,14 @@ install_if_not whiptail
 # Check MAX_COUNT
 if ! [ $MAX_COUNT -gt 0 ]
 then
-    msg_box "The MAX_COUNT variable has to be a positive integer, greater than 0. Please change it accordingly. Recommended is MAX_COUNT=16, because not all menus work reliably with a higher count."
+    msg_box "The MAX_COUNT variable has to be a positive integer, greater than 0. Please change it accordingly. \
+Recommended is MAX_COUNT=16, because not all menus work reliably with a higher count."
     exit
 fi
 
 # Inform the user
-msg_box "This script automates mounting SMB-shares locally in your system and adds them automatically as external storage to your Nextcloud."
+msg_box "This script automates mounting SMB-shares locally in your \
+system and adds them automatically as external storage to your Nextcloud."
 if ! yesno_box_yes "Do you want to proceed with this script?"
 then
     exit 1
@@ -72,8 +74,9 @@ do
 done
 if [ $count -gt $MAX_COUNT ]
 then
-msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.
-If you really want to mount more, you can simply download the smb-mount script directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:
+    msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.
+If you really want to mount more, you can simply download the smb-mount script \
+directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:
 'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh /var/scripts'
 'sudo nano /var/scripts/smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file
 'sudo bash /var/scripts/smbmount.sh' # Execute the script." "$SUBTITLE"
@@ -81,7 +84,8 @@ If you really want to mount more, you can simply download the smb-mount script d
 fi
 
 # Enter SMB-server and Share-name
-SERVER_SHARE_NAME=$(input_box_flow "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
+SERVER_SHARE_NAME=$(input_box_flow "Please enter the server and Share-name like this:
+//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
 SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
 
 # Enter the SMB-user
@@ -113,7 +117,7 @@ do
         if ! mountpoint -q $SMBSHARES/$count
         then
             # If not remove this line from fstab
-msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.
+            msg_box "It seems like the mount wasn't successful. It will get deleted now. Please try again.
 As a hint:
 - you might fix the connection problem by enabling SMB3 on your SMB-server.
 - You could also try to use the IP-address of the SMB-server instead of the Server-name, if not already done.
@@ -126,7 +130,8 @@ As a hint:
             break
         else
             # Inform the user that mounting was successful
-            msg_box "Your mount was successful, congratulations!\nIt's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
+            msg_box "Your mount was successful, congratulations!
+It's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
             # Check if Nextcloud is existing
             NEWNAME="SMB$count"
             if ! [ -f $NCPATH/occ ]
@@ -145,17 +150,23 @@ As a hint:
             fi
             # Choose the name for the external storage
             NEWNAME_BACKUP="$NEWNAME"
-            if yesno_box_yes "Do you want to use a different name for this external storage inside Nextcloud or just use the default name $NEWNAME?" "$SUBTITLE"
+            if yesno_box_yes "Do you want to use a different name for this \
+external storage inside Nextcloud or just use the default name $NEWNAME?" "$SUBTITLE"
             then
                 while :
                 do
-                    NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this mount.\nYou can type in 'exit' and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.\nAlso, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.\nAdvice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
+                    NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this mount.
+You can type in 'exit' and press [ENTER] to use the default $NEWNAME_BACKUP
+Allowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.
+Also, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.
+Advice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
                     if ! echo "$NEWNAME" | grep -q "^[a-zA-Z/]"
                     then
                         msg_box "The name has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid." "$SUBTITLE"
                     elif ! [[ "$NEWNAME" =~ ^[-._a-zA-Z0-9\ /]+$ ]]
                     then
-                        msg_box "Allowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
+                        msg_box "Allowed characters are only spaces, \
+those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
                     elif [ "$NEWNAME" = "exit" ]
                     then
                         NEWNAME="$NEWNAME_BACKUP"
@@ -195,8 +206,8 @@ As a hint:
 If you select no group and no user, the external storage will be visible to all users of your instance.
 Please note that you cannot come back to this menu.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-            "Choose some Nextcloud groups" "" ON \
-            "Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
+"Choose some Nextcloud groups" "" ON \
+"Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
             unset SELECTED_USER
             unset SELECTED_GROUPS
             # Select Nextcloud groups
@@ -240,7 +251,9 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
             # Mount to admin group if no group or user chosen
             if [ -z "$SELECTED_GROUPS" ] && [ -z "$SELECTED_USER" ]
             then
-                if ! yesno_box_no "Attention! You haven't selected any Nextcloud group or user.\nIs this correct?\nIf you select 'yes', it will be visible to all users of your Nextcloud instance.\nIf you select 'no', it will be only visible to Nextcloud users in the admin group." "$SUBTITLE"
+                if ! yesno_box_no "Attention! You haven't selected any Nextcloud group or user.
+Is this correct?\nIf you select 'yes', it will be visible to all users of your Nextcloud instance.
+If you select 'no', it will be only visible to Nextcloud users in the admin group." "$SUBTITLE"
                 then
                     occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
                 fi
@@ -276,11 +289,13 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
             msg_box "Your mount $NEWNAME was successful, congratulations!
 You are now using the Nextcloud external storage app to access files there.
 The Share has been mounted to the Nextcloud admin-group if not specifically changed to users or groups.
-You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to edit external storages in Nextcloud."
+You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' \
+to edit external storages in Nextcloud."
 
             # Inform the user that he can setup inotify for this external storage
             if ! yesno_box_no "Do you want to enable inotify for this external storage in Nextcloud?
-It is only recommended if the content can get changed externally and will let Nextcloud track if this external storage was externally changed.
+It is only recommended if the content can get changed externally and \
+will let Nextcloud track if this external storage was externally changed.
 If you choose 'yes', we will install a needed PHP-plugin, the files_inotify app and create a cronjob for you."
             then
                 break
@@ -289,9 +304,11 @@ If you choose 'yes', we will install a needed PHP-plugin, the files_inotify app 
             # Warn a second time
             if ! yesno_box_no "Are you sure, that you want to enable inotify for this external storage?
 Please note, that this will need around 1 KB additonal RAM per folder.
-We will set the max folder variable to 524288 which will be around 500 MB of additionally needed RAM if you have so many folders.
+We will set the max folder variable to 524288 which will be around \
+500 MB of additionally needed RAM if you have so many folders.
 If you have more folders, you will need to raise this value manually inside '/etc/sysctl.conf'.
-Please also note, that this max folder variable counts for all external storages for which the inotify option gets activated.
+Please also note, that this max folder variable counts for \
+all external storages for which the inotify option gets activated.
 We please you to do the math yourself if the number is high enough for your setup."
             then
                 break
@@ -333,8 +350,10 @@ We please you to do the math yourself if the number is high enough for your setu
             # Inform the user
             if [ -n "$INOTIFY_INSTALL" ]
             then
-                if ! yesno_box_yes "The inotify PHP extension was successfully installed, the max folder variable was set to 524288 and $VMLOGS/files_inotify.log was created.
-Just press [ENTER] (on the default 'yes') to install the needed files_inotify app and setup the cronjob for this external storage."
+                if ! yesno_box_yes "The inotify PHP extension was successfully installed, \
+the max folder variable was set to 524288 and $VMLOGS/files_inotify.log was created.
+Just press [ENTER] (on the default 'yes') to install the needed \
+files_inotify app and setup the cronjob for this external storage."
                 then
                     break
                 fi
@@ -415,7 +434,8 @@ then
 fi
 
 args=(whiptail --title "$TITLE - $SUBTITLE" --checklist \
-"This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.
+"This option let you mount SMB-shares to connect to network-shares \
+from the host-computer or other machines in the local network.
 Choose which one you want to mount.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
@@ -444,7 +464,9 @@ do
         then
             msg_box "It seems like the mount of $SMBSHARES/$count wasn't successful. Please try again." "$SUBTITLE"
         else
-            msg_box "Your mount was successful, congratulations!\n It is accessible in your root directory in $SMBSHARES/$count\nYou can use the Nextcloud external storage app to access files there." "$SUBTITLE"
+            msg_box "Your mount was successful, congratulations!
+It is accessible in your root directory in $SMBSHARES/$count
+You can use the Nextcloud external storage app to access files there." "$SUBTITLE"
         fi
     fi
     count=$((count+1))
@@ -543,7 +565,8 @@ then
     was_mounted=yes
     if mountpoint -q "$SMBSHARES/$count"
     then
-        msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful while trying to change the mount. Please try again." "$SUBTITLE"
+        msg_box "It seems like the unmount of $SMBSHARES/$count wasn't \
+successful while trying to change the mount.\nPlease try again." "$SUBTITLE"
         return
     fi
 fi
@@ -579,7 +602,8 @@ case "$choice" in
     *"Share"*)
         clear
         # Enter SMB-server and Share-name
-        SERVER_SHARE_NAME=$(input_box_flow "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
+        SERVER_SHARE_NAME=$(input_box_flow "Please enter the server and Share-name like this:
+//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
         SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
     ;;&
     *"Username"*)
@@ -625,7 +649,8 @@ mount "$SMBSHARES/$count"
 if ! mountpoint -q "$SMBSHARES/$count"
 then
     # If not remove this line from fstab
-    msg_box "It seems like the mount of the changed configuration wasn't successful. It will get deleted now. The old config will get restored now. Please try again to change the mount." "$SUBTITLE"
+    msg_box "It seems like the mount of the changed configuration wasn't successful. It will get \
+deleted now. The old config will get restored now. Please try again to change the mount." "$SUBTITLE"
     sed -i "/$selected_option_sed/d" /etc/fstab
     echo "$fstab_entry" >> /etc/fstab
     unset fstab_entry
@@ -752,7 +777,8 @@ do
             umount "$SMBSHARES/$count"
             if mountpoint -q $SMBSHARES/$count
             then
-                msg_box "It seems like the unmount of $SMBSHARES/$count wasn't successful during the deletion. Please try again." "$SUBTITLE"
+                msg_box "It seems like the unmount of $SMBSHARES/$count \
+wasn't successful during the deletion. Please try again." "$SUBTITLE"
             else
                 sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
                 if [ -f $SMB_CREDENTIALS/SMB$count ]
@@ -783,13 +809,13 @@ do
 "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.
 Choose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Add a SMB-mount" "(and mount/connect it)" \
-    "Mount SMB-shares" "(connect SMB-shares)" \
-    "Show all SMB-mounts" "(show detailed information about the SMB-mounts)" \
-    "Change a SMB-mount" "(change password, username &/or share of a mount)" \
-    "Unmount SMB-shares" "(disconnect SMB-shares)" \
-    "Delete SMB-mounts" "(and unmount/disconnect them)" \
-    "Exit SMB-share" "(exit this script)" 3>&1 1>&2 2>&3)
+"Add a SMB-mount" "(and mount/connect it)" \
+"Mount SMB-shares" "(connect SMB-shares)" \
+"Show all SMB-mounts" "(show detailed information about the SMB-mounts)" \
+"Change a SMB-mount" "(change password, username &/or share of a mount)" \
+"Unmount SMB-shares" "(disconnect SMB-shares)" \
+"Delete SMB-mounts" "(and unmount/disconnect them)" \
+"Exit SMB-share" "(exit this script)" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Add a SMB-mount")

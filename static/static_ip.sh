@@ -25,7 +25,8 @@ true
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 else
-    printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
+    printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh \
+is missing so you can't run this script."
     printf "Please report this to https://github.com/nextcloud/vm/issues/"
     exit 1
 fi
@@ -52,7 +53,9 @@ then
     check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
 fi
 
-msg_box "Please note that if the IP address changes during an (remote) SSH connection (via Putty, or terminal for example), the connection will break and the IP will reset to DHCP or the IP you had before you started this script.
+msg_box "Please note that if the IP address changes during an (remote) SSH connection \
+(via Putty, or terminal for example), the connection will break and the IP will reset to \
+DHCP or the IP you had before you started this script.
 
 To avoid issues with lost connectivity, please use the VM Console directly, and not SSH."
 if yesno_box_yes "Are you connected via SSH?"
@@ -71,7 +74,8 @@ do
     while :
     do
         # Ask for IP address
-    	LANIP=$(input_box "Please enter the static IP address you want to set, including the subnet.\nExample: 192.168.1.100/24")
+    	LANIP=$(input_box "Please enter the static IP address you want to set, \
+including the subnet.\nExample: 192.168.1.100/24")
         if [[ $LANIP == *"/"* ]]
         then
             if yesno_box_yes "Is this correct? $LANIP"
@@ -88,7 +92,8 @@ do
     while :
     do
         # Ask for domain name
-        GATEWAYIP=$(input_box "Please enter the gateway address you want to set.\nJust hit enter to choose the current gateway.\nYour current gateway is: $GATEWAY")
+        GATEWAYIP=$(input_box "Please enter the gateway address you want to set.
+Just hit enter to choose the current gateway.\nYour current gateway is: $GATEWAY")
         if [ -z "$GATEWAYIP" ]
         then
             GATEWAYIP="$GATEWAY"
@@ -129,7 +134,8 @@ $DNS2
         while :
         do
             # Ask for nameserver
-            NSIP1=$(input_box "Please enter the local nameserver address you want to set.\nJust hit enter to choose the current NS1.\nYour current NS1 is: $DNS1")
+            NSIP1=$(input_box "Please enter the local nameserver address you want to set.
+Just hit enter to choose the current NS1.\nYour current NS1 is: $DNS1")
             if [ -z "$NSIP1" ]
             then
                 NSIP1="$DNS1"
@@ -153,7 +159,9 @@ $DNS2
         while :
         do
             # Ask for nameserver
-            NSIP2=$(input_box "Please enter the local nameserver address you want to set. The 3 options are:\n- Hit enter to choose the current NS2.\n- Enter a new IP address for NS2.\n- Enter the text 'none' if you only have one NS.\nYour current NS2 is: $DISPLAY_DNS2")
+            NSIP2=$(input_box "Please enter the local nameserver address you want to set. The 3 options are:
+- Hit enter to choose the current NS2.\n- Enter a new IP address for NS2.
+- Enter the text 'none' if you only have one NS.\nYour current NS2 is: $DISPLAY_DNS2")
             if [ -z "$NSIP2" ]
             then
                 NSIP2="$DISPLAY_DNS2"

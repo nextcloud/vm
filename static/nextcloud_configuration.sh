@@ -35,7 +35,9 @@ case "$choice" in
     ;;&
     *"Share-folder"*)
         clear
-        msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour."
+        msg_box "This option will make all Nextcloud shares from other users appear in \
+a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all \
+shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour."
         if yesno_box_yes "Do you want to enable this option?"
         then
             occ_command config:system:set share_folder --value="/Shared"
@@ -62,14 +64,16 @@ case "$choice" in
         # Greater than 18.0.3 is 18.0.4 which is required
         if version_gt "$CURRENTVERSION" "18.0.3"
         then
-            msg_box "This option will disable the with Nextcloud 18 introduced user flows. It will disable the user flow settings. Admin flows will continue to work."
+            msg_box "This option will disable the with Nextcloud 18 introduced user flows. \
+It will disable the user flow settings. Admin flows will continue to work."
             if yesno_box_yes "Do you want to disable user flows?"
             then
                 occ_command config:app:set workflowengine user_scope_disabled --value yes
                 msg_box "User flow settings are now disabled."
             fi
         else
-            msg_box "'Disable user flows' is only available on Nextcloud 18.0.4 and above.\nPlease upgrade by running 'sudo bash /var/scripts/update.sh'"
+            msg_box "'Disable user flows' is only available on Nextcloud 18.0.4 and above.
+Please upgrade by running 'sudo bash /var/scripts/update.sh'"
             sleep 1
         fi
     ;;&

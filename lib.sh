@@ -206,7 +206,7 @@ is_root() {
 root_check() {
 if ! is_root
 then
-msg_box "Sorry, you are not root. You now have two options:
+    msg_box "Sorry, you are not root. You now have two options:
 
 1. With SUDO directly:
    a) :~$ sudo bash $SCRIPTS/name-of-script.sh
@@ -315,8 +315,8 @@ reinstall_remove_menu() {
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like $SCRIPT_NAME is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall $SCRIPT_NAME" "" \
-    "Uninstall $SCRIPT_NAME" "" 3>&1 1>&2 2>&3)
+"Reinstall $SCRIPT_NAME" "" \
+"Uninstall $SCRIPT_NAME" "" 3>&1 1>&2 2>&3)
     if [ -z "$choice" ]
     then
         exit 1
@@ -385,14 +385,18 @@ domain_check_200() {
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
     else
-msg_box "DNS lookup failed with dig. The external IP ($WANIP4) address of this server is not the same as the A-record ($DIG).
+    msg_box "DNS lookup failed with dig. The external IP ($WANIP4) \
+address of this server is not the same as the A-record ($DIG).
 Please check your DNS settings! Maybe the domain isn't propagated?
 Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
 
-msg_box "As you noticed your WAN IP and DNS record doesn't match. This can happen when using DDNS for example, or in some edge cases.
-If you feel brave, or are sure that everything is setup correctly, then you can choose to skip this test in the next step.
+    msg_box "As you noticed your WAN IP and DNS record doesn't match. \
+This can happen when using DDNS for example, or in some edge cases.
+If you feel brave, or are sure that everything is setup correctly, \
+then you can choose to skip this test in the next step.
 
-You can always contact us for further support if you wish: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+You can always contact us for further support if you wish: \
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
         if ! yesno_box_no "Do you feel brave and want to continue?"
             then
             exit
@@ -440,7 +444,7 @@ fi
 # Warn user that HTTP/2 will be disabled if installing app that use Apache2 PHP instead of PHP-FPM
 # E.g: http2_warn Modsecurity
 http2_warn() {
-msg_box "This VM has HTTP/2 enabled by default.
+    msg_box "This VM has HTTP/2 enabled by default.
 
 If you continue with installing $1, HTTP/2 will be disabled since it's not compatible with the mpm module used by $1.
 
@@ -483,7 +487,8 @@ PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 print_text_in_color "$ICyan" "Automatically configures pm.max_children for php-fpm..."
 if [ $PHP_FPM_MAX_CHILDREN -lt $min_max_children ]
 then
-msg_box "The current max_children value available to set is $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
+    msg_box "The current max_children value available to set is \
+$PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
 The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
 
 The absolute minimum amount of RAM required to run the VM is 2 GB, but we recomend 4 GB.
@@ -551,7 +556,8 @@ version(){
 }
 if ! version 18.04 "$DISTRO" 20.04.6
 then
-    print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+    print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
+18.04 - 20.04.4 to run this script."
     print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -594,7 +600,8 @@ return 0
 check_external_ip() {
 if [ -z "$WANIP4" ]
 then
-    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again."
+    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. \
+Please check your network and try again."
     sleep 3
     exit 1
 fi
@@ -604,7 +611,7 @@ fi
 check_nextcloud_https() {
     if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
     then
-msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
+        msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
 You easily activate TLS (HTTPS) by running the Let's Encrypt script.
 More info here: https://bit.ly/37wRCin
 
@@ -668,9 +675,11 @@ do
         return 0
     elif [ "$f" != "${methods[$((${#methods[*]} - 1))]}" ]
     then
-        msg_box "It seems like no certs were generated when trying to validate them with the $f method. We will do more tries."
+        msg_box "It seems like no certs were generated when trying \
+to validate them with the $f method. We will do more tries."
     else
-        msg_box "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
+        msg_box "It seems like no certs were generated when trying \
+to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
         return 1;
     fi
 done
@@ -678,7 +687,7 @@ done
 
 # Last message depending on with script that is being run when using the generate_cert() function
 last_fail_tls() {
-msg_box "All methods failed. :/
+    msg_box "All methods failed. :/
 
 You can run the script again by executing: sudo bash $SCRIPTS/menu.sh
 Please try to run it again some other time with other settings.
@@ -735,7 +744,7 @@ elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
-msg_box "It seems like the port ${1} is closed. This could happend when your
+    msg_box "It seems like the port ${1} is closed. This could happend when your
 ISP has blocked the port, or that the port isn't open.
 
 If you are 100% sure the port ${1} is open you can now choose to
@@ -744,7 +753,9 @@ since the service depend on that the port ${1} is open and
 accessible from outside your network."
     if ! yesno_box_no "Are you 100% sure the port ${1} is open?"
     then
-        msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
+        msg_box "Port $1 is not open on either ${WANIP4} or ${2}.
+        
+Please follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
         any_key "Press any key to exit..."
         exit 1
     fi
@@ -769,7 +780,7 @@ fi
 
 if [ "$OS" != 1 ]
 then
-msg_box "Ubuntu Server is required to run this script.
+    msg_box "Ubuntu Server is required to run this script.
 Please install that distro and try again.
 
 You can find the download link here: https://www.ubuntu.com/download/server"
@@ -777,8 +788,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
 fi
 
 if ! version 18.04 "$DISTRO" 20.04.4; then
-msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
-msg_box "Please contact us to get support for upgrading your server:
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+    msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
     exit 1
@@ -857,12 +868,14 @@ fi
 check_command() {
 if ! "$@";
 then
-    print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+    print_text_in_color "$ICyan" "Sorry but something went wrong. Please report \
+this issue to $ISSUES and include the output of the error message. Thank you!"
     print_text_in_color "$IRed" "$* failed"
     if occ_command_no_check -V > /dev/null
     then
         notify_admin_gui \
-        "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!" \
+        "Sorry but something went wrong. Please report this issue to \
+$ISSUES and include the output of the error message. Thank you!" \
         "$* failed"
     fi
     exit 1
@@ -912,12 +925,12 @@ then
         fi
     fi
 else
-msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.6 to run this script."
-msg_box "Please contact us to get support for upgrading your server:
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.6 to run this script."
+    msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
-msg_box "We will now pause for 60 seconds. Please press CTRL+C when prompted to do so."
-countdown "Please press CTRL+C to abort..." 60
+    msg_box "We will now pause for 60 seconds. Please press CTRL+C when prompted to do so."
+    countdown "Please press CTRL+C to abort..." 60
 fi
 }
 
@@ -965,7 +978,7 @@ then
     installcmd="$(occ_command_no_check app:install "$1")"
     if grep 'not compatible' <<< "$installcmd"
     then
-msg_box "The $1 app could not be installed.
+    msg_box "The $1 app could not be installed.
 It's probably not compatible with $(occ_command -V).
 
 You can try to install the app manually after the script has finished,
@@ -1039,8 +1052,10 @@ download_script() {
     if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "{$2} failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|.php|.py' again."
-        print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
-        print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$ICyan" "If you get this error when \
+running the nextcloud-startup-script then just re-run it with:"
+        print_text_in_color "$ICyan" "'sudo bash \
+$SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
         exit 1
     fi
 }
@@ -1068,7 +1083,8 @@ run_script() {
         fi
     else
         print_text_in_color "$IRed" "Running ${2} failed"
-        print_text_in_color "$ICyan" "Script failed to execute. Please run: 'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again."
+        print_text_in_color "$ICyan" "Script failed to execute. Please run: \
+'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again."
         exit 1
     fi
 }
@@ -1148,7 +1164,7 @@ then
 fi
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
-msg_box "This script is developed to work with Nextcloud $1 and later.
+    msg_box "This script is developed to work with Nextcloud $1 and later.
 This means we can't use our own script for now. But don't worry,
 we automated the update process and we will now use Nextclouds updater instead.
 
@@ -1188,7 +1204,7 @@ if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
 else
-msg_box "Your current version are still not compatible with the version required to run this script.
+    msg_box "Your current version are still not compatible with the version required to run this script.
 
 To upgrade between major versions, please check this out:
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
@@ -1273,7 +1289,7 @@ print_text_in_color "$ICyan" "Checking if there are any old images and removing 
 DOCKERPS=$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')
 if [ "$DOCKERPS" != "" ]
 then
-msg_box "Removing old Docker instance(s)... ($DOCKERPS)
+    msg_box "Removing old Docker instance(s)... ($DOCKERPS)
 
 Please note that we will not remove $1 ($2).
 
@@ -1291,7 +1307,7 @@ fi
 docker_prune_this() {
 if does_this_docker_exist "$1"
 then
-msg_box "Removing old Docker image: $1
+    msg_box "Removing old Docker image: $1
 You will be given the option to abort when you hit OK."
     any_key "Press any key to continue. Press CTRL+C to abort"
     docker stop "$(docker container ls | grep "$1" | awk '{print $1}' | tail -1)"

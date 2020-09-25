@@ -18,9 +18,11 @@ then
 fi
 
 # Check where the best mirrors are and update
-msg_box "To make downloads as fast as possible when updating Ubuntu you should have download mirrors that are as close to you as possible.
+msg_box "To make downloads as fast as possible when updating Ubuntu \
+you should have download mirrors that are as close to you as possible.
 
-Please note that there are no gurantees that the download mirrors this script will find are staying up for the lifetime of this server.
+Please note that there are no gurantees that the download mirrors \
+this script will find are staying up for the lifetime of this server.
 Because of this, we don't recommend to change the mirror, except you live far away from the default mirror.
 
 This is the method used: https://github.com/jblakeman/apt-select"
@@ -33,7 +35,8 @@ then
 else
     if [[ "$KEYBOARD_LAYOUT" =~ ,|/|_ ]]
     then
-        msg_box "Your keymap contains more than one language, or a special character. ($KEYBOARD_LAYOUT)\nThis script can only handle one keymap at the time.\nThe default mirror ($REPO) will be kept."
+        msg_box "Your keymap contains more than one language, or a special character. ($KEYBOARD_LAYOUT)
+This script can only handle one keymap at the time.\nThe default mirror ($REPO) will be kept."
         exit 1
     fi
     print_text_in_color "$ICyan" "Locating the best mirrors..."

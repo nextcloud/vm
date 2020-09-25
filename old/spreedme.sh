@@ -116,12 +116,12 @@ fi
 restart_webserver
 if ! systemctl restart snap.spreedme.spreed-webrtc.service
 then
-msg_box "Something is wrong, the installation did not finish correctly.
+    msg_box "Something is wrong, the installation did not finish correctly.
 
 Please report this to $ISSUES"
     exit 1
 else
-msg_box "Success! Spreed.ME is now installed and configured.
+    msg_box "Success! Spreed.ME is now installed and configured.
 
 You may have to change SPREED_WEBRTC_ORIGIN in:
 (sudo nano) $NCPATH/apps/spreedme/config/config.php"

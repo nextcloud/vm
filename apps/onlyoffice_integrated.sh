@@ -34,7 +34,8 @@ then
     # Greater than 18.0.1 is 18.0.2 which is required
     if version_gt "$CURRENTVERSION" "18.0.1"
     then
-        msg_box "Your server is compatible with the new way of installing OnlyOffice. We will now remove the old docker and install the app from Nextcloud instead."
+        msg_box "Your server is compatible with the new way of installing OnlyOffice. \
+We will now remove the old docker and install the app from Nextcloud instead."
         # Remove docker image
         docker_prune_this 'onlyoffice/documentserver'
         # Disable RichDocuments (Collabora App) if activated
@@ -48,7 +49,7 @@ then
             occ_command app:remove onlyoffice
         fi
         # Revoke LE
-        SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
+        SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice\nE.g: office.yourdomain.com")
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -77,11 +78,13 @@ then
             fi
         done
     else
-msg_box "You need to run at least Nextcloud 18.0.1 to be able to run OnlyOffice. Please upgrade using the built in script:
+        msg_box "You need to run at least Nextcloud 18.0.1 to be able to run OnlyOffice. \
+Please upgrade using the built in script:
 
 'sudo bash $SCRIPTS/update.sh'
 
-You can also buy support directly in our shop: https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
+You can also buy support directly in our shop: \
+https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
         exit
     fi
 # Check if OnlyOffice is installed using the new method
@@ -92,8 +95,8 @@ then
         choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'OnlyOffice' is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-        "Reinstall OnlyOffice" "" \
-        "Uninstall OnlyOffice" "" 3>&1 1>&2 2>&3)
+"Reinstall OnlyOffice" "" \
+"Uninstall OnlyOffice" "" 3>&1 1>&2 2>&3)
 
         case "$choice" in
             "Uninstall OnlyOffice")
@@ -119,18 +122,21 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         esac
 	fi
 else
-msg_box "You need to run at least Nextcloud 18.0.1 to be able to run OnlyOffice. Please upgrade using the built in script:
+    msg_box "You need to run at least Nextcloud 18.0.1 to be able to run OnlyOffice. \
+Please upgrade using the built in script:
 
 'sudo bash $SCRIPTS/update.sh'
 
-You can also buy support directly in our shop: https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
+You can also buy support directly in our shop: \
+https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
     exit
 fi
 
 # Check if collabora is installed and remove every trace of it
 if does_this_docker_exist 'collabora/code'
 then
-    msg_box "You can't run both Collabora and OnlyOffice on the same VM. We will now remove Collabora from the server."
+    msg_box "You can't run both Collabora and OnlyOffice on the same VM. \
+We will now remove Collabora from the server."
     # Remove docker image
     docker_prune_this 'collabora/code'
     # Revoke LE
@@ -178,7 +184,8 @@ fi
 # Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
 if [ "$(apache2ctl -M | grep evasive)" != "" ]
 then
-    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. It has comptibility issues with OnlyOffice and you can now choose to disable it."
+    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. \
+It has comptibility issues with OnlyOffice and you can now choose to disable it."
     if ! yesno_box_yes "Do you want to disable DDOS protection?"
     then
         print_text_in_color "$ICyan" "Keeping mod_evasive active."
@@ -204,7 +211,11 @@ then
     occ_command config:app:set onlyoffice DocumentServerUrl --value="$(occ_command_no_check config:system:get overwrite.cli.url)/index.php/apps/documentserver_community/"
     msg_box "OnlyOffice was successfully installed."
 else
-    msg_box "The documentserver_community app failed to install. Please try again later.\n\nIf the error presist, please report the issue to https://github.com/nextcloud/documentserver_community\n\n'sudo -u www-data php ./occ app:install documentserver_community failed!'"
+    msg_box "The documentserver_community app failed to install. Please try again later.
+    
+If the error presist, please report the issue to https://github.com/nextcloud/documentserver_community
+
+'sudo -u www-data php ./occ app:install documentserver_community failed!'"
 fi
 
 if ! is_app_installed onlyoffice

@@ -34,8 +34,8 @@ then
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'Collabora' is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall Collabora" "" \
-    "Uninstall Collabora" "" 3>&1 1>&2 2>&3)
+"Reinstall Collabora" "" \
+"Uninstall Collabora" "" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Uninstall Collabora")
@@ -148,7 +148,10 @@ then
 fi
 
 # Ask for the domain for Collabora
- SUBDOMAIN=$(input_box_flow "Collabora subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
+SUBDOMAIN=$(input_box_flow "Collabora subdomain e.g: office.yourdomain.com
+
+NOTE: This domain must be different than your Nextcloud domain. \
+They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # Nextcloud Main Domain
 NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
@@ -164,13 +167,17 @@ NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 nc_update
 
 # Notification
-msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
+msg_box "Before continuing, please make sure that you have you have \
+edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
+directly to this servers IP. A full exstensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+This can be done automatically if you have UNNP enabled in your firewall/router. \
+You will be offered to use UNNP in the next step.
 
 PLEASE NOTE:
-Using other ports than the default 80 and 443 is not supported, though it may be possible with some custom modification:
+Using other ports than the default 80 and 443 is not supported, \
+though it may be possible with some custom modification:
 https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
 
 if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
@@ -188,7 +195,7 @@ apt update -q4 & spinner_loading
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
 if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
 then
-msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+    msg_box "It seems like Nextcloud is not installed or that you don't use https on:
 $NCDOMAIN.
 Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.

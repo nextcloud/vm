@@ -18,7 +18,8 @@ true
 # shellcheck source=lib.sh
 source /var/scripts/lib.sh
 else
-    printf "You don't seem to have a working internet connection, and /var/scripts/lib.sh is missing so you can't run this script."
+    printf "You don't seem to have a working internet connection, and \
+/var/scripts/lib.sh is missing so you can't run this script."
     printf "Please report this to https://github.com/nextcloud/vm/issues/"
     exit 1
 fi
@@ -61,7 +62,7 @@ case "$choice" in
     ;;&
     *"Activate TLS"*)
         clear
-msg_box "The following script will install a trusted
+        msg_box "The following script will install a trusted
 TLS certificate through Let's Encrypt.
 It's recommended to use TLS (https) together with Nextcloud.
 Please open port 80 and 443 to this servers IP before you continue.
@@ -79,7 +80,8 @@ https://www.techandme.se/open-port-80-443/"
             fi
         else
             echo
-            print_text_in_color "$ICyan" "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
+            print_text_in_color "$ICyan" "OK, but if you want \
+to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh"
             any_key "Press any key to continue..."
         fi
 

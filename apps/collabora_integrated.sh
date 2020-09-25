@@ -34,7 +34,8 @@ check_nextcloud_https "Collabora (Integrated)"
 # Check if Collabora is installed using the old method
 if does_this_docker_exist 'collabora/code'
 then
-    msg_box "Your server is compatible with the new way of installing Collabora. We will now remove the old docker and install the app from Nextcloud instead."
+    msg_box "Your server is compatible with the new way of installing Collabora. \
+We will now remove the old docker and install the app from Nextcloud instead."
     # Remove docker image
     docker_prune_this 'collabora/code'
     # Disable RichDocuments (Collabora App) if activated
@@ -84,8 +85,8 @@ then
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'Collabora' is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall Collabora" "" \
-    "Uninstall Collabora" "" 3>&1 1>&2 2>&3)
+"Reinstall Collabora" "" \
+"Uninstall Collabora" "" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Uninstall Collabora")

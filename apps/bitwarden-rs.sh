@@ -64,13 +64,17 @@ SUBDOMAIN=$(input_box_flow "Please enter the Domain that you want to use for Bit
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
+msg_box "Before continuing, please make sure that you have you have \
+edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
+directly to this servers IP. A full exstensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+This can be done automatically if you have UNNP enabled in your firewall/router. \
+You will be offered to use UNNP in the next step.
 
 PLEASE NOTE:
-Using other ports than the default 80 and 443 is not supported, though it may be possible with some custom modification:
+Using other ports than the default 80 and 443 is not supported, \
+though it may be possible with some custom modification:
 https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
 
 if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
@@ -279,7 +283,7 @@ check_command fail2ban-client reload
 
 while :
 do
-msg_box "Bitwarden_rs with fail2ban have been sucessfully installed! 
+    msg_box "Bitwarden_rs with fail2ban have been sucessfully installed! 
 Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
 Attention! Please note down the password for the admin panel: $ADMIN_PASS

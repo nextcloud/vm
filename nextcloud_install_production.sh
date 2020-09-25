@@ -96,7 +96,7 @@ check_multiverse
 # Check if key is available
 if ! site_200 "$NCREPO"
 then
-msg_box "Nextcloud repo is not available, exiting..."
+    msg_box "Nextcloud repo is not available, exiting..."
     exit 1
 fi
 
@@ -172,10 +172,13 @@ install_if_not netplan.io
 install_if_not build-essential
 
 # Set dual or single drive setup
-msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
-You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
+msg_box "This VM is designed to run with two disks, one for OS and one for DATA. \
+This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
+You could still choose to only run on one disk though, which is not recommended, \
+but maybe your only option depending on which hypervisor you are running.
 
-You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
+You will now get the option to decide which disk you want to use for DATA, \
+or run the automatic script that will choose the available disk automatically."
 
 choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu \
 "How would you like to configure your disks?
@@ -211,9 +214,9 @@ do
     choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu \
 "Which DNS provider should this Nextcloud box use?
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Quad9" "(https://www.quad9.net/)" \
-    "Cloudflare" "(https://www.cloudflare.com/dns/)" \
-    "Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
+"Quad9" "(https://www.quad9.net/)" \
+"Cloudflare" "(https://www.cloudflare.com/dns/)" \
+"Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Quad9")
@@ -370,7 +373,7 @@ check_command download_verify_nextcloud_stable
 
 if [ ! -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
-msg_box "Aborting,something went wrong with the download of $STABLEVERSION.tar.bz2"
+    msg_box "Aborting,something went wrong with the download of $STABLEVERSION.tar.bz2"
     exit 1
 fi
 

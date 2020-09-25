@@ -31,12 +31,14 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
-# Check if /boot is filled more than 90% and exit the script if that's the case since we don't want to end up with a broken system
+# Check if /boot is filled more than 90% and exit the script if that's the case 
+# since we don't want to end up with a broken system
 if [ -d /boot ]
 then
     if [[ "$(df -h | grep -m 1 /boot | awk '{print $5}' | cut -d "%" -f1)" -gt 90 ]]
     then
-msg_box "It seems like your boot drive is filled more than 90%. You can't proceed to upgrade since it probably will break your system
+        msg_box "It seems like your boot drive is filled more than 90%. \
+You can't proceed to upgrade since it probably will break your system
 
 To be able to proceed with the update you need to delete some old Linux kernels. If you need support, please visit:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
@@ -52,14 +54,16 @@ print_text_in_color "$ICyan" "Fetching latest packages with apt..."
 apt update -q4 & spinner_loading
 if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
-    print_text_in_color "$ICyan" "Ondrejs PPA is installed. Holding PHP to avoid upgrading to a newer version without migration..."
+    print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
+Holding PHP to avoid upgrading to a newer version without migration..."
     apt-mark hold php*
 fi
 
 # Don't allow MySQL/MariaDB
 if ! grep -q pgsql /var/www/nextcloud/config/config.php
 then
-    msg_box "MySQL/MariaDB is not supported in this script anymore. Please contact us to get support for upgrading your server: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+    msg_box "MySQL/MariaDB is not supported in this script anymore. Please contact us \to get support \
+for upgrading your server: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     exit 0
 fi
 
@@ -199,11 +203,12 @@ fi
 
 # Update docker containers and remove Watchtower if Bitwarden is preseent due to compatibility issue
 # If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
-# If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates individually dependning on which docker 
-# containers that exist.
+# If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates 
+# individually dependning on which docker containers that exist.
 if is_docker_running
 then
-    # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower to avoid updating Bitwarden again, and only update the specified docker images above
+    # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower 
+    # to avoid updating Bitwarden again, and only update the specified docker images above
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
         if [ -d /root/bwdata ] || [ -d "$BITWARDEN_HOME"/bwdata ]
@@ -218,7 +223,8 @@ then
             docker container prune -f
             docker image prune -a -f
             docker volume prune -f
-            notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
+            notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, \
+we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
         fi
     fi
     # Update selected images
@@ -315,7 +321,8 @@ then
 elif [ -f /tmp/prerelease.version ]
 then
     PRERELEASE_VERSION=yes
-    msg_box "WARNING! You are about to update to a Beta/RC version of Nextcloud.\nThere's no turning back, because it's not possible to downgrade.\n\nPlease only continue if you have made a backup, or took a snapshot."
+    msg_box "WARNING! You are about to update to a Beta/RC version of Nextcloud.\nThere's no turning back, \
+because it's not possible to downgrade.\n\nPlease only continue if you have made a backup, or took a snapshot."
     if ! yesno_box_no "Do you really want to do this?"
     then
         rm -f /tmp/prerelease.version
@@ -340,7 +347,7 @@ fi
 # Major versions unsupported
 if [[ "${CURRENTVERSION%%.*}" -le "$NCBAD" ]]
 then
-msg_box "Please note that updates between multiple major versions are unsupported! Your situation is:
+    msg_box "Please note that updates between multiple major versions are unsupported! Your situation is:
 Current version: $CURRENTVERSION
 Latest release: $NCVERSION
 
@@ -377,7 +384,7 @@ if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
 then
     if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
     then
-msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+        msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
 
 If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
         exit
@@ -391,7 +398,7 @@ if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
 then
     if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
     then
-msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+        msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
 
 If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
         exit
@@ -401,7 +408,7 @@ fi
 # Upgrade Nextcloud
 if ! site_200 $NCREPO
 then
-msg_box "$NCREPO seems to be down, or temporarily not reachable. Please try again in a few minutes."
+    msg_box "$NCREPO seems to be down, or temporarily not reachable. Please try again in a few minutes."
     exit 1
 fi
 
@@ -504,7 +511,7 @@ if [ -d $BACKUP/config/ ]
 then
     print_text_in_color "$ICyan" "$BACKUP/config/ exists"
 else
-msg_box "Something went wrong with backing up your old nextcloud instance
+    msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if config/ folder exist."
     exit 1
 fi
@@ -537,7 +544,7 @@ then
         install_if_not php"$PHPVER"-bcmath
     fi
 else
-msg_box "Something went wrong with backing up your old nextcloud instance
+    msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if the folders exist."
     exit 1
 fi
@@ -645,7 +652,7 @@ fi
 CURRENTVERSION_after=$(occ_command status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]] || [ -n "$PRERELEASE_VERSION" ]
 then
-msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
+    msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
 
 ||| UPGRADE SUCCESS! |||
 
@@ -662,7 +669,7 @@ Thank you for using T&M Hansson IT's updater!"
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update.log
     exit 0
 else
-msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
+    msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
 
 ||| UPGRADE FAILED! |||
 
