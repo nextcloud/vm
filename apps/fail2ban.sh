@@ -28,7 +28,9 @@ lowest_compatible_nc 13
 print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
 if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
 then
-    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Fail2Ban' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --menu \
+"It seems like 'Fail2Ban' is already installed.\nChoose what you want to do.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall Fail2Ban" "" \
     "Uninstall Fail2Ban" "" 3>&1 1>&2 2>&3)
 

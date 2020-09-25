@@ -25,7 +25,9 @@ else
     STARTUP_SWITCH="OFF"
 fi
 
-choice=$(whiptail --title "$TITLE" --checklist "Automatically configure and install the Bitwarden or configure some aspects of it.\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist \
+"Automatically configure and install the Bitwarden or configure some aspects of it.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitwarden  " "(External password manager [4GB RAM] - subdomain required)" OFF \
 "Bitwarden Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "Bitwarden Mail-Configuration" "(Configure the mailserver settings for Bitwarden)" OFF \

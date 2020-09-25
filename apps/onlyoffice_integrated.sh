@@ -89,7 +89,9 @@ elif version_gt "$CURRENTVERSION" "18.0.1" && ! does_this_docker_exist 'onlyoffi
 then
     if is_app_enabled documentserver_community
     then
-        choice=$(whiptail --title "$TITLE" --menu "It seems like 'OnlyOffice' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+        choice=$(whiptail --title "$TITLE" --menu \
+"It seems like 'OnlyOffice' is already installed.\nChoose what you want to do.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         "Reinstall OnlyOffice" "" \
         "Uninstall OnlyOffice" "" 3>&1 1>&2 2>&3)
 

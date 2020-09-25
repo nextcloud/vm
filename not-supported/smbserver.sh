@@ -101,7 +101,9 @@ samba_start() {
 
 # Choose from a list of SMB-user
 smb_user_menu() {
-    args=(whiptail --title "$TITLE - $2" --checklist "$1\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $2" --checklist \
+"$1
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     USERS=$(members "$SMB_GROUP")
     read -r -a USERS <<< "$USERS"
     for user in "${USERS[@]}"
@@ -267,7 +269,9 @@ show_user() {
     local SUBTITLE="Show all SMB-shares from a SMB-user"
 
     # Choose from a list of SMB-users
-    args=(whiptail --title "$TITLE - $SUBTITLE" --menu "Please choose for which SMB-user you want to show all SMB-shares." "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --menu \
+"Please choose for which SMB-user you want to show all SMB-shares.
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     for user in "${USERS[@]}"
     do
         args+=("$user  " "")
@@ -290,7 +294,9 @@ show_user() {
 
     # Show if list with SMB-shares of the chosen SMB-user
     count=1
-    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please choose which shares of $SELECTED_USER you want to show.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
+"Please choose which shares of $SELECTED_USER you want to show.
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     while [ $count -le $MAX_COUNT ]
     do 
         CACHE=$(sed -n "/^#SMB$count-start/,/^#SMB$count-end/p" "$SMB_CONF" | grep -v "^#SMB$count-start" | grep -v "^#SMB$count-end" )
@@ -446,7 +452,9 @@ done
 user_menu() {
 while :
 do
-    choice=$(whiptail --title "$TITLE - SMB-user Menu" --menu "Choose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - SMB-user Menu" --menu \
+"Choose what you want to do.
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Add a SMB-user" "" \
     "Show all SMB-shares from a SMB-user" "" \
     "Change the password of SMB-users" "" \
@@ -767,7 +775,11 @@ to see all for the specific SMB-user available SMB-shares:
     fi
 
     # Select NC groups and/or users
-    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose to enable the this external storage $NEWNAME for specific Nextcloud users or groups.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"You can now choose to enable the this external storage $NEWNAME for specific Nextcloud users or groups.
+If you select no group and no user, the external storage will be visible to all users of your instance.
+Please note that you cannot come back to this menu.
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Choose some Nextcloud groups" "" ON \
     "Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
     unset SELECTED_USER
@@ -776,7 +788,10 @@ to see all for the specific SMB-user available SMB-shares:
     # Choose from NC groups
     if [[ "$choice" == *"Choose some Nextcloud groups"* ]]
     then
-        args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which Nextcloud groups shall get access to the new external storage $NEWNAME.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+        args=(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"Please select which Nextcloud groups shall get access to the new external storage $NEWNAME.
+If you select no group and no user, the external storage will be visible to all users of your instance.
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
         mapfile -t NC_GROUPS <<< "$NC_GROUPS"
         for GROUP in "${NC_GROUPS[@]}"
@@ -794,7 +809,10 @@ to see all for the specific SMB-user available SMB-shares:
     # Choose from NC users
     if [[ "$choice" == *"Choose some Nextcloud users"* ]]
     then
-        args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which Nextcloud users shall get access to the new external storage $NEWNAME.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+        args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
+"Please select which Nextcloud users shall get access to the new external storage $NEWNAME.
+If you select no group and no user, the external storage will be visible to all users of your instance.
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
         mapfile -t NC_USER <<< "$NC_USER"
         for USER in "${NC_USER[@]}"
@@ -962,7 +980,9 @@ show_shares() {
     local SUBTITLE="Show SMB-shares"
 
     # Show a list with available SMB-shares
-    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which SMB-shares you want to show.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
+"Please select which SMB-shares you want to show.
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=1
     while [ $count -le $MAX_COUNT ]
     do
@@ -1017,7 +1037,9 @@ edit_share() {
     local SUBTITLE="Edit a SMB-share"
 
     # Show a list of SMB-shares
-    args=(whiptail --title "$TITLE - $SUBTITLE" --menu "Please select which SMB-share you want to change." "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --menu \
+"Please select which SMB-share you want to change.
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=1
     while [ $count -le $MAX_COUNT ]
     do
@@ -1064,7 +1086,9 @@ edit_share() {
     msg_box "Those are the current values for that SMB-share.\nIn the next step you will be asked what you want to change.\n\n$CLEAN_STORAGE" "$SUBTITLE"
 
     # Show a list of options that can get changed for the selected SMB-share
-    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please choose which options you want to change for $SELECTED_SHARE\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"Please choose which options you want to change for $SELECTED_SHARE
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Change the sharename" "(Change the name of the SMB-share)" OFF \
     "Change the path" "(Change the path of the SMB-share)" OFF \
     "Change valid SMB-users" "(Change which users have access to the SMB-share)" OFF \
@@ -1153,7 +1177,9 @@ delete_share() {
     local SUBTITLE="Delete SMB-shares"
 
     # Choose which SMB-share shall get deleted
-    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which SMB-shares you want to delete.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
+"Please select which SMB-shares you want to delete.
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=1
     while [ $count -le $MAX_COUNT ]
     do 
@@ -1206,7 +1232,9 @@ then
 fi
 while :
 do
-    choice=$(whiptail --title "$TITLE - SMB-share Menu" --menu "Choose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - SMB-share Menu" --menu \
+"Choose what you want to do.
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Create a SMB-share" "" \
     "Show SMB-shares" "" \
     "Edit a SMB-share" "" \
@@ -1241,7 +1269,9 @@ done
 # SMB-server Main Menu
 while :
 do
-    choice=$(whiptail --title "$TITLE - Main Menu" --menu "Choose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - Main Menu" --menu \
+"Choose what you want to do.
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Open the SMB-user Menu" "(manage SMB-users)" \
     "Open the SMB-share Menu  " "(manage SMB-shares)" \
     "Exit" "(exit this script)" 3>&1 1>&2 2>&3)
