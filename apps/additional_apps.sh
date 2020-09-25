@@ -18,7 +18,9 @@ debug_mode
 root_check
 
 # Install Apps
-choice=$(whiptail --title "$TITLE" --checklist "Which apps do you want to install?\n\nAutomatically configure and install selected apps\n$CHECKLIST_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist \
+"Which apps do you want to install?\n\nAutomatically configure and install selected apps
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban" "(Extra Bruteforce protection)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring)" OFF \

@@ -38,7 +38,9 @@ fi
 print_text_in_color "$ICyan" "Checking if Onlyoffice Docker is already installed..."
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
-    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Onlyoffice Docker' is already installed.\nChoose what you want to do.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --menu \
+"It seems like 'Onlyoffice Docker' is already installed.\nChoose what you want to do.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall Onlyoffice Docker" "" \
     "Uninstall Onlyoffice Docker" "" 3>&1 1>&2 2>&3)
 

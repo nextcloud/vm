@@ -25,7 +25,9 @@ else
     STARTUP_SWITCH="OFF"
 fi
 
-choice=$(whiptail --title "$TITLE" --checklist "Automatically install and configure Fail2ban.\n$CHECKLIST_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist \
+"Automatically install and configure Fail2ban.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Install-Fail2ban" "(Install Fail2ban and protect Nextcloud + SSH)" "$STARTUP_SWITCH" \
 "Fail2ban-Statuscheck" "(Check status of currently blocked attacks)" OFF 3>&1 1>&2 2>&3)
 

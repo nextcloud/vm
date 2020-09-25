@@ -190,7 +190,11 @@ As a hint:
                 fi
             fi
             # Groups and User Menu
-            choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "You can now choose to enable this external storage $NEWNAME for specific Nextcloud users or groups.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\nPlease note that you cannot come back to this menu.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+            choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"You can now choose to enable this external storage $NEWNAME for specific Nextcloud users or groups.
+If you select no group and no user, the external storage will be visible to all users of your instance.
+Please note that you cannot come back to this menu.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             "Choose some Nextcloud groups" "" ON \
             "Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
             unset SELECTED_USER
@@ -198,7 +202,10 @@ As a hint:
             # Select Nextcloud groups
             if [[ "$choice" == *"Choose some Nextcloud groups"* ]]
             then
-                args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "Please select which Nextcloud groups shall get access to the new external storage $NEWNAME.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+                args=(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"Please select which Nextcloud groups shall get access to the new external storage $NEWNAME.
+If you select no group and no user, the external storage will be visible to all users of your instance.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
                 NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
                 mapfile -t NC_GROUPS <<< "$NC_GROUPS"
                 for GROUP in "${NC_GROUPS[@]}"
@@ -215,7 +222,10 @@ As a hint:
             # Select Nextcloud users
             if [[ "$choice" == *"Choose some Nextcloud users"* ]]
             then
-                args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist "Please select which Nextcloud users shall get access to the share.\nIf you select no group and no user, the external storage will be visible to all users of your instance.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+                args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
+"Please select which Nextcloud users shall get access to the share.
+If you select no group and no user, the external storage will be visible to all users of your instance.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
                 NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
                 mapfile -t NC_USER <<< "$NC_USER"
                 for USER in "${NC_USER[@]}"
@@ -404,7 +414,10 @@ then
     return
 fi
 
-args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.\nChoose which one you want to mount.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"This option let you mount SMB-shares to connect to network-shares from the host-computer or other machines in the local network.
+Choose which one you want to mount.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 
 # Find out which SMB-shares are available
@@ -451,7 +464,10 @@ then
 fi
 
 # Find out which SMB-shares are available
-args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you show detailed information about your SMB-shares.\nChoose which one you want to see.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"This option let you show detailed information about your SMB-shares.
+Choose which one you want to see.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -495,7 +511,10 @@ then
 fi
 
 # Find out which SMB-shares are available
-args=(whiptail --title "$TITLE - $SUBTITLE" --menu "This option let you change the password, the username and/or the network-share of one of your SMB-mounts.\nChoose which one you want to show.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --menu \
+"This option let you change the password, the username and/or the network-share of one of your SMB-mounts.
+Choose which one you want to show.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -549,7 +568,9 @@ else
 fi
 
 # Let the user choose which entries he wants to change
-choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist "$fstab_entry\n$old_credentials\nChoose which option you want to change.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"$fstab_entry\n$old_credentials\nChoose which option you want to change.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Password" "(change the password of the SMB-user)" OFF \
 "Username" "(change the username of the SMB-user)" OFF \
 "Share" "(change the SMB-share to use the same mount directory)" OFF 3>&1 1>&2 2>&3)
@@ -657,7 +678,10 @@ then
 fi
 
 # Find out which SMB-shares are available
-args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you unmount SMB-shares to disconnect network-shares from the host-computer or other machines in the local network.\nChoose what you want to do.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"This option let you unmount SMB-shares to disconnect network-shares from the \
+host-computer or other machines in the local network.\nChoose what you want to do.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -700,7 +724,10 @@ then
 fi
 
 # Check which SMB-shares are available
-args=(whiptail --title "$TITLE - $SUBTITLE" --checklist "This option let you delete SMB-shares to disconnect and remove network-shares from the Nextcloud VM.\nChoose what you want to do.\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+args=(whiptail --title "$TITLE - $SUBTITLE" --checklist \
+"This option let you delete SMB-shares to disconnect and remove \
+network-shares from the Nextcloud VM.\nChoose what you want to do.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 count=1
 while  [ $count -le $MAX_COUNT ]
 do
@@ -752,7 +779,10 @@ return
 while :
 do
     # Main menu
-    choice=$(whiptail --title "$TITLE" --menu "This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.\nChoose what you want to do.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --menu \
+"This script let you manage SMB-shares to access files from the host-computer or other machines in the local network.
+Choose what you want to do.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Add a SMB-mount" "(and mount/connect it)" \
     "Mount SMB-shares" "(connect SMB-shares)" \
     "Show all SMB-mounts" "(show detailed information about the SMB-mounts)" \

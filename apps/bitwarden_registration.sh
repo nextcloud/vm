@@ -38,7 +38,9 @@ else
 fi
 
 # Yes or No?
-choice=$(whiptail --title "$TITLE" --menu "Do you want to disable Bitwarden User Registration?\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --menu \
+"Do you want to disable Bitwarden User Registration?
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Yes" "(Disable public user registration)" \
 "No" "(Enable public user registration)" 3>&1 1>&2 2>&3)
 

@@ -19,7 +19,10 @@ debug_mode
 # Check if root
 root_check
 
-choice=$(whiptail --title "$TITLE" --menu "Configure the logout time (in seconds) which will forcefully logout the Nextcloud user from the web browser when the timeout is reached.\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --menu \
+"Configure the logout time (in seconds) which will forcefully logout \
+the Nextcloud user from the web browser when the timeout is reached.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "1800s" "30 minutes" \
 "7200s" "2 hours" \
 "43200s" "12 hours" \
