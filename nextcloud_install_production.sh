@@ -177,7 +177,9 @@ You could still choose to only run on one disk though, which is not recommended,
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
 
-choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu "How would you like to configure your disks?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu \
+"How would you like to configure your disks?
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)" \
 "2 Disks Manual" "(Choose by yourself)" \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" 3>&1 1>&2 2>&3)
@@ -206,7 +208,9 @@ esac
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
 while :
 do
-    choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu "Which DNS provider should this Nextcloud box use?" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu \
+"Which DNS provider should this Nextcloud box use?
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Quad9" "(https://www.quad9.net/)" \
     "Cloudflare" "(https://www.cloudflare.com/dns/)" \
     "Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
@@ -705,7 +709,9 @@ a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
-choice=$(whiptail --title "$TITLE - Install apps or software" --checklist "Automatically configure and install selected apps or software\n$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
+"Automatically configure and install selected apps or software
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "" ON \
 "Contacts" "" ON \
 "IssueTemplate" "" ON \

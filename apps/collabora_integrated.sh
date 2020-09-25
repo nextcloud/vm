@@ -81,7 +81,9 @@ fi
 # Check if Collabora is installed using the new method
 if is_app_enabled richdocumentscode
 then
-    choice=$(whiptail --title "$TITLE" --menu "It seems like 'Collabora' is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --menu \
+"It seems like 'Collabora' is already installed.\nChoose what you want to do.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall Collabora" "" \
     "Uninstall Collabora" "" 3>&1 1>&2 2>&3)
 

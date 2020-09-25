@@ -77,7 +77,8 @@ use_global_systemd_dns
 TITLE="Nextcloud VM - $(date +%Y)"
 [ -n "$SCRIPT_NAME" ] && TITLE+=" - $SCRIPT_NAME"
 CHECKLIST_GUIDE="Navigate with the [ARROW] keys and (de)select with the [SPACE] key. Confirm by pressing [ENTER]"
-MENU_GUIDE="You can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'"
+MENU_GUIDE="Navigate with the [ARROW] keys and confirm by pressing [ENTER]"
+RUN_LATER_GUIDE="You can view this script later by running 'sudo bash $SCRIPTS/menu.sh'"
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
@@ -311,7 +312,9 @@ explainer_popup() {
 }
 
 reinstall_remove_menu() {
-    choice=$(whiptail --title "$TITLE" --menu "It seems like $SCRIPT_NAME is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    choice=$(whiptail --title "$TITLE" --menu \
+"It seems like $SCRIPT_NAME is already installed.\nChoose what you want to do.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall $SCRIPT_NAME" "" \
     "Uninstall $SCRIPT_NAME" "" 3>&1 1>&2 2>&3)
     if [ -z "$choice" ]

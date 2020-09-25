@@ -21,7 +21,9 @@ debug_mode
 root_check
 
 # Configure Nextcloud
-choice=$(whiptail --title "$TITLE" --checklist "Which settings do you want to configure?\n$CHECKLIST_GUIDE\n$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --checklist \
+"Which settings do you want to configure?
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
 "Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
 "Disable workspaces" "(disable top notes in GUI)" OFF \

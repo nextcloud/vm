@@ -28,7 +28,9 @@ then
 fi
 
 # Yes or No?
-choice=$(whiptail --title "$TITLE" --menu "Do you want to disable the Bitwarden_rs admin-panel?\nYou can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+choice=$(whiptail --title "$TITLE" --menu \
+"Do you want to disable the Bitwarden_rs admin-panel?
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Yes" "(Disable the admin-panel)" \
 "No" "(Enable the admin-panel and change the password for the admin-panel)" 3>&1 1>&2 2>&3)
 
