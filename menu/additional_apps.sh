@@ -34,6 +34,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
+"ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" "$STARTUP_SWITCH" \
@@ -68,6 +69,10 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Netdata script..."
         run_script APP netdata
     ;;&
+    *"ClamAV"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the ClamAV script..."
+        run_script APP clamav
     *"BPYTOP"*)
         clear
         SUBTITLE="BPYTOP"
