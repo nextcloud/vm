@@ -26,9 +26,14 @@ So please run them on your own risk. Feedback is more than welcome, though and c
 
 Choose which one you want to execute.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"PLEX Media Server" "(Multimedia server application)" OFF \
 "SMB-server" "(Create and manage a SMB-server on OS level)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
+    *"PLEX Media Server"*)
+        print_text_in_color "$ICyan" "Downloading the PLEX Media Server script..."
+        run_script NOT_SUPPORTED plexmediaserver
+    ;;&
     *"SMB-server"*)
         print_text_in_color "$ICyan" "Downloading the SMB Server script..."
         run_script NOT_SUPPORTED smbserver
