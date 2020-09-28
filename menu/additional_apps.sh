@@ -73,6 +73,7 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading the ClamAV script..."
         run_script APP clamav
+    ;;&
     *"BPYTOP"*)
         clear
         SUBTITLE="BPYTOP"
