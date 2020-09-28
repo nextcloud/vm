@@ -51,26 +51,31 @@ install_if_not mailutils
 MAIL_SERVER=$(input_box_flow "Please enter the email server URL that you want to use.\nE.g. smtp.mail.com")
 
 # Enter if you want to use ssl
-while :
-do
-    PROTOCOL=$(input_box_flow "Please type in the encryption protocol for your mailserver.
-The available options are 'SSL', 'STARTTLS' or 'none'.")
-    if [ "$PROTOCOL" = "SSL" ]
-    then
+PROTOCOL=$(whiptail --title "$TITLE" --nocancel --menu \
+"Please choose the encryption protocol for your mailserver.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"SSL" "" \
+"STARTTLS" "" \
+"none" "" 3>&1 1>&2 2>&3)
+
+if [ -z "$PROTOCOL" ]
+then
+    exit 1
+fi
+
+case "$PROTOCOL" in
+    "SSL")
         DEFAULT_PORT=465
-        break
-    elif [ "$PROTOCOL" = "none" ]
-    then
-        DEFAULT_PORT=25
-        break
-    elif [ "$PROTOCOL" = "STARTTLS" ]
-    then
+    ;;
+    "STARTTLS")
         DEFAULT_PORT=587
-        break
-    else
-        msg_box "The answer wasn't correct. Please type in 'SSL', 'STARTTLS' or 'none'."
-    fi
-done
+    ;;
+    "none")
+        DEFAULT_PORT=25
+    ;;
+    *)
+    ;;
+esac
 
 # Enter Port or just use standard port (defined by usage of ssl)
 SMTP_PORT=$(input_box_flow "Please enter the port for your mailserver.
