@@ -5,8 +5,8 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="SMTP Mail"
-SCRIPT_EXPLAINER="This script helps setting up a SMTP client for the OS, \
-that will be used to send Mails about failed Cronjob's and such."
+SCRIPT_EXPLAINER="This script helps setting up an SMTP client for the OS, \
+that will be used to send emails about failed cronjob's and such."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -23,7 +23,7 @@ root_check
 explainer_popup
 
 # Check if smtp-mail was already configured
-print_text_in_color "$ICyan" "Checking if smtp-mail is already installed and configured..."
+print_text_in_color "$ICyan" "Checking if SMTP is already installed and configured..."
 if [ -f /etc/msmtprc ]
 then
     # Ask for removal or reinstallation
@@ -48,7 +48,7 @@ install_if_not msmtp-mta
 install_if_not mailutils
 
 # Enter mailserver
-MAIL_SERVER=$(input_box_flow "Please enter the mailserver URL that you want to use.\nE.g. smtp.mail.de")
+MAIL_SERVER=$(input_box_flow "Please enter the email server URL that you want to use.\nE.g. smtp.mail.com")
 
 # Enter if you want to use ssl
 while :
