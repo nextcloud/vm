@@ -116,6 +116,7 @@ AV_REPORT="$(clamscan \
 --log=$VMLOGS/clamav-fullscan.log \
 --max-scantime=43200000 \
 --max-filesize=100M \
+--pcre-max-filesize=100M \
 --max-dir-recursion=30 \
 / )"
 
