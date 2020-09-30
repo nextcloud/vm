@@ -1396,6 +1396,7 @@ esac
 # occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
 local NC_USER
+unset NC_USER
 local user
 local admin
 if ! is_app_enabled notifications
@@ -1405,7 +1406,7 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-if [ -z "${NC_ADMIN_USER[@]}" ]
+if [ -z "${NC_ADMIN_USER[*]}" ]
 then
     NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
     mapfile -t NC_USER <<< "$NC_USER"
