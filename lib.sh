@@ -1413,10 +1413,9 @@ then
     do
         if occ_command_no_check user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
         then
-            NC_ADMIN_USER+="$user\n"
+            NC_ADMIN_USER+=("$user")
         fi
     done
-    mapfile -t NC_ADMIN_USER <<< "$NC_ADMIN_USER"
 fi
 
 for admin in "${NC_ADMIN_USER[@]}"
