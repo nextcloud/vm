@@ -217,6 +217,11 @@ download_script MENU menu
 download_script MENU server_configuration
 download_script MENU nextcloud_configuration
 download_script MENU additional_apps
+# Download home server menu for fitting servers
+if lshw -c system -quiet | grep "product:" | grep -q " NUC"
+then
+    download_script MENU home_server_menu
+fi
 
 if home_sme_server
 then
@@ -327,6 +332,12 @@ bash $SCRIPTS/nextcloud_configuration.sh
 
 # Install apps
 bash $SCRIPTS/additional_apps.sh
+
+# Run home server menu for fitting servers
+if lshw -c system -quiet | grep "product:" | grep -q " NUC"
+then
+    bash "$SCRIPTS"/home_server_menu
+fi
 
 clear
 ### Change passwords
