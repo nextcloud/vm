@@ -220,7 +220,7 @@ download_script MENU additional_apps
 # Download home server menu for fitting servers
 if lshw -c system -quiet | grep "product:" | grep -q " NUC"
 then
-    download_script MENU home_server_menu
+    download_script MENU home_server
 fi
 
 if home_sme_server
@@ -336,7 +336,7 @@ bash $SCRIPTS/additional_apps.sh
 # Run home server menu for fitting servers
 if lshw -c system -quiet | grep "product:" | grep -q " NUC"
 then
-    bash "$SCRIPTS"/home_server_menu.sh
+    bash "$SCRIPTS"/home_server.sh
 fi
 
 clear

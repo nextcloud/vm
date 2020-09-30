@@ -51,7 +51,7 @@ case "$choice" in
     ;;
     "Home Server")
         print_text_in_color "$ICyan" "Downloading the Home Server Menu..."
-        run_script MENU home_server_menu
+        run_script MENU home_server
     ;;
     "Nextcloud Configuration")
         print_text_in_color "$ICyan" "Downloading the Nextcloud Configuration Menu..."
