@@ -336,7 +336,7 @@ bash $SCRIPTS/additional_apps.sh
 # Run home server menu for fitting servers
 if lshw -c system -quiet | grep "product:" | grep -q " NUC"
 then
-    bash "$SCRIPTS"/home_server_menu
+    bash "$SCRIPTS"/home_server_menu.sh
 fi
 
 clear
