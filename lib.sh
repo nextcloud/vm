@@ -1395,6 +1395,9 @@ esac
 #
 # occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
+local NC_USERS
+local user
+local admin
 if ! is_app_enabled notifications
 then
     print_text_in_color "$IRed" "The notifications app isn't enabled - unable to send notifications"
@@ -1402,13 +1405,23 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r admin
+if [ -z "${NC_ADMIN_USER[*]}" ]
+then
+    NC_USERS=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+    mapfile -t NC_USERS <<< "$NC_USERS"
+    for user in "${NC_USERS[@]}"
+    do
+        if occ_command_no_check user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
+        then
+            NC_ADMIN_USER+=("$user")
+        fi
+    done
+fi
+
+for admin in "${NC_ADMIN_USER[@]}"
 do
-    if occ_command_no_check user:info "$admin" | cut -d "-" -f2 | grep -x -q " admin"
-    then
-        print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-        occ_command_no_check notification:generate -l "$2" "$admin" "$1"
-    fi
+    print_text_in_color "$IGreen" "Posting '$1' to: $admin"
+    occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 done
 }
 
