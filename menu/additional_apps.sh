@@ -45,7 +45,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 case "$choice" in
     *"Documentserver"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Documentserver MENU..."
+        print_text_in_color "$ICyan" "Downloading the Documentserver Menu..."
         run_script MENU documentserver
     ;;&
     *"Bitwarden"*)
@@ -114,7 +114,7 @@ case "$choice" in
     ;;&
     *"Talk"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Talk MENU..."
+        print_text_in_color "$ICyan" "Downloading the Talk Menu..."
         run_script MENU talk_menu
     ;;&
     *"Webmin"*)
