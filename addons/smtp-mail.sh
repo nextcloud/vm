@@ -155,7 +155,6 @@ cat << MSMTP_CONF > /etc/msmtprc
 defaults
 auth            off
 aliases         /etc/aliases
-# recipient=$RECIPIENT
 $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
 
@@ -169,6 +168,9 @@ port            $SMTP_PORT
 from            $MAIL_USERNAME
 
 account default : $MAIL_SERVER
+
+### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
+# recipient=$RECIPIENT
 MSMTP_CONF
 else
 # With AUTH (Username and Password)
@@ -177,7 +179,6 @@ cat << MSMTP_CONF > /etc/msmtprc
 defaults
 auth            on
 aliases         /etc/aliases
-# recipient=$RECIPIENT
 $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
 
@@ -193,6 +194,10 @@ user            $MAIL_USERNAME
 password        $MAIL_PASSWORD
 
 account default : $MAIL_SERVER
+
+### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
+# recipient=$RECIPIENT
+
 MSMTP_CONF
 fi
 
@@ -219,7 +224,7 @@ set sendmail="/usr/bin/msmtp -t"
 DEFINE_MAIL
 
 # Test sending of mails
-if ! echo -e "Congratulations! Since this email reached you, it seems like everything is working properly. :)" | mail -s "Test email from your NcVM" "$RECIPIENT" &>/dev/null
+if ! echo -e "Congratulations! Since this email reached you, it seems like everything is working properly. :) To change the settings please check /etc/msmtp on your server, or simply just run the setup script again." | mail -s "Test email from your NcVM" "$RECIPIENT" &>/dev/null
 then
     # Fail message
     msg_box "It seems like something has failed.
