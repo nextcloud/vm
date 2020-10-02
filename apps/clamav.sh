@@ -118,7 +118,7 @@ case "$choice" in
     "Copy to a folder")
         ARGUMENT="--move="
         AV_PATH="/root/.clamav/clamav-fullscan.jail"
-        msg_box "We will move/copy the files to '$AV_PATH'"
+        msg_box "We will copy the files to '$AV_PATH'"
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
@@ -126,7 +126,7 @@ case "$choice" in
     "Move to a folder")
         ARGUMENT="--copy="
         AV_PATH="/root/.clamav/clamav-fullscan.jail"
-        msg_box "We will move/copy the files to '$AV_PATH'"
+        msg_box "We will move the files to '$AV_PATH'"
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
