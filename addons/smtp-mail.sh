@@ -33,10 +33,10 @@ then
     apt-get purge msmtp-mta -y
     apt-get purge mailutils -y
     apt autoremove -y
-    mv /etc/aliases.backup /etc/aliases
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
     rm -f $VMLOGS/mail_msmtp.log
+    echo "" > /etc/aliases
     # Show successful uninstall if applicable
     removal_popup
 else
@@ -154,7 +154,7 @@ cat << MSMTP_CONF > /etc/msmtprc
 # Set default values for all following accounts.
 defaults
 auth            off
-aliases         /etc/msmtp_aliases
+aliases         /etc/aliases
 # recipient=$RECIPIENT
 $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
@@ -162,7 +162,7 @@ $MSMTP_ENCRYPTION2
 tls_trust_file  /etc/ssl/certs/ca-certificates.crt
 # logfile         $VMLOGS/mail_msmtp.log
 
-# Host
+# Account to send emails
 account         $MAIL_SERVER
 host            $MAIL_SERVER
 port            $SMTP_PORT
@@ -176,17 +176,15 @@ cat << MSMTP_CONF > /etc/msmtprc
 # Set default values for all following accounts.
 defaults
 auth            on
-aliases         /etc/msmtp_aliases
+aliases         /etc/aliases
 # recipient=$RECIPIENT
 $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
-aliases /etc/aliases
-# recipient=$RECIPIENT
 
 tls_trust_file  /etc/ssl/certs/ca-certificates.crt
-logfile         $VMLOGS/smtp_msmtp.log
+# logfile         $VMLOGS/smtp_msmtp.log
 
-# Host
+# Account to send emails
 account         $MAIL_SERVER
 host            $MAIL_SERVER
 port            $SMTP_PORT
@@ -208,14 +206,11 @@ sudo touch $VMLOGS/mail_msmtp.log
 sudo chown msmtp:msmtp $VMLOGS/mail_msmtp.log
 sudo chmod 0644 $VMLOGS/mail_msmtp.log
 
-# Create a backup of the aliases file
-mv /etc/aliases /etc/aliases.backup
-
 # Create aliases
-cat << ALIASES_CONF > /etc/msmtp_aliases
-root: $MAIL_USERNAME
-default: $MAIL_USERNAME
-cron: $MAIL_USERNAME
+cat << ALIASES_CONF > /etc/aliases
+root: $RECIPIENT
+default:$RECIPIENT
+cron: $RECIPIENT
 ALIASES_CONF
 
 # Define the mail-program
@@ -229,15 +224,15 @@ then
     # Fail message
     msg_box "It seems like something has failed.
 We will now reset everything so that you are able to start over again.
-Please run this script again."
+Please run this script once more time if you want to make another try."
     apt-get purge msmtp -y
     apt-get purge msmtp-mta -y
     apt-get purge mailutils -y
     apt autoremove -y
-    mv /etc/aliases.backup /etc/aliases
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
     rm -f $VMLOGS/mail_msmtp.log
+    echo "" > /etc/aliases
 else
     # Success message
     msg_box "Congratulaions, the test email was successfully sent!
