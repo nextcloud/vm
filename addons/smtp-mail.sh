@@ -111,7 +111,7 @@ then
 fi
 
 # Enter the recipient
-RECIPIENT=$(input_box_flow "Please enter the recipient email address that shall receive all mails.\nE.g. recipient@$MAIL_SERVER)
+RECIPIENT=$(input_box_flow "Please enter the recipient email address that shall receive all mails.\nE.g. recipient@$MAIL_SERVER")
 
 # Present what we gathered, if everything okay, write to files
 msg_box "These are the settings that will be used. Please check that everything seems correct.
@@ -136,7 +136,7 @@ then
     export MSMTP_ENCRYPTION2="tls_starttls    off"
 elif [ "$PROTOCOL" = "STARTTLS" ]
 then
-    export MSMTP_ENCRYPTION1="tls             off"
+    export MSMTP_ENCRYPTION1="tls             on"
     export MSMTP_ENCRYPTION2="tls_starttls    on"
 elif [ "$PROTOCOL" = "NO-ENCRYPTION" ]
 then
