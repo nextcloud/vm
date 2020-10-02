@@ -145,7 +145,7 @@ then
 fi
 
 # Check if auth should be set or not
-if [ -z $MAIL_USERNAME ]
+if [ -z "$MAIL_USERNAME" ]
 then
     MAIL_USERNAME="no-reply@nextcloudvm.com"
 
