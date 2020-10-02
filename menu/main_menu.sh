@@ -35,19 +35,19 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     "Additional Apps")
-        print_text_in_color "$ICyan" "Downloading the Additional Apps script..."
+        print_text_in_color "$ICyan" "Downloading the Additional Apps Menu..."
         run_script MENU additional_apps
     ;;
     "Nextcloud Configuration")
-        print_text_in_color "$ICyan" "Downloading the Nextcloud Configuration script..."
+        print_text_in_color "$ICyan" "Downloading the Nextcloud Configuration Menu..."
         run_script MENU nextcloud_configuration
     ;;
     "Startup Configuration")
-        print_text_in_color "$ICyan" "Downloading the Startup Configuration script..."
+        print_text_in_color "$ICyan" "Downloading the Startup Configuration Menu..."
         run_script MENU startup_configuration
     ;;
     "Server Configuration")
-        print_text_in_color "$ICyan" "Downloading the Server Configuration script..."
+        print_text_in_color "$ICyan" "Downloading the Server Configuration Menu..."
         run_script MENU server_configuration
     ;;
     "Update Nextcloud")

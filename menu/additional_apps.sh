@@ -45,17 +45,17 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 case "$choice" in
     *"Documentserver"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Documentserver script..."
+        print_text_in_color "$ICyan" "Downloading the Documentserver Menu..."
         run_script MENU documentserver
     ;;&
     *"Bitwarden"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
+        print_text_in_color "$ICyan" "Downloading the Bitwarden Menu..."
         run_script MENU bitwarden_menu
     ;;&
     *"Fail2ban  "*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Fail2ban script..."
+        print_text_in_color "$ICyan" "Downloading the Fail2ban Menu..."
         run_script MENU fail2ban_menu
     ;;&
     *"Adminer"*)
@@ -116,7 +116,7 @@ to finish the setup once this script is done." "$SUBTITLE"
     ;;&
     *"Talk"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Talk script..."
+        print_text_in_color "$ICyan" "Downloading the Talk Menu..."
         run_script MENU talk_menu
     ;;&
     *"Webmin"*)

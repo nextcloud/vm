@@ -1323,7 +1323,7 @@ fi
 docker_update_specific() {
 if does_this_docker_exist "$1" "$2"
 then
-    docker run --rm --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
+    docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
     print_text_in_color "$IGreen" "$2 docker image just got updated!"
     notify_admin_gui "Docker image just got updated!" "We just updated $2 docker image automatically!"
 fi
@@ -1378,7 +1378,7 @@ home_sme_server() {
 # OLD MEMORY: BLS16G4 (Balistix Sport) || 18ASF2G72HZ (ECC)
 if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH"
 then
-    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266"
+    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1"
     then
         if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B"
         then
@@ -1411,6 +1411,9 @@ esac
 #
 # occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
+local NC_USERS
+local user
+local admin
 if ! is_app_enabled notifications
 then
     print_text_in_color "$IRed" "The notifications app isn't enabled - unable to send notifications"
@@ -1418,13 +1421,23 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r admin
+if [ -z "${NC_ADMIN_USER[*]}" ]
+then
+    NC_USERS=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+    mapfile -t NC_USERS <<< "$NC_USERS"
+    for user in "${NC_USERS[@]}"
+    do
+        if occ_command_no_check user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
+        then
+            NC_ADMIN_USER+=("$user")
+        fi
+    done
+fi
+
+for admin in "${NC_ADMIN_USER[@]}"
 do
-    if occ_command_no_check user:info "$admin" | cut -d "-" -f2 | grep -x -q " admin"
-    then
-        print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-        occ_command_no_check notification:generate -l "$2" "$admin" "$1"
-    fi
+    print_text_in_color "$IGreen" "Posting '$1' to: $admin"
+    occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 done
 }
 
