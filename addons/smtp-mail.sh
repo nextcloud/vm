@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="SMTP Mail"
-SCRIPT_EXPLAINER="This script helps setting up an SMTP client for the OS, \
+SCRIPT_EXPLAINER="This script will setup an SMTP relay in your Nextcloud Server \
 that will be used to send emails about failed cronjob's and such."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -22,7 +22,7 @@ root_check
 # Show explainer
 explainer_popup
 
-# Check if smtp-mail was already configured
+# Check if Smtp Relay was already configured
 print_text_in_color "$ICyan" "Checking if SMTP is already installed and configured..."
 if [ -f /etc/msmtprc ]
 then
@@ -36,10 +36,11 @@ then
     mv /etc/aliases.backup /etc/aliases
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
+    rm -f $VMLOGS/mail_msmtp.log
     # Show successful uninstall if applicable
     removal_popup
 else
-    print_text_in_color "$ICyan" "Installing smtp-mail..."
+    print_text_in_color "$ICyan" "Installing SMTP Relay..."
 fi
 
 # Install needed tools
@@ -117,9 +118,9 @@ msg_box "These are the settings that will be used. Please check that everything 
 
 Mailserver URL=$MAIL_SERVER
 Encryption=$PROTOCOL
-SMTP-port=$SMTP_PORT
-SMTP-username=$MAIL_USERNAME
-SMTP-password=$MAIL_PASSWORD
+SMTP Port=$SMTP_PORT
+SMTP Username=$MAIL_USERNAME
+SMTP Password=$MAIL_PASSWORD
 Recipient=$RECIPIENT"
 
 # Ask if everything is okay
@@ -131,33 +132,35 @@ fi
 # Add the encryption settings to the file as well
 if [ "$PROTOCOL" = "SSL" ]
 then
-    export MSMTP_ENCRYPTION1="tls            on"
-    export MSMTP_ENCRYPTION2="tls_starttls   off"
+    export MSMTP_ENCRYPTION1="tls             on"
+    export MSMTP_ENCRYPTION2="tls_starttls    off"
 elif [ "$PROTOCOL" = "STARTTLS" ]
 then
-    export MSMTP_ENCRYPTION1="tls            off"
-    export MSMTP_ENCRYPTION2="tls_starttls   on"
+    export MSMTP_ENCRYPTION1="tls             off"
+    export MSMTP_ENCRYPTION2="tls_starttls    on"
 elif [ "$PROTOCOL" = "NO-ENCRYPTION" ]
 then
-    export MSMTP_ENCRYPTION1="tls            off"
-    export MSMTP_ENCRYPTION2="tls_starttls   off"
+    export MSMTP_ENCRYPTION1="tls             off"
+    export MSMTP_ENCRYPTION2="tls_starttls    off"
 fi
 
 # Check if auth should be set or not
 if [ -z $MAIL_USERNAME ]
 then
-    MAIL_USERNAME="nextcloud_mail_server@nextcloudvm.com"
+    MAIL_USERNAME="no-reply@nextcloudvm.com"
 
 # Without AUTH (Username and Password)
 cat << MSMTP_CONF > /etc/msmtprc
 # Set default values for all following accounts.
 defaults
 auth            off
+aliases         /etc/msmtp_aliases
+# recipient=$RECIPIENT
 $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
 
 tls_trust_file  /etc/ssl/certs/ca-certificates.crt
-logfile         $VMLOGS/smtp_msmtp.log
+# logfile         $VMLOGS/mail_msmtp.log
 
 # Host
 account         $MAIL_SERVER
@@ -168,14 +171,17 @@ from            $MAIL_USERNAME
 account default : $MAIL_SERVER
 MSMTP_CONF
 else
-
 # With AUTH (Username and Password)
 cat << MSMTP_CONF > /etc/msmtprc
 # Set default values for all following accounts.
 defaults
 auth            on
+aliases         /etc/msmtp_aliases
+# recipient=$RECIPIENT
 $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
+aliases /etc/aliases
+# recipient=$RECIPIENT
 
 tls_trust_file  /etc/ssl/certs/ca-certificates.crt
 logfile         $VMLOGS/smtp_msmtp.log
@@ -185,7 +191,7 @@ account         $MAIL_SERVER
 host            $MAIL_SERVER
 port            $SMTP_PORT
 from            $MAIL_USERNAME@$MAIL_SERVER
-user            $MAIL_USERNAME@$MAIL_SERVER
+user            $MAIL_USERNAME
 password        $MAIL_PASSWORD
 
 account default : $MAIL_SERVER
@@ -195,13 +201,21 @@ fi
 # Secure the file
 chmod 600 /etc/msmtprc
 
+# Create logs
+# TODO: not working due to permissions error
+rm -f $VMLOGS/mail_msmtp.log
+sudo touch $VMLOGS/mail_msmtp.log
+sudo chown msmtp:msmtp $VMLOGS/mail_msmtp.log
+sudo chmod 0644 $VMLOGS/mail_msmtp.log
+
 # Create a backup of the aliases file
 mv /etc/aliases /etc/aliases.backup
 
 # Create aliases
-cat << ALIASES_CONF > /etc/aliases
+cat << ALIASES_CONF > /etc/msmtp_aliases
 root: $MAIL_USERNAME
 default: $MAIL_USERNAME
+cron: $MAIL_USERNAME
 ALIASES_CONF
 
 # Define the mail-program
@@ -210,7 +224,7 @@ set sendmail="/usr/bin/msmtp -t"
 DEFINE_MAIL
 
 # Test sending of mails
-if ! echo -e "Congratulations! This testmail has reached you, so it seems like everything was setup correctly." | mail -s "Testmail from your NcVM" "$RECIPIENT" &>/dev/null
+if ! echo -e "Congratulations! Since this email reached you, it seems like everything is working properly. :)" | mail -s "Test email from your NcVM" "$RECIPIENT" &>/dev/null
 then
     # Fail message
     msg_box "It seems like something has failed.
@@ -223,9 +237,10 @@ Please run this script again."
     mv /etc/aliases.backup /etc/aliases
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
+    rm -f $VMLOGS/mail_msmtp.log
 else
     # Success message
-    msg_box "Congratulaions, the testmail was sent successfully.
-Please look at the inbox of your recipient $RECIPIENT. The testmail should be there."
+    msg_box "Congratulaions, the test email was successfully sent!
+Please check the inbox for $RECIPIENT. The test email should arrive soon."
 fi
 exit
