@@ -847,6 +847,9 @@ then
     check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
 fi
 
+# Disable hibernation
+systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+
 # Reboot
 msg_box "Installation almost done, system will reboot when you hit OK. 
 
