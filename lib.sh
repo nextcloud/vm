@@ -1405,6 +1405,7 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
+send_mail "$1" "$2"
 if [ -z "${NC_ADMIN_USER[*]}" ]
 then
     NC_USERS=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
