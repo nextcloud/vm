@@ -1395,7 +1395,6 @@ esac
 #
 # occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
-send_mail "$1" "$2"
 if ! is_app_enabled notifications
 then
     print_text_in_color "$IRed" "The notifications app isn't enabled - unable to send notifications"
