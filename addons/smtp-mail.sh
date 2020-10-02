@@ -104,14 +104,14 @@ esac
 # Enter your mail username
 if yesno_box_yes "Do you have a username and password for the login to $MAIL_SERVER?"
 then
-    MAIL_USERNAME=$(input_box_flow "Please enter the username for the login to your mail provider.\nE.g. user@$MAIL_SERVER")
+    MAIL_USERNAME=$(input_box_flow "Please enter the username for the login to your mail provider.\nE.g. you@$MAIL_SERVER")
 
     # Enter your mailuser password
     MAIL_PASSWORD=$(input_box_flow "Please enter the password for your mailserver user.")
 fi
 
 # Enter the recipient
-RECIPIENT=$(input_box_flow "Please enter the recipient email address that shall receive all mails.\nE.g. mail@example.com")
+RECIPIENT=$(input_box_flow "Please enter the recipient email address that shall receive all mails.\nE.g. recipient@$MAIL_SERVER)
 
 # Present what we gathered, if everything okay, write to files
 msg_box "These are the settings that will be used. Please check that everything seems correct.
