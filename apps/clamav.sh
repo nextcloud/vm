@@ -5,9 +5,9 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="ClamAV"
-SCRIPT_EXPLAINER="This script installs the open-source Antivirus-software ClamAV on your server \
+SCRIPT_EXPLAINER="This script installs the open-source antivirus-software ClamAV on your server \
 and configures Nextcloud to detect infected files already during the upload.
-At the end of the script, you will have the chance to setup a weekly full-scan of all files."
+At the end of the script, you will be able to choose to setup a weekly full scan of all files."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -91,18 +91,18 @@ occ_command config:app:set files_antivirus av_infected_action --value="only_log"
 # Inform the user
 msg_box "ClamAV was succesfully installed.
 
-Your Nextcloud should be safer now."
+Your Nextcloud should be more secure now."
 
 # Ask for full-scan
-if ! yesno_box_yes "Do you want to setup a weekly full-scan of all files?
-It will run on sundays starting at 10:00 for max 12h. 
-You will be notified what the result was."
+if ! yesno_box_yes "Do you want to setup a weekly full scan of all your files?
+It will run on Sundays starting at 10:00 and will continue for a maximum of 12 hours (hardcoded). 
+You will be notified when it's finished so that you can check the final result."
 then
     exit
 fi
 
 choice=$(whiptail --title "$TITLE" --nocancel --menu \
-"Choose should happen with infected files.
+"Choose what should happen with infected files.
 Infected files will always get reported to you no matter which option you choose.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Only log" "" \
@@ -116,14 +116,14 @@ case "$choice" in
     ;;
     "Copy to a folder")
         AV_PATH="/root/.clamav/clamav-fullscan.jail"
-        msg_box "We will copy the files to '$AV_PATH'"
+        msg_box "We will move/copy the files to '$AV_PATH'"
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
     ;;
     "Move to a folder")
         AV_PATH="/root/.clamav/clamav-fullscan.jail"
-        msg_box "We will move the files to '$AV_PATH'"
+        msg_box "We will move/copy the files to '$AV_PATH'"
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
@@ -176,8 +176,8 @@ touch "$VMLOGS"/clamav-fullscan.log
 chown clamav:clamav "$VMLOGS"/clamav-fullscan.log
 
 # Inform the user
-msg_box "The full-scan was successfully setup.
-It will run on sundays starting at 10:00 for max 12h. 
-You will be notified what the result was."
+msg_box "The full scan was successfully setup.
+It will run on Sundays starting at 10:00 and will continue for a maximum of 12 hours (hardcoded).
+You will be notified when it's finished so that you can check the final result."
 
 exit
