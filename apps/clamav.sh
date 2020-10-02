@@ -101,6 +101,46 @@ then
     exit
 fi
 
+choice=$(whiptail --title "$TITLE" --nocancel --menu \
+"Choose what shall happen with infected files.
+Infected files will always get reported to you no matter which one you choose.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Only log" "" \
+"Copy to a folder" "" \
+"Move to a folder" "" \
+"Remove" "" 3>&1 1>&2 2>&3)
+
+case "$choice" in
+    "Only log")
+        ARGUMENT=""
+    ;;
+    "Copy to a folder")
+        ARGUMENT="--move="
+    ;;
+    "Move to a folder")
+        ARGUMENT="--copy="
+    ;;
+    "Remove")
+        ARGUMENT="--remove=yes"
+    ;;
+    "")
+        exit 1
+    ;;
+    *)
+    ;;
+esac
+
+if [ "$choice" = "Copy to a folder" ] || [ "$choice" = "Move to a folder" ]
+then
+    AV_PATH="/root/.clamav/clamav-fullscan.jail"
+    msg_box "We will move/copy the files to '$AV_PATH'"
+    mkdir -p "$AV_PATH"
+    chown -R clamav:clamav "$AV_PATH"
+    chmod -R 600 "$AV_PATH"
+else
+    AV_PATH=""
+fi
+
 # Create the full-scan script
 cat << CLAMAV_REPORT > "$SCRIPTS"/clamav-fullscan.sh
 #!/bin/bash
@@ -115,6 +155,7 @@ AV_REPORT="$(clamscan \
 --infected \
 --cross-fs \
 --log=$VMLOGS/clamav-fullscan.log \
+$ARGUMENT$AV_PATH \
 --max-scantime=43200000 \
 --max-filesize=1G \
 --pcre-max-filesize=1G \
