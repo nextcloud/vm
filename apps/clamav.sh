@@ -103,7 +103,7 @@ fi
 
 choice=$(whiptail --title "$TITLE" --nocancel --menu \
 "Choose what shall happen with infected files.
-Infected files will always get reported to you no matter which one you choose.
+Infected files will always get reported to you no matter which option you choose.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Only log" "" \
 "Copy to a folder" "" \
