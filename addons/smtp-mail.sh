@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="SMTP Relay with msmtp"
-SCRIPT_EXPLAINER="This script will setup an SMTP Relay in your Nextcloud Server \
+SCRIPT_EXPLAINER="This script will setup an SMTP Relay (Mail Server) in your Nextcloud Server \
 that will be used to send emails about failed cronjob's and such."
 # shellcheck source=lib.sh
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -23,7 +23,7 @@ root_check
 explainer_popup
 
 # Check if Smtp Relay was already configured
-print_text_in_color "$ICyan" "Checking if SMTP is already installed and configured..."
+print_text_in_color "$ICyan" "Checking if an SMTP Relay is already installed and/or configured..."
 if [ -f /etc/msmtprc ]
 then
     # Ask for removal or reinstallation
@@ -48,12 +48,12 @@ install_if_not msmtp
 install_if_not msmtp-mta
 install_if_not mailutils
 
-# Enter mailserver
-MAIL_SERVER=$(input_box_flow "Please enter the email server URL that you want to use.\nE.g. smtp.mail.com")
+# Enter Mail Server
+MAIL_SERVER=$(input_box_flow "Please enter the SMTP Relay URL that you want to use.\nE.g. smtp.mail.com")
 
 # Enter if you want to use ssl
 PROTOCOL=$(whiptail --title "$TITLE" --nocancel --menu \
-"Please choose the encryption protocol for your mailserver.
+"Please choose the encryption protocol for your SMTP Relay.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "SSL" "" \
 "STARTTLS" "" \
@@ -95,19 +95,19 @@ case "$SMTP_PORT" in
         SMTP_PORT="$DEFAULT_PORT"
     ;;
     "Enter another port")
-        SMTP_PORT="$(input_box_flow 'Please enter the port for your mailserver.')"
+        SMTP_PORT="$(input_box_flow 'Please enter the port for your SMTP Relay.')"
     ;;
     *)
     ;;
 esac
 
-# Enter your mail username
-if yesno_box_yes "Do you have a username and password for the login to $MAIL_SERVER?"
+# Enter your SMTP username
+if yesno_box_yes "Does $MAIL_SERVER require any credenitals, like username and password?"
 then
-    MAIL_USERNAME=$(input_box_flow "Please enter the username for the login to your mail provider.\nE.g. you@$MAIL_SERVER")
+    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@$MAIL_SERVER")
 
     # Enter your mailuser password
-    MAIL_PASSWORD=$(input_box_flow "Please enter the password for your mailserver user.")
+    MAIL_PASSWORD=$(input_box_flow "Please enter the SMTP password to your email provider.")
 fi
 
 # Enter the recipient
@@ -124,7 +124,7 @@ SMTP Password=$MAIL_PASSWORD
 Recipient=$RECIPIENT"
 
 # Ask if everything is okay
-if ! yesno_box_yes "Do you want to proceed?"
+if ! yesno_box_yes "Does everything look correct?"
 then
     exit
 fi
