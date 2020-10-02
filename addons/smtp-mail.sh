@@ -56,7 +56,7 @@ PROTOCOL=$(whiptail --title "$TITLE" --nocancel --menu \
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "SSL" "" \
 "STARTTLS" "" \
-"none" "" 3>&1 1>&2 2>&3)
+"NO-ENCRYPTION" "" 3>&1 1>&2 2>&3)
 
 if [ -z "$PROTOCOL" ]
 then
@@ -70,35 +70,7 @@ case "$PROTOCOL" in
     "STARTTLS")
         DEFAULT_PORT=587
     ;;
-    "none")
-        DEFAULT_PORT=25
-    ;;
-    *)
-    ;;
-esac
-
-
-# Enter if you want to use ssl
-PROTOCOL="$(whiptail --title "$TITLE" --nocancel --menu \
-"Please choose the encryption protocol for your mailserver.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"SSL" "" \
-"STARTTLS" "" \
-"NO ENCRYPTION" "" 3>&1 1>&2 2>&3)
-
-if [ -z "$PROTOCOL" ]
-then
-    exit 1
-fi
-
-case "$PROTOCOL" in
-    "SSL")
-        DEFAULT_PORT=465
-    ;;
-    "STARTTLS")
-        DEFAULT_PORT=587
-    ;;
-    "NO ENCRYPTION")
+    "NO-ENCRYPTION")
         DEFAULT_PORT=25
     ;;
     *)
