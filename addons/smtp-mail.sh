@@ -136,7 +136,7 @@ then
     export MSMTP_ENCRYPTION2="tls_starttls    off"
 elif [ "$PROTOCOL" = "STARTTLS" ]
 then
-    export MSMTP_ENCRYPTION1="tls             off"
+    export MSMTP_ENCRYPTION1="tls             on"
     export MSMTP_ENCRYPTION2="tls_starttls    on"
 elif [ "$PROTOCOL" = "NO-ENCRYPTION" ]
 then
