@@ -128,6 +128,23 @@ then
     exit
 fi
 
+# Check if auth should be set or not
+if [ -z $MAIL_USERNAME ]
+then
+    MAIL_USERNAME="nextcloud_mail_server@yourserver.com"
+# Create the file
+cat << MSMTP_CONF > /etc/msmtprc
+defaults
+port $SMTP_PORT
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+host $MAIL_SERVER
+from $MAIL_USERNAME
+auth off
+account default: $MAIL_USERNAME
+aliases /etc/aliases
+# recipient=$RECIPIENT
+MSMTP_CONF
+else
 # Create the file
 cat << MSMTP_CONF > /etc/msmtprc
 defaults
@@ -144,6 +161,7 @@ aliases /etc/aliases
 # recipient=$RECIPIENT
 MSMTP_CONF
 unset MAIL_PASSWORD
+fi
 
 # Add the encryption settings to the file as well
 if [ "$PROTOCOL" = "SSL" ]
@@ -158,7 +176,7 @@ cat << MSMTP_CONF >> /etc/msmtprc
 tls off
 tls_starttls on
 MSMTP_CONF
-elif [ "$PROTOCOL" = "none" ]
+elif [ "$PROTOCOL" = "NO-ENCRYPTION" ]
 then
 cat << MSMTP_CONF >> /etc/msmtprc
 tls off
@@ -184,8 +202,7 @@ set sendmail="/usr/bin/msmtp -t"
 DEFINE_MAIL
 
 # Test sending of mails
-if ! echo -e "Congratulations!\nThis testmail has reached you, \
-so it seems like everything was setup correctly." | mail -s "Testmail from your NcVM" "$RECIPIENT" &>/dev/null
+if ! echo -e "Congratulations! This testmail has reached you, so it seems like everything was setup correctly." | mail -s "Testmail from your NcVM" "$RECIPIENT" &>/dev/null
 then
     # Fail message
     msg_box "It seems like something has failed.
