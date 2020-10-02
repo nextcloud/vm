@@ -115,8 +115,8 @@ AV_REPORT="$(clamscan \
 --cross-fs \
 --log=$VMLOGS/clamav-fullscan.log \
 --max-scantime=43200000 \
---max-filesize=100M \
---pcre-max-filesize=100M \
+--max-filesize=1G \
+--pcre-max-filesize=1G \
 --max-dir-recursion=30 \
 / )"
 
