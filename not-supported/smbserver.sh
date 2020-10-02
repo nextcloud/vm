@@ -215,7 +215,7 @@ add_user() {
     echo "$HASH" >> "$HASH_HISTORY"
 
     # Modify the groups of the SMB-user
-    check_command usermod --append --groups "$SMB_GROUP","$WEB_USER" "$NEWNAME"
+    check_command usermod --append --groups "$SMB_GROUP","$WEB_GROUP" "$NEWNAME"
 
     # Inform the user
     msg_box "The smb-user $NEWNAME was successfully created.\n\nIf this is the first SMB-user, that you have created, you should be able to create a new SMB-share now by returning to the Main Menu of this script and choosing from there 'SMB-share Menu' -> 'create a SMB-share'.\nSuggested is though, creating all needed SMB-users first." "$SUBTITLE"
