@@ -116,7 +116,7 @@ RECIPIENT=$(input_box_flow "Please enter the recipient email address that shall 
 # Present what we gathered, if everything okay, write to files
 msg_box "These are the settings that will be used. Please check that everything seems correct.
 
-Mailserver URL=$MAIL_SERVER
+SMTP Relay URL=$MAIL_SERVER
 Encryption=$PROTOCOL
 SMTP Port=$SMTP_PORT
 SMTP Username=$MAIL_USERNAME
