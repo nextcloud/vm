@@ -115,10 +115,9 @@ then
     # Resize LVM (live installer is &%¤%/!
     # VM
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-    lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+    lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 
     # Run it again manually just to be sure it's done
-    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
     while :
     do
         lvdisplay | grep "Size" | awk '{print $3}'
@@ -130,7 +129,10 @@ then
                 then
                     if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                     then
-                        resize2fs /dev/ubuntu-vg/ubuntu-lv
+                        if yesno_box_yes "Do you want to make all free space available to your root partition?"
+                        then
+                            resize2fs /dev/ubuntu-vg/ubuntu-lv
+                        fi
                         break
                     fi
                 fi
