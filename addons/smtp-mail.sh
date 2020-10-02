@@ -4,7 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="SMTP Mail"
+SCRIPT_NAME="SMTP Relay with msmtp"
 SCRIPT_EXPLAINER="This script will setup an SMTP Relay in your Nextcloud Server \
 that will be used to send emails about failed cronjob's and such."
 # shellcheck source=lib.sh
