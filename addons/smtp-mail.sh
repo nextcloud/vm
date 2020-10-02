@@ -128,59 +128,67 @@ then
     exit
 fi
 
-# Check if auth should be set or not
-if [ -z $MAIL_USERNAME ]
-then
-    MAIL_USERNAME="nextcloud_mail_server@yourserver.com"
-# Create the file
-cat << MSMTP_CONF > /etc/msmtprc
-defaults
-port $SMTP_PORT
-tls_trust_file /etc/ssl/certs/ca-certificates.crt
-host $MAIL_SERVER
-from $MAIL_USERNAME
-auth off
-account default: $MAIL_USERNAME
-aliases /etc/aliases
-# recipient=$RECIPIENT
-MSMTP_CONF
-else
-# Create the file
-cat << MSMTP_CONF > /etc/msmtprc
-defaults
-port $SMTP_PORT
-tls_trust_file /etc/ssl/certs/ca-certificates.crt
-account $MAIL_USERNAME
-host $MAIL_SERVER
-from $MAIL_USERNAME
-auth on
-user $MAIL_USERNAME
-password $MAIL_PASSWORD
-account default: $MAIL_USERNAME
-aliases /etc/aliases
-# recipient=$RECIPIENT
-MSMTP_CONF
-unset MAIL_PASSWORD
-fi
-
 # Add the encryption settings to the file as well
 if [ "$PROTOCOL" = "SSL" ]
 then
-cat << MSMTP_CONF >> /etc/msmtprc
-tls on
-tls_starttls off
-MSMTP_CONF
+    export MSMTP_ENCRYPTION1="tls            on"
+    export MSMTP_ENCRYPTION2="tls_starttls   off"
 elif [ "$PROTOCOL" = "STARTTLS" ]
 then
-cat << MSMTP_CONF >> /etc/msmtprc
-tls off
-tls_starttls on
-MSMTP_CONF
+    export MSMTP_ENCRYPTION1="tls            off"
+    export MSMTP_ENCRYPTION2="tls_starttls   on"
 elif [ "$PROTOCOL" = "NO-ENCRYPTION" ]
 then
-cat << MSMTP_CONF >> /etc/msmtprc
-tls off
-tls_starttls off
+    export MSMTP_ENCRYPTION1="tls            off"
+    export MSMTP_ENCRYPTION2="tls_starttls   off"
+fi
+
+# Check if auth should be set or not
+if [ -z $MAIL_USERNAME ]
+then
+    MAIL_USERNAME="nextcloud_mail_server@nextcloudvm.com"
+
+# Without AUTH (Username and Password)
+cat << MSMTP_CONF > /etc/msmtprc
+# Set default values for all following accounts.
+defaults
+auth            off
+$MSMTP_ENCRYPTION1
+$MSMTP_ENCRYPTION2
+
+tls_trust_file  /etc/ssl/certs/ca-certificates.crt
+logfile         $VMLOGS/smtp_msmtp.log
+
+# Host
+account         $MAIL_SERVER
+host            $MAIL_SERVER
+port            $SMTP_PORT
+from            $MAIL_USERNAME
+
+account default : $MAIL_SERVER
+MSMTP_CONF
+else
+
+# With AUTH (Username and Password)
+cat << MSMTP_CONF > /etc/msmtprc
+# Set default values for all following accounts.
+defaults
+auth            on
+$MSMTP_ENCRYPTION1
+$MSMTP_ENCRYPTION2
+
+tls_trust_file  /etc/ssl/certs/ca-certificates.crt
+logfile         $VMLOGS/smtp_msmtp.log
+
+# Host
+account         $MAIL_SERVER
+host            $MAIL_SERVER
+port            $SMTP_PORT
+from            $MAIL_USERNAME@$MAIL_SERVER
+user            $MAIL_USERNAME@$MAIL_SERVER
+password        $MAIL_PASSWORD
+
+account default : $MAIL_SERVER
 MSMTP_CONF
 fi
 
