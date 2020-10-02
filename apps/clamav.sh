@@ -102,7 +102,7 @@ then
 fi
 
 choice=$(whiptail --title "$TITLE" --nocancel --menu \
-"Choose what shall happen with infected files.
+"Choose should happen with infected files.
 Infected files will always get reported to you no matter which option you choose.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Only log" "" \
@@ -112,16 +112,25 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     "Only log")
-        ARGUMENT=""
+        AV_PATH=""
     ;;
     "Copy to a folder")
-        ARGUMENT="--move="
+        AV_PATH="/root/.clamav/clamav-fullscan.jail"
+        msg_box "We will move/copy the files to '$AV_PATH'"
+        mkdir -p "$AV_PATH"
+        chown -R clamav:clamav "$AV_PATH"
+        chmod -R 600 "$AV_PATH"
     ;;
     "Move to a folder")
-        ARGUMENT="--copy="
+        AV_PATH="/root/.clamav/clamav-fullscan.jail"
+        msg_box "We will move/copy the files to '$AV_PATH'"
+        mkdir -p "$AV_PATH"
+        chown -R clamav:clamav "$AV_PATH"
+        chmod -R 600 "$AV_PATH"
     ;;
     "Remove")
         ARGUMENT="--remove=yes"
+        AV_PATH=""
     ;;
     "")
         exit 1
@@ -129,17 +138,6 @@ case "$choice" in
     *)
     ;;
 esac
-
-if [ "$choice" = "Copy to a folder" ] || [ "$choice" = "Move to a folder" ]
-then
-    AV_PATH="/root/.clamav/clamav-fullscan.jail"
-    msg_box "We will move/copy the files to '$AV_PATH'"
-    mkdir -p "$AV_PATH"
-    chown -R clamav:clamav "$AV_PATH"
-    chmod -R 600 "$AV_PATH"
-else
-    AV_PATH=""
-fi
 
 # Create the full-scan script
 cat << CLAMAV_REPORT > "$SCRIPTS"/clamav-fullscan.sh
