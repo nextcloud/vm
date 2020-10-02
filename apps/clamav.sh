@@ -39,7 +39,8 @@ then
     apt purge clamav -y
     apt autoremove -y
     rm -f /etc/systemd/system/clamav-daemon.service
-    rm -f "$SCRIPTS"/av_report.sh
+    rm -f "$SCRIPTS"/clamav-fullscan.sh
+    rm -f "$VMLOGS"/clamav-fullscan.log
     crontab -u root -l | grep -v 'clamav-fullscan.sh'  | crontab -u root -
     if is_app_installed files_antivirus
     then
