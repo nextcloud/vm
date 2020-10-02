@@ -398,6 +398,9 @@ then
 fi
 clear
 
+# We need to unset the cached admin-user since we have changed its name
+unset NC_ADMIN_USER
+
 msg_box "Well done, you have now finished most of the setup.
 
 There are still some stuff left to do, but they are automated so sit back and relax! :)"
