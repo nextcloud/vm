@@ -77,12 +77,11 @@ download_script STATIC fetch_lib
 # Set locales
 run_script ADDONS locales
 
-# Check current repo
-if yesno_box_yes "Do you want to use http://archive.ubuntu.com as repository for this server?"
+# Offer to use archive.ubuntu.com
+msg_box "Your current download repository is $REPO"
+if yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
 then
     sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
-else
-    run_script ADDONS locate_mirror
 fi
 
 # Create new current user
