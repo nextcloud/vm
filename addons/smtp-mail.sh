@@ -104,14 +104,14 @@ esac
 # Enter your SMTP username
 if yesno_box_yes "Does $MAIL_SERVER require any credenitals, like username and password?"
 then
-    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@$MAIL_SERVER")
+    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com")
 
     # Enter your mailuser password
     MAIL_PASSWORD=$(input_box_flow "Please enter the SMTP password to your email provider.")
 fi
 
 # Enter the recipient
-RECIPIENT=$(input_box_flow "Please enter the recipient email address that shall receive all mails.\nE.g. recipient@$MAIL_SERVER")
+RECIPIENT=$(input_box_flow "Please enter the recipient email address that shall receive all mails.\nE.g. recipient@mail.com")
 
 # Present what we gathered, if everything okay, write to files
 msg_box "These are the settings that will be used. Please check that everything seems correct.
@@ -132,16 +132,16 @@ fi
 # Add the encryption settings to the file as well
 if [ "$PROTOCOL" = "SSL" ]
 then
-    export MSMTP_ENCRYPTION1="tls             on"
-    export MSMTP_ENCRYPTION2="tls_starttls    off"
+    MSMTP_ENCRYPTION1="tls             on"
+    MSMTP_ENCRYPTION2="tls_starttls    off"
 elif [ "$PROTOCOL" = "STARTTLS" ]
 then
-    export MSMTP_ENCRYPTION1="tls             on"
-    export MSMTP_ENCRYPTION2="tls_starttls    on"
+    MSMTP_ENCRYPTION1="tls             on"
+    MSMTP_ENCRYPTION2="tls_starttls    on"
 elif [ "$PROTOCOL" = "NO-ENCRYPTION" ]
 then
-    export MSMTP_ENCRYPTION1="tls             off"
-    export MSMTP_ENCRYPTION2="tls_starttls    off"
+    MSMTP_ENCRYPTION1="tls             off"
+    MSMTP_ENCRYPTION2="tls_starttls    off"
 fi
 
 # Check if auth should be set or not
@@ -189,7 +189,7 @@ tls_trust_file  /etc/ssl/certs/ca-certificates.crt
 account         $MAIL_SERVER
 host            $MAIL_SERVER
 port            $SMTP_PORT
-from            $MAIL_USERNAME@$MAIL_SERVER
+from            $MAIL_USERNAME
 user            $MAIL_USERNAME
 password        $MAIL_PASSWORD
 
@@ -213,9 +213,9 @@ sudo chmod 0644 $VMLOGS/mail_msmtp.log
 
 # Create aliases
 cat << ALIASES_CONF > /etc/aliases
-root: $RECIPIENT
-default:$RECIPIENT
-cron: $RECIPIENT
+root: $MAIL_USERNAME
+default:$MAIL_USERNAME
+cron: $MAIL_USERNAME
 ALIASES_CONF
 
 # Define the mail-program
