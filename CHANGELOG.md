@@ -27,7 +27,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Improve fetch_lib
 - SMBmount: Introduce the option to customize the mount before adding as external storage to Nextcloud
 - SMBmount: Add the option to utilize inotify to actively watch over externally changed files and folders
-- Repository: create the [not-supported](https://github.com/nextcloud/vm/tree/master/not-supported) folder with additional options like creating a SMB-server
+- Repository: added the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported) with additional options like creating a SMB-server
 - Minor bugfixes and improvements
 
 ### Full changelog:
