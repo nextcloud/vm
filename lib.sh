@@ -230,33 +230,9 @@ then
 fi
 }
 
-# TODO: delete in a few releases (e.g. NC20) since not needed anymore
-ask_yes_or_no() {
-    read -r -p "$1 ([y]es or [N]o): "
-    case ${REPLY,,} in
-        y|yes)
-            echo "yes"
-        ;;
-        *)
-            echo "no"
-        ;;
-    esac
-}
-
 msg_box() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
     whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3
-}
-
-# TODO: delete in a few releases (e.g. NC20) since not needed anymore
-yesno_box() {
-    [ -n "$2" ] && local SUBTITLE=" - $2"
-    if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
-    then
-        return 0
-    else
-        return 1
-    fi
 }
 
 yesno_box_yes() {
@@ -1073,34 +1049,10 @@ run_script() {
     fi
 }
 
-# Initial download of script in ../static
-# call like: download_static_script name_of_script
-download_static_script() {
-download_script STATIC "${1}"
-}
-
-# Initial download of script in ../lets-encrypt
-# call like: download_le_script name_of_script
-download_le_script() {
-download_script LETS_ENC "${1}"
-}
-
 # Run any script in ../master
 # call like: run_main_script name_of_script
 run_main_script() {
 run_script GITHUB_REPO "${1}"
-}
-
-# Run any script in ../static
-# call like: run_static_script name_of_script
-run_static_script() {
-run_script STATIC "${1}"
-}
-
-# Run any script in ../apps
-# call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
-run_app_script() {
-run_script APP "${1}"
 }
 
 version(){
