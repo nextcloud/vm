@@ -119,6 +119,8 @@ fi
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
+    if yesno_box_yes "Do you want to make all free space available to your root partition?"
+    then
     # Resize LVM (live installer is &%¤%/!
     # VM
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
@@ -136,16 +138,14 @@ then
                 then
                     if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                     then
-                        if yesno_box_yes "Do you want to make all free space available to your root partition?"
-                        then
-                            resize2fs /dev/ubuntu-vg/ubuntu-lv
-                        fi
+                        resize2fs /dev/ubuntu-vg/ubuntu-lv
                         break
                     fi
                 fi
             fi
         fi
     done
+    fi
 fi
 
 # Check if it's a clean server
