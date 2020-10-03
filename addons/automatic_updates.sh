@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Automatic Updates"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 print_text_in_color "$ICyan" "Configuring automatic updates..."
 

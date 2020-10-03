@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Talk with Signaling Server"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 nc_update
@@ -234,7 +234,7 @@ SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Notification
 msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
