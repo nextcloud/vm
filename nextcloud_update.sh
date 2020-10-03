@@ -8,7 +8,7 @@
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 ncdb
@@ -161,10 +161,22 @@ then
         if pecl list | grep -q smbclient
         then
             yes no | pecl upgrade smbclient
-            # Check if igbinary.so is enabled
-            if ! grep -qFx extension=smbclient.so "$PHP_INI"
+            # Check if smbclient is enabled and create the file if not
+            if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
             then
-                echo "extension=smbclient.so" >> "$PHP_INI"
+               touch $PHP_MODS_DIR/smbclient.ini
+            fi
+            # Enable new smbclient
+            if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
+            then
+                echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
+                echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
+                check_command phpenmod -v ALL smbclient
+            fi
+            # Remove old smbclient
+            if grep -qFx extension=smbclient.so "$PHP_INI"
+            then
+                sed -i "s|extension=smbclient.so||g" "$PHP_INI"
             fi
         fi
         if pecl list | grep -q apcu
@@ -385,8 +397,22 @@ If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-
 fi
 
 # Check if PHP version is compatible with $NCVERSION
-PHP_VER=73
+PHP_VER=72
 NC_VER=20
+if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
+then
+    if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
+    then
+msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+
+If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+        exit
+    fi
+fi
+
+# Check if PHP version is compatible with $NCVERSION
+PHP_VER=73
+NC_VER=21
 if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
 then
     if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]

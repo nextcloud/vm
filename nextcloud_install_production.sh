@@ -18,7 +18,7 @@ fi
 true
 SCRIPT_NAME="Nextcloud Install Script"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check if dpkg or apt is running
 is_process_running apt
@@ -54,7 +54,7 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -119,6 +119,8 @@ fi
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
+    if yesno_box_yes "Do you want to make all free space available to your root partition?"
+    then
     # Resize LVM (live installer is &%¤%/!
     # VM
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
@@ -136,16 +138,14 @@ then
                 then
                     if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                     then
-                        if yesno_box_yes "Do you want to make all free space available to your root partition?"
-                        then
-                            resize2fs /dev/ubuntu-vg/ubuntu-lv
-                        fi
+                        resize2fs /dev/ubuntu-vg/ubuntu-lv
                         break
                     fi
                 fi
             fi
         fi
     done
+    fi
 fi
 
 # Check if it's a clean server

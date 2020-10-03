@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Not-supported Menu"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -26,10 +26,16 @@ So please run them on your own risk. Feedback is more than welcome, though and c
 
 Choose which one you want to execute.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "PLEX Media Server" "(Multimedia server application)" OFF \
 "SMB-server" "(Create and manage a SMB-server on OS level)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
+    *"ClamAV"*)
+        clear
+        print_text_in_color "$ICyan" "Downloading the ClamAV script..."
+        run_script APP clamav
+    ;;&
     *"PLEX Media Server"*)
         print_text_in_color "$ICyan" "Downloading the PLEX Media Server script..."
         run_script NOT_SUPPORTED plexmediaserver
