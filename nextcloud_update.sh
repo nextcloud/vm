@@ -161,10 +161,22 @@ then
         if pecl list | grep -q smbclient
         then
             yes no | pecl upgrade smbclient
-            # Check if igbinary.so is enabled
-            if ! grep -qFx extension=smbclient.so "$PHP_INI"
+            # Check if smbclient is enabled and create the file if not
+            if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
             then
-                echo "extension=smbclient.so" >> "$PHP_INI"
+               touch $PHP_MODS_DIR/smbclient.ini
+            fi
+            # Enable new smbclient
+            if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
+            then
+                echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
+                echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
+                check_command phpenmod -v ALL smbclient
+            fi
+            # Remove old smbclient
+            if grep -qFx extension=smbclient.so "$PHP_INI"
+            then
+                sed -i "s|extension=smbclient.so||g" "$PHP_INI"
             fi
         fi
         if pecl list | grep -q apcu
