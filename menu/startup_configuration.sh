@@ -56,7 +56,7 @@ choice=$(whiptail --title "$TITLE" --checklist \
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Keyboard Layout" "(Change the keyboard layout from '$KEYBOARD_LAYOUT')" "$KEYBOARD_LAYOUT_SWITCH" \
 "Timezone" "(Change the timezone from $(cat /etc/timezone))" "$TIMEZONE_SWITCH" \
-"Locate Mirror" "(Change the apt-mirror from $REPO)" "$MIRROR_SWITCH" 3>&1 1>&2 2>&3)
+"Locate Mirror" "(Change the apt-mirror from $REPO)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Keyboard Layout"*)
