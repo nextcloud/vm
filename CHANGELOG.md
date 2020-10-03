@@ -19,11 +19,12 @@ PR's are more than welcome. Happy Nextclouding!
 
 ### Small changelog:
 - Add SMTP email relay to be able to send emails directly from the OS (Ubuntu)
-- 
+- Make it possible to open ports with UNMP
+- Standarlize whiptails even more
 - Minor bugfixes and improvements
 
 ### Full changelog:
-- https://github.com/nextcloud/vm/compare/20.0.3..20.0.0
+- https://github.com/nextcloud/vm/compare/19.0.3..20.0.0
 - https://nextcloud.com/changelog/#latest20
 
 ## 19.0.3
