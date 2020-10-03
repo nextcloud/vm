@@ -765,13 +765,6 @@ case "$choice" in
     ;;
 esac
 
-# Upgrade
-apt update -q4 & spinner_loading
-apt dist-upgrade -y
-
-# Remove LXD (always shows up as failed during boot)
-apt-get purge lxd -y
-
 # Cleanup
 apt autoremove -y
 apt autoclean
@@ -852,6 +845,7 @@ then
 fi
 
 # Disable hibernation
+print_text_in_color "$ICyan" "Disable hibernation..."
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 # Reboot
