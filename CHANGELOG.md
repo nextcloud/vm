@@ -20,11 +20,12 @@ PR's are more than welcome. Happy Nextclouding!
 ### Small changelog:
 - Add SMTP email relay to be able to send emails directly from the OS (Ubuntu)
 - Make it possible to open ports with UPNP
-- Update notify_admin_gui to cache all found admin users
+- Update notify_admin_gui to cache all found admin users (tested with 500 users, and it's MUCH faster now)
 - Disable hibernation (Ubuntu)
 - Set archive.ubuntu.com as default Repo (Ubuntu)
 - Standardize whiptails even more
 - Improve fetch_lib
+- Use fetch_lib in all scripts to prefer local libary instead of hammering Github with requests in every script
 - SMBmount: Introduce the option to customize the mount before adding as external storage to Nextcloud
 - SMBmount: Add the option to utilize inotify to actively watch over externally changed files and folders
 - Repository: cleanup by removing duplicate scripts and not-needed functions
