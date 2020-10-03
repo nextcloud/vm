@@ -232,7 +232,7 @@ To change the settings please check /etc/msmtprc on your server, or simply just 
 
 YOUR CURRENT SETTINGS:
 -------------------------------------------
-$(cat /etc/msmtprc | grep -v password)
+$(grep -v password /etc/msmtprc)
 -------------------------------------------
 
 Best regards
