@@ -71,6 +71,22 @@ sed -i "s|^StreamMaxLength.*|StreamMaxLength 100M|" /etc/clamav/clamd.conf
 check_command systemctl restart clamav-freshclam
 check_command systemctl restart clamav-daemon
 
+print_text_in_color "$ICyan" "Waiting for ClamAV daemon to start up..."
+counter=0
+while ! [ -f "/var/run/clamav/clamd.ctl" ] && [ "$counter" -lt 2 ]
+do
+    sleep 5
+    ((counter++))
+done
+
+# Check if clamd exists now
+if ! [ -f "/var/run/clamav/clamd.ctl" ]
+then
+    msg_box "Failed to start the ClamAV daemon.
+Please report this to $ISSUES"
+    exit 1
+fi
+
 # Make the service more reliable
 check_command cp /lib/systemd/system/clamav-daemon.service /etc/systemd/system/clamav-daemon.service
 sed -i '/\[Service\]/a Restart=always' /etc/systemd/system/clamav-daemon.service
