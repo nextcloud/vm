@@ -33,6 +33,14 @@ else
     TIMEZONE_SWITCH="OFF"
 fi
 
+# Get the correct timezone switch
+if ! grep 'http://archive.ubuntu.com' /etc/apt/source.list
+then
+    MIRROR_SWITCH="ON"
+else
+    MIRROR_SWITCH="OFF"
+fi
+
 # Show a msg_box during the startup script
 if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
 then
@@ -48,7 +56,7 @@ choice=$(whiptail --title "$TITLE" --checklist \
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Keyboard Layout" "(Change the keyboard layout from '$KEYBOARD_LAYOUT')" "$KEYBOARD_LAYOUT_SWITCH" \
 "Timezone" "(Change the timezone from $(cat /etc/timezone))" "$TIMEZONE_SWITCH" \
-"Locate Mirror" "(Change the apt-mirror for faster updates)" OFF 3>&1 1>&2 2>&3)
+"Locate Mirror" "(Change the apt-mirror for faster updates)" "$MIRROR_SWITCH" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Keyboard Layout"*)
