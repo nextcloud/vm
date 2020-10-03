@@ -10,7 +10,7 @@ SCRIPT_EXPLAINER="This script allows you to create a SMB-server from your Nextcl
 It helps you manage all SMB-users and SMB-shares.
 As bonus feature you can automatically mount the chosen directories to Nextcloud and create Nextcloud users with the same credentials like your SMB-users."
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

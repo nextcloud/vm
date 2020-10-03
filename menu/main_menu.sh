@@ -8,10 +8,6 @@ SCRIPT_NAME="Main Menu"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-### TODO Remove this after some releases
-# Download fetch_lib.sh to be able to use it
-download_script STATIC fetch_lib
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
