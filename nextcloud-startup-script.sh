@@ -526,6 +526,10 @@ apt autoclean
 # Set trusted domain in config.php
 run_script NETWORK trusted
 
+# Remove preference for IPv4
+rm -f /etc/apt/apt.conf.d/99force-ipv4 
+apt update
+
 # Success!
 msg_box "The installation process is *almost* done.
 
@@ -554,10 +558,7 @@ Login to Nextcloud in your browser:
 - IP: $ADDRESS
 - Hostname: $(hostname -f)
 
-PLEASE HIT OK TO REBOOT"
-
-# Prefer IPv6
-sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+### PLEASE HIT OK TO REBOOT ###"
 
 # Reboot
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
