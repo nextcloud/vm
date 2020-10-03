@@ -232,11 +232,11 @@ To change the settings please check /etc/msmtprc on your server, or simply just 
 
 YOUR CURRENT SETTINGS:
 -------------------------------------------
-$(cat /etc/msmtprc)
+$(cat /etc/msmtprc | grep -v password)
 -------------------------------------------
 
 Best regards
-The Nextcloud VM team
+The NcVM team
 https://nextcloudvm.com" \
 | mail -s "Test email from your NcVM" "$RECIPIENT" &>/dev/null
 then
