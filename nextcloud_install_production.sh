@@ -77,6 +77,14 @@ download_script STATIC fetch_lib
 # Set locales
 run_script ADDONS locales
 
+# Check current repo
+if yesno_box_yes "Do you want to use http://archive.ubuntu.com as repository for this server?"
+then
+    sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
+else
+    run_script ADDONS locate_mirror
+fi
+
 # Create new current user
 download_script STATIC adduser
 bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
@@ -244,9 +252,6 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         msg_box "Could not validate the DNS server. Please try again."
     fi
 done
-
-# Check current repo
-run_script ADDONS locate_mirror
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
