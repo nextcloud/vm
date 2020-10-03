@@ -224,7 +224,9 @@ set sendmail="/usr/bin/msmtp -t"
 DEFINE_MAIL
 
 # Test sending of mails
-if ! echo -e "Congratulations! Since this email reached you, it seems like everything is working properly. :) To change the settings please check /etc/msmtp on your server, or simply just run the setup script again." | mail -s "Test email from your NcVM" "$RECIPIENT" &>/dev/null
+if ! echo -e "Congratulations! Since this email reached you, it seems like everything is working properly. :) 
+To change the settings please check /etc/msmtp on your server, or simply just run the setup script again." \
+| mail -s "Test email from your NcVM" "$RECIPIENT" &>/dev/null
 then
     # Fail message
     msg_box "It seems like something has failed.
