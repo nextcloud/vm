@@ -34,7 +34,7 @@ else
 fi
 
 # Get the correct timezone switch
-if ! grep 'http://archive.ubuntu.com' /etc/apt/source.list
+if [ $REPO != 'http://archive.ubuntu.com/ubuntu' ]
 then
     MIRROR_SWITCH="ON"
 else
@@ -44,8 +44,8 @@ fi
 # Show a msg_box during the startup script
 if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
 then
-msg_box "Running a server, it's important that certain things are correct. 
-In the following menu you will be asked to setup the most basic stuff of your server. 
+msg_box "Running a server, it's important that certain things are correct.
+In the following menu you will be asked to setup the most basic stuff of your server.
 
 The script is smart, and have already pre-selected the values that you'd want to change based on the current settings."
 fi
@@ -56,7 +56,7 @@ choice=$(whiptail --title "$TITLE" --checklist \
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Keyboard Layout" "(Change the keyboard layout from '$KEYBOARD_LAYOUT')" "$KEYBOARD_LAYOUT_SWITCH" \
 "Timezone" "(Change the timezone from $(cat /etc/timezone))" "$TIMEZONE_SWITCH" \
-"Locate Mirror" "(Change the apt-mirror for faster updates)" "$MIRROR_SWITCH" 3>&1 1>&2 2>&3)
+"Locate Mirror" "(Change the apt-mirror from $REPO)" "$MIRROR_SWITCH" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Keyboard Layout"*)
@@ -109,8 +109,17 @@ case "$choice" in
     ;;&
     *"Locate Mirror"*)
         clear
-        print_text_in_color "$ICyan" "Downloading the Locate Mirror script..."
-        run_script ADDONS locate_mirror
+        SUBTITLE="apt-mirror"
+        msg_box "Current apt-mirror is $REPO" "$SUBTITLE"
+        if ! yesno_box_yes "Do you want to change the apt-mirror?" "$SUBTITLE"
+        then
+            print_text_in_color "$ICyan" "Not changing the apt-mirror..."
+            sleep 1
+            clear
+        else
+           print_text_in_color "$ICyan" "Downloading the Locate Mirror script..."
+           run_script ADDONS locate_mirror
+        fi
     ;;&
     *)
     ;;
