@@ -19,8 +19,16 @@ PR's are more than welcome. Happy Nextclouding!
 
 ### Small changelog:
 - Add SMTP email relay to be able to send emails directly from the OS (Ubuntu)
-- Make it possible to open ports with UNMP
-- Standarlize whiptails even more
+- Make it possible to open ports with UPNP
+- Update notify_admin_gui to cache all found admin users
+- Disable hibernation (Ubuntu)
+- Set archive.ubuntu.com as default Repo (Ubuntu)
+- Standardize whiptails even more
+- Improve fetch_lib
+- SMBmount: Introduce the option to customize the mount before adding as external storage to Nextcloud
+- SMBmount: Add the option to utilize inotify to actively watch over externally changed files and folders
+- Repository: create the [not-supported](https://github.com/nextcloud/vm/tree/master/not-supported) folder with additional options like creating a SMB-server
+
 - Minor bugfixes and improvements
 
 ### Full changelog:
@@ -30,14 +38,14 @@ PR's are more than welcome. Happy Nextclouding!
 ## 19.0.3
 
 ### Small changelog:
-- Standarlize input_box flow
+- Standardize input_box flow
 - Automatically rewrite Webmin to HTTPS
 - Add default dark mode theme to Adminer
 - Make Adminer work on HTTP/2
-- Introduce fetch_liband chain libaries - this is now the new way of fetching the libs
+- Introduce fetch_lib and chain libaries - this is now the new way of fetching the libs
 - Add more menu scripts
 - Add more Yes/No boxes and fix occurances where the text wasn't shown due to print_text_in_color
-- Standarlize Whiptails even more
+- Standardize Whiptails even more
 - Change to TLS1.2 all over
 - Make functions out of all special variables
 - Create a new (smart) startup script with basic server settings
