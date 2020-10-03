@@ -34,7 +34,7 @@ else
 fi
 
 # Get the correct apt-mirror
-if [ "$REPO" != 'http://archive.ubuntu.com/ubuntu' ]
+if [ "$REPO" = 'http://archive.ubuntu.com/ubuntu' ]
 then
     MIRROR_SWITCH="ON"
 else
