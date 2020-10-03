@@ -1421,6 +1421,7 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
+send_mail "$1" "$2"
 if [ -z "${NC_ADMIN_USER[*]}" ]
 then
     NC_USERS=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
@@ -1439,6 +1440,22 @@ do
     print_text_in_color "$IGreen" "Posting '$1' to: $admin"
     occ_command_no_check notification:generate -l "$2" "$admin" "$1"
 done
+}
+
+# Use this to send system mails
+# e.g.: send_mail "subject" "text"
+send_mail() {
+    local RECIPIENT
+    if [ -f /etc/msmtprc ]
+    then
+        RECIPIENT=$(grep "recipient=" /etc/msmtprc)
+        RECIPIENT="${RECIPIENT##*recipient=}"
+        if [ -n "$RECIPIENT" ]
+        then
+            print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
+            echo -e "$2" | mail --subject "NcVM - $1" "$RECIPIENT"
+        fi
+    fi
 }
 
 zpool_import_if_missing() {

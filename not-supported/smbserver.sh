@@ -222,7 +222,7 @@ add_user() {
     echo "$HASH" >> "$HASH_HISTORY"
 
     # Modify the groups of the SMB-user
-    check_command usermod --append --groups "$SMB_GROUP","$WEB_USER" "$NEWNAME"
+    check_command usermod --append --groups "$SMB_GROUP","$WEB_GROUP" "$NEWNAME"
 
     # Inform the user
     msg_box "The smb-user $NEWNAME was successfully created.
