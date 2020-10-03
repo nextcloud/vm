@@ -33,7 +33,7 @@ else
     TIMEZONE_SWITCH="OFF"
 fi
 
-# Get the correct timezone switch
+# Get the correct apt-mirror
 if [ $REPO != 'http://archive.ubuntu.com/ubuntu' ]
 then
     MIRROR_SWITCH="ON"
