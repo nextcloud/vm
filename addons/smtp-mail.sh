@@ -213,9 +213,9 @@ sudo chmod 0644 $VMLOGS/mail_msmtp.log
 
 # Create aliases
 cat << ALIASES_CONF > /etc/aliases
-root: $MAIL_USERNAME
-default:$MAIL_USERNAME
-cron: $MAIL_USERNAME
+root: $RECIPIENT
+default: $RECIPIENT
+cron: $RECIPIENT
 ALIASES_CONF
 
 # Define the mail-program
