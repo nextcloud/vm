@@ -56,7 +56,7 @@ This should work again after a reboot of your server."
             exit 1
         fi
     fi
-    check_command lvcreate --size 2.5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
+    check_command lvcreate --size 5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
     check_command systemctl start apache2.service
 fi
 

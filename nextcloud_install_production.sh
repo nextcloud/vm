@@ -40,12 +40,12 @@ Please note: this feature will not be used by this script but by other scripts l
 For now we will only create a placeholder volume that will be used to let some space for snapshot volumes."
 then
     check_free_space
-    if [ "$FREE_SPACE" -ge 25 ]
+    if [ "$FREE_SPACE" -ge 50 ]
     then
         print_text_in_color "$ICyan" "Creating placeholder volume..."
         sleep 1
         # Create a placeholder snapshot
-        check_command lvcreate --size 2.5G --name "NcVM-installation" ubuntu-vg
+        check_command lvcreate --size 5G --name "NcVM-installation" ubuntu-vg
     else
         print_text_in_color "$IRed" "Could not create volume because of insufficient space..."
         sleep 2

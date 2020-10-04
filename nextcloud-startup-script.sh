@@ -52,7 +52,7 @@ root_check
 if does_snapshot_exist "NcVM-installation" && ! does_snapshot_exist "NcVM-startup"
 then
     check_command lvremove /dev/ubuntu-vg/NcVM-installation -y
-    check_command lvcreate --size 2.5G --snapshot --name "NcVM-startup" /dev/ubuntu-vg/ubuntu-lv
+    check_command lvcreate --size 5G --snapshot --name "NcVM-startup" /dev/ubuntu-vg/ubuntu-lv
 fi
 
 # Check network
