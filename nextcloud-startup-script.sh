@@ -61,6 +61,7 @@ then
         msg_box "The creation of a snapshot failed.
 If you just merged and old one, please reboot your server once more. 
 It should work afterwards again."
+        exit 1
     fi
 fi
 
