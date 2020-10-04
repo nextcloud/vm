@@ -24,6 +24,33 @@ source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 is_process_running apt
 is_process_running dpkg
 
+# Test if snapshot already exists
+if does_snapshot_exist "NcVM-installation"
+then
+    msg_box "Unable to continue because a snapshot already exists.
+
+You can either restore the initial state of the root partition by running:
+'sudo lvconvert --merge /dev/ubuntu-vg/NcVM-installation && sudo reboot'
+
+or remove the snapshot by running:
+'sudo lvremove /dev/ubuntu-vg/NcVM-installation'"
+fi
+
+# Create a snapshot before modifying anything
+if yesno_box_no "Do you want to create LVM snapshots to be able to restore the initial state of your root partition?"
+then
+    check_free_space
+    if [ "$FREE_SPACE" -ge 25 ]
+    then
+        print_text_in_color "$ICyan" "Creating snapshot..."
+        sleep 1
+        check_command lvcreate --size 2.5G --snapshot --name "NcVM-installation" /dev/ubuntu-vg/ubuntu-lv
+    else
+        print_text_in_color "$IRed" "Could not create snapshot because of insufficient space..."
+        sleep 2
+    fi
+fi
+
 # Install lshw if not existing
 if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then

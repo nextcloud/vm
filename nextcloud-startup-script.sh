@@ -48,6 +48,13 @@ ncdb
 # Check if root
 root_check
 
+# Create a snapshot before modifying anything
+if does_snapshot_exist "NcVM-installation" && ! does_snapshot_exist "NcVM-startup"
+then
+    check_command lvremove /dev/ubuntu-vg/NcVM-installation -y
+    check_command lvcreate --size 2.5G --snapshot --name "NcVM-startup" /dev/ubuntu-vg/ubuntu-lv
+fi
+
 # Check network
 if network_ok
 then
