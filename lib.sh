@@ -1427,7 +1427,7 @@ fi
 
 # Check for free space on the ubuntu-vg
 check_free_space() {
-    if ! vgs &>/dev/null
+    if vgs &>/dev/null
     then
         FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+\.[0-9]" | sed 's|\.||')
     fi
@@ -1442,10 +1442,8 @@ does_snapshot_exist() {
     local SNAPSHOTS
     local snapshot
     if lvs &>/dev/null
-    then
-        return 1
+        SNAPSHOTS="$(lvs | grep ubuntu-vg | awk '{print $1}' | grep -v ubuntu-lv)"
     fi
-    SNAPSHOTS="$(lvs | grep ubuntu-vg | awk '{print $1}' | grep -v ubuntu-lv)"
     if [ -z "$SNAPSHOTS" ]
     then
         return 1
