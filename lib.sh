@@ -1427,7 +1427,7 @@ fi
 
 # Check for free space on the ubuntu-vg
 check_free_space() {
-    if vgs &>/dev/null
+    if ! vgs &>/dev/null
     then
         FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+\.[0-9]" | sed 's|\.||')
     fi
