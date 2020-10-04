@@ -30,6 +30,12 @@ lowest_compatible_nc 18
 ram_check 2 FullTextSearch
 cpu_check 2 FullTextSearch
 
+# Temporary check forNC 20
+if ! install_and_enable_app fulltextsearch
+then
+    exit 1
+fi
+
 # Check if fulltextsearch is already installed
 print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
 if does_this_docker_exist "$nc_fts"
