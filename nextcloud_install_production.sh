@@ -53,38 +53,6 @@ then
     fi
 fi
 
-# Fix LVM on BASE image
-if grep -q "LVM" /etc/fstab
-then
-    if yesno_box_yes "Do you want to make all free space available to your root partition?"
-    then
-    # Resize LVM (live installer is &%¤%/!
-    # VM
-    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-    lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
-
-    # Run it again manually just to be sure it's done
-    while :
-    do
-        lvdisplay | grep "Size" | awk '{print $3}'
-        if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-        then
-            if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-            then
-                if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-                then
-                    if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-                    then
-                        resize2fs /dev/ubuntu-vg/ubuntu-lv
-                        break
-                    fi
-                fi
-            fi
-        fi
-    done
-    fi
-fi
-
 # Create the correct snapshot
 if does_snapshot_exist "placeholder"
 then
@@ -184,6 +152,38 @@ then
 else
     print_text_in_color "$ICyan" "Home/SME Server not detected. No worries, just testing the function."
     sleep 3
+fi
+
+# Fix LVM on BASE image
+if grep -q "LVM" /etc/fstab
+then
+    if yesno_box_yes "Do you want to make all free space available to your root partition?"
+    then
+    # Resize LVM (live installer is &%¤%/!
+    # VM
+    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
+    lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+
+    # Run it again manually just to be sure it's done
+    while :
+    do
+        lvdisplay | grep "Size" | awk '{print $3}'
+        if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+        then
+            if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+            then
+                if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                then
+                    if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                    then
+                        resize2fs /dev/ubuntu-vg/ubuntu-lv
+                        break
+                    fi
+                fi
+            fi
+        fi
+    done
+    fi
 fi
 
 # Check if it's a clean server
