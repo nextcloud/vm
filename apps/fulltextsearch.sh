@@ -30,7 +30,7 @@ lowest_compatible_nc 18
 ram_check 2 FullTextSearch
 cpu_check 2 FullTextSearch
 
-# Temporary check forNC 20
+# Temporary check for NC 20
 if ! install_and_enable_app fulltextsearch
 then
     exit 1
