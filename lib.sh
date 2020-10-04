@@ -1441,6 +1441,10 @@ check_free_space() {
 does_snapshot_exist() {
     local SNAPSHOTS
     local snapshot
+    if lvs &>/dev/null
+    then
+        return 1
+    fi
     SNAPSHOTS="$(lvs | grep ubuntu-vg | awk '{print $1}' | grep -v ubuntu-lv)"
     if [ -z "$SNAPSHOTS" ]
     then
