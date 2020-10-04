@@ -30,16 +30,6 @@ if [ "no" = $(ask_yes_or_no "Do you want to continue with this script?") ]
 then
     exit 1
 fi
-
-# Let the user run an initial packet update
-if [ "no" = $(ask_yes_or_no "Do you want to run an initial packet update?") ]
-then
-    print_text_in_color "$ICyan" "Not updating the packets..."
-else
-    print_text_in_color "$ICyan" "Updating all packets..."
-    apt update -q4 & spinner_loading
-    apt dist-upgrade -y
-fi
  
 # Check if dpkg or apt is running
 is_process_running apt
