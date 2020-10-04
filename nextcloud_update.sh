@@ -49,7 +49,12 @@ then
         check_command lvremove /dev/ubuntu-vg/NcVM-startup -y
     elif does_snapshot_exist "NcVM-snapshot"
     then
-        check_command lvremove /dev/ubuntu-vg/NcVM-snapshot -y
+        if ! lvremove /dev/ubuntu-vg/NcVM-snapshot -y
+        then
+            msg_box "It seems like the old snapshot could not get removed.
+This should work again after a reboot of your server."
+            exit 1
+        fi
     fi
     check_command lvcreate --size 2.5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
     check_command systemctl start apache2.service
