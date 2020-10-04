@@ -3,7 +3,7 @@
 true
 SCRIPT_NAME="Activate TLS"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # This is needed since we removed this from the startup script, or changed name so it can't be downloaded anymore
 msg_box "You are running an outdated release.
