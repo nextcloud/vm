@@ -1442,6 +1442,7 @@ does_snapshot_exist() {
     local SNAPSHOTS
     local snapshot
     if lvs &>/dev/null
+    then
         SNAPSHOTS="$(lvs | grep ubuntu-vg | awk '{print $1}' | grep -v ubuntu-lv)"
     fi
     if [ -z "$SNAPSHOTS" ]
