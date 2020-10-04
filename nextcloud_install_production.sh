@@ -24,19 +24,23 @@ You can find the sourcecode and other advices here: https://github.com/nextcloud
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Show explainer
-explainer_popup
+any_key "$SCRIPT_EXPLAINER\nPress any key to continue."
+
+if [ "no" = $(ask_yes_or_no "Do you want to continue with this script?") ]
+then
+    exit 1
+fi
 
 # Let the user run an initial packet update
-if yesno_box_no "Do you want to run an initial packet update?"
+if [ "no" = $(ask_yes_or_no "Do you want to run an initial packet update?") ]
 then
+    print_text_in_color "$ICyan" "Not updating the packets..."
+else
     print_text_in_color "$ICyan" "Updating all packets..."
     apt update -q4 & spinner_loading
     apt dist-upgrade -y
- else
-    print_text_in_color "$ICyan" "Not updating the packets..."
- fi
+fi
  
-
 # Check if dpkg or apt is running
 is_process_running apt
 is_process_running dpkg
@@ -95,8 +99,8 @@ download_script STATIC fetch_lib
 run_script ADDONS locales
 
 # Offer to use archive.ubuntu.com
-msg_box "Your current download repository is $REPO"
-if yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
+any_key "Your current download repository is $REPO\nPress any key to continue."
+if [ "yes" = $(ask_yes_or_no "Do you want use http://archive.ubuntu.com as repository for this server?") ]
 then
     sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
 fi
@@ -136,7 +140,7 @@ fi
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
-    if yesno_box_yes "Do you want to make all free space available to your root partition?"
+    if [ "yes" = $(ask_yes_or_no "Do you want to make all free space available to your root partition?") ]
     then
     # Resize LVM (live installer is &%¤%/!
     # VM

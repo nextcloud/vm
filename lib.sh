@@ -235,6 +235,19 @@ msg_box() {
     whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3
 }
 
+# Only needed in nextcloud_install_production.sh
+ask_yes_or_no() {
+    read -r -p "$1 ([y]es or [N]o): "
+    case ${REPLY,,} in
+        y|yes)
+            echo "yes"
+        ;;
+        *)
+            echo "no"
+        ;;
+    esac
+}
+
 yesno_box_yes() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
     if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
