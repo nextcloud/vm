@@ -34,6 +34,7 @@ You can either restore the initial state of the root partition by running:
 
 or remove the snapshot by running:
 'sudo lvremove /dev/ubuntu-vg/NcVM-installation'"
+    exit 1
 fi
 
 # Create a snapshot before modifying anything
