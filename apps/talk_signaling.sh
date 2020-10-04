@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Talk with Signaling Server"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 nc_update
@@ -240,7 +240,7 @@ They can however be hosted on the same server, but would require seperate DNS en
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Notification
 msg_box "Before continuing, please make sure that you have you have \

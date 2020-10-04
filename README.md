@@ -1,4 +1,4 @@
-Nextcloud VM
+Nextcloud VM Appliance
 ============
 
 Server installation. Simplified. :cloud:

@@ -2,8 +2,8 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# Prefer IPv4
-sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+# Prefer IPv4 for apt
+echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
 
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
@@ -18,7 +18,7 @@ fi
 true
 SCRIPT_NAME="Nextcloud Install Script"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check if dpkg or apt is running
 is_process_running apt
@@ -54,7 +54,7 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -76,6 +76,13 @@ download_script STATIC fetch_lib
 
 # Set locales
 run_script ADDONS locales
+
+# Offer to use archive.ubuntu.com
+msg_box "Your current download repository is $REPO"
+if yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
+then
+    sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
+fi
 
 # Create new current user
 download_script STATIC adduser
@@ -112,6 +119,8 @@ fi
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
+    if yesno_box_yes "Do you want to make all free space available to your root partition?"
+    then
     # Resize LVM (live installer is &%¤%/!
     # VM
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
@@ -129,16 +138,14 @@ then
                 then
                     if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
                     then
-                        if yesno_box_yes "Do you want to make all free space available to your root partition?"
-                        then
-                            resize2fs /dev/ubuntu-vg/ubuntu-lv
-                        fi
+                        resize2fs /dev/ubuntu-vg/ubuntu-lv
                         break
                     fi
                 fi
             fi
         fi
     done
+    fi
 fi
 
 # Check if it's a clean server
@@ -247,9 +254,6 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         msg_box "Could not validate the DNS server. Please try again."
     fi
 done
-
-# Check current repo
-run_script ADDONS locate_mirror
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
@@ -764,13 +768,6 @@ case "$choice" in
     ;;
 esac
 
-# Upgrade
-apt update -q4 & spinner_loading
-apt dist-upgrade -y
-
-# Remove LXD (always shows up as failed during boot)
-apt-get purge lxd -y
-
 # Cleanup
 apt autoremove -y
 apt autoclean
@@ -851,6 +848,7 @@ then
 fi
 
 # Disable hibernation
+print_text_in_color "$ICyan" "Disable hibernation..."
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 # Reboot

@@ -7,7 +7,7 @@
 true
 SCRIPT_NAME="Full Text Search"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 ncdb
@@ -29,6 +29,12 @@ lowest_compatible_nc 18
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 FullTextSearch
 cpu_check 2 FullTextSearch
+
+# Temporary check for NC 20
+if ! install_and_enable_app fulltextsearch
+then
+    exit 1
+fi
 
 # Check if fulltextsearch is already installed
 print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
