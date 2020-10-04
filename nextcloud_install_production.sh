@@ -26,6 +26,7 @@ source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 # Show explainer
 explainer_popup
 
+# Let the user run an initial packet update
 if yesno_box_no "Do you want to run an initial packet update?"
 then
     print_text_in_color "$ICyan" "Updating all packets..."
