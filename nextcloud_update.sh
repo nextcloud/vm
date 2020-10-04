@@ -431,6 +431,19 @@ msg_box "$NCREPO seems to be down, or temporarily not reachable. Please try agai
     exit 1
 fi
 
+if [[ "${CURRENTVERSION%%.*}" -lt "${NCVERSION%%.*}" ]]
+then
+    msg_box "By continuing, you will upgrade to the next major Nextcloud version ${NCVERSION%%.*}.
+Please note that it is possible that some apps are not compatible with the new version.
+To check this, please visit https://your-nc-domain/settings/admin/overview and make sure that all apps are compatible.
+
+Additionally, a backup is always recommended before upgrading!"
+    if ! yesno_box_no "Are you ready to upgrade?"
+    then
+        exit 1
+    fi
+fi
+
 countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort." "10"
 
 # Backup app status
