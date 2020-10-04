@@ -45,6 +45,7 @@ then
     SNAPSHOT_EXISTS=1
     check_command systemctl stop apache2.service
     if does_snapshot_exist "NcVM-startup"
+    then
         check_command lvremove /dev/ubuntu-vg/NcVM-startup -y
     elif does_snapshot_exist "NcVM-snapshot"
     then
