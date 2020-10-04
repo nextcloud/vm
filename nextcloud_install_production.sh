@@ -17,8 +17,24 @@ fi
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Nextcloud Install Script"
+SCRIPT_EXPLAINER="Welcome to the Nextcloud VM installer.
+It simplifies the installation of Nextcloud and its integrations by a lot and has other great features.
+You can find the sourcecode and other advices here: https://github.com/nextcloud/vm"
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Show explainer
+explainer_popup
+
+if yesno_box_no "Do you want to run an initial packet update?"
+then
+    print_text_in_color "$ICyan" "Updating all packets..."
+    apt update -q4 & spinner_loading
+    apt dist-upgrade -y
+ else
+    print_text_in_color "$ICyan" "Not updating the packets..."
+ fi
+ 
 
 # Check if dpkg or apt is running
 is_process_running apt
