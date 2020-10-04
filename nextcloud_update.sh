@@ -39,8 +39,9 @@ Cannot proceed because you would loose the last snapshot."
 fi
 
 # Create a snapshot before doing anything else
+check_free_space
 if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
-|| does_snapshot_exist "NcVM-snapshot")
+|| does_snapshot_exist "NcVM-snapshot" || [ "$FREE_SPACE" -ge 50 ] )
 then
     SNAPSHOT_EXISTS=1
     check_command systemctl stop apache2.service
@@ -56,7 +57,14 @@ This should work again after a reboot of your server."
             exit 1
         fi
     fi
-    check_command lvcreate --size 5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
+    if ! lvcreate --size 5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
+    then
+        msg_box "The creation of a snapshot failed.
+If you just merged and old one, please reboot your server once more. 
+It should work afterwards again."
+        check_command systemctl start apache2.service
+        exit 1
+    fi
     check_command systemctl start apache2.service
 fi
 
