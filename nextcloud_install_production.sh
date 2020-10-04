@@ -27,39 +27,29 @@ is_process_running dpkg
 # Test if snapshot already exists
 if does_snapshot_exist "NcVM-installation"
 then
-    msg_box "Unable to continue because a snapshot already exists.
+    msg_box "Unable to continue because a logical volume already exists.
 
-You can either restore the initial state of the root partition by running:
-'sudo lvconvert --merge /dev/ubuntu-vg/NcVM-installation && sudo reboot'
-
-or remove the snapshot by running:
+To run this script again, please remove the volume by running:
 'sudo lvremove /dev/ubuntu-vg/NcVM-installation'"
     exit 1
 fi
 
-# Create a snapshot before modifying anything
-if yesno_box_no "Do you want to create LVM snapshots to be able to restore the initial state of your root partition?"
+# Create a placeholder volume before modifying anything
+if yesno_box_no "Do you want to create LVM snapshots to be able to restore your root partition during upgrades and such?
+Please note: this feature will not be used by this script but by other scripts later on.
+For now we will only create a placeholder volume that will be used to let some space for snapshot volumes."
 then
     check_free_space
     if [ "$FREE_SPACE" -ge 25 ]
     then
-        print_text_in_color "$ICyan" "Creating placeholder snapshot..."
+        print_text_in_color "$ICyan" "Creating placeholder volume..."
         sleep 1
         # Create a placeholder snapshot
-        check_command lvcreate --size 2.5G --name "placeholder" ubuntu-vg
+        check_command lvcreate --size 2.5G --name "NcVM-installation" ubuntu-vg
     else
-        print_text_in_color "$IRed" "Could not create snapshot because of insufficient space..."
+        print_text_in_color "$IRed" "Could not create volume because of insufficient space..."
         sleep 2
     fi
-fi
-
-# Create the correct snapshot
-if does_snapshot_exist "placeholder"
-then
-    print_text_in_color "$ICyan" "Removing the placeholder snapshot"
-    check_command lvremove /dev/ubuntu-vg/placeholder -y
-    print_text_in_color "$ICyan" "Creating the correct snapshot"
-    check_command lvcreate --size 2.5G --snapshot --name "NcVM-installation" /dev/ubuntu-vg/ubuntu-lv
 fi
 
 # Install lshw if not existing
