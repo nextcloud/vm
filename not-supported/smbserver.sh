@@ -54,7 +54,7 @@ do
         MOUNTS+=("$directory")
     fi
 done
-if [ -z "$MOUNTS[*]" ]
+if [ -z "${MOUNTS[*]}" ]
 then
     msg_box "No usable drive found. You have to mount a new drive in /mnt."
     exit 1
