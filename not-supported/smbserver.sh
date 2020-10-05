@@ -44,6 +44,22 @@ fi
 # Show explainer
 explainer_popup
 
+# Find mounts
+DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 2 -type d | grep -v "/mnt/ncdata")
+mapfile -t DIRECTORIES <<< "$DIRECTORIES"
+for directory in "${DIRECTORIES[@]}"
+do
+    if mountpoint -q "$directory"
+    then
+        MOUNTS+=($directory)
+    fi
+done
+if [ -z "$MOUNTS" ]
+then
+    msg_box "No usable drive found. You have to mount a new drive in /mnt."
+    exit 1
+fi
+
 # Install all needed tools
 install_if_not samba
 install_if_not members
@@ -497,46 +513,42 @@ done
 
 # Choose the path for a SMB-share
 choose_path() {
-local DIRECTORIES
-DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d -not -path "/mnt/ncdata*")
+local VALID_DIRS
+local VALID
+local mount
+
+# Find usable directories
+DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d | grep -v "/mnt/ncdata")
+for mount in "${MOUNTS[@]}"
+do
+    VALID_DIRS+="$(echo -e "$DIRECTORIES" | grep "^$mount")\n"
+done
 while :
 do
-    # Don*t show the msg_box with some examples if empty
-    if [ -n "$DIRECTORIES" ]
-    then
-        msg_box "In the following step you will need to type in the directoy that you want to use.\nHere you can see a certain list of options that you can type in.\n\n$DIRECTORIES" "$2"
-    fi
-
+    msg_box "In the following step you will need to type in the directoy that you want to use.\nHere you can see a certain list of options that you can type in.\n\n$VALID_DIRS" "$2"
+    
     # Type in the new path
-    NEWPATH=$(input_box_flow "$1.\nIt needs to be a directory beginning with '/mnt/' to be valid.\nPlease note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
-    if [[ "$NEWPATH" = *"\\"* ]]
-    then
-        msg_box "Please don't use backslashes." "$2"
-    elif [ "$NEWPATH" = "exit" ]
+    NEWPATH=$(input_box_flow "$1.Please note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
+    for mount in "${MOUNTS[@]}"
+    do
+        if echo "$NEWPATH" | grep -q "^$mount"
+        then
+            VALID=1
+        fi
+    done
+    if [ "$NEWPATH" = "exit" ]
     then
         return 1
-    elif ! echo "$NEWPATH" | grep -q "^/mnt/..*"
+    elif [ -z "$VALID" ]
     then
-        msg_box "The path needs to be a directory beginning with '/mnt/' to be valid." "$2"
-    elif echo "$NEWPATH" | grep -q "^/mnt/ncdata"
-    then
-        msg_box "The path isn't allowed to start with '/mnt/ncdata'." "$2"
+        msg_box "This path isn't valid. Please try a different one. It has to be a directory on a mount." "$2"
     elif ! [ -d "$NEWPATH" ]
     then
         if yesno_box_no "The path doesn't exist. Do you want to create it?" "$2"
         then
-            if echo "$NEWPATH" | grep -q "^/mnt/smbshares"
-            then
-                msg_box "Please don't use something in /mnt/smbshares to create a new directory" "$2"
-            else
-                mkdir -p "$NEWPATH"
-                break
-            fi
+            check_command mkdir -p "$NEWPATH"
+            break
         fi
-    # elif grep -q "path = $NEWPATH$" "$SMB_CONF"
-    # then
-    #     # TODO: think about if this is really needed.
-    #     msg_box "The path is already in use. Please try again."
     else
         break
     fi
