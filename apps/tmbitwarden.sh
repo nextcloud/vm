@@ -315,7 +315,7 @@ then
     # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower to avoid updating Bitwarden again, and only update the specified docker images above
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
-        if [ -d /root/bwdata ] || [ -d "$BITWARDEN_HOME"/bwdata ]
+        if [ -d "$BITWARDEN_HOME"/bwdata ]
         then
             if does_this_docker_exist 'containrrr/watchtower'
             then
