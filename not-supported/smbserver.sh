@@ -51,10 +51,10 @@ for directory in "${DIRECTORIES[@]}"
 do
     if mountpoint -q "$directory"
     then
-        MOUNTS+=($directory)
+        MOUNTS+=("$directory")
     fi
 done
-if [ -z "$MOUNTS" ]
+if [ -z "$MOUNTS[*]" ]
 then
     msg_box "No usable drive found. You have to mount a new drive in /mnt."
     exit 1
@@ -516,12 +516,13 @@ choose_path() {
 local VALID_DIRS
 local VALID
 local mount
+local LOCALDIRECTORIES
 
 # Find usable directories
-DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d | grep -v "/mnt/ncdata")
+LOCALDIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d | grep -v "/mnt/ncdata")
 for mount in "${MOUNTS[@]}"
 do
-    VALID_DIRS+="$(echo -e "$DIRECTORIES" | grep "^$mount")\n"
+    VALID_DIRS+="$(echo -e "$LOCALDIRECTORIES" | grep "^$mount")\n"
 done
 while :
 do
