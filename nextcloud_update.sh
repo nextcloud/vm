@@ -292,6 +292,10 @@ then
     mkdir -p "$SCRIPTS"
     download_script STATIC setup_secure_permissions_nextcloud
     chmod +x "$SECURE"
+else
+    rm "$SECURE"
+    download_script STATIC setup_secure_permissions_nextcloud
+    chmod +x "$SECURE"
 fi
 
 # Update all Nextcloud apps
