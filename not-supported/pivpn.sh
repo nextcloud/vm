@@ -229,6 +229,7 @@ PIVPN_CONF
 else
     msg_box "Couldn't write configuration to setupVars.conf.
 Please report this to $ISSUES"
+    exit 1
 fi
 
 # Inform the user about successfully installing PiVPN
