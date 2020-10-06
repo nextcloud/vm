@@ -10,7 +10,7 @@ SCRIPT_EXPLAINER="The Pi-hole® is a DNS sinkhole that protects your devices fro
 without installing any client-side software.
 This is their official website: https://pi-hole.net"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
