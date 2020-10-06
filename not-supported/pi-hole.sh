@@ -3,7 +3,7 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2016,2034,2059,2128
+# shellcheck disable=2016,2034,2059,2178
 true
 SCRIPT_NAME="Pi-hole"
 SCRIPT_EXPLAINER="The Pi-hole® is a DNS sinkhole that protects your devices from unwanted content, \
