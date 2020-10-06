@@ -530,6 +530,7 @@ do
     
     # Type in the new path
     NEWPATH=$(input_box_flow "$1.Please note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
+    unset VALID
     for mount in "${MOUNTS[@]}"
     do
         if echo "$NEWPATH" | grep -q "^$mount"
