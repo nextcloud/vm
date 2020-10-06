@@ -94,7 +94,7 @@ if it is installed before installing Wireguard."
 fi
 
 # Test if the user is okay
-if [ -z "$UNIXUSER" ] || ! ls /home | grep -q "$UNIXUSER"
+if [ -z "$UNIXUSER" ] || ! ls -l /home | awk '{print $9}' | grep -q "$UNIXUSER"
 then
     msg_box "It seems like you run this script as pure root \
 or your user doesn't have a home directory. This is not supported."
