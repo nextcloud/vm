@@ -184,12 +184,13 @@ export PIHOLE_INTERFACE
 bash "$SCRIPTS"/pihole-install.sh | tee "$SCRIPTS"/pihole-install.report
 
 # Get all installed and remove pihole-install.sh
+unset INSTALLED
 INSTALLED=$(grep "Checking for" "$SCRIPTS"/pihole-install.report | grep "will be installed" | awk '{print $8}')
 check_command rm "$SCRIPTS"/pihole-install.sh
 check_command rm "$SCRIPTS"/pihole-install.report
 
 # Check if at least one app got installed
-if [ -z "$INSTALLED" ]
+if [ -z "${INSTALLED[@]}" ]
 then
     msg_bos "Something is wrong. Didn't expect that no requirement get installed.
 Please report this to $ISSUES"
@@ -218,7 +219,7 @@ else
 fi
 
 # Make an array from installed applications
-mapfile -t INSTALLED <<< "$INSTALLED"
+mapfile -t INSTALLED <<< "${INSTALLED[@]}"
 
 # Insert the new lines into update.sh
 cat << PIHOLE_UPDATE >> "$SCRIPTS/update.sh"
