@@ -319,6 +319,29 @@ else
     exit 1
 fi
 
+# Remove Watchtower
+if is_docker_running
+then
+    # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower to avoid updating Bitwarden again, and only update the specified docker images above
+    if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
+    then
+        if [ -d "$BITWARDEN_HOME"/bwdata ]
+        then
+            if does_this_docker_exist 'containrrr/watchtower'
+            then
+                docker stop watchtower
+            elif does_this_docker_exist 'v2tec/watchtower'
+            then
+                docker stop watchtower
+            fi
+            docker container prune -f
+            docker image prune -a -f
+            docker volume prune -f
+            notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
+        fi
+    fi
+fi
+
 # Add prune command
 add_dockerprune
 

@@ -102,7 +102,7 @@ do
     if ! grep -q "$SMBSHARES/$count " /etc/fstab
     then 
         # Write to /etc/fstab and mount
-        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino,cache=none 0 0" >> /etc/fstab
+        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino,cache=none,nofail 0 0" >> /etc/fstab
         mkdir -p $SMB_CREDENTIALS
         touch $SMB_CREDENTIALS/SMB$count
         chown -R root:root $SMB_CREDENTIALS
@@ -635,7 +635,7 @@ then
 fi
 
 # Write changed line to /etc/fstab and mount
-echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino,cache=none 0 0" >> /etc/fstab
+echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=www-data,gid=www-data,file_mode=0770,dir_mode=0770,nounix,noserverino,cache=none,nofail 0 0" >> /etc/fstab
 mkdir -p $SMB_CREDENTIALS
 touch "$SMB_CREDENTIALS/SMB$count"
 chown -R root:root $SMB_CREDENTIALS
