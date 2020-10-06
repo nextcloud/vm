@@ -516,21 +516,19 @@ local DIRECTORIES
 DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d -not -path "/mnt/ncdata*")
 while :
 do
-    # Don*t show the msg_box with some examples if empty
-    if [ -n "$DIRECTORIES" ]
-    then
-        msg_box "In the following step you will need to type in the directoy that you want to use.
-Here you can see a certain list of options that you can type in.\n\n$DIRECTORIES" "$2"
-    fi
-
+    msg_box "In the following step you will need to type in the directoy that you want to use.\nHere you can see a certain list of options that you can type in.\n\n$VALID_DIRS" "$2"
+    
     # Type in the new path
-    NEWPATH=$(input_box_flow "$1.\nIt needs to be a directory beginning with '/mnt/' to be valid.
-Please note, that the owner of the directory will be changed to the Web-user.
-If you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
-    if [[ "$NEWPATH" = *"\\"* ]]
-    then
-        msg_box "Please don't use backslashes." "$2"
-    elif [ "$NEWPATH" = "exit" ]
+    NEWPATH=$(input_box_flow "$1.Please note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
+    unset VALID
+    for mount in "${MOUNTS[@]}"
+    do
+        if echo "$NEWPATH" | grep -q "^$mount"
+        then
+            VALID=1
+        fi
+    done
+    if [ "$NEWPATH" = "exit" ]
     then
         return 1
     elif ! echo "$NEWPATH" | grep -q "^/mnt/..*"
