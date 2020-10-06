@@ -541,10 +541,12 @@ do
 done
 while :
 do
-    msg_box "In the following step you will need to type in the directoy that you want to use.\nHere you can see a certain list of options that you can type in.\n\n$VALID_DIRS" "$2"
+    msg_box "In the following step you will need to type in the directoy that you want to use.
+Here you can see a certain list of options that you can type in.\n\n$VALID_DIRS" "$2"
     
     # Type in the new path
-    NEWPATH=$(input_box_flow "$1.Please note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
+    NEWPATH=$(input_box_flow "$1.Please note, that the owner of the directory will be changed to the Web-user.
+If you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
     unset VALID
     for mount in "${MOUNTS[@]}"
     do
