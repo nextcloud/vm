@@ -184,7 +184,7 @@ export PIHOLE_INTERFACE
 bash "$SCRIPTS"/pihole-install.sh | tee "$SCRIPTS"/pihole-install.report
 
 # Get all installed and remove pihole-install.sh
-INSTALLED=$(cat "$SCRIPTS"/pihole-install.report | grep "Checking for" | grep "will be installed" | awk '{print $8}')
+INSTALLED=$(grep "Checking for" "$SCRIPTS"/pihole-install.report | grep "will be installed" | awk '{print $8}')
 check_command rm "$SCRIPTS"/pihole-install.sh
 check_command rm "$SCRIPTS"/pihole-install.report
 
