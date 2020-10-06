@@ -190,7 +190,7 @@ check_command rm "$SCRIPTS"/pihole-install.sh
 check_command rm "$SCRIPTS"/pihole-install.report
 
 # Check if at least one app got installed
-if [ -z "${INSTALLED[@]}" ]
+if [ -z "${INSTALLED[*]}" ]
 then
     msg_bos "Something is wrong. Didn't expect that no requirement get installed.
 Please report this to $ISSUES"
