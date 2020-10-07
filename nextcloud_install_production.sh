@@ -25,6 +25,7 @@ if [ "$1" = "--provisioning" ] ||  [ "$1" = "-p" ]
 then
     print_text_in_color "$ICyan" "Running in provisioning mode..."
     PROVISIONING=1
+    sleep 1
 elif [ "$1" = "" ]
 then
     print_text_in_color "$ICyan" "Running in normal mode..."
