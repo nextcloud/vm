@@ -3,7 +3,7 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
 # Check for flags
-if [ "$1" = "--provisioning" ]
+if [ "$1" = "--provisioning" ] ||  [ "$1" = "-p" ]
 then
     PROVISIONING=1
 fi
