@@ -207,7 +207,7 @@ chmod 600 /etc/msmtprc
 # Create logs
 rm -f $VMLOGS/mail_msmtp.log
 sudo touch $VMLOGS/mail_msmtp.log
-sudo chmod 666 $VMLOGS/mail_msmtp.log
+sudo chmod 666 $VMLOGS/mail_msmtp.log # Even this doesn't work, strange
 
 # Create aliases
 cat << ALIASES_CONF > /etc/aliases
@@ -236,11 +236,12 @@ $(grep -v password /etc/msmtprc)
 Best regards
 The NcVM team
 https://nextcloudvm.com" \
-| mail -s "Test email from your NcVM" "$RECIPIENT" &>/dev/null
+| mail -s "Test email from your NcVM" "$RECIPIENT" > $VMLOGS/mail_msmtp.log 2>&1 # But this works
 then
     # Fail message
     msg_box "It seems like something has failed.
-We will now reset everything so that you are able to start over again.
+You can look at $VMLOGS/mail_msmtp.log for further logs.
+We will now reset everything except the logfile so that you are able to start over again.
 Please run this script once more time if you want to make another try."
     apt-get purge msmtp -y
     apt-get purge msmtp-mta -y
