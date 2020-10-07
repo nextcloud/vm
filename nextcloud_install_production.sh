@@ -2,12 +2,6 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# Check for flags
-if [ "$1" = "--provisioning" ] ||  [ "$1" = "-p" ]
-then
-    PROVISIONING=1
-fi
-
 # Prefer IPv4 for apt
 echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
 
@@ -25,6 +19,20 @@ true
 SCRIPT_NAME="Nextcloud Install Script"
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Check for flags
+if [ "$1" = "--provisioning" ] ||  [ "$1" = "-p" ]
+then
+    print_text_in_color "$ICyan" "Running in provisioning mode..."
+    PROVISIONING=1
+elif [ "$1" = "" ]
+then
+    print_text_in_color "$ICyan" "Running in normal mode..."
+    sleep 1
+else
+    msg_box "Failed to get the correct flag. Did you enter it correctly?"
+    exit 1
+fi
 
 # Check if dpkg or apt is running
 is_process_running apt
