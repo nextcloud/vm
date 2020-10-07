@@ -1466,6 +1466,9 @@ then
 elif grep 7.4 <<< "$GETPHP" >/dev/null 2>&1
 then
    export PHPVER=7.4
+#elif grep 8.0 <<< "$GETPHP" >/dev/null 2>&1
+#then
+#   export PHPVER=8.0
 fi
 
 export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
