@@ -21,14 +21,14 @@ SCRIPT_NAME="Nextcloud Install Script"
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for flags
-if [ "$1" = "--provisioning" ] || [ "$1" = "-p" ]
+if [ "$1" = "" ]
+then
+    print_text_in_color "$ICyan" "Running in normal mode..."
+    sleep 1
+elif [ "$1" = "--provisioning" ] || [ "$1" = "-p" ]
 then
     print_text_in_color "$ICyan" "Running in provisioning mode..."
     PROVISIONING=1
-    sleep 1
-elif [ "$1" = "" ]
-then
-    print_text_in_color "$ICyan" "Running in normal mode..."
     sleep 1
 else
     msg_box "Failed to get the correct flag. Did you enter it correctly?"
