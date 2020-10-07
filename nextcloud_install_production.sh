@@ -2,6 +2,12 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
+# Check for flags
+if [ "$1" = "--provisioning" ]
+then
+    PROVISIONING=1
+fi
+
 # Prefer IPv4 for apt
 echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
 
@@ -78,8 +84,11 @@ download_script STATIC fetch_lib
 run_script ADDONS locales
 
 # Offer to use archive.ubuntu.com
-msg_box "Your current download repository is $REPO"
-if yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
+if [ -z "$PROVISIONING" ]
+then
+    msg_box "Your current download repository is $REPO"
+fi
+if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
 then
     sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
 fi
@@ -119,7 +128,7 @@ fi
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
-    if yesno_box_yes "Do you want to make all free space available to your root partition?"
+    if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want to make all free space available to your root partition?"
     then
     # Resize LVM (live installer is &%¤%/!
     # VM
@@ -181,17 +190,22 @@ install_if_not netplan.io
 install_if_not build-essential
 
 # Set dual or single drive setup
-msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
+if [ -z "$PROVISIONING" ]
+then
+    msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
 You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
 
-choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu \
+    choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu \
 "How would you like to configure your disks?
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)" \
 "2 Disks Manual" "(Choose by yourself)" \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" 3>&1 1>&2 2>&3)
+else
+    choice="2 Disks Auto"
+fi
 
 case "$choice" in
     "2 Disks Auto")
@@ -217,12 +231,17 @@ esac
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
 while :
 do
-    choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu \
+    if [ -z "$PROVISIONING" ]
+    then
+        choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu \
 "Which DNS provider should this Nextcloud box use?
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Quad9" "(https://www.quad9.net/)" \
-    "Cloudflare" "(https://www.cloudflare.com/dns/)" \
-    "Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
+"Quad9" "(https://www.quad9.net/)" \
+"Cloudflare" "(https://www.cloudflare.com/dns/)" \
+"Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
+    else
+        choice="Quad9"
+    fi
 
     case "$choice" in
         "Quad9")
@@ -715,7 +734,9 @@ a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
-choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
+if [ -z "$PROVISIONING" ]
+then
+    choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
 "Automatically configure and install selected apps or software
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "" ON \
@@ -727,6 +748,9 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Mail" "" ON \
 "Deck" "" ON \
 "Group-Folders" "" ON 3>&1 1>&2 2>&3)
+else
+    choice="Calendar Contacts IssueTemplate PDFViewer Extract Text Mail Deck Group-Folders"
+fi
 
 case "$choice" in
     *"Calendar"*)
@@ -849,7 +873,10 @@ print_text_in_color "$ICyan" "Disable hibernation..."
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 # Reboot
-msg_box "Installation almost done, system will reboot when you hit OK. 
+if [ -z "$PROVISIONING" ]
+then
+    msg_box "Installation almost done, system will reboot when you hit OK. 
 
 Please log in again once rebooted to run the setup script."
+fi
 reboot
