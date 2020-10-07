@@ -183,7 +183,7 @@ $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
 
 tls_trust_file  /etc/ssl/certs/ca-certificates.crt
-# logfile         $VMLOGS/smtp_msmtp.log
+logfile         $VMLOGS/mail_msmtp.log
 
 # Account to send emails
 account         $MAIL_SERVER
@@ -205,7 +205,6 @@ fi
 chmod 600 /etc/msmtprc
 
 # Create logs
-# TODO: not working due to permissions error
 rm -f $VMLOGS/mail_msmtp.log
 sudo touch $VMLOGS/mail_msmtp.log
 sudo chown msmtp:msmtp $VMLOGS/mail_msmtp.log
@@ -250,7 +249,6 @@ Please run this script once more time if you want to make another try."
     apt autoremove -y
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
-    rm -f $VMLOGS/mail_msmtp.log
     echo "" > /etc/aliases
 else
     # Success message
