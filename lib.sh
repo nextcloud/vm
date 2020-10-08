@@ -855,6 +855,15 @@ nextcloud_occ_no_check() {
 sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
+# Backwards compatibility (2020-10-08)
+occ_command() {
+nextcloud_occ
+}
+
+occ_command_no_check() {
+nextcloud_occ_no_check
+}
+
 network_ok() {
 version(){
     local h t v
