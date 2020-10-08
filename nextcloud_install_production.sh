@@ -20,6 +20,21 @@ SCRIPT_NAME="Nextcloud Install Script"
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
+# Check for flags
+if [ "$1" = "" ]
+then
+    print_text_in_color "$ICyan" "Running in normal mode..."
+    sleep 1
+elif [ "$1" = "--provisioning" ] || [ "$1" = "-p" ]
+then
+    print_text_in_color "$ICyan" "Running in provisioning mode..."
+    PROVISIONING=1
+    sleep 1
+else
+    msg_box "Failed to get the correct flag. Did you enter it correctly?"
+    exit 1
+fi
+
 # Check if dpkg or apt is running
 is_process_running apt
 is_process_running dpkg
@@ -78,8 +93,11 @@ download_script STATIC fetch_lib
 run_script ADDONS locales
 
 # Offer to use archive.ubuntu.com
-msg_box "Your current download repository is $REPO"
-if yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
+if [ -z "$PROVISIONING" ]
+then
+    msg_box "Your current download repository is $REPO"
+fi
+if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
 then
     sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
 fi
@@ -119,7 +137,7 @@ fi
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
-    if yesno_box_yes "Do you want to make all free space available to your root partition?"
+    if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want to make all free space available to your root partition?"
     then
     # Resize LVM (live installer is &%¤%/!
     # VM
@@ -181,7 +199,9 @@ install_if_not netplan.io
 install_if_not build-essential
 
 # Set dual or single drive setup
-msg_box "This VM is designed to run with two disks, one for OS and one for DATA. \
+if [ -z "$PROVISIONING" ]
+then
+    msg_box "This VM is designed to run with two disks, one for OS and one for DATA. \
 This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
 You could still choose to only run on one disk though, which is not recommended, \
 but maybe your only option depending on which hypervisor you are running.
@@ -189,12 +209,15 @@ but maybe your only option depending on which hypervisor you are running.
 You will now get the option to decide which disk you want to use for DATA, \
 or run the automatic script that will choose the available disk automatically."
 
-choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu \
+    choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu \
 "How would you like to configure your disks?
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)" \
 "2 Disks Manual" "(Choose by yourself)" \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" 3>&1 1>&2 2>&3)
+else
+    choice="2 Disks Auto"
+fi
 
 case "$choice" in
     "2 Disks Auto")
@@ -220,12 +243,17 @@ esac
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
 while :
 do
-    choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu \
+    if [ -z "$PROVISIONING" ]
+    then
+        choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu \
 "Which DNS provider should this Nextcloud box use?
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Quad9" "(https://www.quad9.net/)" \
 "Cloudflare" "(https://www.cloudflare.com/dns/)" \
 "Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
+    else
+        choice="Quad9"
+    fi
 
     case "$choice" in
         "Quad9")
@@ -394,7 +422,7 @@ bash $SECURE & spinner_loading
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
-occ_command maintenance:install \
+nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
@@ -404,7 +432,7 @@ occ_command maintenance:install \
 --admin-pass="$NCPASS"
 echo
 print_text_in_color "$ICyan" "Nextcloud version:"
-occ_command status
+nextcloud_occ status
 sleep 3
 echo
 
@@ -412,8 +440,8 @@ echo
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Run the updatenotification on a schelude
-occ_command config:system:set upgrade.disable-web --value="true"
-occ_command config:app:set updatenotification notify_groups --value="[]"
+nextcloud_occ config:system:set upgrade.disable-web --value="true"
+nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_script STATIC updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
@@ -432,31 +460,31 @@ sed -i "s|post_max_size =.*|post_max_size = 1100M|g" "$PHP_INI"
 sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" "$PHP_INI"
 
 # Set loggging
-occ_command config:system:set log_type --value=file
-occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
+nextcloud_occ config:system:set log_type --value=file
+nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
 rm -f "$NCDATA/nextcloud.log"
-occ_command config:system:set loglevel --value=2
+nextcloud_occ config:system:set loglevel --value=2
 install_and_enable_app admin_audit
-occ_command config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
-occ_command config:system:set log.condition apps 0 --value admin_audit
+nextcloud_occ config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
+nextcloud_occ config:system:set log.condition apps 0 --value admin_audit
 
 # Set SMTP mail
-occ_command config:system:set mail_smtpmode --value="smtp"
+nextcloud_occ config:system:set mail_smtpmode --value="smtp"
 
 # Forget login/session after 30 minutes
-occ_command config:system:set remember_login_cookie_lifetime --value="1800"
+nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
 
 # Set logrotate (max 10 MB)
-occ_command config:system:set log_rotate_size --value="10485760"
+nextcloud_occ config:system:set log_rotate_size --value="10485760"
 
 # Set trashbin retention obligation (save it in trahbin for 6 months or delete when space is needed)
-occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
+nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 180"
 
 # Set versions retention obligation (save versions for 12 months or delete when space is needed)
-occ_command config:system:set versions_retention_obligation --value="auto, 365"
+nextcloud_occ config:system:set versions_retention_obligation --value="auto, 365"
 
 # Remove simple signup
-occ_command config:system:set simpleSignUpLink.shown --type=bool --value=false
+nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
 
 # Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
@@ -562,15 +590,15 @@ fi
 
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
-yes | occ_command db:convert-filecache-bigint
-occ_command db:add-missing-indices
+yes | nextcloud_occ db:convert-filecache-bigint
+nextcloud_occ db:add-missing-indices
 while [ -z "$CURRENTVERSION" ]
 do
     CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 done
 if [ "${CURRENTVERSION%%.*}" -ge "19" ]
 then
-    occ_command db:add-missing-columns
+    nextcloud_occ db:add-missing-columns
 fi
 
 # Install Figlet
@@ -718,7 +746,9 @@ a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
-choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
+if [ -z "$PROVISIONING" ]
+then
+    choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
 "Automatically configure and install selected apps or software
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "" ON \
@@ -730,6 +760,9 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Mail" "" ON \
 "Deck" "" ON \
 "Group-Folders" "" ON 3>&1 1>&2 2>&3)
+else
+    choice="Calendar Contacts IssueTemplate PDFViewer Extract Text Mail Deck Group-Folders"
+fi
 
 case "$choice" in
     *"Calendar"*)
@@ -852,7 +885,10 @@ print_text_in_color "$ICyan" "Disable hibernation..."
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 # Reboot
-msg_box "Installation almost done, system will reboot when you hit OK. 
+if [ -z "$PROVISIONING" ]
+then
+    msg_box "Installation almost done, system will reboot when you hit OK. 
 
 Please log in again once rebooted to run the setup script."
+fi
 reboot

@@ -51,15 +51,15 @@ fi
 if [ -d "$NC_APPS_PATH/spreedme" ]
 then
     # Remove
-    occ_command app:disable spreedme
+    nextcloud_occ app:disable spreedme
     print_text_in_color "$ICyan" "Spreed.ME app already seems to be installed and will now be re-installed..."
     rm -R "$NC_APPS_PATH/spreedme"
     # Reinstall
-    occ_command app:install spreedme
+    nextcloud_occ app:install spreedme
 else
-    occ_command app:install spreedme
+    nextcloud_occ app:install spreedme
 fi
-occ_command app:enable spreedme
+nextcloud_occ app:enable spreedme
 chown -R www-data:www-data "$NC_APPS_PATH"
 
 # Generate secret keys

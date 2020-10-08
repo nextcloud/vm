@@ -36,7 +36,7 @@ lowest_compatible_nc 13
 
 # Check if adminer is already installed
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
-if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] || is_this_installed coturn
+if [ -n "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] || is_this_installed coturn
 then
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.
@@ -47,9 +47,9 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     case "$choice" in
         "Uninstall Nextcloud Talk")
             print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
-            occ_command_no_check config:app:delete spreed stun_servers
-            occ_command_no_check config:app:delete spreed turn_servers
-            occ_command_no_check app:remove spreed
+            nextcloud_occ_no_check config:app:delete spreed stun_servers
+            nextcloud_occ_no_check config:app:delete spreed turn_servers
+            nextcloud_occ_no_check app:remove spreed
             rm $TURN_CONF
             apt-get purge coturn -y
             msg_box "Nextcloud Talk was successfully uninstalled and all settings were resetted."
@@ -57,9 +57,9 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         ;;
         "Reinstall Nextcloud Talk")
             print_text_in_color "$ICyan" "Reinstalling Nextcloud Talk..."
-            occ_command_no_check config:app:delete spreed stun_servers
-            occ_command_no_check config:app:delete spreed turn_servers
-            occ_command_no_check app:remove spreed
+            nextcloud_occ_no_check config:app:delete spreed stun_servers
+            nextcloud_occ_no_check config:app:delete spreed turn_servers
+            nextcloud_occ_no_check app:remove spreed
             rm $TURN_CONF
             apt-get purge coturn -y
         ;;
@@ -178,8 +178,8 @@ TURN_SERVERS_STRING="[{\"server\":\"$TURN_DOMAIN:$TURN_PORT\",\"secret\":\"$TURN
 if ! is_app_installed spreed
 then
     install_and_enable_app spreed
-    occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
-    occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
+    nextcloud_occ config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
+    nextcloud_occ config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
     chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 

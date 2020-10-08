@@ -41,12 +41,12 @@ We will now remove the old docker and install the app from Nextcloud instead."
     # Disable RichDocuments (Collabora App) if activated
     if is_app_installed richdocuments
     then
-        occ_command app:remove richdocuments
+        nextcloud_occ app:remove richdocuments
     fi
     # Disable OnlyOffice (Collabora App) if activated
     if is_app_installed onlyoffice
     then
-        occ_command app:remove onlyoffice
+        nextcloud_occ app:remove onlyoffice
     fi
     # Revoke LE
     SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
@@ -69,9 +69,9 @@ We will now remove the old docker and install the app from Nextcloud instead."
     count=0
     while [ "$count" -lt 10 ]
     do
-        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
         then
-            occ_command_no_check config:system:delete trusted_domains "$count"
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
             break
         else
             count=$((count+1))
@@ -91,18 +91,18 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     case "$choice" in
         "Uninstall Collabora")
             print_text_in_color "$ICyan" "Uninstalling Collabora..."
-            occ_command app:remove richdocumentscode
+            nextcloud_occ app:remove richdocumentscode
             # Disable Collabora App if activated
             if is_app_installed richdocuments
             then
-                occ_command app:remove richdocuments
+                nextcloud_occ app:remove richdocuments
             fi
             msg_box "Collabora was successfully uninstalled."
             exit
         ;;
         "Reinstall Collabora")
             print_text_in_color "$ICyan" "Reinstalling Collabora..."
-            occ_command app:remove richdocumentscode
+            nextcloud_occ app:remove richdocumentscode
         ;;
         "")
             exit 1
@@ -139,9 +139,9 @@ then
     count=0
     while [ "$count" -lt 10 ]
     do
-        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
         then
-            occ_command_no_check config:system:delete trusted_domains "$count"
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
             break
         else
             count=$((count+1))
@@ -151,7 +151,7 @@ else
     # Remove OnlyOffice app
     if is_app_installed onlyoffice
     then
-        occ_command app:remove onlyoffice
+        nextcloud_occ app:remove onlyoffice
     fi
 fi
 
@@ -159,13 +159,13 @@ fi
 if is_app_enabled documentserver_community
 then
     any_key "OnlyOffice will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    occ_command app:remove documentserver_community
+    nextcloud_occ app:remove documentserver_community
 fi
 
 # Disable OnlyOffice App if activated
 if is_app_installed onlyoffice
 then
-    occ_command app:remove onlyoffice
+    nextcloud_occ app:remove onlyoffice
 fi
 
 # Install Collabora

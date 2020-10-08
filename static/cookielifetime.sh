@@ -33,22 +33,22 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     "1800s")
-        occ_command config:system:set remember_login_cookie_lifetime --value="1800"
+        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
     ;;
     "7200s")
-        occ_command config:system:set remember_login_cookie_lifetime --value="7200"
+        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="7200"
     ;;
     "43200s")
-        occ_command config:system:set remember_login_cookie_lifetime --value="43200"
+        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="43200"
     ;;
     "172800s")
-        occ_command config:system:set remember_login_cookie_lifetime --value="172800"
+        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="172800"
     ;;
     "604800s")
-        occ_command config:system:set remember_login_cookie_lifetime --value="604800"
+        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="604800"
     ;;
     "2419200s")
-        occ_command config:system:set remember_login_cookie_lifetime --value="2419200"
+        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="2419200"
     ;;
     "Custom")
         while :
@@ -69,7 +69,7 @@ You can not set a value below 30 minutes (1800 seconds).")
             then
                 msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. Please try again."
             else
-                if occ_command config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
+                if nextcloud_occ config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
                 then
                     msg_box "Cookie Lifetime is now successfully set to $COOKIE_LIFETIME seconds."
                 fi

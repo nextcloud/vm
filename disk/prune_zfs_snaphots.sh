@@ -55,7 +55,7 @@ The script will also delete everything in trashbin for all users to free up some
             fi
             touch $VMLOGS/zfs_prune.log
             ./zfs-prune-snapshots.sh 4w ncdata >> $VMLOGS/zfs_prune.log
-            occ_command trashbin:cleanup --all-users >> $VMLOGS/zfs_prune.log
+            nextcloud_occ trashbin:cleanup --all-users >> $VMLOGS/zfs_prune.log
         fi
     fi
 fi

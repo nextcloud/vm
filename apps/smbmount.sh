@@ -217,7 +217,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Please select which Nextcloud groups shall get access to the new external storage $NEWNAME.
 If you select no group and no user, the external storage will be visible to all users of your instance.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
-                NC_GROUPS=$(occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
+                NC_GROUPS=$(nextcloud_occ_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
                 mapfile -t NC_GROUPS <<< "$NC_GROUPS"
                 for GROUP in "${NC_GROUPS[@]}"
                 do
@@ -237,7 +237,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 "Please select which Nextcloud users shall get access to the share.
 If you select no group and no user, the external storage will be visible to all users of your instance.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
-                NC_USER=$(occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+                NC_USER=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
                 mapfile -t NC_USER <<< "$NC_USER"
                 for USER in "${NC_USER[@]}"
                 do
@@ -246,7 +246,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
                 SELECTED_USER=$("${args[@]}" 3>&1 1>&2 2>&3)
             fi
             # Create and mount external storage to the admin group
-            MOUNT_ID=$(occ_command files_external:create "$NEWNAME" local null::null -c datadir="$NEWPATH" )
+            MOUNT_ID=$(nextcloud_occ files_external:create "$NEWNAME" local null::null -c datadir="$NEWPATH" )
             MOUNT_ID=${MOUNT_ID//[!0-9]/}
             # Mount to admin group if no group or user chosen
             if [ -z "$SELECTED_GROUPS" ] && [ -z "$SELECTED_USER" ]
@@ -255,35 +255,35 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 Is this correct?\nIf you select 'yes', it will be visible to all users of your Nextcloud instance.
 If you select 'no', it will be only visible to Nextcloud users in the admin group." "$SUBTITLE"
                 then
-                    occ_command files_external:applicable --add-group=admin "$MOUNT_ID" -q
+                    nextcloud_occ files_external:applicable --add-group=admin "$MOUNT_ID" -q
                 fi
             fi
             # Mount to chosen Nextcloud groups
             if [ -n "$SELECTED_GROUPS" ]
             then
-                occ_command_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||' | while read -r NC_GROUPS
+                nextcloud_occ_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||' | while read -r NC_GROUPS
                 do
                     if [[ "$SELECTED_GROUPS" = *"$NC_GROUPS  "* ]]
                     then
-                        occ_command files_external:applicable --add-group="$NC_GROUPS" "$MOUNT_ID" -q
+                        nextcloud_occ files_external:applicable --add-group="$NC_GROUPS" "$MOUNT_ID" -q
                     fi
                 done
             fi
             # Mount to chosen Nextcloud users
             if [ -n "$SELECTED_USER" ]
             then
-                occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r NC_USER
+                nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r NC_USER
                 do
                     if [[ "$SELECTED_USER" = *"$NC_USER  "* ]]
                     then
-                        occ_command files_external:applicable --add-user="$NC_USER" "$MOUNT_ID" -q
+                        nextcloud_occ files_external:applicable --add-user="$NC_USER" "$MOUNT_ID" -q
                     fi
                 done
             fi
             # Enable all other options
-            occ_command files_external:option "$MOUNT_ID" filesystem_check_changes 1
-            occ_command files_external:option "$MOUNT_ID" readonly "$READONLY"
-            occ_command files_external:option "$MOUNT_ID" enable_sharing "$SHARING"
+            nextcloud_occ files_external:option "$MOUNT_ID" filesystem_check_changes 1
+            nextcloud_occ files_external:option "$MOUNT_ID" readonly "$READONLY"
+            nextcloud_occ files_external:option "$MOUNT_ID" enable_sharing "$SHARING"
 
             # Inform the user that mounting was successful
             msg_box "Your mount $NEWNAME was successful, congratulations!
@@ -364,12 +364,12 @@ files_inotify app and setup the cronjob for this external storage."
             then
                 # This check is needed to check if the app is compatible with the current NC version
                 print_text_in_color "$ICyan" "Installing the files_inotify app..."
-                if ! occ_command_no_check app:install files_inotify
+                if ! nextcloud_occ_no_check app:install files_inotify
                 then
                     # Inform the user if the app couldn't get installed
                     msg_box "It seems like the files_inotify app isn't compatible with the current NC version. Cannot proceed."
                     # Remove the app to be able to install it again in another try
-                    occ_command_no_check app:remove files_inotify
+                    nextcloud_occ_no_check app:remove files_inotify
                     break
                 fi
             fi
@@ -377,7 +377,7 @@ files_inotify app and setup the cronjob for this external storage."
             # Make sure that the app is enabled, too
             if ! is_app_enabled files_inotify
             then
-                occ_command_no_check app:enable files_inotify
+                nextcloud_occ_no_check app:enable files_inotify
             fi
 
             # Add crontab for this external storage

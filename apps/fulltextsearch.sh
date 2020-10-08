@@ -55,16 +55,16 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             if is_app_installed fulltextsearch
             then
                 print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-                occ_command_no_check fulltextsearch:reset
-                occ_command app:remove fulltextsearch
+                nextcloud_occ_no_check fulltextsearch:reset
+                nextcloud_occ app:remove fulltextsearch
             fi
             if is_app_installed fulltextsearch_elasticsearch
             then
-                occ_command app:remove fulltextsearch_elasticsearch
+                nextcloud_occ app:remove fulltextsearch_elasticsearch
             fi
             if is_app_installed files_fulltextsearch
             then
-                occ_command app:remove files_fulltextsearch
+                nextcloud_occ app:remove files_fulltextsearch
             fi
             # Remove nc_fts docker if installed
             docker_prune_this "$nc_fts"
@@ -82,16 +82,16 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
                 # Reset database table
                 check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
                 # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-                occ_command_no_check fulltextsearch:reset
-                occ_command app:remove fulltextsearch
+                nextcloud_occ_no_check fulltextsearch:reset
+                nextcloud_occ app:remove fulltextsearch
             fi
             if is_app_installed fulltextsearch_elasticsearch
             then
-                occ_command app:remove fulltextsearch_elasticsearch
+                nextcloud_occ app:remove fulltextsearch_elasticsearch
             fi
             if is_app_installed files_fulltextsearch
             then
-                occ_command app:remove files_fulltextsearch
+                nextcloud_occ app:remove files_fulltextsearch
             fi
 
             # Remove nc_fts docker if installed
@@ -108,7 +108,7 @@ else
 fi
 
 # Make sure there is an Nextcloud installation
-if ! [ "$(occ_command -V)" ]
+if ! [ "$(nextcloud_occ -V)" ]
 then
     msg_box "It seems there is no Nextcloud server installed, please check your installation."
     exit 1
@@ -119,7 +119,7 @@ if is_app_installed nextant
 then
     # Remove Nextant
     msg_box "We will now remove Nextant + Solr and replace it with Full Text Search"
-    occ_command app:remove nextant
+    nextcloud_occ app:remove nextant
 
     # Remove Solr
     systemctl stop solr.service
@@ -180,10 +180,10 @@ install_and_enable_app files_fulltextsearch
 chown -R www-data:www-data $NC_APPS_PATH
 
 # Final setup
-occ_command fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_ElasticSearch\\Platform\\ElasticSearchPlatform"}'
-occ_command fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${ROREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
-occ_command files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
-if occ_command fulltextsearch:index < /dev/null
+nextcloud_occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_ElasticSearch\\Platform\\ElasticSearchPlatform"}'
+nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${ROREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
+nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
+if nextcloud_occ fulltextsearch:index < /dev/null
 then
     msg_box "Full Text Search was successfully installed!"
 fi

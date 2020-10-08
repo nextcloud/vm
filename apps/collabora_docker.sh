@@ -63,15 +63,15 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             # Disable RichDocuments (Collabora App) if activated
             if is_app_installed richdocuments
             then
-                occ_command app:remove richdocuments
+                nextcloud_occ app:remove richdocuments
             fi
             # Remove trusted domain
             count=0
             while [ "$count" -lt 10 ]
             do
-                if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+                if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
                 then
-                    occ_command_no_check config:system:delete trusted_domains "$count"
+                    nextcloud_occ_no_check config:system:delete trusted_domains "$count"
                     break
                 else
                     count=$((count+1))
@@ -124,9 +124,9 @@ then
     count=0
     while [ "$count" -lt 10 ]
     do
-        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
         then
-            occ_command_no_check config:system:delete trusted_domains "$count"
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
             break
         else
             count=$((count+1))
@@ -138,13 +138,13 @@ fi
 if is_app_enabled documentserver_community
 then
     any_key "OnlyOffice will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    occ_command app:remove documentserver_community
+    nextcloud_occ app:remove documentserver_community
 fi
 
 # Disable OnlyOffice App if activated
 if is_app_installed onlyoffice
 then
-    occ_command app:remove onlyoffice
+    nextcloud_occ app:remove onlyoffice
 fi
 
 # Ask for the domain for Collabora
@@ -154,7 +154,7 @@ NOTE: This domain must be different than your Nextcloud domain. \
 They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # Nextcloud Main Domain
-NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
 # Nextcloud Main Domain dot-escaped
 NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
@@ -338,9 +338,9 @@ fi
 # Set config for RichDocuments (Collabora App)
 if is_app_installed richdocuments
 then
-    occ_command config:app:set richdocuments wopi_url --value=https://"$SUBDOMAIN"
+    nextcloud_occ config:app:set richdocuments wopi_url --value=https://"$SUBDOMAIN"
     chown -R www-data:www-data "$NC_APPS_PATH"
-    occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    nextcloud_occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
     # Add prune command
     add_dockerprune
     # Restart Docker
