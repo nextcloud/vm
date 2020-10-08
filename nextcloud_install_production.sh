@@ -232,7 +232,7 @@ install_if_not build-essential
 # Set dual or single drive setup
 if [ -z "$PROVISIONING" ]
 then
-    msg_box "This VM is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
+    msg_box "This server is designed to run with two disks, one for OS and one for DATA. This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
 You could still choose to only run on one disk though, which is not recommended, but maybe your only option depending on which hypervisor you are running.
 
 You will now get the option to decide which disk you want to use for DATA, or run the automatic script that will choose the available disk automatically."
