@@ -45,6 +45,7 @@ if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM
 then
     SNAPSHOT_EXISTS=1
     check_command systemctl stop apache2.service
+    nextcloud_occ maintenance:mode --on
     if does_snapshot_exist "NcVM-startup"
     then
         check_command lvremove /dev/ubuntu-vg/NcVM-startup -y
@@ -65,6 +66,7 @@ It should work afterwards again."
         check_command systemctl start apache2.service
         exit 1
     fi
+    nextcloud_occ maintenance:mode --off
     check_command systemctl start apache2.service
 fi
 
