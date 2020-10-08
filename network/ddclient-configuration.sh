@@ -42,6 +42,7 @@ case "$choice" in
         PROTOCOL="dyndns2"
         SERVER="update.dedyn.io"
         USE_SSL="yes"
+    ;;
     "Strato")
         PROVIDER="Strato"
         INSTRUCTIONS="activate DynDNS for your Domain"
