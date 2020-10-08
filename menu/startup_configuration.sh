@@ -100,7 +100,7 @@ case "$choice" in
                     sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 
                     # Change timezone for logging
-                    occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+                    nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
                     clear
                     msg_box "The timezone was changed successfully." "$SUBTITLE"
                 fi

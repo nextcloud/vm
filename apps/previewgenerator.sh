@@ -50,13 +50,13 @@ then
     if is_app_installed previewgenerator
     then
         # enable previews
-        occ_command config:system:set enable_previews --value=true --type=boolean
+        nextcloud_occ config:system:set enable_previews --value=true --type=boolean
 
         # install needed dependency for movies
         install_if_not ffmpeg
 
         # reset the preview formats
-        occ_command config:system:delete "enabledPreviewProviders"
+        nextcloud_occ config:system:delete "enabledPreviewProviders"
 
         # reset the cronjob
         print_text_in_color "$ICyan" "Resetting the cronjob for the Preview Generation"
@@ -114,37 +114,37 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
     case "$choice" in
         *"PNG"*)
-            occ_command config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
+            nextcloud_occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\PNG"
         ;;&
         *"JPEG"*)
-            occ_command config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
+            nextcloud_occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\JPEG"
         ;;&
         *"GIF"*)
-            occ_command config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
+            nextcloud_occ config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\GIF"
         ;;&
         *"BMP"*)
-            occ_command config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
+            nextcloud_occ config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\BMP"
         ;;&
         *"MarkDown"*)
-            occ_command config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\MarkDown"
+            nextcloud_occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\MarkDown"
         ;;&
         *"MP3"*)
-            occ_command config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MP3"
+            nextcloud_occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\MP3"
         ;;&
         *"TXT"*)
-            occ_command config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\TXT"
+            nextcloud_occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\TXT"
         ;;&
         *"Movie"*)
-            occ_command config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\Movie"
+            nextcloud_occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\Movie"
         ;;&
         *"Photoshop"*)
-            occ_command config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Photoshop"
+            nextcloud_occ config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Photoshop"
         ;;&
         *"SVG"*)
-            occ_command config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\SVG"
+            nextcloud_occ config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\SVG"
         ;;&
         *"TIFF"*)
-            occ_command config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\TIFF"
+            nextcloud_occ config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\TIFF"
         ;;&
         *)
         ;;
@@ -176,28 +176,28 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
     case "$choice" in
         *"PNG"*)
-            occ_command config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\PNG"
+            nextcloud_occ config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\PNG"
         ;;&
         *"JPEG"*)
-            occ_command config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\JPEG"
+            nextcloud_occ config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\JPEG"
         ;;&
         *"GIF"*)
-            occ_command config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\GIF"
+            nextcloud_occ config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\GIF"
         ;;&
         *"BMP"*)
-            occ_command config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\BMP"
+            nextcloud_occ config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\BMP"
         ;;&
         *"MarkDown"*)
-            occ_command config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\MarkDown"
+            nextcloud_occ config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\MarkDown"
         ;;&
         *"MP3"*)
-            occ_command config:system:set enabledPreviewProviders 16 --value="OC\\Preview\\MP3"
+            nextcloud_occ config:system:set enabledPreviewProviders 16 --value="OC\\Preview\\MP3"
         ;;&
         *"TXT"*)
-            occ_command config:system:set enabledPreviewProviders 17 --value="OC\\Preview\\TXT"
+            nextcloud_occ config:system:set enabledPreviewProviders 17 --value="OC\\Preview\\TXT"
         ;;&
         *"Movie"*)
-            occ_command config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\Movie"
+            nextcloud_occ config:system:set enabledPreviewProviders 18 --value="OC\\Preview\\Movie"
         ;;&
         *)
         ;;
@@ -205,13 +205,13 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 fi
 
 # Set aspect ratio
-occ_command config:app:set previewgenerator squareSizes --value="32 256"
-occ_command config:app:set previewgenerator widthSizes  --value="256 384"
-occ_command config:app:set previewgenerator heightSizes --value="256"
-occ_command config:system:set preview_max_x --value="2048"
-occ_command config:system:set preview_max_y --value="2048"
-occ_command config:system:set jpeg_quality --value="60"
-occ_command config:app:set preview jpeg_quality --value="60"
+nextcloud_occ config:app:set previewgenerator squareSizes --value="32 256"
+nextcloud_occ config:app:set previewgenerator widthSizes  --value="256 384"
+nextcloud_occ config:app:set previewgenerator heightSizes --value="256"
+nextcloud_occ config:system:set preview_max_x --value="2048"
+nextcloud_occ config:system:set preview_max_y --value="2048"
+nextcloud_occ config:system:set jpeg_quality --value="60"
+nextcloud_occ config:app:set preview jpeg_quality --value="60"
 
 msg_box "In the last step you can define a specific Nextcloud user for which will be the user that runs the Preview Generation.
 
@@ -227,12 +227,12 @@ then
     chown www-data:www-data "$VMLOGS"/previewgenerator.log
 
     # Pre generate everything
-    occ_command preview:generate-all
+    nextcloud_occ preview:generate-all
 else
     while :
     do
         PREVIEW_USER=$(input_box "Enter the Nextcloud user for which you want to run the Preview Generation (as a scheluded task)")
-        if [ -z "$(occ_command user:list | grep "$PREVIEW_USER" | awk '{print $3}')" ]
+        if [ -z "$(nextcloud_occ user:list | grep "$PREVIEW_USER" | awk '{print $3}')" ]
         then
             msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
         else
@@ -245,5 +245,5 @@ else
     chown www-data:www-data "$VMLOGS"/previewgenerator.log
 
     # Pre generate everything
-    occ_command preview:generate-all "$PREVIEW_USER"
+    nextcloud_occ preview:generate-all "$PREVIEW_USER"
 fi
