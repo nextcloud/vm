@@ -436,8 +436,8 @@ then
         # Add specific values to PHP-FPM based on 32 GB RAM
         check_command sed -i "s|pm.max_children.*|pm.max_children = 600|g" "$PHP_POOL_DIR"/nextcloud.conf
         check_command sed -i "s|pm.start_servers.*|pm.start_servers = 100|g" "$PHP_POOL_DIR"/nextcloud.conf
-        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 100|g" "$PHP_POOL_DIR"/nextcloud.conf
-        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 400|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 20|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 480|g" "$PHP_POOL_DIR"/nextcloud.conf
         restart_webserver
     # 16 GB RAM
     elif [[ 14 -lt "${mem_available_gb}" ]]
@@ -445,8 +445,8 @@ then
         # Add specific values to PHP-FPM based on 16 GB RAM
         check_command sed -i "s|pm.max_children.*|pm.max_children = 300|g" "$PHP_POOL_DIR"/nextcloud.conf
         check_command sed -i "s|pm.start_servers.*|pm.start_servers = 50|g" "$PHP_POOL_DIR"/nextcloud.conf
-        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 50|g" "$PHP_POOL_DIR"/nextcloud.conf
-        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 200|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 20|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 280|g" "$PHP_POOL_DIR"/nextcloud.conf
         restart_webserver
     fi
 else
