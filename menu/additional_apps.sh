@@ -119,6 +119,24 @@ You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/
             print_text_in_color "$ICyan" "Installing Midnight Commander..."
             check_command install_if_not mc
             msg_box "Midnight Commander was successfully installed.\nYou can launch it by running 'mc' in the terminal." "$SUBTITLE"
+            if yesno_box_yes "Do you want to install a dark theme for Midnight Commander?" "$SUBTITLE"
+            then
+                print_text_in_color "$ICyan" "Installing dark Theme for Midnight Commander..."
+                USER_HOMES=$(find /home -mindepth 1 -maxdepth 1 -type d)
+                mapfile -t USER_HOMES <<< "$USER_HOMES"
+                USER_HOMES+=(/root)
+                THEME="linux:normal=white,black:marked=yellow,black:input=,green:menu=black:menusel=white:\
+menuhot=red,:menuhotsel=black,red:dfocus=white,black:dhotnormal=white,black:\
+dhotfocus=white,black:executable=,black:directory=white,black:link=white,black:\
+device=white,black:special=white,black:core=,black:stalelink=red,black:editnormal=white,black"
+                for user_home in "$USER_HOMES"
+                do
+                    if [ -f "$user_home"/.config/mc/ini ]
+                    then
+                        sed -i "s|^base_color=|base_color=$THEME|" "$user_home"/.config/mc/ini
+                    fi
+                done
+            fi
         fi
     ;;&
     *"FullTextSearch"*)
