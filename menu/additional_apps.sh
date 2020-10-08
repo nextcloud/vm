@@ -98,8 +98,9 @@ case "$choice" in
         msg_box "Midnight Commander is a file manager for the command line." "$SUBTITLE"
         if is_this_installed mc
         then
-            if yesno_box_yes "It seems like Midnight Commander is already installed.\nDo you want to remove it?" "$SUBTITLE"
+            if yesno_box_yes "It seems like Midnight Commander is already installed.\nDo you want to uninstall it?" "$SUBTITLE"
             then
+                print_text_in_color "$ICyan" "Uninstalling Midnight Commander..."
                 apt purge mc -y
                 apt autoremove -y
                 msg_box "Midnight Commander was successfully uninstalled." "$SUBTITLE"
