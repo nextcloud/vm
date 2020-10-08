@@ -31,7 +31,7 @@ check_nextcloud_https "OnlyOffice (Docker)"
 if is_app_enabled documentserver_community
 then
     any_key "The integrated OnlyOffice Documentserver will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    occ_command app:remove documentserver_community
+    nextcloud_occ app:remove documentserver_community
 fi
 
 # Check if collabora is already installed
@@ -70,15 +70,15 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             # Disable RichDocuments (Collabora App) if activated
             if is_app_installed onlyoffice
             then
-                occ_command app:remove onlyoffice
+                nextcloud_occ app:remove onlyoffice
             fi
             # Remove trusted domain
             count=0
             while [ "$count" -lt 10 ]
             do
-                if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+                if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
                 then
-                    occ_command_no_check config:system:delete trusted_domains "$count"
+                    nextcloud_occ_no_check config:system:delete trusted_domains "$count"
                     break
                 else
                     count=$((count+1))
@@ -131,15 +131,15 @@ then
     # Disable Collabora App if activated
     if is_app_installed richdocuments
     then
-       occ_command app:remove richdocuments
+       nextcloud_occ app:remove richdocuments
     fi
     # Remove trusted domain
     count=0
     while [ "$count" -lt 10 ]
     do
-        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
         then
-            occ_command_no_check config:system:delete trusted_domains "$count"
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
             break
         else
             count=$((count+1))
@@ -166,7 +166,7 @@ fi
 SUBDOMAIN=$(input_box_flow "OnlyOffice subdomain e.g: office.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # Nextcloud Main Domain
-NCDOMAIN=$(occ_command_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
 # shellcheck disable=2034,2059
 true
@@ -334,9 +334,9 @@ fi
 # Set config for OnlyOffice
 if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
-    occ_command config:app:set onlyoffice DocumentServerUrl --value=https://"$SUBDOMAIN/"
+    nextcloud_occ config:app:set onlyoffice DocumentServerUrl --value=https://"$SUBDOMAIN/"
     chown -R www-data:www-data "$NC_APPS_PATH"
-    occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    nextcloud_occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
     # Add prune command
     add_dockerprune
     # Restart Docker

@@ -41,7 +41,7 @@ check_nextcloud_https "Nextclod Talk"
 
 # Check if talk/spreed is already installed
 print_text_in_color "$ICyan" "Checking if Talk is already installed..."
-if [ -n "$(occ_command_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] || is_this_installed coturn
+if [ -n "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] || is_this_installed coturn
 then
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.
@@ -52,10 +52,10 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     case "$choice" in
         "Uninstall Nextcloud Talk")
             print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
-            occ_command_no_check config:app:delete spreed stun_servers
-            occ_command_no_check config:app:delete spreed turn_servers
-            occ_command_no_check config:app:delete spreed signaling_servers
-            occ_command_no_check app:remove spreed
+            nextcloud_occ_no_check config:app:delete spreed stun_servers
+            nextcloud_occ_no_check config:app:delete spreed turn_servers
+            nextcloud_occ_no_check config:app:delete spreed signaling_servers
+            nextcloud_occ_no_check app:remove spreed
             rm -rf \
               "$TURN_CONF" \
               "$SIGNALING_SERVER_CONF" \
@@ -81,10 +81,10 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         ;;
         "Reinstall Nextcloud Talk")
             print_text_in_color "$ICyan" "Reinstalling Nextcloud Talk..."
-            occ_command_no_check config:app:delete spreed stun_servers
-            occ_command_no_check config:app:delete spreed turn_servers
-            occ_command_no_check config:app:delete spreed signaling_servers
-            occ_command_no_check app:remove spreed
+            nextcloud_occ_no_check config:app:delete spreed stun_servers
+            nextcloud_occ_no_check config:app:delete spreed turn_servers
+            nextcloud_occ_no_check config:app:delete spreed signaling_servers
+            nextcloud_occ_no_check app:remove spreed
             rm -rf \
               "$TURN_CONF" \
               "$SIGNALING_SERVER_CONF" \
@@ -201,8 +201,8 @@ then
     install_and_enable_app spreed
 fi
 
-occ_command config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
-occ_command config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
+nextcloud_occ config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" --output json
+nextcloud_occ config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
 chown -R www-data:www-data "$NC_APPS_PATH"
 
 msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
@@ -443,7 +443,7 @@ fi
 
 # Set signaling server strings
 SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
-occ_command config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
+nextcloud_occ config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
 
 # Check that everything is working
 if ! curl -L https://"$SUBDOMAIN"/api/v1/welcome

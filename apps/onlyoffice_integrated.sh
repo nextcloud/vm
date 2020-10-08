@@ -40,12 +40,12 @@ then
         # Disable RichDocuments (Collabora App) if activated
         if is_app_installed richdocuments
         then
-            occ_command app:remove richdocuments
+            nextcloud_occ app:remove richdocuments
         fi
         # Disable OnlyOffice (Collabora App) if activated
         if is_app_installed onlyoffice
         then
-            occ_command app:remove onlyoffice
+            nextcloud_occ app:remove onlyoffice
         fi
         # Revoke LE
         SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
@@ -68,9 +68,9 @@ then
         count=0
         while [ "$count" -lt 10 ]
         do
-            if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+            if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
             then
-                occ_command_no_check config:system:delete trusted_domains "$count"
+                nextcloud_occ_no_check config:system:delete trusted_domains "$count"
                 break
             else
                 count=$((count+1))
@@ -98,18 +98,18 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         case "$choice" in
             "Uninstall OnlyOffice")
 	        print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
-		occ_command app:remove documentserver_community
+		nextcloud_occ app:remove documentserver_community
                 # Disable Onlyoffice App if activated
                 if is_app_installed onlyoffice
                 then
-                    occ_command app:remove onlyoffice
+                    nextcloud_occ app:remove onlyoffice
                 fi
 		msg_box "OnlyOffice was successfully uninstalled."
 		exit
             ;;
             "Reinstall OnlyOffice")
                 print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
-                occ_command app:remove documentserver_community
+                nextcloud_occ app:remove documentserver_community
             ;;
             "")
                 exit 1
@@ -153,15 +153,15 @@ then
     # Disable Collabora App if activated
     if is_app_installed richdocuments
     then
-       occ_command app:remove richdocuments
+       nextcloud_occ app:remove richdocuments
     fi
     # Remove trusted domain
     count=0
     while [ "$count" -lt 10 ]
     do
-        if [ "$(occ_command_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
         then
-            occ_command_no_check config:system:delete trusted_domains "$count"
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
             break
         else
             count=$((count+1))
@@ -171,7 +171,7 @@ else
     # Remove Collabora app
     if is_app_installed richdocuments
     then
-        occ_command app:remove richdocuments
+        nextcloud_occ app:remove richdocuments
     fi
 fi
 
@@ -201,7 +201,7 @@ sleep 2
 if install_and_enable_app documentserver_community
 then
     chown -R www-data:www-data "$NC_APPS_PATH"
-    occ_command config:app:set onlyoffice DocumentServerUrl --value="$(occ_command_no_check config:system:get overwrite.cli.url)/index.php/apps/documentserver_community/"
+    nextcloud_occ config:app:set onlyoffice DocumentServerUrl --value="$(nextcloud_occ_no_check config:system:get overwrite.cli.url)/index.php/apps/documentserver_community/"
     msg_box "OnlyOffice was successfully installed."
 else
     msg_box "The documentserver_community app failed to install. Please try again later.\n\nIf the error presist, please report the issue to https://github.com/nextcloud/documentserver_community\n\n'sudo -u www-data php ./occ app:install documentserver_community failed!'"
