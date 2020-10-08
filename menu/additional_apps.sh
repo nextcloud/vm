@@ -75,10 +75,10 @@ case "$choice" in
         install_if_not snapd
         if snap list | grep -q bpytop
         then
-            if yesno_box_yes "It seems like BPYTOP is already installed.\nDo you want to remove it?"
+            if yesno_box_yes "It seems like BPYTOP is already installed.\nDo you want to remove it?" "$SUBTITLE"
             then
                 check_command snap remove bpytop
-                msg_box "BPYTOP was successfully removed!"
+                msg_box "BPYTOP was successfully removed!" "$SUBTITLE"
             fi
         elif yesno_box_yes "Do you want to install BPYTOP?" "$SUBTITLE"
         then
