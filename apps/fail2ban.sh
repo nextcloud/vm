@@ -69,21 +69,21 @@ mkdir -p "$VMLOGS"
 print_text_in_color "$ICyan" "Finding nextcloud.log..."
 while :
 do
-    if [ "$(occ_command_no_check config:system:get logfile)" = "$VMLOGS/nextcloud.log" ]
+    if [ "$(nextcloud_occ_no_check config:system:get logfile)" = "$VMLOGS/nextcloud.log" ]
     then
         if [ -f "$VMLOGS/nextcloud.log" ]
         then
             chown www-data:www-data "$VMLOGS/nextcloud.log"
-            occ_command config:system:set log_type --value=file
-            occ_command config:system:set loglevel --value=2
+            nextcloud_occ config:system:set log_type --value=file
+            nextcloud_occ config:system:set loglevel --value=2
             break
         fi
-    elif [ "$(occ_command_no_check config:system:get logfile)" != "" ]
+    elif [ "$(nextcloud_occ_no_check config:system:get logfile)" != "" ]
     then
         # Set logging
-        occ_command config:system:set log_type --value=file
-        occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
-        occ_command config:system:set loglevel --value=2
+        nextcloud_occ config:system:set log_type --value=file
+        nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
+        nextcloud_occ config:system:set loglevel --value=2
         touch "$VMLOGS/nextcloud.log"
         chown www-data:www-data "$VMLOGS/nextcloud.log"
         break
@@ -95,9 +95,9 @@ do
             print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
             xargs rm -f <<< "$NCLOG"
             # Set logging
-            occ_command config:system:set log_type --value=file
-            occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
-            occ_command config:system:set loglevel --value=2
+            nextcloud_occ config:system:set log_type --value=file
+            nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
+            nextcloud_occ config:system:set loglevel --value=2
             touch "$VMLOGS/nextcloud.log"
             chown www-data:www-data "$VMLOGS/nextcloud.log"
             break
@@ -118,7 +118,7 @@ check_command apt install fail2ban -y
 check_command update-rc.d fail2ban disable
 
 # Set timezone
-occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
 
 # Create nextcloud.conf file
 # Test: failregex = Login failed.*Remote IP.*<HOST>

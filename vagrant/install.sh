@@ -10,5 +10,4 @@ check_command git clone https://github.com/nextcloud/vm.git
 
 cd vm || exit && print_text_in_color "$IRed" "Could not cd into the 'vm' folder."
 
-yes no | sudo bash nextcloud_install_production.sh
-
+sudo bash nextcloud_install_production.sh --provisioning
