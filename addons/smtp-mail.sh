@@ -35,7 +35,7 @@ then
     apt autoremove -y
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
-    rm -f $VMLOGS/mail_msmtp.log
+    rm -f /var/log/msmtp
     echo "" > /etc/aliases
     # Show successful uninstall if applicable
     removal_popup
@@ -159,7 +159,7 @@ $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
 
 tls_trust_file  /etc/ssl/certs/ca-certificates.crt
-# logfile         $VMLOGS/mail_msmtp.log
+# logfile         /var/log/msmtp
 
 # Account to send emails
 account         $MAIL_SERVER
@@ -183,7 +183,7 @@ $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
 
 tls_trust_file  /etc/ssl/certs/ca-certificates.crt
-# logfile         $VMLOGS/smtp_msmtp.log
+logfile         /var/log/msmtp
 
 # Account to send emails
 account         $MAIL_SERVER
@@ -205,11 +205,9 @@ fi
 chmod 600 /etc/msmtprc
 
 # Create logs
-# TODO: not working due to permissions error
-rm -f $VMLOGS/mail_msmtp.log
-sudo touch $VMLOGS/mail_msmtp.log
-sudo chown msmtp:msmtp $VMLOGS/mail_msmtp.log
-sudo chmod 0644 $VMLOGS/mail_msmtp.log
+rm -f /var/log/msmtp
+touch /var/log/msmtp
+chmod 666 /var/log/msmtp
 
 # Create aliases
 cat << ALIASES_CONF > /etc/aliases
@@ -238,11 +236,12 @@ $(grep -v password /etc/msmtprc)
 Best regards
 The NcVM team
 https://nextcloudvm.com" \
-| mail -s "Test email from your NcVM" "$RECIPIENT" &>/dev/null
+| mail -s "Test email from your NcVM" "$RECIPIENT"
 then
     # Fail message
     msg_box "It seems like something has failed.
-We will now reset everything so that you are able to start over again.
+You can look at /var/log/msmtp for further logs.
+We will now reset everything except the logfile so that you are able to start over again.
 Please run this script once more time if you want to make another try."
     apt-get purge msmtp -y
     apt-get purge msmtp-mta -y
@@ -250,7 +249,6 @@ Please run this script once more time if you want to make another try."
     apt autoremove -y
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
-    rm -f $VMLOGS/mail_msmtp.log
     echo "" > /etc/aliases
 else
     # Success message
