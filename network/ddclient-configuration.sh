@@ -23,17 +23,25 @@ You have to setup an account before you can start.\n\nPlease choose your DynDNS-
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE
 If your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" \
+"deSEC" "(desec.io)" \
 "Strato" "(strato.de)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Cloudflare")
         PROVIDER="Cloudflare"
-        INSTRUCTIONS="Register an email address for your domain and get an Cloudflare API-key"
+        INSTRUCTIONS="register an email address for your domain and get an Cloudflare API-key"
         GUIDE="https://www.techandme.se/setup-multiple-accounts-with-ddclient-and-cloudflare/"
         PROTOCOL="cloudflare"
         SERVER="www.cloudflare.com"
         USE_SSL="yes"
     ;;
+    "deSEC")
+        PROVIDER="deSEC"
+        INSTRUCTIONS="get a DDNS account with password"
+        GUIDE="https://www.os-privacy.de/dyndns-desec-3181/"
+        PROTOCOL="dyndns2"
+        SERVER="update.dedyn.io"
+        USE_SSL="yes"
     "Strato")
         PROVIDER="Strato"
         INSTRUCTIONS="activate DynDNS for your Domain"
