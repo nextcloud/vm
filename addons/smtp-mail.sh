@@ -206,9 +206,8 @@ chmod 600 /etc/msmtprc
 
 # Create logs
 rm -f /var/log/msmtp
-sudo touch /var/log/msmtp
-chown msmtp:msmtp /var/log/msmtp
-sudo chmod 644 /var/log/msmtp
+touch /var/log/msmtp
+chmod 666 /var/log/msmtp
 
 # Create aliases
 cat << ALIASES_CONF > /etc/aliases
