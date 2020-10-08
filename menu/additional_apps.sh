@@ -35,6 +35,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
+"Midnight Commander" "(Terminal file manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" "$STARTUP_SWITCH" \
 "LDAP" "(Windows Active directory)" OFF \
@@ -89,6 +90,25 @@ case "$choice" in
             else
                 msg_box "It seems like the installation of BPYTOP failed. Please try again." "$SUBTITLE"
             fi
+        fi
+    ;;&
+    *"Midnight Commander"*)
+        clear
+        SUBTITLE="Midnight Commander"
+        msg_box "Midnight Commander is a file manager for the command line." "$SUBTITLE"
+        if is_this_installed mc
+        then
+            if yesno_box_yes "It seems like Midnight Commander is already installed.\nDo you want to remove it?" "$SUBTITLE"
+            then
+                apt purge mc -y
+                apt autoremove -y
+                msg_box "Midnight Commander was successfully uninstalled." "$SUBTITLE"
+            fi
+        elif yesno_box_yes "Do you want to install Midnight Commander?" "$SUBTITLE"
+        then
+            print_text_in_color "$ICyan" "Installing Midnight Commander..."
+            check_command install_if_not mc
+            msg_box "Midnight Commander was successfully installed.\nYou can launch it by running 'mc' in the terminal." "$SUBTITLE"
         fi
     ;;&
     *"FullTextSearch"*)
