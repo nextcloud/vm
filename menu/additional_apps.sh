@@ -81,6 +81,7 @@ case "$choice" in
                 msg_box "BPYTOP was successfully removed!"
             fi
         elif yesno_box_yes "Do you want to install BPYTOP?" "$SUBTITLE"
+        then
             print_text_in_color "$ICyan" "Installing BPYTOP..."
             if snap install bpytop
             then
