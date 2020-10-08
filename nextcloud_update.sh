@@ -301,10 +301,10 @@ fi
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    occ_command maintenance:mode --off
+    nextcloud_occ maintenance:mode --off
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
-    UPDATED_APPS="$(occ_command_no_check app:update --all)"
+    UPDATED_APPS="$(nextcloud_occ_no_check app:update --all)"
 fi
 
 # Check which apps got updated
@@ -440,7 +440,7 @@ countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds.
 # Backup app status
 # Fixing https://github.com/nextcloud/server/issues/4538
 print_text_in_color "$ICyan" "Getting and backing up the status of apps for later, this might take a while..."
-NC_APPS="$(occ_command app:list | awk '{print$2}' | tr -d ':' | sed '/^$/d')"
+NC_APPS="$(nextcloud_occ app:list | awk '{print$2}' | tr -d ':' | sed '/^$/d')"
 if [ -z "$NC_APPS" ]
 then
     print_text_in_color "$IRed" "No apps detected, aborting export of app status... Please report this issue to $ISSUES"
@@ -449,7 +449,7 @@ else
     declare -Ag APPSTORAGE
     for app in $NC_APPS
     do
-        APPSTORAGE[$app]=$(occ_command_no_check config:app:get "$app" enabled)
+        APPSTORAGE[$app]=$(nextcloud_occ_no_check config:app:get "$app" enabled)
     done
 fi
 
@@ -544,7 +544,7 @@ then
     print_text_in_color "$ICyan" "$BACKUP/apps/ exists"
     echo 
     print_text_in_color "$IGreen" "All files are backed up."
-    occ_command maintenance:mode --on
+    nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
@@ -553,17 +553,17 @@ then
     print_text_in_color "$IGreen" "Restoring config to Nextcloud..."
     rsync -Aaxz $BACKUP/config "$NCPATH"/
     bash $SECURE & spinner_loading
-    occ_command maintenance:mode --off
-    occ_command upgrade
+    nextcloud_occ maintenance:mode --off
+    nextcloud_occ upgrade
     # Optimize
     print_text_in_color "$ICyan" "Optimizing Nextcloud..."
-    yes | occ_command db:convert-filecache-bigint
-    occ_command db:add-missing-indices
+    yes | nextcloud_occ db:convert-filecache-bigint
+    nextcloud_occ db:add-missing-indices
     CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
     if [ "${CURRENTVERSION%%.*}" -ge "19" ]
     then
         check_php
-        occ_command db:add-missing-columns
+        nextcloud_occ db:add-missing-columns
         install_if_not php"$PHPVER"-bcmath
     fi
 else
@@ -636,7 +636,7 @@ then
             then
                 if is_app_enabled "$app"
                 then
-                    occ_command_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+                    nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
                 fi
             fi
         fi
@@ -659,12 +659,12 @@ chown -R root:root "$BACKUP"
 # Pretty URLs
 print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data "$NCPATH"
-occ_command config:system:set htaccess.RewriteBase --value="/"
-occ_command maintenance:update:htaccess
+nextcloud_occ config:system:set htaccess.RewriteBase --value="/"
+nextcloud_occ maintenance:update:htaccess
 bash "$SECURE"
 
 # Repair
-occ_command maintenance:repair
+nextcloud_occ maintenance:repair
 
 # Create $VMLOGS dir
 if [ ! -d "$VMLOGS" ]
@@ -672,7 +672,7 @@ then
     mkdir -p "$VMLOGS"
 fi
 
-CURRENTVERSION_after=$(occ_command status | grep "versionstring" | awk '{print $3}')
+CURRENTVERSION_after=$(nextcloud_occ status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]] || [ -n "$PRERELEASE_VERSION" ]
 then
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.
@@ -683,8 +683,8 @@ If you notice that some apps are disabled it's due to that they are not compatib
 To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
 
 Thank you for using T&M Hansson IT's updater!"
-    occ_command status
-    occ_command maintenance:mode --off
+    nextcloud_occ status
+    nextcloud_occ maintenance:mode --off
     print_text_in_color "$ICyan" "Sending notification about the successful update to all admins..."
     notify_admin_gui \
     "Nextcloud is now updated!" \
@@ -703,6 +703,6 @@ Maintenance mode is kept on."
     notify_admin_gui \
     "Nextcloud update failed!" \
     "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
-    occ_command status
+    nextcloud_occ status
     exit 1
 fi

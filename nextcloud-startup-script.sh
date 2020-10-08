@@ -297,15 +297,15 @@ clear
 sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 
 # Change timezone for logging
-occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
 clear
 
 # Pretty URLs
 print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
-occ_command config:system:set overwrite.cli.url --value="http://localhost/"
-occ_command config:system:set htaccess.RewriteBase --value="/"
-occ_command maintenance:update:htaccess
+nextcloud_occ config:system:set overwrite.cli.url --value="http://localhost/"
+nextcloud_occ config:system:set htaccess.RewriteBase --value="/"
+nextcloud_occ maintenance:update:htaccess
 bash $SECURE & spinner_loading
 
 # Generate new SSH Keys
@@ -351,7 +351,7 @@ unset UNIX_PASSWORD
 clear
 
 # NEXTCLOUD USER
-NCADMIN=$(occ_command user:list | awk '{print $3}')
+NCADMIN=$(nextcloud_occ user:list | awk '{print $3}')
 msg_box "We will now change the username and password for the Web Admin in Nextcloud."
 while :
 do
@@ -393,7 +393,7 @@ done
 if [[ "$NCADMIN" ]]
 then
     print_text_in_color "$ICyan" "Deleting $NCADMIN..."
-    occ_command user:delete "$NCADMIN"
+    nextcloud_occ user:delete "$NCADMIN"
     sleep 2
 fi
 clear
@@ -462,7 +462,7 @@ bash "$SCRIPTS"/temporary-fix.sh
 rm "$SCRIPTS"/temporary-fix.sh
 
 # Cleanup 1
-occ_command maintenance:repair
+nextcloud_occ maintenance:repair
 rm -f "$SCRIPTS/ip.sh"
 rm -f "$SCRIPTS/change_db_pass.sh"
 rm -f "$SCRIPTS/instruction.sh"

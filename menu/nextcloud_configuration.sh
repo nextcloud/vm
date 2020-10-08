@@ -49,7 +49,7 @@ case "$choice" in
         msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour." "$SUBTITLE"
         if yesno_box_yes "Do you want to enable this option?" "$SUBTITLE"
         then
-            occ_command config:system:set share_folder --value="/Shared"
+            nextcloud_occ config:system:set share_folder --value="/Shared"
             msg_box "All new Nextcloud shares from other users will appear in the 'Shared' folder from now on." "$SUBTITLE"
         fi
     ;;&
@@ -66,7 +66,7 @@ case "$choice" in
                 sleep 1
             else
                 # Disable workspaces
-                occ_command config:app:set text workspace_available --value=0
+                nextcloud_occ config:app:set text workspace_available --value=0
                 msg_box "Rich workspaces are now disabled." "$SUBTITLE"
             fi
         fi
@@ -80,7 +80,7 @@ case "$choice" in
             msg_box "This option will disable the with Nextcloud 18 introduced user flows. It will disable the user flow settings. Admin flows will continue to work." "$SUBTITLE"
             if yesno_box_yes "Do you want to disable user flows?" "$SUBTITLE"
             then
-                occ_command config:app:set workflowengine user_scope_disabled --value yes
+                nextcloud_occ config:app:set workflowengine user_scope_disabled --value yes
                 msg_box "User flow settings are now disabled." "$SUBTITLE"
             fi
         else
@@ -95,7 +95,7 @@ case "$choice" in
         if yesno_box_yes "Do you want to enable logrotate for Nextcloud logs?" "$SUBTITLE"
         then
             # Set logrotate (without size restriction)
-            occ_command config:system:set log_rotate_size --value=0
+            nextcloud_occ config:system:set log_rotate_size --value=0
 
             # Configure logrotate to rotate logs for us (max 10, every day a new one)
             cat << NEXTCLOUD_CONF > /etc/logrotate.d/nextcloud.log.conf
