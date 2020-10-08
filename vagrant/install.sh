@@ -4,10 +4,10 @@
 true
 SCRIPT_NAME="Install NcVM with Vagrant"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-install_if_not wget
-check_command wget https://raw.githubusercontent.com/nextcloud/vm/master/nextcloud_install_production.sh
+check_command git clone https://github.com/nextcloud/vm.git
 
-check_command sudo bash nextcloud_install_production.sh --provisioning
+cd vm || exit && print_text_in_color "$IRed" "Could not cd into the 'vm' folder."
 
+sudo bash nextcloud_install_production.sh --provisioning
