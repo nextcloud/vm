@@ -207,7 +207,9 @@ chmod 600 /etc/msmtprc
 # Create logs
 rm -f $VMLOGS/mail_msmtp.log
 sudo touch $VMLOGS/mail_msmtp.log
-sudo chmod 666 $VMLOGS/mail_msmtp.log # Even this doesn't work, strange
+chown msmtp:msmtp $VMLOGS/mail_msmtp.log
+sudo chmod 644 $VMLOGS/mail_msmtp.log
+sed -i "s| /var/log/msmtp | $VMLOGS/mail_msmtp.log |" /etc/apparmor.d/usr.bin.msmtp
 
 # Create aliases
 cat << ALIASES_CONF > /etc/aliases
@@ -236,7 +238,7 @@ $(grep -v password /etc/msmtprc)
 Best regards
 The NcVM team
 https://nextcloudvm.com" \
-| mail -s "Test email from your NcVM" "$RECIPIENT" > $VMLOGS/mail_msmtp.log 2>&1 # But this works
+| mail -s "Test email from your NcVM" "$RECIPIENT"
 then
     # Fail message
     msg_box "It seems like something has failed.
