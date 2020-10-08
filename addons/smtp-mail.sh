@@ -35,7 +35,7 @@ then
     apt autoremove -y
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
-    rm -f $VMLOGS/mail_msmtp.log
+    rm -f /var/log/msmtp
     echo "" > /etc/aliases
     # Show successful uninstall if applicable
     removal_popup
@@ -159,7 +159,7 @@ $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
 
 tls_trust_file  /etc/ssl/certs/ca-certificates.crt
-# logfile         $VMLOGS/mail_msmtp.log
+# logfile         /var/log/msmtp
 
 # Account to send emails
 account         $MAIL_SERVER
@@ -183,7 +183,7 @@ $MSMTP_ENCRYPTION1
 $MSMTP_ENCRYPTION2
 
 tls_trust_file  /etc/ssl/certs/ca-certificates.crt
-logfile         $VMLOGS/mail_msmtp.log
+logfile         /var/log/msmtp
 
 # Account to send emails
 account         $MAIL_SERVER
@@ -205,11 +205,10 @@ fi
 chmod 600 /etc/msmtprc
 
 # Create logs
-rm -f $VMLOGS/mail_msmtp.log
-sudo touch $VMLOGS/mail_msmtp.log
-chown msmtp:msmtp $VMLOGS/mail_msmtp.log
-sudo chmod 644 $VMLOGS/mail_msmtp.log
-sed -i "s| /var/log/msmtp | $VMLOGS/mail_msmtp.log |" /etc/apparmor.d/usr.bin.msmtp
+rm -f /var/log/msmtp
+sudo touch /var/log/msmtp
+chown msmtp:msmtp /var/log/msmtp
+sudo chmod 644 /var/log/msmtp
 
 # Create aliases
 cat << ALIASES_CONF > /etc/aliases
@@ -242,7 +241,7 @@ https://nextcloudvm.com" \
 then
     # Fail message
     msg_box "It seems like something has failed.
-You can look at $VMLOGS/mail_msmtp.log for further logs.
+You can look at /var/log/msmtp for further logs.
 We will now reset everything except the logfile so that you are able to start over again.
 Please run this script once more time if you want to make another try."
     apt-get purge msmtp -y
