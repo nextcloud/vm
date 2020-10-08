@@ -44,7 +44,7 @@ then
     crontab -u root -l | grep -v 'clamav-fullscan.sh'  | crontab -u root -
     if is_app_installed files_antivirus
     then
-        occ_command_no_check app:remove files_antivirus
+        nextcloud_occ_no_check app:remove files_antivirus
     fi
     # Show successful uninstall if applicable
     removal_popup
@@ -98,11 +98,11 @@ check_command systemctl restart clamav-daemon
 install_and_enable_app files_antivirus
 
 # Configure Nextcloud app
-occ_command config:app:set files_antivirus av_mode --value="socket"
-occ_command config:app:set files_antivirus av_socket --value="/var/run/clamav/clamd.ctl"
-occ_command config:app:set files_antivirus av_stream_max_length --value="104857600"
-occ_command config:app:set files_antivirus av_max_file_size --value="-1"
-occ_command config:app:set files_antivirus av_infected_action --value="only_log"
+nextcloud_occ config:app:set files_antivirus av_mode --value="socket"
+nextcloud_occ config:app:set files_antivirus av_socket --value="/var/run/clamav/clamd.ctl"
+nextcloud_occ config:app:set files_antivirus av_stream_max_length --value="104857600"
+nextcloud_occ config:app:set files_antivirus av_max_file_size --value="-1"
+nextcloud_occ config:app:set files_antivirus av_infected_action --value="only_log"
 
 # Inform the user
 msg_box "ClamAV was succesfully installed.

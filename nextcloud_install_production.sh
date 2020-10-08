@@ -391,7 +391,7 @@ bash $SECURE & spinner_loading
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
-occ_command maintenance:install \
+nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
@@ -401,7 +401,7 @@ occ_command maintenance:install \
 --admin-pass="$NCPASS"
 echo
 print_text_in_color "$ICyan" "Nextcloud version:"
-occ_command status
+nextcloud_occ status
 sleep 3
 echo
 
@@ -409,8 +409,8 @@ echo
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Run the updatenotification on a schelude
-occ_command config:system:set upgrade.disable-web --value="true"
-occ_command config:app:set updatenotification notify_groups --value="[]"
+nextcloud_occ config:system:set upgrade.disable-web --value="true"
+nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_script STATIC updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
@@ -429,31 +429,31 @@ sed -i "s|post_max_size =.*|post_max_size = 1100M|g" "$PHP_INI"
 sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" "$PHP_INI"
 
 # Set loggging
-occ_command config:system:set log_type --value=file
-occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
+nextcloud_occ config:system:set log_type --value=file
+nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
 rm -f "$NCDATA/nextcloud.log"
-occ_command config:system:set loglevel --value=2
+nextcloud_occ config:system:set loglevel --value=2
 install_and_enable_app admin_audit
-occ_command config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
-occ_command config:system:set log.condition apps 0 --value admin_audit
+nextcloud_occ config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
+nextcloud_occ config:system:set log.condition apps 0 --value admin_audit
 
 # Set SMTP mail
-occ_command config:system:set mail_smtpmode --value="smtp"
+nextcloud_occ config:system:set mail_smtpmode --value="smtp"
 
 # Forget login/session after 30 minutes
-occ_command config:system:set remember_login_cookie_lifetime --value="1800"
+nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
 
 # Set logrotate (max 10 MB)
-occ_command config:system:set log_rotate_size --value="10485760"
+nextcloud_occ config:system:set log_rotate_size --value="10485760"
 
 # Set trashbin retention obligation (save it in trahbin for 6 months or delete when space is needed)
-occ_command config:system:set trashbin_retention_obligation --value="auto, 180"
+nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 180"
 
 # Set versions retention obligation (save versions for 12 months or delete when space is needed)
-occ_command config:system:set versions_retention_obligation --value="auto, 365"
+nextcloud_occ config:system:set versions_retention_obligation --value="auto, 365"
 
 # Remove simple signup
-occ_command config:system:set simpleSignUpLink.shown --type=bool --value=false
+nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
 
 # Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
@@ -559,15 +559,15 @@ fi
 
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
-yes | occ_command db:convert-filecache-bigint
-occ_command db:add-missing-indices
+yes | nextcloud_occ db:convert-filecache-bigint
+nextcloud_occ db:add-missing-indices
 while [ -z "$CURRENTVERSION" ]
 do
     CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 done
 if [ "${CURRENTVERSION%%.*}" -ge "19" ]
 then
-    occ_command db:add-missing-columns
+    nextcloud_occ db:add-missing-columns
 fi
 
 # Install Figlet
