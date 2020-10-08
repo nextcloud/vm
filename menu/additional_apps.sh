@@ -136,6 +136,7 @@ device=white,black:special=white,black:core=,black:stalelink=red,black:editnorma
                         sed -i "s|^base_color=|base_color=$THEME|" "$user_home"/.config/mc/ini
                     fi
                 done
+                msg_box "The theme was successfully applied. Now check out Midnight Commander by running 'mc' over cli!"
             fi
         fi
     ;;&
