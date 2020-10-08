@@ -44,7 +44,7 @@ if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM
 || does_snapshot_exist "NcVM-snapshot" || [ "$FREE_SPACE" -ge 50 ] )
 then
     SNAPSHOT_EXISTS=1
-    check_command systemctl stop apache2.service
+    check_command systemctl stop docker
     nextcloud_occ maintenance:mode --on
     if does_snapshot_exist "NcVM-startup"
     then
@@ -67,7 +67,7 @@ It should work afterwards again."
         exit 1
     fi
     nextcloud_occ maintenance:mode --off
-    check_command systemctl start apache2.service
+    check_command systemctl start docker
 fi
 
 # Check if /boot is filled more than 90% and exit the script if that's the case since we don't want to end up with a broken system
