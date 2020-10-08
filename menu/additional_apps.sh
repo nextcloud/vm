@@ -97,6 +97,7 @@ You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/
                 else
                     msg_box "It seems like the installation of BPYTOP failed. Please try again." "$SUBTITLE"
                 fi
+            fi
         fi
     ;;&
     *"FullTextSearch"*)
