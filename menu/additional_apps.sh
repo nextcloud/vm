@@ -129,7 +129,7 @@ You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/
 menuhot=red,:menuhotsel=black,red:dfocus=white,black:dhotnormal=white,black:\
 dhotfocus=white,black:executable=,black:directory=white,black:link=white,black:\
 device=white,black:special=white,black:core=,black:stalelink=red,black:editnormal=white,black"
-                for user_home in "$USER_HOMES"
+                for user_home in "${USER_HOMES[@]}"
                 do
                     if [ -f "$user_home"/.config/mc/ini ]
                     then
