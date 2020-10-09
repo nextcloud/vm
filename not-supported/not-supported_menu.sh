@@ -28,6 +28,7 @@ Choose which one you want to execute.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "PLEX Media Server" "(Multimedia server application)" OFF \
+"Remotedesktop" "(Install a remotedesktop based on xrdp)" OFF \
 "SMB-server" "(Create and manage a SMB-server on OS level)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -39,6 +40,10 @@ case "$choice" in
     *"PLEX Media Server"*)
         print_text_in_color "$ICyan" "Downloading the PLEX Media Server script..."
         run_script NOT_SUPPORTED plexmediaserver
+    ;;&
+    *"Remotedesktop"*)
+        print_text_in_color "$ICyan" "Downloading the Remotedesktop script..."
+        run_script NOT_SUPPORTED remotedesktop
     ;;&
     *"SMB-server"*)
         print_text_in_color "$ICyan" "Downloading the SMB Server script..."
