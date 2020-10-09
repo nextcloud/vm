@@ -27,6 +27,8 @@ So please run them on your own risk. Feedback is more than welcome, though and c
 Choose which one you want to execute.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
+"Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
+"PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
 "PLEX Media Server" "(Multimedia server application)" OFF \
 "Remotedesktop" "(Install a remotedesktop based on xrdp)" OFF \
 "SMB-server" "(Create and manage a SMB-server on OS level)" OFF 3>&1 1>&2 2>&3)
@@ -36,6 +38,14 @@ case "$choice" in
         clear
         print_text_in_color "$ICyan" "Downloading the ClamAV script..."
         run_script APP clamav
+    ;;&
+    *"Pi-hole"*)
+        print_text_in_color "$ICyan" "Downloading the Pi-hole script..."
+        run_script NOT_SUPPORTED pi-hole
+    ;;&
+    *"PiVPN"*)
+        print_text_in_color "$ICyan" "Downloading the PiVPN script..."
+        run_script NOT_SUPPORTED pivpn
     ;;&
     *"PLEX Media Server"*)
         print_text_in_color "$ICyan" "Downloading the PLEX Media Server script..."
