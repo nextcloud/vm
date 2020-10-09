@@ -38,7 +38,7 @@ case "$choice" in
     "deSEC")
         PROVIDER="deSEC"
         INSTRUCTIONS="get a DDNS account with password"
-        GUIDE="https://www.os-privacy.de/dyndns-desec-3181/"
+        GUIDE="https://desec.io/#"
         PROTOCOL="dyndns2"
         SERVER="update.dedyn.io"
         USE_SSL="yes"
