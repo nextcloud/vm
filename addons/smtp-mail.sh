@@ -236,7 +236,7 @@ $(grep -v password /etc/msmtprc)
 Best regards
 The NcVM team
 https://nextcloudvm.com" \
-| mail -s "Test email from your NcVM" "$RECIPIENT" > /var/log/msmtp 2>&1
+| mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
 then
     # Fail message
     msg_box "It seems like something has failed.
