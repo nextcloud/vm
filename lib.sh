@@ -1033,8 +1033,8 @@ download_script() {
 
 If it still fails, please report this issue to: $ISSUES."
         fi
-fi
         exit 1
+    fi
 }
 
 # call like: run_script folder_variable name_of_script
