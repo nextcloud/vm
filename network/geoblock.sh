@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+
+# shellcheck disable=2034,2059,1091
+true
+SCRIPT_NAME="Geoblock"
+SCRIPT_EXPLAINER="This script let's you allow access to your websites only from chosen countries."
+# shellcheck source=lib.sh
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
+# Must be root
+root_check
+
+# Show explainer
+explainer_popup
+
+# Check if it is already configured
+if grep -q "^#Geoip-block-start" /etc/apache2/apache2.conf
+then
+    # Ask for removal or reinstallation
+    reinstall_remove_menu
+    # Removal
+    if is_this_installed jq
+    then
+        apt purge jq -y
+    fi
+    if is_this_installed libapache2-mod-geoip
+    then
+        a2dismod geoip
+        apt purge libapache2-mod-geoip -y
+    fi
+    apt autoremove -y
+    sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
+    check_command systemctl restart apache2
+    # Show successful uninstall if applicable
+    removal_popup
+else
+    print_text_in_color "$ICyan" "Installing Geoblock..."
+fi
+
+# Install needed tools
+# Unfortunately jq is needed for this
+install_if_not jq
+install_if_not libapache2-mod-geoip
+
+# Enable apache mod
+check_command a2enmod geoip rewrite
+check_command systemctl restart apache2
+
+# Get country names
+COUNTRY_NAMES=$(jq .[][].name /usr/share/iso-codes/json/iso_3166-1.json | sed 's|^"||;s|"$||')
+mapfile -t COUNTRY_NAMES <<< "$COUNTRY_NAMES"
+
+# Get country codes
+COUNTRY_CODES=$(jq .[][].alpha_2 /usr/share/iso-codes/json/iso_3166-1.json | sed 's|^"||;s|"$||')
+mapfile -t COUNTRY_CODES <<< "$COUNTRY_CODES"
+
+# Check if both arrays match
+if [ "${#COUNTRY_NAMES[@]}" != "${#COUNTRY_CODES[@]}" ]
+then
+    msg_box "Somethings is wrong. The names length is not equal to the codees length.
+Please report this to $ISSUES"
+fi
+
+# Create checklist
+args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
+"Please select all countries that shall have access to your websites.
+All countries that are not selected will not have access to your websites.
+$CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+count=0
+while [ "$count" -lt "${#COUNTRY_NAMES[@]}" ]
+do
+    args+=("${COUNTRY_CODES[$count]}" "${COUNTRY_NAMES[$count]}" OFF)
+    ((count++))
+done
+
+# Let the user choose the countries
+selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
+if [ -z "$selected_options" ]
+then
+    exit 1
+fi
+mapfile -t selected_options <<< "$selected_options"
+
+GEOIP_CONF="#Geoip-block-start - Please don't remove or change this line
+<Location />\n"
+for country in "${selected_options[@]}"
+do
+    GEOIP_CONF+="    SetEnvIf GEOIP_COUNTRY_CODE $country AllowCountry\n"
+done
+GEOIP_CONF+="    Allow from env=AllowCountry
+    Allow from 127.0.0.1/8
+    Allow from 192.168.0.0/16
+    Allow from 172.16.0.0/12
+    Allow from 10.0.0.0/8
+    Order Deny,Allow
+    Deny from all
+</Location>
+#Geoip-block-end - Please don't remove or change this line"
+
+# Write everything to the file
+echo -e "$GEOIP_CONF" >> /etc/apache2/apache2.conf
+
+check_command systemctl restart apache2
+
+msg_box "Geoblock was successfully configured"
+
+exit
