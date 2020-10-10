@@ -39,6 +39,37 @@ fi
 is_process_running apt
 is_process_running dpkg
 
+# Test if snapshot already exists
+if does_snapshot_exist "NcVM-installation"
+then
+    msg_box "Unable to continue because a logical volume already exists.
+
+To run this script again, please remove the volume by running:
+'sudo lvremove /dev/ubuntu-vg/NcVM-installation'"
+    exit 1
+fi
+
+# Create a placeholder volume before modifying anything
+if [ -z "$PROVISIONING" ]
+then
+    if yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
+Please note: this feature will not be used by this script but by other scripts later on.
+For now we will only create a placeholder volume that will be used to let some space for snapshot volumes."
+    then
+        check_free_space
+        if [ "$FREE_SPACE" -ge 50 ]
+        then
+            print_text_in_color "$ICyan" "Creating volume..."
+            sleep 1
+            # Create a placeholder snapshot
+            check_command lvcreate --size 5G --name "NcVM-installation" ubuntu-vg
+        else
+            print_text_in_color "$IRed" "Could not create volume because of insufficient space..."
+            sleep 2
+        fi
+    fi
+fi
+
 # Install lshw if not existing
 if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then

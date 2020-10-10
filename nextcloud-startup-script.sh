@@ -48,6 +48,23 @@ ncdb
 # Check if root
 root_check
 
+# Create a snapshot before modifying anything
+check_free_space
+if does_snapshot_exist "NcVM-installation" || [ "$FREE_SPACE" -ge 50 ]
+then
+    if does_snapshot_exist "NcVM-installation"
+    then
+        check_command lvremove /dev/ubuntu-vg/NcVM-installation -y
+    fi
+    if ! lvcreate --size 5G --snapshot --name "NcVM-startup" /dev/ubuntu-vg/ubuntu-lv
+    then
+        msg_box "The creation of a snapshot failed.
+If you just merged and old one, please reboot your server once more. 
+It should work afterwards again."
+        exit 1
+    fi
+fi
+
 # Check network
 if network_ok
 then
@@ -450,8 +467,8 @@ then
         # Add specific values to PHP-FPM based on 32 GB RAM
         check_command sed -i "s|pm.max_children.*|pm.max_children = 600|g" "$PHP_POOL_DIR"/nextcloud.conf
         check_command sed -i "s|pm.start_servers.*|pm.start_servers = 100|g" "$PHP_POOL_DIR"/nextcloud.conf
-        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 100|g" "$PHP_POOL_DIR"/nextcloud.conf
-        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 400|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 20|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 480|g" "$PHP_POOL_DIR"/nextcloud.conf
         restart_webserver
     # 16 GB RAM
     elif [[ 14 -lt "${mem_available_gb}" ]]
@@ -459,8 +476,8 @@ then
         # Add specific values to PHP-FPM based on 16 GB RAM
         check_command sed -i "s|pm.max_children.*|pm.max_children = 300|g" "$PHP_POOL_DIR"/nextcloud.conf
         check_command sed -i "s|pm.start_servers.*|pm.start_servers = 50|g" "$PHP_POOL_DIR"/nextcloud.conf
-        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 50|g" "$PHP_POOL_DIR"/nextcloud.conf
-        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 200|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.min_spare_servers.*|pm.min_spare_servers = 20|g" "$PHP_POOL_DIR"/nextcloud.conf
+        check_command sed -i "s|pm.max_spare_servers.*|pm.max_spare_servers = 280|g" "$PHP_POOL_DIR"/nextcloud.conf
         restart_webserver
     fi
 else

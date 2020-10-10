@@ -1036,11 +1036,19 @@ download_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
     if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
-        print_text_in_color "$IRed" "{$2} failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|.php|.py' again."
-        print_text_in_color "$ICyan" "If you get this error when \
-running the nextcloud-startup-script then just re-run it with:"
-        print_text_in_color "$ICyan" "'sudo bash \
-$SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$IRed" "{$2} failed to download."
+        sleep 2
+        if ! yesno_box_yes "Are you running the first setup of this server?"
+        then
+            msg_box "Please run sudo bash '$SCRIPTS/update.sh' \
+from your CLI to get the latest scripts from Github, needed for a successful run."
+        else
+            msg_box "If you get this error when running the first setup script, \
+then just re-run it with: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' \
+from your CLI, and all the scripts will be downloaded again.
+
+If it still fails, please report this issue to: $ISSUES."
+        fi
         exit 1
     fi
 }
@@ -1448,6 +1456,41 @@ then
     check_command zpool export "$POOLNAME"
     check_command zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
 fi
+}
+
+# Check for free space on the ubuntu-vg
+check_free_space() {
+    if vgs &>/dev/null
+    then
+        FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+\.[0-9]" | sed 's|\.||')
+    fi
+    if [ -z "$FREE_SPACE" ]
+    then
+        FREE_SPACE=0
+    fi
+}
+
+# Check if snapshotname already exists
+does_snapshot_exist() {
+    local SNAPSHOTS
+    local snapshot
+    if lvs &>/dev/null
+    then
+        SNAPSHOTS="$(lvs | grep ubuntu-vg | awk '{print $1}' | grep -v ubuntu-lv)"
+    fi
+    if [ -z "$SNAPSHOTS" ]
+    then
+        return 1
+    fi
+    mapfile -t SNAPSHOTS <<< "$SNAPSHOTS"
+    for snapshot in "${SNAPSHOTS[@]}"
+    do
+        if [ "$snapshot" = "$1" ]
+        then
+            return 0
+        fi
+    done
+    return 1
 }
 
 check_php() {
