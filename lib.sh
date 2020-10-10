@@ -1023,9 +1023,16 @@ download_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
     if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
-        print_text_in_color "$IRed" "{$2} failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|.php|.py' again."
-        print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
-        print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$IRed" "{$2} failed to download."
+        sleep 2
+        if ! yesno_box_yes "Are you running the first setup of this server?"
+        then
+            msg_box "Please run sudo bash '$SCRIPTS/update.sh' from your CLI to get the latest scripts from Github, needed for a successful run."
+        else
+            msg_box "If you get this error when running the first setup script, then just re-run it with: 'sudo bash $SCRIPTS/nextcloud-startup-script.sh' from your CLI, and all the scripts will be downloaded again.
+
+If it still fails, please report this issue to: $ISSUES."
+        fi
         exit 1
     fi
 }
