@@ -31,6 +31,45 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
+if does_snapshot_exist "NcVM-snapshot-update"
+then
+    msg_box "It seems like the last update was not successful.
+Cannot proceed because you would loose the last snapshot."
+    exit 1
+fi
+
+# Create a snapshot before doing anything else
+check_free_space
+if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
+|| does_snapshot_exist "NcVM-snapshot" || [ "$FREE_SPACE" -ge 50 ] )
+then
+    SNAPSHOT_EXISTS=1
+    check_command systemctl stop docker
+    nextcloud_occ maintenance:mode --on
+    if does_snapshot_exist "NcVM-startup"
+    then
+        check_command lvremove /dev/ubuntu-vg/NcVM-startup -y
+    elif does_snapshot_exist "NcVM-snapshot"
+    then
+        if ! lvremove /dev/ubuntu-vg/NcVM-snapshot -y
+        then
+            msg_box "It seems like the old snapshot could not get removed.
+This should work again after a reboot of your server."
+            exit 1
+        fi
+    fi
+    if ! lvcreate --size 5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
+    then
+        msg_box "The creation of a snapshot failed.
+If you just merged and old one, please reboot your server once more. 
+It should work afterwards again."
+        check_command systemctl start apache2.service
+        exit 1
+    fi
+    nextcloud_occ maintenance:mode --off
+    check_command systemctl start docker
+fi
+
 # Check if /boot is filled more than 90% and exit the script if that's the case since we don't want to end up with a broken system
 if [ -d /boot ]
 then
@@ -546,6 +585,10 @@ then
     print_text_in_color "$IGreen" "All files are backed up."
     nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
+    if [ -n "$SNAPSHOT_EXISTS" ]
+    then
+        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-update
+    fi
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
     check_command tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
@@ -690,6 +733,10 @@ Thank you for using T&M Hansson IT's updater!"
     "Nextcloud is now updated!" \
     "Your Nextcloud is updated to $CURRENTVERSION_after with the update script in the Nextcloud VM."
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update.log
+    if [ -n "$SNAPSHOT_EXISTS" ]
+    then
+        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-update /dev/ubuntu-vg/NcVM-snapshot
+    fi
     exit 0
 else
 msg_box "Latest version is: $NCVERSION. Current version is: $CURRENTVERSION_after.

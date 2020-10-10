@@ -48,6 +48,23 @@ ncdb
 # Check if root
 root_check
 
+# Create a snapshot before modifying anything
+check_free_space
+if does_snapshot_exist "NcVM-installation" || [ "$FREE_SPACE" -ge 50 ]
+then
+    if does_snapshot_exist "NcVM-installation"
+    then
+        check_command lvremove /dev/ubuntu-vg/NcVM-installation -y
+    fi
+    if ! lvcreate --size 5G --snapshot --name "NcVM-startup" /dev/ubuntu-vg/ubuntu-lv
+    then
+        msg_box "The creation of a snapshot failed.
+If you just merged and old one, please reboot your server once more. 
+It should work afterwards again."
+        exit 1
+    fi
+fi
+
 # Check network
 if network_ok
 then

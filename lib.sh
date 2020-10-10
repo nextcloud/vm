@@ -1441,6 +1441,41 @@ then
 fi
 }
 
+# Check for free space on the ubuntu-vg
+check_free_space() {
+    if vgs &>/dev/null
+    then
+        FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+\.[0-9]" | sed 's|\.||')
+    fi
+    if [ -z "$FREE_SPACE" ]
+    then
+        FREE_SPACE=0
+    fi
+}
+
+# Check if snapshotname already exists
+does_snapshot_exist() {
+    local SNAPSHOTS
+    local snapshot
+    if lvs &>/dev/null
+    then
+        SNAPSHOTS="$(lvs | grep ubuntu-vg | awk '{print $1}' | grep -v ubuntu-lv)"
+    fi
+    if [ -z "$SNAPSHOTS" ]
+    then
+        return 1
+    fi
+    mapfile -t SNAPSHOTS <<< "$SNAPSHOTS"
+    for snapshot in "${SNAPSHOTS[@]}"
+    do
+        if [ "$snapshot" = "$1" ]
+        then
+            return 0
+        fi
+    done
+    return 1
+}
+
 check_php() {
 print_text_in_color "$ICyan" "Getting current PHP-version..."
 GETPHP="$(php -v | grep -m 1 PHP | awk '{print $2}' | cut -d '-' -f1)"
