@@ -44,7 +44,11 @@ if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM
 || does_snapshot_exist "NcVM-snapshot" || [ "$FREE_SPACE" -ge 50 ] )
 then
     SNAPSHOT_EXISTS=1
-    check_command systemctl stop docker
+    if is_docker_running
+    then
+        check_command systemctl stop docker
+        DOCKER=1
+    fi
     nextcloud_occ maintenance:mode --on
     if does_snapshot_exist "NcVM-startup"
     then
@@ -53,6 +57,13 @@ then
     then
         if ! lvremove /dev/ubuntu-vg/NcVM-snapshot -y
         then
+            nextcloud_occ maintenance:mode --off
+            if [ -n "$DOCKER" ]
+            then
+                check_command systemctl start docker
+            fi
+            notify_admin_gui "Update failed!" 
+"Could not remove NcVM-snapshot - Please reboot your server $(date + %Y%m%d)"
             msg_box "It seems like the old snapshot could not get removed.
 This should work again after a reboot of your server."
             exit 1
@@ -60,14 +71,23 @@ This should work again after a reboot of your server."
     fi
     if ! lvcreate --size 5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
     then
+        nextcloud_occ maintenance:mode --off
+        if [ -n "$DOCKER" ]
+        then
+            check_command systemctl start docker
+        fi
+        notify_admin_gui "Update failed!" 
+"Could not create NcVM-snapshot - Please reboot your server $(date + %Y%m%d)"
         msg_box "The creation of a snapshot failed.
 If you just merged and old one, please reboot your server once more. 
 It should work afterwards again."
-        check_command systemctl start apache2.service
         exit 1
     fi
     nextcloud_occ maintenance:mode --off
-    check_command systemctl start docker
+    if [ -n "$DOCKER" ]
+    then
+        check_command systemctl start docker
+    fi
 fi
 
 # Check if /boot is filled more than 90% and exit the script if that's the case since we don't want to end up with a broken system
