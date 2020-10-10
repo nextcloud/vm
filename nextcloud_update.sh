@@ -62,7 +62,7 @@ then
             then
                 check_command systemctl start docker
             fi
-            notify_admin_gui "Update failed!" 
+            notify_admin_gui "Update failed!" \
 "Could not remove NcVM-snapshot - Please reboot your server $(date + %Y%m%d)"
             msg_box "It seems like the old snapshot could not get removed.
 This should work again after a reboot of your server."
@@ -76,7 +76,7 @@ This should work again after a reboot of your server."
         then
             check_command systemctl start docker
         fi
-        notify_admin_gui "Update failed!" 
+        notify_admin_gui "Update failed!" \
 "Could not create NcVM-snapshot - Please reboot your server $(date + %Y%m%d)"
         msg_box "The creation of a snapshot failed.
 If you just merged and old one, please reboot your server once more. 
