@@ -1277,7 +1277,7 @@ if does_this_docker_exist "$1" "$2"
 then
     docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
     print_text_in_color "$IGreen" "$2 docker image just got updated!"
-    notify_admin_gui "Docker image just got updated!" "We just updated $2 docker image automatically!"
+    echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
 fi
 }
 
