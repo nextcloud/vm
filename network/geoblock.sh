@@ -23,7 +23,7 @@ root_check
 explainer_popup
 
 # Check if it is already configured
-if grep -q "^#Geoip-block-start" /etc/apache2/apache2.conf
+if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
     # Ask for removal or reinstallation
     reinstall_remove_menu
@@ -146,22 +146,29 @@ then
 fi
 
 GEOIP_CONF="#Geoip-block-start - Please don't remove or change this line
+<IfModule mod_geoip.c>
+  GeoIPEnable On
+  GeoIPDBFile /usr/share/GeoIP/GeoIP.dat
+  GeoIPDBFile /usr/share/GeoIP/GeoIPv6.dat
+</IfModule>
 <Location />\n"
 for continent in "${choice[@]}"
 do
-    GEOIP_CONF+="    SetEnvIf GEOIP_CONTINENT_CODE $continent AllowCountryOrContinent\n"
+    GEOIP_CONF+="  SetEnvIf GEOIP_CONTINENT_CODE    $continent AllowCountryOrContinent\n"
+    GEOIP_CONF+="  SetEnvIf GEOIP_CONTINENT_CODE_V6 $continent AllowCountryOrContinent\n"
 done
 for country in "${selected_options[@]}"
 do
-    GEOIP_CONF+="    SetEnvIf GEOIP_COUNTRY_CODE $country AllowCountryOrContinent\n"
+    GEOIP_CONF+="  SetEnvIf GEOIP_COUNTRY_CODE    $country AllowCountryOrContinent\n"
+    GEOIP_CONF+="  SetEnvIf GEOIP_COUNTRY_CODE_V6 $country AllowCountryOrContinent\n"
 done
-GEOIP_CONF+="    Allow from env=AllowCountryOrContinent
-    Allow from 127.0.0.1/8
-    Allow from 192.168.0.0/16
-    Allow from 172.16.0.0/12
-    Allow from 10.0.0.0/8
-    Order Deny,Allow
-    Deny from all
+GEOIP_CONF+="  Allow from env=AllowCountryOrContinent
+  Allow from 127.0.0.1/8
+  Allow from 192.168.0.0/16
+  Allow from 172.16.0.0/12
+  Allow from 10.0.0.0/8
+  Order Deny,Allow
+  Deny from all
 </Location>
 #Geoip-block-end - Please don't remove or change this line"
 
