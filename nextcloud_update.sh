@@ -583,7 +583,7 @@ then
     print_text_in_color "$ICyan" "$BACKUP/apps/ exists"
     echo 
     print_text_in_color "$IGreen" "All files are backed up."
-    notify_admin_gui \
+    send_mail \
     "Nextcloud update started!" \
     "Please don't shutdown or reboot your server during the update! $(date +%T)"
     nextcloud_occ maintenance:mode --on
