@@ -175,6 +175,28 @@ install_remove_packet() {
 }
 
 case "$choice" in
+    *"XRDP"*)
+        SUBTITLE="XRDP"
+        msg_box "This option will uninstall XRDP and all other desktop applications from this list \
+as well as the gnome desktop." "$SUBTITLE"
+        if yesno_box_no "Do you want to do this?" "$SUBTITLE"
+        then
+            APPS=(firefox gedit makemkv-oss makemkv-bin nautilus sound-juicer vlc \
+gnome-shell-extension-dash-to-panel gnome-session xrdp)
+            for app in "${APPS[@]}"
+            do
+                if is_this_installed "$app"
+                then
+                    apt purge "$app" -y
+                fi
+            done
+            apt autoremove -y
+            add-apt-repository --remove ppa:heyarje/makemkv-beta -y
+            apt update -q4 & spinner_loading
+            msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
+            exit
+        fi
+    ;;&
     *"Firefox"*)
         install_remove_packet firefox Firefox
     ;;&
@@ -217,27 +239,6 @@ We will need to add a 3rd party repository to install it which can set your serv
     ;;&
     *"VLC"*)
         install_remove_packet vlc VLC
-    ;;&
-    *"XRDP"*)
-        SUBTITLE="XRDP"
-        msg_box "This option will uninstall XRDP and all other desktop applications from this list \
-as well as the gnome desktop." "$SUBTITLE"
-        if yesno_box_no "Do you want to do this?" "$SUBTITLE"
-        then
-            APPS=(firefox gedit makemkv-oss makemkv-bin nautilus sound-juicer vlc \
-    gnome-shell-extension-dash-to-panel gnome-session xrdp)
-            for app in "${APPS[@]}"
-            do
-                if is_this_installed "$app"
-                then
-                    apt purge "$app" -y
-                fi
-            done
-            apt autoremove -y
-            add-apt-repository --remove ppa:heyarje/makemkv-beta -y
-            apt update -q4 & spinner_loading
-            msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
-        fi
     ;;&
     *)
     ;;
