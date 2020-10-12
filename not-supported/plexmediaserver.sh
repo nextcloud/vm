@@ -26,6 +26,7 @@ msg_box "$SCRIPT_EXPLAINER"
 # Check if already installed
 if ! is_this_installed plexmediaserver
 then
+    # Ask for installing
     install_popup "$SCRIPT_NAME"
 else
     msg_box "It seems like PLEX Media Server is already installed.

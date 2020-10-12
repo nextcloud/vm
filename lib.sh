@@ -280,40 +280,54 @@ input_box_flow() {
 }
 
 install_popup() {
-    local MESSAGE
-    if [ -z "$2" ]
-    then
-        MESSAGE="Installing $1..."
-    else
-        MESSAGE="$2 $1..."
-    fi
     if yesno_box_yes "Do you want to install $1?"
     then
-        print_text_in_color "$ICyan" "$MESSAGE"
+        print_text_in_color "$ICyan" "Installing $1..."
     else
-        exit 1
+        if [ -z "$2" ] || [ "$2" = "exit" ]
+        then
+            exit 1
+        elif [ "$2" = "sleep" ]
+        then
+            sleep 1
+        else
+            exit 1
+        fi
     fi
 }
 
 reinstall_remove_menu() {
     choice=$(whiptail --title "$TITLE" --menu \
-"It seems like $SCRIPT_NAME is already installed.\nChoose what you want to do.
+"It seems like $1 is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall $SCRIPT_NAME" "" \
-    "Uninstall $SCRIPT_NAME" "" 3>&1 1>&2 2>&3)
-    if [ -z "$choice" ]
+    "Reinstall" "$1" \
+    "Uninstall" "$1" 3>&1 1>&2 2>&3)
+    if [ "$choice" = "Reinstall" ]
     then
+        print_text_in_color "$ICyan" "Reinstalling $1..."
+    elif [ "$choice" = "Uninstall" ]
+    then
+        print_text_in_color "$ICyan" "Uninstalling $1..."
+    else
         exit 1
     fi
 }
 
 removal_popup() {
-    if [ "$choice" = "Uninstall $SCRIPT_NAME" ]
+    if [ "$choice" = "Uninstall" ]
     then
-        msg_box "$SCRIPT_NAME was successfully uninstalled."
-        exit
+        msg_box "$1 was successfully uninstalled."
+        if [ -z "$2" ] || [ "$2" = "exit" ]
+        then
+            exit 1
+        elif [ "$2" = "sleep" ]
+        then
+            sleep 1
+        else
+            exit 1
+        fi
     else
-        print_text_in_color "$ICyan" "Reinstalling $SCRIPT_NAME..."
+        print_text_in_color "$ICyan" "Reinstalling $1..."
     fi
 }
 

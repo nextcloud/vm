@@ -23,13 +23,13 @@ root_check
 msg_box "$SCRIPT_EXPLAINER"
 
 # Check if Smtp Relay was already configured
-print_text_in_color "$ICyan" "Checking if an SMTP Relay is already installed and/or configured..."
 if ! [ -f /etc/msmtprc ]
 then
+    # Ask for installing
     install_popup "$SCRIPT_NAME"
 else
     # Ask for removal or reinstallation
-    reinstall_remove_menu
+    reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     apt-get purge msmtp -y
     apt-get purge msmtp-mta -y
@@ -40,7 +40,7 @@ else
     rm -f /var/log/msmtp
     echo "" > /etc/aliases
     # Show successful uninstall if applicable
-    removal_popup
+    removal_popup "$SCRIPT_NAME"
 fi
 
 # Install needed tools

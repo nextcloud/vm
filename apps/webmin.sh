@@ -25,18 +25,18 @@ root_check
 msg_box "$SCRIPT_EXPLAINER"
 
 # Check if webmin is already installed
-print_text_in_color "$ICyan" "Checking if Webmin is already installed..."
 if ! is_this_installed webmin
 then
+    # Ask for installing
     install_popup "$SCRIPT_NAME"
 else
     # Ask for removal or reinstallation
-    reinstall_remove_menu
+    reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     check_command apt-get purge webmin -y
     rm -rf /etc/apt/sources.list.d/webmin.list
     # Show successful uninstall if applicable
-    removal_popup
+    removal_popup "$SCRIPT_NAME"
 fi
 
 # Install packages for Webmin

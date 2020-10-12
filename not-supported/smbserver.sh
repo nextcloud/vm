@@ -44,6 +44,13 @@ fi
 # Show explainer
 msg_box "$SCRIPT_EXPLAINER"
 
+# Show install_popup
+if ! is_this_installed samba
+then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+fi
+
 # Find mounts
 DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 2 -type d | grep -v "/mnt/ncdata")
 mapfile -t DIRECTORIES <<< "$DIRECTORIES"
@@ -58,12 +65,6 @@ if [ -z "${MOUNTS[*]}" ]
 then
     msg_box "No usable drive found. You have to mount a new drive in /mnt."
     exit 1
-fi
-
-# Show install_popup
-if ! is_this_installed samba
-then
-    install_popup "$SCRIPT_NAME"
 fi
 
 # Install all needed tools

@@ -27,6 +27,7 @@ msg_box "$SCRIPT_EXPLAINER"
 # Check if already installed
 if ! pivpn &>/dev/null
 then
+    # Ask for installing
     install_popup "$SCRIPT_NAME"
 else
     # Choose to uninstall
