@@ -23,8 +23,10 @@ msg_box "$SCRIPT_EXPLAINER"
 
 # Check if adminer is already installed
 print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
-if is_this_installed adminer
+if ! is_this_installed adminer
 then
+    install_popup "$SCRIPT_NAME"
+else
     # Ask for removal or reinstallation
     reinstall_remove_menu
     # Removal
@@ -36,8 +38,6 @@ then
     restart_webserver
     # Show successful uninstall if applicable
     removal_popup
-else
-    print_text_in_color "$ICyan" "Installing and securing Adminer..."
 fi
 
 # Check that the script can see the external IP (apache fails otherwise)

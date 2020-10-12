@@ -24,8 +24,10 @@ msg_box "$SCRIPT_EXPLAINER"
 
 # Check if Smtp Relay was already configured
 print_text_in_color "$ICyan" "Checking if an SMTP Relay is already installed and/or configured..."
-if [ -f /etc/msmtprc ]
+if ! [ -f /etc/msmtprc ]
 then
+    install_popup "$SCRIPT_NAME"
+else
     # Ask for removal or reinstallation
     reinstall_remove_menu
     # Removal
@@ -39,8 +41,6 @@ then
     echo "" > /etc/aliases
     # Show successful uninstall if applicable
     removal_popup
-else
-    print_text_in_color "$ICyan" "Installing SMTP Relay..."
 fi
 
 # Install needed tools

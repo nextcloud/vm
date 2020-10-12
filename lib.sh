@@ -279,6 +279,22 @@ input_box_flow() {
     echo "$RESULT"
 }
 
+install_popup() {
+    local MESSAGE
+    if [ -z "$2" ]
+    then
+        MESSAGE="Installing $1..."
+    else
+        MESSAGE="$2 $1..."
+    fi
+    if yesno_box_yes "Do you want to install $1?"
+    then
+        print_text_in_color "$ICyan" "$MESSAGE"
+    else
+        exit 1
+    fi
+}
+
 reinstall_remove_menu() {
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like $SCRIPT_NAME is already installed.\nChoose what you want to do.

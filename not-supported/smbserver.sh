@@ -60,6 +60,12 @@ then
     exit 1
 fi
 
+# Show install_popup
+if ! is_this_installed samba
+then
+    install_popup "$SCRIPT_NAME"
+fi
+
 # Install all needed tools
 install_if_not samba
 install_if_not members

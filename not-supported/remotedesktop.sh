@@ -26,6 +26,8 @@ msg_box "$SCRIPT_EXPLAINER"
 # Check if xrdp is installed
 if ! is_this_installed xrdp
 then
+    install_popup "$SCRIPT_NAME"
+    
     # Don't run this script as root user, because we will need the account
     if [ -z "$UNIXUSER" ]
     then

@@ -29,8 +29,10 @@ cpu_check 2 "ClamAV"
 
 # Check if webmin is already installed
 print_text_in_color "$ICyan" "Checking if ClamAV is already installed..."
-if is_this_installed clamav-daemon || is_this_installed clamav || is_this_installed clamav-freshclam
+if ! is_this_installed clamav-daemon && ! is_this_installed clamav && ! is_this_installed clamav-freshclam
 then
+    install_popup "$SCRIPT_NAME"
+else
     # Ask for removal or reinstallation
     reinstall_remove_menu
     # Removal
@@ -48,8 +50,6 @@ then
     fi
     # Show successful uninstall if applicable
     removal_popup
-else
-    print_text_in_color "$ICyan" "Installing ClamAV..."
 fi
 
 # Install needed tools
