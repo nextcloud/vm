@@ -6,6 +6,8 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="SMB Mount"
+SCRIPT_EXPLAINER="This script automates mounting SMB-shares locally in your \
+system and adds them automatically as external storage to your Nextcloud."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -34,11 +36,14 @@ then
     exit
 fi
 
-# Inform the user
-msg_box "This script automates mounting SMB-shares locally in your system and adds them automatically as external storage to your Nextcloud."
-if ! yesno_box_yes "Do you want to proceed with this script?"
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
+
+# Show install_popup
+if ! is_this_installed cifs-utils
 then
-    exit 1
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
 fi
 
 # Needed for DFS-shares to work
