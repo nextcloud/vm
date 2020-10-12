@@ -22,7 +22,7 @@ debug_mode
 root_check
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
 
 # Check if already installed
 if pihole &>/dev/null

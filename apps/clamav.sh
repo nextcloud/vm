@@ -21,7 +21,7 @@ debug_mode
 root_check
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
 
 # Needs 1 GB alone
 ram_check 3 "ClamAV"

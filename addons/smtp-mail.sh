@@ -20,7 +20,7 @@ debug_mode
 root_check
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
 
 # Check if Smtp Relay was already configured
 print_text_in_color "$ICyan" "Checking if an SMTP Relay is already installed and/or configured..."

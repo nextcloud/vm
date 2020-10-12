@@ -279,14 +279,6 @@ input_box_flow() {
     echo "$RESULT"
 }
 
-explainer_popup() {
-    msg_box "$SCRIPT_EXPLAINER"
-    if ! yesno_box_yes "Do you want to proceed with this script?"
-    then
-        exit 1
-    fi
-}
-
 reinstall_remove_menu() {
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like $SCRIPT_NAME is already installed.\nChoose what you want to do.
