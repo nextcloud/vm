@@ -290,6 +290,9 @@ install_popup() {
         elif [ "$2" = "sleep" ]
         then
             sleep 1
+        elif [ "$2" = "return" ]
+        then
+            return 1
         else
             exit 1
         fi
@@ -297,24 +300,36 @@ install_popup() {
 }
 
 reinstall_remove_menu() {
-    choice=$(whiptail --title "$TITLE" --menu \
+    REINSTALL_REMOVE=$(whiptail --title "$TITLE" --menu \
 "It seems like $1 is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     "Reinstall" "$1" \
     "Uninstall" "$1" 3>&1 1>&2 2>&3)
-    if [ "$choice" = "Reinstall" ]
+    if [ "$REINSTALL_REMOVE" = "Reinstall" ]
     then
         print_text_in_color "$ICyan" "Reinstalling $1..."
-    elif [ "$choice" = "Uninstall" ]
+    elif [ "$REINSTALL_REMOVE" = "Uninstall" ]
     then
         print_text_in_color "$ICyan" "Uninstalling $1..."
-    else
-        exit 1
+    elif [ -z "$REINSTALL_REMOVE" ]
+    then
+        if [ -z "$2" ] || [ "$2" = "exit" ]
+        then
+            exit 1
+        elif [ "$2" = "sleep" ]
+        then
+            sleep 1
+        elif [ "$2" = "return" ]
+        then
+            return 1
+        else
+            exit 1
+        fi
     fi
 }
 
 removal_popup() {
-    if [ "$choice" = "Uninstall" ]
+    if [ "$REINSTALL_REMOVE" = "Uninstall" ]
     then
         msg_box "$1 was successfully uninstalled."
         if [ -z "$2" ] || [ "$2" = "exit" ]
@@ -323,11 +338,19 @@ removal_popup() {
         elif [ "$2" = "sleep" ]
         then
             sleep 1
+        elif [ "$2" = "return" ]
+        then
+            return 1
         else
             exit 1
         fi
-    else
+    elif [ "$REINSTALL_REMOVE" = "Reinstall" ]
+    then
         print_text_in_color "$ICyan" "Reinstalling $1..."
+    else
+        msg_box "Didn't expect that REINSTALL_REMOVE is different.
+Please report this to $ISSUES"
+        exit 1
     fi
 }
 
