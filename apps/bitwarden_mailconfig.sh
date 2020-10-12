@@ -5,6 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Bitwarden Mail Configuration"
+SCRIPT_EXPLAINER="This script lets you configure your mailserver settings for Bitwarden."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -37,7 +38,7 @@ else
     exit 1
 fi
 
-msg_box "This script lets you configure your mailserver settings for Bitwarden."
+msg_box "$SCRIPT_EXPLAINER"
 if ! yesno_box_yes "Do you want to continue?"
 then
     exit
