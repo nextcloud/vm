@@ -36,27 +36,22 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     *"Bitwarden  "*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden script..."
         run_script APP tmbitwarden
     ;;&
     *"Bitwarden Registration"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden Registration script..."
         run_script APP bitwarden_registration
     ;;&
     *"Bitwarden Mail-Configuration"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden Mailconfig script..."
         run_script APP bitwarden_mailconfig
     ;;&
     *"Bitwarden-RS  "*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden-RS script..."
         run_script APP bitwarden-rs
     ;;&
     *"Bitwarden-RS Admin-panel"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden-RS Admin-panel script..."
         run_script APP bitwarden-rs_admin-panel
     ;;&

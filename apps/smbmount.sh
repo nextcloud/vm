@@ -577,18 +577,15 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     *"Share"*)
-        clear
         # Enter SMB-server and Share-name
         SERVER_SHARE_NAME=$(input_box_flow "Please enter the server and Share-name like this:\n//Server/Share\nor\n//IP-address/Share" "$SUBTITLE")
         SERVER_SHARE_NAME=${SERVER_SHARE_NAME// /\\040}
     ;;&
     *"Username"*)
-        clear
         # Enter the SMB-user
         SMB_USER=$(input_box_flow "Please enter the username of the SMB-user" "$SUBTITLE")
     ;;&
     *"Password"*)
-        clear
         # Enter the password of the SMB-user
         SMB_PASSWORD=$(input_box_flow "Please enter the password of the SMB-user $SMB_USER." "$SUBTITLE")
     ;;&
