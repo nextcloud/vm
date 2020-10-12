@@ -58,7 +58,7 @@ If you have already installed a desktop environment, you will not need to instal
     adduser xrdp ssl-cert
 
     # Make sure that you don't get prompted with a password request after login
-    cat << DESKTOP_CONF >> /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
+    cat << DESKTOP_CONF > /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
 [Allow Package Management all Users]
 Identity=unix-user:*
 Action=org.freedesktop.packagekit.system-sources-refresh
@@ -193,6 +193,7 @@ gnome-shell-extension-dash-to-panel gnome-session xrdp)
             apt autoremove -y
             add-apt-repository --remove ppa:heyarje/makemkv-beta -y
             apt update -q4 & spinner_loading
+            rm -f /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
             msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
             exit
         fi
