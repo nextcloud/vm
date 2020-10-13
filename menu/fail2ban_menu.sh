@@ -33,12 +33,10 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     *"Install-Fail2ban"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Fail2ban install script..."
         run_script APP fail2ban
     ;;&
     *"Fail2ban-Statuscheck"*)
-        clear
         SUBTITLE="Fail2ban Statuscheck"
         if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
         then
