@@ -53,4 +53,3 @@ else
     fi
     msg_box "The apt-mirror was successfully changed."
 fi
-clear

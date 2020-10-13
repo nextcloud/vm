@@ -298,7 +298,6 @@ msg_box "PLEASE NOTE:
 [#] You can also ask for help here:
     https://help.nextcloud.com/c/support/appliances-docker-snappy-vm
     https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
-clear
 
 msg_box "PLEASE NOTE:
 
@@ -308,14 +307,12 @@ If you feel uncertain about the options during the setup, just choose the defaul
 When the setup is done, the server will automatically reboot.
 
 Please report any issues to: $ISSUES"
-clear
 
 # Change timezone in PHP
 sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 
 # Change timezone for logging
 nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
-clear
 
 # Pretty URLs
 print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
@@ -334,7 +331,6 @@ dpkg-reconfigure openssh-server
 print_text_in_color "$ICyan" "Generating new PostgreSQL password..."
 check_command bash "$SCRIPTS/change_db_pass.sh"
 sleep 3
-clear
 
 # Server configurations
 bash $SCRIPTS/server_configuration.sh
@@ -345,7 +341,6 @@ bash $SCRIPTS/nextcloud_configuration.sh
 # Install apps
 bash $SCRIPTS/additional_apps.sh
 
-clear
 ### Change passwords
 # CLI USER
 msg_box "For better security, we will now change the password for the CLI user in Ubuntu."
@@ -365,7 +360,6 @@ then
     msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD\n\nThis is used when you login to the Ubuntu Server console."
 fi
 unset UNIX_PASSWORD
-clear
 
 # NEXTCLOUD USER
 NCADMIN=$(nextcloud_occ user:list | awk '{print $3}')
@@ -413,7 +407,6 @@ then
     nextcloud_occ user:delete "$NCADMIN"
     sleep 2
 fi
-clear
 
 # We need to unset the cached admin-user since we have changed its name
 unset NC_ADMIN_USER

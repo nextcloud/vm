@@ -36,7 +36,6 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     "Yes")
-        clear
         print_text_in_color "$ICyan" "Stopping bitwarden_rs..."
         docker stop bitwarden_rs
         if grep -q '"admin_token":' /home/bitwarden_rs/config.json
@@ -50,7 +49,6 @@ case "$choice" in
         msg_box "The admin-panel for Bitwarden_rs is now disabled."
     ;;
     "No")
-        clear
         print_text_in_color "$ICyan" "Stopping bitwarden_rs..."
         docker stop bitwarden_rs
         ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
