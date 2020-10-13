@@ -35,7 +35,6 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     *"ClamAV"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the ClamAV script..."
         run_script APP clamav
     ;;&

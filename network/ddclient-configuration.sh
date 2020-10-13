@@ -94,8 +94,6 @@ then
     exit
 fi
 
-clear
-
 # needed for cloudflare to work
 if [ "$PROVIDER" = "Cloudflare" ]
 then

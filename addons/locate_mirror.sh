@@ -56,4 +56,3 @@ This script can only handle one keymap at the time.\nThe default mirror ($REPO) 
     fi
     msg_box "The apt-mirror was successfully changed."
 fi
-clear

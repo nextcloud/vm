@@ -47,22 +47,18 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     *"Static IP"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Static IP script..."
         run_script NETWORK static_ip
     ;;&
     *"Security"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Security script..."
         run_script ADDONS security
     ;;&
     *"DDclient Configuration"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the DDclient Configuration script..."
         run_script NETWORK ddclient-configuration
     ;;&
     *"Activate TLS"*)
-        clear
         SUBTITLE="Activate TLS"
         msg_box "The following script will install a trusted
 TLS certificate through Let's Encrypt.
@@ -87,20 +83,16 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
         
         # Just make sure it is gone
         rm -f "$SCRIPTS/test-new-config.sh"
-        clear
     ;;&
     *"Automatic updates"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Automatic Updates script..."
         run_script ADDONS automatic_updates
     ;;&
     *"SMTP Mail"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the SMTP Mail script..."
         run_script ADDONS smtp-mail
     ;;&
     *"Disk Check"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Disk Check script..."
         run_script DISK smartctl
     ;;&
