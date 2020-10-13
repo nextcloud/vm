@@ -27,22 +27,18 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     "Collabora (Docker)")
-        clear
         print_text_in_color "$ICyan" "Downloading the Collabora (Docker) script..."
         run_script APP collabora_docker
     ;;
     "Collabora (Integrated)")
-        clear
         print_text_in_color "$ICyan" "Downloading the Collabora (Integrated) script..."
         run_script APP collabora_integrated
     ;;
     "OnlyOffice (Docker)")
-        clear
         print_text_in_color "$ICyan" "Downloading the OnlyOffice (Docker) script..."
         run_script APP onlyoffice_docker
     ;;
     "OnlyOffice (Integrated)")
-        clear
         print_text_in_color "$ICyan" "Downloading the OnlyOffice (Integrated) script..."
         run_script APP onlyoffice_integrated
     ;;
