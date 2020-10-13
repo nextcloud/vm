@@ -348,8 +348,8 @@ removal_popup() {
     then
         print_text_in_color "$ICyan" "Reinstalling $1..."
     else
-        msg_box "Didn't expect that REINSTALL_REMOVE is different.
-Please report this to $ISSUES"
+        msg_box "It seems like neither Uninstall nor Reinstall is chosen, \
+something is wrong here. Please report this to $ISSUES"
         exit 1
     fi
 }
