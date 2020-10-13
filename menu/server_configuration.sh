@@ -41,6 +41,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
 "DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
+"Geoblock" "(Restrict access to your websites to certain countries)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "SMTP Mail" "(Enable beeing notified by mail from your server)" "$STARTUP_SWITCH" \
 "Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF 3>&1 1>&2 2>&3)
@@ -83,6 +84,11 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
         
         # Just make sure it is gone
         rm -f "$SCRIPTS/test-new-config.sh"
+    ;;&
+    *"Geoblock")
+        clear
+        print_text_in_color "$ICyan" "Downloading the Geoblock script..."
+        run_script NETWORK geoblock 
     ;;&
     *"Automatic updates"*)
         print_text_in_color "$ICyan" "Downloading the Automatic Updates script..."
