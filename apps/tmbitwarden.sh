@@ -48,9 +48,9 @@ print_text_in_color "$ICyan" "Installing Bitwarden password manager..."
 msg_box "Bitwarden is a password manager that is seperate from Nextcloud, \
 though we provide this service because it's self hosted and secure.
 
-To be able to use Bitwarden, you need a seperate subdomain. \
+To be able to use Bitwarden, you need a seperate subdomain.
 Please create a DNS record and point it to this server, e.g: bitwarden.yourdomain.com.
-After Bitwarden is setup, we will automatically generate a TLS cert with Let's Enrypt. \
+After Bitwarden is setup, we will automatically generate a TLS cert with Let's Enrypt.
 There's no need to get your own prior to this setup, nor during the Bitwarden setup.
 
 The script is based on this documentation: https://help.bitwarden.com/article/install-on-premise/
@@ -59,7 +59,7 @@ It's a good idea to read that before you start this script.
 Please also report any issues regarding this script setup to $ISSUES"
 
 msg_box "The necessary preparations to run expose Bitwarden to the internet are:
-1. Please open port 443 and 80 and point to this server. \
+1. Please open port 443 and 80 and point to this server.
 (You will be asked if you want to use UPNP to open those ports automatically in the next step.)
 2. Please create a DNS record for your subdomain and point that to this server.
 3. Raise the amount of RAM to this server to at least 4 GB."
@@ -159,7 +159,7 @@ check_command systemctl daemon-reload
 # Check if all ssl settings were entered correctly
 if grep ^url "$BITWARDEN_HOME"/bwdata/config.yml | grep -q https || grep ^url "$BITWARDEN_HOME"/bwdata/config.yml | grep -q localhost
 then
-    msg_box "It seems like some of the settings you entered are wrong. \
+    msg_box "It seems like some of the settings you entered are wrong.
 We will now remove Bitwarden so that you can start over with the installation."
     check_command systemctl stop bitwarden
     docker volume prune -f
@@ -196,8 +196,8 @@ edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
 directly to this servers IP. A full exstensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UNNP enabled in your firewall/router. \
-You will be offered to use UNNP in the next step.
+This can be done automatically if you have UPNP enabled in your firewall/router.
+You will be offered to use UPNP in the next step.
 
 PLEASE NOTE:
 Using other ports than the default 80 and 443 is not supported, \
