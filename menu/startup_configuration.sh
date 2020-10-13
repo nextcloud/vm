@@ -60,14 +60,12 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     *"Keyboard Layout"*)
-        clear
         SUBTITLE="Keyboard Layout"
         msg_box "Current keyboard layout is $KEYBOARD_LAYOUT." "$SUBTITLE"
         if ! yesno_box_yes "Do you want to change keyboard layout?" "$SUBTITLE"
         then
             print_text_in_color "$ICyan" "Not changing keyboard layout..."
             sleep 1
-            clear
         else
             # Change layout
             dpkg-reconfigure keyboard-configuration
@@ -82,14 +80,12 @@ case "$choice" in
         fi
     ;;&
     *"Timezone"*)
-        clear
         SUBTITLE="Timezone"
         msg_box "Current timezone is $(cat /etc/timezone)" "$SUBTITLE"
         if ! yesno_box_yes "Do you want to change the timezone?" "$SUBTITLE"
         then
             print_text_in_color "$ICyan" "Not changing timezone..."
             sleep 1
-            clear
         else
             if dpkg-reconfigure tzdata
             then
@@ -101,21 +97,18 @@ case "$choice" in
 
                     # Change timezone for logging
                     nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
-                    clear
                     msg_box "The timezone was changed successfully." "$SUBTITLE"
                 fi
             fi
         fi
     ;;&
     *"Locate Mirror"*)
-        clear
         SUBTITLE="apt-mirror"
         msg_box "Current apt-mirror is $REPO" "$SUBTITLE"
         if ! yesno_box_yes "Do you want to change the apt-mirror?" "$SUBTITLE"
         then
             print_text_in_color "$ICyan" "Not changing the apt-mirror..."
             sleep 1
-            clear
         else
            print_text_in_color "$ICyan" "Downloading the Locate Mirror script..."
            run_script ADDONS locate_mirror

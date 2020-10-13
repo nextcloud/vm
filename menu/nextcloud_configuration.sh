@@ -44,7 +44,6 @@ case "$choice" in
         run_script STATIC cookielifetime
     ;;&
     *"Share-folder"*)
-        clear
         SUBTITLE="Share-folder"
         msg_box "This option will make all Nextcloud shares from other users appear in a folder named 'Shared' in the Nextcloud GUI.\n\nIf you don't enable this option, all shares will appear directly in the Nextcloud GUI root folder, which is the default behaviour." "$SUBTITLE"
         if yesno_box_yes "Do you want to enable this option?" "$SUBTITLE"
@@ -54,7 +53,6 @@ case "$choice" in
         fi
     ;;&
     *"Disable workspaces"*)
-        clear
         SUBTITLE="Disable workspaces"
         msg_box "This option will will disable a feature named 'rich workspaces'. It will disable the top notes in GUI." "$SUBTITLE"
         if yesno_box_yes "Do you want to disable rich workspaces?" "$SUBTITLE"
@@ -72,7 +70,6 @@ case "$choice" in
         fi
     ;;&
     *"Disable user flows"*)
-        clear
         SUBTITLE="Disable user flows"
         # Greater than 18.0.3 is 18.0.4 which is required
         if version_gt "$CURRENTVERSION" "18.0.3"
@@ -89,7 +86,6 @@ case "$choice" in
         fi
     ;;&
     *"Enable logrotate"*)
-        clear
         SUBTITLE="Enable logrotate"
         msg_box "This option enables logrotate for Nextcloud logs to keep all logs for 10 days" "$SUBTITLE"
         if yesno_box_yes "Do you want to enable logrotate for Nextcloud logs?" "$SUBTITLE"

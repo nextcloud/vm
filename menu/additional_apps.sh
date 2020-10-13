@@ -45,32 +45,26 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     *"Documentserver"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Documentserver Menu..."
         run_script MENU documentserver
     ;;&
     *"Bitwarden"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Bitwarden Menu..."
         run_script MENU bitwarden_menu
     ;;&
     *"Fail2ban  "*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Fail2ban Menu..."
         run_script MENU fail2ban_menu
     ;;&
     *"Adminer"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Adminer script..."
         run_script APP adminer
     ;;&
     *"Netdata"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Netdata script..."
         run_script APP netdata
     ;;&
     *"BPYTOP"*)
-        clear
         SUBTITLE="BPYTOP"
         msg_box "BPYTOP is an amazing alternative to ressource-monitor software like htop." "$SUBTITLE"
         install_if_not snapd
@@ -102,7 +96,6 @@ You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/
         fi
     ;;&
     *"Midnight Commander"*)
-        clear
         SUBTITLE="Midnight Commander"
         msg_box "Midnight Commander is a file manager for the command line." "$SUBTITLE"
         if is_this_installed mc
@@ -141,17 +134,14 @@ device=white,black:special=white,black:core=,black:stalelink=red,black:editnorma
         fi
     ;;&
     *"FullTextSearch"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the FullTextSearch script..."
         run_script APP fulltextsearch
     ;;&
     *"PreviewGenerator"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the PreviewGenerator script..."
         run_script APP previewgenerator
     ;;&
     *"LDAP"*)
-        clear
         SUBTITLE="LDAP"
         print_text_in_color "$ICyan" "Installing LDAP..."
         if install_and_enable_app user_ldap
@@ -162,17 +152,14 @@ device=white,black:special=white,black:core=,black:stalelink=red,black:editnorma
         fi
     ;;&
     *"Talk"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Talk Menu..."
         run_script MENU talk_menu
     ;;&
     *"Webmin"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Webmin script..."
         run_script APP webmin
     ;;&
     *"SMB-mount"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the SMB-mount script..."
         run_script APP smbmount
     ;;&
