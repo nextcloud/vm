@@ -33,12 +33,10 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     *"Talk "*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Talk script..."
         run_script APP talk
     ;;&
     *"Talk-Signaling"*)
-        clear
         print_text_in_color "$ICyan" "Downloading the Talk Signaling script..."
         run_script APP talk_signaling
     ;;&

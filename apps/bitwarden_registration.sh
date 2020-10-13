@@ -46,7 +46,6 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     "Yes")
-        clear
         print_text_in_color "$ICyan" "Disabling Bitwarden User Regitration..."
         # Disable
         if [ -f /root/bwdata/env/global.override.env ]
@@ -71,7 +70,6 @@ case "$choice" in
         fi
     ;;
     "No")
-        clear
         print_text_in_color "$ICyan" "Enabling Bitwarden User Registration..."
         # Enable
         if [ -f /root/bwdata/env/global.override.env ]
