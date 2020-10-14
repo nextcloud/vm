@@ -24,8 +24,8 @@ then
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'Netdata' is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall Netdata" "" \
-    "Uninstall Netdata" "" 3>&1 1>&2 2>&3)
+"Reinstall Netdata" "" \
+"Uninstall Netdata" "" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Uninstall Netdata")
@@ -96,7 +96,7 @@ any_key "Please check information above and press any key to continue..."
 # Installation done?
 if [ -d /etc/netdata ]
 then
-msg_box "Netdata is now installed and can be accessed from this address:
+    msg_box "Netdata is now installed and can be accessed from this address:
 
 http://$ADDRESS:19999
 

@@ -24,8 +24,8 @@ root_check
 # Must be 20.04
 if ! version 20.04 "$DISTRO" 20.04.6
 then
-msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to install Talk"
-msg_box "Please contact us to get support for upgrading your server:
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to install Talk"
+    msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
 exit
@@ -46,8 +46,8 @@ then
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall Nextcloud Talk" "" \
-    "Uninstall Nextcloud Talk" "" 3>&1 1>&2 2>&3)
+"Reinstall Nextcloud Talk" "" \
+"Uninstall Nextcloud Talk" "" 3>&1 1>&2 2>&3)
     
     case "$choice" in
         "Uninstall Nextcloud Talk")
@@ -176,9 +176,11 @@ check_command systemctl restart coturn.service
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
 
-This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+This can be done automatically if you have UNNP enabled in your firewall/router. \
+You will be offered to use UNNP in the next step.
 
-After you hit OK, the script will check if the port is open or not. If it fails and you want to run this script again, just execute this in your CLI:
+After you hit OK, the script will check if the port is open or not. If it fails \
+and you want to run this script again, just execute this in your CLI:
 sudo bash /var/scripts/menu.sh, and choose 'Talk'."
 
 if yesno_box_no "Do you want to use UPNP to open port $TURN_PORT?"
@@ -205,7 +207,8 @@ nextcloud_occ config:app:set spreed stun_servers --value="$STUN_SERVERS_STRING" 
 nextcloud_occ config:app:set spreed turn_servers --value="$TURN_SERVERS_STRING" --output json
 chown -R www-data:www-data "$NC_APPS_PATH"
 
-msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
+msg_box "Nextcloud Talk is now installed. For more information about \
+Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
 
 ####################### SIGNALING
 
@@ -230,20 +233,27 @@ then
 fi
 
 # Ask for the domain for Talk
-SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain.com\n\nNOTE: This domain must be different than your Nextcloud domain. They can however be hosted on the same server, but would require seperate DNS entries.")
+SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain.com
+
+NOTE: This domain must be different than your Nextcloud domain. \
+They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Notification
-msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
+msg_box "Before continuing, please make sure that you have you have \
+edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
+directly to this servers IP. A full exstensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+This can be done automatically if you have UNNP enabled in your firewall/router. \
+You will be offered to use UNNP in the next step.
 
 PLEASE NOTE:
-Using other ports than the default 80 and 443 is not supported, though it may be possible with some custom modification:
+Using other ports than the default 80 and 443 is not supported, \
+though it may be possible with some custom modification:
 https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
 
 if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"

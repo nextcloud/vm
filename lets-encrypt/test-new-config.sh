@@ -21,7 +21,7 @@ a2dissite "$HTTP_CONF"
 a2dissite 000-default.conf
 if restart_webserver
 then
-msg_box "New settings works! TLS is now activated and OK!
+    msg_box "New settings works! TLS is now activated and OK!
 
 This cert will expire in 90 days if you don't renew it.
 There are several ways of renewing this cert and here are some tips and tricks:

@@ -48,7 +48,7 @@ fi
 # Show a msg_box during the startup script
 if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
 then
-msg_box "Running a server, it's important that certain things are correct.
+    msg_box "Running a server, it's important that certain things are correct.
 In the following menu you will be asked to setup the most basic stuff of your server.
 
 The script is smart, and have already pre-selected the values that you'd want to change based on the current settings."
@@ -76,8 +76,13 @@ case "$choice" in
             setupcon --force
             # Set locales
             run_script ADDONS locales
-            input_box "Please try out all buttons (e.g: @ # \$ : y n) to find out if the keyboard settings were correctly applied.\nIf the keyboard is still wrong, you will be offered to reboot the server in the next step.\n\nPlease continue by hitting [ENTER]" "$SUBTITLE" >/dev/null
-            if ! yesno_box_yes "Did the keyboard work as expected??\n\nIf you choose 'No' the server will be rebooted. After the reboot, please login as usual and run this script again." "$SUBTITLE"
+            input_box "Please try out all buttons (e.g: @ # \$ : y n) \
+to find out if the keyboard settings were correctly applied.
+If the keyboard is still wrong, you will be offered to reboot the server in the next step.
+
+Please continue by hitting [ENTER]" "$SUBTITLE" >/dev/null
+            if ! yesno_box_yes "Did the keyboard work as expected??\n\nIf you choose 'No' \
+the server will be rebooted. After the reboot, please login as usual and run this script again." "$SUBTITLE"
             then
                 reboot
             fi

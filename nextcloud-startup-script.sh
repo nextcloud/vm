@@ -88,7 +88,7 @@ SETDHCP
     set_systemd_resolved_dns "$IFACE"
     if ! nslookup github.com
     then
-msg_box "The script failed to get an address from DHCP.
+        msg_box "The script failed to get an address from DHCP.
 You must have a working network connection to run this script.
 
 You will now be provided with the option to set a static IP manually instead."
@@ -104,7 +104,7 @@ then
     print_text_in_color "$IGreen" "Online!"
 elif home_sme_server
 then
-msg_box "It seems like the last try failed as well using LAN ethernet.
+    msg_box "It seems like the last try failed as well using LAN ethernet.
 
 Since the Home/SME server is equipped with a WIFI module, you will now be asked to enable it to get connectivity.
 
@@ -117,7 +117,7 @@ Please note: It's not recomended to run a server on WIFI. Using an ethernet cabl
         then
             print_text_in_color "$IGreen" "Online!"
 	else
-msg_box "Network NOT OK. You must have a working network connection to run this script.
+        msg_box "Network NOT OK. You must have a working network connection to run this script.
 
 Please contact us for support:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/
@@ -126,7 +126,7 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
         exit 1
         fi
 else
-msg_box "Network NOT OK. You must have a working network connection to run this script.
+    msg_box "Network NOT OK. You must have a working network connection to run this script.
 
 Please contact us for support:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/
@@ -154,7 +154,8 @@ debug_mode
 # Check that this run on the PostgreSQL VM
 if ! is_this_installed postgresql-common
 then
-    print_text_in_color "$IRed" "This script is intended to be run using a PostgreSQL database, but PostgreSQL is not installed."
+    print_text_in_color "$IRed" "This script is intended to be \
+run using a PostgreSQL database, but PostgreSQL is not installed."
     print_text_in_color "$IRed" "Aborting..."
     exit 1
 fi
@@ -177,7 +178,7 @@ then
     else
         if [ -z "$UNIXUSER" ]
         then
-msg_box "You seem to be running this as the pure root user.
+            msg_box "You seem to be running this as the pure root user.
 You must run this as a regular user with sudo permissions.
 
 Please create a user with sudo permissions and the run this command:
@@ -188,7 +189,7 @@ We will do this for you when you hit OK."
        bash $SCRIPTS/adduser.sh "$SCRIPTS/nextcloud-startup-script.sh"
        rm $SCRIPTS/adduser.sh
        else
-msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
+            msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
 which could be the case if you are running directly from the scripts on Gihub and not the VM.
 
 As long as the user you created have sudo permissions it's safe to continue.
@@ -203,15 +204,19 @@ fi
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
 then
-msg_box "The Nextcloud startup script that handles the first setup (this one) is desinged to be run once, not several times in a row.
+    msg_box "The Nextcloud startup script that handles the first setup \
+(this one) is desinged to be run once, not several times in a row.
 
-If you feel uncertain about adding some extra features during this setup, then it's best to wait until after the first setup is done. You can always add all the extra features later.
+If you feel uncertain about adding some extra features during this setup, \
+then it's best to wait until after the first setup is done. You can always add all the extra features later.
 
 [For the Nextcloud VM:]
 Please delete this VM from your host and reimport it once again, then run this setup like you did the first time.
 
 [For the Nextcloud Home/SME Server:]
-It's a bit more tricky since you can't revert in the same way as with a VM. The best thing you can do now is to save all the output from the session you ran before this one + write down all the steps you took and send and email to:
+It's a bit more tricky since you can't revert in the same way as with a VM. \
+The best thing you can do now is to save all the output from the session you \
+ran before this one + write down all the steps you took and send and email to:
 github@hanssonit.se with the subject 'Issues with first setup', and we'll take it from there.
 
 Full documentation can be found here: https://docs.hanssonit.se
@@ -359,7 +364,9 @@ do
 done
 if check_command echo "$UNIXUSER:$UNIX_PASSWORD" | sudo chpasswd
 then
-    msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD\n\nThis is used when you login to the Ubuntu Server console."
+    msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD
+    
+This is used when you login to the Ubuntu Server console."
 fi
 unset UNIX_PASSWORD
 
@@ -368,7 +375,10 @@ NCADMIN=$(nextcloud_occ user:list | awk '{print $3}')
 msg_box "We will now change the username and password for the Web Admin in Nextcloud."
 while :
 do
-    NEWUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.\nIt must differ from the current one: $NCADMIN.\n\nThe only allowed characters for the username are:\n 'a-z', 'A-Z', '0-9', and '_.@-'")
+    NEWUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
+It must differ from the current one: $NCADMIN.\n\nThe only allowed characters for the username are:
+
+'a-z', 'A-Z', '0-9', and '_.@-'")
     if [[ "$NEWUSER" == *" "* ]]
     then
         msg_box "Please don't use spaces."
@@ -395,7 +405,9 @@ do
     export OC_PASS
     if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWUSER --password-from-env -g admin"
     then
-        msg_box "The new Web Admin in Nextcloud is now: $NEWUSER\nThe password is set to: $OC_PASS\n\nThis is used when you login to Nextcloud itself, i.e. on the web."
+        msg_box "The new Web Admin in Nextcloud is now: $NEWUSER\nThe password is set to: $OC_PASS
+        
+This is used when you login to Nextcloud itself, i.e. on the web."
         unset OC_PASS
         break
     else
@@ -420,7 +432,8 @@ There are still some stuff left to do, but they are automated so sit back and re
 # Add default notifications
 notify_admin_gui \
 "Please setup SMTP" \
-"Please remember to setup SMTP to be able to send shared links, user notifications and more via email. Please go here and start setting it up: https://your-nextcloud/settings/admin."
+"Please remember to setup SMTP to be able to send shared links, user notifications and more via email. \
+Please go here and start setting it up: https://your-nextcloud/settings/admin."
 
 notify_admin_gui \
 "Do you need support?" \
@@ -430,7 +443,8 @@ if ! is_this_installed php"$PHPVER"-imagick
 then
     notify_admin_gui \
     "Regarding Imagick not being installed" \
-    "As you may have noticed, Imagick is not installed. We care about your security, and here's the reason: https://github.com/nextcloud/server/issues/13099."
+    "As you may have noticed, Imagick is not installed. We care about your security, \
+and here's the reason: https://github.com/nextcloud/server/issues/13099."
 fi
 
 # Fixes https://github.com/nextcloud/vm/issues/58

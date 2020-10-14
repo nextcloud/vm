@@ -20,11 +20,13 @@ root_check
 # PHP 7.x is needed
 if is_this_installed php5.6-common
 then
-    msg_box "At least PHP 7.X is supported, please upgrade your PHP version: https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+    msg_box "At least PHP 7.X is supported, please upgrade your PHP version: \
+https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
     exit
 elif is_this_installed php5.5-common
 then
-    msg_box "At least PHP 7.X is supported, please upgrade your PHP version: https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+    msg_box "At least PHP 7.X is supported, please upgrade your PHP version: \
+https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
     exit
 fi
 
@@ -68,7 +70,8 @@ else
     exit
 fi
 
-msg_box "In the next step you can choose to install a package called imagick to speed up the generation of previews and add support for more filetypes.
+msg_box "In the next step you can choose to install a package called imagick \
+to speed up the generation of previews and add support for more filetypes.
 
 The currently supported filetypes are:
 * PNG
@@ -100,17 +103,17 @@ then
     choice=$(whiptail --title "$TITLE - Choose file formats" --checklist \
 "Now you can choose for which file formats you would like to generate previews for
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "PNG" "" ON \
-    "JPEG" "" ON \
-    "GIF" "" ON \
-    "BMP" "" ON \
-    "MarkDown" "" ON \
-    "MP3" "" ON \
-    "TXT" "" ON \
-    "Movie" "" ON \
-    "Photoshop" "" ON \
-    "SVG" "" ON \
-    "TIFF" "" ON 3>&1 1>&2 2>&3)
+"PNG" "" ON \
+"JPEG" "" ON \
+"GIF" "" ON \
+"BMP" "" ON \
+"MarkDown" "" ON \
+"MP3" "" ON \
+"TXT" "" ON \
+"Movie" "" ON \
+"Photoshop" "" ON \
+"SVG" "" ON \
+"TIFF" "" ON 3>&1 1>&2 2>&3)
 
     case "$choice" in
         *"PNG"*)
@@ -165,14 +168,14 @@ else
     choice=$(whiptail --title "$TITLE - Choose file formats" --checklist \
 "Now you can choose for which file formats you would like to generate previews for
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "PNG" "" ON \
-    "JPEG" "" ON \
-    "GIF" "" ON \
-    "BMP" "" ON \
-    "MarkDown" "" ON \
-    "MP3" "" ON \
-    "TXT" "" ON \
-    "Movie" "" ON 3>&1 1>&2 2>&3)
+"PNG" "" ON \
+"JPEG" "" ON \
+"GIF" "" ON \
+"BMP" "" ON \
+"MarkDown" "" ON \
+"MP3" "" ON \
+"TXT" "" ON \
+"Movie" "" ON 3>&1 1>&2 2>&3)
 
     case "$choice" in
         *"PNG"*)
@@ -213,9 +216,11 @@ nextcloud_occ config:system:set preview_max_y --value="2048"
 nextcloud_occ config:system:set jpeg_quality --value="60"
 nextcloud_occ config:app:set preview jpeg_quality --value="60"
 
-msg_box "In the last step you can define a specific Nextcloud user for which will be the user that runs the Preview Generation.
+msg_box "In the last step you can define a specific Nextcloud user for \
+which will be the user that runs the Preview Generation.
 
-The default behaviour (just hit [ENTER]) is to run with the system user 'www-data' which will generate previews for all users.
+The default behaviour (just hit [ENTER]) is to run with the \
+system user 'www-data' which will generate previews for all users.
 
 If you on the other hand choose to use a specific user, previews will ONLY be generated for that specific user."
 if ! yesno_box_no "Do you want to choose a specific Nextcloud user to generate previews?"
@@ -231,7 +236,8 @@ then
 else
     while :
     do
-        PREVIEW_USER=$(input_box "Enter the Nextcloud user for which you want to run the Preview Generation (as a scheluded task)")
+        PREVIEW_USER=$(input_box "Enter the Nextcloud user for \
+which you want to run the Preview Generation (as a scheluded task)")
         if [ -z "$(nextcloud_occ user:list | grep "$PREVIEW_USER" | awk '{print $3}')" ]
         then
             msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
