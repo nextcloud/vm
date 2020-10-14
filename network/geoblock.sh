@@ -20,13 +20,16 @@ debug_mode
 root_check
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
 
 # Check if it is already configured
-if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
+if ! grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
     # Ask for removal or reinstallation
-    reinstall_remove_menu
+    reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     if is_this_installed jq
     then
@@ -41,9 +44,7 @@ then
     sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
     check_command systemctl restart apache2
     # Show successful uninstall if applicable
-    removal_popup
-else
-    print_text_in_color "$ICyan" "Installing Geoblock..."
+    removal_popup "$SCRIPT_NAME"
 fi
 
 # Install needed tools

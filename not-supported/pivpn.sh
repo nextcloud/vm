@@ -22,11 +22,14 @@ debug_mode
 root_check
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
 
 # Check if already installed
-if pivpn &>/dev/null
+if ! pivpn &>/dev/null
 then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
     # Choose to uninstall
     if ! yesno_box_no "It seems like PiVPN is already installed.
 Do you want to uninstall PiVPN and reset all its settings?

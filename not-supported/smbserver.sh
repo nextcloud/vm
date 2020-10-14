@@ -44,7 +44,14 @@ then
 fi
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
+
+# Show install_popup
+if ! is_this_installed samba
+then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+fi
 
 # Find mounts
 DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 2 -type d | grep -v "/mnt/ncdata")
