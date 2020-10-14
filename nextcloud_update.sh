@@ -155,7 +155,7 @@ download_script STATIC fetch_lib
 # Get newest dat files for geoblock.sh
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
-    get_newest_dat_files
+    # get_newest_dat_files # Uncomment this in a new PR to be able to test this properly
     check_command systemctl restart apache2
 fi
 
