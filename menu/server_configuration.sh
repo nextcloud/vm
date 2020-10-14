@@ -85,7 +85,7 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
         # Just make sure it is gone
         rm -f "$SCRIPTS/test-new-config.sh"
     ;;&
-    *"Geoblock")
+    *"Geoblock"*)
         clear
         print_text_in_color "$ICyan" "Downloading the Geoblock script..."
         run_script NETWORK geoblock 
