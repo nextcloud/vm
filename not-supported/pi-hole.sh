@@ -22,11 +22,14 @@ debug_mode
 root_check
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
 
 # Check if already installed
-if pihole &>/dev/null
+if ! pihole &>/dev/null
 then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
     # Choose to uninstall
     if ! yesno_box_no "It seems like Pi-hole is already installed.
 Do you want to uninstall Pi-hole and reset all its settings?"
