@@ -32,29 +32,35 @@ This script can be run again by executing: sudo bash $SCRIPTS/menu.sh, and choos
 
 if ! yesno_box_yes "Are you sure you want to continue?"
 then
-msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
+    msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo \
+bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
     exit
 fi
 
 if ! yesno_box_yes "Have you opened port 80 and 443 in your router, or are you using UPNP?"
 then
-msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
+    msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo \
+bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
     exit
 fi
 
 if ! yesno_box_yes "Do you have a domain that you will use?"
 then
-msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
+    msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo \
+bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
     exit
 fi
 
 # Nextcloud Main Domain (activate-tls.sh)
-TLSDOMAIN=$(input_box_flow "Please enter the domain name you will use for Nextcloud.\n\nMake sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
+TLSDOMAIN=$(input_box_flow "Please enter the domain name you will use for Nextcloud.
+Make sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
 
-msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $TLSDOMAIN, and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
+msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $TLSDOMAIN, \
+and opened port 80 and 443 directly to this servers IP. A full exstensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step."
+This can be done automatically if you have UNNP enabled in your firewall/router. \
+You will be offered to use UNNP in the next step."
 
 if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
 then
@@ -199,9 +205,11 @@ then
         fi
         # Activate new config
         check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
-msg_box "Please remember to keep port 80 (and 443) open so that Let's Encrypt can do the automatic renewal of the cert. If port 80 is closed the cert will expire in 3 months.
+        msg_box "Please remember to keep port 80 (and 443) open so that Let's Encrypt can do \
+the automatic renewal of the cert. If port 80 is closed the cert will expire in 3 months.
 
-You don't need to worry about security as port 80 is directly forwarded to 443, so no traffic will actually be on port 80, except for the forwarding to 443 (HTTPS)."
+You don't need to worry about security as port 80 is directly forwarded to 443, so \
+no traffic will actually be on port 80, except for the forwarding to 443 (HTTPS)."
         exit 0
     fi
 else

@@ -15,7 +15,7 @@ debug_mode
 
 if [[ $UNIXUSER != "ncadmin" ]]
 then
-msg_box "Current user with sudo permissions is: $UNIXUSER.
+    msg_box "Current user with sudo permissions is: $UNIXUSER.
 This script will set up everything with that user.
 If the field after ':' is blank you are probably running as a pure root user.
 It's possible to install with root, but there will be minor errors.

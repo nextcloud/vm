@@ -72,10 +72,13 @@ fi
 HOSTNAME=$(input_box_flow "Please enter the Host that you want to configure DDNS for.\nE.g. 'example.com'")
 
 # Enter your login
-LOGIN=$(input_box_flow "Please enter the login for your DDNS provider.\nIt will be most likely the domain or registered email address depending on your DDNS Provider.\nE.g. 'example.com' or 'mail@example.com'\nIf you are not sure, please refer to the documentation of your DDNS provider.")
+LOGIN=$(input_box_flow "Please enter the login for your DDNS provider.\nIt will be most likely the domain \
+or registered email address depending on your DDNS Provider.\nE.g. 'example.com' or 'mail@example.com'
+If you are not sure, please refer to the documentation of your DDNS provider.")
 
 # Enter your password
-PASSWORD=$(input_box_flow "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.\nIf you are not sure, please refer to the documentation of your DDNS provider.")
+PASSWORD=$(input_box_flow "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.
+If you are not sure, please refer to the documentation of your DDNS provider.")
 
 # Get results and store in a variable:
 RESULT="You will see now a list of all entered information. Please check that everything seems correct.\n\n"

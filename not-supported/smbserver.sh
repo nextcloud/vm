@@ -8,7 +8,8 @@ true
 SCRIPT_NAME="SMB Server"
 SCRIPT_EXPLAINER="This script allows you to create a SMB-server from your Nextcloud-VM.
 It helps you manage all SMB-users and SMB-shares.
-As bonus feature you can automatically mount the chosen directories to Nextcloud and create Nextcloud users with the same credentials like your SMB-users."
+As bonus feature you can automatically mount the chosen directories to Nextcloud and \
+create Nextcloud users with the same credentials like your SMB-users."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -37,7 +38,8 @@ install_if_not whiptail
 # Check MAX_COUNT
 if ! [ $MAX_COUNT -gt 0 ]
 then
-    msg_box "The MAX_COUNT variable has to be a positive integer, greater than 0. Please change it accordingly. Recommended is MAX_COUNT=16, because not all menus work reliably with a higher count."
+    msg_box "The MAX_COUNT variable has to be a positive integer, greater than 0. Please change it accordingly. \
+    Recommended is MAX_COUNT=16, because not all menus work reliably with a higher count."
     exit
 fi
 
@@ -133,7 +135,9 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 choose_password() {
 while :
 do
-    PASSWORD=$(input_box_flow "$1\nThe password needs to be at least 12 digits long to be valid.\nIt also needs to contain at least one hyphen '-' and one of those characters each: 'a-z' 'A-Z' and '0-9' to be valid.\nYou can cancel by typing in 'exit' and pressing [ENTER]." "$2")
+    PASSWORD=$(input_box_flow "$1\nThe password needs to be at least 12 digits long to be valid.
+It also needs to contain at least one hyphen '-' and one of those characters each: \
+'a-z' 'A-Z' and '0-9' to be valid.\nYou can cancel by typing in 'exit' and pressing [ENTER]." "$2")
     if [ "$PASSWORD" = "exit" ]
     then
         return 1
@@ -172,13 +176,16 @@ choose_username() {
 local NEWNAME_TRANSLATED
 while :
 do
-    NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '-' and '0-9'.\nAlso, the username needs to start with a letter to be valid.\nIf you want to cancel, just type in 'exit' and press [ENTER]." "$2")
+    NEWNAME=$(input_box_flow "$1\nAllowed characters are only 'a-z' 'A-Z' '-' and '0-9'.
+Also, the username needs to start with a letter to be valid.
+If you want to cancel, just type in 'exit' and press [ENTER]." "$2")
     if [[ "$NEWNAME" == *" "* ]]
     then
         msg_box "Please don't use spaces." "$2"
     elif ! [[ "$NEWNAME" =~ ^[a-zA-Z][-a-zA-Z0-9]+$ ]]
     then
-        msg_box "Allowed characters are only 'a-z' 'A-Z '-' and '0-9'.\nAlso, the username needs to start with a letter to be valid." "$2"
+        msg_box "Allowed characters are only 'a-z' 'A-Z '-' and '0-9'.
+Also, the username needs to start with a letter to be valid." "$2"
     elif [ "$NEWNAME" = "exit" ]
     then
         return 1
@@ -234,7 +241,11 @@ add_user() {
     check_command usermod --append --groups "$SMB_GROUP","$WEB_GROUP" "$NEWNAME"
 
     # Inform the user
-    msg_box "The smb-user $NEWNAME was successfully created.\n\nIf this is the first SMB-user, that you have created, you should be able to create a new SMB-share now by returning to the Main Menu of this script and choosing from there 'SMB-share Menu' -> 'create a SMB-share'.\nSuggested is though, creating all needed SMB-users first." "$SUBTITLE"
+    msg_box "The smb-user $NEWNAME was successfully created.
+    
+If this is the first SMB-user, that you have created, you should be able to create a new SMB-share now by \
+returning to the Main Menu of this script and choosing from there 'SMB-share Menu' -> 'create a SMB-share'.
+Suggested is though, creating all needed SMB-users first." "$SUBTITLE"
 
     # Test if NC exists
     if ! [ -f $NCPATH/occ ]
@@ -382,10 +393,13 @@ do
             unset PASSWORD
             continue
         # Offer the possibility to change the password of the same NC user, if existing, too
-        elif yesno_box_no "Do you want to change the password of a Nextcloud account with the same name $user to the same password?\nThis most likely only applies, if you created your Nextcloud users with this script.\nPlease not that this will forcefully log out all devices from this user, so it should only be used in case." "$SUBTITLE"
+        elif yesno_box_no "Do you want to change the password of a Nextcloud account with the same name $user \
+to the same password?\nThis most likely only applies, if you created your Nextcloud users with this script.
+Please not that this will forcefully log out all devices from this user, so it should only be used in case." "$SUBTITLE"
         then
             # Warn about consequences
-            if ! yesno_box_no "Do you really want to do this? It will forcefully log out all devices from this Nextcloud user $user" "$SUBTITLE"
+            if ! yesno_box_no "Do you really want to do this? It will \
+forcefully log out all devices from this Nextcloud user $user" "$SUBTITLE"
             then
                 continue
             fi
@@ -397,7 +411,8 @@ do
         NEXTCLOUD_USERS=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
         if ! echo "$NEXTCLOUD_USERS" | grep -q "^$user$"
         then
-            msg_box "There doesn't exist any user with this name $user in Nextcloud. No chance to change the password of the Nextcloud account." "$SUBTITLE"
+            msg_box "There doesn't exist any user with this name $user in Nextcloud. \
+No chance to change the password of the Nextcloud account." "$SUBTITLE"
             continue
         fi 
 
@@ -471,12 +486,12 @@ do
     choice=$(whiptail --title "$TITLE - SMB-user Menu" --menu \
 "Choose what you want to do.
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Add a SMB-user" "" \
-    "Show all SMB-shares from a SMB-user" "" \
-    "Change the password of SMB-users" "" \
-    "Change the username of SMB-users" "" \
-    "Delete SMB-users" "" \
-    "Return to the Main Menu" "" 3>&1 1>&2 2>&3)
+"Add a SMB-user" "" \
+"Show all SMB-shares from a SMB-user" "" \
+"Change the password of SMB-users" "" \
+"Change the username of SMB-users" "" \
+"Delete SMB-users" "" \
+"Return to the Main Menu" "" 3>&1 1>&2 2>&3)
 
     if [ -n "$choice" ] && [ "$choice" != "Add a SMB-user" ] && [ "$choice" != "Return to the Main Menu" ] && [ -z "$(members "$SMB_GROUP")" ]
     then
@@ -526,10 +541,12 @@ do
 done
 while :
 do
-    msg_box "In the following step you will need to type in the directoy that you want to use.\nHere you can see a certain list of options that you can type in.\n\n$VALID_DIRS" "$2"
+    msg_box "In the following step you will need to type in the directoy that you want to use.
+Here you can see a certain list of options that you can type in.\n\n$VALID_DIRS" "$2"
     
     # Type in the new path
-    NEWPATH=$(input_box_flow "$1.Please note, that the owner of the directory will be changed to the Web-user.\nIf you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
+    NEWPATH=$(input_box_flow "$1.Please note, that the owner of the directory will be changed to the Web-user.
+If you don't know any, and you want to cancel, just type in 'exit' and press [ENTER]." "$2")
     unset VALID
     for mount in "${MOUNTS[@]}"
     do
@@ -580,7 +597,9 @@ CACHE=$(grep "\[.*\]" "$SMB_CONF" | tr "[:upper:]" "[:lower:]")
 while :
 do
     # Type in the new sharename
-    NEWNAME=$(input_box_flow "$1\nAllowed characters are only those three special characters '.-_' and 'a-z' 'A-Z' '0-9'.\nAlso, the sharename needs to start with a letter 'a-z' or 'A-Z' to be valid.\nIf you want to cancel, just type in 'exit' and press [ENTER]." "$2")
+    NEWNAME=$(input_box_flow "$1\nAllowed characters are only those three special characters \
+'.-_' and 'a-z' 'A-Z' '0-9'.\nAlso, the sharename needs to start with a letter 'a-z' or 'A-Z' to be valid.
+If you want to cancel, just type in 'exit' and press [ENTER]." "$2")
     NEWNAME_TRANSLATED=$(echo "$NEWNAME" | tr "[:upper:]" "[:lower:]")
     if [[ "$NEWNAME" = *" "* ]]
     then
@@ -729,18 +748,24 @@ to see all for the specific SMB-user available SMB-shares:
     NEWNAME_BACKUP="$NEWNAME"
 
     # Ask if the default name can be used
-    if yesno_box_no "Do you want to use a different name for this external storage inside Nextcloud or just use the default sharename $NEWNAME?\nThis time spaces are possible." "$SUBTITLE"
+    if yesno_box_no "Do you want to use a different name for this external storage inside Nextcloud or \
+just use the default sharename $NEWNAME?\nThis time spaces are possible." "$SUBTITLE"
     then
         while :
         do
             # Type in the new mountname that will be used in NC
-            NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this path $NEWPATH.\nYou can type in 'exit' and press [ENTER] to use the default $NEWNAME_BACKUP\nAllowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.\nAlso, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.\nAdvice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
+            NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this path $NEWPATH.
+You can type in 'exit' and press [ENTER] to use the default $NEWNAME_BACKUP
+Allowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.
+Also, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.
+Advice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
             if ! echo "$NEWNAME" | grep -q "^[a-zA-Z/]"
             then
                 msg_box "The name has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid." "$SUBTITLE"
             elif ! [[ "$NEWNAME" =~ ^[-._a-zA-Z0-9\ /]+$ ]]
             then
-                msg_box "Allowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
+                msg_box "Allowed characters are only spaces, those \
+four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
             elif [ "$NEWNAME" = "exit" ]
             then
                 NEWNAME="$NEWNAME_BACKUP"
@@ -754,7 +779,8 @@ to see all for the specific SMB-user available SMB-shares:
     # Choose if it shall be writeable in NC
     if [ "$WRITEABLE" = "yes" ]
     then
-        if ! yesno_box_yes "Do you want to mount this new external storage $NEWNAME as writeable in your Nextcloud?" "$SUBTITLE"
+        if ! yesno_box_yes "Do you want to mount this new \
+external storage $NEWNAME as writeable in your Nextcloud?" "$SUBTITLE"
         then
             READONLY="true"
         else
@@ -762,7 +788,8 @@ to see all for the specific SMB-user available SMB-shares:
         fi
     elif [ "$WRITEABLE" = "no" ]
     then
-        if ! yesno_box_no "Do you want to mount this new external storage $NEWNAME as writeable in your Nextcloud?" "$SUBTITLE"
+        if ! yesno_box_no "Do you want to mount this new \
+external storage $NEWNAME as writeable in your Nextcloud?" "$SUBTITLE"
         then
             READONLY="true"
         else
@@ -794,8 +821,8 @@ to see all for the specific SMB-user available SMB-shares:
 If you select no group and no user, the external storage will be visible to all users of your instance.
 Please note that you cannot come back to this menu.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Choose some Nextcloud groups" "" ON \
-    "Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
+"Choose some Nextcloud groups" "" ON \
+"Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
     unset SELECTED_USER
     unset SELECTED_GROUPS
 
@@ -843,7 +870,9 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     # Mount it to the admin group if no group or user chosen
     if [ -z "$SELECTED_GROUPS" ] && [ -z "$SELECTED_USER" ]
     then
-        if ! yesno_box_no "Attention! You haven't selected any Nextcloud group or user.\nIs this correct?\nIf you select 'yes', it will be visible to all users of your Nextcloud instance.\nIf you select 'no', it will be only visible to Nextcloud users in the admin group." "$SUBTITLE"
+        if ! yesno_box_no "Attention! You haven't selected any Nextcloud group or user.
+Is this correct?\nIf you select 'yes', it will be visible to all users of your Nextcloud instance.
+If you select 'no', it will be only visible to Nextcloud users in the admin group." "$SUBTITLE"
         then
             nextcloud_occ files_external:applicable --add-group=admin "$MOUNT_ID" -q
         fi
@@ -882,11 +911,13 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     msg_box "Your mount $NEWNAME was successful, congratulations!
 You are now using the Nextcloud external storage app to access files there.
 The Share has been mounted to the Nextcloud admin-group if not specifically changed to users or groups.
-You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' to edit external storages in Nextcloud." "$SUBTITLE"
+You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' \
+to edit external storages in Nextcloud." "$SUBTITLE"
 
     # Inform the user that he can setup inotify for this external storage
     if ! yesno_box_no "Do you want to enable inotify for this external storage in Nextcloud?
-It is only recommended if the content can get changed externally and will let Nextcloud track if this external storage was externally changed.
+It is only recommended if the content can get changed externally and \
+will let Nextcloud track if this external storage was externally changed.
 If you choose 'yes', we will install a needed PHP-plugin, the files_inotify app and create a cronjob for you."
     then
         return
@@ -895,9 +926,11 @@ If you choose 'yes', we will install a needed PHP-plugin, the files_inotify app 
     # Warn a second time
     if ! yesno_box_no "Are you sure, that you want to enable inotify for this external storage?
 Please note, that this will need around 1 KB additonal RAM per folder.
-We will set the max folder variable to 524288 which will be around 500 MB of additionally needed RAM if you have so many folders.
+We will set the max folder variable to 524288 which will be around 500 MB \
+of additionally needed RAM if you have so many folders.
 If you have more folders, you will need to raise this value manually inside '/etc/sysctl.conf'.
-Please also note, that this max folder variable counts for all external storages for which the inotify option gets activated.
+Please also note, that this max folder variable counts for all \
+external storages for which the inotify option gets activated.
 We please you to do the math yourself if the number is high enough for your setup."
     then
         return
@@ -939,8 +972,10 @@ We please you to do the math yourself if the number is high enough for your setu
     # Inform the user
     if [ -n "$INOTIFY_INSTALL" ]
     then
-        if ! yesno_box_yes "The inotify PHP extension was successfully installed, the max folder variable was set to 524288 and $VMLOGS/files_inotify.log was created.
-Just press [ENTER] (on the default 'yes') to install the needed files_inotify app and setup the cronjob for this external storage."
+        if ! yesno_box_yes "The inotify PHP extension was successfully installed, \
+the max folder variable was set to 524288 and $VMLOGS/files_inotify.log was created.
+Just press [ENTER] (on the default 'yes') to install the needed \
+files_inotify app and setup the cronjob for this external storage."
         then
             return
         fi
@@ -1097,16 +1132,17 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 
     # Show the current settings
     CLEAN_STORAGE=$(echo "$STORAGE" | grep -v "\#SMB")
-    msg_box "Those are the current values for that SMB-share.\nIn the next step you will be asked what you want to change.\n\n$CLEAN_STORAGE" "$SUBTITLE"
+    msg_box "Those are the current values for that SMB-share.
+In the next step you will be asked what you want to change.\n\n$CLEAN_STORAGE" "$SUBTITLE"
 
     # Show a list of options that can get changed for the selected SMB-share
     choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist \
 "Please choose which options you want to change for $SELECTED_SHARE
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Change the sharename" "(Change the name of the SMB-share)" OFF \
-    "Change the path" "(Change the path of the SMB-share)" OFF \
-    "Change valid SMB-users" "(Change which users have access to the SMB-share)" OFF \
-    "Change writeable mode" "(Change if the SMB-share is writeable)" OFF 3>&1 1>&2 2>&3)
+"Change the sharename" "(Change the name of the SMB-share)" OFF \
+"Change the path" "(Change the path of the SMB-share)" OFF \
+"Change valid SMB-users" "(Change which users have access to the SMB-share)" OFF \
+"Change writeable mode" "(Change if the SMB-share is writeable)" OFF 3>&1 1>&2 2>&3)
 
     # Execute the chosen options
     case "$choice" in
@@ -1118,7 +1154,8 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             STORAGE=$(echo "$STORAGE" | sed "/^\[.*\]$/s/^\[.*\]$/\[$NEWNAME\]/")
         ;;&
         *"Change the path"*)
-            if ! choose_path "Please type in the new directory that you want to use for that SMB-share $SELECTED_SHARE." "$SUBTITLE"
+            if ! choose_path "Please type in the new directory that \
+you want to use for that SMB-share $SELECTED_SHARE." "$SUBTITLE"
             then
                 return
             fi
@@ -1128,7 +1165,8 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             STORAGE=$(echo "$STORAGE" | sed "/path = /s/path.*/path = $NEWPATH/")
         ;;&
         *"Change valid SMB-users"*)
-            if ! choose_users "Please choose the SMB-users that shall have access to the share $SELECTED_SHARE." "$SUBTITLE"
+            if ! choose_users "Please choose the SMB-users \
+that shall have access to the share $SELECTED_SHARE." "$SUBTITLE"
             then
                 return
             fi
@@ -1154,7 +1192,8 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
     # Show how the SMB-share will look after applying all changed options and let decide if the user wants to continue
     CLEAN_STORAGE=$(echo "$STORAGE" | grep -v "\#SMB")
-    if ! yesno_box_yes "This is how the SMB-share $SELECTED_SHARE will look like from now on.\nIs everything correct?\n\n$CLEAN_STORAGE" "$SUBTITLE"
+    if ! yesno_box_yes "This is how the SMB-share $SELECTED_SHARE will look like from now on.
+Is everything correct?\n\n$CLEAN_STORAGE" "$SUBTITLE"
     then
         return
     fi
@@ -1249,11 +1288,11 @@ do
     choice=$(whiptail --title "$TITLE - SMB-share Menu" --menu \
 "Choose what you want to do.
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Create a SMB-share" "" \
-    "Show SMB-shares" "" \
-    "Edit a SMB-share" "" \
-    "Delete SMB-shares" "" \
-    "Return to the Main Menu" "" 3>&1 1>&2 2>&3)
+"Create a SMB-share" "" \
+"Show SMB-shares" "" \
+"Edit a SMB-share" "" \
+"Delete SMB-shares" "" \
+"Return to the Main Menu" "" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Create a SMB-share")
@@ -1286,9 +1325,9 @@ do
     choice=$(whiptail --title "$TITLE - Main Menu" --menu \
 "Choose what you want to do.
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Open the SMB-user Menu" "(manage SMB-users)" \
-    "Open the SMB-share Menu  " "(manage SMB-shares)" \
-    "Exit" "(exit this script)" 3>&1 1>&2 2>&3)
+"Open the SMB-user Menu" "(manage SMB-users)" \
+"Open the SMB-share Menu  " "(manage SMB-shares)" \
+"Exit" "(exit this script)" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Open the SMB-user Menu")
