@@ -359,7 +359,7 @@ something is wrong here. Please report this to $ISSUES"
 get_newest_dat_files() {
     # IPv4
     IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/dat \
-    | grep -oP '[a-zA-Z0-9_-]+4\.dat' | uniq | grep -v 'yyyy-mm' | sort -r | head -1)
+    | grep -oP '[a-zA-Z0-9_-]+4\.dat' | uniq | grep -v 'yyyy-mm' | grep -v 'maxmind4.dat' | sort -r | head -1)
     if [ -z "$IPV4_NAME" ]
     then
         print_text_in_color "$IRed" "Could not get the newest IPv4_name. Not updating the .dat file"
@@ -383,7 +383,7 @@ get_newest_dat_files() {
     fi
     # IPv6
     IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/dat \
-    | grep -oP '[a-zA-Z0-9_-]+6\.dat' | uniq | grep -v 'yyyy-mm' | sort -r | head -1)
+    | grep -oP '[a-zA-Z0-9_-]+6\.dat' | uniq | grep -v 'yyyy-mm' | grep -v 'maxmind6.dat' | sort -r | head -1)
     if [ -z "$IPV6_NAME" ]
     then
         print_text_in_color "$IRed" "Could not get the newest IPv6_name. Not updating the .dat file"
