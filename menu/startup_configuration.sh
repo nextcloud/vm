@@ -14,6 +14,10 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 DEBUG=0
 debug_mode
 
+# Update the lib once during the startup script
+# TODO: delete this again e.g. with NC 20.0.1
+download_script GITHUB_REPO lib
+
 # Must be root
 root_check
 
