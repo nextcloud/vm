@@ -234,6 +234,8 @@ download_script MENU menu
 download_script MENU server_configuration
 download_script MENU nextcloud_configuration
 download_script MENU additional_apps
+# Update the lib once during the startup script
+download_script GITHUB_REPO lib
 
 if home_sme_server
 then
