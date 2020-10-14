@@ -303,8 +303,8 @@ reinstall_remove_menu() {
     REINSTALL_REMOVE=$(whiptail --title "$TITLE" --menu \
 "It seems like $1 is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall" "$1" \
-"Uninstall" "$1" 3>&1 1>&2 2>&3)
+"Reinstall" " $1" \
+"Uninstall" " $1" 3>&1 1>&2 2>&3)
     if [ "$REINSTALL_REMOVE" = "Reinstall" ]
     then
         print_text_in_color "$ICyan" "Reinstalling $1..."
