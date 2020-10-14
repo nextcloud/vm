@@ -61,7 +61,7 @@ case "$choice" in
     ;;&
     *"Activate TLS"*)
         SUBTITLE="Activate TLS"
-msg_box "The following script will install a trusted
+        msg_box "The following script will install a trusted
 TLS certificate through Let's Encrypt.
 It's recommended to use TLS (https) together with Nextcloud.
 Please open port 80 and 443 to this servers IP before you continue.

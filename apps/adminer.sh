@@ -101,11 +101,11 @@ check_command a2ensite adminer.conf
 
 if ! restart_webserver
 then
-msg_box "Apache2 could not restart...
+    msg_box "Apache2 could not restart...
 The script will exit."
     exit 1
 else
-msg_box "Adminer was sucessfully installed and can be reached here:
+    msg_box "Adminer was sucessfully installed and can be reached here:
 https://$ADDRESS:9443
 
 You can download more plugins and get more information here: 

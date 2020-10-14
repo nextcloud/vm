@@ -146,7 +146,8 @@ device=white,black:special=white,black:core=,black:stalelink=red,black:editnorma
         print_text_in_color "$ICyan" "Installing LDAP..."
         if install_and_enable_app user_ldap
         then
-            msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap to finish the setup once this script is done." "$SUBTITLE"
+            msg_box "LDAP installed! Please visit https://subdomain.yourdomain.com/settings/admin/ldap \
+to finish the setup once this script is done." "$SUBTITLE"
         else
             msg_box "LDAP installation failed." "$SUBTITLE"
         fi
