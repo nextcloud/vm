@@ -370,7 +370,7 @@ get_newest_dat_files() {
             print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
             sleep 1
             download_script DAT_FILES "$IPV4_NAME"
-            rm -f /usr/share/GeoIP/GeoIP.dat
+            check_command rm /usr/share/GeoIP/GeoIP.dat
             check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
             check_command mv "/usr/share/GeoIP/$IPV4_NAME" /usr/share/GeoIP/GeoIP.dat
             chown root:root /usr/share/GeoIP/GeoIP.dat
@@ -394,7 +394,7 @@ get_newest_dat_files() {
             print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
             sleep 1
             download_script DAT_FILES "$IPV6_NAME"
-            rm -f /usr/share/GeoIP/GeoIPv6.dat
+            check_command rm /usr/share/GeoIP/GeoIPv6.dat
             check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
             check_command mv "/usr/share/GeoIP/$IPV6_NAME" /usr/share/GeoIP/GeoIPv6.dat
             chown root:root /usr/share/GeoIP/GeoIPv6.dat
