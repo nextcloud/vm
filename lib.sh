@@ -359,7 +359,7 @@ something is wrong here. Please report this to $ISSUES"
 get_newest_dat_files() {
     # IPv4
     IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/dat \
-    | grep -oP '[a-zA-Z0-9_-]+4\.dat' | uniq | sort -r | head -1
+    | grep -oP '[a-zA-Z0-9_-]+4\.dat' | uniq | sort -r | head -1 \
     | grep -v 'yyyy-mm')
     if [ -z "$IPV4_NAME" ]
     then
@@ -384,7 +384,7 @@ get_newest_dat_files() {
     fi
     # IPv6
     IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/dat \
-    | grep -oP '[a-zA-Z0-9_-]+6\.dat' | uniq | sort -r | head -1
+    | grep -oP '[a-zA-Z0-9_-]+6\.dat' | uniq | sort -r | head -1 \
     | grep -v 'yyyy-mm')
     if [ -z "$IPV6_NAME" ]
     then
