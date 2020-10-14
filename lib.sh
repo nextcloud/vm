@@ -279,33 +279,78 @@ input_box_flow() {
     echo "$RESULT"
 }
 
-explainer_popup() {
-    msg_box "$SCRIPT_EXPLAINER"
-    if ! yesno_box_yes "Do you want to proceed with this script?"
+install_popup() {
+    if yesno_box_yes "Do you want to install $1?"
     then
-        exit 1
+        print_text_in_color "$ICyan" "Installing $1..."
+    else
+        if [ -z "$2" ] || [ "$2" = "exit" ]
+        then
+            exit 1
+        elif [ "$2" = "sleep" ]
+        then
+            sleep 1
+        elif [ "$2" = "return" ]
+        then
+            return 1
+        else
+            exit 1
+        fi
     fi
 }
 
 reinstall_remove_menu() {
-    choice=$(whiptail --title "$TITLE" --menu \
-"It seems like $SCRIPT_NAME is already installed.\nChoose what you want to do.
+    REINSTALL_REMOVE=$(whiptail --title "$TITLE" --menu \
+"It seems like $1 is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall $SCRIPT_NAME" "" \
-"Uninstall $SCRIPT_NAME" "" 3>&1 1>&2 2>&3)
-    if [ -z "$choice" ]
+"Reinstall" "$1" \
+"Uninstall" "$1" 3>&1 1>&2 2>&3)
+    if [ "$REINSTALL_REMOVE" = "Reinstall" ]
     then
-        exit 1
+        print_text_in_color "$ICyan" "Reinstalling $1..."
+    elif [ "$REINSTALL_REMOVE" = "Uninstall" ]
+    then
+        print_text_in_color "$ICyan" "Uninstalling $1..."
+    elif [ -z "$REINSTALL_REMOVE" ]
+    then
+        if [ -z "$2" ] || [ "$2" = "exit" ]
+        then
+            exit 1
+        elif [ "$2" = "sleep" ]
+        then
+            sleep 1
+        elif [ "$2" = "return" ]
+        then
+            return 1
+        else
+            exit 1
+        fi
     fi
 }
 
 removal_popup() {
-    if [ "$choice" = "Uninstall $SCRIPT_NAME" ]
+    if [ "$REINSTALL_REMOVE" = "Uninstall" ]
     then
-        msg_box "$SCRIPT_NAME was successfully uninstalled."
-        exit
+        msg_box "$1 was successfully uninstalled."
+        if [ -z "$2" ] || [ "$2" = "exit" ]
+        then
+            exit 1
+        elif [ "$2" = "sleep" ]
+        then
+            sleep 1
+        elif [ "$2" = "return" ]
+        then
+            return 1
+        else
+            exit 1
+        fi
+    elif [ "$REINSTALL_REMOVE" = "Reinstall" ]
+    then
+        print_text_in_color "$ICyan" "Reinstalling $1..."
     else
-        print_text_in_color "$ICyan" "Reinstalling $SCRIPT_NAME..."
+        msg_box "It seems like neither Uninstall nor Reinstall is chosen, \
+something is wrong here. Please report this to $ISSUES"
+        exit 1
     fi
 }
 

@@ -21,11 +21,14 @@ debug_mode
 root_check
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
 
 # Check if already installed
-if is_this_installed plexmediaserver
+if ! is_this_installed plexmediaserver
 then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
     msg_box "It seems like PLEX Media Server is already installed.
 
 If you want to delete PLEX Media Server and it's data to be able \

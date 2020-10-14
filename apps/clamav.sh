@@ -21,18 +21,20 @@ debug_mode
 root_check
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
 
 # Needs 1 GB alone
 ram_check 3 "ClamAV"
 cpu_check 2 "ClamAV"
 
 # Check if webmin is already installed
-print_text_in_color "$ICyan" "Checking if ClamAV is already installed..."
-if is_this_installed clamav-daemon || is_this_installed clamav || is_this_installed clamav-freshclam
+if ! is_this_installed clamav-daemon && ! is_this_installed clamav && ! is_this_installed clamav-freshclam
 then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
     # Ask for removal or reinstallation
-    reinstall_remove_menu
+    reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     apt purge clamav-daemon -y
     apt purge clamav-freshclam -y
@@ -47,9 +49,7 @@ then
         nextcloud_occ_no_check app:remove files_antivirus
     fi
     # Show successful uninstall if applicable
-    removal_popup
-else
-    print_text_in_color "$ICyan" "Installing ClamAV..."
+    removal_popup "$SCRIPT_NAME"
 fi
 
 # Install needed tools

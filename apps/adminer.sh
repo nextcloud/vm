@@ -19,14 +19,16 @@ debug_mode
 root_check
 
 # Show explainer
-explainer_popup
+msg_box "$SCRIPT_EXPLAINER"
 
 # Check if adminer is already installed
-print_text_in_color "$ICyan" "Checking if Adminer is already installed..."
-if is_this_installed adminer
+if ! is_this_installed adminer
 then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
     # Ask for removal or reinstallation
-    reinstall_remove_menu
+    reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     check_external_ip # Check that the script can see the external IP (apache fails otherwise)
     a2disconf adminer.conf
@@ -35,9 +37,7 @@ then
     check_command apt-get purge adminer -y
     restart_webserver
     # Show successful uninstall if applicable
-    removal_popup
-else
-    print_text_in_color "$ICyan" "Installing and securing Adminer..."
+    removal_popup "$SCRIPT_NAME"
 fi
 
 # Check that the script can see the external IP (apache fails otherwise)
