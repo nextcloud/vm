@@ -17,9 +17,10 @@ debug_mode
 root_check
 
 # Check Ubuntu version
-if ! version 16.04 "$DISTRO" 20.04.6; then
-msg_box "Your current Ubuntu version is $DISTRO but must be between 16.04 - 20.04.6 to run this script."
-msg_box "Please contact us to get support for upgrading your server:
+if ! version 16.04 "$DISTRO" 20.04.6
+then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 16.04 - 20.04.6 to run this script."
+    msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
     exit 1

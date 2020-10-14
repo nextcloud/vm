@@ -24,8 +24,8 @@ root_check
 # Must be 20.04
 if ! version 20.04 "$DISTRO" 20.04.6
 then
-msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to install Talk"
-msg_box "Please contact us to get support for upgrading your server:
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to install Talk"
+    msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
 exit
@@ -41,8 +41,8 @@ then
     choice=$(whiptail --title "$TITLE" --menu \
 "It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall Nextcloud Talk" "" \
-    "Uninstall Nextcloud Talk" "" 3>&1 1>&2 2>&3)
+"Reinstall Nextcloud Talk" "" \
+"Uninstall Nextcloud Talk" "" 3>&1 1>&2 2>&3)
 
     case "$choice" in
         "Uninstall Nextcloud Talk")
@@ -77,7 +77,7 @@ fi
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
 if ! curl -s https://"${TURN_DOMAIN//\\/}"/status.php | grep -q 'installed":true'
 then
-msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+    msg_box "It seems like Nextcloud is not installed or that you don't use https on:
 ${TURN_DOMAIN//\\/}
 Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.
@@ -154,9 +154,11 @@ check_command systemctl restart coturn.service
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
 
-This can be done automatically if you have UNNP enabled in your firewall/router. You will be offered to use UNNP in the next step.
+This can be done automatically if you have UNNP enabled in your firewall/router. \
+You will be offered to use UNNP in the next step.
 
-After you hit OK, the script will check if the port is open or not. If it fails and you want to run this script again, just execute this in your CLI:
+After you hit OK, the script will check if the port is open or not. If it fails \
+and you want to run this script again, just execute this in your CLI:
 sudo bash /var/scripts/menu.sh, and choose 'Talk'."
 
 if yesno_box_no "Do you want to use UPNP to open port $TURN_PORT?"
@@ -183,7 +185,7 @@ fi
 
 if is_app_installed spreed
 then
-msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:
+    msg_box "Nextcloud Talk is now installed. For more information about Nextcloud Talk and its mobile apps visit:
 https://nextcloud.com/talk/"
 fi
 
