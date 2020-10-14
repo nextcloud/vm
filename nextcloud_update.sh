@@ -152,6 +152,13 @@ download_script MENU menu
 # Make sure fetch_lib.sh is available
 download_script STATIC fetch_lib
 
+# Get newest dat files for geoblock.sh
+if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
+then
+    get_newest_dat_files
+    check_command systemctl restart apache2
+fi
+
 # Update docker-ce to overlay2 since devicemapper is deprecated
 if [ -f /etc/systemd/system/docker.service ]
 then

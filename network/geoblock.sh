@@ -56,6 +56,9 @@ install_if_not libapache2-mod-geoip
 check_command a2enmod geoip rewrite
 check_command systemctl restart apache2
 
+# Download newest dat files
+get_newest_dat_files
+
 # Restrict to countries and/or continents
 choice=$(whiptail --title "$TITLE"  --checklist \
 "Do you want to restrict to countries and/or continents?
