@@ -25,6 +25,13 @@ else
     STARTUP_SWITCH="OFF"
 fi
 
+# Show a msg_box during the startup script
+if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+then
+    msg_box "In the following menu will be additional apps offered to you that you can install.
+We have pre-selected apps that we recommend to any installation."
+fi
+
 # Install Apps
 choice=$(whiptail --title "$TITLE" --checklist \
 "Which apps do you want to install?\n\nAutomatically configure and install selected apps
