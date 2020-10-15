@@ -79,6 +79,23 @@ TITLE="Nextcloud VM - $(date +%Y)"
 CHECKLIST_GUIDE="Navigate with the [ARROW] keys and (de)select with the [SPACE] key. Confirm by pressing [ENTER]"
 MENU_GUIDE="Navigate with the [ARROW] keys and confirm by pressing [ENTER]"
 RUN_LATER_GUIDE="You can view this script later by running 'sudo bash $SCRIPTS/menu.sh'"
+# Whiptail styling:
+export NEWT_COLORS='
+root=brightblue,brightblue
+window=white,white
+border=blue,white
+shadow=blue,blue
+title=blue,white
+textbox=black,white
+button=white,brightblue
+compactbutton=black,white
+listbox=black,white
+actlistbox=white,brightblue
+actsellistbox=white,brightblue
+checkbox=black,white
+actcheckbox=white,brightblue
+entry=white,brightblue
+'
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
