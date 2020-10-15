@@ -33,6 +33,13 @@ else
     STARTUP_SWITCH="OFF"
 fi
 
+# Show a msg_box during the startup script
+if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+then
+    msg_box "In the following menu will be server configuration offered to you that you can choose to configure.
+We have pre-selected configuration that we recommend to any installation."
+fi
+
 # Server configurations
 choice=$(whiptail --title "$TITLE" --checklist \
 "Choose what you want to configure
