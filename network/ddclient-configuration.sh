@@ -24,6 +24,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE
 If your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" \
 "deSEC" "(desec.io)" \
+"Duck DNS" "(duckdns.org)" \
 "Strato" "(strato.de)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -41,6 +42,14 @@ case "$choice" in
         GUIDE="https://desec.io/#"
         PROTOCOL="dyndns2"
         SERVER="update.dedyn.io"
+        USE_SSL="yes"
+    ;;
+    "Duck DNS")
+        PROVIDER="Duck DNS"
+        INSTRUCTIONS="get a DDNS account with password"
+        GUIDE="https://www.duckdns.org/faqs.jsp"
+        PROTOCOL="duckdns"
+        SERVER="www.duckdns.org"
         USE_SSL="yes"
     ;;
     "Strato")
@@ -80,15 +89,14 @@ If you are not sure, please refer to the documentation of your DDNS provider.")
 PASSWORD=$(input_box_flow "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.
 If you are not sure, please refer to the documentation of your DDNS provider.")
 
-# Get results and store in a variable:
-RESULT="You will see now a list of all entered information. Please check that everything seems correct.\n\n"
-RESULT+="Provider=$PROVIDER\n"
-RESULT+="Host=$HOSTNAME\n"
-RESULT+="login=$LOGIN\n"
-RESULT+="password=$PASSWORD\n"
+# Present what we gathered
+msg_box "You will see now a list of all entered information. Please check that everything seems correct.\n
+Provider=$PROVIDER
+Host=$HOSTNAME
+login=$LOGIN
+password=$PASSWORD"
 
-# Present what we gathered, if everything okay, write to file
-msg_box "$RESULT"
+# If everything okay, write to file
 if ! yesno_box_yes "Do you want to proceed?"
 then
     exit
