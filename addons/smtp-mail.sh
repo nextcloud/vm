@@ -244,7 +244,7 @@ You can look at /var/log/msmtp for further logs.
 Please run this script once more time if you want to make another try."
     if yesno_box_yes "Do you want to reset all configs and uninstall all packets \
 that were made/installed by this script so that you keep a clean system?
-This will make debugging more complicated since you will have only the log file to debug this."
+This will make debugging more complicated since you will only have the log file to debug this."
     then
         apt-get purge msmtp -y
         apt-get purge msmtp-mta -y
