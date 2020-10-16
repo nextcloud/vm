@@ -78,7 +78,7 @@ TITLE="Nextcloud VM - $(date +%Y)"
 [ -n "$SCRIPT_NAME" ] && TITLE+=" - $SCRIPT_NAME"
 CHECKLIST_GUIDE="Navigate with the [ARROW] keys and (de)select with the [SPACE] key. \
 Confirm by pressing [ENTER]. Cancel by pressing [Esc]."
-MENU_GUIDE="Navigate with the [ARROW] keys and confirm by pressing [ENTER]. Cancel by pressing [Esc]."
+MENU_GUIDE="Navigate with the [ARROW] keys and confirm by pressing [ENTER]. Cancel by pressing [ESC]."
 RUN_LATER_GUIDE="You can view this script later by running 'sudo bash $SCRIPTS/menu.sh'."
 # Repo
 GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
