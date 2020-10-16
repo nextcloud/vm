@@ -92,7 +92,7 @@ DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
 NOT_SUPPORTED="$GITHUB_REPO/not-supported"
-DAT_FILES="$GITHUB_REPO/dat"
+GEOBLOCKDAT="$GITHUB_REPO/dat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
@@ -360,7 +360,7 @@ something is wrong here. Please report this to $ISSUES"
 get_newest_dat_files() {
     # IPv4
     IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/dat \
-    | grep -oP '[a-zA-Z0-9_-]+4\.dat' | uniq | grep -v 'yyyy-mm' | grep -v 'maxmind4.dat' | sort -r | head -1)
+    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
     if [ -z "$IPV4_NAME" ]
     then
         print_text_in_color "$IRed" "Could not get the newest IPv4_name. Not updating the .dat file"
@@ -370,13 +370,14 @@ get_newest_dat_files() {
         then
             print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
             sleep 1
-            download_script DAT_FILES "$IPV4_NAME"
+            check_command curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
             check_command rm /usr/share/GeoIP/GeoIP.dat
             check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
             check_command mv "/usr/share/GeoIP/$IPV4_NAME" /usr/share/GeoIP/GeoIP.dat
             chown root:root /usr/share/GeoIP/GeoIP.dat
             chmod 644 /usr/share/GeoIP/GeoIP.dat
-            find /var/scripts -type f -regex '.*/[a-zA-Z0-9_-]+4\.dat' -not -name "$IPV4_NAME" -delete
+            find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -not -name "$IPV4_NAME" -delete
         else
             print_text_in_color "$ICyan" "The latest IPv4 dat file is already downloaded."
             sleep 1
@@ -384,7 +385,7 @@ get_newest_dat_files() {
     fi
     # IPv6
     IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/dat \
-    | grep -oP '[a-zA-Z0-9_-]+6\.dat' | uniq | grep -v 'yyyy-mm' | grep -v 'maxmind6.dat' | sort -r | head -1)
+    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
     if [ -z "$IPV6_NAME" ]
     then
         print_text_in_color "$IRed" "Could not get the newest IPv6_name. Not updating the .dat file"
@@ -394,13 +395,14 @@ get_newest_dat_files() {
         then
             print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
             sleep 1
-            download_script DAT_FILES "$IPV6_NAME"
+            check_command curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
             check_command rm /usr/share/GeoIP/GeoIPv6.dat
             check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
             check_command mv "/usr/share/GeoIP/$IPV6_NAME" /usr/share/GeoIP/GeoIPv6.dat
             chown root:root /usr/share/GeoIP/GeoIPv6.dat
             chmod 644 /usr/share/GeoIP/GeoIPv6.dat
-            find /var/scripts -type f -regex '.*/[a-zA-Z0-9_-]+6\.dat' -not -name "$IPV6_NAME" -delete
+            find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -not -name "$IPV6_NAME" -delete
         else
             print_text_in_color "$ICyan" "The latest IPv6 dat file is already downloaded."
             sleep 1
@@ -1133,8 +1135,7 @@ rm -f releases
 # Use it for functions like download_static_script
 download_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
-    if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" \
-    || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS" || curl_to_dir "${!1}" "${2}" "$SCRIPTS"; }
+    if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "{$2} failed to download."
         sleep 2
