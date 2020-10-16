@@ -36,8 +36,11 @@ fi
 # Show a msg_box during the startup script
 if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
 then
-    msg_box "In the following menu will be server configuration offered to you that you can choose to configure.
-We have pre-selected configuration that we recommend to any installation."
+    msg_box "In the next step, you will be offered to easily install different configurations that are made to enhance your server and experiance.
+We have pre-selected some choices that we recommend for any installation.
+
+PLEASE NOTE: For stability reassons you should *not* select everything just for the sake of it.
+It's better to run: sudo bash /var/scripts/menu.sh when the first setup is complete, and after you've made a snapshot/backup of the server."
 fi
 
 # Server configurations
@@ -50,7 +53,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
 "Geoblock" "(Restrict access to your websites to certain countries)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
-"SMTP Mail" "(Enable beeing notified by mail from your server)" "$STARTUP_SWITCH" \
+"SMTP Mail" "(Enable beeing notified by mail from your server)" OFF \
 "Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
