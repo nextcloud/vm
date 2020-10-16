@@ -239,7 +239,7 @@ docker run -i -t -d -p 127.0.0.3:9090:80 --restart always --name onlyoffice only
 # docker run -i -t -d -p 127.0.0.3:9090:80 --restart=always --name onlyoffice \
 # -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data  onlyoffice/documentserver-ie
 
-# Install apache2 
+# Install apache2
 install_if_not apache2
 
 # Enable Apache2 module's
@@ -248,6 +248,12 @@ a2enmod proxy_wstunnel
 a2enmod proxy_http
 a2enmod ssl
 a2enmod headers
+
+# Only add TLS 1.3 on Ubuntu later than 20.04
+if version 20.04 "$DISTRO" 20.04.10
+then
+    TLS13="+TLSv1.3"
+fi
 
 if [ -f "$HTTPS_CONF" ]
 then
@@ -270,7 +276,7 @@ then
     # Intermediate configuration
     SSLEngine               on
     SSLCompression          off
-    SSLProtocol             -all +TLSv1.2 +TLSv1.3
+    SSLProtocol             -all +TLSv1.2 $TLS13
     SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
     SSLHonorCipherOrder     off
     SSLSessionTickets       off
