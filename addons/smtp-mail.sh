@@ -218,7 +218,7 @@ ALIASES_CONF
 
 # Define the mail-program
 cat << DEFINE_MAIL > /etc/mail.rc
-set sendmail="/usr/bin/msmtp"
+set sendmail="/usr/bin/msmtp -t"
 DEFINE_MAIL
 
 # Test sending of mails
@@ -241,15 +241,20 @@ then
     # Fail message
     msg_box "It seems like something has failed.
 You can look at /var/log/msmtp for further logs.
-We will now reset everything except the logfile so that you are able to start over again.
 Please run this script once more time if you want to make another try."
-    apt-get purge msmtp -y
-    apt-get purge msmtp-mta -y
-    apt-get purge mailutils -y
-    apt autoremove -y
-    rm -f /etc/mail.rc
-    rm -f /etc/msmtprc
-    echo "" > /etc/aliases
+    if yesno_box_yes "Do you want to reset all configs and uninstall all packets \
+that were made/installed by this script so that you keep a clean system?
+This will make debugging more complicated since you will have only the log file to debug this."
+    then
+        apt-get purge msmtp -y
+        apt-get purge msmtp-mta -y
+        apt-get purge mailutils -y
+        apt autoremove -y
+        rm -f /etc/mail.rc
+        rm -f /etc/msmtprc
+        echo "" > /etc/aliases
+        msg_box "Successfully done this."
+    fi
 else
     # Success message
     msg_box "Congratulaions, the test email was successfully sent!
