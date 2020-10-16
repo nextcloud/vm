@@ -717,10 +717,15 @@ then
 #    ServerName cloud.example.com
 
 ### SETTINGS ###
+    <FilesMatch "\.php$">
+        SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
+    </FilesMatch>
+
+    # Intermediate configuration
     SSLEngine               on
     SSLCompression          off
     SSLProtocol             -all +TLSv1.2 +TLSv1.3
-    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20$
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
     SSLHonorCipherOrder     off
     SSLSessionTickets       off
     ServerSignature         off
@@ -729,10 +734,6 @@ then
     LogLevel warn
     CustomLog ${APACHE_LOG_DIR}/access.log combined
     ErrorLog ${APACHE_LOG_DIR}/error.log
-
-    <FilesMatch "\.php$">
-        SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
-    </FilesMatch>
 
     DocumentRoot $NCPATH
 

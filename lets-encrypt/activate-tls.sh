@@ -127,6 +127,21 @@ then
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
+    # Intermediate configuration
+    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+    SSLEngine               on
+    SSLCompression          off
+    SSLProtocol             -all +TLSv1.2 +TLSv1.3
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
+    ServerSignature         off
+
+    # Logs
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
     DocumentRoot $NCPATH
 
     <Directory $NCPATH>
@@ -168,21 +183,6 @@ then
     SSLCertificateKeyFile $CERTFILES/$TLSDOMAIN/privkey.pem
     SSLOpenSSLConfCmd DHParameters $DHPARAMS_TLS
 </VirtualHost>
-
-    # Intermediate configuration
-    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    SSLEngine               on
-    SSLCompression          off
-    SSLProtocol             -all +TLSv1.2 +TLSv1.3
-    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20$
-    SSLHonorCipherOrder     off
-    SSLSessionTickets       off
-    ServerSignature         off
-
-    # Logs
-    LogLevel warn
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-    ErrorLog ${APACHE_LOG_DIR}/error.log
 
 ### EXTRAS ###
     SSLUseStapling On
