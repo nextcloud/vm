@@ -218,7 +218,7 @@ ALIASES_CONF
 
 # Define the mail-program
 cat << DEFINE_MAIL > /etc/mail.rc
-set sendmail="/usr/bin/msmtp -t"
+set sendmail="/usr/bin/msmtp"
 DEFINE_MAIL
 
 # Test sending of mails
