@@ -388,7 +388,6 @@ print_text_in_color "$ICyan" "Enabling HTTP/2 server wide..."
 cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
     Protocols h2 http/1.1
-    H2Direct on
 </IfModule>
 HTTP2_ENABLE
 print_text_in_color "$IGreen" "$HTTP2_CONF was successfully created"
@@ -712,7 +711,6 @@ then
 
 <VirtualHost *:443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    SSLEngine on
 
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
@@ -722,6 +720,20 @@ then
     <FilesMatch "\.php$">
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
+
+    # Intermediate configuration
+    SSLEngine               on
+    SSLCompression          off
+    SSLProtocol             -all +TLSv1.2 +TLSv1.3
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
+    ServerSignature         off
+
+    # Logs
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
 
     DocumentRoot $NCPATH
 

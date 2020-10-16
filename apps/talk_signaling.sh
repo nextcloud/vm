@@ -363,6 +363,12 @@ mkdir -p /var/www/html/error
 echo "Hi there! :) If you see this page, the Apache2 proxy for $DESCRIPTION is up and running." > /var/www/html/error/404_proxy.html
 chown -R www-data:www-data /var/www/html/error
 
+# Only add TLS 1.3 on Ubuntu later than 20.04
+if version 20.04 "$DISTRO" 20.04.10
+then
+    TLS13="+TLSv1.3"
+fi
+
 if [ -f "$HTTPS_CONF" ]
 then
     a2dissite "$SUBDOMAIN.conf"
@@ -374,18 +380,25 @@ then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
     ServerName $SUBDOMAIN:443
-    SSLEngine on
-    ServerSignature On
-    SSLHonorCipherOrder on
     SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
     SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
     SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
     SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
-    SSLProtocol TLSv1.2
-    SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
+
+    # Intermediate configuration
+    SSLEngine               on
+    SSLCompression          off
+    SSLProtocol             -all +TLSv1.2 $TLS13
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
+    ServerSignature         off
+
+    # Logs
     LogLevel warn
-    CustomLog $VMLOGS/talk_apache_access.log combined
-    ErrorLog $VMLOGS/talk_apache_error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
     # Just in case - see below
     SSLProxyEngine On
     SSLProxyVerify None
