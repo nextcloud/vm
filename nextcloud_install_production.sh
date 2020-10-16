@@ -388,7 +388,6 @@ print_text_in_color "$ICyan" "Enabling HTTP/2 server wide..."
 cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
     Protocols h2 http/1.1
-    H2Direct on
 </IfModule>
 HTTP2_ENABLE
 print_text_in_color "$IGreen" "$HTTP2_CONF was successfully created"
