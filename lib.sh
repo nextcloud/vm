@@ -92,7 +92,7 @@ DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
 NOT_SUPPORTED="$GITHUB_REPO/not-supported"
-GEOBLOCKDAT="$GITHUB_REPO/dat"
+GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
@@ -359,7 +359,7 @@ something is wrong here. Please report this to $ISSUES"
 # Used in geoblock.sh
 get_newest_dat_files() {
     # IPv4
-    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/dat \
+    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
     if [ -z "$IPV4_NAME" ]
     then
@@ -384,7 +384,7 @@ get_newest_dat_files() {
         fi
     fi
     # IPv6
-    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/dat \
+    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
     if [ -z "$IPV6_NAME" ]
     then
