@@ -239,7 +239,7 @@ docker run -i -t -d -p 127.0.0.3:9090:80 --restart always --name onlyoffice only
 # docker run -i -t -d -p 127.0.0.3:9090:80 --restart=always --name onlyoffice \
 # -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data  onlyoffice/documentserver-ie
 
-# Install apache2 
+# Install apache2
 install_if_not apache2
 
 # Enable Apache2 module's
@@ -248,6 +248,12 @@ a2enmod proxy_wstunnel
 a2enmod proxy_http
 a2enmod ssl
 a2enmod headers
+
+# Only add TLS 1.3 on Ubuntu later than 20.04
+if version 20.04 "$DISTRO" 20.04.10
+then
+    TLS13="+TLSv1.3"
+fi
 
 if [ -f "$HTTPS_CONF" ]
 then
@@ -262,18 +268,21 @@ then
 <VirtualHost *:443>
      ServerName $SUBDOMAIN:443
 
-    SSLEngine on
-    ServerSignature On
-    SSLHonorCipherOrder on
-
     SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
     SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
     SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
     SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
-    
-    SSLProtocol TLSv1.2
-    SSLCipherSuite ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS
 
+    # Intermediate configuration
+    SSLEngine               on
+    SSLCompression          off
+    SSLProtocol             -all +TLSv1.2 $TLS13
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
+    ServerSignature         off
+
+    # Logs
     LogLevel warn
     CustomLog ${APACHE_LOG_DIR}/access.log combined
     ErrorLog ${APACHE_LOG_DIR}/error.log
@@ -283,7 +292,7 @@ then
     SSLProxyVerify None
     SSLProxyCheckPeerCN Off
     SSLProxyCheckPeerName Off
-    
+
     # Improve security settings
     Header set X-XSS-Protection "1; mode=block"
     Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"

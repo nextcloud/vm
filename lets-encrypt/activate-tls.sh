@@ -104,6 +104,12 @@ fi
 # To get the correct version for the Apache conf file
 check_php
 
+# Only add TLS 1.3 on Ubuntu later than 20.04
+if version 20.04 "$DISTRO" 20.04.10
+then
+    TLS13="+TLSv1.3"
+fi
+
 # Generate nextcloud_tls_domain.conf
 if [ ! -f "$tls_conf" ]
 then
@@ -117,15 +123,6 @@ then
 </VirtualHost>
 
 <VirtualHost *:443>
-
-    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    SSLEngine on
-    SSLCompression off
-    SSLProtocol TLSv1.2
-    SSLHonorCipherOrder on
-    SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
-    SSLSessionTickets off
-
 ### YOUR SERVER ADDRESS ###
 
     ServerAdmin admin@$TLSDOMAIN
@@ -135,6 +132,21 @@ then
     <FilesMatch "\.php$">
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
+
+    # Intermediate configuration
+    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+    SSLEngine               on
+    SSLCompression          off
+    SSLProtocol             -all +TLSv1.2 $TLS13
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
+    ServerSignature         off
+
+    # Logs
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
 
     DocumentRoot $NCPATH
 
@@ -176,7 +188,6 @@ then
     SSLCertificateFile $CERTFILES/$TLSDOMAIN/cert.pem
     SSLCertificateKeyFile $CERTFILES/$TLSDOMAIN/privkey.pem
     SSLOpenSSLConfCmd DHParameters $DHPARAMS_TLS
-
 </VirtualHost>
 
 ### EXTRAS ###
