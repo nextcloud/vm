@@ -25,6 +25,16 @@ else
     STARTUP_SWITCH="OFF"
 fi
 
+# Show a msg_box during the startup script
+if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+then
+    msg_box "In the next step, you will be offered to easily install apps that are made to enhance your server and experiance.
+We have pre-selected apps that we recommend for any installation.
+
+PLEASE NOTE: For stability reassons you should *not* select apps just for the sake of it.
+It's better to run: sudo bash /var/scripts/menu.sh when the first setup is complete, and after you've made a snapshot/backup of the server."
+fi
+
 # Install Apps
 choice=$(whiptail --title "$TITLE" --checklist \
 "Which apps do you want to install?\n\nAutomatically configure and install selected apps
