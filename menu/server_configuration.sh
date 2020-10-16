@@ -40,7 +40,7 @@ then
 We have pre-selected some choices that we recommend for any installation.
 
 PLEASE NOTE: For stability reassons you should *not* select everything just for the sake of it.
-It's better to run: sudo bash /var/scripts/menu.sh when the first setup is complete, and after you've made a snapshot/backup of the server."
+It's better to run: sudo bash $SCRIPTS/menu.sh when the first setup is complete, and after you've made a snapshot/backup of the server."
 fi
 
 # Server configurations
