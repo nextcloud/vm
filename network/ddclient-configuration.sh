@@ -93,8 +93,8 @@ If you are not sure, please refer to the documentation of your DDNS provider.")
 msg_box "You will see now a list of all entered information. Please check that everything seems correct.\n
 Provider=$PROVIDER
 Host=$HOSTNAME
-login=$LOGIN
-password=$PASSWORD"
+Login=$LOGIN
+Password=$PASSWORD"
 
 # If everything okay, write to file
 if ! yesno_box_yes "Do you want to proceed?"
@@ -151,5 +151,5 @@ DDCLIENT_CONF
 msg_box "Everything is setup by now and we will check the connection."
 OUTPUT="$(ddclient -verbose)"
 msg_box "Please check the logs below and make sure that everything looks good. If not, just run this script again.
-If you are certain, that you entered all things correctly and it didn't work, please report this to\n$ISSUES\n\n$OUTPUT"
+If you are certain that you entered all things correctly and it didn't work, please report this to\n$ISSUES\n\n$OUTPUT"
 exit

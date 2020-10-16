@@ -5,8 +5,8 @@
 
 # shellcheck disable=2034,2059,1091
 true
-SCRIPT_NAME="Geoblock"
-SCRIPT_EXPLAINER="This script let's you allow access to your websites only from chosen countries."
+SCRIPT_NAME="GeoBlock"
+SCRIPT_EXPLAINER="This script lets you restrict access to your server, only allowing the countries you choose."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -90,9 +90,9 @@ then
 
     # Create checklist
     args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
-"Please select all countries that shall have access to your websites.
-All countries that are not selected will not have access to your websites \
-if you not choose to activate their continent.
+"Please select all countries that shall have access to your server.
+All countries that are'nt selected will *not* have access to your server. \
+To allow them you have to choose the specific continent.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=0
     while [ "$count" -lt "${#COUNTRY_NAMES[@]}" ]
@@ -114,8 +114,8 @@ if [[ "$choice" = *"Continents"* ]]
 then
     # Restrict to continents
     choice=$(whiptail --title "$TITLE" --separate-output --checklist \
-"Please choose all continents that shall have access to your websites.
-All countries on not selected continents will not have access to your websites \
+"Please choose all continents that shall have access to your server.
+All countries on not selected continents will not have access to your server \
 if you haven't explicitely chosen them in the countries menu before.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "AF" "Africa" OFF \
@@ -181,6 +181,6 @@ echo -e "$GEOIP_CONF" >> /etc/apache2/apache2.conf
 
 check_command systemctl restart apache2
 
-msg_box "Geoblock was successfully configured"
+msg_box "GeoBlock was successfully configured"
 
 exit
