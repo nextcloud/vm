@@ -63,11 +63,24 @@ Listen 9443
 
 <VirtualHost *:9443>
     Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    SSLEngine on
-    
+
+    # Intermediate configuration
+    SSLEngine               on
+    SSLCompression          off
+    SSLProtocol             -all +TLSv1.2 +TLSv1.3
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20$
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
+    ServerSignature         off
+
+    # Logs
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
     # This is needed to redirect access on http://$ADDRESS:9443/ to https://$ADDRESS:9443/
     ErrorDocument 400 https://$ADDRESS:9443/
-    
+
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
 #    ServerName adminer.example.com

@@ -254,17 +254,20 @@ then
   SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
   SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
   SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
-  
-  # Intermediate configuration 
-  Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+
+  # Intermediate configuration
   SSLEngine               on
   SSLCompression          off
   SSLProtocol             -all +TLSv1.2 +TLSv1.3
-  SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+  SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20$
   SSLHonorCipherOrder     off
   SSLSessionTickets       off
-    
+  ServerSignature         off
+
+  # Logs
   LogLevel warn
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
+  ErrorLog ${APACHE_LOG_DIR}/error.log
 
   # Encoded slashes need to be allowed
   AllowEncodedSlashes NoDecode
@@ -274,7 +277,7 @@ then
   SSLProxyVerify None
   SSLProxyCheckPeerCN Off
   SSLProxyCheckPeerName Off
-  
+
   # Improve security settings
   Header set X-XSS-Protection "1; mode=block"
   Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
@@ -292,7 +295,7 @@ then
   # WOPI discovery URL
   ProxyPass           /hosting/discovery https://127.0.0.1:9980/hosting/discovery retry=0
   ProxyPassReverse    /hosting/discovery https://127.0.0.1:9980/hosting/discovery
-  
+
   # Endpoint with information about availability of various features
   ProxyPass           /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities retry=0
   ProxyPassReverse    /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities
