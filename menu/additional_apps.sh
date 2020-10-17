@@ -75,35 +75,8 @@ case "$choice" in
         run_script APP netdata
     ;;&
     *"BPYTOP"*)
-        SUBTITLE="BPYTOP"
-        msg_box "BPYTOP is an amazing alternative to ressource-monitor software like htop." "$SUBTITLE"
-        install_if_not snapd
-        if snap list | grep -q bpytop
-        then
-            if yesno_box_yes "It seems like BPYTOP is already installed.\nDo you want to uninstall it?" "$SUBTITLE"
-            then
-                print_text_in_color "$ICyan" "Uninstalling BPYTOP..."
-                check_command snap remove bpytop
-                msg_box "BPYTOP was successfully removed!" "$SUBTITLE"
-            fi
-        elif yesno_box_yes "Do you want to install BPYTOP?" "$SUBTITLE"
-        then
-            print_text_in_color "$ICyan" "Installing BPYTOP..."
-            if snap install bpytop
-            then
-                snap connect bpytop:mount-observe
-                snap connect bpytop:network-control
-                snap connect bpytop:hardware-observe
-                snap connect bpytop:system-observe
-                snap connect bpytop:process-control
-                snap connect bpytop:physical-memory-observe
-                hash -r
-                msg_box "BPYTOP is now installed! Check out the amazing stats by runnning 'bpytop' from your CLI.
-You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/blob/master/README.md" "$SUBTITLE"
-            else
-                msg_box "It seems like the installation of BPYTOP failed. Please try again." "$SUBTITLE"
-            fi
-        fi
+        print_text_in_color "$ICyan" "Downloading the BPYTOP script..."
+        run_script APP bpytop
     ;;&
     *"Midnight Commander"*)
         SUBTITLE="Midnight Commander"
