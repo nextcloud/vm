@@ -30,7 +30,7 @@ You can disable the automatic updates by entering the crontab file like this:
 'sudo crontab -e -u root'
 Then just put a hash (#) in front of the row that you want to disable.
 
-In the next step you will be able to choose to proceed or exit."
+In the next step you will be able to choose to proceed or exit." "$SUBTITLE"
 
 if yesno_box_yes "Do you want to enable automatic updates?"
 then
@@ -43,4 +43,5 @@ then
         sed -i "s|exit|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
         echo "exit" >> "$SCRIPTS"/update.sh
     fi
+    msg_box "Please remember to keep backups in case something should go wrong, you never know." "$SUBTITLE"
 fi
