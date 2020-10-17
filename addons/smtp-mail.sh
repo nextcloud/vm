@@ -261,7 +261,7 @@ This will make debugging more complicated since you will only have the log file 
             rm -f /etc/mail.rc
             rm -f /etc/msmtprc
             echo "" > /etc/aliases
-            msg_box "Successfully done this." 
+            msg_box "Uninstallation of MSMTP was successfully done" 
         fi
         exit 1
     fi
