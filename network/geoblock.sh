@@ -57,7 +57,7 @@ check_command a2enmod geoip rewrite
 check_command systemctl restart apache2
 
 # Download newest dat files
-# get_newest_dat_files # TODO: Uncomment this in a followup PR to be able to test this properly
+get_newest_dat_files
 
 # Restrict to countries and/or continents
 choice=$(whiptail --title "$TITLE"  --checklist \
