@@ -18,6 +18,8 @@ debug_mode
 # Must be root
 root_check
 
+msg_box "$SCRIPT_EXPLAINER"
+
 # Needed for snaps to run
 install_if_not snapd
 
