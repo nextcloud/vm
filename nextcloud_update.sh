@@ -275,7 +275,7 @@ fi
 # Get newest dat files for geoblock.sh
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
-    # get_newest_dat_files # TODO: Uncomment this in a followup PR to be able to test this properly
+    get_newest_dat_files
     check_command systemctl restart apache2
 fi
 
