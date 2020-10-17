@@ -34,6 +34,9 @@ then
     then
         msg_box "Please don't run this script as pure root user!"
         exit 1
+    else
+        # Add the user to the www-data group to be able to write to all disks
+        usermod -a -G www-data "$UNIXUSER"
     fi
 
     # Check if gnome-session is installed
@@ -51,9 +54,6 @@ If you have already installed a desktop environment, you will not need to instal
             check_command sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable dash-to-panel@jderose9.github.com
         fi
     fi
-    
-    # Add the user to the www-data group to be able to write to all disks
-    usermod -a -G www-data "$UNIXUSER"
     
     # Install xrdp
     print_text_in_color "$ICyan" "Installing xrdp..."
