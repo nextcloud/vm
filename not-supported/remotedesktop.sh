@@ -28,7 +28,8 @@ if ! is_this_installed xrdp
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
-
+    XRDP_INSTALL=1
+    
     # Don't run this script as root user, because we will need the account
     if [ -z "$UNIXUSER" ]
     then
@@ -48,7 +49,7 @@ If you have already installed a desktop environment, you will not need to instal
             print_text_in_color "$ICyan" "Installing gnome-session..."
             install_if_not gnome-session
             install_if_not gnome-shell-extension-dash-to-panel
-            check_command dbus-launch gnome-extensions enable dash-to-panel@jderose9.github.com
+            check_command sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable dash-to-panel@jderose9.github.com
         fi
     fi
     
@@ -58,10 +59,18 @@ If you have already installed a desktop environment, you will not need to instal
     adduser xrdp ssl-cert
 
     # Make sure that you don't get prompted with a password request after login
-    cat << DESKTOP_CONF > /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
+    cat << DESKTOP_CONF > /etc/polkit-1/localauthority/50-local.d/allow-update-repo.pkla
 [Allow Package Management all Users]
 Identity=unix-user:*
 Action=org.freedesktop.packagekit.system-sources-refresh
+ResultAny=yes
+ResultInactive=yes
+ResultActive=yes
+DESKTOP_CONF
+    cat << DESKTOP_CONF > /etc/polkit-1/localauthority/50-local.d/color.pkla
+[Allow colord for all users]
+Identity=unix-user:*
+Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile
 ResultAny=yes
 ResultInactive=yes
 ResultActive=yes
@@ -194,6 +203,8 @@ gnome-shell-extension-dash-to-panel gnome-session xrdp)
             add-apt-repository --remove ppa:heyarje/makemkv-beta -y
             apt update -q4 & spinner_loading
             rm -f /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
+            rm -f /etc/polkit-1/localauthority/50-local.d/allow-update-repo.pkla
+            rm -f /etc/polkit-1/localauthority/50-local.d/color.pkla
             msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
             exit
         fi
@@ -244,4 +255,15 @@ We will need to add a 3rd party repository to install it which can set your serv
     *)
     ;;
 esac
+
+# Allow to reboot if xrdp was just installed because otherwise the usermod won't apply
+if [ -n "$XRDP_INSTALL" ]
+then
+    if yesno_box_yes "Do you want to reboot your server now?
+After the initial installation of XRDP it is recommended to reboot the server to apply all settings."
+    then
+        reboot
+    fi
+fi
+
 exit
