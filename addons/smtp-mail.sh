@@ -233,17 +233,13 @@ The NcVM team
 https://nextcloudvm.com"
 
 # Define the mail-program
-cat << DEFINE_MAIL > /etc/mail.rc
-set sendmail="/usr/bin/msmtp -t"
-DEFINE_MAIL
+echo 'set sendmail="/usr/bin/msmtp -t"' > /etc/mail.rc
 
 # Test mail
 if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
 then
     # Test another version
-    cat << DEFINE_MAIL > /etc/mail.rc
-set sendmail="/usr/bin/msmtp"
-DEFINE_MAIL
+    echo 'set sendmail="/usr/bin/msmtp"' > /etc/mail.rc
 
     # Second try
     if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
