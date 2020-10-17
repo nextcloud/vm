@@ -33,7 +33,7 @@ else
     # Choose to uninstall
     if ! yesno_box_no "It seems like PiVPN is already installed.
 Do you want to uninstall PiVPN and reset all its settings?
-This will also remove all clients that have currently home network acces via Wireguard."
+This will also remove all CLIents that have currently home network acces via Wireguard."
     then
         exit 1
     fi
@@ -113,7 +113,7 @@ Something could go wrong. So please keep backups!"
 if [ -f "$NCPATH/occ" ]
 then
     # Get the NCDOMAIN
-    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.CLI.url | sed 's|https://||;s|/||')
 
     # Check if Nextcloud is installed
     if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true' || [ "$NCDOMAIN" = "nextcloud" ]
@@ -238,7 +238,7 @@ fi
 # Inform the user about successfully installing PiVPN
 msg_box "Congratulations, your PiVPN was setup correctly!
 
-You can now generate new client profiles for your devices by running:
+You can now generate new CLIent profiles for your devices by running:
 'pivpn -a'
 
 Adding the new profile to a mobile phone (using the Wireguard app) can get afterwards done by running:

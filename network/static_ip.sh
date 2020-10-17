@@ -48,7 +48,7 @@ then
 fi
 
 msg_box "Please note that if the IP address changes during an (remote) SSH connection \
-(via Putty, or terminal for example), the connection will break and the IP will reset to \
+(via Putty, or CLI for example), the connection will break and the IP will reset to \
 DHCP or the IP you had before you started this script.
 
 To avoid issues with lost connectivity, please use the VM Console directly, and not SSH."
@@ -188,7 +188,7 @@ network:
        $IFACE: #object name
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
-         addresses: [$LANIP] # client IP address
+         addresses: [$LANIP] # CLIent IP address
          gateway4: $GATEWAYIP # gateway address
          nameservers:
            addresses: [$DNSs] #name servers
@@ -207,7 +207,7 @@ network:
        $IFACE2: #object name
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
-         addresses: [$LANIP] # client IP address
+         addresses: [$LANIP] # CLIent IP address
          gateway4: $GATEWAY # gateway address
          nameservers:
            addresses: [$DNSs] #name servers

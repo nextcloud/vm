@@ -233,8 +233,8 @@ add_dockerprune
 # Inform about fail2ban
 msg_box "We will now set up fail2ban for you.
 You can unban ip addresses by executing the following command:
-sudo fail2ban-client set bitwarden_rs unbanip XX.XX.XX.XX
-sudo fail2ban-client set bitwarden_rs-admin unbanip XX.XX.XX.XX"
+sudo fail2ban-CLIent set bitwarden_rs unbanip XX.XX.XX.XX
+sudo fail2ban-CLIent set bitwarden_rs-admin unbanip XX.XX.XX.XX"
 
 # Install fail2ban
 install_if_not fail2ban
@@ -291,7 +291,7 @@ BWA_JAIL_CONF
 
 check_command systemctl start fail2ban
 countdown "Waiting for fail2ban to start... " 5
-check_command fail2ban-client reload
+check_command fail2ban-CLIent reload
 
 while :
 do
@@ -303,7 +303,7 @@ Otherwise you will not have access to your Bitwarden_rs installation and have to
 
 It is highly recommended to configure and test the smtp settings for mails first.
 Then, if it works, you can easily invite all your user with an e-mail address from this admin-panel.
-(You have to click on users in the top-panel)
+(You have to CLIck on users in the top-panel)
 
 Please remember to report issues only to https://github.com/dani-garcia/bitwarden_rs"
     if yesno_box_no "Do you have the admin password now and know how to access the admin-panel?"

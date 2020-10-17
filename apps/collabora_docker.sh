@@ -154,7 +154,7 @@ NOTE: This domain must be different than your Nextcloud domain. \
 They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # Nextcloud Main Domain
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.CLI.url | sed 's|https://||;s|/||')
 
 # Nextcloud Main Domain dot-escaped
 NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
@@ -201,7 +201,7 @@ Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.
 
 If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
-When TLS is activated, run these commands from your terminal:
+When TLS is activated, run these commands from your CLI:
 sudo curl -sLO $APP/collabora.sh
 sudo bash collabora.sh"
     exit 1
@@ -294,7 +294,7 @@ then
   ProxyPreserveHost On
 
   # static html, js, images, etc. served from loolwsd
-  # loleaflet is the client part of LibreOffice Online
+  # loleaflet is the CLIent part of LibreOffice Online
   ProxyPass           /loleaflet https://127.0.0.1:9980/loleaflet retry=0
   ProxyPassReverse    /loleaflet https://127.0.0.1:9980/loleaflet
 

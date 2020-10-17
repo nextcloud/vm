@@ -208,7 +208,7 @@ sleep 2
 if install_and_enable_app documentserver_community
 then
     chown -R www-data:www-data "$NC_APPS_PATH"
-    nextcloud_occ config:app:set onlyoffice DocumentServerUrl --value="$(nextcloud_occ_no_check config:system:get overwrite.cli.url)index.php/apps/documentserver_community/"
+    nextcloud_occ config:app:set onlyoffice DocumentServerUrl --value="$(nextcloud_occ_no_check config:system:get overwrite.CLI.url)index.php/apps/documentserver_community/"
     msg_box "OnlyOffice was successfully installed."
 else
     msg_box "The documentserver_community app failed to install. Please try again later.

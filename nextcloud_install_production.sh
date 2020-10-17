@@ -522,7 +522,7 @@ phpenmod opcache
 {
 echo "# OPcache settings for Nextcloud"
 echo "opcache.enable=1"
-echo "opcache.enable_cli=1"
+echo "opcache.enable_CLI=1"
 echo "opcache.interned_strings_buffer=8"
 echo "opcache.max_accelerated_files=10000"
 echo "opcache.memory_consumption=256"
@@ -552,19 +552,19 @@ echo "pgsql.log_notice = 0"
 # Install Redis (distrubuted cache)
 run_script ADDONS redis-server-ubuntu
 
-# Install smbclient
-# php"$PHPVER"-smbclient does not yet work in PHP 7.4
-install_if_not libsmbclient-dev
-yes no | pecl install smbclient
-if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
+# Install smbCLIent
+# php"$PHPVER"-smbCLIent does not yet work in PHP 7.4
+install_if_not libsmbCLIent-dev
+yes no | pecl install smbCLIent
+if [ ! -f $PHP_MODS_DIR/smbCLIent.ini ]
 then
-    touch $PHP_MODS_DIR/smbclient.ini
+    touch $PHP_MODS_DIR/smbCLIent.ini
 fi
-if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
+if ! grep -qFx extension=smbCLIent.so $PHP_MODS_DIR/smbCLIent.ini
 then
-    echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
-    echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
-    check_command phpenmod -v ALL smbclient
+    echo "# PECL smbCLIent" > $PHP_MODS_DIR/smbCLIent.ini
+    echo "extension=smbCLIent.so" >> $PHP_MODS_DIR/smbCLIent.ini
+    check_command phpenmod -v ALL smbCLIent
 fi
 
 # Enable igbinary for PHP
@@ -609,7 +609,7 @@ echo "apc.ttl=3600"
 echo "apc.gc_ttl=7200"
 echo "apc.mmap_file_mask=NULL"
 echo "apc.slam_defense=1"
-echo "apc.enable_cli=1"
+echo "apc.enable_CLI=1"
 echo "apc.use_request_time=1"
 echo "apc.serializer=igbinary"
 echo "apc.coredump_unmap=0"
@@ -673,7 +673,7 @@ then
     </Directory>
 
     # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
+    # viewed by Web CLIents.
     <Files ".ht*">
     Require all denied
     </Files>
@@ -754,7 +754,7 @@ then
     </Directory>
 
     # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
+    # viewed by Web CLIents.
     <Files ".ht*">
     Require all denied
     </Files>

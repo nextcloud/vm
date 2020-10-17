@@ -49,7 +49,7 @@ choice=$(whiptail --title "$TITLE" --checklist \
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
-"DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \
+"DDCLIent Configuration" "(Use ddCLIent for automatic DDNS updates)" OFF \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
 "GeoBlock" "(Only allow certain countries to access your server)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
@@ -65,9 +65,9 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Security script..."
         run_script ADDONS security
     ;;&
-    *"DDclient Configuration"*)
-        print_text_in_color "$ICyan" "Downloading the DDclient Configuration script..."
-        run_script NETWORK ddclient-configuration
+    *"DDCLIent Configuration"*)
+        print_text_in_color "$ICyan" "Downloading the DDCLIent Configuration script..."
+        run_script NETWORK ddCLIent-configuration
     ;;&
     *"Activate TLS"*)
         SUBTITLE="Activate TLS"

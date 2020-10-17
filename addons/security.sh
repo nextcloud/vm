@@ -33,10 +33,10 @@ then
     cat << ENVASIVE > "$ENVASIVE"
 DOSHashTableSize 2048
 DOSPageCount 20  # maximum number of requests for the same page
-DOSSiteCount 300  # total number of requests for any object by the same client IP on the same listener
+DOSSiteCount 300  # total number of requests for any object by the same CLIent IP on the same listener
 DOSPageInterval 1.0 # interval for the page count threshold
 DOSSiteInterval 1.0  # interval for the site count threshold
-DOSBlockingPeriod 10.0 # time that a client IP will be blocked for
+DOSBlockingPeriod 10.0 # time that a CLIent IP will be blocked for
 DOSLogDir
 ENVASIVE
 fi

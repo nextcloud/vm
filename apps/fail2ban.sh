@@ -37,7 +37,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     case "$choice" in
         "Uninstall Fail2Ban")
             print_text_in_color "$ICyan" "Uninstalling Fail2Ban..."
-            fail2ban-client unban --all
+            fail2ban-CLIent unban --all
             rm /etc/fail2ban/filter.d/nextcloud.conf
             rm /etc/fail2ban/jail.local
             check_command apt-get purge fail2ban -y
@@ -46,7 +46,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         ;;
         "Reinstall Fail2Ban")
             print_text_in_color "$ICyan" "Reinstalling Fail2Ban..."
-            fail2ban-client unban --all
+            fail2ban-CLIent unban --all
             rm /etc/fail2ban/filter.d/nextcloud.conf
             rm /etc/fail2ban/jail.local
             check_command apt-get purge fail2ban -y
@@ -190,7 +190,7 @@ check_command systemctl restart fail2ban.service
 # The End
 msg_box "Fail2ban is now sucessfully installed.
 
-Please use 'fail2ban-client set nextcloud unbanip <Banned IP>' to unban certain IPs
+Please use 'fail2ban-CLIent set nextcloud unbanip <Banned IP>' to unban certain IPs
 You can also use 'iptables -L -n' to check which IPs that are banned"
 
 exit

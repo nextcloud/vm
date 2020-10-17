@@ -40,7 +40,7 @@ case "$choice" in
         SUBTITLE="Fail2ban Statuscheck"
         if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
         then
-            msg_box "$(fail2ban-client status nextcloud && fail2ban-client status sshd && iptables -L -n)" "$SUBTITLE"
+            msg_box "$(fail2ban-CLIent status nextcloud && fail2ban-CLIent status sshd && iptables -L -n)" "$SUBTITLE"
         else
             msg_box "Fail2ban isn't installed. Please run 'sudo bash /var/scripts/menu.sh' to install it." "$SUBTITLE"
         fi

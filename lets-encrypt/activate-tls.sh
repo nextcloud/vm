@@ -165,7 +165,7 @@ then
     SetEnv HTTP_HOME $NCPATH
 
     # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
+    # viewed by Web CLIents.
     <Files ".ht*">
     Require all denied
     </Files>
