@@ -69,7 +69,8 @@ DESKTOP_CONF
     cat << DESKTOP_CONF > /etc/polkit-1/localauthority/50-local.d/color.pkla
 [Allow colord for all users]
 Identity=unix-user:*
-Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-m>ResultAny=yes
+Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile
+ResultAny=yes
 ResultInactive=yes
 ResultActive=yes
 DESKTOP_CONF
