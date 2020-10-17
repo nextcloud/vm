@@ -32,8 +32,14 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    sed -i "s|.*bpytop'||g" /home/"$UNIXUSER"/.bash_aliases
-    sed -i "s|.*bpytop'||g" /root/.bash_aliases
+    if [ -f /home/"$UNIXUSER"/.bash_aliases ]
+    then
+        sed -i "s|.*bpytop'||g" /home/"$UNIXUSER"/.bash_aliases
+    fi
+    if [ -f /root/.bash_aliases ]
+    then
+        sed -i "s|.*bpytop'||g" /root/.bash_aliases
+    fi
     snap remove bpytop
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
