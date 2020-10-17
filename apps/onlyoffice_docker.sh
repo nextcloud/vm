@@ -213,7 +213,7 @@ $NCDOMAIN.
 Please install Nextcloud and make sure your domain is reachable, or activate TLS
 on your domain to be able to run this script.
 If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
-When TLS is activated, run these commands from your terminal:
+When TLS is activated, run these commands from your CLI:
 sudo curl -sLO $APP/onlyoffice_docker.sh
 sudo bash onlyoffice_docker.sh"
     exit 1

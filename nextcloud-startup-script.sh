@@ -364,7 +364,7 @@ if check_command echo "$UNIXUSER:$UNIX_PASSWORD" | sudo chpasswd
 then
     msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD
     
-This is used when you login to the Ubuntu Server console."
+This is used when you login to the Ubuntu CLI."
 fi
 unset UNIX_PASSWORD
 

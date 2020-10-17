@@ -45,7 +45,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
-"Midnight Commander" "(Terminal file manager)" OFF \
+"Midnight Commander" "(CLI file manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews)" "$STARTUP_SWITCH" \
 "LDAP" "(Windows Active directory)" OFF \
@@ -94,7 +94,7 @@ case "$choice" in
         then
             print_text_in_color "$ICyan" "Installing Midnight Commander..."
             check_command install_if_not mc
-            msg_box "Midnight Commander was successfully installed.\nYou can launch it by running 'mc' in the terminal." "$SUBTITLE"
+            msg_box "Midnight Commander was successfully installed.\nYou can launch it by running 'mc' in the CLI." "$SUBTITLE"
             if yesno_box_yes "Do you want to install a dark theme for Midnight Commander?" "$SUBTITLE"
             then
                 print_text_in_color "$ICyan" "Installing dark Theme for Midnight Commander..."
@@ -112,7 +112,7 @@ device=white,black:special=white,black:core=,black:stalelink=red,black:editnorma
                         sed -i "s|^base_color=|base_color=$THEME|" "$user_home"/.config/mc/ini
                     fi
                 done
-                msg_box "The theme was successfully applied. Now check out Midnight Commander by running 'mc' over cli!"
+                msg_box "The theme was successfully applied. Now check out Midnight Commander by running 'mc' over CLI!"
             fi
         fi
     ;;&

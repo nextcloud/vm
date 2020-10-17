@@ -48,7 +48,7 @@ then
 fi
 
 msg_box "Please note that if the IP address changes during an (remote) SSH connection \
-(via Putty, or terminal for example), the connection will break and the IP will reset to \
+(via Putty, or CLI for example), the connection will break and the IP will reset to \
 DHCP or the IP you had before you started this script.
 
 To avoid issues with lost connectivity, please use the VM Console directly, and not SSH."
