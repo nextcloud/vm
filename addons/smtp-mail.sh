@@ -216,13 +216,8 @@ default: $RECIPIENT
 cron: $RECIPIENT
 ALIASES_CONF
 
-# Define the mail-program
-cat << DEFINE_MAIL > /etc/mail.rc
-set sendmail="/usr/bin/msmtp -t"
-DEFINE_MAIL
-
-# Test sending of mails
-if ! echo -e "Congratulations!
+# Store message in a variable
+TEST_MAIL="Congratulations!
 
 Since this email reached you, it seems like everything is working properly. :)
 
@@ -235,29 +230,48 @@ $(grep -v password /etc/msmtprc)
 
 Best regards
 The NcVM team
-https://nextcloudvm.com" \
-| mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
+https://nextcloudvm.com"
+
+# Define the mail-program
+cat << DEFINE_MAIL > /etc/mail.rc
+set sendmail="/usr/bin/msmtp -t"
+DEFINE_MAIL
+
+# Test mail
+if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
 then
-    # Fail message
-    msg_box "It seems like something has failed.
+    # Test another version
+    cat << DEFINE_MAIL > /etc/mail.rc
+set sendmail="/usr/bin/msmtp"
+DEFINE_MAIL
+
+    # Second try
+    if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
+    then
+        # Fail message
+        msg_box "It seems like something has failed.
 You can look at /var/log/msmtp for further logs.
-Please run this script once more time if you want to make another try."
-    if yesno_box_yes "Do you want to reset all configs and uninstall all packets \
+Please run this script once more if you want to make another try."
+
+        # Let the user decide if configs/packets shall get resetted/uninstalled
+        if yesno_box_yes "Do you want to reset all configs and uninstall all packets \
 that were made/installed by this script so that you keep a clean system?
 This will make debugging more complicated since you will only have the log file to debug this."
-    then
-        apt-get purge msmtp -y
-        apt-get purge msmtp-mta -y
-        apt-get purge mailutils -y
-        apt autoremove -y
-        rm -f /etc/mail.rc
-        rm -f /etc/msmtprc
-        echo "" > /etc/aliases
-        msg_box "Successfully done this."
+        then
+            apt-get purge msmtp -y
+            apt-get purge msmtp-mta -y
+            apt-get purge mailutils -y
+            apt autoremove -y
+            rm -f /etc/mail.rc
+            rm -f /etc/msmtprc
+            echo "" > /etc/aliases
+            msg_box "Successfully done this." 
+        fi
+        exit 1
     fi
-else
-    # Success message
-    msg_box "Congratulaions, the test email was successfully sent!
-Please check the inbox for $RECIPIENT. The test email should arrive soon."
 fi
+
+# Success message
+msg_box "Congratulations, the test email was successfully sent!
+Please check the inbox for $RECIPIENT. The test email should arrive soon."
 exit
