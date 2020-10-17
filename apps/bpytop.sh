@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="BPYTOP"
-SCRIPT_EXPLAINER="BPYTOP is an amazing alternative to ressource-monitor software like top or htop."
+SCRIPT_EXPLAINER="BPYTOP is an amazing alternative to resource-monitor software like top or htop."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
