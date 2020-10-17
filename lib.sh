@@ -363,7 +363,7 @@ get_newest_dat_files() {
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
     if [ -z "$IPV4_NAME" ]
     then
-        print_text_in_color "$IRed" "Could not get the newest IPv4_name. Not updating the .dat file"
+        print_text_in_color "$IRed" "Could not get the newest IPv4 name. Not updating the .dat file"
         sleep 1
     else
         if ! [ -f "$SCRIPTS/$IPV4_NAME" ]
@@ -388,7 +388,7 @@ get_newest_dat_files() {
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
     if [ -z "$IPV6_NAME" ]
     then
-        print_text_in_color "$IRed" "Could not get the newest IPv6_name. Not updating the .dat file"
+        print_text_in_color "$IRed" "Could not get the newest IPv6 name. Not updating the .dat file"
         sleep 1
     else
         if ! [ -f "$SCRIPTS/$IPV6_NAME" ]
