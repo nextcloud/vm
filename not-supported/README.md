@@ -7,7 +7,7 @@ Although mostof the scripts might not be 100% ready, we would love to hear your 
 Feedback is especially welcome, if you would like to add some features that these scripts bring in the released version of the NcVM.<br>
 So, please report back! 🚀
 
-### How to run this inside my NcVM?
+## How to run this inside my NcVM?
 We have prepared a menu for you to choose from available options. You can download the menu with the following command:<br>
 `sudo wget https://raw.githubusercontent.com/nextcloud/vm/master/not-supported/not-supported.sh -P /var/scripts`<br>
 After downloading the menu, you just run it with the following command:<br>
