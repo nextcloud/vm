@@ -31,6 +31,8 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
+    find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
     if is_this_installed jq
     then
         apt purge jq -y
