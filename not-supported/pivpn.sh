@@ -113,7 +113,7 @@ Something could go wrong. So please keep backups!"
 if [ -f "$NCPATH/occ" ]
 then
     # Get the NCDOMAIN
-    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.CLI.url | sed 's|https://||;s|/||')
+    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
     # Check if Nextcloud is installed
     if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true' || [ "$NCDOMAIN" = "nextcloud" ]

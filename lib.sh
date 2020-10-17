@@ -172,7 +172,7 @@ es_install() {
 turn_install() {
     TURN_CONF="/etc/turnserver.conf"
     TURN_PORT=3478
-    TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.CLI.url | sed 's|https://||;s|/||')
+    TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
     SHUF=$(shuf -i 25-29 -n 1)
     TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
@@ -686,7 +686,7 @@ fi
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https() {
-    if ! nextcloud_occ_no_check config:system:get overwrite.CLI.url | grep -q "https"
+    if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
     then
         msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
 You easily activate TLS (HTTPS) by running the Let's Encrypt script.

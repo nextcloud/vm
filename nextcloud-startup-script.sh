@@ -322,7 +322,7 @@ nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
 # Pretty URLs
 print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data $NCPATH
-nextcloud_occ config:system:set overwrite.CLI.url --value="http://localhost/"
+nextcloud_occ config:system:set overwrite.cli.url --value="http://localhost/"
 nextcloud_occ config:system:set htaccess.RewriteBase --value="/"
 nextcloud_occ maintenance:update:htaccess
 bash $SECURE & spinner_loading

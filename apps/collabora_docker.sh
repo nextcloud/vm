@@ -154,7 +154,7 @@ NOTE: This domain must be different than your Nextcloud domain. \
 They can however be hosted on the same server, but would require seperate DNS entries.")
 
 # Nextcloud Main Domain
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.CLI.url | sed 's|https://||;s|/||')
+NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
 # Nextcloud Main Domain dot-escaped
 NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
