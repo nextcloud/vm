@@ -60,7 +60,7 @@ You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/
     # Ask for aliases
     if [ -f /root/.bash_aliases ]
     then
-        if yesno_box_yes "You you want to add an alias for bpytop to replace both htop and top?"
+        if yesno_box_yes "Would you like to add an alias for bpytop to replace both htop and top?"
         then
             echo "alias top='bpytop'" >> /root/.bash_aliases
             echo "alias htop='bpytop'" >> /root/.bash_aliases
