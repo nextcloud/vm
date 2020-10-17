@@ -80,7 +80,7 @@ case "$choice" in
     ;;&
     *"Midnight Commander"*)
         SUBTITLE="Midnight Commander"
-        msg_box "Midnight Commander is a file manager for the command line." "$SUBTITLE"
+        msg_box "Midnight Commander is a file manager that can be used in your CLI." "$SUBTITLE"
         if is_this_installed mc
         then
             if yesno_box_yes "It seems like Midnight Commander is already installed.\nDo you want to uninstall it?" "$SUBTITLE"
