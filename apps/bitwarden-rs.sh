@@ -303,7 +303,7 @@ Otherwise you will not have access to your Bitwarden_rs installation and have to
 
 It is highly recommended to configure and test the smtp settings for mails first.
 Then, if it works, you can easily invite all your user with an e-mail address from this admin-panel.
-(You have to CLIck on users in the top-panel)
+(You have to click on users in the top-panel)
 
 Please remember to report issues only to https://github.com/dani-garcia/bitwarden_rs"
     if yesno_box_no "Do you have the admin password now and know how to access the admin-panel?"
