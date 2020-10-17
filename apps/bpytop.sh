@@ -71,6 +71,7 @@ You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/
                 echo "alias top='bpytop'" >> /home/"$UNIXUSER"/.bash_aliases
                 echo "alias htop='bpytop'" >> /home/"$UNIXUSER"/.bash_aliases
             fi
+            msg_box "Alias for bpytop is now set! You can now type both 'htop' and 'top' in your CLI to use bpytop."
         fi
     fi
 else
