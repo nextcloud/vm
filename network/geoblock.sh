@@ -59,6 +59,8 @@ check_command a2enmod geoip rewrite
 check_command systemctl restart apache2
 
 # Download newest dat files
+find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
 get_newest_dat_files
 
 # Restrict to countries and/or continents
