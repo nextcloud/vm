@@ -31,6 +31,8 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
+    find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
     if is_this_installed jq
     then
         apt purge jq -y
@@ -55,6 +57,11 @@ install_if_not libapache2-mod-geoip
 # Enable apache mod
 check_command a2enmod geoip rewrite
 check_command systemctl restart apache2
+
+# Download newest dat files
+find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
+get_newest_dat_files
 
 # Restrict to countries and/or continents
 choice=$(whiptail --title "$TITLE"  --checklist \

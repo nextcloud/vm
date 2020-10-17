@@ -272,6 +272,13 @@ then
     ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 fi
 
+# Get newest dat files for geoblock.sh
+if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
+then
+    get_newest_dat_files
+    check_command systemctl restart apache2
+fi
+
 # Update docker containers and remove Watchtower if Bitwarden is preseent due to compatibility issue
 # If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
 # If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates 

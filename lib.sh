@@ -92,6 +92,7 @@ DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
 NOT_SUPPORTED="$GITHUB_REPO/not-supported"
+GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
@@ -352,6 +353,60 @@ removal_popup() {
         msg_box "It seems like neither Uninstall nor Reinstall is chosen, \
 something is wrong here. Please report this to $ISSUES"
         exit 1
+    fi
+}
+
+# Used in geoblock.sh
+get_newest_dat_files() {
+    # IPv4
+    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
+    if [ -z "$IPV4_NAME" ]
+    then
+        print_text_in_color "$IRed" "Could not get the newest IPv4 name. Not updating the .dat file"
+        sleep 1
+    else
+        if ! [ -f "$SCRIPTS/$IPV4_NAME" ]
+        then
+            print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
+            sleep 1
+            check_command curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
+            check_command rm /usr/share/GeoIP/GeoIP.dat
+            check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
+            check_command mv "/usr/share/GeoIP/$IPV4_NAME" /usr/share/GeoIP/GeoIP.dat
+            chown root:root /usr/share/GeoIP/GeoIP.dat
+            chmod 644 /usr/share/GeoIP/GeoIP.dat
+            find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -not -name "$IPV4_NAME" -delete
+        else
+            print_text_in_color "$ICyan" "The latest IPv4 dat file is already downloaded."
+            sleep 1
+        fi
+    fi
+    # IPv6
+    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
+    if [ -z "$IPV6_NAME" ]
+    then
+        print_text_in_color "$IRed" "Could not get the newest IPv6 name. Not updating the .dat file"
+        sleep 1
+    else
+        if ! [ -f "$SCRIPTS/$IPV6_NAME" ]
+        then
+            print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
+            sleep 1
+            check_command curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
+            check_command rm /usr/share/GeoIP/GeoIPv6.dat
+            check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
+            check_command mv "/usr/share/GeoIP/$IPV6_NAME" /usr/share/GeoIP/GeoIPv6.dat
+            chown root:root /usr/share/GeoIP/GeoIPv6.dat
+            chmod 644 /usr/share/GeoIP/GeoIPv6.dat
+            find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -not -name "$IPV6_NAME" -delete
+        else
+            print_text_in_color "$ICyan" "The latest IPv6 dat file is already downloaded."
+            sleep 1
+        fi
     fi
 }
 
