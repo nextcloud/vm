@@ -200,6 +200,7 @@ gnome-shell-extension-dash-to-panel gnome-session xrdp)
                 fi
             done
             apt autoremove -y
+            systemctl set-default multi-user
             add-apt-repository --remove ppa:heyarje/makemkv-beta -y
             apt update -q4 & spinner_loading
             rm -f /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
