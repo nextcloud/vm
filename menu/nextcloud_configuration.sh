@@ -41,7 +41,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 case "$choice" in
     *"CookieLifetime"*)
         print_text_in_color "$ICyan" "Downloading the CookieLifetime script..."
-        run_script STATIC cookielifetime
+        run_script ADDONS cookielifetime
     ;;&
     *"Share-folder"*)
         SUBTITLE="Share-folder"
