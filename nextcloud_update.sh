@@ -211,7 +211,7 @@ if [ "${CURRENTVERSION%%.*}" -ge "17" ]
 then
     if [ -f "$PHP_INI" ]
     then
-        print_text_in_color "$ICyan" "Trying to upgrade igbinary, smbCLIent, and APCu..."
+        print_text_in_color "$ICyan" "Trying to upgrade igbinary, smbclient, and APCu..."
         if pecl list | grep igbinary >/dev/null 2>&1
         then
             yes no | pecl upgrade igbinary
@@ -221,25 +221,25 @@ then
                 echo "extension=igbinary.so" >> "$PHP_INI"
             fi
         fi
-        if pecl list | grep -q smbCLIent
+        if pecl list | grep -q smbclient
         then
-            yes no | pecl upgrade smbCLIent
-            # Check if smbCLIent is enabled and create the file if not
-            if [ ! -f $PHP_MODS_DIR/smbCLIent.ini ]
+            yes no | pecl upgrade smbclient
+            # Check if smbclient is enabled and create the file if not
+            if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
             then
-               touch $PHP_MODS_DIR/smbCLIent.ini
+               touch $PHP_MODS_DIR/smbclient.ini
             fi
-            # Enable new smbCLIent
-            if ! grep -qFx extension=smbCLIent.so $PHP_MODS_DIR/smbCLIent.ini
+            # Enable new smbclient
+            if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
             then
-                echo "# PECL smbCLIent" > $PHP_MODS_DIR/smbCLIent.ini
-                echo "extension=smbCLIent.so" >> $PHP_MODS_DIR/smbCLIent.ini
-                check_command phpenmod -v ALL smbCLIent
+                echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
+                echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
+                check_command phpenmod -v ALL smbclient
             fi
-            # Remove old smbCLIent
-            if grep -qFx extension=smbCLIent.so "$PHP_INI"
+            # Remove old smbclient
+            if grep -qFx extension=smbclient.so "$PHP_INI"
             then
-                sed -i "s|extension=smbCLIent.so||g" "$PHP_INI"
+                sed -i "s|extension=smbclient.so||g" "$PHP_INI"
             fi
         fi
         if pecl list | grep -q apcu

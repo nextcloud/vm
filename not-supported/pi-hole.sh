@@ -7,7 +7,7 @@
 true
 SCRIPT_NAME="Pi-hole"
 SCRIPT_EXPLAINER="The Pi-hole® is a DNS sinkhole that protects your devices from unwanted content, \
-without installing any CLIent-side software.
+without installing any client-side software.
 This is their official website: https://pi-hole.net"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -138,7 +138,7 @@ Please report this to $ISSUES"
 
     # Inform the user
     msg_box "Pi-hole was successfully uninstalled!
-Please reset the DNS on your router/CLIents to restore internet connectivity"
+Please reset the DNS on your router/clients to restore internet connectivity"
     msg_box "After you hit OK, your NcVM will get restarted."
     # Reboot the NcVM because it would cause problems if not
     reboot

@@ -233,8 +233,8 @@ add_dockerprune
 # Inform about fail2ban
 msg_box "We will now set up fail2ban for you.
 You can unban ip addresses by executing the following command:
-sudo fail2ban-CLIent set bitwarden_rs unbanip XX.XX.XX.XX
-sudo fail2ban-CLIent set bitwarden_rs-admin unbanip XX.XX.XX.XX"
+sudo fail2ban-client set bitwarden_rs unbanip XX.XX.XX.XX
+sudo fail2ban-client set bitwarden_rs-admin unbanip XX.XX.XX.XX"
 
 # Install fail2ban
 install_if_not fail2ban
@@ -291,7 +291,7 @@ BWA_JAIL_CONF
 
 check_command systemctl start fail2ban
 countdown "Waiting for fail2ban to start... " 5
-check_command fail2ban-CLIent reload
+check_command fail2ban-client reload
 
 while :
 do

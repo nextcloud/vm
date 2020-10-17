@@ -317,7 +317,7 @@ debug = false
 [sessions]
 hashkey = $(openssl rand -hex 16)
 blockkey = $(openssl rand -hex 16)
-[CLIents]
+[clients]
 internalsecret = $(openssl rand -hex 16)
 [backend]
 allowed = ${TURN_DOMAIN}

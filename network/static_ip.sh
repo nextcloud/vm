@@ -188,7 +188,7 @@ network:
        $IFACE: #object name
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
-         addresses: [$LANIP] # CLIent IP address
+         addresses: [$LANIP] # client IP address
          gateway4: $GATEWAYIP # gateway address
          nameservers:
            addresses: [$DNSs] #name servers
@@ -207,7 +207,7 @@ network:
        $IFACE2: #object name
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
-         addresses: [$LANIP] # CLIent IP address
+         addresses: [$LANIP] # client IP address
          gateway4: $GATEWAY # gateway address
          nameservers:
            addresses: [$DNSs] #name servers

@@ -294,7 +294,7 @@ then
   ProxyPreserveHost On
 
   # static html, js, images, etc. served from loolwsd
-  # loleaflet is the CLIent part of LibreOffice Online
+  # loleaflet is the client part of LibreOffice Online
   ProxyPass           /loleaflet https://127.0.0.1:9980/loleaflet retry=0
   ProxyPassReverse    /loleaflet https://127.0.0.1:9980/loleaflet
 

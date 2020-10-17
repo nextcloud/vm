@@ -552,19 +552,19 @@ echo "pgsql.log_notice = 0"
 # Install Redis (distrubuted cache)
 run_script ADDONS redis-server-ubuntu
 
-# Install smbCLIent
-# php"$PHPVER"-smbCLIent does not yet work in PHP 7.4
-install_if_not libsmbCLIent-dev
-yes no | pecl install smbCLIent
-if [ ! -f $PHP_MODS_DIR/smbCLIent.ini ]
+# Install smbclient
+# php"$PHPVER"-smbclient does not yet work in PHP 7.4
+install_if_not libsmbclient-dev
+yes no | pecl install smbclient
+if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
 then
-    touch $PHP_MODS_DIR/smbCLIent.ini
+    touch $PHP_MODS_DIR/smbclient.ini
 fi
-if ! grep -qFx extension=smbCLIent.so $PHP_MODS_DIR/smbCLIent.ini
+if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
 then
-    echo "# PECL smbCLIent" > $PHP_MODS_DIR/smbCLIent.ini
-    echo "extension=smbCLIent.so" >> $PHP_MODS_DIR/smbCLIent.ini
-    check_command phpenmod -v ALL smbCLIent
+    echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
+    echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
+    check_command phpenmod -v ALL smbclient
 fi
 
 # Enable igbinary for PHP
@@ -673,7 +673,7 @@ then
     </Directory>
 
     # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web CLIents.
+    # viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
@@ -754,7 +754,7 @@ then
     </Directory>
 
     # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web CLIents.
+    # viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>

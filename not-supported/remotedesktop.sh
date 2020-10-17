@@ -96,7 +96,7 @@ POWER
 
     # Inform the user
     msg_box "XRDP was successfuly installed. 
-You should be able to connect via an RDP CLIent with your server \
+You should be able to connect via an RDP client with your server \
 using the credentials of $UNIXUSER and the server ip-address $ADDRESS"
 fi
 
