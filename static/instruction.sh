@@ -20,12 +20,11 @@ cat << INST2
 | Nextcloud VM              = https://bit.ly/2S8eGfS                    |
 | Nextcloud Home/SME Server = https://bit.ly/2k2TNaM                    |
 |                                                                       |
-| To be 100% sure that all the keystrokes work correctly (like @),      |
-| please use an SSH CLI like Putty. You can download it here:      |
+| Optional:                                                             |
+| If you are running Windows 10 (1809) or later, you can simply use SSH |
+| from the command prompt. You can also use Putty, download it here:    |
 | https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html        |
-| If you are running Windows 10 1809 or later, you can simply use SSH   |
-| from the command prompt. Connect like this:                           |
-| ssh ncadmin@local.IP.of.this.server                                   |
+| Connect like this: ssh ncadmin@local.IP.of.this.server                |
 |                                                                       |
 | This server could be made maintenace free by using automatic updates  |
 | with the built in update script. If you want automatic updates on     |
