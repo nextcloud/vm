@@ -35,6 +35,7 @@ then
     then
         msg_box "Please don't run this script as pure root user!"
         exit 1
+    fi
 
     # Check if gnome-session is installed
     if ! is_this_installed gnome-session 
