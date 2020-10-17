@@ -28,16 +28,13 @@ if ! is_this_installed xrdp
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
-
+    XRDP_INSTALL=1
+    
     # Don't run this script as root user, because we will need the account
     if [ -z "$UNIXUSER" ]
     then
         msg_box "Please don't run this script as pure root user!"
         exit 1
-    else
-        # Add the user to the www-data group to be able to write to all disks
-        usermod -a -G www-data "$UNIXUSER"
-    fi
 
     # Check if gnome-session is installed
     if ! is_this_installed gnome-session 
@@ -92,6 +89,9 @@ POWER
     print_text_in_color "$ICyan" "Waiting for acpid to restart..."
     sleep 5
     check_command systemctl restart acpid
+
+    # Add the user to the www-data group to be able to write to all disks
+    usermod -a -G www-data "$UNIXUSER"
 
     # Inform the user
     msg_box "XRDP was successfuly installed. 
@@ -254,4 +254,15 @@ We will need to add a 3rd party repository to install it which can set your serv
     *)
     ;;
 esac
+
+# Allow to reboot if xrdp was just installed because otherwise the usermod won't apply
+if [ -n "$XRDP_INSTALL" ]
+then
+    if yesno_box_yes "Do you want to reboot your server now?
+After the initial installation of XRDP it is recommended to reboot the server to apply all settings."
+    then
+        reboot
+    fi
+fi
+
 exit
