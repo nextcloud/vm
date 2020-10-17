@@ -38,36 +38,33 @@ else
 fi
 
 # Install it!
-if yesno_box_yes "Do you want to install BPYTOP?" "$SUBTITLE"
+if snap install bpytop
 then
-    if snap install bpytop
+    snap connect bpytop:mount-observe
+    snap connect bpytop:network-control
+    snap connect bpytop:hardware-observe
+    snap connect bpytop:system-observe
+    snap connect bpytop:process-control
+    snap connect bpytop:physical-memory-observe
+    hash -r
+    msg_box "BPYTOP is now installed! Check out the amazing stats by runnning 'bpytop' from your CLI.
+You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/blob/master/README.md"
+    # Ask for aliases
+    if [ -f /root/.bash_aliases ]
     then
-        snap connect bpytop:mount-observe
-        snap connect bpytop:network-control
-        snap connect bpytop:hardware-observe
-        snap connect bpytop:system-observe
-        snap connect bpytop:process-control
-        snap connect bpytop:physical-memory-observe
-        hash -r
-        msg_box "BPYTOP is now installed! Check out the amazing stats by runnning 'bpytop' from your CLI.
-You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/blob/master/README.md" "$SUBTITLE"
-            # Ask for aliases
-            if [ -f /root/.bash_aliases ]
+        if yesno_box_yes "You you want to add an alias for bpytop to replace both htop and top?"
+        then
+            echo "alias top='bpytop'" >> /root/.bash_aliases
+            echo "alias htop='bpytop'" >> /root/.bash_aliases
+            if [ -d /home/"$UNIXUSER" ]
             then
-                if yesno_box_yes "You you want to add an alias for bpytop to replace both htop and top?"
-                then
-                    echo "alias top='bpytop'" >> /root/.bash_aliases
-                    echo "alias htop='bpytop'" >> /root/.bash_aliases
-                    if [ -d /home/"$UNIXUSER" ]
-                    then
-                        touch /home/"$UNIXUSER"/.bash_aliases
-                        chown "$UNIXUSER":"$UNIXUSER" /home/"$UNIXUSER"/.bash_aliases
-                        echo "alias top='bpytop'" >> /home/"$UNIXUSER"/.bash_aliases
-                        echo "alias htop='bpytop'" >> /home/"$UNIXUSER"/.bash_aliases
-                    fi
-                fi
+                touch /home/"$UNIXUSER"/.bash_aliases
+                chown "$UNIXUSER":"$UNIXUSER" /home/"$UNIXUSER"/.bash_aliases
+                echo "alias top='bpytop'" >> /home/"$UNIXUSER"/.bash_aliases
+                echo "alias htop='bpytop'" >> /home/"$UNIXUSER"/.bash_aliases
             fi
-    else
-        msg_box "It seems like the installation of BPYTOP failed. Please try again." "$SUBTITLE"
+        fi
     fi
+else
+    msg_box "It seems like the installation of BPYTOP failed. Please try again."
 fi
