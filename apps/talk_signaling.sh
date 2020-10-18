@@ -24,7 +24,7 @@ debug_mode
 root_check
 
 # Check if talk_signaling is already installed
-if [ -n "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] \
+if [ -z "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] \
 && ! is_this_installed coturn
 then
     # Ask for installing
