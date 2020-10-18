@@ -91,12 +91,6 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Nextcloud 19 is required.
-lowest_compatible_nc 19
-
-ram_check 2 Collabora
-cpu_check 2 Collabora
-
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https "Collabora (Integrated)"
 
@@ -155,6 +149,12 @@ if is_app_installed onlyoffice
 then
     nextcloud_occ app:remove onlyoffice
 fi
+
+# Nextcloud 19 is required.
+lowest_compatible_nc 19
+
+ram_check 2 Collabora
+cpu_check 2 Collabora
 
 # Install Collabora
 msg_box "We will now install Collabora.
