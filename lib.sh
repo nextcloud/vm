@@ -1047,7 +1047,7 @@ fi
 
 #example: is_app_installed documentserver_community
 is_app_installed() {
-if [ -d "$NC_APPS_PATH/$1" ]
+if nextcloud_occ app:list | grep -wq "$1"
 then
     return 0
 else
