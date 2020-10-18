@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Setup DDclient"
+SCRIPT_EXPLAINER="This script lets you setup DynDNS by using the ddclient application."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -17,11 +19,43 @@ debug_mode
 # Check if root
 root_check
 
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
+
+# Check if ddclient is already installed
+if ! is_this_installed ddclient
+then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    apt purge ddclient -y
+    if is_this_installed libjson-any-perl
+    then
+        apt purge libjson-any-perl -y
+    fi
+    apt autoremove -y
+    rm -f /etc/ddclient.conf
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
+fi
+
+# install needed tool
+DEBIAN_FRONTEND=noninteractive apt install ddclient -y
+
+# Test if file exists
+if [ ! -f /etc/ddclient.conf ]
+then
+    msg_box "The default ddclient.conf doesn't seem to exist.\nPlease report this to\n$ISSUES."
+    exit 1
+fi
+
 choice=$(whiptail --title "$TITLE" --menu \
-"This script lets you setup DynDNS by using the ddclient application.
-You have to setup an account before you can start.\n\nPlease choose your DynDNS-Provider.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE
-If your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Please choose your DynDNS-Provider.\nYou have to setup an account before you can start.\n
+If your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" \
 "deSEC" "(desec.io)" \
 "Duck DNS" "(duckdns.org)" \
@@ -106,20 +140,6 @@ fi
 if [ "$PROVIDER" = "Cloudflare" ]
 then
     install_if_not libjson-any-perl
-fi
-
-# Install ddclient
-if ! is_this_installed ddclient
-then
-    print_text_in_color "$ICyan" "Installing ddclient..."
-    # This creates a ddclient service, creates a /etc/default/ddclient file and a /etc/ddclient.conf file
-    DEBIAN_FRONTEND=noninteractive apt install ddclient -y
-fi
-
-if [ ! -f /etc/ddclient.conf ]
-then
-    msg_box "The default ddclient.conf doesn't seem to exist.\nPlease report this to\n$ISSUES."
-    exit 1
 fi
 
 # Write information to ddclient.conf
