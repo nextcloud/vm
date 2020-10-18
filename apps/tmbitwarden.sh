@@ -5,6 +5,11 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Bitwarden"
+SCIPT_EXPLAINER="Bitwarden is a free and open-source password management service \
+that stores sensitive information such as website credentials in an encrypted vault.
+The Bitwarden platform offers a variety of client applications including a \
+web interface, desktop applications, browser extensions, mobile apps, and a CLI. 
+Bitwarden offers a cloud-hosted service as well as the ability to deploy the solution on-premises."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -16,6 +21,9 @@ debug_mode
 
 # Check if root
 root_check
+
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
 
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
@@ -42,8 +50,6 @@ rm -rf ${BITWARDEN_HOME:?}/bwdata"
         fi
     fi
 fi
-
-print_text_in_color "$ICyan" "Installing Bitwarden password manager..."
 
 msg_box "Bitwarden is a password manager that is seperate from Nextcloud, \
 though we provide this service because it's self hosted and secure.
