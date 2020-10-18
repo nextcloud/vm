@@ -57,7 +57,7 @@ else
 fi
 
 # Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 FullTextSearch
+ram_check 3 FullTextSearch
 cpu_check 2 FullTextSearch
 
 # Make sure there is an Nextcloud installation
@@ -124,12 +124,12 @@ docker run -d --restart always \
 -v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
 -e "discovery.type=single-node" \
 -e "bootstrap.memory_lock=true" \
--e ES_JAVA_OPTS="-Xms512M -Xmx512M" \
+-e ES_JAVA_OPTS="-Xms1024M -Xmx1024M" \
 -i -t $nc_fts
 
 # Wait for bootstraping
 docker restart $fts_es_name
-countdown "Waiting for Docker bootstraping..." "30"
+countdown "Waiting for Docker bootstraping..." "60"
 docker logs $fts_es_name
 
 # Get Full Text Search app for nextcloud
