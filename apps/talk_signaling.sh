@@ -23,12 +23,9 @@ debug_mode
 # Must be root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if talk_signaling is already installed
 if [ -n "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] \
-|| is_this_installed coturn
+&& ! is_this_installed coturn
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
