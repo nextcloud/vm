@@ -24,7 +24,7 @@ root_check
 
 # Check if talk is already installed
 if [ -z "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] \
-|| is_this_installed coturn
+&& ! is_this_installed coturn
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
