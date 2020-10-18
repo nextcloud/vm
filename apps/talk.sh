@@ -5,6 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Talk"
+SCRIPT_EXPLAINER="Talk provides videochat functionalities for Nextcloud."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -21,6 +22,28 @@ debug_mode
 # Must be root
 root_check
 
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
+
+# Check if talk is already installed
+if ! [ -n "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] \
+|| is_this_installed coturn
+then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    nextcloud_occ_no_check config:app:delete spreed stun_servers
+    nextcloud_occ_no_check config:app:delete spreed turn_servers
+    nextcloud_occ_no_check app:remove spreed
+    rm $TURN_CONF
+    apt-get purge coturn -y
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
+fi
+
 # Must be 20.04
 if ! version 20.04 "$DISTRO" 20.04.6
 then
@@ -29,48 +52,6 @@ then
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
 exit
-fi
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
-
-# Check if adminer is already installed
-print_text_in_color "$ICyan" "Checking if Talk is already installed..."
-if [ -n "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] || is_this_installed coturn
-then
-    choice=$(whiptail --title "$TITLE" --menu \
-"It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall Nextcloud Talk" "" \
-"Uninstall Nextcloud Talk" "" 3>&1 1>&2 2>&3)
-
-    case "$choice" in
-        "Uninstall Nextcloud Talk")
-            print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
-            nextcloud_occ_no_check config:app:delete spreed stun_servers
-            nextcloud_occ_no_check config:app:delete spreed turn_servers
-            nextcloud_occ_no_check app:remove spreed
-            rm $TURN_CONF
-            apt-get purge coturn -y
-            msg_box "Nextcloud Talk was successfully uninstalled and all settings were resetted."
-            exit
-        ;;
-        "Reinstall Nextcloud Talk")
-            print_text_in_color "$ICyan" "Reinstalling Nextcloud Talk..."
-            nextcloud_occ_no_check config:app:delete spreed stun_servers
-            nextcloud_occ_no_check config:app:delete spreed turn_servers
-            nextcloud_occ_no_check app:remove spreed
-            rm $TURN_CONF
-            apt-get purge coturn -y
-        ;;
-        "")
-            exit 1
-        ;;
-        *)
-        ;;
-    esac
-else
-    print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
 fi
 
 # Check if Nextcloud is installed
@@ -154,8 +135,8 @@ check_command systemctl restart coturn.service
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
 
-This can be done automatically if you have UNNP enabled in your firewall/router. \
-You will be offered to use UNNP in the next step.
+This can be done automatically if you have UPNP enabled in your firewall/router. \
+You will be offered to use UPNP in the next step.
 
 After you hit OK, the script will check if the port is open or not. If it fails \
 and you want to run this script again, just execute this in your CLI:
