@@ -45,7 +45,7 @@ else
     # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
     nextcloud_occ_no_check fulltextsearch:reset
     APPS=(fulltextsearch fulltextsearch_elasticsearch files_fulltextsearch)
-    for app in "${APSS[@]}"
+    for app in "${APPS[@]}"
     do
         if is_app_installed "$app"
         then
