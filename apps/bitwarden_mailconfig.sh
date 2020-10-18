@@ -18,6 +18,9 @@ debug_mode
 # Must be root
 root_check
 
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
+
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
 if is_docker_running
@@ -38,7 +41,7 @@ else
     exit 1
 fi
 
-msg_box "$SCRIPT_EXPLAINER"
+# Let the user cancel
 if ! yesno_box_yes "Do you want to continue?"
 then
     exit
