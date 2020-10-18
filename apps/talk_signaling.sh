@@ -5,6 +5,8 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Talk with Signaling Server"
+SCRIPT_EXPLAINER="This script provides videochat functionality and \
+the so-called High-Performance-Backend for Nextcloud."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -21,6 +23,47 @@ debug_mode
 # Must be root
 root_check
 
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
+
+# Check if talk_signaling is already installed
+if [ -n "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] \
+|| is_this_installed coturn
+then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    nextcloud_occ_no_check config:app:delete spreed stun_servers
+    nextcloud_occ_no_check config:app:delete spreed turn_servers
+    nextcloud_occ_no_check config:app:delete spreed signaling_servers
+    nextcloud_occ_no_check app:remove spreed
+    rm -rf \
+        "$TURN_CONF" \
+        "$SIGNALING_SERVER_CONF" \
+        /etc/nats \
+        /etc/janus \
+        /etc/apt/trusted.gpg.d/morph027-janus.asc \
+        /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
+        /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
+        /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
+        /etc/apt/sources.list.d/morph027-janus.list \
+        /etc/apt/sources.list.d/morph027-nats-server.list \
+        $VMLOGS/talk_apache_error.log \
+        $VMLOGS/talk_apache_access.log \
+        $VMLOGS/turnserver.log \
+        /var/www/html/error
+    apt-get purge coturn -y
+    apt-get purge nats-server -y
+    apt-get purge janus -y
+    apt-get purge nextcloud-spreed-signaling -y
+    apt autoremove -y
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
+fi
+
 # Must be 20.04
 if ! version 20.04 "$DISTRO" 20.04.6
 then
@@ -31,86 +74,13 @@ https://shop.hanssonit.se/"
 exit
 fi
 
-# Nextcloud 13 is required.
+# Nextcloud 19 is required.
 lowest_compatible_nc 19
 
 ####################### TALK (COTURN)
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https "Nextclod Talk"
-
-# Check if talk/spreed is already installed
-print_text_in_color "$ICyan" "Checking if Talk is already installed..."
-if [ -n "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] || is_this_installed coturn
-then
-    choice=$(whiptail --title "$TITLE" --menu \
-"It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall Nextcloud Talk" "" \
-"Uninstall Nextcloud Talk" "" 3>&1 1>&2 2>&3)
-    
-    case "$choice" in
-        "Uninstall Nextcloud Talk")
-            print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
-            nextcloud_occ_no_check config:app:delete spreed stun_servers
-            nextcloud_occ_no_check config:app:delete spreed turn_servers
-            nextcloud_occ_no_check config:app:delete spreed signaling_servers
-            nextcloud_occ_no_check app:remove spreed
-            rm -rf \
-              "$TURN_CONF" \
-              "$SIGNALING_SERVER_CONF" \
-              /etc/nats \
-              /etc/janus \
-              /etc/apt/trusted.gpg.d/morph027-janus.asc \
-              /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
-              /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
-              /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
-              /etc/apt/sources.list.d/morph027-janus.list \
-              /etc/apt/sources.list.d/morph027-nats-server.list \
-              $VMLOGS/talk_apache_error.log \
-              $VMLOGS/talk_apache_access.log \
-              $VMLOGS/turnserver.log \
-              /var/www/html/error
-            apt-get purge coturn -y
-            apt-get purge nats-server -y
-            apt-get purge janus -y
-            apt-get purge nextcloud-spreed-signaling -y
-            apt autoremove -y
-            msg_box "Nextcloud Talk was successfully uninstalled and all settings were reverted."
-            exit
-        ;;
-        "Reinstall Nextcloud Talk")
-            print_text_in_color "$ICyan" "Reinstalling Nextcloud Talk..."
-            nextcloud_occ_no_check config:app:delete spreed stun_servers
-            nextcloud_occ_no_check config:app:delete spreed turn_servers
-            nextcloud_occ_no_check config:app:delete spreed signaling_servers
-            nextcloud_occ_no_check app:remove spreed
-            rm -rf \
-              "$TURN_CONF" \
-              "$SIGNALING_SERVER_CONF" \
-              /etc/nats \
-              /etc/janus \
-              /etc/apt/trusted.gpg.d/morph027-janus.asc \
-              /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
-              /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
-              /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
-              /etc/apt/sources.list.d/morph027-janus.list \
-              /etc/apt/sources.list.d/morph027-nats-server.list
-            apt-get purge coturn -y
-            apt-get purge nats-server -y
-            apt-get purge janus -y
-            apt-get purge nextcloud-spreed-signaling -y
-            apt autoremove -y
-        ;;
-        "")
-            exit 1
-        ;;
-        *)
-        ;;
-    esac
-else
-    print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
-fi
 
 # Let the user choose port. TURN_PORT in msg_box is taken from lib.sh and later changed if user decides to.
 msg_box "The default port for Talk used in this script is port $TURN_PORT.
@@ -477,3 +447,5 @@ else
     msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 0
 fi
+
+msg_box "Installation was successful!"
