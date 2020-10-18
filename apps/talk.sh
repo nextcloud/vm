@@ -22,9 +22,6 @@ debug_mode
 # Must be root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if talk is already installed
 if [ -z "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] \
 || is_this_installed coturn
