@@ -282,6 +282,7 @@ input_box_flow() {
 }
 
 install_popup() {
+    msg_box "$SCRIPT_EXPLAINER"
     if yesno_box_yes "Do you want to install $1?"
     then
         print_text_in_color "$ICyan" "Installing $1..."
@@ -1047,7 +1048,7 @@ fi
 
 #example: is_app_installed documentserver_community
 is_app_installed() {
-if [ -d "$NC_APPS_PATH/$1" ]
+if nextcloud_occ app:list | grep -wq "$1"
 then
     return 0
 else
