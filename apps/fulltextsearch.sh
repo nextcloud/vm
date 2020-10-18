@@ -31,7 +31,7 @@ msg_box "$SCRIPT_EXPLAINER"
 lowest_compatible_nc 18
 
 # Check if Full Text Search is already installed
-if ! does_this_docker_exist "$nc_fts"
+if ! does_this_docker_exist "$nc_fts" || ! is_app_installed fulltextsearch
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -129,7 +129,12 @@ docker run -d --restart always \
 
 # Wait for bootstraping
 docker restart $fts_es_name
-countdown "Waiting for Docker bootstraping..." "60"
+if [[ "$(cpu_check 1 test | awk '{print $5}' | tr -d '()')" > 2 ]]
+then
+    countdown "Waiting for Docker bootstraping..." "30"
+else
+    countdown "Waiting for Docker bootstraping..." "120"
+fi
 docker logs $fts_es_name
 
 # Get Full Text Search app for nextcloud
