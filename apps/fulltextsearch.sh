@@ -126,7 +126,7 @@ docker run -d --restart always \
 
 # Wait for bootstraping
 docker restart $fts_es_name
-if [[ "$(cpu_check 1 test | awk '{print $5}' | tr -d '()')" < 2 ]]
+if [ "$(nproc)" -gt 2 ]
 then
     countdown "Waiting for Docker bootstraping..." "30"
 else
