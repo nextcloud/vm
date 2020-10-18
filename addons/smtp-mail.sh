@@ -19,9 +19,6 @@ debug_mode
 # Must be root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if Smtp Relay was already configured
 if ! [ -f /etc/msmtprc ]
 then

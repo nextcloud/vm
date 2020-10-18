@@ -1074,11 +1074,14 @@ or when a new version of the app is released with the following command:
 'sudo -u www-data php ${NCPATH}/occ app:install $1'"
     rm -Rf "$NCPATH/apps/$1"
     else
-        # Enable $1
+        # Enable $1 if it's installed but not enabled
         if is_app_installed "$1"
         then
-            nextcloud_occ app:enable "$1"
-            chown -R www-data:www-data "$NC_APPS_PATH"
+            if ! is_app_enabled "$1"
+            then
+                nextcloud_occ app:enable "$1"
+                chown -R www-data:www-data "$NC_APPS_PATH"
+            fi
         fi
     fi
 else
