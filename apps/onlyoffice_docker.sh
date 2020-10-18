@@ -5,6 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="OnlyOffice (Docker)"
+SCRIPT_EXPLAINER="Install OnlyOffice Documentserver Docker"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -17,8 +18,8 @@ debug_mode
 # Check if root
 root_check
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 OnlyOffice
@@ -35,74 +36,53 @@ then
 fi
 
 # Check if collabora is already installed
-print_text_in_color "$ICyan" "Checking if Onlyoffice Docker is already installed..."
-if does_this_docker_exist 'onlyoffice/documentserver'
+if ! does_this_docker_exist 'onlyoffice/documentserver'
 then
-    choice=$(whiptail --title "$TITLE" --menu \
-"It seems like 'Onlyoffice Docker' is already installed.\nChoose what you want to do.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall Onlyoffice Docker" "" \
-"Uninstall Onlyoffice Docker" "" 3>&1 1>&2 2>&3)
-
-    case "$choice" in
-        "Uninstall Onlyoffice Docker")
-            print_text_in_color "$ICyan" "Uninstalling Onlyoffice Docker..."
-            # Check if Collabora is previously installed
-            # If yes, then stop and prune the docker container
-            docker_prune_this 'onlyoffice/documentserver'
-            # Revoke LE
-            SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
-            if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
-            then
-                yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-                REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-                for remove in $REMOVE_OLD
-                    do rm -rf "$remove"
-                done
-            fi
-            # Remove Apache2 config
-            if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
-            then
-                a2dissite "$SUBDOMAIN".conf
-                restart_webserver
-                rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
-            fi
-            # Disable RichDocuments (Collabora App) if activated
-            if is_app_installed onlyoffice
-            then
-                nextcloud_occ app:remove onlyoffice
-            fi
-            # Remove trusted domain
-            count=0
-            while [ "$count" -lt 10 ]
-            do
-                if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-                then
-                    nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-                    break
-                else
-                    count=$((count+1))
-                fi
-            done
-            
-            msg_box "Onlyoffice Docker was successfully uninstalled."
-            exit
-        ;;
-        "Reinstall Onlyoffice Docker")
-            print_text_in_color "$ICyan" "Reinstalling Onlyoffice Docker..."
-            
-            # Check if Collabora is previously installed
-            # If yes, then stop and prune the docker container
-            docker_prune_this 'onlyoffice/documentserver'
-        ;;
-        "")
-            exit 1
-        ;;
-        *)
-        ;;
-    esac
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
 else
-    print_text_in_color "$ICyan" "Installing Onlyoffice Docker..."
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    # Check if Collabora is previously installed
+    # If yes, then stop and prune the docker container
+    docker_prune_this 'onlyoffice/documentserver'
+    # Revoke LE
+    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
+    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+    then
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf "$remove"
+        done
+    fi
+    # Remove Apache2 config
+    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+    then
+        a2dissite "$SUBDOMAIN".conf
+        restart_webserver
+        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+    fi
+    # Disable RichDocuments (Collabora App) if activated
+    if is_app_installed onlyoffice
+    then
+        nextcloud_occ app:remove onlyoffice
+    fi
+    # Remove trusted domain
+    count=0
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        then
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
 fi
 
 # Check if collabora is installed and remove every trace of it
