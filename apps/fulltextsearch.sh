@@ -38,8 +38,6 @@ then
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
-    # Removal
-    docker_prune_this "$nc_fts"
     # Reset database table
     check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
     # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
@@ -52,6 +50,8 @@ else
             nextcloud_occ app:remove "$app"
         fi
     done
+    # Removal Docker image
+    docker_prune_this "$nc_fts"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
