@@ -300,6 +300,8 @@ install_popup() {
             exit 1
         fi
     fi
+    # SCRIPT_EXPLAINER is exported in each script, this unsets it.
+    unset SCRIPT_EXPLAINER
 }
 
 reinstall_remove_menu() {
