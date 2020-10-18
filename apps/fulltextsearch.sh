@@ -6,7 +6,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Full Text Search"
-SCRIPT_EXPLAINER="Full Text Search provides a full text search for Nextcloud."
+SCRIPT_EXPLAINER="Full Text Search provides Elasticsearch for Nextcloud, which makes it possible to search for text inside files."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -83,7 +83,7 @@ then
     deluser --group solr
 fi
 
-# Temporary check for NC 20
+# Check if the app is compatible with the current Nextcloud version
 if ! install_and_enable_app fulltextsearch
 then
     exit 1
