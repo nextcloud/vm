@@ -51,7 +51,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Webmin" "(Server GUI)" "$STARTUP_SWITCH" \
-"SMB-mount" "(Connect to SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
+"SMB-mount" "(Mount SMB-shares from your local network to Nextcloud)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Documentserver"*)
