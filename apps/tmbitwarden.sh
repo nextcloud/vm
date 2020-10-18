@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Bitwarden"
-SCIPT_EXPLAINER="Bitwarden is a free and open-source password management service \
+SCRIPT_EXPLAINER="Bitwarden is a free and open-source password management service \
 that stores sensitive information such as website credentials in an encrypted vault.
 The Bitwarden platform offers a variety of client applications including a \
 web interface, desktop applications, browser extensions, mobile apps, and a CLI. 
