@@ -18,9 +18,6 @@ debug_mode
 # Check if root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Remove OnlyOffice-documentserver if activated
 if is_app_enabled documentserver_community
 then
