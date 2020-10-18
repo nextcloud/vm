@@ -71,5 +71,5 @@ MC_INI
 done
 
 # Inform the user
-msg_box "The dark theme for Midnight Commander was successfully applied.
+msg_box "The dark theme for Midnight Commander was successfully applied."
 exit
