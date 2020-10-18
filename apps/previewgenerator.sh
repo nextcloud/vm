@@ -5,6 +5,8 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Preview Generator"
+SCRIPT_EXPLAINER="This script will install the Preview Generator. 
+It can speedup the loading of previews in Nextcloud a lot."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -16,6 +18,9 @@ debug_mode
 
 # Check if root
 root_check
+
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
 
 # PHP 7.x is needed
 if is_this_installed php5.6-common
@@ -31,41 +36,51 @@ https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
 fi
 
 # Encryption may not be enabled
-if is_app_enabled encryption
+if is_app_enabled encryption || is_app_enabled end_to_end_encryption
 then
     msg_box "It seems like you have encryption enabled which is unsupported when using the Preview Generator"
     exit
 fi
 
-msg_box "This script will install the Preview Generator. 
-
-It can speedup the loading of previews in Nextcloud a lot.
-
-Please note: If you continue, all your current Preview Generator settings will be lost, if any."
-if yesno_box_yes "Do you want to install the Preview Generator?"
+# Check if previewgenerator is already installed
+if ! is_app_installed previewgenerator
 then
-    # Install preview generator
-     print_text_in_color "$ICyan" "Installing the Preview Generator..."
-    install_and_enable_app previewgenerator
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    nextcloud_occ app:remove previewgenerator
+    # reset the preview formats
+    nextcloud_occ_no_check config:system:delete "enabledPreviewProviders"
+    # reset the cronjob
+    crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
+    # Remove apps
+    APPS=(ffmpeg php-imagick libmagickcore-6.q16-3-extra)
+    for app in "${APPS[@]}"
+    do
+        if is_this_installed "$app"
+        then
+            apt purge "$app" -y
+        fi
+    done
+    apt autoremove -y
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
+fi
 
-    # check if the previewgenerator is installed and enabled
-    if is_app_installed previewgenerator
-    then
-        # enable previews
-        nextcloud_occ config:system:set enable_previews --value=true --type=boolean
+# Install preview generator
+install_and_enable_app previewgenerator
 
-        # install needed dependency for movies
-        install_if_not ffmpeg
+# check if the previewgenerator is installed and enabled
+if is_app_enabled previewgenerator
+then
+    # enable previews
+    nextcloud_occ config:system:set enable_previews --value=true --type=boolean
 
-        # reset the preview formats
-        nextcloud_occ config:system:delete "enabledPreviewProviders"
-
-        # reset the cronjob
-        print_text_in_color "$ICyan" "Resetting the cronjob for the Preview Generation"
-        crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
-    else
-        exit
-    fi
+    # install needed dependency for movies
+    install_if_not ffmpeg
 else
     exit
 fi
@@ -253,3 +268,5 @@ which you want to run the Preview Generation (as a scheluded task)")
     # Pre generate everything
     nextcloud_occ preview:generate-all "$PREVIEW_USER"
 fi
+
+msg_box "Previewgenerator was successfully installed."
