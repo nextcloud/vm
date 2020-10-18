@@ -72,13 +72,6 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 Collabora
-cpu_check 2 Collabora
-
-# Check if Nextcloud is installed with TLS
-check_nextcloud_https "Collabora (Docker)"
-
 # Check if OnlyOffice is previously installed
 # If yes, then stop and prune the docker container
 if does_this_docker_exist 'onlyoffice/documentserver'
@@ -195,6 +188,13 @@ domain_check_200 "$SUBDOMAIN"
 # Check open ports with NMAP
 check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
+
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 2 Collabora
+cpu_check 2 Collabora
+
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "Collabora (Docker)"
 
 # Install Docker
 install_docker
