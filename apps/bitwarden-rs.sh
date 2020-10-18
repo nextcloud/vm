@@ -19,6 +19,9 @@ debug_mode
 # Check if root
 root_check
 
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
+
 # Check if bitwarden_rs is already installed
 if [ -d /home/bitwarden_rs ] || docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
 then
