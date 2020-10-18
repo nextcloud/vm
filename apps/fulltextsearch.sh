@@ -6,7 +6,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Full Text Search"
-SCRIPT_EXPLAINER="Full Text Search provides Elasticsearch for Nextcloud, which makes it possible to search for text inside files."
+export SCRIPT_EXPLAINER="Full Text Search provides Elasticsearch for Nextcloud, which makes it possible to search for text inside files."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -24,9 +24,6 @@ debug_mode
 # Must be root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Nextcloud 18 is required.
 lowest_compatible_nc 18
 
@@ -35,6 +32,7 @@ if ! does_this_docker_exist "$nc_fts" || ! is_app_installed fulltextsearch
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
+    unset SCRIPT_EXPLAINER
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
