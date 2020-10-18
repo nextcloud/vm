@@ -21,9 +21,6 @@ debug_mode
 # Check if root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
