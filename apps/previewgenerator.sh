@@ -23,14 +23,9 @@ root_check
 msg_box "$SCRIPT_EXPLAINER"
 
 # PHP 7.x is needed
-if is_this_installed php5.6-common
+if is_this_installed php5.6-common || is_this_installed php5.5-common
 then
-    msg_box "At least PHP 7.X is supported, please upgrade your PHP version: \
-https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
-    exit
-elif is_this_installed php5.5-common
-then
-    msg_box "At least PHP 7.X is supported, please upgrade your PHP version: \
+    msg_box "At least PHP 7.X is required, please upgrade your PHP version: \
 https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
     exit
 fi
