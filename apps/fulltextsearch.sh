@@ -6,6 +6,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Full Text Search"
+SCRIPT_EXPLAINER="Full Text Search provides a full text search for Nextcloud."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -29,7 +30,7 @@ msg_box "$SCRIPT_EXPLAINER"
 # Nextcloud 18 is required.
 lowest_compatible_nc 18
 
-# Check if webmin is already installed
+# Check if Full Text Search is already installed
 if ! does_this_docker_exist "$nc_fts"
 then
     # Ask for installing
