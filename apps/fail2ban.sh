@@ -7,7 +7,7 @@
 true
 SCRIPT_NAME="Fail2ban"
 SCRIPT_EXPLAINER="Fail2ban provides extra Brute Force protextion for Nextcloud.
-It scans Nextcloud's and SSH log files and bans IPs that show malicious \
+It scans the Nextcloud and SSH log files and bans IPs that show malicious \
 signs -- too many password failures, seeking for exploits, etc. 
 Generally Fail2Ban is then used to update firewall rules to \
 reject the IP addresses for a specified amount of time."
@@ -35,6 +35,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
+    print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
     fail2ban-client unban --all
     rm /etc/fail2ban/filter.d/nextcloud.conf
     rm /etc/fail2ban/jail.local
