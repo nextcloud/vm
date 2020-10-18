@@ -21,13 +21,6 @@ root_check
 # Show explainer
 msg_box "$SCRIPT_EXPLAINER"
 
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 OnlyOffice
-cpu_check 2 OnlyOffice
-
-# Check if Nextcloud is installed with TLS
-check_nextcloud_https "OnlyOffice (Docker)"
-
 # Remove OnlyOffice-documentserver if activated
 if is_app_enabled documentserver_community
 then
@@ -206,6 +199,13 @@ domain_check_200 "$SUBDOMAIN"
 # Check open ports with NMAP
 check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
+
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 2 OnlyOffice
+cpu_check 2 OnlyOffice
+
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "OnlyOffice (Docker)"
 
 # Install Docker
 install_docker
