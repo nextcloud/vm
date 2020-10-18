@@ -39,17 +39,17 @@ fi
 choice=$(whiptail --title "$TITLE" --checklist \
 "Which apps do you want to install?\n\nAutomatically configure and install selected apps
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Documentserver" "(OnlyOffice or Collabora - Docker or Integrated)" OFF \
+"Documentserver" "(OnlyOffice or Collabora - Docker or Integrated for Nextcloud)" OFF \
 "Bitwarden" "(External password manager)" OFF \
-"Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
+"Fail2ban  " "(Extra Bruteforce protection for Nextcloud)" "$STARTUP_SWITCH" \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
-"PreviewGenerator" "(Pre-generate previews)" "$STARTUP_SWITCH" \
-"LDAP" "(Windows Active directory)" OFF \
-"Talk" "(Nextcloud Video calls and chat)" OFF \
+"PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
+"LDAP" "(Windows Active directory for Nextcloud)" OFF \
+"Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Webmin" "(Server GUI)" "$STARTUP_SWITCH" \
 "SMB-mount" "(Connect to SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
