@@ -24,12 +24,6 @@ root_check
 # Show explainer
 msg_box "$SCRIPT_EXPLAINER"
 
-# Nextcloud 18 is required.
-lowest_compatible_nc 18
-
-# Check if Nextcloud is installed with TLS
-check_nextcloud_https "OnlyOffice (Integrated)"
-
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
@@ -185,6 +179,12 @@ It has comptibility issues with OnlyOffice and you can now choose to disable it.
 	systemctl restart apache2.service
     fi
 fi
+
+# Nextcloud 18 is required.
+lowest_compatible_nc 18
+
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "OnlyOffice (Integrated)"
 
 # Install OnlyOffice
 msg_box "We will now install OnlyOffice.
