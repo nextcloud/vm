@@ -5,6 +5,8 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Bitwarden RS"
+SCRIPT_EXPLAINER="Bitwarden RS is an unofficial Bitwarden server API implementation in Rust.
+It has less hardware requirements and therefore runs on nearly any hardware."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -17,13 +19,16 @@ debug_mode
 # Check if root
 root_check
 
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
+
 # Check if bitwarden_rs is already installed
 if [ -d /home/bitwarden_rs ] || docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
 then
-    msg_box "It seems like you have already installed Bitwarden_rs.
+    msg_box "It seems like you have already installed Bitwarden RS.
 You cannot install it again because you would loose all your data and passwords.
 
-If you are certain that you definitely want to delete Bitwarden_rs and all 
+If you are certain that you definitely want to delete Bitwarden RS and all \
 its data to be able to reinstall it, you can execute the following commands:
 
 'sudo docker stop bitwarden_rs'
@@ -32,11 +37,8 @@ its data to be able to reinstall it, you can execute the following commands:
     exit 1
 fi
 
-# Inform what bitwarden_rs is
-msg_box "Bitwarden_rs is an unofficial Bitwarden server API implementation in Rust.
-It has less hardware requirements and therefore runs on nearly any hardware.
-
-Since it's unofficial, you need to really trust the maintainer of the project to install it:
+# Second info box
+msg_box "Since it's unofficial, you need to really trust the maintainer of the project to install it:
 https://github.com/dani-garcia/bitwarden_rs
 You never know what could hide in an unofficial release.
 
@@ -45,6 +47,10 @@ sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden
 
 Please report issues only to https://github.com/dani-garcia/bitwarden_rs"
 
+# Ask for installing
+install_popup "$SCRIPT_EXPLAINER"
+
+# Show a second waring
 msg_box "Are you really sure?
 
 It's always is recommended to install the official Bitwarden by running:
@@ -52,7 +58,8 @@ sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden
 
 You will be offered to abort in the next step"
 
-if ! yesno_box_yes "Are you sure you want to install Bitwarden_rs?"
+# Let the user cancel
+if ! yesno_box_yes "Are you sure you want to install Bitwarden RS?"
 then
     exit
 fi
@@ -64,19 +71,21 @@ SUBDOMAIN=$(input_box_flow "Please enter the Domain that you want to use for Bit
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
+# Inform the user
 msg_box "Before continuing, please make sure that you have you have \
 edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
 directly to this servers IP. A full exstensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UNNP enabled in your firewall/router. \
-You will be offered to use UNNP in the next step.
+This can be done automatically if you have UPNP enabled in your firewall/router.
+You will be offered to use UPNP in the next step.
 
 PLEASE NOTE:
 Using other ports than the default 80 and 443 is not supported, \
 though it may be possible with some custom modification:
 https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
 
+# Ask for UPNP
 if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
 then
     unset FAIL
@@ -295,6 +304,7 @@ check_command fail2ban-client reload
 
 while :
 do
+    # Inform the user
     msg_box "Bitwarden_rs with fail2ban have been sucessfully installed! 
 Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
@@ -306,6 +316,8 @@ Then, if it works, you can easily invite all your user with an e-mail address fr
 (You have to click on users in the top-panel)
 
 Please remember to report issues only to https://github.com/dani-garcia/bitwarden_rs"
+
+    # Ask for password
     if yesno_box_no "Do you have the admin password now and know how to access the admin-panel?"
     then
         break
