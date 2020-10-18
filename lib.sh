@@ -282,6 +282,7 @@ input_box_flow() {
 }
 
 install_popup() {
+    msg_box "$SCRIPT_EXPLAINER"
     if yesno_box_yes "Do you want to install $1?"
     then
         print_text_in_color "$ICyan" "Installing $1..."
