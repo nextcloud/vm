@@ -20,9 +20,6 @@ debug_mode
 # Check if root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if xrdp is installed
 if ! is_this_installed xrdp
 then
