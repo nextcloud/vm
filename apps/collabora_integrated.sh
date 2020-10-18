@@ -5,6 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Collabora (Integrated)"
+SCRIPT_EXPLAINER="Install the integrated Collabora Office Server"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -20,16 +21,8 @@ debug_mode
 # Check if root
 root_check
 
-print_text_in_color "$ICyan" "Running the Collabora install script..."
-
-# Nextcloud 19 is required.
-lowest_compatible_nc 19
-
-ram_check 2 Collabora
-cpu_check 2 Collabora
-
-# Check if Nextcloud is installed with TLS
-check_nextcloud_https "Collabora (Integrated)"
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
 
 # Check if Collabora is installed using the old method
 if does_this_docker_exist 'collabora/code'
@@ -82,35 +75,30 @@ fi
 # Check if Collabora is installed using the new method
 if is_app_enabled richdocumentscode
 then
-    choice=$(whiptail --title "$TITLE" --menu \
-"It seems like 'Collabora' is already installed.\nChoose what you want to do.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall Collabora" "" \
-"Uninstall Collabora" "" 3>&1 1>&2 2>&3)
-
-    case "$choice" in
-        "Uninstall Collabora")
-            print_text_in_color "$ICyan" "Uninstalling Collabora..."
-            nextcloud_occ app:remove richdocumentscode
-            # Disable Collabora App if activated
-            if is_app_installed richdocuments
-            then
-                nextcloud_occ app:remove richdocuments
-            fi
-            msg_box "Collabora was successfully uninstalled."
-            exit
-        ;;
-        "Reinstall Collabora")
-            print_text_in_color "$ICyan" "Reinstalling Collabora..."
-            nextcloud_occ app:remove richdocumentscode
-        ;;
-        "")
-            exit 1
-        ;;
-        *)
-        ;;
-    esac
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    nextcloud_occ app:remove richdocumentscode
+    # Disable Collabora App if activated
+    if is_app_installed richdocuments
+    then
+        nextcloud_occ app:remove richdocuments
+    fi
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
 fi
+
+# Nextcloud 19 is required.
+lowest_compatible_nc 19
+
+ram_check 2 Collabora
+cpu_check 2 Collabora
+
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "Collabora (Integrated)"
 
 # Check if Onlyoffice is installed and remove every trace of it
 if does_this_docker_exist 'onlyoffice/documentserver'
