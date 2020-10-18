@@ -23,10 +23,6 @@ root_check
 # Show explainer
 msg_box "$SCRIPT_EXPLAINER"
 
-# Needs 1 GB alone
-ram_check 3 "ClamAV"
-cpu_check 2 "ClamAV"
-
 # Check if webmin is already installed
 if ! is_this_installed clamav-daemon && ! is_this_installed clamav && ! is_this_installed clamav-freshclam
 then
@@ -51,6 +47,10 @@ else
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
+
+# Needs 1 GB alone
+ram_check 3 "ClamAV"
+cpu_check 2 "ClamAV"
 
 # Install needed tools
 apt update -q4 & spinner_loading
