@@ -23,89 +23,41 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 19 is required.
+# Show explainer
+msg_box "$SCRIPT_EXPLAINER"
+
+# Nextcloud 18 is required.
 lowest_compatible_nc 18
+
+# Check if webmin is already installed
+if ! does_this_docker_exist "$nc_fts"
+then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    docker_prune_this "$nc_fts"
+    # Reset database table
+    check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
+    # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
+    nextcloud_occ_no_check fulltextsearch:reset
+    APPS=(fulltextsearch fulltextsearch_elasticsearch files_fulltextsearch)
+    for app in "${APSS[@]}"
+    do
+        if is_app_installed "$app"
+        then
+            nextcloud_occ app:remove "$app"
+        fi
+    done
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
+fi
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 FullTextSearch
 cpu_check 2 FullTextSearch
-
-# Temporary check for NC 20
-if ! install_and_enable_app fulltextsearch
-then
-    exit 1
-fi
-
-# Check if fulltextsearch is already installed
-print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
-if does_this_docker_exist "$nc_fts"
-then
-    choice=$(whiptail --title "$TITLE" --menu \
-"It seems like 'Fulltextsearch' is already installed.\nChoose what you want to do.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall Fulltextsearch" "" \
-"Uninstall Fulltextsearch" "" 3>&1 1>&2 2>&3)
-
-    case "$choice" in
-        "Uninstall Fulltextsearch")
-            print_text_in_color "$ICyan" "Uninstalling Fulltextsearch..."
-            # Reset database table
-            check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
-            # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-            if is_app_installed fulltextsearch
-            then
-                print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-                nextcloud_occ_no_check fulltextsearch:reset
-                nextcloud_occ app:remove fulltextsearch
-            fi
-            if is_app_installed fulltextsearch_elasticsearch
-            then
-                nextcloud_occ app:remove fulltextsearch_elasticsearch
-            fi
-            if is_app_installed files_fulltextsearch
-            then
-                nextcloud_occ app:remove files_fulltextsearch
-            fi
-            # Remove nc_fts docker if installed
-            docker_prune_this "$nc_fts"
-
-            msg_box "Fulltextsearch was successfully uninstalled."
-            exit
-        ;;
-        "Reinstall Fulltextsearch")
-            print_text_in_color "$ICyan" "Reinstalling FullTextSearch..."
-
-            # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-            if is_app_installed fulltextsearch
-            then
-                print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-                # Reset database table
-                check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
-                # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-                nextcloud_occ_no_check fulltextsearch:reset
-                nextcloud_occ app:remove fulltextsearch
-            fi
-            if is_app_installed fulltextsearch_elasticsearch
-            then
-                nextcloud_occ app:remove fulltextsearch_elasticsearch
-            fi
-            if is_app_installed files_fulltextsearch
-            then
-                nextcloud_occ app:remove files_fulltextsearch
-            fi
-
-            # Remove nc_fts docker if installed
-            docker_prune_this "$nc_fts"
-        ;;
-        "")
-            exit 1
-        ;;
-        *)
-        ;;
-    esac
-else
-    print_text_in_color "$ICyan" "Installing Fulltextsearch..."
-fi
 
 # Make sure there is an Nextcloud installation
 if ! [ "$(nextcloud_occ -V)" ]
@@ -128,6 +80,12 @@ then
     rm /etc/init.d/solr
     deluser --remove-home solr
     deluser --group solr
+fi
+
+# Temporary check for NC 20
+if ! install_and_enable_app fulltextsearch
+then
+    exit 1
 fi
 
 # Check & install docker
