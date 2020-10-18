@@ -22,9 +22,6 @@ debug_mode
 # Check if root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if webmin is already installed
 if ! is_this_installed mc
 then

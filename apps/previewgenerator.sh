@@ -19,9 +19,6 @@ debug_mode
 # Check if root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # PHP 7.x is needed
 if is_this_installed php5.6-common || is_this_installed php5.5-common
 then

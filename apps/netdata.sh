@@ -23,9 +23,6 @@ debug_mode
 # Must be root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if netdata is already installed
 if ! [ -d /etc/netdata ]
 then

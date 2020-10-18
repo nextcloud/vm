@@ -43,9 +43,6 @@ then
     exit
 fi
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Show install_popup
 if ! is_this_installed samba
 then
