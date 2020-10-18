@@ -32,7 +32,6 @@ if ! does_this_docker_exist "$nc_fts" || ! is_app_installed fulltextsearch
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
-    unset SCRIPT_EXPLAINER
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
