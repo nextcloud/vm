@@ -18,9 +18,6 @@ debug_mode
 # Check if root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if adminer is already installed
 if ! is_this_installed adminer
 then

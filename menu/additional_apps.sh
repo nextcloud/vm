@@ -47,11 +47,11 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
-"PreviewGenerator" "(Pre-generate previews)" "$STARTUP_SWITCH" \
-"LDAP" "(Windows Active directory)" OFF \
-"Talk" "(Nextcloud Video calls and chat)" OFF \
-"Webmin" "(Server GUI)" "$STARTUP_SWITCH" \
-"SMB-mount" "(Connect to SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
+"PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
+"LDAP" "(Windows Active directory for Nextcloud)" OFF \
+"Talk" "(Video calls and chat for Nextcloud)" OFF \
+"Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
+"SMB-mount" "(Mount SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Documentserver"*)
