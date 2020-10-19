@@ -673,6 +673,23 @@ print_text_in_color "$IGreen" "Online!"
 return 0
 }
 
+disable_mod_evasive() {
+    if [ "$(apache2ctl -M | grep evasive)" != "" ]
+    then
+        msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. \
+It has comptibility issues with OnlyOffice and you can now choose to disable it."
+        if ! yesno_box_yes "Do you want to disable DDOS protection?"
+        then
+            print_text_in_color "$ICyan" "Keeping mod_evasive active."
+        else
+            a2dismod evasive
+            # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
+            apt-get purge libapache2-mod-evasive -y
+            systemctl restart apache2
+        fi
+    fi
+}
+
 
 # Check that the script can see the external IP (apache fails otherwise), used e.g. in the adminer app script.
 check_external_ip() {
@@ -687,15 +704,21 @@ fi
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https() {
-    if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
+    print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
+    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+    if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
     then
-        msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
+        msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+$NCDOMAIN.
+Please install Nextcloud and make sure your domain is reachable, or activate TLS
+on your domain to be able to run this script.
+Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
 You easily activate TLS (HTTPS) by running the Let's Encrypt script.
 More info here: https://bit.ly/37wRCin
 
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
 Additional Apps --> Documentserver --> $1."
-        exit
+        exit 1
     fi
 }
 
@@ -809,6 +832,32 @@ cleanup_open_port() {
     fi
 }
 
+open_standard_ports() {
+    msg_box "Before continuing, please make sure that you have you have \
+edited the DNS settings for $1, and opened port 80 and 443 \
+directly to this servers IP. A full exstensive guide can be found here:
+https://www.techandme.se/open-port-80-443
+
+This can be done automatically if you have UPNP enabled in your firewall/router. \
+You will be offered to use UPNP in the next step.
+
+PLEASE NOTE:
+Using other ports than the default 80 and 443 is not supported, \
+though it may be possible with some custom modification:
+https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
+
+    if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
+    then
+        unset FAIL
+        open_port 80 TCP
+        open_port 443 TCP
+        cleanup_open_port
+    fi
+    msg_box "After you hit okay, we will check if ports 80 and 443 TCP are open."
+    check_open_port 80 "$1"
+    check_open_port 443 "$1"
+}
+
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
 print_text_in_color "$ICyan" "Checking if port ${1} is open with https://www.networkappers.com/tools/open-port-checker..."
@@ -838,6 +887,27 @@ Please follow this guide to open ports in your router or firewall:\nhttps://www.
         exit 1
     fi
 fi
+}
+
+domain_flow() {
+    SUBDOMAIN=$(input_box_flow "$1 subdomain e.g: office.yourdomain.com
+NOTE: This domain must be different than your Nextcloud domain. \
+They can however be hosted on the same server, but would require seperate DNS entries.")
+
+    # shellcheck disable=2034,2059
+    true
+    # shellcheck source=lib.sh
+    source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/szaimen-patch-22/lib.sh)
+
+    # Get all needed variables from the library
+    nc_update
+
+    # Get the latest packages
+    apt update -q4 & spinner_loading
+
+    # Check if $SUBDOMAIN exists and is reachable
+    print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
+    domain_check_200 "$SUBDOMAIN"
 }
 
 check_distro_version() {
@@ -925,6 +995,13 @@ Please note that things may be very slow and not work as expected. YOU HAVE BEEN
 else
     print_text_in_color "$IGreen" "RAM for ${2} OK! ($mem_available_gb GB)"
 fi
+}
+
+raise_ram_check_4gb() {
+    msg_box "Other Office solutions are currently installed.
+To make this script work, we will need to raise the Ram amount to 4GB.
+If you want to proceed with a lower amount of RAM, you are free to uninstall any of them."
+    ram_check 4 "$1"
 }
 
 # Test number of CPU
@@ -1056,6 +1133,15 @@ else
 fi
 }
 
+disable_office_integration() {
+    if is_app_enabled "$1"
+    then
+        msg_box "$2 integration is enabled and will get disabled now.
+You can enable it later again over the appstore."
+        nextcloud_occ app:disable "$1"
+    fi
+}
+
 install_and_enable_app() {
 # Download and install $1
 if ! is_app_installed "$1"
@@ -1088,6 +1174,38 @@ else
     print_text_in_color "$ICyan" "It seems like $1 is installed already, trying to enable it..."
     nextcloud_occ_no_check app:enable "$1"
 fi
+}
+
+remove_office_domain() {
+    # Revoke LE
+    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for $1, e.g: office.yourdomain.com")
+    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+    then
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf "$remove"
+        done
+    fi
+    # Remove Apache2 config
+    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+    then
+        a2dissite "$SUBDOMAIN".conf
+        restart_webserver
+        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+    fi
+    # Remove trusted domain
+    count=0
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
+        then
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
 }
 
 download_verify_nextcloud_stable() {
