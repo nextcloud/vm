@@ -34,14 +34,10 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    APPS=(spreed signaling_servers turn_servers stun_servers)
-    for app in "${APPS[@]}"
-    do
-        if is_app_installed "$app"
-        then
-            nextcloud_occ app:remove "$app"
-        fi
-    done
+    nextcloud_occ_no_check config:app:delete spreed stun_servers
+    nextcloud_occ_no_check config:app:delete spreed turn_servers
+    nextcloud_occ_no_check config:app:delete spreed signaling_servers
+    nextcloud_occ_no_check app:remove spreed
     rm -rf \
         "$TURN_CONF" \
         "$SIGNALING_SERVER_CONF" \
@@ -57,22 +53,14 @@ else
         $VMLOGS/talk_apache_access.log \
         $VMLOGS/turnserver.log \
         /var/www/html/error
-    if is_this_installed coturn
-    then
-        apt-get purge coturn -y
-    fi
-    if is_this_installed nats-server
-    then
-        apt-get purge nats-server -y
-    fi
-    if is_this_installed janus
-    then
-        apt-get purge janus -y
-    fi
-    if is_this_installed nextcloud-spreed-signaling
-    then
-        apt-get purge nextcloud-spreed-signaling -y
-    fi
+    APPS=(coturn nats-server janus nextcloud-spreed-signaling)
+    for app in "${APPS[@]}"
+    do
+        if is_this_installed "$app"
+        then
+            apt purge "$app" -y
+        fi
+    done
     apt autoremove -y
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
