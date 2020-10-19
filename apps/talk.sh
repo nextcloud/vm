@@ -53,8 +53,7 @@ else
         $VMLOGS/talk_apache_access.log \
         $VMLOGS/turnserver.log \
         /var/www/html/error
-            apt-get purge coturn -y
-    APPS=(nats-server janus nextcloud-spreed-signaling)
+    APPS=(coturn nats-server janus nextcloud-spreed-signaling)
     for app in "${APPS[@]}"
     do
         if is_this_installed "$app"
