@@ -63,7 +63,7 @@ fi
 # Check if service is running
 if ! pgrep apache2 > /dev/null
 then
-    systemctl start apache2.service
+    start_if_stopped apache2.service
 fi
 CRONTAB
 }

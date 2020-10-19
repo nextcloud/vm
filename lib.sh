@@ -515,7 +515,7 @@ start_if_stopped() {
 if ! pgrep "$1"
 then
     print_text_in_color "$ICyan" "Starting $1..."
-    check_command systemctl start "$1".service
+    systemctl start "$1".service
 fi
 }
 

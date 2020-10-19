@@ -56,7 +56,7 @@ apt install clamav clamav-freshclam clamav-daemon -y
 # stop freshclam and update the database
 check_command systemctl stop clamav-freshclam
 check_command freshclam
-check_command systemctl start clamav-freshclam
+start_if_stopped clamav-freshclam
 
 # Edit ClamAV settings to fit the installation
 sed -i "s|^MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|" /etc/clamav/clamd.conf

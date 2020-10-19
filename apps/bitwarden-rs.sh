@@ -298,7 +298,7 @@ findtime = 1800
 ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 BWA_JAIL_CONF
 
-check_command systemctl start fail2ban
+start_if_stopped fail2ban
 countdown "Waiting for fail2ban to start... " 5
 check_command fail2ban-client reload
 

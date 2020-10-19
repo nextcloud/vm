@@ -60,7 +60,7 @@ then
             nextcloud_occ maintenance:mode --off
             if [ -n "$DOCKER" ]
             then
-                check_command systemctl start docker
+                start_if_stopped docker
             fi
             notify_admin_gui "Update failed!" \
 "Could not remove NcVM-snapshot - Please reboot your server! $(date +%T)"
@@ -74,7 +74,7 @@ This should work again after a reboot of your server."
         nextcloud_occ maintenance:mode --off
         if [ -n "$DOCKER" ]
         then
-            check_command systemctl start docker
+            start_if_stopped docker
         fi
         notify_admin_gui "Update failed!" \
 "Could not create NcVM-snapshot - Please reboot your server! $(date +%T)"
@@ -86,7 +86,7 @@ It should work afterwards again."
     nextcloud_occ maintenance:mode --off
     if [ -n "$DOCKER" ]
     then
-        check_command systemctl start docker
+        start_if_stopped docker
     fi
 fi
 
@@ -696,7 +696,7 @@ then
     if ! pgrep postgres >/dev/null 2>&1
     then
         print_text_in_color "$ICyan" "Starting PostgreSQL..."
-        check_command systemctl start postgresql.service
+        systemctl start postgresql.service
     fi
 fi
 
