@@ -696,7 +696,7 @@ then
     if ! pgrep postgres >/dev/null 2>&1
     then
         print_text_in_color "$ICyan" "Starting PostgreSQL..."
-        start_if_stopped postgresql.service
+        systemctl start postgresql.service
     fi
 fi
 
