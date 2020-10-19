@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Collabora (Integrated)"
-SCRIPT_EXPLAINER="Install the integrated Collabora Office Server"
+SCRIPT_EXPLAINER="This script will install the integrated Collabora Office Server"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
