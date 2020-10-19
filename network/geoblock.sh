@@ -19,9 +19,6 @@ debug_mode
 # Must be root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if it is already configured
 if ! grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
