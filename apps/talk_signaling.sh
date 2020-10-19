@@ -4,7 +4,7 @@
 
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Talk with Signaling Server"
+SCRIPT_NAME="Nextcloud Talk"
 SCRIPT_EXPLAINER="This script installs Nextcloud Talk and also offers the possibility \
 to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
 It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
@@ -196,7 +196,7 @@ Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
 
 ####################### SIGNALING
 
-DESCRIPTION="Talk Signaling Server"
+SCRIPT_NAME="Talk Signaling Server"
 
 msg_box "You will now be presented with the option to install the Talk Signaling (STUN) server. 
 This aims to give you greater performance and ability to have more users in a call at the same time.
@@ -211,7 +211,7 @@ https://gitlab.com/packaging/nextcloud-spreed-signaling
 https://gitlab.com/packaging/janus/"
 
 # Ask the user if he/she wants the HPB server as well
-if ! yesno_box_yes "Do you want to install the $DESCRIPTION?"
+if ! yesno_box_yes "Do you want to install the $SCRIPT_NAME?"
 then
     exit 1
 fi
@@ -344,7 +344,7 @@ chown www-data:www-data $VMLOGS/talk_apache_error.log $VMLOGS/talk_apache_access
 
 # Prep the error page
 mkdir -p /var/www/html/error
-echo "Hi there! :) If you see this page, the Apache2 proxy for $DESCRIPTION is up and running." > /var/www/html/error/404_proxy.html
+echo "Hi there! :) If you see this page, the Apache2 proxy for $SCRIPT_NAME is up and running." > /var/www/html/error/404_proxy.html
 chown -R www-data:www-data /var/www/html/error
 
 # Only add TLS 1.3 on Ubuntu later than 20.04
