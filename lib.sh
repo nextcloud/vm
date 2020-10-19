@@ -515,7 +515,7 @@ start_if_stopped() {
 if ! pgrep "$1"
 then
     print_text_in_color "$ICyan" "Starting $1..."
-    start_if_stopped "$1".service
+    systemctl start "$1".service
 fi
 }
 
@@ -736,7 +736,7 @@ a2dissite 000-default.conf
 systemctl reload apache2.service
 default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 #http-01
-local  standalone="certbot certonly --standalone --pre-hook \"systemctl stop apache2.service\" --post-hook \"start_if_stopped apache2.service\" $default_le"
+local  standalone="certbot certonly --standalone --pre-hook \"systemctl stop apache2.service\" --post-hook \"systemctl start apache2.service\" $default_le"
 #tls-alpn-01
 local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default_le"
 #dns
