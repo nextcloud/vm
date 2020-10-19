@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Collabora (Docker)"
-SCRIPT_EXPLAINER="Install Collabora Office Server Docker"
+SCRIPT_EXPLAINER="This script will install the Collabora Office Server bundled with Docker"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -20,7 +20,7 @@ root_check
 
 # Check if Collabora is already installed
 print_text_in_color "$ICyan" "Checking if Collabora is already installed..."
-if does_this_docker_exist 'collabora/code'
+if ! does_this_docker_exist 'collabora/code'
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
