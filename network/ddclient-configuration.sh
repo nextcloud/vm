@@ -100,7 +100,7 @@ case "$choice" in
 esac
 
 # Instructions
-msg_box "Before you can continue, you have to access $PROVIDER and $INSTRUCTIONS.\nHere is a guide:\n$GUIDE"
+msg_box "Before you can continue, you have to access $PROVIDER and $INSTRUCTIONS.\n\nHere is a guide:\n$GUIDE"
 
 # Ask if everything is prepared
 if ! yesno_box_yes "Are you ready to continue?"
