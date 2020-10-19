@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="OnlyOffice (Integrated)"
-SCRIPT_EXPLAINER="Install the integrated OnlyOffice Documentserver Community."
+SCRIPT_EXPLAINER="This script will install the integrated OnlyOffice Documentserver Community."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
