@@ -45,7 +45,7 @@ ram_check 2 "$SCRIPT_NAME"
 cpu_check 2 "$SCRIPT_NAME"
 
 # Check for other Office solutions
-if does_this_docker_exist 'collabora/code' || is_app_enabled richdocumentscode || is_app_enabled documentserver_community
+if does_this_docker_exist 'collabora/code' || is_app_enabled richdocumentscode
 then
     raise_ram_check_4gb "$SCRIPT_NAME"
 fi
