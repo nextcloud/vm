@@ -5,7 +5,7 @@
 
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Setup DDclient"
+SCRIPT_NAME="DynDNS with ddclient"
 SCRIPT_EXPLAINER="This script lets you setup DynDNS by using the Linux ddclient software."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
