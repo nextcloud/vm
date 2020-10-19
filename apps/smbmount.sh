@@ -37,9 +37,6 @@ Recommended is MAX_COUNT=16, because not all menus work reliably with a higher c
     exit
 fi
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Show install_popup
 if ! is_this_installed cifs-utils
 then

@@ -282,6 +282,7 @@ input_box_flow() {
 }
 
 install_popup() {
+    msg_box "$SCRIPT_EXPLAINER"
     if yesno_box_yes "Do you want to install $1?"
     then
         print_text_in_color "$ICyan" "Installing $1..."
@@ -1047,7 +1048,7 @@ fi
 
 #example: is_app_installed documentserver_community
 is_app_installed() {
-if [ -d "$NC_APPS_PATH/$1" ]
+if nextcloud_occ app:list | grep -wq "$1"
 then
     return 0
 else
@@ -1073,11 +1074,14 @@ or when a new version of the app is released with the following command:
 'sudo -u www-data php ${NCPATH}/occ app:install $1'"
     rm -Rf "$NCPATH/apps/$1"
     else
-        # Enable $1
+        # Enable $1 if it's installed but not enabled
         if is_app_installed "$1"
         then
-            nextcloud_occ app:enable "$1"
-            chown -R www-data:www-data "$NC_APPS_PATH"
+            if ! is_app_enabled "$1"
+            then
+                nextcloud_occ app:enable "$1"
+                chown -R www-data:www-data "$NC_APPS_PATH"
+            fi
         fi
     fi
 else

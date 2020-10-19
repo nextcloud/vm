@@ -21,9 +21,6 @@ debug_mode
 # Check if root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if already installed
 if ! pivpn &>/dev/null
 then
