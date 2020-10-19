@@ -19,9 +19,6 @@ debug_mode
 # Must be root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if Smtp Relay was already configured
 if ! [ -f /etc/msmtprc ]
 then
@@ -162,12 +159,12 @@ tls_trust_file  /etc/ssl/certs/ca-certificates.crt
 # logfile         /var/log/msmtp
 
 # Account to send emails
-account         $MAIL_SERVER
+account         $MAIL_USERNAME
 host            $MAIL_SERVER
 port            $SMTP_PORT
 from            $MAIL_USERNAME
 
-account default : $MAIL_SERVER
+account default : $MAIL_USERNAME
 
 ### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
 # recipient=$RECIPIENT
@@ -186,14 +183,14 @@ tls_trust_file  /etc/ssl/certs/ca-certificates.crt
 logfile         /var/log/msmtp
 
 # Account to send emails
-account         $MAIL_SERVER
+account         $MAIL_USERNAME
 host            $MAIL_SERVER
 port            $SMTP_PORT
 from            $MAIL_USERNAME
 user            $MAIL_USERNAME
 password        $MAIL_PASSWORD
 
-account default : $MAIL_SERVER
+account default : $MAIL_USERNAME
 
 ### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
 # recipient=$RECIPIENT

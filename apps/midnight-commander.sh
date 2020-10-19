@@ -22,9 +22,6 @@ debug_mode
 # Check if root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if webmin is already installed
 if ! is_this_installed mc
 then
@@ -71,6 +68,5 @@ MC_INI
 done
 
 # Inform the user
-msg_box "The dark theme was successfully applied to Midnight Commander.
-Now try out Midnight Commander by running 'mc' in the CLI."
+msg_box "The dark theme for Midnight Commander was successfully applied."
 exit
