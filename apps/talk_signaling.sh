@@ -57,10 +57,22 @@ else
         $VMLOGS/talk_apache_access.log \
         $VMLOGS/turnserver.log \
         /var/www/html/error
-    apt-get purge coturn -y
-    apt-get purge nats-server -y
-    apt-get purge janus -y
-    apt-get purge nextcloud-spreed-signaling -y
+    if is_this_installed coturn
+    then
+        apt-get purge coturn -y
+    fi
+    if is_this_installed nats-server
+    then
+        apt-get purge nats-server -y
+    fi
+    if is_this_installed janus
+    then
+        apt-get purge janus -y
+    fi
+    if is_this_installed nextcloud-spreed-signaling
+    then
+        apt-get purge nextcloud-spreed-signaling -y
+    fi
     apt autoremove -y
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
