@@ -4,7 +4,10 @@
 
 # shellcheck disable=2034,2059
 true
-SCRIPT_NAME="Talk with Signaling Server"
+SCRIPT_NAME="Nextcloud Talk"
+SCRIPT_EXPLAINER="This script installs Nextcloud Talk and also offers the possibility \
+to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
+It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -21,96 +24,77 @@ debug_mode
 # Must be root
 root_check
 
+# Check if talk_signaling is already installed
+if [ -z "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] \
+&& ! is_this_installed coturn
+then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    APPS=(spreed signaling_servers turn_servers stun_servers)
+    for app in "${APPS[@]}"
+    do
+        if is_app_installed "$app"
+        then
+            nextcloud_occ app:remove "$app"
+        fi
+    done
+    rm -rf \
+        "$TURN_CONF" \
+        "$SIGNALING_SERVER_CONF" \
+        /etc/nats \
+        /etc/janus \
+        /etc/apt/trusted.gpg.d/morph027-janus.asc \
+        /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
+        /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
+        /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
+        /etc/apt/sources.list.d/morph027-janus.list \
+        /etc/apt/sources.list.d/morph027-nats-server.list \
+        $VMLOGS/talk_apache_error.log \
+        $VMLOGS/talk_apache_access.log \
+        $VMLOGS/turnserver.log \
+        /var/www/html/error
+    if is_this_installed coturn
+    then
+        apt-get purge coturn -y
+    fi
+    if is_this_installed nats-server
+    then
+        apt-get purge nats-server -y
+    fi
+    if is_this_installed janus
+    then
+        apt-get purge janus -y
+    fi
+    if is_this_installed nextcloud-spreed-signaling
+    then
+        apt-get purge nextcloud-spreed-signaling -y
+    fi
+    apt autoremove -y
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
+fi
+
 # Must be 20.04
 if ! version 20.04 "$DISTRO" 20.04.6
 then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to install Talk"
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.10 to install Talk"
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
 exit
 fi
 
-# Nextcloud 13 is required.
+# Nextcloud 19 is required.
 lowest_compatible_nc 19
 
 ####################### TALK (COTURN)
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https "Nextclod Talk"
-
-# Check if talk/spreed is already installed
-print_text_in_color "$ICyan" "Checking if Talk is already installed..."
-if [ -n "$(nextcloud_occ_no_check config:app:get spreed turn_servers | sed 's/\[\]//')" ] || is_this_installed coturn
-then
-    choice=$(whiptail --title "$TITLE" --menu \
-"It seems like 'Nextcloud Talk' is already installed.\nChoose what you want to do.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall Nextcloud Talk" "" \
-"Uninstall Nextcloud Talk" "" 3>&1 1>&2 2>&3)
-    
-    case "$choice" in
-        "Uninstall Nextcloud Talk")
-            print_text_in_color "$ICyan" "Uninstalling Nextcloud Talk and resetting all settings..."
-            nextcloud_occ_no_check config:app:delete spreed stun_servers
-            nextcloud_occ_no_check config:app:delete spreed turn_servers
-            nextcloud_occ_no_check config:app:delete spreed signaling_servers
-            nextcloud_occ_no_check app:remove spreed
-            rm -rf \
-              "$TURN_CONF" \
-              "$SIGNALING_SERVER_CONF" \
-              /etc/nats \
-              /etc/janus \
-              /etc/apt/trusted.gpg.d/morph027-janus.asc \
-              /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
-              /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
-              /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
-              /etc/apt/sources.list.d/morph027-janus.list \
-              /etc/apt/sources.list.d/morph027-nats-server.list \
-              $VMLOGS/talk_apache_error.log \
-              $VMLOGS/talk_apache_access.log \
-              $VMLOGS/turnserver.log \
-              /var/www/html/error
-            apt-get purge coturn -y
-            apt-get purge nats-server -y
-            apt-get purge janus -y
-            apt-get purge nextcloud-spreed-signaling -y
-            apt autoremove -y
-            msg_box "Nextcloud Talk was successfully uninstalled and all settings were reverted."
-            exit
-        ;;
-        "Reinstall Nextcloud Talk")
-            print_text_in_color "$ICyan" "Reinstalling Nextcloud Talk..."
-            nextcloud_occ_no_check config:app:delete spreed stun_servers
-            nextcloud_occ_no_check config:app:delete spreed turn_servers
-            nextcloud_occ_no_check config:app:delete spreed signaling_servers
-            nextcloud_occ_no_check app:remove spreed
-            rm -rf \
-              "$TURN_CONF" \
-              "$SIGNALING_SERVER_CONF" \
-              /etc/nats \
-              /etc/janus \
-              /etc/apt/trusted.gpg.d/morph027-janus.asc \
-              /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
-              /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
-              /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
-              /etc/apt/sources.list.d/morph027-janus.list \
-              /etc/apt/sources.list.d/morph027-nats-server.list
-            apt-get purge coturn -y
-            apt-get purge nats-server -y
-            apt-get purge janus -y
-            apt-get purge nextcloud-spreed-signaling -y
-            apt autoremove -y
-        ;;
-        "")
-            exit 1
-        ;;
-        *)
-        ;;
-    esac
-else
-    print_text_in_color "$ICyan" "Installing Nextcloud Talk..."
-fi
 
 # Let the user choose port. TURN_PORT in msg_box is taken from lib.sh and later changed if user decides to.
 msg_box "The default port for Talk used in this script is port $TURN_PORT.
@@ -212,7 +196,7 @@ Nextcloud Talk and its mobile apps visit:\nhttps://nextcloud.com/talk/"
 
 ####################### SIGNALING
 
-DESCRIPTION="Talk Signaling Server"
+SCRIPT_NAME="Talk Signaling Server"
 
 msg_box "You will now be presented with the option to install the Talk Signaling (STUN) server. 
 This aims to give you greater performance and ability to have more users in a call at the same time.
@@ -227,7 +211,7 @@ https://gitlab.com/packaging/nextcloud-spreed-signaling
 https://gitlab.com/packaging/janus/"
 
 # Ask the user if he/she wants the HPB server as well
-if ! yesno_box_yes "Do you want to install the $DESCRIPTION?"
+if ! yesno_box_yes "Do you want to install the $SCRIPT_NAME?"
 then
     exit 1
 fi
@@ -360,7 +344,7 @@ chown www-data:www-data $VMLOGS/talk_apache_error.log $VMLOGS/talk_apache_access
 
 # Prep the error page
 mkdir -p /var/www/html/error
-echo "Hi there! :) If you see this page, the Apache2 proxy for $DESCRIPTION is up and running." > /var/www/html/error/404_proxy.html
+echo "Hi there! :) If you see this page, the Apache2 proxy for $SCRIPT_NAME is up and running." > /var/www/html/error/404_proxy.html
 chown -R www-data:www-data /var/www/html/error
 
 # Only add TLS 1.3 on Ubuntu later than 20.04
@@ -477,3 +461,5 @@ else
     msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 0
 fi
+
+msg_box "Installation was successful!"
