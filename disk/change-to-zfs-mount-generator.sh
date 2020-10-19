@@ -55,7 +55,7 @@ systemctl disable zfs-mount
 # FOR ZEDLET
 check_command systemctl enable zfs-zed.service
 check_command systemctl enable zfs.target
-start_if_stopped zfs-zed.service
+start_if_stopped zfs-zed
 
 # Activate config
 touch /etc/zfs/zfs-list.cache/"$POOLNAME"
