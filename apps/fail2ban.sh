@@ -6,6 +6,11 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Fail2ban"
+SCRIPT_EXPLAINER="Fail2ban provides extra Brute Force protextion for Nextcloud.
+It scans the Nextcloud and SSH log files and bans IPs that show malicious \
+signs -- too many password failures, seeking for exploits, etc. 
+Generally Fail2Ban is then used to update firewall rules to \
+reject the IP addresses for a specified amount of time."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -21,44 +26,22 @@ debug_mode
 # Check if root
 root_check
 
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
-
 # Check if fail2ban is already installed
-print_text_in_color "$ICyan" "Checking if Fail2Ban is already installed..."
-if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
+if ! is_this_installed fail2ban
 then
-    choice=$(whiptail --title "$TITLE" --menu \
-"It seems like 'Fail2Ban' is already installed.\nChoose what you want to do.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall Fail2Ban" "" \
-"Uninstall Fail2Ban" "" 3>&1 1>&2 2>&3)
-
-    case "$choice" in
-        "Uninstall Fail2Ban")
-            print_text_in_color "$ICyan" "Uninstalling Fail2Ban..."
-            fail2ban-client unban --all
-            rm /etc/fail2ban/filter.d/nextcloud.conf
-            rm /etc/fail2ban/jail.local
-            check_command apt-get purge fail2ban -y
-            msg_box "Fail2Ban was successfully uninstalled."
-            exit
-        ;;
-        "Reinstall Fail2Ban")
-            print_text_in_color "$ICyan" "Reinstalling Fail2Ban..."
-            fail2ban-client unban --all
-            rm /etc/fail2ban/filter.d/nextcloud.conf
-            rm /etc/fail2ban/jail.local
-            check_command apt-get purge fail2ban -y
-        ;;
-        "")
-            exit 1
-        ;;
-        *)
-        ;;
-    esac
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
 else
-    print_text_in_color "$ICyan" "Installing Fail2ban..."
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
+    fail2ban-client unban --all
+    rm /etc/fail2ban/filter.d/nextcloud.conf
+    rm /etc/fail2ban/jail.local
+    check_command apt-get purge fail2ban -y
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
 fi
 
 # Create $VMLOGS dir
