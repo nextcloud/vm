@@ -5,8 +5,9 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Talk with Signaling Server"
-SCRIPT_EXPLAINER="This script provides videochat functionality and \
-the so-called High-Performance-Backend for Nextcloud."
+SCRIPT_EXPLAINER="This script installs Nextcloud Talk and also offers the possibility \
+to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
+It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
