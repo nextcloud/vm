@@ -5,6 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="OnlyOffice (Integrated)"
+SCRIPT_EXPLAINER="This script will install the integrated OnlyOffice Documentserver Community."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -19,14 +20,6 @@ debug_mode
 
 # Check if root
 root_check
-
-print_text_in_color "$ICyan" "Running the OnlyOffice install script..."
-
-# Nextcloud 18 is required.
-lowest_compatible_nc 18
-
-# Check if Nextcloud is installed with TLS
-check_nextcloud_https "OnlyOffice (Integrated)"
 
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
@@ -90,37 +83,24 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
 # Check if OnlyOffice is installed using the new method
 elif version_gt "$CURRENTVERSION" "18.0.1" && ! does_this_docker_exist 'onlyoffice/documentserver'
 then
-    if is_app_enabled documentserver_community
+    # Check if webmin is already installed
+    if ! is_app_enabled documentserver_community
     then
-        choice=$(whiptail --title "$TITLE" --menu \
-"It seems like 'OnlyOffice' is already installed.\nChoose what you want to do.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall OnlyOffice" "" \
-"Uninstall OnlyOffice" "" 3>&1 1>&2 2>&3)
-
-        case "$choice" in
-            "Uninstall OnlyOffice")
-	        print_text_in_color "$ICyan" "Uninstalling OnlyOffice..."
-		nextcloud_occ app:remove documentserver_community
-                # Disable Onlyoffice App if activated
-                if is_app_installed onlyoffice
-                then
-                    nextcloud_occ app:remove onlyoffice
-                fi
-		msg_box "OnlyOffice was successfully uninstalled."
-		exit
-            ;;
-            "Reinstall OnlyOffice")
-                print_text_in_color "$ICyan" "Reinstalling OnlyOffice..."
-                nextcloud_occ app:remove documentserver_community
-            ;;
-            "")
-                exit 1
-            ;;
-            *)
-            ;;
-        esac
-	fi
+        # Ask for installing
+        install_popup "$SCRIPT_NAME"
+    else
+        # Ask for removal or reinstallation
+        reinstall_remove_menu "$SCRIPT_NAME"
+        # Removal
+        nextcloud_occ app:remove documentserver_community
+        # Disable Onlyoffice App if activated
+        if is_app_installed onlyoffice
+        then
+            nextcloud_occ app:remove onlyoffice
+        fi
+        # Show successful uninstall if applicable
+        removal_popup "$SCRIPT_NAME"
+    fi
 else
     msg_box "You need to run at least Nextcloud 18.0.1 to be able to run OnlyOffice. \
 Please upgrade using the built in script:
@@ -196,6 +176,12 @@ It has comptibility issues with OnlyOffice and you can now choose to disable it.
 	systemctl restart apache2.service
     fi
 fi
+
+# Nextcloud 18 is required.
+lowest_compatible_nc 18
+
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "OnlyOffice (Integrated)"
 
 # Install OnlyOffice
 msg_box "We will now install OnlyOffice.
