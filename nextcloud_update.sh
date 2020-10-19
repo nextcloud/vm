@@ -47,7 +47,6 @@ then
     if is_docker_running
     then
         check_command systemctl stop docker
-        DOCKER=1
     fi
     nextcloud_occ maintenance:mode --on
     if does_snapshot_exist "NcVM-startup"
@@ -58,10 +57,7 @@ then
         if ! lvremove /dev/ubuntu-vg/NcVM-snapshot -y
         then
             nextcloud_occ maintenance:mode --off
-            if [ -n "$DOCKER" ]
-            then
-                start_if_stopped docker
-            fi
+            start_if_stopped docker
             notify_admin_gui "Update failed!" \
 "Could not remove NcVM-snapshot - Please reboot your server! $(date +%T)"
             msg_box "It seems like the old snapshot could not get removed.
@@ -72,10 +68,7 @@ This should work again after a reboot of your server."
     if ! lvcreate --size 5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
     then
         nextcloud_occ maintenance:mode --off
-        if [ -n "$DOCKER" ]
-        then
-            start_if_stopped docker
-        fi
+        start_if_stopped docker
         notify_admin_gui "Update failed!" \
 "Could not create NcVM-snapshot - Please reboot your server! $(date +%T)"
         msg_box "The creation of a snapshot failed.
@@ -84,10 +77,7 @@ It should work afterwards again."
         exit 1
     fi
     nextcloud_occ maintenance:mode --off
-    if [ -n "$DOCKER" ]
-    then
-        start_if_stopped docker
-    fi
+    start_if_stopped docker
 fi
 
 # Check if /boot is filled more than 90% and exit the script if that's 
