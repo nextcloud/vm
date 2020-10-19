@@ -102,8 +102,8 @@ to finish the setup once this script is done." "$SUBTITLE"
         fi
     ;;&
     *"Talk"*)
-        print_text_in_color "$ICyan" "Downloading the Talk Menu..."
-        run_script MENU talk_menu
+        print_text_in_color "$ICyan" "Downloading the Talk script..."
+        run_script APP talk
     ;;&
     *"Webmin"*)
         print_text_in_color "$ICyan" "Downloading the Webmin script..."

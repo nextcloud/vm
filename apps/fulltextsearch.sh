@@ -6,6 +6,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Full Text Search"
+SCRIPT_EXPLAINER="Full Text Search provides Elasticsearch for Nextcloud, which makes it possible to search for text inside files."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -23,89 +24,38 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 19 is required.
+# Nextcloud 18 is required.
 lowest_compatible_nc 18
 
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 FullTextSearch
-cpu_check 2 FullTextSearch
-
-# Temporary check for NC 20
-if ! install_and_enable_app fulltextsearch
+# Check if Full Text Search is already installed
+if ! does_this_docker_exist "$nc_fts" || ! is_app_installed fulltextsearch
 then
-    exit 1
-fi
-
-# Check if fulltextsearch is already installed
-print_text_in_color "$ICyan" "Checking if Fulltextsearch is already installed..."
-if does_this_docker_exist "$nc_fts"
-then
-    choice=$(whiptail --title "$TITLE" --menu \
-"It seems like 'Fulltextsearch' is already installed.\nChoose what you want to do.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Reinstall Fulltextsearch" "" \
-"Uninstall Fulltextsearch" "" 3>&1 1>&2 2>&3)
-
-    case "$choice" in
-        "Uninstall Fulltextsearch")
-            print_text_in_color "$ICyan" "Uninstalling Fulltextsearch..."
-            # Reset database table
-            check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
-            # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-            if is_app_installed fulltextsearch
-            then
-                print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-                nextcloud_occ_no_check fulltextsearch:reset
-                nextcloud_occ app:remove fulltextsearch
-            fi
-            if is_app_installed fulltextsearch_elasticsearch
-            then
-                nextcloud_occ app:remove fulltextsearch_elasticsearch
-            fi
-            if is_app_installed files_fulltextsearch
-            then
-                nextcloud_occ app:remove files_fulltextsearch
-            fi
-            # Remove nc_fts docker if installed
-            docker_prune_this "$nc_fts"
-
-            msg_box "Fulltextsearch was successfully uninstalled."
-            exit
-        ;;
-        "Reinstall Fulltextsearch")
-            print_text_in_color "$ICyan" "Reinstalling FullTextSearch..."
-
-            # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-            if is_app_installed fulltextsearch
-            then
-                print_text_in_color "$ICyan" "Removing old version of Full Text Search and resetting the app..."
-                # Reset database table
-                check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
-                # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
-                nextcloud_occ_no_check fulltextsearch:reset
-                nextcloud_occ app:remove fulltextsearch
-            fi
-            if is_app_installed fulltextsearch_elasticsearch
-            then
-                nextcloud_occ app:remove fulltextsearch_elasticsearch
-            fi
-            if is_app_installed files_fulltextsearch
-            then
-                nextcloud_occ app:remove files_fulltextsearch
-            fi
-
-            # Remove nc_fts docker if installed
-            docker_prune_this "$nc_fts"
-        ;;
-        "")
-            exit 1
-        ;;
-        *)
-        ;;
-    esac
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
 else
-    print_text_in_color "$ICyan" "Installing Fulltextsearch..."
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Reset database table
+    check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
+    # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
+    nextcloud_occ_no_check fulltextsearch:reset
+    APPS=(fulltextsearch fulltextsearch_elasticsearch files_fulltextsearch)
+    for app in "${APPS[@]}"
+    do
+        if is_app_installed "$app"
+        then
+            nextcloud_occ app:remove "$app"
+        fi
+    done
+    # Removal Docker image
+    docker_prune_this "$nc_fts"
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
 fi
+
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 3 FullTextSearch
+cpu_check 2 FullTextSearch
 
 # Make sure there is an Nextcloud installation
 if ! [ "$(nextcloud_occ -V)" ]
@@ -128,6 +78,12 @@ then
     rm /etc/init.d/solr
     deluser --remove-home solr
     deluser --group solr
+fi
+
+# Check if the app is compatible with the current Nextcloud version
+if ! install_and_enable_app fulltextsearch
+then
+    exit 1
 fi
 
 # Check & install docker
@@ -165,12 +121,17 @@ docker run -d --restart always \
 -v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
 -e "discovery.type=single-node" \
 -e "bootstrap.memory_lock=true" \
--e ES_JAVA_OPTS="-Xms512M -Xmx512M" \
+-e ES_JAVA_OPTS="-Xms1024M -Xmx1024M" \
 -i -t $nc_fts
 
 # Wait for bootstraping
 docker restart $fts_es_name
-countdown "Waiting for docker bootstraping..." "20"
+if [ "$(nproc)" -gt 2 ]
+then
+    countdown "Waiting for Docker bootstraping..." "30"
+else
+    countdown "Waiting for Docker bootstraping..." "120"
+fi
 docker logs $fts_es_name
 
 # Get Full Text Search app for nextcloud
