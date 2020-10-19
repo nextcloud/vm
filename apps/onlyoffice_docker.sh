@@ -5,7 +5,7 @@
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="OnlyOffice (Docker)"
-SCRIPT_EXPLAINER="Install OnlyOffice Documentserver Docker"
+SCRIPT_EXPLAINER="This script will install the OnlyOffice Document Server bundled with Docker"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
