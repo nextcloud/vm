@@ -34,10 +34,14 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    nextcloud_occ_no_check config:app:delete spreed stun_servers
-    nextcloud_occ_no_check config:app:delete spreed turn_servers
-    nextcloud_occ_no_check config:app:delete spreed signaling_servers
-    nextcloud_occ_no_check app:remove spreed
+    APPS=(spreed signaling_servers turn_servers stun_servers)
+    for app in "${APPS[@]}"
+    do
+        if is_app_installed "$app"
+        then
+            nextcloud_occ app:remove "$app"
+        fi
+    done
     rm -rf \
         "$TURN_CONF" \
         "$SIGNALING_SERVER_CONF" \
@@ -65,7 +69,7 @@ fi
 # Must be 20.04
 if ! version 20.04 "$DISTRO" 20.04.6
 then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.6 to install Talk"
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.10 to install Talk"
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
