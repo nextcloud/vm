@@ -369,7 +369,7 @@ After the account is registered, please disable user registration by running sud
 Additional Apps --> Bitwarden --> Bitwarden Registration
 
 Some notes to the Bitwarden service:
-to START Bitwarden, simply execute: 'systemctl start bitwarden'
+to START Bitwarden, simply execute: 'start_if_stopped bitwarden'
 to STOP Bitwarden, simply execute: 'systemctl stop bitwarden'
 to RESTART Bitwarden, simply execute: 'systemctl restart bitwarden'"
 

@@ -208,7 +208,7 @@ then
 fi
 
 # Start Bitwarden
-systemctl start bitwarden
+start_if_stopped bitwarden
 msg_box "Your Bitwarden mailserver settings should be successfully changed by now.
 
 If you experience any issues, please report them to $ISSUES"
