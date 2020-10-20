@@ -21,7 +21,7 @@ debug_mode
 # Check if root
 root_check
 
-# Check if webmin is already installed
+# Check if OnlyOffice is already installed
 if ! is_app_enabled documentserver_community
 then
     # Ask for installing
