@@ -835,7 +835,8 @@ cleanup_open_port() {
 open_standard_ports() {
     msg_box "Before continuing, please make sure that you have \
 edited the DNS settings for $1, and opened port 80 and 443 \
-directly to this servers IP. A full extensive guide can be found here:
+directly to this servers IP. 
+A full extensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
 This can be done automatically if you have UPNP enabled in your firewall/router. \
