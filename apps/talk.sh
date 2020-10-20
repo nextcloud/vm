@@ -449,5 +449,3 @@ else
     msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 0
 fi
-
-msg_box "Installation was successful!"
