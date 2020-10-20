@@ -455,7 +455,7 @@ domain_check_200() {
         print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
         print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
         nslookup "${1}" "$INTERNET_DNS"
-        return 1
+        exit
     fi
 
     # Is the DNS record same as the external IP address of the server?
@@ -706,7 +706,7 @@ fi
 check_nextcloud_https() {
     print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
     NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
-    if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
+    if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true' || [ "$NCDOMAIN" = "nextcloud" ]
     then
         msg_box "It seems like Nextcloud is not installed or that you don't use https on:
 $NCDOMAIN.
