@@ -1213,7 +1213,7 @@ fi
 
 remove_office_domain() {
     # Revoke LE
-    SUBDOMAIN=$(input_box_flow "We wil, remove the old Office Domain now.
+    SUBDOMAIN=$(input_box_flow "We wil remove the old Office Domain now.
 Please enter the subdomain you are currently using for $1
 E.g: office.yourdomain.com")
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
