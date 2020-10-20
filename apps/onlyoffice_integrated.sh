@@ -22,7 +22,7 @@ debug_mode
 root_check
 
 # Check if OnlyOffice is already installed
-if ! is_app_enabled documentserver_community
+if ! is_app_installed documentserver_community
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
