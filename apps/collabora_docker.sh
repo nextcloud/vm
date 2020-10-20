@@ -7,7 +7,7 @@ true
 SCRIPT_NAME="Collabora (Docker)"
 SCRIPT_EXPLAINER="This script will install the Collabora Office Server bundled with Docker"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/szaimen-patch-22/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -19,7 +19,6 @@ debug_mode
 root_check
 
 # Check if Collabora is already installed
-print_text_in_color "$ICyan" "Checking if Collabora is already installed..."
 if ! does_this_docker_exist 'collabora/code'
 then
     # Ask for installing
@@ -28,170 +27,43 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    # Check if Collabora is previously installed
-    # If yes, then stop and prune the docker container
     docker_prune_this 'collabora/code'
-    # Revoke LE
-    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
-    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
-    then
-        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-        for remove in $REMOVE_OLD
-            do rm -rf "$remove"
-        done
-    fi
-    # Remove Apache2 config
-    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
-    then
-        a2dissite "$SUBDOMAIN".conf
-        restart_webserver
-        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
-    fi
+    # Remove office Domain
+    remove_office_domain "$SCRIPT_NAME"
     # Disable RichDocuments (Collabora App) if activated
+    nextcloud_occ_no_check config:app:delete richdocuments wopi_url
     if is_app_installed richdocuments
     then
         nextcloud_occ app:remove richdocuments
     fi
-    # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Check if OnlyOffice is previously installed
-# If yes, then stop and prune the docker container
-if does_this_docker_exist 'onlyoffice/documentserver'
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 2 "$SCRIPT_NAME"
+cpu_check 2 "$SCRIPT_NAME"
+
+# Check for other Office solutions
+if does_this_docker_exist 'onlyoffice/documentserver' || is_app_enabled richdocumentscode
 then
-    docker_prune_this 'onlyoffice/documentserver'
-    # Revoke LE
-    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
-    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
-    then
-        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-        for remove in $REMOVE_OLD
-            do rm -rf "$remove"
-        done
-    fi
-    # Remove Apache2 config
-    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
-    then
-        a2dissite "$SUBDOMAIN".conf
-        restart_webserver
-        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
-    fi
-    # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
+    raise_ram_check_4gb "$SCRIPT_NAME"
 fi
 
-# remove OnlyOffice-documentserver if activated
-if is_app_enabled documentserver_community
-then
-    any_key "OnlyOffice will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    nextcloud_occ app:remove documentserver_community
-fi
-
-# Disable OnlyOffice App if activated
-if is_app_installed onlyoffice
-then
-    nextcloud_occ app:remove onlyoffice
-fi
-
-# Ask for the domain for Collabora
-SUBDOMAIN=$(input_box_flow "Collabora subdomain e.g: office.yourdomain.com
-
-NOTE: This domain must be different than your Nextcloud domain. \
-They can however be hosted on the same server, but would require seperate DNS entries.")
-
-# Nextcloud Main Domain
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "$SCRIPT_NAME"
 
 # Nextcloud Main Domain dot-escaped
 NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 
-# Curl the library another time to get the correct https_conf
-# shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+# Disable OnlyOffice App if activated
+disable_office_integration onlyoffice "OnlyOffice"
 
-# Get all needed variables from the library
-nc_update
+# Get domain, etc.
+office_domain_flow "$SCRIPT_NAME"
 
-# Notification
-msg_box "Before continuing, please make sure that you have you have \
-edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
-directly to this servers IP. A full exstensive guide can be found here:
-https://www.techandme.se/open-port-80-443
-
-This can be done automatically if you have UNNP enabled in your firewall/router. \
-You will be offered to use UNNP in the next step.
-
-PLEASE NOTE:
-Using other ports than the default 80 and 443 is not supported, \
-though it may be possible with some custom modification:
-https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
-
-if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
-then
-    unset FAIL
-    open_port 80 TCP
-    open_port 443 TCP
-    cleanup_open_port
-fi
-    
-# Get the latest packages
-apt update -q4 & spinner_loading
-
-# Check if Nextcloud is installed
-print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
-then
-    msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-$NCDOMAIN.
-Please install Nextcloud and make sure your domain is reachable, or activate TLS
-on your domain to be able to run this script.
-
-If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
-When TLS is activated, run these commands from your CLI:
-sudo curl -sLO $APP/collabora.sh
-sudo bash collabora.sh"
-    exit 1
-fi
-
-# Check if $SUBDOMAIN exists and is reachable
-print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
-domain_check_200 "$SUBDOMAIN"
-
-# Check open ports with NMAP
-check_open_port 80 "$SUBDOMAIN"
-check_open_port 443 "$SUBDOMAIN"
-
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 Collabora
-cpu_check 2 Collabora
-
-# Check if Nextcloud is installed with TLS
-check_nextcloud_https "Collabora (Docker)"
+# Open ports
+open_standard_ports "$SUBDOMAIN"
 
 # Install Docker
 install_docker
@@ -223,9 +95,7 @@ then
 fi
 
 # Create Vhost for Collabora online in Apache2
-if [ ! -f "$HTTPS_CONF" ];
-then
-    cat << HTTPS_CREATE > "$HTTPS_CONF"
+cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
   ServerName $SUBDOMAIN:443
 
@@ -296,37 +166,14 @@ then
 </VirtualHost>
 HTTPS_CREATE
 
-    if [ -f "$HTTPS_CONF" ];
-    then
-        print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
-        sleep 1
-    else
-        print_text_in_color "$IRed" "Unable to create vhost, exiting..."
-        print_text_in_color "$IRed" "Please report this issue here $ISSUES"
-        exit 1
-    fi
-fi
+# Check if https_conf got created successfully
+check_https_conf "$HTTPS_CONF"
 
-# Install certbot (Let's Encrypt)
-install_certbot
+# Generate certs
+generate_office_cert "$SUBDOMAIN"
 
-# Generate certs and  auto-configure  if successful
-if generate_cert  "$SUBDOMAIN"
-then
-    # Generate DHparams chifer
-    if [ ! -f "$DHPARAMS_SUB" ]
-    then
-        openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
-    fi
-    print_text_in_color "$IGreen" "Certs are generated!"
-    a2ensite "$SUBDOMAIN.conf"
-    restart_webserver
-    # Install Collabora App
-    install_and_enable_app richdocuments
-else
-    last_fail_tls "$SCRIPTS"/apps/collabora.sh
-    exit 1
-fi
+# Install Collabora
+install_and_enable_app richdocuments
 
 # Set config for RichDocuments (Collabora App)
 if is_app_installed richdocuments
