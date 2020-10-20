@@ -99,13 +99,11 @@ fi
 if [ -f "$HTTPS_CONF" ]
 then
     a2dissite "$SUBDOMAIN.conf"
-    rm -f "$HTTPS_CONF"
+    check_command rm "$HTTPS_CONF"
 fi
 
 # Create Vhost for OnlyOffice Docker online in Apache2
-if [ ! -f "$HTTPS_CONF" ];
-then
-    cat << HTTPS_CREATE > "$HTTPS_CONF"
+cat << HTTPS_CREATE > "$HTTPS_CONF"
 <VirtualHost *:443>
      ServerName $SUBDOMAIN:443
 
@@ -156,37 +154,14 @@ then
 </VirtualHost>
 HTTPS_CREATE
 
-    if [ -f "$HTTPS_CONF" ];
-    then
-        print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
-        sleep 1
-    else
-        print_text_in_color "$IRed" "Unable to create vhost, exiting..."
-        print_text_in_color "$IRed" "Please report this issue here $ISSUES"
-        exit 1
-    fi
-fi
-
-# Install certbot (Let's Encrypt)
-install_certbot
+# Check if https_conf got created successfully
+check_https_conf "$HTTPS_CONF"
 
 # Generate certs
-if generate_cert "$SUBDOMAIN"
-then
-    # Generate DHparams chifer
-    if [ ! -f "$DHPARAMS_SUB" ]
-    then
-        openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
-    fi
-    print_text_in_color "$IGreen" "Certs are generated!"
-    a2ensite "$SUBDOMAIN.conf"
-    restart_webserver
-    # Install OnlyOffice
-    install_and_enable_app onlyoffice
-else
-    last_fail_tls "$SCRIPTS"/apps/onlyoffice.sh
-    exit 1
-fi
+generate_office_cert "$SUBDOMAIN"
+
+# Install OnlyOffice
+install_and_enable_app onlyoffice
 
 # Set config for OnlyOffice
 if [ -d "$NC_APPS_PATH"/onlyoffice ]

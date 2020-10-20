@@ -482,6 +482,18 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     fi
 }
 
+check_https_conf() {
+    if [ -f "$1" ];
+    then
+        print_text_in_color "$IGreen" "$1 was successfully created."
+        sleep 1
+    else
+        print_text_in_color "$IRed" "Unable to create vhost, exiting..."
+        print_text_in_color "$IRed" "Please report this issue here $ISSUES"
+        exit 1
+    fi
+}
+
 # A function to set the systemd-resolved default DNS servers based on the
 # current Internet facing interface. This is needed for docker interfaces
 # that might not use the same DNS servers otherwise.
@@ -784,6 +796,27 @@ to validate them with the $f method. We have tried all the methods. Please check
         return 1;
     fi
 done
+}
+
+generate_office_cert() {
+    # Install certbot (Let's Encrypt)
+    install_certbot
+
+    # Generate cert
+    if generate_cert "$1"
+    then
+        # Generate DHparams chifer
+        if [ ! -f "$DHPARAMS_SUB" ]
+        then
+            openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
+        fi
+        print_text_in_color "$IGreen" "Certs are generated!"
+        a2ensite "$1.conf"
+        restart_webserver
+    else
+        last_fail_tls office
+        exit 1
+    fi
 }
 
 # Last message depending on with script that is being run when using the generate_cert() function
