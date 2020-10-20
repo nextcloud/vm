@@ -60,7 +60,7 @@ disable_office_integration richdocuments "Collabora Online"
 disable_mod_evasive
 
 # Get domain, etc.
-domain_flow "$SCRIPT_NAME"
+office_domain_flow "$SCRIPT_NAME"
 
 # Open ports
 open_standard_ports "$SUBDOMAIN"

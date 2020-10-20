@@ -833,9 +833,9 @@ cleanup_open_port() {
 }
 
 open_standard_ports() {
-    msg_box "Before continuing, please make sure that you have you have \
+    msg_box "Before continuing, please make sure that you have \
 edited the DNS settings for $1, and opened port 80 and 443 \
-directly to this servers IP. A full exstensive guide can be found here:
+directly to this servers IP. A full extensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
 This can be done automatically if you have UPNP enabled in your firewall/router. \
@@ -889,7 +889,7 @@ Please follow this guide to open ports in your router or firewall:\nhttps://www.
 fi
 }
 
-domain_flow() {
+office_domain_flow() {
     SUBDOMAIN=$(input_box_flow "$1 subdomain e.g: office.yourdomain.com
 NOTE: This domain must be different than your Nextcloud domain. \
 They can however be hosted on the same server, but would require seperate DNS entries.")
