@@ -66,6 +66,7 @@ Please note that it might take very long time to install the app, and you will n
 
 Please be paitent, don't abort."
 install_and_enable_app richdocuments
+nextcloud_occ_no_check config:app:delete richdocuments wopi_url
 sleep 2
 if install_and_enable_app richdocumentscode
 then
