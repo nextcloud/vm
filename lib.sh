@@ -1500,7 +1500,7 @@ fi
 docker_prune_this() {
 if does_this_docker_exist "$1"
 then
-    print_text_in_color "$ICyan" "Removing old Docker image: $1
+    print_text_in_color "$ICyan" "Removing old Docker image: $1"
     docker stop "$(docker container ls | grep "$1" | awk '{print $1}' | tail -1)"
     docker container prune -f
     docker image prune -a -f
