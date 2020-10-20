@@ -191,6 +191,8 @@ then
     nextcloud_occ config:app:set onlyoffice DocumentServerUrl --value=https://"$SUBDOMAIN/"
     chown -R www-data:www-data "$NC_APPS_PATH"
     nextcloud_occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    # Check the connection
+    nextcloud_occ onlyoffice:documentserver check
     # Add prune command
     add_dockerprune
     # Restart Docker
