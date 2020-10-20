@@ -1000,9 +1000,9 @@ fi
 }
 
 raise_ram_check_4gb() {
-    msg_box "Other Office solutions are currently installed.
-To make this script work, we will need to raise the Ram amount to 4GB.
-If you want to proceed with a lower amount of RAM, you are free to uninstall any of them."
+    msg_box "Other Office solutions are currently enabled.
+To make this script work, we need to raise the necessary amount of RAM to 4GB.
+If you want to proceed with a lower amount of RAM, please disable/uninstall them before running this script."
     ram_check 4 "$1"
 }
 
