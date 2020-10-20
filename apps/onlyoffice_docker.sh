@@ -40,6 +40,9 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
+# Nextcloud 18 is required.
+lowest_compatible_nc 18
+
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 "$SCRIPT_NAME"
 cpu_check 2 "$SCRIPT_NAME"
