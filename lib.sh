@@ -891,7 +891,8 @@ fi
 }
 
 office_domain_flow() {
-    SUBDOMAIN=$(input_box_flow "$1 subdomain e.g: office.yourdomain.com
+    SUBDOMAIN=$(input_box_flow "Please enter the Subdomain that you want to use with $1
+E.g: office.yourdomain.com
 NOTE: This domain must be different than your Nextcloud domain. \
 They can however be hosted on the same server, but would require seperate DNS entries.")
 
@@ -1179,7 +1180,9 @@ fi
 
 remove_office_domain() {
     # Revoke LE
-    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for $1, e.g: office.yourdomain.com")
+    SUBDOMAIN=$(input_box_flow "We wil, remove the old Office Domain now.
+Please enter the subdomain you are currently using for $1
+E.g: office.yourdomain.com")
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
