@@ -57,7 +57,7 @@ for directory in "${DIRECTORIES[@]}"
 do
     if mountpoint -q "$directory"
     then
-        MOUNTS+=("$directory")
+        MOUNTS+=("$directory/")
     fi
 done
 if [ -z "${MOUNTS[*]}" ]
