@@ -687,13 +687,13 @@ create_share() {
             chmod -R 770 "$NEWPATH"
             if [ "$(stat -c %a "$NEWPATH")" != "770" ]
             then
-                msg_box "Something went wrong. Couln't set the correct mod permissions for the location." "$SUBTITLE"
+                msg_box "Something went wrong. Couldn't set the correct mod permissions for the location." "$SUBTITLE"
                 return 1
             fi
             chown -R "$WEB_USER":"$WEB_GROUP" "$NEWPATH"
             if [ "$(stat -c %G "$NEWPATH")" != "$WEB_GROUP" ] || [ "$(stat -c %U "$NEWPATH")" != "$WEB_USER" ]
             then
-                msg_box "Something went wrong. Couln't set the correct own permissions for the location." "$SUBTITLE"
+                msg_box "Something went wrong. Couldn't set the correct own permissions for the location." "$SUBTITLE"
                 return 1
             fi
             
