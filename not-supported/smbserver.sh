@@ -541,6 +541,7 @@ local LOCALDIRECTORIES
 LOCALDIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d | grep -v "/mnt/ncdata")
 for mount in "${MOUNTS[@]}"
 do
+    VALID_DIRS+="$mount\n"
     VALID_DIRS+="$(echo -e "$LOCALDIRECTORIES" | grep "^$mount")\n"
 done
 while :
