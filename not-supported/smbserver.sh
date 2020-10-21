@@ -691,7 +691,7 @@ create_share() {
                 return 1
             fi
             chown -R "$WEB_USER":"$WEB_GROUP" "$NEWPATH"
-            if [ "$(stat -c %G "$NEWPATH")" != "$WEB_GROUP" ] || [ "$(stat -c %U $NEWPATH)" != "$WEB_USER" ]
+            if [ "$(stat -c %G "$NEWPATH")" != "$WEB_GROUP" ] || [ "$(stat -c %U "$NEWPATH")" != "$WEB_USER" ]
             then
                 msg_box "Something went wrong. Couln't set the correct own permissions for the location."
                 return 1
