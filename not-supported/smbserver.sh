@@ -27,7 +27,7 @@ SMB_CONF="/etc/samba/smb.conf"
 HASH_DIRECTORY="/root/.smbserver"
 HASH_HISTORY="$HASH_DIRECTORY/hash-history"
 SMB_GROUP="smb-users"
-PROHIBITED_NAMES=(global homes netlogon profiles printers print$ root ncadmin "$SMB_GROUP" placeholder_for_last_space)
+PROHIBITED_NAMES=(global homes netlogon profiles printers print$ root ncadmin "$SMB_GROUP" plex pi-hole placeholder_for_last_space)
 WEB_GROUP="www-data"
 WEB_USER="www-data"
 MAX_COUNT=16
@@ -57,7 +57,7 @@ for directory in "${DIRECTORIES[@]}"
 do
     if mountpoint -q "$directory"
     then
-        MOUNTS+=("$directory")
+        MOUNTS+=("$directory/")
     fi
 done
 if [ -z "${MOUNTS[*]}" ]
@@ -541,6 +541,7 @@ local LOCALDIRECTORIES
 LOCALDIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d | grep -v "/mnt/ncdata")
 for mount in "${MOUNTS[@]}"
 do
+    VALID_DIRS+="$mount\n"
     VALID_DIRS+="$(echo -e "$LOCALDIRECTORIES" | grep "^$mount")\n"
 done
 while :
@@ -685,7 +686,17 @@ create_share() {
         then
             # Correct the ACL
             chmod -R 770 "$NEWPATH"
+            if [ "$(stat -c %a "$NEWPATH")" != "770" ]
+            then
+                msg_box "Something went wrong. Couldn't set the correct mod permissions for the location." "$SUBTITLE"
+                return 1
+            fi
             chown -R "$WEB_USER":"$WEB_GROUP" "$NEWPATH"
+            if [ "$(stat -c %G "$NEWPATH")" != "$WEB_GROUP" ] || [ "$(stat -c %U "$NEWPATH")" != "$WEB_USER" ]
+            then
+                msg_box "Something went wrong. Couldn't set the correct own permissions for the location." "$SUBTITLE"
+                return 1
+            fi
             
             # Write all settings to SMB-conf
             samba_stop
