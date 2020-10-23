@@ -198,7 +198,7 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Mount a drive" "(Interactively mount a NTFS drive)" \
 "Exit" "(Exit this script)" 3>&1 1>&2 2>&3)
     case "$choice" in
-        "Mount a drives")
+        "Mount a drive")
             mount_drive
         ;;
         "Exit")
