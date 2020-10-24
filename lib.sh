@@ -1528,8 +1528,10 @@ send_mail() {
         then
             print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
             echo -e "$2" | mail --subject "NcVM - $1" "$RECIPIENT"
+            return 0
         fi
     fi
+    return 1
 }
 
 zpool_import_if_missing() {
