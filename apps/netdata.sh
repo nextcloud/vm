@@ -20,8 +20,15 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 DEBUG=0
 debug_mode
 
-# Must be root
+# Must be sudo
 root_check
+
+if [ -z $UNIXUSER ]
+then
+    msg_box "You can't run this script as a pure root user. You need to issue the following command:
+sudo -u regular_user sudo bash $SCRIPTS/menu.sh
+
+Then choose "Additional Apps --> Netdata"
 
 # Check if netdata is already installed
 if ! [ -d /etc/netdata ]
