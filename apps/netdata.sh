@@ -23,12 +23,15 @@ debug_mode
 # Must be sudo
 root_check
 
-if [ -z $UNIXUSER ]
+# Can't be run as pure root user
+if [ -z "$UNIXUSER" ]
 then
     msg_box "You can't run this script as a pure root user. You need to issue the following command:
 sudo -u regular_user sudo bash $SCRIPTS/menu.sh
 
-Then choose "Additional Apps --> Netdata"
+Then choose Additional Apps --> Netdata"
+    exit 1
+fi
 
 # Check if netdata is already installed
 if ! [ -d /etc/netdata ]
