@@ -1049,7 +1049,6 @@ else
 fi
 }
 
-
 # Test number of CPU
 # Call it like this: cpu_check [amount of min CPU] [for which program]
 # Example: cpu_check 2 Nextcloud
@@ -1181,12 +1180,22 @@ else
 fi
 }
 
-disable_office_integration() {
+remove_office_integration() {
+# This is to make more RAM available when checking with raise_ram_check
+# Collabora:
+# 1=richdocuemnts
+# 2=code
+# 3=collabora
+# OnlyOffice:
+# 1=richdocuemnts
+# 2=documentserver
+# 3=onlyoffice
     if is_app_enabled "$1"
     then
         msg_box "$2 integration is enabled and will get disabled now.
 You can enable it later again over the appstore."
-        nextcloud_occ app:disable "$1"
+        nextcloud_occ app:remove "$1" ## need a better fucntion here
+        docker_prune_this '"$3"/"$2"'
     fi
 }
 
