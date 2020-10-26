@@ -1032,13 +1032,23 @@ else
 fi
 }
 
-raise_ram_check_4gb() {
-if ! ram_check 4 "$1" > /dev/null
+raise_ram_check() {
+install_if_not bc
+mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
+mem_available_gb="$(LC_NUMERIC="en_US.UTF-8" printf '%0.2f\n' "$(echo "scale=3; $mem_available/(1024*1024)" | bc)")"
+mem_required="$((${1}*(924*1024)))" # 100MiB/GiB margin and allow 90% to be able to run on physical machines
+if [ "${mem_available}" -lt "${mem_required}" ]
 then
     msg_box "It seems like other documentserver solutions are currently enabled on this server.
 To make this script work, you need to raise the necessary amount of RAM to at least 4 GB, preferably more.
+
+In the next step you can choose to disable the other document server to get more RAM available."
+    return 1
+else
+    return 0
 fi
 }
+
 
 # Test number of CPU
 # Call it like this: cpu_check [amount of min CPU] [for which program]
