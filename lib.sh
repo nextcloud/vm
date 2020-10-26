@@ -1799,9 +1799,9 @@ print_text_in_color "$IGreen" PHPVER="$PHPVER"
 }
 
 add_dockerprune() {
-print_text_in_color "$ICyan" "Adding cronjob for Docker weekly prune..."
 if ! crontab -u root -l | grep -q 'dockerprune.sh'
 then
+    print_text_in_color "$ICyan" "Adding cronjob for Docker weekly prune..."
     mkdir -p "$SCRIPTS"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
     check_command echo "#!/bin/bash" > "$SCRIPTS/dockerprune.sh"
