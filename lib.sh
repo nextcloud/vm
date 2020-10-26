@@ -1033,10 +1033,11 @@ fi
 }
 
 raise_ram_check_4gb() {
-    msg_box "Other Office solutions are currently enabled.
-To make this script work, we need to raise the necessary amount of RAM to 4GB.
-If you want to proceed with a lower amount of RAM, please disable/uninstall them before running this script."
-    ram_check 4 "$1"
+if ! ram_check 4 "$1" > /dev/null
+then
+    msg_box "It seems like other documentserver solutions are currently enabled on this server.
+To make this script work, you need to raise the necessary amount of RAM to at least 4 GB, preferably more.
+fi
 }
 
 # Test number of CPU
