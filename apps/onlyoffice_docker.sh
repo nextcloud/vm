@@ -50,14 +50,18 @@ cpu_check 2 "$SCRIPT_NAME"
 # Check for other Office solutions
 if does_this_docker_exist 'collabora/code' || is_app_enabled richdocumentscode
 then
-    raise_ram_check_4gb "$SCRIPT_NAME"
+    if ! raise_ram_check 4 "$SCRIPT_NAME"
+    then
+        if yesno_box_no "Do you want to disable Collabora to be able to continue?"
+        then
+            # Disable Collabora App if activated
+            disable_office_integration richdocuments "Collabora Online"
+        fi
+    fi
 fi
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https "$SCRIPT_NAME"
-
-# Disable Collabora App if activated
-disable_office_integration richdocuments "Collabora Online"
 
 # Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
 disable_mod_evasive
