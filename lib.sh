@@ -1350,6 +1350,11 @@ run_main_script() {
 run_script GITHUB_REPO "${1}"
 }
 
+# Backwards compatibility (2020-10-25) Needed for update.sh to run in all VMs, even those several years old
+run_static_script() {
+run_script STATIC "${1}"
+}
+
 version(){
     local h t v
 
@@ -1682,9 +1687,13 @@ send_mail() {
         if [ -n "$RECIPIENT" ]
         then
             print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
-            echo -e "$2" | mail --subject "NcVM - $1" "$RECIPIENT"
+            if echo -e "$2" | mail --subject "NcVM - $1" "$RECIPIENT"
+            then
+                return 0
+            fi
         fi
     fi
+    return 1
 }
 
 zpool_import_if_missing() {

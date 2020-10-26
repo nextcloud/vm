@@ -37,9 +37,8 @@ else
     # Removal
     print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
     fail2ban-client unban --all
-    rm /etc/fail2ban/filter.d/nextcloud.conf
-    rm /etc/fail2ban/jail.local
     check_command apt-get purge fail2ban -y
+    rm -Rf /etc/fail2ban/   
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
