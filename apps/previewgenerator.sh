@@ -255,7 +255,7 @@ which you want to run the Preview Generation (as a scheluded task)")
 fi
 
 # Add crontab for www-data
-if ! crontab -u www-data -l | grep -q 'previewgenerator'
+if ! crontab -u www-data -l | grep -q 'preview:pre-generate'
 then
     print_text_in_color "$ICyan" "Adding crontab for $SCRIPT_NAME"
     crontab -u www-data -l | { cat; echo "*/10 * * * * php -f $NCPATH/occ preview:pre-generate >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
