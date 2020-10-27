@@ -236,7 +236,7 @@ then
     print_text_in_color "$ICyan" "Using www-data (all Nextcloud users) for generating previews..."
 
     # Pre generate everything
-    nextcloud_occ preview:generate-all -vvv
+    nextcloud_occ preview:generate-all
 else
     while :
     do
@@ -251,7 +251,7 @@ which you want to run the Preview Generation (as a scheluded task)")
     done
 
     # Pre generate everything
-    nextcloud_occ preview:generate-all "$PREVIEW_USER" -vvv
+    nextcloud_occ preview:generate-all "$PREVIEW_USER"
 fi
 
 # Add crontab for www-data
