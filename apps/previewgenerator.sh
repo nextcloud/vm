@@ -160,7 +160,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         ;;
     esac
 else
-    # check if imagick ist installed and remove it
+    # check if imagick is installed and remove it
     if is_this_installed php-imagick
     then
         apt-get purge php-imagick -y
@@ -255,8 +255,11 @@ which you want to run the Preview Generation (as a scheluded task)")
 fi
 
 # Add crontab for www-data
-crontab -u www-data -l | { cat; echo "*/10 * * * * php -f $NCPATH/occ preview:pre-generate >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
-touch "$VMLOGS"/previewgenerator.log
-chown www-data:www-data "$VMLOGS"/previewgenerator.log
-
+if ! crontab -u www-data -l | grep -q 'previewgenerator'
+then
+    print_text_in_color "$ICyan" "Adding crontab for $SCRIPT_NAME"
+    crontab -u www-data -l | { cat; echo "*/10 * * * * php -f $NCPATH/occ preview:pre-generate >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
+    touch "$VMLOGS"/previewgenerator.log
+    chown www-data:www-data "$VMLOGS"/previewgenerator.log
+fi
 msg_box "Previewgenerator was successfully installed."
