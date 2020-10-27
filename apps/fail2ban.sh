@@ -27,7 +27,7 @@ debug_mode
 root_check
 
 # Check if fail2ban is already installed
-if ! is_this_installed fail2ban
+if ! [ -f /etc/fail2ban/filter.d/nextcloud.conf ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -35,10 +35,21 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
-    fail2ban-client unban --all
-    check_command apt-get purge fail2ban -y
-    rm -Rf /etc/fail2ban/   
+    if ! docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
+    then
+        print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
+        fail2ban-client unban --all
+        apt purge fail2ban -y
+        rm -rf /etc/fail2ban
+    else
+        print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
+        fail2ban-client set nextcloud bantime 1
+        fail2ban-client set sshd bantime 1
+        sleep 5
+        rm /etc/fail2ban/filter.d/nextcloud.conf
+        sed -i '/^\[sshd\]$/,$d' /etc/fail2ban/jail.local
+        check_command systemctl restart fail2ban
+    fi
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
