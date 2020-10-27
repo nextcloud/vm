@@ -223,6 +223,11 @@ nextcloud_occ config:system:set preview_max_y --value="2048"
 nextcloud_occ config:system:set jpeg_quality --value="60"
 nextcloud_occ config:app:set preview jpeg_quality --value="60"
 
+# Add crontab for www-data
+crontab -u www-data -l | { cat; echo "*/10 * * * * php -f $NCPATH/occ preview:pre-generate >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
+touch "$VMLOGS"/previewgenerator.log
+chown www-data:www-data "$VMLOGS"/previewgenerator.log
+
 msg_box "In the last step you can define a specific Nextcloud user for \
 which will be the user that runs the Preview Generation.
 
@@ -230,13 +235,10 @@ The default behaviour (just hit [ENTER]) is to run with the \
 system user 'www-data' which will generate previews for all users.
 
 If you on the other hand choose to use a specific user, previews will ONLY be generated for that specific user."
+
 if ! yesno_box_no "Do you want to choose a specific Nextcloud user to generate previews?"
 then
     print_text_in_color "$ICyan" "Using www-data (all Nextcloud users) for generating previews..."
-    # Add crontab for www-data
-    crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
-    touch "$VMLOGS"/previewgenerator.log
-    chown www-data:www-data "$VMLOGS"/previewgenerator.log
 
     # Pre generate everything
     nextcloud_occ preview:generate-all
@@ -252,10 +254,6 @@ which you want to run the Preview Generation (as a scheluded task)")
             break
         fi
     done
-    # Add crontab for $PREVIEW_USER
-    crontab -u www-data -l | { cat; echo "0 4 * * * php -f $NCPATH/occ preview:pre-generate $PREVIEW_USER >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
-    touch "$VMLOGS"/previewgenerator.log
-    chown www-data:www-data "$VMLOGS"/previewgenerator.log
 
     # Pre generate everything
     nextcloud_occ preview:generate-all "$PREVIEW_USER"
