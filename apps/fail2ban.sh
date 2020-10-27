@@ -108,7 +108,7 @@ FINDTIME_=1800
 MAXRETRY_=20
 
 apt update -q4 & spinner_loading
-check_command apt install fail2ban -y
+apt install fail2ban -y
 check_command update-rc.d fail2ban disable
 
 # Set timezone
