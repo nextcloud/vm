@@ -27,7 +27,7 @@ debug_mode
 root_check
 
 # Check if fail2ban is already installed
-if ! [ -f /etc/fail2ban/filter.d/nextcloud.conf ]
+if ! [ -f /etc/fail2ban/filter.d/nextcloud.conf ] || is_this_installed fail2ban
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -35,7 +35,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    if ! docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
+    if ! does_this_docker_exist bitwarden_rs
     then
         print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
         fail2ban-client unban --all
@@ -43,8 +43,7 @@ else
         rm -rf /etc/fail2ban
     else
         print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
-        fail2ban-client set nextcloud bantime 1
-        fail2ban-client set sshd bantime 1
+        fail2ban-client unban --all
         sleep 5
         rm /etc/fail2ban/filter.d/nextcloud.conf
         sed -i '/^\[sshd\]$/,$d' /etc/fail2ban/jail.local
@@ -71,7 +70,7 @@ do
             nextcloud_occ config:system:set loglevel --value=2
             break
         fi
-    elif [ "$(nextcloud_occ_no_check config:system:get logfile)" != "" ]
+    elif [ -n "$(nextcloud_occ_no_check config:system:get logfile)" ]
     then
         # Set logging
         nextcloud_occ config:system:set log_type --value=file
