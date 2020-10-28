@@ -33,11 +33,11 @@ PG_COMMENT_OUT=("data_directory" "hba_file" "ident_file" "external_pid_file" "po
 
 if [ -d "$POSTGRESPATH" ] 
 then
-	test=($(find /usr -wholename '*/bin/postgres' |grep -Eo "[0-9][0-9]"))
+	mapfile -t test < <(find /usr -wholename '*/bin/postgres' |grep -Eo "[0-9][0-9]")
 	
 	PSQLVERSION=0
-	for v in ${test[@]}; do
-	    if (( $v > $PSQLVERSION )); then PSQLVERSION=$v; fi; 
+	for v in "${test[@]}"; do
+	    if (( v > PSQLVERSION )); then PSQLVERSION=$v; fi; 
 	done
 
 	echo "Postgresql installation Version $PSQLVERSION found"
@@ -50,7 +50,7 @@ PG_CFG="/etc/postgresql/$PSQLVERSION/main"
 PG_DATA="/var/lib/postgresql/$PSQLVERSION/main"
 
 
-if (( $PSQLVERSION < $PSQLVERSION_DOCKER )); then
+if (( PSQLVERSION < PSQLVERSION_DOCKER )); then
 	echo "Migrating database from version $PSQLVERSION to version $PSQLVERSION_DOCKER"
 	
 	sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -67,7 +67,7 @@ if (( $PSQLVERSION < $PSQLVERSION_DOCKER )); then
 
 	echo "Migrating old cluster"
 	{
-		pg_upgradecluster -m upgrade $PSQLVERSION main
+		pg_upgradecluster -m upgrade "$PSQLVERSION" main
 	} ||
 	{
 		# could also check psotgresql owner
@@ -75,19 +75,19 @@ if (( $PSQLVERSION < $PSQLVERSION_DOCKER )); then
 		#echo $USER
 		#USER=$(stat -c '%U' "/var/lib/postgresql/12/main")
 		#echo $USER
-		chown -R postgres:postgres $PG_CFG
-		chown -R postgres:postgres $PG_DATA
-		pg_upgradecluster -m upgrade $PSQLVERSION main
+		chown -R postgres:postgres "$PG_CFG"
+		chown -R postgres:postgres "$PG_DATA"
+		pg_upgradecluster -m upgrade "$PSQLVERSION" main
 	}	
 fi
 
 echo "making new folders"
-mkdir $DIR 
+mkdir "$DIR"
 
 echo "Copying docker-compose file"
-cp docker-compose.yml $DIR
+cp docker-compose.yml "$DIR"
 
-cd $DIR
+cd "$DIR" || exit 0
 mkdir db 
 mkdir config
 
@@ -106,24 +106,27 @@ cp -R /var/www/nextcloud/config/* config
 
 echo "Creating .env file"
 
-INDEX=0
-
 for var in "${CFG_VARS[@]}"
 do	
-	line=($(cat config/config.php |grep $var |grep "[\"'][^\"']*[\"']"))
+	file=$(grep "$var" < config/config.php)
+	IFS=" " read -r -a line <<< "$(grep "[\"'][^\"']*[\"']" <<< "$file")"
 	value=$(echo "${line[2]}"| sed -r "s/[\"',-]//gi")
 	echo "${CFG_NAMES[INDEX]}=$value saved in .env file"
 	echo "${CFG_NAMES[INDEX]}=$value" >> ".env"
 	
-	let INDEX=${INDEX}+1
+	((INDEX=INDEX+1))
 done
 
-echo "${CFG_NAMES_EXT[0]}=$NC_USER" >> ".env"
-echo "${CFG_NAMES_EXT[1]}=$NC_PWD" >> ".env"
+{
+	echo "${CFG_NAMES_EXT[0]}=$NC_USER" 
+	echo "${CFG_NAMES_EXT[1]}=$NC_PWD" 
+}>> ".env"
 
 echo "NC_PORT=${NC_PORT}" >> ".env"
 
-line=($(cat config/config.php |grep datadirectory |grep "[\"'][^\"']*[\"']"))
+
+file=$(grep datadirectory < config/config.php)
+IFS=" " read -r -a line <<< "$(grep "[\"'][^\"']*[\"']" <<< "$file")"
 ORG_DATADIR=$(echo "${line[2]}"| sed -r "s/[\"',-]//gi")
 echo "NC_DATADIR=${ORG_DATADIR}" >> ".env"
 
@@ -133,7 +136,7 @@ sed -i '/memcache.distributed/s/^/#/g' $NC_CFG_PATH
 sed -i '/memcache.locking/s/^/#/g' $NC_CFG_PATH
 
 start=$(sed -n '/redis/=' $NC_CFG_PATH| head -1) 
-ends=($(sed -n '/),/=' $NC_CFG_PATH ))
+mapfile -t ends < <(sed -n '/),/=' $NC_CFG_PATH )
 
 for e in "${ends[@]}"
 do
@@ -165,7 +168,7 @@ sed -i "$start s/.*/listen_addresses = '*'/" $PG_CFG_PATH
 echo "Patching Postgresql HBA file"
 echo "host all all all md5" >> db/pg_hba.conf
 
-chown -R www-data:docker *
+chown -R www-data:docker ./*
 
 echo "Disabeling postgresql"
 systemctl disable postgresql
