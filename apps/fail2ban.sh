@@ -27,7 +27,7 @@ debug_mode
 root_check
 
 # Check if fail2ban is already installed
-if ! [ -f /etc/fail2ban/filter.d/nextcloud.conf ] || is_this_installed fail2ban
+if ! [ -f /etc/fail2ban/filter.d/nextcloud.conf ] || ! is_this_installed fail2ban
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
