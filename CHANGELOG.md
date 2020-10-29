@@ -28,7 +28,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Created geblock.sh in order to allow access from configured countries and/or continents
 - Made it more clear that a Nextcloud update started
 - Added DuckDNS to DDclient-configuration
-- Fixed a wrong OnlyOffice-URL
+- Fixed an incorrect OnlyOffice-URL
 - Improved the guidance how to control whiptails
 - Added some popups that explain the Additional Apps Menu and Server Configuration Menu during the startup script
 - Switched to TLS1.3 for new website-configurations on Ubuntu 20.04
