@@ -19,9 +19,6 @@ debug_mode
 # Check if root
 root_check
 
-# Show explainer
-msg_box "$SCRIPT_EXPLAINER"
-
 # Check if bitwarden_rs is already installed
 if [ -d /home/bitwarden_rs ] || docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
 then
@@ -37,18 +34,18 @@ its data to be able to reinstall it, you can execute the following commands:
     exit 1
 fi
 
+# Ask for installing
+install_popup "$SCRIPT_NAME"
+
 # Second info box
 msg_box "Since it's unofficial, you need to really trust the maintainer of the project to install it:
 https://github.com/dani-garcia/bitwarden_rs
 You never know what could hide in an unofficial release.
 
 It's always is recommended to install the official Bitwarden by running:
-sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden
+sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden --> Bitwarden
 
-Please report issues only to https://github.com/dani-garcia/bitwarden_rs"
-
-# Ask for installing
-install_popup "$SCRIPT_EXPLAINER"
+Please only report issues to https://github.com/dani-garcia/bitwarden_rs"
 
 # Show a second waring
 msg_box "Are you really sure?
@@ -59,7 +56,7 @@ sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden
 You will be offered to abort in the next step"
 
 # Let the user cancel
-if ! yesno_box_yes "Are you sure you want to install Bitwarden RS?"
+if ! yesno_box_yes "Are you really sure you want to install $SCRIPT_NAME?"
 then
     exit
 fi
