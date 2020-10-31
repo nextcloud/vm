@@ -43,6 +43,8 @@ PR's are more than welcome. Happy Nextclouding!
 - Updatenotification: added an advice for Major Nextcloud updates
 - Improved previewgenerator
 - Fixed problems with static-ip
+- Added Docker migrate script
+- Fixed and issue with ClamAV
 - Added more options to the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported) and made some enhancements
 - Minor bugfixes and improvements
 
