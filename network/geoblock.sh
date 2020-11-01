@@ -96,6 +96,7 @@ Please report this to $ISSUES"
     then
         msg_box "Somethings is wrong. The names length is not equal to the codes length.
 Please report this to $ISSUES"
+        exit 1
     fi
 
     # Create checklist
