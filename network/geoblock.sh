@@ -47,8 +47,6 @@ else
 fi
 
 # Install needed tools
-# Unfortunately jq is needed for this
-install_if_not jq
 install_if_not libapache2-mod-geoip
 
 # Enable apache mod
@@ -74,19 +72,30 @@ fi
 # Countries
 if [[ "$choice" = *"Countries"* ]]
 then
+    # Download csv file
+    if ! curl_to_dir "https://dev.maxmind.com/static/csv/codes" "iso3166.csv" "$SCRIPTS"
+    then
+        msg_box "Could not download the iso3166.csv file.
+Please report this to $ISSUES"
+        exit 1
+    fi
+
     # Get country names
-    COUNTRY_NAMES=$(jq .[][].name /usr/share/iso-codes/json/iso_3166-1.json | sed 's|^"||;s|"$||')
+    COUNTRY_NAMES=$(sed 's|,.*||' "$SCRIPTS/iso3166.csv")
     mapfile -t COUNTRY_NAMES <<< "$COUNTRY_NAMES"
 
     # Get country codes
-    COUNTRY_CODES=$(jq .[][].alpha_2 /usr/share/iso-codes/json/iso_3166-1.json | sed 's|^"||;s|"$||')
+    COUNTRY_CODES=$(sed 's|.*,"||;s|"$||' "$SCRIPTS/iso3166.csv")
     mapfile -t COUNTRY_CODES <<< "$COUNTRY_CODES"
+
+    # Remove the csv file since no longer needed
+    check_command rm "$SCRIPTS/iso3166.csv"
 
     # Check if both arrays match
     if [ "${#COUNTRY_NAMES[@]}" != "${#COUNTRY_CODES[@]}" ]
     then
-        msg_box "Somethings is wrong. The names length is not equal to the codees length.
-    Please report this to $ISSUES"
+        msg_box "Somethings is wrong. The names length is not equal to the codes length.
+Please report this to $ISSUES"
     fi
 
     # Create checklist
