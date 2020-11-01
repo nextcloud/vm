@@ -15,6 +15,18 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+
+## 20.0.2
+
+### Small changelog:
+- Encrypt SMB-transfer if AES-NI is enabled
+- Fix bugs with the `--provisioning` flag
+- Minor bugfixes and improvements
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/20.0.1..20.0.2
+- https://nextcloud.com/changelog/#latest20
+
 ## 20.0.1
 
 ### Small changelog:
