@@ -71,7 +71,7 @@ install_if_not samba
 install_if_not members
 
 # Use SMB3
-if ! grep -q "^protocol" /etc/samba/smb.conf
+if ! grep -q "^protocol" "$SMB_CONF"
 then
     sed -i '/\[global\]/a protocol = SMB3' "$SMB_CONF"
 else
@@ -84,6 +84,18 @@ then
     sed -i '/\[global\]/a access based share enum = yes' "$SMB_CONF"
 else
     sed -i 's|.*access based share enum =.*|access based share enum = yes|' "$SMB_CONF"
+fi
+
+# Activate encrypted transfer if AES-NI is enabled (passwords are encrypted by default)
+install_if_not cpuid
+if cpuid | grep " AES" | grep -q true
+then
+    if ! grep -q "^smb encrypt =" "$SMB_CONF"
+    then
+        sed -i '/\[global\]/a smb encrypt = desired' "$SMB_CONF"
+    else
+        sed -i 's|^smb encrypt =.*|smb encrypt = desired|' "$SMB_CONF"
+    fi
 fi
 
 # Disable the [homes] share by default only if active
