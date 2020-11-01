@@ -24,8 +24,6 @@ root_check
 
 # Variables
 SMB_CONF="/etc/samba/smb.conf"
-HASH_DIRECTORY="/root/.smbserver"
-HASH_HISTORY="$HASH_DIRECTORY/hash-history"
 SMB_GROUP="smb-users"
 PROHIBITED_NAMES=(global homes netlogon profiles printers print$ root ncadmin "$SMB_GROUP" plex pi-hole placeholder_for_last_space)
 WEB_GROUP="www-data"
@@ -105,16 +103,6 @@ then
     sed -i 's|^\[homes\]|\;\[homes\]|' "$SMB_CONF"
 fi
 
-# Create a history file for storing password hashes
-if ! [ -f "$HASH_HISTORY" ]
-then
-    mkdir -p "$HASH_DIRECTORY"
-    touch "$HASH_HISTORY"
-fi
-# Modify the ACL
-chown -R root:root "$HASH_DIRECTORY"
-chmod 600 -R "$HASH_DIRECTORY"
-
 # Samba stop function
 samba_stop() {
     print_text_in_color "$ICyan" "Stopping the SMB-server..."
@@ -151,36 +139,17 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 choose_password() {
 while :
 do
-    PASSWORD=$(input_box_flow "$1\nThe password needs to be at least 12 digits long to be valid.
-It also needs to contain at least one hyphen '-' and one of those characters each: \
-'a-z' 'A-Z' and '0-9' to be valid.\nYou can cancel by typing in 'exit' and pressing [ENTER]." "$2")
+    PASSWORD=$(input_box_flow "$1
+You can cancel by typing in 'exit' and pressing [ENTER]." "$2")
     if [ "$PASSWORD" = "exit" ]
     then
         return 1
-    elif [ "${#PASSWORD}" -lt 12 ]
-    then
-        msg_box "Please enter a password with at least 12 digits." "$2"
     elif [[ "$PASSWORD" = *" "* ]]
     then
         msg_box "Please don't use spaces." "$2"
     elif [[ "$PASSWORD" = *"\\"* ]]
     then
         msg_box "Please don't use backslashes." "$2"
-    elif ! [[ "$PASSWORD" =~ [-] ]]
-    then
-        msg_box "The password needs to contain at least one hyphen '-' to be valid." "$2"
-    elif ! [[ "$PASSWORD" =~ [a-z] ]]
-    then
-        msg_box "The password needs to contain at least one lowercase letter 'a-z' to be valid." "$2"
-    elif ! [[ "$PASSWORD" =~ [A-Z] ]]
-    then
-        msg_box "The password needs to contain at least one capital letter 'A-Z' to be valid." "$2"
-    elif ! [[ "$PASSWORD" =~ [0-9] ]]
-    then
-        msg_box "The password needs to contain at least one number '0-9' to be valid." "$2"
-    elif grep -q "$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')" "$HASH_HISTORY"
-    then
-        msg_box "The password was already used. Please use a different one." "$2"
     else
         break
     fi
@@ -249,10 +218,6 @@ add_user() {
     check_command adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "$NEWNAME"
     check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$NEWNAME"
 
-    # Store the hash of the password in the Hash-history file
-    HASH="$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')"
-    echo "$HASH" >> "$HASH_HISTORY"
-
     # Modify the groups of the SMB-user
     check_command usermod --append --groups "$SMB_GROUP","$WEB_GROUP" "$NEWNAME"
 
@@ -269,7 +234,8 @@ Suggested is though, creating all needed SMB-users first." "$SUBTITLE"
         unset PASSWORD
         return
     # If NC exists, offer to create a NC  user
-    elif ! yesno_box_no "Do you want to create a Nextcloud user with the same credentials?" "$SUBTITLE"
+    elif ! yesno_box_no "Do you want to create a Nextcloud user with the same credentials?
+Please note that this option could be a security risk, if the chosen password was too simple." "$SUBTITLE"
     then
         return
     fi
