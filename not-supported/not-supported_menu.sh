@@ -38,7 +38,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 case "$choice" in
     *"Bitlocker Mount"*)
         print_text_in_color "$ICyan" "Downloading the Bitlocker Mount script..."
-        run_script NOT_SUPPORTED bitlocker-mount
+        run_script NOT_SUPPORTED_FOLDER bitlocker-mount
     ;;&
     *"ClamAV"*)
         print_text_in_color "$ICyan" "Downloading the ClamAV script..."
@@ -46,27 +46,27 @@ case "$choice" in
     ;;&
     *"NTFS Mount"*)
         print_text_in_color "$ICyan" "Downloading the NTFS Mount script..."
-        run_script NOT_SUPPORTED ntfs-mount
+        run_script NOT_SUPPORTED_FOLDER ntfs-mount
     ;;&
     *"Pi-hole"*)
         print_text_in_color "$ICyan" "Downloading the Pi-hole script..."
-        run_script NOT_SUPPORTED pi-hole
+        run_script NOT_SUPPORTED_FOLDER pi-hole
     ;;&
     *"PiVPN"*)
         print_text_in_color "$ICyan" "Downloading the PiVPN script..."
-        run_script NOT_SUPPORTED pivpn
+        run_script NOT_SUPPORTED_FOLDER pivpn
     ;;&
     *"PLEX Media Server"*)
         print_text_in_color "$ICyan" "Downloading the PLEX Media Server script..."
-        run_script NOT_SUPPORTED plexmediaserver
+        run_script NOT_SUPPORTED_FOLDER plexmediaserver
     ;;&
     *"Remotedesktop"*)
         print_text_in_color "$ICyan" "Downloading the Remotedesktop script..."
-        run_script NOT_SUPPORTED remotedesktop
+        run_script NOT_SUPPORTED_FOLDER remotedesktop
     ;;&
     *"SMB-server"*)
         print_text_in_color "$ICyan" "Downloading the SMB Server script..."
-        run_script NOT_SUPPORTED smbserver
+        run_script NOT_SUPPORTED_FOLDER smbserver
     ;;&
     *)
     ;;
