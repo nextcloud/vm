@@ -32,6 +32,11 @@ then
     print_text_in_color "$ICyan" "Running in provisioning mode..."
     export PROVISIONING=1
     sleep 1
+elif [ "$1" = "--allow-snapshots" ]
+then
+    print_text_in_color "$ICyan" "Running in allow-snapshot mode..."
+    ALLOW_SNAPSHOTS=1
+    sleep 1
 else
     msg_box "Failed to get the correct flag. Did you enter it correctly?"
     exit 1
@@ -60,7 +65,7 @@ fi
 # Create a placeholder volume before modifying anything
 if [ -z "$PROVISIONING" ]
 then
-    if yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
+    if [ -n "$ALLOW_SNAPSHOTS" ] || yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
 Please note: this feature will not be used by this script but by other scripts later on.
 For now we will only create a placeholder volume that will be used to let some space for snapshot volumes."
     then
@@ -136,7 +141,7 @@ if [ -z "$PROVISIONING" ]
 then
     msg_box "Your current download repository is $REPO"
 fi
-if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
+if [ -n "$PROVISIONING" ] || yesno_box_no "Do you want use http://archive.ubuntu.com as repository for this server?"
 then
     sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
 fi
@@ -174,7 +179,7 @@ else
 fi
 
 # Fix LVM on BASE image
-if grep -q "LVM" /etc/fstab
+if grep -q "LVM" /etc/fstab && [ -z "$ALLOW_SNAPSHOTS" ]
 then
     if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want to make all free space available to your root partition?"
     then
@@ -241,6 +246,9 @@ install_if_not build-essential
 if [ -n "$PROVISIONING" ]
 then
     choice="2 Disks Auto"
+elif [ -n "$ALLOW_SNAPSHOTS" ] 
+then
+    choice="1 Disk"
 else
     msg_box "This server is designed to run with two disks, one for OS and one for DATA. \
 This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
