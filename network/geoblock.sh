@@ -81,11 +81,11 @@ Please report this to $ISSUES"
     fi
 
     # Get country names
-    COUNTRY_NAMES=$(sed 's|,.*||' "$SCRIPTS/iso3166.csv")
+    COUNTRY_NAMES=$(sed 's|.*,"||;s|"$||' "$SCRIPTS/iso3166.csv")
     mapfile -t COUNTRY_NAMES <<< "$COUNTRY_NAMES"
 
     # Get country codes
-    COUNTRY_CODES=$(sed 's|.*,"||;s|"$||' "$SCRIPTS/iso3166.csv")
+    COUNTRY_CODES=$(sed 's|,.*||' "$SCRIPTS/iso3166.csv")
     mapfile -t COUNTRY_CODES <<< "$COUNTRY_CODES"
 
     # Remove the csv file since no longer needed
