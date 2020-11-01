@@ -86,7 +86,7 @@ else
     sed -i 's|.*access based share enum =.*|access based share enum = yes|' "$SMB_CONF"
 fi
 
-# Activate encrypted transfer (passwords are always encrypted)
+# Activate encrypted transfer if AES-NI is enabled (passwords are encrypted by default)
 install_if_not cpuid
 if cpuid | grep " AES" | grep -q true
 then
