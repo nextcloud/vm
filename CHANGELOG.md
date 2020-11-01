@@ -19,9 +19,13 @@ PR's are more than welcome. Happy Nextclouding!
 ## 20.0.2
 
 ### Small changelog:
-- Encrypt SMB-transfer if AES-NI is enabled
-- Fix bugs with the `--provisioning` flag
+- SMB-server: encrypt SMB-transfer if AES-NI is enabled
+- Fixed bugs with the `--provisioning` flag
+- Updated geoblock.sh to get rid of jq
+- Added a script-explainer to nextcloud_install_production.sh
+- SMB-server: allow to choose nearly any password again
 - Minor bugfixes and improvements
+
 
 ### Full changelog:
 - https://github.com/nextcloud/vm/compare/20.0.1..20.0.2
