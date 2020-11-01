@@ -19,6 +19,9 @@ root_check
 
 ##################################################################
 
+# Remove the startup script
+rm -f "$SCRIPTS/nextcloud-startup-script.sh"
+
 # Main menu
 choice=$(whiptail --title "$TITLE" --menu \
 "Choose what you want to do.

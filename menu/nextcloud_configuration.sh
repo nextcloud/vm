@@ -32,10 +32,10 @@ fi
 choice=$(whiptail --title "$TITLE" --checklist \
 "Which settings do you want to configure?
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
-"Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
-"Disable workspaces" "(disable top notes in GUI)" OFF \
-"Disable user flows" "(Disable user settings for Nextcloud Flow)" OFF \
+"CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" "$STARTUP_SWITCH" \
+"Share-folder" "(Shares from other users will appear in a folder named 'Shared')" "$STARTUP_SWITCH" \
+"Disable workspaces" "(disable top notes in GUI)" "$STARTUP_SWITCH" \
+"Disable user flows" "(Disable user settings for Nextcloud Flow)" "$STARTUP_SWITCH" \
 "Enable logrotate" "(Use logrotate to keep more Nextcloud logs)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in

@@ -45,12 +45,12 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
-"Midnight Commander" "(CLI file manager)" OFF \
+"Midnight Commander" "(CLI file manager)" "$STARTUP_SWITCH" \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
-"Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
+"Webmin" "(Server GUI like Cpanel)" OFF \
 "SMB-mount" "(Mount SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in

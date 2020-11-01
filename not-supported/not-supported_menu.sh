@@ -17,6 +17,14 @@ debug_mode
 # Must be root
 root_check
 
+# Set the startup switch
+if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+then
+    STARTUP_SWITCH="ON"
+else
+    STARTUP_SWITCH="OFF"
+fi
+
 # Main menu
 choice=$(whiptail --title "$TITLE" --checklist \
 "This is the Not-supported Menu of the Nextcloud VM!
@@ -26,14 +34,14 @@ So please run them on your own risk. Feedback is more than welcome, though and c
 
 Choose which one you want to execute.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Bitlocker Mount" "(Mount Bitlocker encrypted drives)" OFF \
-"ClamAV" "(Antivirus for Nextcloud and files)" OFF \
-"NTFS Mount" "(Mount NTFS (Windows) drives)" OFF \
+"Bitlocker Mount" "(Mount Bitlocker encrypted drives)" "$STARTUP_SWITCH" \
+"ClamAV" "(Antivirus for Nextcloud and files)" "$STARTUP_SWITCH" \
+"NTFS Mount" "(Mount NTFS (Windows) drives)" "$STARTUP_SWITCH" \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
 "PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
 "PLEX Media Server" "(Multimedia server application)" OFF \
 "Remotedesktop" "(Install a remotedesktop based on xrdp)" OFF \
-"SMB-server" "(Create and manage a SMB-server on OS level)" OFF 3>&1 1>&2 2>&3)
+"SMB-server" "(Create and manage a SMB-server on OS level)" "$STARTUP_SWITCH" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Bitlocker Mount"*)
