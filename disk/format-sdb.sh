@@ -136,9 +136,12 @@ fi
 
 if lsblk -l -n | grep -v mmcblk | grep disk | awk '{ print $1 }' | tail -1 > /dev/null
 then
-    msg_box "Formatting your $SYSNAME secondary volume ($DISKTYPE) when you hit OK.
+    if [ -z "$PROVISIONING" ]
+    then
+        msg_box "Formatting your $SYSNAME secondary volume ($DISKTYPE) when you hit OK.
 
 *** WARNING: ALL YOUR DATA WILL BE ERASED! ***"
+    fi
     if zpool list | grep "$POOLNAME" > /dev/null
     then
         check_command zpool destroy "$POOLNAME"
@@ -196,7 +199,9 @@ fi
 # Success!
 if grep "$POOLNAME" /etc/mtab
 then
-    msg_box "$MOUNT_ mounted successfully as a ZFS volume.
+    if [ -z "$PROVISIONING" ]
+    then
+        msg_box "$MOUNT_ mounted successfully as a ZFS volume.
 
 Automatic scrubbing is done monthly via a cronjob that you can find here:
 /etc/cron.d/zfsutils-linux
@@ -210,4 +215,5 @@ CURRENT STATUS:
 $(zpool status $POOLNAME)
 
 $(zpool list)"
+    fi
 fi
