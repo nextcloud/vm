@@ -345,6 +345,12 @@ bash $SCRIPTS/nextcloud_configuration.sh
 # Install apps
 bash $SCRIPTS/additional_apps.sh
 
+# Show not-supported menu if existing
+if [ -f "$SCRIPTS/not-supported.sh" ]
+then
+    bash "$SCRIPTS/not-supported.sh"
+fi
+
 ### Change passwords
 # CLI USER
 msg_box "For better security, we will now change the password for the CLI user in Ubuntu."
