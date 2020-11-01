@@ -33,7 +33,8 @@ Please note that all options that get offered to you are not part of the release
 So please run them on your own risk. Feedback is more than welcome, though and can get reported here: $ISSUES
 
 Choose which one you want to execute.
-$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+$CHECKLIST_GUIDE\n\nYou can view this Menu later by running:
+'sudo bash $SCRIPTS/not-supported.sh'" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitlocker Mount" "(Mount Bitlocker encrypted drives)" "$STARTUP_SWITCH" \
 "ClamAV" "(Antivirus for Nextcloud and files)" "$STARTUP_SWITCH" \
 "NTFS Mount" "(Mount NTFS (Windows) drives)" "$STARTUP_SWITCH" \
