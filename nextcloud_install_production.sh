@@ -293,6 +293,9 @@ do
     if [ -n "$PROVISIONING" ]
     then
         choice="Quad9"
+    elif [ -n "$ALLOW_SNAPSHOTS" ] 
+    then
+        choice="Local"
     else
         choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu \
 "Which DNS provider should this Nextcloud box use?
