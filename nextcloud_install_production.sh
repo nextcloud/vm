@@ -811,6 +811,9 @@ restart_webserver
 if [ -n "$PROVISIONING" ]
 then
     choice="Calendar Contacts IssueTemplate PDFViewer Extract Text Mail Deck Group-Folders"
+elif [ -n "$ALLOW_SNAPSHOTS" ] 
+then
+    choice="Calendar Contacts PDFViewer Text Deck"
 else
     choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
 "Automatically configure and install selected apps or software
