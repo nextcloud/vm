@@ -54,6 +54,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "GeoBlock" "(Only allow certain countries to access your server)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "SMTP Mail" "(Enable beeing notified by mail from your server)" OFF \
+"Disk Monitoring" "(Continuosly check for S.M.A.R.T errors on your disks)" OFF \
 "Disk Check" "(Check for S.M.A.R.T errors on your disks every week on Mondays)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -106,6 +107,10 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
     *"SMTP Mail"*)
         print_text_in_color "$ICyan" "Downloading the SMTP Mail script..."
         run_script ADDONS smtp-mail
+    ;;&
+    *"Disk Monitoring"*)
+        print_text_in_color "$ICyan" "Downloading the Disk Monitoring script..."
+        run_script DISK smart-monitoring
     ;;&
     *"Disk Check"*)
         print_text_in_color "$ICyan" "Downloading the Disk Check script..."
