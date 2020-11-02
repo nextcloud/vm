@@ -84,7 +84,7 @@ SMART_NOTIFICATION
 chmod +x "$SCRIPTS/smart-notification.sh"
 
 # Restart service
-check_command systemctl start smartmontools
+start_if_stopped smartmontools
 
 msg_box "S.M.A.R.T Monitoring was successfully set up."
 
