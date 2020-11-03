@@ -27,7 +27,6 @@ So please run them on your own risk. Feedback is more than welcome, though and c
 Choose which one you want to execute.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitlocker Mount" "(Mount Bitlocker encrypted drives)" OFF \
-"ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "NTFS Mount" "(Mount NTFS (Windows) drives)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
 "PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
@@ -39,10 +38,6 @@ case "$choice" in
     *"Bitlocker Mount"*)
         print_text_in_color "$ICyan" "Downloading the Bitlocker Mount script..."
         run_script NOT_SUPPORTED_FOLDER bitlocker-mount
-    ;;&
-    *"ClamAV"*)
-        print_text_in_color "$ICyan" "Downloading the ClamAV script..."
-        run_script APP clamav
     ;;&
     *"NTFS Mount"*)
         print_text_in_color "$ICyan" "Downloading the NTFS Mount script..."

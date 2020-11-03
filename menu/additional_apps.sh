@@ -45,6 +45,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
+"ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
@@ -77,6 +78,10 @@ case "$choice" in
     *"BPYTOP"*)
         print_text_in_color "$ICyan" "Downloading the BPYTOP script..."
         run_script APP bpytop
+    ;;&
+    *"ClamAV"*)
+        print_text_in_color "$ICyan" "Downloading the ClamAV script..."
+        run_script APP clamav
     ;;&
     *"Midnight Commander"*)
         print_text_in_color "$ICyan" "Downloading the Midnight Commander script..."
