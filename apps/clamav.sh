@@ -185,7 +185,7 @@ chown root:root "$SCRIPT_PATH"
 chmod 700 "$SCRIPT_PATH"
 
 # Create the cronjob
-crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPT_PATH 2>&1"; } | crontab -u root -
+crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPT_PATH > /dev/null 2>&1"; } | crontab -u root -
 
 # Inform the user
 msg_box "ClamAV was succesfully installed.
@@ -271,7 +271,7 @@ CLAMAV_REPORT
 chmod +x "$SCRIPTS"/clamav-fullscan.sh
 
 # Create the cronjob
-crontab -u root -l | { cat; echo "0 10 * * 7 $SCRIPTS/clamav-fullscan.sh 2>&1"; } | crontab -u root -
+crontab -u root -l | { cat; echo "0 10 * * 7 $SCRIPTS/clamav-fullscan.sh > /dev/null 2>&1"; } | crontab -u root -
 
 # Create the log-file
 touch "$VMLOGS"/clamav-fullscan.log
