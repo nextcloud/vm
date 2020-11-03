@@ -72,14 +72,14 @@ check_command systemctl restart clamav-daemon
 
 print_text_in_color "$ICyan" "Waiting for ClamAV daemon to start up..."
 counter=0
-while ! [ -f "/var/run/clamav/clamd.ctl" ] && [ "$counter" -lt 2 ]
+while ! [ -a "/var/run/clamav/clamd.ctl" ] && [ "$counter" -lt 2 ]
 do
     sleep 5
     ((counter++))
 done
 
 # Check if clamd exists now
-if ! [ -f "/var/run/clamav/clamd.ctl" ]
+if ! [ -a "/var/run/clamav/clamd.ctl" ]
 then
     msg_box "Failed to start the ClamAV daemon.
 Please report this to $ISSUES"
