@@ -103,10 +103,9 @@ nextcloud_occ config:app:set files_antivirus av_stream_max_length --value="10485
 nextcloud_occ config:app:set files_antivirus av_max_file_size --value="-1"
 nextcloud_occ config:app:set files_antivirus av_infected_action --value="only_log"
 
+# Create av notification script
 SCRIPT_PATH="$SCRIPTS/nextcloud-av-notification.sh"
-
-# TODO: uncomment the following line
-# cat << AV_NOTIFICATION >> "$SCRIPT_PATH"
+cat << AV_NOTIFICATION >> "$SCRIPT_PATH"
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
@@ -120,35 +119,35 @@ SCRIPT_EXPLAINER="This script sends notifications about infected files."
 # Variables
 lastMinutes=30
 LOGFILE="/var/log/nextcloud/nextcloud.log"
-tempfile="/tmp/nextcloud_av_notofications-$(date +"%M-%N").tmp"
-getCurrentTimeZone=$(date +"%:::z")
-getCurrentTimeZone="${getCurrentTimeZone:1}"
-timeShiftTo=$((60 * $getCurrentTimeZone))
-timeShiftFrom=$((60 * $getCurrentTimeZone + $lastMinutes))
-dateFrom=$(date --date="-$timeShiftFrom min" "+%Y-%m-%dT%H:%M:00+00:00")
-dateTo=$(date --date="-$timeShiftTo min" "+%Y-%m-%dT%H:%M:00+00:00")
+tempfile="/tmp/nextcloud_av_notofications-\$(date +"%M-%N").tmp"
+getCurrentTimeZone=\$(date +"%:::z")
+getCurrentTimeZone="\${getCurrentTimeZone:1}"
+timeShiftTo=\$((60 * \$getCurrentTimeZone))
+timeShiftFrom=\$((60 * \$getCurrentTimeZone + \$lastMinutes))
+dateFrom=\$(date --date="-\$timeShiftFrom min" "+%Y-%m-%dT%H:%M:00+00:00")
+dateTo=\$(date --date="-\$timeShiftTo min" "+%Y-%m-%dT%H:%M:00+00:00")
 
 # Check if nextcloud.log exist
-if ! [ -f "$LOGFILE" ]
+if ! [ -f "\$LOGFILE" ]
 then
     exit
 fi
 
 # Extract logs for a last defined minutes
-awk -v d1="$dateFrom" -v d2="$dateTo" -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LOGFILE" \
-| grep "Infected file" | awk -F'["]' '{print $34}' > "$tempfile"
+awk -v d1="\$dateFrom" -v d2="\$dateTo" -F'["]' '\$10 > d1 && \$10 < d2 || \$10 ~ d2' "\$LOGFILE" \
+| grep "Infected file" | awk -F'["]' '{print \$34}' > "\$tempfile"
 
 # Extract logs for a last defined minutes, from a ROTATED log if present
-if test "$(find "$LOGFILE.1" -mmin -"$lastMinutes")"
+if test "\$(find "\$LOGFILE.1" -mmin -"\$lastMinutes")"
 then
-    awk -v d1="$dateFrom" -v d2="$dateTo" -F'["]' '$10 > d1 && $10 < d2 || $10 ~ d2' "$LOGFILE.1" \
-| grep "Infected file" | awk -F'["]' '{print $34}' >> "$tempfile"
+    awk -v d1="\$dateFrom" -v d2="\$dateTo" -F'["]' '\$10 > d1 && \$10 < d2 || \$10 ~ d2' "\$LOGFILE.1" \
+| grep "Infected file" | awk -F'["]' '{print \$34}' >> "\$tempfile"
 fi
 
 # Exit if no results found
-if ! [ -s "$tempfile" ]
+if ! [ -s "\$tempfile" ]
 then
-    rm "$tempfile"
+    rm "\$tempfile"
     exit
 fi
 
@@ -161,27 +160,26 @@ root_check
 
 # Send notification
 WORDS=(found deleted)
-for toFind in "${WORDS[@]}"
+for toFind in "\${WORDS[@]}"
 do
-    if grep -q "$toFind" "$tempfile"
+    if grep -q "\$toFind" "\$tempfile"
     then
         # Prepare output
-        grep "$toFind" "$tempfile" | awk '{$1=""; $2 = ""; $3 = "";$4 = ""; $5 = ""; $6 = ""; print $0}' \
-| sed -r -e 's|appdata_.{12}||' | sed 's|   ||g' > "$tempfile.output"
+        grep "\$toFind" "\$tempfile" | awk '{\$1=""; \$2 = ""; \$3 = "";\$4 = ""; \$5 = ""; \$6 = ""; print \$0}' \
+| sed -r -e 's|appdata_.{12}||' | sed 's|   ||g' > "\$tempfile.output"
 
         # Send notification
         notify_admin_gui \
-        "Nextcloud Antivirus - Infected File(s) $toFind!" \
-        "$(cat "$tempfile.output" | cut -c -4000)"
+        "Nextcloud Antivirus - Infected File(s) \$toFind!" \
+        "\$(cat "\$tempfile.output" | cut -c -4000)"
     fi
 done
 
-rm "$tempfile"
-rm "$tempfile.output"
+rm "\$tempfile"
+rm "\$tempfile.output"
 
-# TODO: uncomment the following lines:
-# exit
-# AV_NOTIFICATION
+exit
+AV_NOTIFICATION
 
 chown root:root "$SCRIPT_PATH"
 chmod 700 "$SCRIPT_PATH"
