@@ -52,13 +52,16 @@ fi
 
 # Install dark theme
 print_text_in_color "$ICyan" "Installing dark theme for Midnight Commander..."
-USER_HOMES=$(find /home -mindepth 1 -maxdepth 1 -type d)
-mapfile -t USER_HOMES <<< "$USER_HOMES"
-USER_HOMES+=(/root)
-for user_home in "${USER_HOMES[@]}"
+if [ -z "$UNIXUSER" ]
+then
+    USERS=(root)
+else
+    USERS=("$UNIXUSER" root)
+fi
+for user in "${USERS[@]}"
 do
-    mkdir -p "$user_home/.config/mc"
-    cat << MC_INI > "$user_home/.config/mc/ini"
+    sudo -u "$user" mkdir -p "~/.config/mc"
+    sudo -u "$user" cat << MC_INI > "~/.config/mc/ini"
 [Colors]
 base_color=linux:normal=white,black:marked=yellow,black:input=,green:menu=black:menusel=white:\
 menuhot=red,:menuhotsel=black,red:dfocus=white,black:dhotnormal=white,black:\
