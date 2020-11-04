@@ -60,8 +60,14 @@ else
 fi
 for user in "${USERS[@]}"
 do
-    sudo -u "$user" mkdir -p "~/.config/mc"
-    sudo -u "$user" cat << MC_INI > "~/.config/mc/ini"
+    if [ "$user" = root ]
+    then
+        MC_PATH=/root/.config/mc
+    else
+        MC_PATH=/home/$user/.config/mc
+    fi
+    sudo -u "$user" mkdir -p "$MC_PATH"
+    sudo -u "$user" cat << MC_INI > "$MC_PATH/ini"
 [Colors]
 base_color=linux:normal=white,black:marked=yellow,black:input=,green:menu=black:menusel=white:\
 menuhot=red,:menuhotsel=black,red:dfocus=white,black:dhotnormal=white,black:\
