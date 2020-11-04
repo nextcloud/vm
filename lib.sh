@@ -91,7 +91,7 @@ MENU="$GITHUB_REPO/menu"
 DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
-NOT_SUPPORTED="$GITHUB_REPO/not-supported"
+NOT_SUPPORTED_FOLDER="$GITHUB_REPO/not-supported"
 GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
@@ -1193,6 +1193,11 @@ run_main_script() {
 run_script GITHUB_REPO "${1}"
 }
 
+# Backwards compatibility (2020-10-25) Needed for update.sh to run in all VMs, even those several years old
+run_static_script() {
+run_script STATIC "${1}"
+}
+
 version(){
     local h t v
 
@@ -1527,9 +1532,13 @@ send_mail() {
         if [ -n "$RECIPIENT" ]
         then
             print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
-            echo -e "$2" | mail --subject "NcVM - $1" "$RECIPIENT"
+            if echo -e "$2" | mail --subject "NcVM - $1" "$RECIPIENT"
+            then
+                return 0
+            fi
         fi
     fi
+    return 1
 }
 
 zpool_import_if_missing() {
@@ -1635,9 +1644,9 @@ print_text_in_color "$IGreen" PHPVER="$PHPVER"
 }
 
 add_dockerprune() {
-print_text_in_color "$ICyan" "Adding cronjob for Docker weekly prune..."
 if ! crontab -u root -l | grep -q 'dockerprune.sh'
 then
+    print_text_in_color "$ICyan" "Adding cronjob for Docker weekly prune..."
     mkdir -p "$SCRIPTS"
     crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
     check_command echo "#!/bin/bash" > "$SCRIPTS/dockerprune.sh"

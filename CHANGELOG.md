@@ -15,6 +15,43 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 20.0.1
+
+### Small changelog:
+- Made the setup of SMTP-mail more reliable
+- Added a switch to the install-script to enable automatic provisioning of new releases
+- Changed occ_command to nextcloud_occ to simplify copy and paste between scripts and CLI
+- Improved the logging for SMTP-mail
+- Added deSEC to DDclient-configuration
+- Implemented an option to create LVM snapshots during the update script for certain instances
+- Don't clear the CLI history anymore to simplify debugging
+- Created geblock.sh in order to allow access from configured countries and/or continents
+- Made it more clear that a Nextcloud update started
+- Added DuckDNS to DDclient-configuration
+- Fixed an incorrect OnlyOffice-URL
+- Improved the guidance how to control whiptails
+- Added some popups that explain the Additional Apps Menu and Server Configuration Menu during the startup script
+- Switched to TLS1.3 for new website-configurations on Ubuntu 20.04
+- Added a mechanism to update geoblock database file and added the geoblockdat folder to the repository
+- SMTP-mail: allow to cancel the removal of configurations and packets if the testmail fails in order to simplify debugging
+- Made BPYTOP its own script
+- Standardized the usage of the word CLI
+- Made Midnight Commander its own script
+- Updated all app scripts with a new function for reinstalling
+- Renamed the talk-signaling script to talk and deleted the old talk script
+- Use start_if_stopped everywhere it fits
+- Updatenotification: added an advice for Major Nextcloud updates
+- Improved previewgenerator
+- Fixed problems with static-ip
+- Added Docker migrate script
+- Fixed and issue with ClamAV
+- Added more options to the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported) and made some enhancements
+- Minor bugfixes and improvements
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/20.0.0..20.0.1
+- https://nextcloud.com/changelog/#latest20
+
 ## 20.0.0
 
 ### Small changelog:

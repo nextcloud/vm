@@ -31,7 +31,7 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
-if does_snapshot_exist "NcVM-snapshot-update"
+if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "It seems like the last update was not successful.
 Cannot proceed because you would loose the last snapshot."
@@ -614,7 +614,7 @@ then
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     if [ -n "$SNAPSHOT_EXISTS" ]
     then
-        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-update
+        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
     fi
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
@@ -762,7 +762,7 @@ Thank you for using T&M Hansson IT's updater!"
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update.log
     if [ -n "$SNAPSHOT_EXISTS" ]
     then
-        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-update /dev/ubuntu-vg/NcVM-snapshot
+        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
     fi
     exit 0
 else

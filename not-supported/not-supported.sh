@@ -22,7 +22,7 @@ print_text_in_color "$ICyan" "Running the Not-supported Menu script..."
 if network_ok
 then
     # Delete, download, run
-    run_script NOT_SUPPORTED not-supported_menu
+    run_script NOT_SUPPORTED_FOLDER not-supported_menu
 fi
 
 exit

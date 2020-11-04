@@ -27,7 +27,7 @@ debug_mode
 root_check
 
 # Check if fail2ban is already installed
-if ! is_this_installed fail2ban
+if ! [ -f /etc/fail2ban/filter.d/nextcloud.conf ] || ! is_this_installed fail2ban
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -35,11 +35,20 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
-    fail2ban-client unban --all
-    rm /etc/fail2ban/filter.d/nextcloud.conf
-    rm /etc/fail2ban/jail.local
-    check_command apt-get purge fail2ban -y
+    if ! does_this_docker_exist bitwarden_rs
+    then
+        print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
+        fail2ban-client unban --all
+        apt purge fail2ban -y
+        rm -rf /etc/fail2ban
+    else
+        print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
+        fail2ban-client unban --all
+        sleep 5
+        rm /etc/fail2ban/filter.d/nextcloud.conf
+        sed -i '/^\[sshd\]$/,$d' /etc/fail2ban/jail.local
+        check_command systemctl restart fail2ban
+    fi
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -61,7 +70,7 @@ do
             nextcloud_occ config:system:set loglevel --value=2
             break
         fi
-    elif [ "$(nextcloud_occ_no_check config:system:get logfile)" != "" ]
+    elif [ -n "$(nextcloud_occ_no_check config:system:get logfile)" ]
     then
         # Set logging
         nextcloud_occ config:system:set log_type --value=file
@@ -98,7 +107,7 @@ FINDTIME_=1800
 MAXRETRY_=20
 
 apt update -q4 & spinner_loading
-check_command apt install fail2ban -y
+install_if_not fail2ban -y
 check_command update-rc.d fail2ban disable
 
 # Set timezone
