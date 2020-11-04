@@ -24,6 +24,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Updated geoblock.sh to get rid of jq
 - Added a script-explainer to nextcloud_install_production.sh
 - SMB-server: allow to choose nearly any password again
+- ClamAV - add a mechanism to inform about found files
 - Minor bugfixes and improvements
 
 
