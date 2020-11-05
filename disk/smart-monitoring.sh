@@ -32,6 +32,7 @@ else
     rm -f "$SCRIPTS/smart-notification.sh"
     check_command apt purge smartmontools -y
     apt autoremove -y
+    rm -f /etc/smartd.conf
     # reset the cronjob
     crontab -u root -l | grep -v 'smartctl.sh'  | crontab -u root -
     crontab -u root -l | grep -v 'smart-notification.sh'  | crontab -u root -
