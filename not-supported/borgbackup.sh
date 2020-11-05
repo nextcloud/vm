@@ -249,21 +249,20 @@ borg --version
 
 # Borg options
 # TODO: try out if the compression satisfies one core 70-100%. If not increase the compression. E.g. auto,zstd,10
-BORG_OPTS=(--stats "--compression" "auto,zstd" --exclude-caches --checkpoint-interval 86400)
+BORG_OPTS="--stats --compression auto,zstd --exclude-caches --checkpoint-interval 86400"
 
 # System backup
-SYSTEM_BACKUP=(borg create ${BORG_OPTS[@]} --one-file-system)
 EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache var/cache lost+found run var/run dev tmp)
 # mnt, media, sys, prob don't need to be excluded because of the usage of lvm-snapshots and the --one-file-system flag
 for directory in "${EXCLUDED_DIRECTORIES[@]}"
 do
-    SYSTEM_BACKUP+=(--exclude "$LVM_MOUNT/$directory/")
+    EXCLUDE_DIRS+="--exclude $LVM_MOUNT/$directory/ "
 done
-SYSTEM_BACKUP+=("$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-system-partition" "$LVM_MOUNT/")
 
 # Create system backup
 inform_user "$ICyan" "Creating system partition backup..."
-if ! "${SYSTEM_BACKUP[@]}"
+if ! borg create "$BORG_OPTS" --one-file-system "$EXCLUDE_DIRS" \
+"$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-system-partition" "$LVM_MOUNT/"
 then
     show_drive_usage
     re_rename_snapshot
@@ -314,7 +313,7 @@ fi
 
 # Boot partition backup
 inform_user "$ICyan" "Creating boot partition backup..."
-if ! borg create ${BORG_OPTS[@]} "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-boot-partition" "/boot/"
+if ! borg create "$BORG_OPTS" "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-boot-partition" "/boot/"
 then
     show_drive_usage
     re_rename_snapshot
@@ -333,7 +332,7 @@ do
 
     # Create backup
     inform_user "$ICyan" "Creating $DIRECTORY_NAME backup..."
-    if ! borg create ${BORG_OPTS[@]} --one-file-system \
+    if ! borg create "$BORG_OPTS" --one-file-system \
 "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-$DIRECTORY_NAME-directory" "$DIRECTORY/"
     then
         show_drive_usage
