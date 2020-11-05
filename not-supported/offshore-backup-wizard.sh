@@ -302,7 +302,7 @@ fi
 if network_ok
 then
     echo "Executing \$SCRIPT_NAME. \$(date +%Y-%m-%d_%H-%M-%S)" >> "\$RSYNC_BACKUP_LOG"
-    run_script NOT_SUPPORTED rsyncbackup
+    run_script NOT_SUPPORTED_FOLDER rsyncbackup
 else
     echo "Unable to execute \$SCRIPT_NAME. No network connection. \$(date +%Y-%m-%d_%H-%M-%S)" >> "\$RSYNC_BACKUP_LOG"
     notify_admin_gui "Unable to execute \$SCRIPT_NAME." "No network connection."

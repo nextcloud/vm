@@ -407,7 +407,7 @@ cat << WRITE_BACKUP_SCRIPT >> "$BACKUP_SCRIPT_NAME"
 if network_ok
 then
     echo "Executing \$SCRIPT_NAME. \$(date +%Y-%m-%d_%H-%M-%S)" >> "\$BORGBACKUP_LOG"
-    run_script NOT_SUPPORTED borgbackup
+    run_script NOT_SUPPORTED_FOLDER borgbackup
 else
     echo "Unable to execute \$SCRIPT_NAME. No network connection. \$(date +%Y-%m-%d_%H-%M-%S)" >> "\$BORGBACKUP_LOG"
     notify_admin_gui "Unable to execute \$SCRIPT_NAME." "No network connection."
