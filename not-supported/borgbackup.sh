@@ -73,7 +73,7 @@ send_error_mail() {
     fi
     inform_user "$IRed" "$MAIL_TITLE sent error on $END_DATE_READABLE ($DURATION_READABLE)"
     inform_user "$IRed" "$MAIL_TITLE failed! $1"
-    if ! send_mail "$MAIL_TITLE failed! $1" "$(cat $LOG_FILE)"
+    if ! send_mail "$MAIL_TITLE failed! $1" "$(cat "$LOG_FILE")"
     then
         notify_admin_gui \
         "$MAIL_TITLE failed! Though mail sending didn't work!" \
@@ -249,7 +249,7 @@ borg --version
 
 # Borg options
 # TODO: try out if the compression satisfies one core 70-100%. If not increase the compression. E.g. auto,zstd,10
-BORG_OPTS=(--stats --compression auto,zstd --exclude-caches --checkpoint-interval 86400)
+BORG_OPTS=(--stats "--compression auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
 # System backup
 SYSTEM_BACKUP=(borg create ${BORG_OPTS[@]} --one-file-system)
@@ -374,7 +374,7 @@ get_expiration_time
 inform_user "$IGreen" "Backup finished on $END_DATE_READABLE ($DURATION_READABLE)"
 
 # Send mail about successful backup
-if ! send_mail "Daily backup successful!" "$(cat $LOG_FILE)"
+if ! send_mail "Daily backup successful!" "$(cat "$LOG_FILE")"
 then
     notify_admin_gui \
     "Daily backup successful! Though mail sending didn't work!" \
@@ -456,7 +456,7 @@ get_expiration_time
 inform_user "$IGreen" "Backup integrity check finished on $END_DATE_READABLE ($DURATION_READABLE)"
 
 # Send mail about successful backup
-if ! send_mail "Backup integrity check successful!" "$(cat $LOG_FILE)"
+if ! send_mail "Backup integrity check successful!" "$(cat "$LOG_FILE")"
 then
     notify_admin_gui \
     "Backup integrity check succesful! Though mail sending didn't work!" \

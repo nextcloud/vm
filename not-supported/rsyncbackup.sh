@@ -58,7 +58,7 @@ send_error_mail() {
     get_expiration_time
     inform_user "$IRed" "Off-shore backup sent error on $END_DATE_READABLE ($DURATION_READABLE)"
     inform_user "$IRed" "Off-shore backup failed! $1"
-    if ! send_mail "Off-shore backup failed! $1" "$(cat $LOG_FILE)"
+    if ! send_mail "Off-shore backup failed! $1" "$(cat "$LOG_FILE")"
     then
         notify_admin_gui \
         "Off-shore backup failed! Though mail sending didn't work!" \
@@ -191,7 +191,7 @@ get_expiration_time
 inform_user "$IGreen" "Off-shore backup finished on $END_DATE_READABLE ($DURATION_READABLE)"
 
 # Send mail about successful backup
-if ! send_mail "Off-shore backup successful! You can now disconnect the off-shore backup drive!" "$(cat $LOG_FILE)"
+if ! send_mail "Off-shore backup successful! You can now disconnect the off-shore backup drive!" "$(cat "$LOG_FILE")"
 then
     notify_admin_gui \
     "Off-shore backup successful! Though mail sending didn't work!" \
