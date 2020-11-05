@@ -249,7 +249,7 @@ borg --version
 
 # Borg options
 # TODO: try out if the compression satisfies one core 70-100%. If not increase the compression. E.g. auto,zstd,10
-BORG_OPTS=(--stats "--compression auto,zstd" --exclude-caches --checkpoint-interval 86400)
+BORG_OPTS=(--stats "--compression" "auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
 # System backup
 SYSTEM_BACKUP=(borg create ${BORG_OPTS[@]} --one-file-system)
