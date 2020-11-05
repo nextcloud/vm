@@ -24,7 +24,10 @@ PR's are more than welcome. Happy Nextclouding!
 - Updated geoblock.sh to get rid of jq
 - Added a script-explainer to nextcloud_install_production.sh
 - SMB-server: allow to choose nearly any password again
-- ClamAV - add a mechanism to inform about found files
+- ClamAV - added a mechanism to inform about found files
+- Fixed a bug in midnight-commander.sh
+- Remotedesktop - Added two more options
+- Created smart-monitoring.sh to allow continuosly smart checking
 - Minor bugfixes and improvements
 
 
