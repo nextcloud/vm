@@ -222,7 +222,7 @@ then
     msg_box "No backup drive chosen. Hence exiting."
     exit 1
 else
-    BACKUP_TARGET_DIRECTORY=$(echo "$selected_options" | sed 's|/$||')
+    BACKUP_TARGET_DIRECTORY="${selected_options%%/}"
     # Mount the backup drive
     check_command mount "$BACKUP_TARGET_DIRECTORY"
     BACKUP_MOUNT="$BACKUP_TARGET_DIRECTORY"
@@ -396,7 +396,7 @@ for source in "${ADDITIONAL_BACKUP_DIRECTORIES[@]}"
 do
     SOURCES+="$source\n"
 done
-SOURCES=$(echo "$SOURCES" | sed 's|\\n$||')
+SOURCES="${SOURCES%%\\n}"
 SOURCES+='"'
 echo -e "$SOURCES" >> "$BACKUP_SCRIPT_NAME"
 

@@ -140,7 +140,7 @@ then
     mapfile -t ADDITIONAL_BACKUP_DIRECTORIES <<< "$ADDITIONAL_BACKUP_DIRECTORIES"
     for directory in "${ADDITIONAL_BACKUP_DIRECTORIES[@]}"
     do
-        DIRECTORY=$(echo "$directory" | sed 's|/$||')
+        DIRECTORY="${directory%%/}"
         if ! [ -d "$directory" ]
         then
             send_error_mail "$directory doesn't exist. Drive not connected?"
@@ -328,7 +328,7 @@ do
     then
         continue
     fi
-    DIRECTORY=$(echo "$directory" | sed 's|/$||')
+    DIRECTORY="${directory%%/}"
     DIRECTORY_NAME=$(echo "$DIRECTORY" | sed 's|^/||;s|/|-|;s| |_|')
 
     # Create backup

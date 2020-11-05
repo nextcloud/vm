@@ -79,14 +79,14 @@ fi
 # Get backup mountpoint from daily-borg-backup.sh
 DAILY_BACKUP_MOUNTPOINT="$(grep "BACKUP_MOUNTPOINT=" "$DAILY_BACKUP_FILE" | sed 's|.*BACKUP_MOUNTPOINT="||;s|"$||')"
 DAILY_BACKUP_TARGET="$(grep "BACKUP_TARGET_DIRECTORY=" "$DAILY_BACKUP_FILE" | sed 's|.*BACKUP_TARGET_DIRECTORY="||;s|"$||')"
-DAILY_BACKUP_DIFFERENCE="$(echo "$DAILY_BACKUP_TARGET" | sed "s|$DAILY_BACKUP_MOUNTPOINT||")"
+DAILY_BACKUP_DIFFERENCE="${DAILY_BACKUP_TARGET##$DAILY_BACKUP_MOUNTPOINT}"
 if [ -z "$DAILY_BACKUP_MOUNTPOINT" ] || [ -z "$DAILY_BACKUP_TARGET" ] || [ -z "$DAILY_BACKUP_DIFFERENCE" ]
 then
     msg_box "One needed variable from daily-borg-backup.sh is empty.
 This is false."
     exit 1
 fi
-if [ -z "$(echo "$DAILY_BACKUP_MOUNTPOINT" | sed "s|$DAILY_BACKUP_TARGET||")" ]
+if [ "$DAILY_BACKUP_MOUNTPOINT" = "$DAILY_BACKUP_TARGET" ]
 then
     msg_box "Daily backup mountpoint and target are the same which is wrong."
     exit 1
@@ -165,7 +165,7 @@ then
     msg_box "No backup drive chosen. Hence exiting."
     exit 1
 else
-    BACKUP_TARGET_DIRECTORY=$(echo "$selected_options" | sed 's|/$||')
+    BACKUP_TARGET_DIRECTORY="${selected_options%%/}"
     # Mount the backup drive
     check_command mount "$BACKUP_TARGET_DIRECTORY"
     BACKUP_MOUNT="$BACKUP_TARGET_DIRECTORY"
