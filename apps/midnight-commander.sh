@@ -67,13 +67,14 @@ do
         MC_PATH=/home/$user/.config/mc
     fi
     sudo -u "$user" mkdir -p "$MC_PATH"
-    sudo -u "$user" cat << MC_INI > "$MC_PATH/ini"
+    cat << MC_INI > "$MC_PATH/ini"
 [Colors]
 base_color=linux:normal=white,black:marked=yellow,black:input=,green:menu=black:menusel=white:\
 menuhot=red,:menuhotsel=black,red:dfocus=white,black:dhotnormal=white,black:\
 dhotfocus=white,black:executable=,black:directory=white,black:link=white,black:\
 device=white,black:special=white,black:core=,black:stalelink=red,black:editnormal=white,black
 MC_INI
+    chown "$user":"$user" "$MC_PATH/ini"
 done
 
 # Inform the user
