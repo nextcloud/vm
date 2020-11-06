@@ -1,4 +1,3 @@
-
 #!/bin/bash
 # shellcheck disable=2034,2059
 true
@@ -10,4 +9,5 @@ source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 msg_box "You are running an outdated release.
 
 You see this message only to make it possible to run the first startup script, but as time goes, more and more will we incompatible.
+
 We urge you to download the latest version as soon as possible: https://github.com/nextcloud/vm/releases"
