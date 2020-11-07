@@ -163,7 +163,7 @@ then
     CHECK_BACKUP=1
 else
     DAYS_SINCE_LAST_BACKUP_CHECK=$((DAYS_SINCE_LAST_BACKUP_CHECK+1))
-    sed -i "s|^DAYS_SINCE_LAST_BACKUP_CHECK.*|DAYS_SINCE_LAST_BACKUP_CHECK=$DAYS_SINCE_LAST_BACKUP_CHECK|" "$SCRIPTS/daily-borg-backup.sh"
+    sed -i "s|^export DAYS_SINCE_LAST_BACKUP_CHECK.*|export DAYS_SINCE_LAST_BACKUP_CHECK=$DAYS_SINCE_LAST_BACKUP_CHECK|" "$SCRIPTS/daily-borg-backup.sh"
 fi
 
 # Check if pending snapshot is existing and cancel the backup in this case.
@@ -248,7 +248,8 @@ export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 borg --version
 
 # Borg options
-# TODO: try out if the compression satisfies one core 70-100%. If not increase the compression. E.g. auto,zstd,10
+# auto,zstd compression seems to has the best ratio based on:
+# https://forum.level1techs.com/t/optimal-compression-for-borg-backups/145870/6
 BORG_OPTS="--stats --compression auto,zstd --exclude-caches --checkpoint-interval 86400"
 
 # System backup
@@ -261,7 +262,7 @@ done
 
 # Create system backup
 inform_user "$ICyan" "Creating system partition backup..."
-if ! borg create "$BORG_OPTS" --one-file-system "$EXCLUDE_DIRS" \
+if ! borg create $BORG_OPTS --one-file-system $EXCLUDE_DIRS \
 "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-system-partition" "$LVM_MOUNT/"
 then
     show_drive_usage
@@ -313,7 +314,7 @@ fi
 
 # Boot partition backup
 inform_user "$ICyan" "Creating boot partition backup..."
-if ! borg create "$BORG_OPTS" "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-boot-partition" "/boot/"
+if ! borg create $BORG_OPTS "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-boot-partition" "/boot/"
 then
     show_drive_usage
     re_rename_snapshot
@@ -332,7 +333,7 @@ do
 
     # Create backup
     inform_user "$ICyan" "Creating $DIRECTORY_NAME backup..."
-    if ! borg create "$BORG_OPTS" --one-file-system \
+    if ! borg create $BORG_OPTS --one-file-system \
 "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-$DIRECTORY_NAME-directory" "$DIRECTORY/"
     then
         show_drive_usage
@@ -449,6 +450,10 @@ if ! umount "$BACKUP_MOUNTPOINT"
 then
     send_error_mail "Could not unmount the backup drive!" "Backup integrity check"
 fi
+
+# Resetting the integrity Check
+inform_user "$ICyan" "Resetting the backup check timer..."
+sed -i "s|^export DAYS_SINCE_LAST_BACKUP_CHECK.*|export DAYS_SINCE_LAST_BACKUP_CHECK=0|" "$SCRIPTS/daily-borg-backup.sh"
 
 # Show expiration time
 get_expiration_time
