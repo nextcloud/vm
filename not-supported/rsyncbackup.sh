@@ -124,11 +124,7 @@ fi
 # Check if at least one daily backup drive has run
 BORGBACKUP_LOG="$(grep "^export BORGBACKUP_LOG" "$SCRIPTS/daily-borg-backup.sh" \
 | sed 's|.*BORGBACKUP_LOG="||' | sed 's|"$||')"
-if [ -z "$BORGBACKUP_LOG" ] || ! [ -f "$BORGBACKUP_LOG" ]
-then
-    send_error_mail "Could not get the daily backup log file. Does it exist?"
-fi
-if ! grep -q "Backup finished on" "$BORGBACKUP_LOG"
+if [ -z "$BORGBACKUP_LOG" ] || ! [ -f "$BORGBACKUP_LOG" ] || ! grep -q "Backup finished on" "$BORGBACKUP_LOG"
 then
     send_error_mail "Not even one daily backup was successfully created. Please wait for that first."
 fi
