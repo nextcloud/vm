@@ -26,7 +26,8 @@ DAILY_BACKUP_FILE="$SCRIPTS/daily-borg-backup.sh"
 # Functions
 mount_if_connected() {
     umount "$1" &>/dev/null
-    if ! mount "$1" &>/dev/null
+    mount "$1" &>/dev/null
+    if ! mountpoint -q "$1"
     then
         return 1
     fi
