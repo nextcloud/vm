@@ -26,7 +26,7 @@ CURRENT_DATE=$(date --date @"$START_TIME" +"%Y%m%d_%H%M%S")
 CURRENT_DATE_READABLE=$(date --date @"$START_TIME" +"%d.%m.%Y - %H:%M:%S")
 LOG_FILE="$VMLOGS/rsyncbackup-$CURRENT_DATE.log"
 # This is needed for running via cron
-PATH+=":/sbin"
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 
 # Functions
 inform_user() {
