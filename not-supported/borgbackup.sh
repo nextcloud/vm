@@ -25,6 +25,8 @@ START_TIME=$(date +%s)
 CURRENT_DATE=$(date --date @"$START_TIME" +"%Y%m%d_%H%M%S")
 CURRENT_DATE_READABLE=$(date --date @"$START_TIME" +"%d.%m.%Y - %H:%M:%S")
 LOG_FILE="$VMLOGS/borgbackup-$CURRENT_DATE.log"
+# This is needed for running via cron
+PATH+=":/sbin"
 
 # Functions
 inform_user() {
@@ -378,6 +380,15 @@ fi
 if [ -z "$CHECK_BACKUP" ]
 then
     exit
+fi
+
+# Recreate logfile
+if ! [ -f "$LOG_FILE" ]
+then
+    touch "$LOG_FILE"
+    # Write output to logfile.
+    exec > >(tee -i "$LOG_FILE")
+    exec 2>&1
 fi
 
 # New start time

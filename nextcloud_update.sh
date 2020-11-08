@@ -39,6 +39,7 @@ Cannot proceed because you would loose the last snapshot."
 fi
 
 # Create a snapshot before doing anything else
+PATH+=":/sbin" # This is needed for running via cron
 check_free_space
 if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
 || does_snapshot_exist "NcVM-snapshot" || [ "$FREE_SPACE" -ge 50 ] )
