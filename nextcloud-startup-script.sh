@@ -204,7 +204,7 @@ fi
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
 then
-    msg_box "The Nextcloud startup script that handles the first setup \
+    msg_box "The $SCRIPT_NAME script that handles the first setup \
 (this one) is desinged to be run once, not several times in a row.
 
 If you feel uncertain about adding some extra features during this setup, \
@@ -226,7 +226,6 @@ fi
 
 touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 
-echo
 print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
 # Scripts in static (.sh, .php, .py)
 download_script LETS_ENC activate-tls
