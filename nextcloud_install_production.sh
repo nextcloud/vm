@@ -17,6 +17,8 @@ fi
 # shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Nextcloud Install Script"
+SCRIPT_EXPLAINER="This script is installing all requierments that are needed for Nextcloud to run.
+It's the first of two parts that are necessary to finish your customized Nextcloud installation."
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -28,11 +30,17 @@ then
 elif [ "$1" = "--provisioning" ] || [ "$1" = "-p" ]
 then
     print_text_in_color "$ICyan" "Running in provisioning mode..."
-    PROVISIONING=1
+    export PROVISIONING=1
     sleep 1
 else
     msg_box "Failed to get the correct flag. Did you enter it correctly?"
     exit 1
+fi
+
+# Show explainer
+if [ -z "$PROVISIONING" ]
+then
+    msg_box "$SCRIPT_EXPLAINER"
 fi
 
 # Check if dpkg or apt is running
@@ -230,8 +238,10 @@ install_if_not netplan.io
 install_if_not build-essential
 
 # Set dual or single drive setup
-if [ -z "$PROVISIONING" ]
+if [ -n "$PROVISIONING" ]
 then
+    choice="2 Disks Auto"
+else
     msg_box "This server is designed to run with two disks, one for OS and one for DATA. \
 This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
 You could still choose to only run on one disk though, which is not recommended, \
@@ -246,8 +256,6 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "2 Disks Auto" "(Automatically configured)" \
 "2 Disks Manual" "(Choose by yourself)" \
 "1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" 3>&1 1>&2 2>&3)
-else
-    choice="2 Disks Auto"
 fi
 
 case "$choice" in
@@ -274,16 +282,16 @@ esac
 # https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
 while :
 do
-    if [ -z "$PROVISIONING" ]
+    if [ -n "$PROVISIONING" ]
     then
+        choice="Quad9"
+    else
         choice=$(whiptail --title "$TITLE - Set DNS Resolver" --menu \
 "Which DNS provider should this Nextcloud box use?
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Quad9" "(https://www.quad9.net/)" \
 "Cloudflare" "(https://www.cloudflare.com/dns/)" \
 "Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
-    else
-        choice="Quad9"
     fi
 
     case "$choice" in
@@ -789,8 +797,10 @@ a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
 
-if [ -z "$PROVISIONING" ]
+if [ -n "$PROVISIONING" ]
 then
+    choice="Calendar Contacts IssueTemplate PDFViewer Extract Text Mail Deck Group-Folders"
+else
     choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
 "Automatically configure and install selected apps or software
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
@@ -803,8 +813,6 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Mail" "" ON \
 "Deck" "" ON \
 "Group-Folders" "" ON 3>&1 1>&2 2>&3)
-else
-    choice="Calendar Contacts IssueTemplate PDFViewer Extract Text Mail Deck Group-Folders"
 fi
 
 case "$choice" in
