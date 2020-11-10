@@ -29,6 +29,9 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitlocker Mount" "(Mount Bitlocker encrypted drives)" OFF \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "NTFS Mount" "(Mount NTFS (Windows) drives)" OFF \
+"Backup Viewer" "(View your Backups)" OFF \
+"Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
+"Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
 "PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
 "PLEX Media Server" "(Multimedia server application)" OFF \
@@ -47,6 +50,18 @@ case "$choice" in
     *"NTFS Mount"*)
         print_text_in_color "$ICyan" "Downloading the NTFS Mount script..."
         run_script NOT_SUPPORTED_FOLDER ntfs-mount
+    ;;&
+    *"Backup Viewer"*)
+        print_text_in_color "$ICyan" "Downloading the Daily Backup Viewer script..."
+        run_script NOT_SUPPORTED_FOLDER backup-viewer
+    ;;&
+    *"Daily Backup Wizard"*)
+        print_text_in_color "$ICyan" "Downloading the Daily Backup Wizard script..."
+        run_script NOT_SUPPORTED_FOLDER daily-backup-wizard
+    ;;&
+    *"Off-Shore Backup Wizard"*)
+        print_text_in_color "$ICyan" "Downloading the Off-Shore Backup Wizard script..."
+        run_script NOT_SUPPORTED_FOLDER offshore-backup-wizard
     ;;&
     *"Pi-hole"*)
         print_text_in_color "$ICyan" "Downloading the Pi-hole script..."
