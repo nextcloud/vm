@@ -75,7 +75,7 @@ fi
 
 # Execute the script
 print_text_in_color "$ICyan" "Setting up automatic unlocking via TPM2..."
-if ! echo "$PASSWORD" | clevis luks bind -k - -d "/dev/${ENCRYPTED_DEVICE[@]}" tpm2 '{"pcr_ids":"7"}'
+if ! echo "$PASSWORD" | clevis luks bind -k - -d "/dev/${ENCRYPTED_DEVICE[*]}" tpm2 '{"pcr_ids":"7"}'
 then
     msg_box "Something has failed while trying to configure clevis luks.
 We will now uninstall all needed packets again, so that you are able to start over."
