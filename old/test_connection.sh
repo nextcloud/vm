@@ -27,8 +27,8 @@ print_text_in_color() {
         printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
-curl_to_dir google.com google.connectiontest /tmp
-if [ ! -s /tmp/google.connectiontest ]
+curl_to_dir google.com google.connectiontest "$SCRIPTS"
+if [ ! -s "$SCRIPTS"/google.connectiontest ]
 then
     print_text_in_color "$IRed" "Not connected!"
 else
