@@ -33,6 +33,7 @@ fi
 if lshw -quiet | grep -q "driver=nvme" && ! grep -q "nvme_core.default_ps_max_latency_us" /etc/default/grub
 then
     print_text_in_color "$ICyan" "Configuring necessary pre-requirements..."
+    # shellcheck disable=1091
     source /etc/default/grub
     GRUB_CMDLINE_LINUX_DEFAULT+=" nvme_core.default_ps_max_latency_us=5500"
     sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT=\"$GRUB_CMDLINE_LINUX_DEFAULT\"|" /etc/default/grub
