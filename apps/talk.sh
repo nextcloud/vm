@@ -259,6 +259,7 @@ check_command systemctl enable nats-server
 
 # Janus WebRTC Server
 ## Installation
+# shellcheck source=/etc/lsb-release
 source /etc/lsb-release
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-janus.asc" "https://packaging.gitlab.io/janus/gpg.key"
 echo "deb [arch=amd64] https://packaging.gitlab.io/janus/$DISTRIB_CODENAME $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-janus.list
