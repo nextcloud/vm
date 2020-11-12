@@ -1,12 +1,11 @@
 on:
   push:
-  pull_request:
 
 name: 'check-code-with-shellcheck'
 
 jobs:
   shellcheck:
-    name: will status be green? :)
+    name: Github Actions
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -14,3 +13,5 @@ jobs:
       uses: ludeeus/action-shellcheck@master
       with:
         check_together: 'yes'
+      env:
+        SHELLCHECK_OPTS: -e SC2059 -e SC2034

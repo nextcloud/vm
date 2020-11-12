@@ -3,7 +3,6 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Off-Shore Backup Wizard"
 SCRIPT_EXPLAINER="This script helps creating an off-shore backup script for your server."
@@ -259,7 +258,6 @@ cat << WRITE_BACKUP_SCRIPT > "$BACKUP_SCRIPT_NAME"
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Off-Shore Rsync Backup"
 SCRIPT_EXPLAINER="This script executes the off-shore rsync backup."

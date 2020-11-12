@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2019, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="OnlyOffice (Docker)"
 SCRIPT_EXPLAINER="This script will install the OnlyOffice Document Server bundled with Docker"
@@ -141,7 +140,6 @@ They can however be hosted on the same server, but would require seperate DNS en
 # Nextcloud Main Domain
 NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
-# shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)

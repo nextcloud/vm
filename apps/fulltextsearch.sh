@@ -3,7 +3,6 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # SwITNet Ltd © - 2020, https://switnet.net/
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Full Text Search"
 SCRIPT_EXPLAINER="Full Text Search provides Elasticsearch for Nextcloud, which makes it possible to search for text inside files."
