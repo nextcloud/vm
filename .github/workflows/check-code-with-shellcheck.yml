@@ -2,7 +2,7 @@ on:
   push:
   pull_request:
 
-name: 'Trigger: Push action'
+name: 'check-code-with-shellcheck'
 
 jobs:
   shellcheck:
