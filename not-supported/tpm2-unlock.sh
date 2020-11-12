@@ -3,7 +3,7 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059
+# shellcheck disable=2034,2059,1091
 true
 SCRIPT_NAME="TPM2 Unlock"
 SCRIPT_EXPLAINER="This script helps automatically unlocking the root partition during boot."
