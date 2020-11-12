@@ -3,7 +3,7 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059,1091
+# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="TPM2 Unlock"
 SCRIPT_EXPLAINER="This script helps automatically unlocking the root partition during boot."
@@ -33,6 +33,7 @@ fi
 if lshw -quiet | grep -q "driver=nvme" && ! grep -q "nvme_core.default_ps_max_latency_us" /etc/default/grub
 then
     print_text_in_color "$ICyan" "Configuring necessary pre-requirements..."
+    # shellcheck disabl=1091
     source /etc/default/grub
     GRUB_CMDLINE_LINUX_DEFAULT+=" nvme_core.default_ps_max_latency_us=5500"
     sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT=\"$GRUB_CMDLINE_LINUX_DEFAULT\"|" /etc/default/grub
