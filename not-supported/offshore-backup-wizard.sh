@@ -25,13 +25,11 @@ DAILY_BACKUP_FILE="$SCRIPTS/daily-borg-backup.sh"
 
 # Functions
 mount_if_connected() {
-    if ! test "$(timeout 5 ls -A "$1")"
+    umount "$1" &>/dev/null
+    mount "$1" &>/dev/null
+    if ! mountpoint -q "$1"
     then
-        mount "$1" &>/dev/null
-        if ! test "$(timeout 5 ls -A "$1")"
-        then
-            return 1
-        fi
+        return 1
     fi
     return 0
 }
@@ -319,12 +317,7 @@ crontab -u root -l | { cat; echo "0 20 * * * $BACKUP_SCRIPT_NAME > /dev/null 2>&
 
 # Inform user
 msg_box "The off-shore backup script was successfully created!
-It is located here: '$BACKUP_SCRIPT_NAME'"
-
-# Ask for running the script
-if yesno_box_yes "Do you want to run the first off-shore backup now?"
-then
-    check_command bash "$BACKUP_SCRIPT_NAME"
-fi
+It is located here: '$BACKUP_SCRIPT_NAME'\n
+The first backup will run at 20.00h, if the first daily backup has been created until then."
 
 exit

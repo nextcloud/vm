@@ -55,6 +55,9 @@ Please run this option again if you want to try again."
     return 1
 fi
 
+# Wait until the drive has spin up
+countdown "Waiting for the drive to spin up..." 15
+
 # Get all new drives
 mapfile -t CURRENT_DRIVES <<< "$CURRENT_DRIVES"
 for drive in "${CURRENT_DRIVES[@]}"
@@ -89,7 +92,7 @@ do
         then
             continue
         fi
-        LABEL=$(echo "$STATS" | awk '{print $5}')
+        LABEL=$(echo "$STATS" | awk '{print $5,$6,$7,$8,$9,$10,$11,$12}' | sed 's| |_|g' |  sed -r 's|[_]+$||')
         if ! grep -q "$UUID" /etc/fstab
         then
             args+=("$UUID" "$LABEL $DRIVE_DESCRIPTION $SIZE $FSTYPE")
@@ -121,7 +124,7 @@ then
 fi
 
 # Get the label of the partition
-LABEL=$(lsblk -o UUID,LABEL | grep "^$UUID " | awk '{print $2}')
+LABEL=$(lsblk -o UUID,LABEL | grep "^$UUID " | awk '{print $2,$3,$4,$5,$6,$7,$8,$9}' | sed 's| |_|g' |  sed -r 's|[_]+$||')
 if [ -z "$LABEL" ]
 then
     LABEL="partition-label"

@@ -25,6 +25,8 @@ START_TIME=$(date +%s)
 CURRENT_DATE=$(date --date @"$START_TIME" +"%Y%m%d_%H%M%S")
 CURRENT_DATE_READABLE=$(date --date @"$START_TIME" +"%d.%m.%Y - %H:%M:%S")
 LOG_FILE="$VMLOGS/rsyncbackup-$CURRENT_DATE.log"
+# This is needed for running via cron
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 
 # Functions
 inform_user() {
@@ -119,6 +121,14 @@ fi
 if ! does_snapshot_exist "NcVM-snapshot"
 then
     send_error_mail "NcVM-snapshot doesn't exists."
+fi
+
+# Check if at least one daily backup drive has run
+BORGBACKUP_LOG="$(grep "^export BORGBACKUP_LOG" "$SCRIPTS/daily-borg-backup.sh" \
+| sed 's|.*BORGBACKUP_LOG="||' | sed 's|"$||')"
+if [ -z "$BORGBACKUP_LOG" ] || ! [ -f "$BORGBACKUP_LOG" ] || ! grep -q "Backup finished on" "$BORGBACKUP_LOG"
+then
+    send_error_mail "Not even one daily backup was successfully created. Please wait for that first."
 fi
 
 # Prepare backup repository
