@@ -66,7 +66,7 @@ then
     chown "${rootuser}":"${rootuser}" "${VMLOGS}"/update.log
 fi
 
-if ! stat "$NCDATA"/* | grep -q  www-data
+if stat -c "%U:%G" "$NCDATA"/* | grep -cv "${htuser}:${htgroup}"
 then
     chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
 fi
