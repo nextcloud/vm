@@ -10,7 +10,6 @@
 # The intention here is to make the import process more robust, and less prune to fail
 # Esentially, changing from źfs-mount.service' to 'zfs-mount-generator' which by many has been working better.
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Change to ZFS Mount Generator"
 # shellcheck source=lib.sh

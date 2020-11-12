@@ -4,7 +4,6 @@
 # DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
 #################################################################################################################
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
