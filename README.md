@@ -85,6 +85,8 @@ Please report any issues you can find. Improvments are welcome!
 <br>
 [![Check-code-with-shellcheck Actions status](https://github.com/nextcloud/vm/workflows/check-code-with-shellcheck/badge.svg)](https://github.com/nextcloud/vm/actions)
 <br>
+[![Reviewdog Actions status](https://github.com/nextcloud/vm/workflows/reviewdog/badge.svg)](https://github.com/nextcloud/vm/actions)
+<br>
 **Stability Status:**
 <br>
 ![Stability Status](https://img.shields.io/badge/stability-stable-brightgreen.svg)
