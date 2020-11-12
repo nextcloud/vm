@@ -3,11 +3,11 @@ on:
   push:
 
 name: 'reviewdog'
+level: error
 
 jobs:
   shellcheck:
     name: PR review
-    level: error
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -21,7 +21,6 @@ jobs:
           exclude: "./.git/*" # Optional.
   misspell:
     name: Check spelling
-    level: warning
     runs-on: ubuntu-latest
     steps:
       - name: spelling or typos
