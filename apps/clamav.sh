@@ -255,7 +255,7 @@ AV_REPORT="$(clamscan \
 --infected \
 --cross-fs \
 --log=$VMLOGS/clamav-fullscan.log \
-$ARGUMENT$AV_PATH \
+"$ARGUMENT$AV_PATH" \
 --max-scantime=43200000 \
 --max-filesize=1G \
 --pcre-max-filesize=1G \
