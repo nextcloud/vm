@@ -66,7 +66,7 @@ then
     chown "${rootuser}":"${rootuser}" "${VMLOGS}"/update.log
 fi
 
-if ! [ "$(ls -ld "${NCDATA}" | awk '{print$3$4}')" == "${htuser}""${htgroup}" ]
+if ! stat "$NCDATA"/* | grep -q  www-data
 then
     chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
 fi
