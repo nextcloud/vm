@@ -18,6 +18,7 @@ jobs:
         SHELLCHECK_OPTS: -e SC2059 -e SC2034
   reviewdog:
     name: Reviewdog
+    runs-on: ubuntu-latest
     steps:
     - uses: reviewdog/action-setup@v1
       with:
