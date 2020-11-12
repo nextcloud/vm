@@ -6,7 +6,7 @@ name: 'check-code-with-shellcheck'
 
 jobs:
   shellcheck:
-    name: Shellcheck
+    name: will status be green? :)
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
