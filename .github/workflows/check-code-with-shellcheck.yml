@@ -16,10 +16,3 @@ jobs:
         check_together: 'yes'
       env:
         SHELLCHECK_OPTS: -e SC2059 -e SC2034
-  reviewdog:
-    name: Reviewdog
-    runs-on: ubuntu-latest
-    steps:
-    - uses: reviewdog/action-setup@v1
-      with:
-        reviewdog_version: latest # Optional. [latest,nightly,v.X.Y.Z]
