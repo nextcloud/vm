@@ -6,7 +6,7 @@ name: 'reviewdog'
 
 jobs:
   shellcheck:
-    name: PR review
+    name: Shellcheck testing
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
