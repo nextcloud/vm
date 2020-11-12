@@ -83,7 +83,7 @@ Please report any issues you can find. Improvments are welcome!
 <br>
 **Build Status:**
 <br>
-[![Build Status](https://travis-ci.org/nextcloud/vm.svg?branch=master)](https://travis-ci.org/nextcloud/vm)
+[![Check-code-with-shellcheck Actions status](https://github.com/nextcloud/vm/workflows/check-code-with-shellcheck/badge.svg)](https://github.com/nextcloud/vm/actions)
 <br>
 **Stability Status:**
 <br>
