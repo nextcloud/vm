@@ -223,6 +223,15 @@ nextcloud_occ config:system:set preview_max_y --value="2048"
 nextcloud_occ config:system:set jpeg_quality --value="60"
 nextcloud_occ config:app:set preview jpeg_quality --value="60"
 
+# Add crontab for www-data
+if ! crontab -u www-data -l | grep -q 'preview:pre-generate'
+then
+    print_text_in_color "$ICyan" "Adding crontab for $SCRIPT_NAME"
+    crontab -u www-data -l | { cat; echo "*/10 * * * * php -f $NCPATH/occ preview:pre-generate >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
+    touch "$VMLOGS"/previewgenerator.log
+    chown www-data:www-data "$VMLOGS"/previewgenerator.log
+fi
+
 msg_box "In the last step you can define a specific Nextcloud user for \
 which will be the user that runs the Preview Generation.
 
@@ -254,12 +263,4 @@ which you want to run the Preview Generation (as a scheluded task)")
     nextcloud_occ preview:generate-all "$PREVIEW_USER"
 fi
 
-# Add crontab for www-data
-if ! crontab -u www-data -l | grep -q 'preview:pre-generate'
-then
-    print_text_in_color "$ICyan" "Adding crontab for $SCRIPT_NAME"
-    crontab -u www-data -l | { cat; echo "*/10 * * * * php -f $NCPATH/occ preview:pre-generate >> $VMLOGS/previewgenerator.log"; } | crontab -u www-data -
-    touch "$VMLOGS"/previewgenerator.log
-    chown www-data:www-data "$VMLOGS"/previewgenerator.log
-fi
 msg_box "Previewgenerator was successfully installed."
