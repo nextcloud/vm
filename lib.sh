@@ -1194,7 +1194,7 @@ remove_office_integration() {
         msg_box "$2 integration is enabled and will get disabled now.
 You can enable it later again over the appstore."
         nextcloud_occ app:remove "$1" ## need a better fucntion here
-        docker_prune_this '"$3"/"$2"'
+        docker_prune_this "$3"/"$2"
     fi
 }
 
