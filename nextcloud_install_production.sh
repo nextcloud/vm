@@ -14,7 +14,6 @@ else
     apt install curl -y
 fi
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Nextcloud Install Script"
 SCRIPT_EXPLAINER="This script is installing all requierments that are needed for Nextcloud to run.
@@ -105,7 +104,6 @@ else
     apt install whiptail -y
 fi
 
-# shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)

@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059,2012
 true
 SCRIPT_NAME="Setup Secure Permissions for Nextcloud"
 # shellcheck source=lib.sh
@@ -67,7 +66,7 @@ then
     chown "${rootuser}":"${rootuser}" "${VMLOGS}"/update.log
 fi
 
-if ! [ "$(ls -ld "${NCDATA}" | awk '{print$3$4}')" == "${htuser}""${htgroup}" ]
+if stat -c "%U:%G" "$NCDATA"/* | grep -cv "${htuser}:${htgroup}"
 then
     chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
 fi

@@ -3,7 +3,6 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059,1091
 true
 SCRIPT_NAME="GeoBlock"
 SCRIPT_EXPLAINER="This script lets you restrict access to your server, only allowing the countries you choose."
