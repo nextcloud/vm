@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Netdata"
 SCRIPT_EXPLAINER="Netdata is an open source tool designed to collect real-time metrics, \

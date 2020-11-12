@@ -3,7 +3,6 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Daily Backup Wizard"
 SCRIPT_EXPLAINER="This script helps creating a daily backup script for your server."
@@ -358,7 +357,6 @@ cat << WRITE_BACKUP_SCRIPT > "$BACKUP_SCRIPT_NAME"
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Daily Borg Backup"
 SCRIPT_EXPLAINER="This script executes the daily Borg backup."

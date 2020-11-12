@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="ClamAV"
 SCRIPT_EXPLAINER="This script installs the open-source antivirus-software ClamAV on your server \

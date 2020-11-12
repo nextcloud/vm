@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Bitwarden RS"
 SCRIPT_EXPLAINER="Bitwarden RS is an unofficial Bitwarden server API implementation in Rust.

@@ -36,7 +36,6 @@ done
 is_process_running apt
 is_process_running dpkg
 
-# shellcheck disable=2034,2059,1091
 true
 SCRIPT_NAME="Nextcloud Startup Script"
 # shellcheck source=lib.sh
@@ -135,7 +134,6 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
     exit 1
 fi
 
-# shellcheck disable=2034,2059,1091
 true
 SCRIPT_NAME="Nextcloud Startup Script"
 # shellcheck source=lib.sh

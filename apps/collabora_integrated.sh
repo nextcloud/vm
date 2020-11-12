@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Collabora (Integrated)"
 SCRIPT_EXPLAINER="This script will install the integrated Collabora Office Server"
