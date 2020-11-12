@@ -259,7 +259,9 @@ check_command systemctl enable nats-server
 
 # Janus WebRTC Server
 ## Installation
-. /etc/lsb-release
+## TODO Fix shellcheck check, and remove the disable command
+# shellcheck disable=SC1091
+source /etc/lsb-release
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-janus.asc" "https://packaging.gitlab.io/janus/gpg.key"
 echo "deb [arch=amd64] https://packaging.gitlab.io/janus/$DISTRIB_CODENAME $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-janus.list
 apt update -q4 & spinner_loading
