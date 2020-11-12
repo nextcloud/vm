@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Set trusted domain"
 # shellcheck source=lib.sh

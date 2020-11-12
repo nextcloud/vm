@@ -3,7 +3,6 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="DynDNS with ddclient"
 SCRIPT_EXPLAINER="This script lets you setup DynDNS by using the Linux ddclient software."

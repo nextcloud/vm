@@ -5,7 +5,6 @@
 # Use local lib file in case there is no internet connection
 if printf "Testing internet connection..." && ping github.com -c 2 >/dev/null 2>&1
 then
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Static IP"
 # shellcheck source=lib.sh
@@ -13,7 +12,6 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
  # If we have internet, then use the latest variables from the lib remote file
 elif [ -f /var/scripts/lib.sh ]
 then
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Static IP"
 # shellcheck source=lib.sh

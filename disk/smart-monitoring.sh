@@ -3,7 +3,6 @@
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="S.M.A.R.T Monitoring"
 SCRIPT_EXPLAINER="This script configures S.M.A.R.T Monitoring for all your drives \
@@ -67,7 +66,6 @@ then
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="S.M.A.R.T Notification"
 SCRIPT_EXPLAINER="This script sends a notification if something is wrong with your drives."
@@ -115,7 +113,6 @@ $SCRIPTS/smart-notification.sh -s (O/../../(2|4|6)/02|S/../../5/02|L/../20/./02)
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 # Copyright © 2020 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="S.M.A.R.T Notification"
 SCRIPT_EXPLAINER="This script sends a notification if something is wrong with your drives."
