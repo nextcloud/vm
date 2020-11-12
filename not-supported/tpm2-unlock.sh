@@ -62,9 +62,6 @@ then
     exit 1
 fi
 
-# Install needed tools
-apt install clevis-tpm2 clevis-luks clevis-initramfs -y
-
 # Enter the password
 PASSWORD="$(input_box_flow "Please enter the password for your root partition
 If you want to cancel, just type in 'exit' and press [ENTER].")"
@@ -72,6 +69,9 @@ if [ "$PASSWORD" = 'exit' ]
 then
     exit 1
 fi
+
+# Install needed tools
+apt install clevis-tpm2 clevis-luks clevis-initramfs -y
 
 # Execute the script
 print_text_in_color "$ICyan" "Setting up automatic unlocking via TPM2..."
