@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Redis Server Ubuntu"
 # shellcheck source=lib.sh

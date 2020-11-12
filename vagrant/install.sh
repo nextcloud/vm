@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="Install NcVM with Vagrant"
 # shellcheck source=lib.sh

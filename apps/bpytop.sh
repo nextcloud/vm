@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
 
-# shellcheck disable=2034,2059
 true
 SCRIPT_NAME="BPYTOP"
 SCRIPT_EXPLAINER="BPYTOP is an amazing alternative to resource-monitor software like top or htop."
