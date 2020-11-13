@@ -66,9 +66,13 @@ then
     chown "${rootuser}":"${rootuser}" "${VMLOGS}"/update.log
 fi
 
-if stat -c "%U:%G" "$NCDATA"/* | grep -cv "${htuser}:${htgroup}"
+# Nextcloud datafolder
+if [ -d "$NCDATA" ]
 then
-    chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
+    if stat -c "%U:%G" "$NCDATA"/* | grep -cv "${htuser}:${htgroup}"
+    then
+        chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
+    fi
 fi
 
 chmod +x "${NCPATH}"/occ
