@@ -439,7 +439,7 @@ then
     notify_admin_gui \
     "Regarding Imagick not being installed" \
     "As you may have noticed, Imagick is not installed. We care about your security, \
-and here's the reason: https://github.com/nextcloud/server/issues/13099."
+and here's the reason: https://github.com/nextcloud/server/issues/13099"
 fi
 
 # Fixes https://github.com/nextcloud/vm/issues/58
