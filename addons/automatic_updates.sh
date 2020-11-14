@@ -33,10 +33,8 @@ In the next step you will be able to choose to proceed or exit." "$SUBTITLE"
 
 if yesno_box_yes "Do you want to enable automatic updates?"
 then
-    # TODO: delete the following line after a few releases. It was copied to the install-script.
-    nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
     touch $VMLOGS/update.log
-    crontab -u root -l | { cat; echo "0 $AUT_UPDATES_TIME * * 6 $SCRIPTS/update.sh minor >> $VMLOGS/update.log"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "0 $AUT_UPDATES_TIME * * 6 $SCRIPTS/update.sh minor >> $VMLOGS/update.log 2>&1"; } | crontab -u root -
     if yesno_box_yes "Do you want to reboot your server after every update? *recommended*"
     then
         sed -i "s|exit|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
