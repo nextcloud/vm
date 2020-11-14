@@ -24,9 +24,10 @@ rootuser='root'
 if [ -f "$NCPATH"/config/config.php ]
 then
     NCDATA="$(grep 'datadir' "${NCPATH}"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
-    # Check if ncdata is set, else fetch value from lib again (should happen during installation)
+    # Check if ncdata is set, else fetch value from lib again (maybe happens during installation)
     if [ -z "${NCDATA}" ]
     then
+        # shellcheck source=lib.sh
         source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
     fi
 fi
