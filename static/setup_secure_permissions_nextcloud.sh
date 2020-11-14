@@ -23,7 +23,12 @@ rootuser='root'
 # Only check for existing datadir if Nextcloud is installed
 if [ -f "$NCPATH"/config/config.php ]
 then
-    NCDATA="$(grep 'datadir' "$NCPATH"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
+    NCDATA="$(grep 'datadir' "${NCPATH}"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
+    # Check if ncdata is set, else fetch value from lib again (should happen during installation)
+    if [ -z "${NCDATA}" ]
+    then
+        source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+    fi
 fi
 
 print_text_in_color "$IGreen" "Setting secure permissions..."
@@ -31,8 +36,8 @@ print_text_in_color "$ICyan" "Creating possible missing Directories"
 mkdir -p "$NCPATH"/data
 mkdir -p "$NCPATH"/updater
 install -d -m 777 "$VMLOGS"
-install -o www-data -g www-data -m 660 /dev/null /var/log
-mkdir -p "$NCDATA"
+install -o "${htuser}" -g "${htgroup}" -m 660 /dev/null /var/log
+mkdir -p "${NCDATA}"
 
 if ! [ -f "$VMLOGS/nextcloud.log" ]
 then
@@ -69,7 +74,10 @@ fi
 # Nextcloud datafolder
 if [ -d "$NCDATA" ]
 then
-    if stat -c "%U:%G" "$NCDATA"/* | grep -cv "${htuser}:${htgroup}"
+    # Always chown root dir
+    chown "${htuser}":"${htgroup}" "${NCDATA}"/
+    # Check subdirs as well
+    if find "${NCDATA}" -mindepth 1 -type d -exec stat --printf='%U:%G\n' {} \; | grep -v "${htuser}:${htgroup}"
     then
         chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
     fi
