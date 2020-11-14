@@ -68,11 +68,7 @@ fi
 
 # Nextcloud datafolder
 if [ -d "$NCDATA" ]
-then
-    if stat -c "%U:%G" "$NCDATA"/* | grep -cv "${htuser}:${htgroup}"
-    then
-        chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
-    fi
+    chown -R "${htuser}":"${htgroup}" "${NCDATA}"
 fi
 
 chmod +x "${NCPATH}"/occ
