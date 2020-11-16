@@ -316,6 +316,16 @@ do
     DIRECTORY="${directory%%/}"
     DIRECTORY_NAME=$(echo "$DIRECTORY" | sed 's|^/||;s|/|-|;s| |_|')
 
+    # Wait for the drive to spin up (else it is possible that some subdirectories are not backed up)
+    inform_user "$ICyan" "Waiting 15s for the $DIRECTORY_NAME directory..."
+    timeout 0.1s ls -l "$DIRECTORY/" &>/dev/null
+    if ! sleep 15
+    then
+        # In case someone cancels with ctrl+c here
+        re_rename_snapshot
+        send_error_mail "Something failed while waiting for the $DIRECTORY_NAME directory."
+    fi
+
     # Create backup
     inform_user "$ICyan" "Creating $DIRECTORY_NAME backup..."
     if ! borg create "${BORG_OPTS[@]}" --one-file-system \

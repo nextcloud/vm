@@ -5,7 +5,7 @@
 
 true
 SCRIPT_NAME="NTFS Mount"
-SCRIPT_EXPLAINER="This script automates mounting NTFS (Windows) drives locally in your system."
+SCRIPT_EXPLAINER="This script automates mounting NTFS drives locally in your system."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -111,7 +111,7 @@ done
 if [ -z "$UUIDS" ] 
 then
     msg_box "No drive found that can get mounted.
-Most likely none is NTFS (Windows) formatted."
+Most likely none is NTFS formatted."
     return 1
 fi
 
