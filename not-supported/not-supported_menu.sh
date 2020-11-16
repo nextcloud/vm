@@ -27,7 +27,8 @@ Choose which one you want to execute.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitlocker Mount" "(Mount Bitlocker encrypted drives)" OFF \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
-"NTFS Mount" "(Mount NTFS (Windows) drives)" OFF \
+"NTFS Format" "(Format drives to NTFS)" OFF \
+"NTFS Mount" "(Mount NTFS drives)" OFF \
 "Backup Viewer" "(View your Backups)" OFF \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
@@ -35,7 +36,8 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
 "PLEX Media Server" "(Multimedia server application)" OFF \
 "Remotedesktop" "(Install a remotedesktop based on xrdp)" OFF \
-"SMB-server" "(Create and manage a SMB-server on OS level)" OFF 3>&1 1>&2 2>&3)
+"SMB-server" "(Create and manage a SMB-server on OS level)" OFF \
+"Veracrypt" "(Format, encrypt and mount drives with Veracrypt)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Bitlocker Mount"*)
@@ -45,6 +47,10 @@ case "$choice" in
     *"ClamAV"*)
         print_text_in_color "$ICyan" "Downloading the ClamAV script..."
         run_script APP clamav
+    ;;&
+    *"NTFS Format"*)
+        print_text_in_color "$ICyan" "Downloading the NTFS Format script..."
+        run_script NOT_SUPPORTED_FOLDER ntfs-format
     ;;&
     *"NTFS Mount"*)
         print_text_in_color "$ICyan" "Downloading the NTFS Mount script..."
@@ -81,6 +87,10 @@ case "$choice" in
     *"SMB-server"*)
         print_text_in_color "$ICyan" "Downloading the SMB Server script..."
         run_script NOT_SUPPORTED_FOLDER smbserver
+    ;;&
+    *"Veracrypt"*)
+        print_text_in_color "$ICyan" "Downloading the Veracrypt script..."
+        run_script NOT_SUPPORTED_FOLDER veracrypt
     ;;&
     *)
     ;;
