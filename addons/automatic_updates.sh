@@ -31,7 +31,6 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     crontab -u root -l | grep -v "$SCRIPTS/update.sh"  | crontab -u root -
-    sed -i "s|/sbin/shutdown -r +1||g" "$SCRIPTS"/update.sh
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -45,6 +44,6 @@ then
     echo "exit" >> "$SCRIPTS"/update.sh
 fi
 
-msg_box "Please remember to keep backups in case something should go wrong, you never know."
+msg_box "Please remember to keep backups in case something goes wrong, you never know."
 
 exit
