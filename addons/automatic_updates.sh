@@ -30,7 +30,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    crontab -u root -l | grep -v 'smartctl.sh'  | crontab -u root -
+    crontab -u root -l | grep -v "$SCRIPTS/update.sh"  | crontab -u root -
     sed -i "s|/sbin/shutdown -r +1||g" "$SCRIPTS"/update.sh
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
