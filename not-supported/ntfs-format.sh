@@ -23,7 +23,6 @@ msg_box "$SCRIPT_EXPLAINER"
 
 # Mount drive
 format_drive() {
-local UUIDS
 local UUID
 local LABEL
 msg_box "Please disconnect your drive for now and connect it again AFTER you hit OK.

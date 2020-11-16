@@ -28,7 +28,7 @@ then
         exit 1
     fi
     msg_box "Please note that in order to install Veracrypt on your server, \
-we need to add a 3rd Party PPA, which theoratically could set your server under risk."
+we need to add a 3rd Party PPA, which theoretically could set your server under risk."
     if ! yesno_box_yes "Do you want to continue nonetheless?"
     then
         exit 1
