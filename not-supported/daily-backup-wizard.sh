@@ -122,8 +122,7 @@ Always included is a full system backup (aka '/') and the '/mnt/ncdata' director
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 
 # Get mountpoints
-DRIVE_MOUNTS="$(grep "ntfs-3g" /etc/fstab | grep "windows_names" | grep "uid=www-data" \
-| grep "gid=www-data" | grep "umask=007" | grep "x-systemd.automount" | awk '{print $2}' | sed 's|/$||')"
+DRIVE_MOUNTS=$(find /mnt/ -mindepth 1 -maxdepth 2 -type d | grep -v "/mnt/ncdata")
 mapfile -t DRIVE_MOUNTS <<< "$DRIVE_MOUNTS"
 
 # Check if drives are connected
@@ -131,14 +130,12 @@ if [ -n "${DRIVE_MOUNTS[*]}" ]
 then
     for mountpoint in "${DRIVE_MOUNTS[@]}"
     do
-        if ! mount_if_connected "$mountpoint"
+        if mountpoint -q "$mountpoint" && [ "$(stat -c '%a' "$mountpoint")" = "770" ] \
+&& [ "$(stat -c '%U' "$mountpoint")" = "www-data" ] && [ "$(stat -c '%G' "$mountpoint")" = "www-data" ]
         then
-            msg_box "The drive that is mounted at $mountpoint is currently not connected.
-Please connect it to your server before running this script, if you want to backup it."
-            continue
+            args+=("$mountpoint" "" OFF)
+            RESULTS+="$mountpoint"
         fi
-        args+=("$mountpoint" "" OFF)
-        RESULTS+="$mountpoint"
     done
 
     # Only show menu if at least one additional drive is connected
