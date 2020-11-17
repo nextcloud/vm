@@ -31,6 +31,8 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     crontab -u root -l | grep -v "$SCRIPTS/update.sh"  | crontab -u root -
+    sed -i '/shutdown/d' "$SCRIPTS/update.sh"
+    sed -i '/reboot/d' "$SCRIPTS/update.sh"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
