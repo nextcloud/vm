@@ -220,7 +220,7 @@ case "$choice" in
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
-        EXCLUDE_AV_PATH="--exclude-dir=^$AV_PATH"
+        EXCLUDE_AV_PATH="--exclude-dir=^$AV_PATH/"
     ;;
     "Move to a folder")
         ARGUMENT="--move="
@@ -229,7 +229,7 @@ case "$choice" in
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
-        EXCLUDE_AV_PATH="--exclude-dir=^$AV_PATH"
+        EXCLUDE_AV_PATH="--exclude-dir=^$AV_PATH/"
     ;;
     "Remove")
         ARGUMENT="--remove=yes"
