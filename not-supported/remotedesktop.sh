@@ -43,7 +43,7 @@ If you have already installed a desktop environment, you will not need to instal
         then
             # Install gnome-session
             print_text_in_color "$ICyan" "Installing gnome-session..."
-            install_if_not gnome-session
+            apt install gnome-session --no-install-recommends -y
             install_if_not gnome-shell-extension-dash-to-panel
             check_command sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable dash-to-panel@jderose9.github.com
         fi
@@ -204,7 +204,7 @@ case "$choice" in
 as well as the gnome desktop." "$SUBTITLE"
         if yesno_box_no "Do you want to do this?" "$SUBTITLE"
         then
-            APPS=(evince eog firefox gedit makemkv-oss makemkv-bin nautilus sound-juicer vlc \
+            APPS=(evince eog firefox gedit makemkv-oss makemkv-bin nautilus sound-juicer vlc acpid \
 gnome-shell-extension-dash-to-panel gnome-session xrdp)
             for app in "${APPS[@]}"
             do
