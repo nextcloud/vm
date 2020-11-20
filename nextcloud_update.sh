@@ -635,6 +635,11 @@ then
         nextcloud_occ db:add-missing-columns
         install_if_not php"$PHPVER"-bcmath
     fi
+    if [ "${CURRENTVERSION%%.*}" -ge "20" ]
+    then
+        check_php
+        nextcloud_occ db:add-missing-primary-keys
+    fi
 else
     msg_box "Something went wrong with backing up your old nextcloud instance
 Please check in $BACKUP if the folders exist."
