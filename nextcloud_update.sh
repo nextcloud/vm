@@ -637,7 +637,6 @@ then
     fi
     if [ "${CURRENTVERSION%%.*}" -ge "20" ]
     then
-        check_php
         nextcloud_occ db:add-missing-primary-keys
     fi
 else
