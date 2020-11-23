@@ -77,6 +77,11 @@ It should work afterwards again."
     fi
     nextcloud_occ maintenance:mode --off
     start_if_stopped docker
+    # Adjust grub (https://github.com/nextcloud/vm/issues/1694)
+    if ! grep -q "GRUB_DISABLE_OS_PROBER" /etc/default/grub
+    then
+        echo "GRUB_DISABLE_OS_PROBER=true" >> /etc/default/grub
+    fi
 fi
 
 # Check if /boot is filled more than 90% and exit the script if that's 
