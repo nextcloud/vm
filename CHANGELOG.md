@@ -19,15 +19,25 @@ PR's are more than welcome. Happy Nextclouding!
 ## 20.0.2
 
 ### Small changelog:
-- SMB-server: encrypt SMB-transfer if AES-NI is enabled
 - Fixed bugs with the `--provisioning` flag
 - Updated geoblock.sh to get rid of jq
 - Added a script-explainer to nextcloud_install_production.sh
-- SMB-server: allow to choose nearly any password again
 - ClamAV - added a mechanism to inform about found files
 - Fixed a bug in midnight-commander.sh
-- Remotedesktop - Added two more options
 - Created smart-monitoring.sh to allow continuosly smart checking
+- Switched from Travis to Github Actions
+- Added Reviewdog
+- Improved previewgenerator
+- Made some SC rules global
+- Fixed some problems with wrong ownership of /mnt/ncdata
+- Fixed link in startup-script
+- Fixed ClamAV-Fullscan
+- Added apt over https
+- Further improved ClamAV
+- Allow to reinstall automatic updates
+- Improved partition check during the install-script
+- Fixed some typo's
+- Added more options to the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported) and made some enhancements
 - Minor bugfixes and improvements
 
 
