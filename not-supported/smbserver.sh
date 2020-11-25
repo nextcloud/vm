@@ -52,7 +52,8 @@ DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 2 -type d | grep -v "/mnt/ncdata"
 mapfile -t DIRECTORIES <<< "$DIRECTORIES"
 for directory in "${DIRECTORIES[@]}"
 do
-    if mountpoint -q "$directory"
+    if mountpoint -q "$directory" && [ "$(stat -c '%a' "$directory")" = "770" ] \
+&& [ "$(stat -c '%U' "$directory")" = "www-data" ] && [ "$(stat -c '%G' "$directory")" = "www-data" ]
     then
         MOUNTS+=("$directory/")
     fi

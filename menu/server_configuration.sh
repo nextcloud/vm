@@ -52,7 +52,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
 "GeoBlock" "(Only allow certain countries to access your server)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
-"SMTP Mail" "(Enable beeing notified by mail from your server)" OFF \
+"SMTP Mail" "(Enable being notified by mail from your server)" OFF \
 "Disk Monitoring" "(Check for S.M.A.R.T errors on your disks)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in

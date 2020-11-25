@@ -16,7 +16,7 @@ fi
 
 true
 SCRIPT_NAME="Nextcloud Install Script"
-SCRIPT_EXPLAINER="This script is installing all requierments that are needed for Nextcloud to run.
+SCRIPT_EXPLAINER="This script is installing all requirements that are needed for Nextcloud to run.
 It's the first of two parts that are necessary to finish your customized Nextcloud installation."
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -46,20 +46,10 @@ fi
 is_process_running apt
 is_process_running dpkg
 
-# Test if snapshot already exists
-if does_snapshot_exist "NcVM-installation"
-then
-    msg_box "Unable to continue because a logical volume already exists.
-
-To run this script again, please remove the volume by running:
-'sudo lvremove /dev/ubuntu-vg/NcVM-installation'"
-    exit 1
-fi
-
 # Create a placeholder volume before modifying anything
 if [ -z "$PROVISIONING" ]
 then
-    if yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
+    if ! does_snapshot_exist "NcVM-installation" && yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
 Please note: this feature will not be used by this script but by other scripts later on.
 For now we will only create a placeholder volume that will be used to let some space for snapshot volumes."
     then
@@ -231,6 +221,9 @@ fi
 
 # Install needed network
 install_if_not netplan.io
+
+# APT over HTTPS
+install_if_not apt-transport-https
 
 # Install build-essentials to get make
 install_if_not build-essential

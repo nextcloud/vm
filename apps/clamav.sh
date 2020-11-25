@@ -220,6 +220,7 @@ case "$choice" in
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
+        EXCLUDE_AV_PATH="--exclude-dir=^$AV_PATH/"
     ;;
     "Move to a folder")
         ARGUMENT="--move="
@@ -228,6 +229,7 @@ case "$choice" in
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
+        EXCLUDE_AV_PATH="--exclude-dir=^$AV_PATH/"
     ;;
     "Remove")
         ARGUMENT="--remove=yes"
@@ -248,22 +250,26 @@ cat << CLAMAV_REPORT > "$SCRIPTS"/clamav-fullscan.sh
 
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-AV_REPORT="$(clamscan \
+AV_REPORT="\$(clamscan \
 --recursive \
 --stdout \
 --infected \
 --cross-fs \
---log=$VMLOGS/clamav-fullscan.log \
+--log="$VMLOGS/clamav-fullscan.log" \
 "$ARGUMENT$AV_PATH" \
+"$EXCLUDE_AV_PATH" \
 --max-scantime=43200000 \
---max-filesize=1G \
---pcre-max-filesize=1G \
+--max-filesize=1000M \
+--pcre-max-filesize=1000M \
 --max-dir-recursion=30 \
+--exclude-dir=^/sys/ \
+--exclude-dir=^/proc/ \
+--exclude-dir=^/dev/ \
 / )"
 
 notify_admin_gui \
 "Your weekly full-scan ClamAV report" \
-"$AV_REPORT"
+"\$AV_REPORT"
 CLAMAV_REPORT
 
 # Make the script executable
