@@ -24,7 +24,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Added a script-explainer to nextcloud_install_production.sh
 - ClamAV - added a mechanism to inform about found files
 - Fixed a bug in midnight-commander.sh
-- Created smart-monitoring.sh to allow continuosly smart checking
+- Created smart-monitoring.sh to allow continuously smart checking
 - Switched from Travis to Github Actions
 - Added Reviewdog
 - Improved previewgenerator
