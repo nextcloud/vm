@@ -629,6 +629,10 @@ if [ "${CURRENTVERSION%%.*}" -ge "19" ]
 then
     nextcloud_occ db:add-missing-columns
 fi
+if [ "${CURRENTVERSION%%.*}" -ge "20" ]
+then
+    nextcloud_occ db:add-missing-primary-keys
+fi
 
 # Install Figlet
 install_if_not figlet
