@@ -80,7 +80,7 @@
         <br>
         <div class="information">
             <p>Thank you for downloading the Nextcloud VM, you made a good choice! If you see this page, you have run the first setup, and you are now ready to start using Nextcloud on your new server. Congratulations! :)</p>
-            <p>We have set everything up for you and the only thing you have to do now is to login. You can find login details in the middle of this page.</p>
+            <p>We have prepared everything for you, and the only thing you have to do now is to login. You can find login details further down in this page.</p>
             <p>Don't hesitate to ask if you have any questions. You can ask for help in our community <a href="https://help.nextcloud.com/c/support/appliances-docker-snappy-vm" target="_blank">support</a> channels, or <a href="https://shop.hanssonit.se/product/premium-support-per-30-minutes/" target="_blank">buy hands on support</a> from T&M Hansson IT AB. You can also check the <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration" target="_blank">documentation</a>.</p>
         </div>
 
@@ -128,7 +128,7 @@
                     <li><a href="https://<?=$_SERVER['SERVER_NAME'];?>:9443">https://<?=$_SERVER['SERVER_NAME'];?>:9443</a> (HTTPS)</li>
                 </ul>
             </h3>
-            <p>Note: Please accept the warning in the browser if you connect via HTTPS.</p>
+            <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
             <h3>
                 <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6ypBePiqQz3_Mp0" target="_blank">Login details</a>
             </h3>
