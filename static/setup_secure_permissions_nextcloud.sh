@@ -78,7 +78,7 @@ then
     # Always chown root dir
     chown "${htuser}":"${htgroup}" "${NCDATA}"/
     # Check subdirs as well
-    if find "${NCDATA}" -mindepth 1 -type d -exec stat --printf='%U:%G\n' {} \; | grep -v "${htuser}:${htgroup}"
+    if find "${NCDATA}" -maxdepth 4 -type d -exec stat --printf='%U:%G\n' {} \; | grep -v "${htuser}:${htgroup}"
     then
         chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
     fi
