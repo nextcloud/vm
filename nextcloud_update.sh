@@ -140,9 +140,11 @@ then
     rm -Rf /var/log/ncvm/
     rm -f "$NCDATA"/*.log
 elif [ -d "$NCDATA" ]
+then
     rsync -Aaxz "$NCDATA"/*.log "$VMLOGS"
     rm -f "$NCDATA"/*.log
 elif [ -d /var/ncdata ]
+then
     rsync -Aaxz /var/ncdata/*.log "$VMLOGS"
     rm -f /var/ncdata/*.log
 fi
