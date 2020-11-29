@@ -141,11 +141,11 @@ then
     rm -f "$NCDATA"/*.log*
 elif [ -d /var/ncdata ]
 then
-    rsync -Aaxz /var/ncdata/*.log* "$VMLOGS"
+    rsync -Aaxz /var/ncdata/*.log "$VMLOGS"
     rm -f /var/ncdata/*.log*
 elif [ -d "$NCDATA" ]
 then
-    rsync -Aaxz "$NCDATA"/*.log* "$VMLOGS"
+    rsync -Aaxz "$NCDATA"/*.log "$VMLOGS"
     rm -f "$NCDATA"/*.log*
 fi
 
