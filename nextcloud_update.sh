@@ -127,8 +127,13 @@ else
     chmod +x "$SECURE"
 fi
 
-# Move all logs to new dir (2019-09-04)
+# Move all logs to new dir (2019-09-04) # updated 2020-11-29
 bash $SECURE & spinner_loading
+nextcloud_occ config:system:set log_type --value=file
+nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
+nextcloud_occ config:system:set loglevel --value=2
+touch "$VMLOGS/nextcloud.log"
+chown www-data:www-data "$VMLOGS/nextcloud.log"
 if [ -d /var/log/ncvm/ ]
 then
     rsync -Aaxz /var/log/ncvm/ $VMLOGS
