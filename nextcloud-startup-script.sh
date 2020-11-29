@@ -494,6 +494,7 @@ rm -f "$SCRIPTS/server_configuration.sh"
 rm -f "$SCRIPTS/nextcloud_configuration.sh"
 rm -f "$SCRIPTS/additional_apps.sh"
 rm -f "$SCRIPTS/adduser.sh"
+rm -f "$NCDATA"/*.log
 
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
 find "$NCPATH" -type f \( -name 'results' -o -name '*.sh*' \) -delete
@@ -506,7 +507,6 @@ truncate -s 0 \
     "/var/spool/mail/$UNIXUSER" \
     /var/log/apache2/access.log \
     /var/log/apache2/error.log \
-    /var/log/cronjobs_success.log \
     "$VMLOGS/nextcloud.log"
 
 sed -i "s|sudo -i||g" "$UNIXUSER_PROFILE"
@@ -572,7 +572,9 @@ or buy a yearly subscription from Nextcloud:
 BUGS:
 Please report any bugs here: https://github.com/nextcloud/vm/issues"
 
-msg_box "Congratulations! You have successfully installed Nextcloud!
+msg_box "### PLEASE HIT OK TO REBOOT ###
+
+Congratulations! You have successfully installed Nextcloud!
 
 LOGIN:
 Login to Nextcloud in your browser:
