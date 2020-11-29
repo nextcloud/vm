@@ -139,11 +139,11 @@ then
     rsync -Aaxz /var/log/ncvm/ "$VMLOGS"
     rm -Rf /var/log/ncvm/
     rm -f "$NCDATA"/*.log*
-elif [ -d /var/ncdata ]
+elif [ -n "$(find /var/ncdata -maxdepth 1 -name "*.log")" ]
 then
     rsync -Aaxz /var/ncdata/*.log "$VMLOGS"
     rm -f /var/ncdata/*.log*
-elif [ -d "$NCDATA" ]
+elif [ -n "$(find "$NCDATA" -maxdepth 1 -name "*.log")" ]
 then
     rsync -Aaxz "$NCDATA"/*.log "$VMLOGS"
     rm -f "$NCDATA"/*.log*
