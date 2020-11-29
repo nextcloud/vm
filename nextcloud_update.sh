@@ -115,11 +115,28 @@ for upgrading your server: https://shop.hanssonit.se/product/premium-support-per
     exit 0
 fi
 
+# Set secure permissions
+if [ ! -f "$SECURE" ]
+then
+    mkdir -p "$SCRIPTS"
+    download_script STATIC setup_secure_permissions_nextcloud
+    chmod +x "$SECURE"
+else
+    rm "$SECURE"
+    download_script STATIC setup_secure_permissions_nextcloud
+    chmod +x "$SECURE"
+fi
+
 # Move all logs to new dir (2019-09-04)
+bash $SECURE & spinner_loading
 if [ -d /var/log/ncvm/ ]
 then
     rsync -Aaxz /var/log/ncvm/ $VMLOGS
     rm -Rf /var/log/ncvm/
+    rm -f "$NCDATA"/*.log
+else
+    rsync -Aaxz "$NCDATA"/*.log $VMLOGS
+    rm -f "$NCDATA"/*.log
 fi
 
 # Remove the local lib.sh since it's causing issues with new functions (2020-06-01)
@@ -345,18 +362,6 @@ then
    then
        sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.profile
    fi
-fi
-
-# Set secure permissions
-if [ ! -f "$SECURE" ]
-then
-    mkdir -p "$SCRIPTS"
-    download_script STATIC setup_secure_permissions_nextcloud
-    chmod +x "$SECURE"
-else
-    rm "$SECURE"
-    download_script STATIC setup_secure_permissions_nextcloud
-    chmod +x "$SECURE"
 fi
 
 # Update all Nextcloud apps
@@ -734,7 +739,7 @@ print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data "$NCPATH"
 nextcloud_occ config:system:set htaccess.RewriteBase --value="/"
 nextcloud_occ maintenance:update:htaccess
-bash "$SECURE"
+bash $SECURE & spinner_loading
 
 # Repair
 nextcloud_occ maintenance:repair
