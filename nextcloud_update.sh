@@ -138,15 +138,15 @@ if [ -d /var/log/ncvm/ ]
 then
     rsync -Aaxz /var/log/ncvm/ "$VMLOGS"
     rm -Rf /var/log/ncvm/
-    rm -f "$NCDATA"/*.log
-elif [ -d "$NCDATA" ]
-then
-    rsync -Aaxz "$NCDATA"/*.log "$VMLOGS"
-    rm -f "$NCDATA"/*.log
+    rm -f "$NCDATA"/*.log*
 elif [ -d /var/ncdata ]
 then
-    rsync -Aaxz /var/ncdata/*.log "$VMLOGS"
-    rm -f /var/ncdata/*.log
+    rsync -Aaxz /var/ncdata/*.log* "$VMLOGS"
+    rm -f /var/ncdata/*.log*
+elif [ -d "$NCDATA" ]
+then
+    rsync -Aaxz "$NCDATA"/*.log* "$VMLOGS"
+    rm -f "$NCDATA"/*.log*
 fi
 
 # Remove the local lib.sh since it's causing issues with new functions (2020-06-01)
