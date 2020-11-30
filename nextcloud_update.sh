@@ -197,6 +197,9 @@ then
     fi
 fi
 
+# Fix PHP error mesage
+mkdir -p /tmp/pear/cache
+
 # Update Redis PHP extension (18.04 --> 20.04 since 16.04 already is deprecated in the top of this script)
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 
