@@ -44,6 +44,9 @@ check_distro_version
 
 # Install Apache2 
 install_if_not apache2
+a2enmod headers
+a2enmod rewrite
+a2enmod ssl
 
 # Install Adminer
 apt update -q4 & spinner_loading
