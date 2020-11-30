@@ -42,6 +42,9 @@ check_external_ip
 # Check distrobution and version
 check_distro_version
 
+# Install Apache2 
+install_if_not apache2
+
 # Install Adminer
 apt update -q4 & spinner_loading
 install_if_not adminer
