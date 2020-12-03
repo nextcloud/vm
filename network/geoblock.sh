@@ -101,7 +101,7 @@ Please report this to $ISSUES"
     # Create checklist
     args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
 "Please select all countries that shall have access to your server.
-All countries that are'nt selected will *not* have access to your server. \
+All countries that aren't selected will *not* have access to your server. \
 To allow them you have to choose the specific continent.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     count=0
