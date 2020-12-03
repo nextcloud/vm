@@ -87,7 +87,7 @@ check_nextcloud_https "Nextclod Talk"
 msg_box "The default port for Talk used in this script is port $TURN_PORT.
 You can read more about that port here: https://www.speedguide.net/port.php?port=$TURN_PORT
 You will now be given the option to change this port to something of your own. 
-Please keep in mind NOT to use the following ports as they are likley to be in use already: 
+Please keep in mind NOT to use the following ports as they are likely in use already: 
 ${NONO_PORTS[*]}"
 
 if yesno_box_no "Do you want to change port?"
@@ -147,8 +147,8 @@ check_command systemctl restart coturn.service
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
 
-This can be done automatically if you have UNNP enabled in your firewall/router. \
-You will be offered to use UNNP in the next step.
+This can be done automatically if you have UPNP enabled in your firewall/router. \
+You will be offered to use UPNP in the next step.
 
 After you hit OK, the script will check if the port is open or not. If it fails \
 and you want to run this script again, just execute this in your CLI:
@@ -216,11 +216,11 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 # Notification
 msg_box "Before continuing, please make sure that you have you have \
 edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
-directly to this servers IP. A full exstensive guide can be found here:
+directly to this servers IP. A full extensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UNNP enabled in your firewall/router. \
-You will be offered to use UNNP in the next step.
+This can be done automatically if you have UPNP enabled in your firewall/router. \
+You will be offered to use UPNP in the next step.
 
 PLEASE NOTE:
 Using other ports than the default 80 and 443 is not supported, \
@@ -417,7 +417,7 @@ install_certbot
 # Generate certs and  auto-configure  if successful
 if generate_cert  "$SUBDOMAIN"
 then
-    # Generate DHparams chifer
+    # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
         openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
