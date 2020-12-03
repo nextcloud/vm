@@ -10,7 +10,7 @@ if [ $# -eq 0  ]
 		echo "No arguments supplied"
 		exit 0
 	elif [ $# -lt 4  ]; then
-		echo "Wrong number of argments supplied"
+		echo "Wrong number of arguments supplied"
 		exit 0
 fi
 
@@ -70,7 +70,7 @@ if (( PSQLVERSION < PSQLVERSION_DOCKER )); then
 		pg_upgradecluster -m upgrade "$PSQLVERSION" main
 	} ||
 	{
-		# could also check psotgresql owner
+		# could also check postgresql owner
 		#USER=$(stat -c '%U' "/etc/postgresql/12/main")
 		#echo $USER
 		#USER=$(stat -c '%U' "/var/lib/postgresql/12/main")
@@ -170,7 +170,7 @@ echo "host all all all md5" >> db/pg_hba.conf
 
 chown -R www-data:docker ./*
 
-echo "Disabeling postgresql"
+echo "Disabling postgresql"
 systemctl disable postgresql
 systemctl stop postgresql
 
