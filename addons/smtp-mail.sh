@@ -98,11 +98,11 @@ case "$SMTP_PORT" in
 esac
 
 # Enter your SMTP username
-if yesno_box_yes "Does $MAIL_SERVER require any credenitals, like username and password?"
+if yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
 then
     MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com")
 
-    # Enter your mailuser password
+    # Enter your mail user password
     MAIL_PASSWORD=$(input_box_flow "Please enter the SMTP password to your email provider.")
 fi
 
@@ -245,7 +245,7 @@ then
 You can look at /var/log/msmtp for further logs.
 Please run this script once more if you want to make another try."
 
-        # Let the user decide if configs/packets shall get resetted/uninstalled
+        # Let the user decide if configs/packets shall get reset/uninstalled
         if yesno_box_yes "Do you want to reset all configs and uninstall all packets \
 that were made/installed by this script so that you keep a clean system?
 This will make debugging more complicated since you will only have the log file to debug this."
