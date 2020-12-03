@@ -8,7 +8,7 @@
 # This script came to life when we were having issues with importing the ZFS pool (ncdata) on Ubuntu 20.04.
 # After some forum reading and some digging on Github, this is the result.
 # The intention here is to make the import process more robust, and less prune to fail
-# Esentially, changing from źfs-mount.service' to 'zfs-mount-generator' which by many has been working better.
+# Essentially, changing from 'zfs-mount.service' to 'zfs-mount-generator' which by many has been working better.
 
 true
 SCRIPT_NAME="Change to ZFS Mount Generator"
