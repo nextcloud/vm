@@ -108,7 +108,7 @@ rotate 10
 }
 NEXTCLOUD_CONF
 
-            # Set needed ownerchip for the Nextcloud log folder to work correctly
+            # Set needed ownership for the Nextcloud log folder to work correctly
             chown www-data:www-data "${VMLOGS}"/
             
             msg_box "Logrotate was successfully enabled." "$SUBTITLE"
