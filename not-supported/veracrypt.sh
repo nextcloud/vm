@@ -33,7 +33,7 @@ we need to add a 3rd Party PPA, which theoretically could set your server under 
     then
         exit 1
     fi
-    msg_box "We wil now install veracrypt. This can take a long time. Please be patient!"
+    msg_box "We will now install Veracrypt. This can take a long time. Please be patient!"
     add-apt-repository ppa:unit193/encryption -y
     apt update -q4 & spinner_loading
     apt install veracrypt --no-install-recommends -y
@@ -142,7 +142,7 @@ if ! echo "$PASSWORD" \
 --filesystem=NTFS \
 --stdin > /dev/null
 then
-    msg_box "Something failed while encypting with Veracrypt."
+    msg_box "Something failed while encrypting with Veracrypt."
     exit 1
 fi
 
@@ -228,7 +228,7 @@ chmod 700 "$SCRIPTS/veracrypt-automount.sh"
 
 # Create crontab
 crontab -u root -l | grep -v 'veracrypt-automount.sh'  | crontab -u root -
-# Here we want to get informed if something fails hence not redirecting sterr to /dev/null
+# Here we want to get informed if something fails hence not redirecting stderr to /dev/null
 crontab -u root -l | { cat; echo "@reboot $SCRIPTS/veracrypt-automount.sh > /dev/null"; } | crontab -u root -
 
 # Inform the user
