@@ -55,7 +55,7 @@ though we provide this service because it's self hosted and secure.
 
 To be able to use Bitwarden, you need a separate subdomain.
 Please create a DNS record and point it to this server, e.g: bitwarden.yourdomain.com.
-After Bitwarden is setup, we will automatically generate a TLS cert with Let's Enrypt.
+After Bitwarden is setup, we will automatically generate a TLS cert with Let's Encrypt.
 There's no need to get your own prior to this setup, nor during the Bitwarden setup.
 
 The script is based on this documentation: https://help.bitwarden.com/article/install-on-premise/
@@ -189,7 +189,7 @@ sed -i 's|http://|https://|g' "$BITWARDEN_HOME"/bwdata/env/global.override.env
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh rebuild
 print_text_in_color "$ICyan" "Starting Bitwarden for the first time, please be patient..."
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh start
-# We dont' need this for Bitwarden to start, but it's a great way to find out if the DB is online or not.
+# We don't need this for Bitwarden to start, but it's a great way to find out if the DB is online or not.
 countdown "Waiting for the DB to come online..." 5
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
@@ -198,7 +198,7 @@ msg_box "We'll now setup the Apache Proxy that will act as TLS front for your Bi
 
 msg_box "Before continuing, please make sure that you have you have \
 edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
-directly to this servers IP. A full exstensive guide can be found here:
+directly to this servers IP. A full extensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
 This can be done automatically if you have UPNP enabled in your firewall/router.
@@ -317,7 +317,7 @@ install_certbot
 # Generate certs and  auto-configure  if successful
 if generate_cert  "$SUBDOMAIN"
 then
-    # Generate DHparams chifer
+    # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
         openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
@@ -354,7 +354,7 @@ then
             docker container prune -f
             docker image prune -a -f
             docker volume prune -f
-            notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
+            notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container separately instead."
         fi
     fi
 fi
@@ -375,7 +375,7 @@ to RESTART Bitwarden, simply execute: 'systemctl restart bitwarden'"
 msg_box "In case you want to backup Bitwarden, you should know that the MSSQL files are stored here:
 /var/lib/docker/volumes/docker_mssql_data/_data
 
-This is beacuse we run the database as a Docker container, and not \
+This is because we run the database as a Docker container, and not \
 directly on the filesystem - which otherwise would be the default.
 Reason? We found it to be more stable running in a container, \
 several sources in their issue tracker also confirms the same thing."
