@@ -26,9 +26,9 @@ cat << INST2
 | https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html        |
 | Connect like this: ssh ncadmin@local.IP.of.this.server                |
 |                                                                       |
-| This server could be made maintenace free by using automatic updates  |
+| This server could be made maintenance free by using automatic updates  |
 | with the built in update script. If you want automatic updates on     |
-| a weekly schelude, choose to configure it later during this setup.    |
+| a weekly schedule, choose to configure it later during this setup.    |
 |                                                                       |
 |  ###################### T&M Hansson IT - $(date +"%Y") ######################  |
 +-----------------------------------------------------------------------+

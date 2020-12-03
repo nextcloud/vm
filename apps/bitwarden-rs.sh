@@ -70,7 +70,7 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 # Inform the user
 msg_box "Before continuing, please make sure that you have you have \
 edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
-directly to this servers IP. A full exstensive guide can be found here:
+directly to this servers IP. A full extensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
 This can be done automatically if you have UPNP enabled in your firewall/router.
@@ -186,7 +186,7 @@ install_certbot
 # Generate certs and  auto-configure  if successful
 if generate_cert  "$SUBDOMAIN"
 then
-    # Generate DHparams chifer
+    # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
         openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
@@ -301,7 +301,7 @@ check_command fail2ban-client reload
 while :
 do
     # Inform the user
-    msg_box "Bitwarden_rs with fail2ban have been sucessfully installed! 
+    msg_box "Bitwarden_rs with fail2ban have been successfully installed! 
 Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
 Attention! Please note down the password for the admin panel: $ADMIN_PASS

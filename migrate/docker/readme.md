@@ -2,7 +2,7 @@ This repo is intended to help migrate an existing Nextcloud VM installation to a
 The Docker container will use the existing Postgresql Database (and it may update it) and the existing datadir.
 
 # WARNING
-This subfolder, and the migration tool have not been tested by the main maintainers of this repo. We put this here soley for inspiration, and you're on your own if something fails. We would still appreciate if you told us what went wrong though, by creating an issue. 
+This subfolder, and the migration tool have not been tested by the main maintainers of this repo. We put this here solely for inspiration, and you're on your own if something fails. We would still appreciate if you told us what went wrong though, by creating an issue. 
 
 How to use:
 1. clone git
@@ -14,7 +14,7 @@ How to use:
 
 Explanation of the bash script arguments:
 - destinationdir = the folder containing all the files needed to run the Docker container
-- nc_user = the nextcloud administor user
+- nc_user = the Nextcloud administrator user
 - nc_password = password for this user
 - nc_port = port exposed by the container
 

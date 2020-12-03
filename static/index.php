@@ -95,7 +95,7 @@
             </h3>
             <p>Note: Please accept the warning in the browser if you have a self-signed certificate.<br>
 
-            <p>It's recomended to <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a>
+            <p>It's recommended to <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6-83ePiqQz3_MrT/publish-your-server-online" target="_blank">get your own certificate and replace the self-signed certificate to your own.</a>
             The easiest way to get a real TLS certificate is to run the Lets' Encrypt script included on this server.<br>
             Just run 'sudo bash /var/scripts/menu.sh' from your CLI and choose Server Configuration --> Activate TLS.
             <h3>
@@ -116,7 +116,7 @@
             <h3>
 	        <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6yn_ePiqQz3_Mpk" target="_blank">Login details</a>
             </h3>
-            <p>Note: To access Webmin externally you have to open port 10000 in your router, it's not recomended though due to security concerns.</p>
+            <p>Note: To access Webmin externally you have to open port 10000 in your router, it's not recommended though due to security concerns.</p>
         </div>
 
         <h2>Access Adminer</h2>

@@ -197,7 +197,7 @@ then
     fi
 fi
 
-# Fix PHP error mesage
+# Fix PHP error message
 mkdir -p /tmp/pear/cache
 
 # Update Redis PHP extension (18.04 --> 20.04 since 16.04 already is deprecated in the top of this script)
@@ -298,10 +298,10 @@ then
     check_command systemctl restart apache2
 fi
 
-# Update docker containers and remove Watchtower if Bitwarden is preseent due to compatibility issue
+# Update docker containers and remove Watchtower if Bitwarden is present due to compatibility issue
 # If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
 # If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates 
-# individually dependning on which docker containers that exist.
+# individually depending on which docker containers that exist.
 if is_docker_running
 then
     # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower 
@@ -320,7 +320,7 @@ then
             docker container prune -f
             docker image prune -a -f
             docker volume prune -f
-            notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, \
+            notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, \
 we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
         fi
     fi
@@ -614,7 +614,7 @@ if [ -d $BACKUP/config/ ]
 then
     print_text_in_color "$ICyan" "$BACKUP/config/ exists"
 else
-    msg_box "Something went wrong with backing up your old nextcloud instance
+    msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if config/ folder exist."
     exit 1
 fi
@@ -658,7 +658,7 @@ then
         nextcloud_occ db:add-missing-primary-keys
     fi
 else
-    msg_box "Something went wrong with backing up your old nextcloud instance
+    msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if the folders exist."
     exit 1
 fi

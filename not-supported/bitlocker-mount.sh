@@ -5,7 +5,7 @@
 
 true
 SCRIPT_NAME="Bitlocker Mount"
-SCRIPT_EXPLAINER="This script automates mounting Bitlocker encrypted drvies locally in your system.
+SCRIPT_EXPLAINER="This script automates mounting Bitlocker encrypted drives locally in your system.
 Currently supported are only Bitlocker encrypted NTFS (Windows) drives.
 You need a password to mount the drive. Recovery keys are not supported."
 # shellcheck source=lib.sh

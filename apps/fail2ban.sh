@@ -179,7 +179,7 @@ check_command update-rc.d fail2ban enable
 check_command systemctl restart fail2ban.service
 
 # The End
-msg_box "Fail2ban is now sucessfully installed.
+msg_box "Fail2ban is now successfully installed.
 
 Please use 'fail2ban-client set nextcloud unbanip <Banned IP>' to unban certain IPs
 You can also use 'iptables -L -n' to check which IPs that are banned"

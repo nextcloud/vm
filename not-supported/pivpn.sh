@@ -5,7 +5,7 @@
 
 true
 SCRIPT_NAME="PiVPN"
-SCRIPT_EXPLAINER="PiVPN is one of the fastes and most userfriendly ways to get a running Wireguard VPN server.
+SCRIPT_EXPLAINER="PiVPN is one of the fastest and most user friendly ways to get a running Wireguard VPN server.
 This script will setup a Wireguard VPN server to connect devices to your home net from everywhere.
 Wireguard is a relatively new VPN protocol, that is much faster and better then e.g. OpenVPN."
 # shellcheck source=lib.sh
@@ -29,7 +29,7 @@ else
     # Choose to uninstall
     if ! yesno_box_no "It seems like PiVPN is already installed.
 Do you want to uninstall PiVPN and reset all its settings?
-This will also remove all clients that have currently home network acces via Wireguard."
+This will also remove all clients that have currently home network access via Wireguard."
     then
         exit 1
     fi
@@ -46,7 +46,7 @@ This will also remove all clients that have currently home network acces via Wir
     msg_box "Attention!
 
 It could happen that the automatic reboot after uninstalling PiVPN fails (it doesn't finish with shutdown).
-In this case, you will need to poweroff your device by hand.
+In this case, you will need to power off your device by hand.
 Also it might happen that it will not remove pivpn successfully in this case.
 If this is the case, just run the uninstallation again."
     if ! yesno_box_yes "Do you want to continue?"
@@ -128,7 +128,7 @@ fi
 # Ask if backups are ready
 if ! yesno_box_no "Have you made a backup of your NcVM?
 This is the last possibility to quit!
-If you choose 'yes' we will continue with the installtion."
+If you choose 'yes' we will continue with the installation."
 then
     exit 1
 fi

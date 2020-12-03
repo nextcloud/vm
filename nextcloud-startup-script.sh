@@ -105,10 +105,10 @@ elif home_sme_server
 then
     msg_box "It seems like the last try failed as well using LAN ethernet.
 
-Since the Home/SME server is equipped with a WIFI module, you will now be asked to enable it to get connectivity.
+Since the Home/SME server is equipped with a Wi-Fi module, you will now be asked to enable it to get connectivity.
 
-Please note: It's not recomended to run a server on WIFI. Using an ethernet cable is always the best."
-    if yesno_box_yes "Do you want to enable WIFI on this server?"
+Please note: It's not recommended to run a server on Wi-Fi. Using an ethernet cable is always the best."
+    if yesno_box_yes "Do you want to enable Wi-Fi on this server?"
     then
         nmtui
     fi
@@ -188,7 +188,7 @@ We will do this for you when you hit OK."
        rm $SCRIPTS/adduser.sh
        else
             msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
-which could be the case if you are running directly from the scripts on Gihub and not the VM.
+which could be the case if you are running directly from the scripts on Github and not the VM.
 
 As long as the user you created have sudo permissions it's safe to continue.
 This would be the case if you created a new user with the script in the previous step.
@@ -203,7 +203,7 @@ fi
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
 then
     msg_box "The $SCRIPT_NAME script that handles the first setup \
-(this one) is desinged to be run once, not several times in a row.
+(this one) is designed to be run once, not several times in a row.
 
 If you feel uncertain about adding some extra features during this setup, \
 then it's best to wait until after the first setup is done. You can always add all the extra features later.
@@ -380,7 +380,7 @@ It must differ from the current one: $NCADMIN.\n\nThe only allowed characters fo
     elif [ "$NEWUSER" = "$NCADMIN" ]
     then
         msg_box "This username ($NCADMIN) is already in use. Please choose a different one."
-    # - has to be espacaped otherwise it won't work.
+    # - has to be escaped otherwise it won't work.
     # Inspired by: https://unix.stackexchange.com/a/498731/433213
     elif [ "${NEWUSER//[A-Za-z0-9_.\-@]}" ]
     then

@@ -10,7 +10,7 @@ if [ $# -eq 0  ]
 		echo "No arguments supplied"
 		exit 0
 	elif [ $# -lt 4  ]; then
-		echo "Wrong number of argments supplied"
+		echo "Wrong number of arguments supplied"
 		exit 0
 fi
 
@@ -70,7 +70,7 @@ if (( PSQLVERSION < PSQLVERSION_DOCKER )); then
 		pg_upgradecluster -m upgrade "$PSQLVERSION" main
 	} ||
 	{
-		# could also check psotgresql owner
+		# could also check postgresql owner
 		#USER=$(stat -c '%U' "/etc/postgresql/12/main")
 		#echo $USER
 		#USER=$(stat -c '%U' "/var/lib/postgresql/12/main")
@@ -99,7 +99,7 @@ cp /etc/postgresql/13/main/pg_hba.conf db
 cp /etc/postgresql/13/main/pg_ident.conf db
 cp /etc/postgresql/13/main/postgresql.conf db
 
-echo "copying nextcloud config file"
+echo "copying Nextcloud config file"
 cp -R /var/www/nextcloud/config/* config
 
 
@@ -170,12 +170,12 @@ echo "host all all all md5" >> db/pg_hba.conf
 
 chown -R www-data:docker ./*
 
-echo "Disabeling postgresql"
+echo "Disabling postgresql"
 systemctl disable postgresql
 systemctl stop postgresql
 
 echo "Finished"
 echo "Change the 'trusted_domains' section in the config/config.php file to match your needs"
-echo "Run 'docker-compose up -d' to start the nextcloud docker container"
+echo "Run 'docker-compose up -d' to start the Nextcloud docker container"
 echo "You may have to adjust the ownership of config and db folders"
 echo "Consider changing your Apache configuration"

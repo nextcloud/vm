@@ -49,7 +49,7 @@ fi
 # Check if pending snapshot is existing and cancel the setup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
-    msg_box "It seems like currently is running a backup or update.
+    msg_box "It seems to be currently running a backup or update.
 Cannot setup the daily backup now. Please try again later."
     exit 1
 elif does_snapshot_exist "NcVM-startup"
@@ -62,7 +62,7 @@ check_free_space
 if ! does_snapshot_exist "NcVM-snapshot" && ! [ "$FREE_SPACE" -ge 50 ]
 then
     msg_box "Unfortunately you have not enough free space on your vgs to \
-create a LVM-snapshot wich is a requirement to create a backup script."
+create a LVM-snapshot which is a requirement to create a backup script."
     exit 1
 fi
 # Check if backup drives existing
@@ -243,7 +243,7 @@ if [ -n "$CUSTOM_DIRECTORY" ]
 then
     while :
     do
-        SELECTED_DIRECTORY=$(input_box_flow "Please type in the direcotry that you want to use as backup directory.
+        SELECTED_DIRECTORY=$(input_box_flow "Please type in the directory that you want to use as backup directory.
 It has to start with '$BACKUP_TARGET_DIRECTORY/'.
 Recommended is '$BACKUP_TARGET_DIRECTORY/borgbackup/NcVM'
 If you want to cancel, just type in 'exit' and press [ENTER].")

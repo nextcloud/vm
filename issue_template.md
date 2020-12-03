@@ -48,7 +48,7 @@ Insert your nextcloud.log file here
 Insert the CLI output here
 ```
 
-#### Screenshoots
+#### Screenshots
 <!--
 Please use http://imgur.com/ for screenshots. Thanks!
 -->

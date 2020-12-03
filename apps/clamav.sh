@@ -187,7 +187,7 @@ chmod 700 "$SCRIPT_PATH"
 crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPT_PATH > /dev/null 2>&1"; } | crontab -u root -
 
 # Inform the user
-msg_box "ClamAV was succesfully installed.
+msg_box "ClamAV was successfully installed.
 
 Your Nextcloud should be more secure now."
 

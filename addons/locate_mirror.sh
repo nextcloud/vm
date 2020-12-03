@@ -20,7 +20,7 @@ fi
 msg_box "To make downloads as fast as possible when updating Ubuntu \
 you should have download mirrors that are as close to you as possible.
 
-Please note that there are no gurantees that the download mirrors \
+Please note that there are no guarantees that the download mirrors \
 this script will find are staying up for the lifetime of this server.
 Because of this, we don't recommend to change the mirror, except you live far away from the default mirror.
 

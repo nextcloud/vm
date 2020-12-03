@@ -39,7 +39,7 @@ fi
 # Check that the script can see the external IP (apache fails otherwise)
 check_external_ip
 
-# Check distrobution and version
+# Check distribution and version
 check_distro_version
 
 # Install Apache2 
@@ -126,7 +126,7 @@ then
 The script will exit."
     exit 1
 else
-    msg_box "Adminer was sucessfully installed and can be reached here:
+    msg_box "Adminer was successfully installed and can be reached here:
 https://$ADDRESS:9443
 
 You can download more plugins and get more information here: 

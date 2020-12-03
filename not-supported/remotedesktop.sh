@@ -76,7 +76,7 @@ DESKTOP_CONF
     sleep 5
     check_command systemctl restart xrdp
 
-    # Allow to poweroff by pressing the powerbutton
+    # Allow to power off by pressing the power button
     install_if_not acpid
     mkdir -p /etc/acpi/events
     cat << POWER > /etc/acpi/events/power
@@ -91,7 +91,7 @@ POWER
     usermod -a -G www-data "$UNIXUSER"
 
     # Inform the user
-    msg_box "XRDP was successfuly installed. 
+    msg_box "XRDP was successfully installed. 
 You should be able to connect via an RDP client with your server \
 using the credentials of $UNIXUSER and the server ip-address $ADDRESS"
 fi

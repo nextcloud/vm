@@ -105,7 +105,7 @@ readonlyrest:
     groups: ["cloud1"]
 YML_CREATE
 
-# Set persmissions
+# Set permissions
 chown 1000:1000 -R  $RORDIR
 chmod ug+rwx -R  $RORDIR
 
@@ -123,13 +123,13 @@ docker run -d --restart always \
 -e ES_JAVA_OPTS="-Xms1024M -Xmx1024M" \
 -i -t $nc_fts
 
-# Wait for bootstraping
+# Wait for bootstrapping
 docker restart $fts_es_name
 if [ "$(nproc)" -gt 2 ]
 then
-    countdown "Waiting for Docker bootstraping..." "30"
+    countdown "Waiting for Docker bootstrapping..." "30"
 else
-    countdown "Waiting for Docker bootstraping..." "120"
+    countdown "Waiting for Docker bootstrapping..." "120"
 fi
 docker logs $fts_es_name
 

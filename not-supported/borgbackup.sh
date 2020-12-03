@@ -469,7 +469,7 @@ inform_user "$IGreen" "Backup integrity check finished on $END_DATE_READABLE ($D
 if ! send_mail "Backup integrity check successful!" "$(cat "$LOG_FILE")"
 then
     notify_admin_gui \
-    "Backup integrity check succesful! Though mail sending didn't work!" \
+    "Backup integrity check successful! Though mail sending didn't work!" \
     "Please look at the log file $LOG_FILE if you want to find out more."
     paste_log_file
 else

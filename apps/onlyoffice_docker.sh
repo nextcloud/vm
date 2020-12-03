@@ -120,7 +120,7 @@ fi
 if [ "$(apache2ctl -M | grep evasive)" != "" ]
 then
     msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. \
-It has comptibility issues with OnlyOffice and you can now choose to disable it."
+It has compatibility issues with OnlyOffice and you can now choose to disable it."
     if ! yesno_box_yes "Do you want to disable DDOS protection?"
     then
         print_text_in_color "$ICyan" "Keeping mod_evasive active."
@@ -135,7 +135,7 @@ fi
 # Ask for the domain for OnlyOffice
 SUBDOMAIN=$(input_box_flow "OnlyOffice subdomain e.g: office.yourdomain.com
 NOTE: This domain must be different than your Nextcloud domain. \
-They can however be hosted on the same server, but would require seperate DNS entries.")
+They can however be hosted on the same server, but would require separate DNS entries.")
 
 # Nextcloud Main Domain
 NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
@@ -150,11 +150,11 @@ nc_update
 # Notification
 msg_box "Before continuing, please make sure that you have you have \
 edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
-directly to this servers IP. A full exstensive guide can be found here:
+directly to this servers IP. A full extensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UNNP enabled in your firewall/router. \
-You will be offered to use UNNP in the next step.
+This can be done automatically if you have UPNP enabled in your firewall/router. \
+You will be offered to use UPNP in the next step.
 
 PLEASE NOTE:
 Using other ports than the default 80 and 443 is not supported, \
@@ -307,7 +307,7 @@ install_certbot
 # Generate certs
 if generate_cert "$SUBDOMAIN"
 then
-    # Generate DHparams chifer
+    # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
         openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096

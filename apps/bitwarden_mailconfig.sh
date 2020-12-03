@@ -90,14 +90,14 @@ setting, that are already configured inside the global.override.env-file, just l
             DEFAULT_PORT=""
             break
         else
-            msg_box "The answer wasn't correct. Please type in 'SSL', 'STARTTLS', 'none' or leave the inputbox empty."
+            msg_box "The answer wasn't correct. Please type in 'SSL', 'STARTTLS', 'none' or leave the input box empty."
         fi
     fi
 done
 
 # Enter Port or just use standard port (defined by usage of ssl)
 SMTP_PORT=$(input_box_flow "Please enter the port for your mailserver. The default port \
-based on your protocol setting is $DEFAULT_PORT?\nPlease type that port into the inputbox, \
+based on your protocol setting is $DEFAULT_PORT?\nPlease type that port into the input box, \
 if you want to use it.\n\nIf you don't want to change the port, that is already configured \
 inside the global.override.env-file, just leave the box empty.")
 
@@ -112,12 +112,12 @@ MAIL_PASSWORD=$(input_box_flow "Please enter the password for your mailserver us
 If you don't want to change the password, that is already configured inside the \
 global.override.env-file, just leave the box empty.")
 
-# Enter admin mailadresses
-ADMIN_ACCOUNT=$(input_box_flow "Please enter mailaccounts, that should have access \
+# Enter admin mailaddresses
+ADMIN_ACCOUNT=$(input_box_flow "Please enter mail accounts, that should have access \
 to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.
 They don't have to be registered Bitwarden accounts.
 To make this setting work, your Bitwarden mailserver settings have to be correct.
-You can enter just one e-mailaddress or enter more than one like so:
+You can enter just one e-mail address or enter more than one like so:
 'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'
 If you want to keep the admin accounts that are already configured inside the \
 global.override.env-file, just leave the box empty.")

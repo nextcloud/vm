@@ -78,7 +78,7 @@ This script will now exit. Please add a second disk and start over."
     exit 1
 fi
 
-msg_box "You will now see a list with available devices. Choose the device where you want to put your nextcloud data.
+msg_box "You will now see a list with available devices. Choose the device where you want to put your Nextcloud data.
 Attention, the selected device will be formatted!"
 AVAILABLEDEVICES="$(lsblk | grep 'disk' | awk '{print $1}')"
 # https://github.com/koalaman/shellcheck/wiki/SC2206
@@ -87,7 +87,7 @@ mapfile -t AVAILABLEDEVICES <<< "$AVAILABLEDEVICES"
 # Ask for user input
 while
     lsblk
-    read -r -e -p "Enter the drive for the nextcloud data:" -i "$DEVTYPE" userinput
+    read -r -e -p "Enter the drive for the Nextcloud data:" -i "$DEVTYPE" userinput
     userinput=$(echo "$userinput" | awk '{print $1}')
         for disk in "${AVAILABLEDEVICES[@]}";
         do
@@ -121,7 +121,7 @@ install_if_not zfsutils-linux
 isMounted() { findmnt -rno SOURCE,TARGET "$1" >/dev/null;} #path or device
 isDevMounted() { findmnt -rno SOURCE        "$1" >/dev/null;} #device only
 isPathMounted() { findmnt -rno        TARGET "$1" >/dev/null;} #path   only
-isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device memeber of a zpool
+isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device member of a zpool
 
 if isPathMounted "/mnt/ncdata";      #Spaces in path names are ok.
 then

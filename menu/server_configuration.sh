@@ -35,7 +35,7 @@ fi
 # Show a msg_box during the startup script
 if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
 then
-    msg_box "In the next step, you will be offered to easily install different configurations that are made to enhance your server and experiance.
+    msg_box "In the next step, you will be offered to easily install different configurations that are made to enhance your server and experience.
 We have pre-selected some choices that we recommend for any installation.
 
 PLEASE NOTE: For stability reasons you should *not* select everything just for the sake of it.
