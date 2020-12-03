@@ -1179,7 +1179,7 @@ that shall have access to the share $SELECTED_SHARE." "$SUBTITLE"
     # Return if the STORAGE variable is empty now
     if [ -z "$STORAGE" ]
     then
-        msg_box "Something is wrong. Plese try again." "$SUBTITLE"
+        msg_box "Something is wrong. Please try again." "$SUBTITLE"
         return
     fi
 
