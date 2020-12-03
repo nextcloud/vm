@@ -43,7 +43,7 @@ fi
 choice=$(whiptail --title "$TITLE" --menu \
 "Please choose if you want to get informed weekly or directly if an error occurs.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Directly" "(Continous S.M.A.R.T checking)" \
+"Directly" "(Continuous S.M.A.R.T checking)" \
 "Weekly" "(Weekly S.M.A.R.T checking)" 3>&1 1>&2 2>&3)
 
 # Exit if nothing chosen

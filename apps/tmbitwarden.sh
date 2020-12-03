@@ -50,10 +50,10 @@ rm -rf ${BITWARDEN_HOME:?}/bwdata"
     fi
 fi
 
-msg_box "Bitwarden is a password manager that is seperate from Nextcloud, \
+msg_box "Bitwarden is a password manager that is separate from Nextcloud, \
 though we provide this service because it's self hosted and secure.
 
-To be able to use Bitwarden, you need a seperate subdomain.
+To be able to use Bitwarden, you need a separate subdomain.
 Please create a DNS record and point it to this server, e.g: bitwarden.yourdomain.com.
 After Bitwarden is setup, we will automatically generate a TLS cert with Let's Enrypt.
 There's no need to get your own prior to this setup, nor during the Bitwarden setup.
@@ -87,7 +87,7 @@ msg_box "IMPORTANT, PLEASE READ!
 In the next steps you will be asked to answer some questions.
 The questions are from the Bitwarden setup script, and therefore nothing that we control.
 
-It's important that you answer the questions correclty for the rest of the setup to work properly,
+It's important that you answer the questions correctly for the rest of the setup to work properly,
 and to be able to generate a valid TLS certificate automatically with our own (this) script.
 
 Basically:
@@ -354,7 +354,7 @@ then
             docker container prune -f
             docker image prune -a -f
             docker volume prune -f
-            notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
+            notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
         fi
     fi
 fi
@@ -362,7 +362,7 @@ fi
 # Add prune command
 add_dockerprune
 
-msg_box "Bitwarden was sucessfully installed! Please visit $SUBDOMAIN to setup your account.
+msg_box "Bitwarden was successfully installed! Please visit $SUBDOMAIN to setup your account.
 
 After the account is registered, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
 Additional Apps --> Bitwarden --> Bitwarden Registration

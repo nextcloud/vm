@@ -121,7 +121,7 @@ install_if_not zfsutils-linux
 isMounted() { findmnt -rno SOURCE,TARGET "$1" >/dev/null;} #path or device
 isDevMounted() { findmnt -rno SOURCE        "$1" >/dev/null;} #device only
 isPathMounted() { findmnt -rno        TARGET "$1" >/dev/null;} #path   only
-isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device memeber of a zpool
+isDevPartOfZFS() { zpool status | grep "$1" >/dev/null;} #device member of a zpool
 
 if isPathMounted "/mnt/ncdata";      #Spaces in path names are ok.
 then

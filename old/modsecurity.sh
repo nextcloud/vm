@@ -26,7 +26,7 @@ mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.co
 
 msg_box "WARNING WARNING WARNING WARNING WARNING WARNING:
 
-Do not enable active defence if you don't know what you're doing!
+Do not enable active defense if you don't know what you're doing!
 It will break OnlyOffice, and it may break other stuff as well in Nextcloud as it's
 blocking access to files automatically.
 
@@ -37,7 +37,7 @@ You can disable it by typing this command in your shell:
 sed -i 's/SecRuleEngine .*/SecRuleEngine DetectionOnly/g' /etc/modsecurity/modsecurity.conf
 
 YOU HAVE BEEN WARNED."
-if yesno_box_yes "Do you want to enable active defence?"
+if yesno_box_yes "Do you want to enable active defense?"
 then
     sed -i 's|SecRuleEngine .*|SecRuleEngine on|g' /etc/modsecurity/modsecurity.conf
 fi
@@ -85,7 +85,7 @@ cat << MODSECWHITE > "/etc/modsecurity/whitelist.conf"
 </Directory>
 MODSECWHITE
 
-# Don't log in Apache2 error.log, only in a seperate log (/var/log/apache2/modsec_audit.log)
+# Don't log in Apache2 error.log, only in a separate log (/var/log/apache2/modsec_audit.log)
 check_command sed -i 's|SecDefaultAction "phase:1,log,auditlog,pass"|# SecDefaultAction "phase:1,log,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
 check_command sed -i 's|SecDefaultAction "phase:2,log,auditlog,pass"|# SecDefaultAction "phase:2,log,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf
 check_command sed -i 's|# SecDefaultAction "phase:1,nolog,auditlog,pass"|SecDefaultAction "phase:1,nolog,auditlog,pass"|g' /etc/modsecurity/crs/crs-setup.conf

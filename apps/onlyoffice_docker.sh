@@ -135,7 +135,7 @@ fi
 # Ask for the domain for OnlyOffice
 SUBDOMAIN=$(input_box_flow "OnlyOffice subdomain e.g: office.yourdomain.com
 NOTE: This domain must be different than your Nextcloud domain. \
-They can however be hosted on the same server, but would require seperate DNS entries.")
+They can however be hosted on the same server, but would require separate DNS entries.")
 
 # Nextcloud Main Domain
 NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')

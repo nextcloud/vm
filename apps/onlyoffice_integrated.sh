@@ -187,7 +187,7 @@ msg_box "We will now install OnlyOffice.
 
 Please note that it might take very long time to install the app, and you will not see any progress bar.
 
-Please be paitent, don't abort."
+Please be patient, don't abort."
 install_and_enable_app onlyoffice
 sleep 2
 if install_and_enable_app documentserver_community
@@ -198,7 +198,7 @@ then
 else
     msg_box "The documentserver_community app failed to install. Please try again later.
     
-If the error presist, please report the issue to https://github.com/nextcloud/documentserver_community
+If the error persists, please report the issue to https://github.com/nextcloud/documentserver_community
 
 'sudo -u www-data php ./occ app:install documentserver_community failed!'"
 fi

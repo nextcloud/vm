@@ -62,7 +62,7 @@ The `nextcloud_install_production.sh` script can be run as part of Vagrant provi
 
 See [this subrepo](https://github.com/nextcloud/vm/tree/master/vagrant) for more information.
 
-Please report any issues you can find. Improvments are welcome!
+Please report any issues you can find. Improvements are welcome!
 
 ## First look
 #### Nextcloud

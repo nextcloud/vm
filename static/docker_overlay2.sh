@@ -163,5 +163,5 @@ $(cat "${DB_FILE}")
 You can also find the file with the imported docker images here:
 $DB_FILE
 
-If you experiance any issues, please report them to $ISSUES."
+If you experience any issues, please report them to $ISSUES."
 rm -f "$DOCKERBACKUP"/mydockersimages.list

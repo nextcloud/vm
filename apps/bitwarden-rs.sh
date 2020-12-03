@@ -301,7 +301,7 @@ check_command fail2ban-client reload
 while :
 do
     # Inform the user
-    msg_box "Bitwarden_rs with fail2ban have been sucessfully installed! 
+    msg_box "Bitwarden_rs with fail2ban have been successfully installed! 
 Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
 Attention! Please note down the password for the admin panel: $ADMIN_PASS

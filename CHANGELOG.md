@@ -92,7 +92,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Set archive.ubuntu.com as default Repo (Ubuntu)
 - Standardize whiptails even more
 - Improve fetch_lib
-- Use fetch_lib in all scripts to prefer local libary instead of hammering Github with requests in every script
+- Use fetch_lib in all scripts to prefer local library instead of hammering Github with requests in every script
 - Update all Docker containers one by one when the update script is run due to compatibility issues with Bitwarden Password manager
 - Improve the way passwords are set during the initial setup
 - SMBmount: Introduce the option to customize the mount before adding as external storage to Nextcloud

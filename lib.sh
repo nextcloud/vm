@@ -568,7 +568,7 @@ then
 $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
 The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
 
-The absolute minimum amount of RAM required to run the VM is 2 GB, but we recomend 4 GB.
+The absolute minimum amount of RAM required to run the VM is 2 GB, but we recommend 4 GB.
 
 You now have two choices:
 1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
@@ -677,7 +677,7 @@ return 0
 check_external_ip() {
 if [ -z "$WANIP4" ]
 then
-    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. \
+    print_text_in_color "$IRed" "WANIP4 is an empty value, Apache will fail on reboot due to this. \
 Please check your network and try again."
     sleep 3
     exit 1
@@ -812,7 +812,7 @@ cleanup_open_port() {
 check_open_port() {
 print_text_in_color "$ICyan" "Checking if port ${1} is open with https://www.networkappers.com/tools/open-port-checker..."
 install_if_not curl
-# WAN Adress
+# WAN Address
 if check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://networkappers.com/api/port.php?ip=${WANIP4}&port=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
@@ -821,7 +821,7 @@ elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
-    msg_box "It seems like the port ${1} is closed. This could happend when your
+    msg_box "It seems like the port ${1} is closed. This could happened when your
 ISP has blocked the port, or that the port isn't open.
 
 If you are 100% sure the port ${1} is open you can now choose to
@@ -1225,7 +1225,7 @@ spinner_loading() {
     while kill -0 $pid 2>/dev/null
     do
         i=$(( (i+1) %4 ))
-        printf "\r[${spin:$i:1}] " # Add text here, something like "Please be paitent..." maybe?
+        printf "\r[${spin:$i:1}] " # Add text here, something like "Please be patient..." maybe?
         sleep .1
     done
 }

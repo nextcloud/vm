@@ -320,7 +320,7 @@ then
             docker container prune -f
             docker image prune -a -f
             docker volume prune -f
-            notify_admin_gui "Watchtower removed" "Due to compability issues with Bitwarden and Watchtower, \
+            notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, \
 we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
         fi
     fi

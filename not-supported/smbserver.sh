@@ -524,7 +524,7 @@ do
 done
 while :
 do
-    msg_box "In the following step you will need to type in the directoy that you want to use.
+    msg_box "In the following step you will need to type in the directory that you want to use.
 Here you can see a certain list of options that you can type in.\n\n$VALID_DIRS" "$2"
     
     # Type in the new path
@@ -918,7 +918,7 @@ If you choose 'yes', we will install a needed PHP-plugin, the files_inotify app 
 
     # Warn a second time
     if ! yesno_box_no "Are you sure, that you want to enable inotify for this external storage?
-Please note, that this will need around 1 KB additonal RAM per folder.
+Please note, that this will need around 1 KB additional RAM per folder.
 We will set the max folder variable to 524288 which will be around 500 MB \
 of additionally needed RAM if you have so many folders.
 If you have more folders, you will need to raise this value manually inside '/etc/sysctl.conf'.
@@ -1261,7 +1261,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
                 samba_stop
                 sed -i "/^#SMB$count-start/,/^#SMB$count-end/d" "$SMB_CONF"
                 samba_start
-                msg_box "The SMB-share $element was succesfully deleted." "$SUBTITLE"
+                msg_box "The SMB-share $element was successfully deleted." "$SUBTITLE"
                 break
             fi
             count=$((count+1))

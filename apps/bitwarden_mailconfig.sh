@@ -112,7 +112,7 @@ MAIL_PASSWORD=$(input_box_flow "Please enter the password for your mailserver us
 If you don't want to change the password, that is already configured inside the \
 global.override.env-file, just leave the box empty.")
 
-# Enter admin mailadresses
+# Enter admin mailaddresses
 ADMIN_ACCOUNT=$(input_box_flow "Please enter mailaccounts, that should have access \
 to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.
 They don't have to be registered Bitwarden accounts.

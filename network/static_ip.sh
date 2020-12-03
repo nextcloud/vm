@@ -165,7 +165,7 @@ Just hit enter to choose the current NS1.\nYour current NS1 is: $DNS1")
         done
     fi
 
-    # Check if DNS is set manaully and set variables accordingly
+    # Check if DNS is set manually and set variables accordingly
     if [ -n "$NSIP1" ]
     then
         DNSs="$NSIP1"
@@ -223,7 +223,7 @@ $(cat /etc/netplan/01-netcfg.yaml)"
     if test_connection
     then
         sleep 1
-        msg_box "Static IP sucessfully set!"
+        msg_box "Static IP successfully set!"
         break
     fi
 

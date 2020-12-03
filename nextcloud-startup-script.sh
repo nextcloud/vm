@@ -107,7 +107,7 @@ then
 
 Since the Home/SME server is equipped with a WIFI module, you will now be asked to enable it to get connectivity.
 
-Please note: It's not recomended to run a server on WIFI. Using an ethernet cable is always the best."
+Please note: It's not recommended to run a server on WIFI. Using an ethernet cable is always the best."
     if yesno_box_yes "Do you want to enable WIFI on this server?"
     then
         nmtui
@@ -203,7 +203,7 @@ fi
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
 then
     msg_box "The $SCRIPT_NAME script that handles the first setup \
-(this one) is desinged to be run once, not several times in a row.
+(this one) is designed to be run once, not several times in a row.
 
 If you feel uncertain about adding some extra features during this setup, \
 then it's best to wait until after the first setup is done. You can always add all the extra features later.

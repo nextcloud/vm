@@ -91,7 +91,7 @@ POWER
     usermod -a -G www-data "$UNIXUSER"
 
     # Inform the user
-    msg_box "XRDP was successfuly installed. 
+    msg_box "XRDP was successfully installed. 
 You should be able to connect via an RDP client with your server \
 using the credentials of $UNIXUSER and the server ip-address $ADDRESS"
 fi

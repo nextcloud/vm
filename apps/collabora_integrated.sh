@@ -157,7 +157,7 @@ msg_box "We will now install Collabora.
 
 Please note that it might take very long time to install the app, and you will not see any progress bar.
 
-Please be paitent, don't abort."
+Please be patient, don't abort."
 install_and_enable_app richdocuments
 sleep 2
 if install_and_enable_app richdocumentscode

@@ -548,7 +548,7 @@ echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
-# Install Redis (distrubuted cache)
+# Install Redis (distributed cache)
 run_script ADDONS redis-server-ubuntu
 
 # Install smbclient
@@ -889,7 +889,7 @@ fi
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
 
-# Put IP adress in /etc/issue (shown before the login)
+# Put IP address in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
 then
     echo "\4" >> /etc/issue
