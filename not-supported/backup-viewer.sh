@@ -64,21 +64,21 @@ then
         exit 1
     fi
 fi
-# Check if pending snapshot is existing and cancel the vieweing in this case.
+# Check if pending snapshot is existing and cancel the viewing in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "The snapshot pending does exist. Can currently not show the backup.
 Please try again later."
     exit 1
 fi
-# Check if startup snapshot is existing and cancel the vieweing in this case.
+# Check if startup snapshot is existing and cancel the viewing in this case.
 if does_snapshot_exist "NcVM-startup"
 then
     msg_box "The snapshot startup does exist.
 Please run the update script first."
     exit 1
 fi
-# Check if snapshot can get renameds
+# Check if snapshot can get renamed
 if ! does_snapshot_exist "NcVM-snapshot"
 then
     msg_box "The NcVM-snapshot doesn't exist. This isn't allowed."
