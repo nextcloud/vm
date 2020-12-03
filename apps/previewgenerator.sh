@@ -249,7 +249,7 @@ else
     while :
     do
         PREVIEW_USER=$(input_box "Enter the Nextcloud user for \
-which you want to run the Preview Generation (as a scheluded task)")
+which you want to run the Preview Generation (as a scheduled task)")
         if [ -z "$(nextcloud_occ user:list | grep "$PREVIEW_USER" | awk '{print $3}')" ]
         then
             msg_box "It seems like the user you entered ($PREVIEW_USER) doesn't exist, please try again."
