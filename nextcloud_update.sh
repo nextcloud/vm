@@ -197,7 +197,7 @@ then
     fi
 fi
 
-# Fix PHP error mesage
+# Fix PHP error message
 mkdir -p /tmp/pear/cache
 
 # Update Redis PHP extension (18.04 --> 20.04 since 16.04 already is deprecated in the top of this script)
@@ -298,10 +298,10 @@ then
     check_command systemctl restart apache2
 fi
 
-# Update docker containers and remove Watchtower if Bitwarden is preseent due to compatibility issue
+# Update docker containers and remove Watchtower if Bitwarden is present due to compatibility issue
 # If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
 # If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates 
-# individually dependning on which docker containers that exist.
+# individually depending on which docker containers that exist.
 if is_docker_running
 then
     # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower 
