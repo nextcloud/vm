@@ -26,7 +26,7 @@ This cert will expire in 90 days if you don't renew it.
 There are several ways of renewing this cert and here are some tips and tricks:
 https://goo.gl/c1JHR0
 
-To do your job a little bit easier we have added a autorenew script as a cronjob.
+To do your job a little bit easier we have added a auto renew script as a cronjob.
 If you need to edit the crontab please type: crontab -u root -e
 If you need to edit the script itself, please check: $SCRIPTS/letsencryptrenew.sh
 
