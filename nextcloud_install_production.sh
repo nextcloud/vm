@@ -468,7 +468,7 @@ echo
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
-# Run the updatenotification on a schelude
+# Run the updatenotification on a schedule
 nextcloud_occ config:system:set upgrade.disable-web --value="true"
 nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
@@ -488,7 +488,7 @@ sed -i "s|post_max_size =.*|post_max_size = 1100M|g" "$PHP_INI"
 # upload_max
 sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" "$PHP_INI"
 
-# Set loggging
+# Set logging
 nextcloud_occ config:system:set log_type --value=file
 nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
 rm -f "$NCDATA/nextcloud.log"
@@ -506,7 +506,7 @@ nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
 # Set logrotate (max 10 MB)
 nextcloud_occ config:system:set log_rotate_size --value="10485760"
 
-# Set trashbin retention obligation (save it in trahbin for 6 months or delete when space is needed)
+# Set trashbin retention obligation (save it in trashbin for 6 months or delete when space is needed)
 nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 180"
 
 # Set versions retention obligation (save versions for 12 months or delete when space is needed)
