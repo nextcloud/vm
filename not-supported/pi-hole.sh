@@ -58,7 +58,7 @@ Uninstalling Pi-hole will reset all its config and will reboot your NcVM afterwa
     INSTALLED="${INSTALLED##*programs=}"
 
     # Inform the user
-    if ! yesno_box_yes "These are all packets that where instaled during your initial Pi-hole installation:
+    if ! yesno_box_yes "These are all packets that where installed during your initial Pi-hole installation:
 $INSTALLED
 
 Do they look correct to you? If not, you can press 'no' and we will not remove anything.
@@ -313,7 +313,7 @@ http://$ADDRESS:8093/admin
 
 Your password is: $PASSWORD"
 
-# Show the addreses
+# Show the address
 msg_box "You can now configure your devices to use the Pi-hole as their DNS server using:
 IPv4:	$ADDRESS
 IPv6:	${IPV6_ADDRESS:-Not Configured}"
@@ -339,7 +339,7 @@ else
 We have created an update script that you can use to update your Pi-hole by running:
 'bash $SCRIPTS/update.sh'
 
-Of yourse you are free to schedule updates via a cronjob."
+Of course you are free to schedule updates via a cronjob."
 fi
 
 # Ask if the user wants to install unbound
