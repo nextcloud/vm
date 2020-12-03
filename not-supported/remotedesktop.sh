@@ -76,7 +76,7 @@ DESKTOP_CONF
     sleep 5
     check_command systemctl restart xrdp
 
-    # Allow to poweroff by pressing the powerbutton
+    # Allow to power off by pressing the power button
     install_if_not acpid
     mkdir -p /etc/acpi/events
     cat << POWER > /etc/acpi/events/power
