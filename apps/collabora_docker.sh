@@ -142,8 +142,8 @@ edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
 directly to this servers IP. A full exstensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UNNP enabled in your firewall/router. \
-You will be offered to use UNNP in the next step.
+This can be done automatically if you have UPNP enabled in your firewall/router. \
+You will be offered to use UPNP in the next step.
 
 PLEASE NOTE:
 Using other ports than the default 80 and 443 is not supported, \
@@ -312,7 +312,7 @@ install_certbot
 # Generate certs and  auto-configure  if successful
 if generate_cert  "$SUBDOMAIN"
 then
-    # Generate DHparams chifer
+    # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
         openssl dhparam -dsaparam -out "$DHPARAMS_SUB" 4096
