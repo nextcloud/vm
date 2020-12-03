@@ -52,8 +52,8 @@ then
     snap connect bpytop:process-control
     snap connect bpytop:physical-memory-observe
     hash -r
-    msg_box "BPYTOP is now installed! Check out the amazing stats by runnning 'bpytop' from your CLI.
-You can check out their Gihub repo here: https://github.com/aristocratos/bpytop/blob/master/README.md"
+    msg_box "BPYTOP is now installed! Check out the amazing stats by running 'bpytop' from your CLI.
+You can check out their Github repo here: https://github.com/aristocratos/bpytop/blob/master/README.md"
     # Ask for aliases
     if yesno_box_yes "Would you like to add an alias for bpytop to replace both htop and top?"
     then
