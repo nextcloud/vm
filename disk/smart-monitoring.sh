@@ -39,7 +39,7 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Choose between direct notifiaction or weekly
+# Choose between direct notification or weekly
 choice=$(whiptail --title "$TITLE" --menu \
 "Please choose if you want to get informed weekly or directly if an error occurs.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
