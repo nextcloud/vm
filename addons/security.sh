@@ -49,7 +49,7 @@ a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 exit
 
 # Protect against DNS Injection
-# Insipired by: https://www.c-rieger.de/nextcloud-13-nginx-installation-guide-for-ubuntu-18-04-lts/#spamhausproject
+# Inspired by: https://www.c-rieger.de/nextcloud-13-nginx-installation-guide-for-ubuntu-18-04-lts/#spamhausproject
 
 # shellcheck disable=SC2016
 DATE='$(date +%Y-%m-%d)'
