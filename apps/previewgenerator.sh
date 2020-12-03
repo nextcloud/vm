@@ -105,7 +105,7 @@ then
     install_if_not libmagickcore-6.q16-3-extra
 
     # Choose file formats fo the case when imagick is installed.
-    # for additional previews please look at the nextcloud documentation. But these probably won't work.
+    # for additional previews please look at the Nextcloud documentation. But these probably won't work.
     choice=$(whiptail --title "$TITLE - Choose file formats" --checklist \
 "Now you can choose for which file formats you would like to generate previews for
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
@@ -170,7 +170,7 @@ else
         apt-get purge libmagickcore-6.q16-3-extra -y
     fi
     # Choose file formats fo the case when imagick is not installed.
-    # for additional previews please look at the nextcloud documentation. But these probably won't work.
+    # for additional previews please look at the Nextcloud documentation. But these probably won't work.
     choice=$(whiptail --title "$TITLE - Choose file formats" --checklist \
 "Now you can choose for which file formats you would like to generate previews for
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \

@@ -614,7 +614,7 @@ if [ -d $BACKUP/config/ ]
 then
     print_text_in_color "$ICyan" "$BACKUP/config/ exists"
 else
-    msg_box "Something went wrong with backing up your old nextcloud instance
+    msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if config/ folder exist."
     exit 1
 fi
@@ -658,7 +658,7 @@ then
         nextcloud_occ db:add-missing-primary-keys
     fi
 else
-    msg_box "Something went wrong with backing up your old nextcloud instance
+    msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if the folders exist."
     exit 1
 fi
