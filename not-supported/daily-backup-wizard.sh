@@ -49,7 +49,7 @@ fi
 # Check if pending snapshot is existing and cancel the setup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
-    msg_box "It seems like currently is running a backup or update.
+    msg_box "It seems to be currently running a backup or update.
 Cannot setup the daily backup now. Please try again later."
     exit 1
 elif does_snapshot_exist "NcVM-startup"
