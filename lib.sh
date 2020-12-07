@@ -961,7 +961,7 @@ fi
 
 # Example: nextcloud_occ 'maintenance:mode --on'
 nextcloud_occ() {
-check_command sudo -u www-data php "$NCPATH"/occ "$@";
+ echo "hi"
 }
 
 # Example: nextcloud_occ_no_check 'maintenance:mode --on'
@@ -1531,7 +1531,7 @@ send_mail() {
         if [ -n "$RECIPIENT" ]
         then
             print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
-            if echo -e "$2" | mail --subject "NcVM - $1" "$RECIPIENT"
+            if echo -e "$2" | mail -s "NcVM - $1" "$RECIPIENT"
             then
                 return 0
             fi
