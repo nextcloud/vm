@@ -60,8 +60,8 @@ case "$choice" in
         print_text_in_color "$ICyan" "Starting bitwarden_rs..."
         docker start bitwarden_rs
         msg_box "The admin-panel for Bitwarden_rs is now enabled.\n
-Please note down the new admin-panel password: $ADMIN_PASS\n
-Otherwise you will not be able to login to the admin-panel.\n
+Please note the new admin-panel password: $ADMIN_PASS\n
+Otherwise you will be unable to login to the admin-panel.\n
 To change the password again, you can simply run this option (enable admin-panel) again."
     ;;
     *)

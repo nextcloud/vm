@@ -33,7 +33,7 @@ is_process_running dpkg
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "It seems like the last update was not successful.
-Cannot proceed because you would loose the last snapshot."
+Cannot proceed, as you would lose the last snapshot."
     exit 1
 fi
 
@@ -71,8 +71,8 @@ This should work again after a reboot of your server."
         notify_admin_gui "Update failed!" \
 "Could not create NcVM-snapshot - Please reboot your server! $(date +%T)"
         msg_box "The creation of a snapshot failed.
-If you just merged and old one, please reboot your server once more. 
-It should work afterwards again."
+If you just merged and old one, please reboot your server again. 
+It should then start working again."
         exit 1
     fi
     nextcloud_occ maintenance:mode --off
@@ -85,8 +85,8 @@ if [ -d /boot ]
 then
     if [[ "$(df -h | grep -m 1 /boot | awk '{print $5}' | cut -d "%" -f1)" -gt 90 ]]
     then
-        msg_box "It seems like your boot drive is filled more than 90%. \
-You can't proceed to upgrade since it probably will break your system
+        msg_box "It seems like your boot drive is more than 90% full. \
+You can't proceed to upgrade, as it would likely break your system.
 
 To be able to proceed with the update you need to delete some old Linux kernels. If you need support, please visit:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
@@ -321,7 +321,7 @@ then
             docker image prune -a -f
             docker volume prune -f
             notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, \
-we have removed Watchtower from this server. Updates will now happen for each container seperatly instead."
+we have removed Watchtower from this server. Updates will now happen for each container separately."
         fi
     fi
     # Update selected images
@@ -411,8 +411,8 @@ elif [ -f /tmp/prerelease.version ]
 then
     PRERELEASE_VERSION=yes
     msg_box "WARNING! You are about to update to a Beta/RC version of Nextcloud.\nThere's no turning back, \
-because it's not possible to downgrade.\n\nPlease only continue if you have made a backup, or took a snapshot."
-    if ! yesno_box_no "Do you really want to do this?"
+as it's not currently possible to downgrade.\n\nPlease only continue if you have made a backup, or took a snapshot."
+    if ! yesno_box_no "Are you sure you would like to proceed?"
     then
         rm -f /tmp/prerelease.version
         unset PRERELEASE_VERSION
@@ -441,9 +441,9 @@ Current version: $CURRENTVERSION
 Latest release: $NCVERSION
 
 It is best to keep your Nextcloud server upgraded regularly, and to install all point releases
-and major releases without skipping any of them, as skipping releases increases the risk of
-errors. Major releases are 16, 17, 18 and 19. Point releases are intermediate releases for each
-major release. For example, 18.0.5 and 19.0.2 are point releases.
+and major releases, as skipping releases increases the risk of errors. Major releases are 
+16, 17, 18 and 19. Point releases are intermediate releases for each major release. 
+For example, 18.0.5 and 19.0.2 are point releases.
 
 You can read more about Nextcloud releases here: https://github.com/nextcloud/server/wiki/Maintenance-and-Release-Schedule
 
@@ -770,7 +770,7 @@ then
 
 ||| UPGRADE SUCCESS! |||
 
-If you notice that some apps are disabled it's due to that they are not compatible with the new Nextcloud version.
+If you notice that some apps are disabled, it's because they are not compatible with the new Nextcloud version.
 To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
 
 Thank you for using T&M Hansson IT's updater!"
@@ -791,7 +791,7 @@ else
 
 ||| UPGRADE FAILED! |||
 
-Your files are still backed up at $BACKUP. No worries!
+No worries, your files are still backed up at $BACKUP!
 Please report this issue to $ISSUES
 
 Maintenance mode is kept on."

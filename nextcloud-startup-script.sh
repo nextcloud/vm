@@ -107,7 +107,7 @@ then
 
 Since the Home/SME server is equipped with a Wi-Fi module, you will now be asked to enable it to get connectivity.
 
-Please note: It's not recommended to run a server on Wi-Fi. Using an ethernet cable is always the best."
+Please note: It's not recommended to run a server on Wi-Fi; using an ethernet cable is always the best."
     if yesno_box_yes "Do you want to enable Wi-Fi on this server?"
     then
         nmtui
@@ -116,7 +116,7 @@ Please note: It's not recommended to run a server on Wi-Fi. Using an ethernet ca
         then
             print_text_in_color "$IGreen" "Online!"
 	else
-        msg_box "Network NOT OK. You must have a working network connection to run this script.
+        msg_box "Network is NOT OK. You must have a working network connection to run this script.
 
 Please contact us for support:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/
@@ -125,7 +125,7 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
         exit 1
         fi
 else
-    msg_box "Network NOT OK. You must have a working network connection to run this script.
+    msg_box "Network is NOT OK. You must have a working network connection to run this script.
 
 Please contact us for support:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/
@@ -176,7 +176,7 @@ then
     else
         if [ -z "$UNIXUSER" ]
         then
-            msg_box "You seem to be running this as the pure root user.
+            msg_box "You seem to be running this as the root user.
 You must run this as a regular user with sudo permissions.
 
 Please create a user with sudo permissions and the run this command:
@@ -202,8 +202,8 @@ fi
 ######## The first setup is OK to run to this point several times, but not any further ########
 if [ -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times" ]
 then
-    msg_box "The $SCRIPT_NAME script that handles the first setup \
-(this one) is designed to be run once, not several times in a row.
+    msg_box "The $SCRIPT_NAME script that handles this first setup \
+is designed to be run once, not several times in a row.
 
 If you feel uncertain about adding some extra features during this setup, \
 then it's best to wait until after the first setup is done. You can always add all the extra features later.
@@ -212,7 +212,7 @@ then it's best to wait until after the first setup is done. You can always add a
 Please delete this VM from your host and reimport it once again, then run this setup like you did the first time.
 
 [For the Nextcloud Home/SME Server:]
-It's a bit more tricky since you can't revert in the same way as with a VM. \
+It's a bit trickier since you can't revert in the same way as a VM. \
 The best thing you can do now is to save all the output from the session you \
 ran before this one + write down all the steps you took and send and email to:
 github@hanssonit.se with the subject 'Issues with first setup', and we'll take it from there.
@@ -275,7 +275,7 @@ It will also do the following:
 - Install selected apps and automatically configure them
 - Detect and set hostname
 - Detect and set trusted domains
-- Detect the best Ubuntu mirrors depending on your location
+- Detect the best Ubuntu mirrors based on your location
 - Upgrade your system and Nextcloud to latest version
 - Set secure permissions to Nextcloud
 - Set new passwords to Linux and Nextcloud
@@ -422,7 +422,7 @@ unset NC_ADMIN_USER
 
 msg_box "Well done, you have now finished most of the setup.
 
-There are still some stuff left to do, but they are automated so sit back and relax! :)"
+There are still a few steps left but they are automated so sit back and relax! :)"
 
 # Add default notifications
 notify_admin_gui \

@@ -277,7 +277,7 @@ fi
 while :
 do
     ENCRYPTION_KEY=$(input_box_flow "Please enter the encryption key that shall get used for Borg backups.
-Please remember to store this key at a save place. You will not be able to restore your backup if you loose the key.
+Please remember to store this key at a save place. You will not be able to restore your backup if you lose the key.
 If you want to cancel, just type in 'exit' and press [ENTER].")
     if [ "$ENCRYPTION_KEY" = "exit" ]
     then

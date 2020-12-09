@@ -209,7 +209,7 @@ if ! is_root
 then
     msg_box "Sorry, you are not root. You now have two options:
 
-1. With SUDO directly:
+1. Use SUDO directly:
    a) :~$ sudo bash $SCRIPTS/name-of-script.sh
 
 2. Become ROOT and then type your command:
@@ -350,7 +350,7 @@ removal_popup() {
     then
         print_text_in_color "$ICyan" "Reinstalling $1..."
     else
-        msg_box "It seems like neither Uninstall nor Reinstall is chosen, \
+        msg_box "It seems like neither Uninstall nor Reinstall was selected, \
 something is wrong here. Please report this to $ISSUES"
         exit 1
     fi
@@ -363,7 +363,7 @@ get_newest_dat_files() {
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
     if [ -z "$IPV4_NAME" ]
     then
-        print_text_in_color "$IRed" "Could not get the newest IPv4 name. Not updating the .dat file"
+        print_text_in_color "$IRed" "Could not get the latest IPv4 name. Not updating the .dat file"
         sleep 1
     else
         if ! [ -f "$SCRIPTS/$IPV4_NAME" ]
@@ -388,7 +388,7 @@ get_newest_dat_files() {
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
     if [ -z "$IPV6_NAME" ]
     then
-        print_text_in_color "$IRed" "Could not get the newest IPv6 name. Not updating the .dat file"
+        print_text_in_color "$IRed" "Could not get the latest IPv6 name. Not updating the .dat file"
         sleep 1
     else
         if ! [ -f "$SCRIPTS/$IPV6_NAME" ]
@@ -464,15 +464,15 @@ domain_check_200() {
     else
     msg_box "DNS lookup failed with dig. The external IP ($WANIP4) \
 address of this server is not the same as the A-record ($DIG).
-Please check your DNS settings! Maybe the domain isn't propagated?
+Please check your DNS settings! Maybe the domain hasn't propagated?
 Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
 
     msg_box "As you noticed your WAN IP and DNS record doesn't match. \
-This can happen when using DDNS for example, or in some edge cases.
+This can happen when using DDNS for example, or in other edge cases.
 If you feel brave, or are sure that everything is setup correctly, \
 then you can choose to skip this test in the next step.
 
-You can always contact us for further support if you wish: \
+If needed, you can always contact us for further support: \
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
         if ! yesno_box_no "Do you feel brave and want to continue?"
             then
@@ -565,14 +565,14 @@ print_text_in_color "$ICyan" "Automatically configures pm.max_children for php-f
 if [ $PHP_FPM_MAX_CHILDREN -lt $min_max_children ]
 then
     msg_box "The current max_children value available to set is \
-$PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
-The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
+$PHP_FPM_MAX_CHILDREN, and PHP-FPM won't function properly with that value.
+The minimum value is 8, and the value is calculated depening on how much available RAM you have left.
 
 The absolute minimum amount of RAM required to run the VM is 2 GB, but we recommend 4 GB.
 
 You now have two choices:
-1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
-   installing it in the same way as you did before.
+1. Import this VM again, raise the amount of RAM with at least 1 GB, and run this script
+   in the same way as you just have.
 2. Import this VM again without raising the RAM, but don't install any of the following apps:
    1) Collabora
    2) OnlyOffice
@@ -635,7 +635,7 @@ if ! version 18.04 "$DISTRO" 20.04.6
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
 18.04 - 20.04.4 to run this script."
-    print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
+    print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
     sleep 300
@@ -663,7 +663,7 @@ then
     check_command systemctl restart systemd-networkd && sleep 2
     if ! nslookup github.com
     then
-        msg_box "Network NOT OK. You must have a working network connection to run this script.
+        msg_box "Network is NOT OK. You must have a working network connection to run this script.
 If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
         return 1
     fi
@@ -688,8 +688,8 @@ fi
 check_nextcloud_https() {
     if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
     then
-        msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
-You easily activate TLS (HTTPS) by running the Let's Encrypt script.
+        msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
+You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
 More info here: https://bit.ly/37wRCin
 
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
@@ -753,10 +753,10 @@ do
     elif [ "$f" != "${methods[$((${#methods[*]} - 1))]}" ]
     then
         msg_box "It seems like no certs were generated when trying \
-to validate them with the $f method. We will do more tries."
+to validate them with the $f method. We will retry."
     else
         msg_box "It seems like no certs were generated when trying \
-to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
+to validate them with the $f method. We have exhausted all the methods. Please check your DNS and try again."
         return 1;
     fi
 done
@@ -822,11 +822,11 @@ then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
     msg_box "It seems like the port ${1} is closed. This could happened when your
-ISP has blocked the port, or that the port isn't open.
+ISP has blocked the port, or the port isn't open.
 
-If you are 100% sure the port ${1} is open you can now choose to
-continue. There are no guarantees that it will work anyway though,
-since the service depend on that the port ${1} is open and
+If you are 100% sure the port ${1} is open, you can choose to
+continue. There are no guarantees that it will work though,
+since the service depends on port ${1} being open and
 accessible from outside your network."
     if ! yesno_box_no "Are you 100% sure the port ${1} is open?"
     then
@@ -919,7 +919,7 @@ To bypass this check, comment out (add # before the line) 'ram_check X' in the s
 
 In nextcloud_install_production.sh you can find the check somewhere around line #98.
 
-Please note that things may be very slow and not work as expected. YOU HAVE BEEN WARNED!"
+Please note this may affect performance. USE AT YOUR OWN RISK!"
     exit 1
 else
     print_text_in_color "$IGreen" "RAM for ${2} OK! ($mem_available_gb GB)"
@@ -1006,7 +1006,7 @@ then
         if ! site_200 github.com
         then
             # sleep 30 seconds so that some REALLY slow networks have time to restart
-            countdown 'Not online yet, waiting a bit more (last try)...' 30
+            countdown 'Not online yet, waiting a bit more (final attempt)...' 30
             site_200 github.com
         fi
     fi
@@ -1107,7 +1107,7 @@ if network_ok
 then
     curl -fSLO --retry 3 "$NCREPO"/"$STABLEVERSION".tar.bz2
 else
-    msg_box "There seems to be an issue with your network, please try again later.\nThis script will exit."
+    msg_box "There seems to be an issue with your network, please try again later.\nThis script will now exit."
     exit 1
 fi
 # Checksum of the downloaded file
@@ -1244,7 +1244,7 @@ if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
     msg_box "This script is developed to work with Nextcloud $1 and later.
 This means we can't use our own script for now. But don't worry,
-we automated the update process and we will now use Nextclouds updater instead.
+we automated the update process and we will now use Nextcloud's updater instead.
 
 Press [OK] to continue the update, or press [CTRL+C] to abort.
 
@@ -1282,7 +1282,7 @@ if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
 else
-    msg_box "Your current version are still not compatible with the version required to run this script.
+    msg_box "Your current version is still not compatible with the version required to run this script.
 
 To upgrade between major versions, please check this out:
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
@@ -1548,7 +1548,7 @@ then
     return 1
 elif [ -z "$POOLNAME" ]
 then
-    print_text_in_color "$IRed" "It seems like the POOLNAME variable is empty, we can't continue without it."
+    print_text_in_color "$IRed" "Please define the POOLNAME variable, as we can't continue without it."
     return 1
 fi
 # Import zpool in case missing

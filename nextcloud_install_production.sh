@@ -235,8 +235,8 @@ then
 else
     msg_box "This server is designed to run with two disks, one for OS and one for DATA. \
 This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
-You could still choose to only run on one disk though, which is not recommended, \
-but maybe your only option depending on which hypervisor you are running.
+Though not recommended, you can still choose to only run on one disk, \
+if for example it's your only option on the hypervisor you're running.
 
 You will now get the option to decide which disk you want to use for DATA, \
 or run the automatic script that will choose the available disk automatically."
@@ -935,6 +935,6 @@ if [ -z "$PROVISIONING" ]
 then
     msg_box "Installation almost done, system will reboot when you hit OK. 
 
-Please log in again once rebooted to run the setup script."
+After reboot, please login to run the setup script."
 fi
 reboot
