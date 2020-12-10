@@ -139,7 +139,7 @@ then
     rsync -Aaxz /var/log/ncvm/ "$VMLOGS"
     rm -Rf /var/log/ncvm/
     rm -f "$NCDATA"/*.log*
-elif [ -n "$(find /var/ncdata -maxdepth 1 -name "*.log")" ]
+elif [ -d /var/ncdata/ ] && [ -n "$(find /var/ncdata -maxdepth 1 -name "*.log")" ]
 then
     rsync -Aaxz /var/ncdata/*.log "$VMLOGS"
     rm -f /var/ncdata/*.log*
@@ -644,7 +644,7 @@ then
     nextcloud_occ upgrade
     # Optimize
     print_text_in_color "$ICyan" "Optimizing Nextcloud..."
-    yes | nextcloud_occ db:convert-filecache-bigint
+    yes no | nextcloud_occ db:convert-filecache-bigint
     nextcloud_occ db:add-missing-indices
     CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
     if [ "${CURRENTVERSION%%.*}" -ge "19" ]
