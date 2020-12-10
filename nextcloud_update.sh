@@ -644,7 +644,7 @@ then
     nextcloud_occ upgrade
     # Optimize
     print_text_in_color "$ICyan" "Optimizing Nextcloud..."
-    yes | nextcloud_occ db:convert-filecache-bigint
+    yes no | nextcloud_occ db:convert-filecache-bigint
     nextcloud_occ db:add-missing-indices
     CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
     if [ "${CURRENTVERSION%%.*}" -ge "19" ]
