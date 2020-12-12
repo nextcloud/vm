@@ -26,7 +26,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Nextcloud Configuration" "(Choose between available Nextcloud configurations)" \
 "Startup Configuration" "(Choose between available startup configurations)" \
 "Server Configuration" "(Choose between available server configurations)" \
-"Update Nextcloud major" "(Update Nextcloud to the latest major release)" 
+"Update Nextcloud major" "(Update Nextcloud to the latest major release)" \
 "Update Nextcloud minor" "(Update Nextcloud to the latest minor release)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
