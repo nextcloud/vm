@@ -26,7 +26,8 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Nextcloud Configuration" "(Choose between available Nextcloud configurations)" \
 "Startup Configuration" "(Choose between available startup configurations)" \
 "Server Configuration" "(Choose between available server configurations)" \
-"Update Nextcloud" "(Update Nextcloud to the latest release)" 3>&1 1>&2 2>&3)
+"Update Nextcloud major" "(Update Nextcloud to the latest major release)" 
+"Update Nextcloud minor" "(Update Nextcloud to the latest minor release)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Additional Apps")
@@ -45,7 +46,7 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Server Configuration Menu..."
         run_script MENU server_configuration
     ;;
-    "Update Nextcloud")
+    "Update Nextcloud major")
         if [ -f "$SCRIPTS"/update.sh ]
         then
             bash "$SCRIPTS"/update.sh
@@ -54,6 +55,17 @@ case "$choice" in
             download_script STATIC update
             chmod +x "$SCRIPTS"/update.sh
             bash "$SCRIPTS"/update.sh
+        fi
+    ;;
+    "Update Nextcloud minor")
+        if [ -f "$SCRIPTS"/update.sh ]
+        then
+            bash "$SCRIPTS"/update.sh minor
+        else
+            print_text_in_color "$ICyan" "Downloading the Update script..."
+            download_script STATIC update
+            chmod +x "$SCRIPTS"/update.sh
+            bash "$SCRIPTS"/update.sh minor
         fi
     ;;
     *)
