@@ -31,6 +31,11 @@ then
     print_text_in_color "$ICyan" "Running in provisioning mode..."
     export PROVISIONING=1
     sleep 1
+elif [ "$1" = "--not-latest" ]
+then
+    NOT_LATEST=1
+    print_text_in_color "$ICyan" "Running in not-latest mode..."
+    sleep 1
 else
     msg_box "Failed to get the correct flag. Did you enter it correctly?"
     exit 1
@@ -430,6 +435,19 @@ calculate_php_fpm
 
 # Install VM-tools
 install_if_not open-vm-tools
+
+# Get not-latest Nextcloud version
+if [ -n "$NOT_LATEST" ]
+then  
+    while [ -z "$NCVERSION" ]
+    do
+        print_text_in_color "$ICyan" "Fetching the not-latest Nextcloud version..."
+        NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' \
+| sort --version-sort | grep -v "\.0$\|\.1$\|\.2$" | tail -1)
+        STABLEVERSION="nextcloud-$NCVERSION"
+        print_text_in_color "$IGreen" "$NCVERSION"
+    done
+fi
 
 # Download and validate Nextcloud package
 check_command download_verify_nextcloud_stable
