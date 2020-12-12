@@ -439,10 +439,10 @@ install_if_not open-vm-tools
 # Get not-latest Nextcloud version
 if [ -n "$NOT_LATEST" ]
 then  
-	while [ -z "$NCVERSION" ]
-	do
+    while [ -z "$NCVERSION" ]
+    do
         print_text_in_color "$ICyan" "Fetching the not-latest Nextcloud version..."
-		NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep -v "\.0$\|\.1$\|\.2$" | tail -1)
+        NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep -v "\.0$\|\.1$\|\.2$" | tail -1)
         STABLEVERSION="nextcloud-$NCVERSION"
         print_text_in_color "$IGreen" "$NCVERSION"
     done
