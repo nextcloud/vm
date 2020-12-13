@@ -22,7 +22,7 @@ root_check
 if [ -d /home/bitwarden_rs ] || docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
 then
     msg_box "It seems like you have already installed Bitwarden RS.
-You cannot install it again because you would loose all your data and passwords.
+You cannot install it again because you would lose all your data and passwords.
 
 If you are certain that you definitely want to delete Bitwarden RS and all \
 its data to be able to reinstall it, you can execute the following commands:
@@ -68,7 +68,7 @@ SUBDOMAIN=$(input_box_flow "Please enter the Domain that you want to use for Bit
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Inform the user
-msg_box "Before continuing, please make sure that you have you have \
+msg_box "Before continuing, please make sure that you have \
 edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
 directly to this servers IP. A full extensive guide can be found here:
 https://www.techandme.se/open-port-80-443
@@ -304,7 +304,7 @@ do
     msg_box "Bitwarden_rs with fail2ban have been successfully installed! 
 Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
-Attention! Please note down the password for the admin panel: $ADMIN_PASS
+Attention! Please note the password for the admin panel: $ADMIN_PASS
 Otherwise you will not have access to your Bitwarden_rs installation and have to reinstall it completely!
 
 It is highly recommended to configure and test the smtp settings for mails first.

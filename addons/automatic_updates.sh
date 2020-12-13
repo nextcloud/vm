@@ -9,7 +9,7 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 SCRIPT_EXPLAINER="This option will update your server every week on Saturdays at $AUT_UPDATES_TIME:00.
 The update will run the built in script '$SCRIPTS/update.sh' which will update both the server packages and Nextcloud itself.\n
 You can read more about it here: https://www.techandme.se/nextcloud-update-is-now-fully-automated/
-Please keep in mind that automatic updates might fail hence it's \
+Please keep in mind that automatic updates might fail, which is why it's \
 important to have a proper backup in place if you plan to run this option."
 
 # Check for errors + debug code and abort if something isn't right
@@ -46,6 +46,6 @@ then
     echo "exit" >> "$SCRIPTS"/update.sh
 fi
 
-msg_box "Please remember to keep backups in case something goes wrong, you never know."
+msg_box "Please remember to keep backups in case something goes wrong, as you never know."
 
 exit

@@ -215,7 +215,7 @@ ALIASES_CONF
 # Store message in a variable
 TEST_MAIL="Congratulations!
 
-Since this email reached you, it seems like everything is working properly. :)
+Given this email reached you, it seems like everything is working properly. :)
 
 To change the settings please check /etc/msmtprc on your server, or simply just run the setup script again.
 
