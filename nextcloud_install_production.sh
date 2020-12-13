@@ -907,6 +907,13 @@ fi
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
 
+# We don't want automatic updates since they might fail (we use our own script)
+if is_this_installed unattended-upgrades
+then
+    apt purge unattended-upgrades -y
+    apt autoremove -y
+fi
+
 # Put IP address in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
 then
