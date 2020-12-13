@@ -15,6 +15,21 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 20.0.3
+
+### Small changelog:
+- Allow to choose between latest version or not
+- Always run the permissions script
+- Don't allow MariaDB specifically
+- Fix PHP error message from Redis
+- Fix grammar and spelling
+- Update geoblock files
+- Minor bugfixes and improvements
+
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/20.0.2..20.0.3
+- https://nextcloud.com/changelog/#latest20
 
 ## 20.0.2
 
