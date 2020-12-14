@@ -188,7 +188,7 @@ You can also use 'iptables -L -n' to check which IPs that are banned"
 
 # Daily ban notification
 if ! yesno_box_no "Do you want to get notified about daily bans?\n
-If you choose 'yes', you will receive a notification about daily bans at 23.59h."
+If you choose 'yes', you will receive a notification about daily bans at 23:59h."
 then
   exit
 fi
