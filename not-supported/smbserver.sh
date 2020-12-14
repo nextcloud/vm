@@ -96,6 +96,14 @@ then
     fi
 fi
 
+# Set netbios name to a fixed name to reach the server always by using nextcloud
+if ! grep -q "netbios name =" "$SMB_CONF"
+then
+    sed -i '/\[global\]/a netbios name = nextcloud' "$SMB_CONF"
+else
+    sed -i 's|.*netbios name =.*|netbios name = nextcloud|' "$SMB_CONF"
+fi
+
 # Disable the [homes] share by default only if active
 if grep -q "^\[homes\]" "$SMB_CONF"
 then
@@ -717,9 +725,12 @@ EOF
 
 You should be able to connect with the credentials of the chosen SMB-user(s) to the SMB-server now
 to see all for the specific SMB-user available SMB-shares:
-- On Linux in a file manager using this address: 'smb://$ADDRESS'
-- On Windows in the Windows Explorer using this address: '\\\\$ADDRESS'
-- On macOS in the Finder (press 'cmd + K') using this address: 'smb://$ADDRESS'" "$SUBTITLE"
+- On Linux in a file manager using this address: 'smb://nextcloud'
+- On Windows in the Windows Explorer using this address: '\\\\ nextcloud' (without space)
+- On macOS in the Finder (press '[CMD] + [K]') using this address: 'smb://nextcloud'
+
+If connecting using 'nextcloud' as server name doesn't work, \
+you can also connect using the IP-address: '$ADDRESS' instead of nextcloud." "$SUBTITLE"
 
     # Test if NC exists
     if ! [ -f $NCPATH/occ ]
