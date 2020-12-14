@@ -226,7 +226,7 @@ cat << PIHOLE_UPDATE >> "$SCRIPTS/update.sh"
 
 #Pi-hole-start - Please don't remove or change this line
 check_command pihole -up
-check_command sudo sed -i '/^server.port/s/80/8093/' /etc/lighttpd/lighttpd.conf
+check_command sed -i 's|^server\.port.*|server\.port = 8093|' /etc/lighttpd/lighttpd.conf
 # TODO: rewrite to https? Doesn't seem to be easily doable.
 sleep 5 # Wait for lighttpd
 check_command systemctl restart lighttpd
