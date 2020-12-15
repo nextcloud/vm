@@ -211,8 +211,8 @@ fi
 # Report if something was found
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 notify_admin_gui \
-"Your daily fail2ban report" \
-"Those got banned today:
+"Your daily Fail2Ban report" \
+"These IP's got banned today:
 \$BANNED_IPS"
 FAIL2BAN_REPORT
 
@@ -226,6 +226,6 @@ chmod 700 "$SCRIPTS/daily_fail2ban_report.sh"
 
 # Inform user
 msg_box "The daily Fail2Ban report was successfully configured.\n
-You will get notified at 23:59h, if new bans were made that day."
+You will get notified at 23:59h if new bans were made that day."
 
 exit
