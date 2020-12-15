@@ -40,6 +40,8 @@ else
         fail2ban-client unban --all
         apt purge fail2ban -y
         rm -rf /etc/fail2ban
+        crontab -u root -l | grep -v "$SCRIPTS/daily_fail2ban_report.sh"  | crontab -u root -
+        rm -rf "$SCRIPTS/daily_fail2ban_report.sh"
     else
         print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
         fail2ban-client unban --all
@@ -183,5 +185,47 @@ msg_box "Fail2ban is now successfully installed.
 
 Please use 'fail2ban-client set nextcloud unbanip <Banned IP>' to unban certain IPs
 You can also use 'iptables -L -n' to check which IPs that are banned"
+
+# Daily ban notification
+if ! yesno_box_no "Do you want to get notified about daily bans?\n
+If you choose 'yes', you will receive a notification about daily bans at 23:59h."
+then
+  exit
+fi
+
+# Create Fail2ban report script
+cat << FAIL2BAN_REPORT > "$SCRIPTS/daily_fail2ban_report.sh"
+#!/bin/bash
+# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+
+# Look for ip addresses
+BANNED_IPS=\$(grep "Ban " /var/log/fail2ban.log | grep "\$(date +%Y-%m-%d)" \
+| awk -F "NOTICE  " '{print "Jail:",\$2}' | sort)
+
+# Exit if nothing was found
+if [ -z "\$BANNED_IPS" ]
+then
+    exit
+fi
+
+# Report if something was found
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+notify_admin_gui \
+"Your daily Fail2Ban report" \
+"These IP's got banned today:
+\$BANNED_IPS"
+FAIL2BAN_REPORT
+
+# Add crontab entry
+crontab -u root -l | grep -v "$SCRIPTS/daily_fail2ban_report.sh"  | crontab -u root -
+crontab -u root -l | { cat; echo "59 23 * * * $SCRIPTS/daily_fail2ban_report.sh > /dev/null"; } | crontab -u root -
+
+# Adjust access rights
+chown root:root "$SCRIPTS/daily_fail2ban_report.sh"
+chmod 700 "$SCRIPTS/daily_fail2ban_report.sh"
+
+# Inform user
+msg_box "The daily Fail2Ban report was successfully configured.\n
+You will get notified at 23:59h if new bans were made that day."
 
 exit
