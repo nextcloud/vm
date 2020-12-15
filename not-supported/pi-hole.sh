@@ -133,6 +133,11 @@ Please report this to $ISSUES"
     # Remove that section from update.sh
     check_command sed -i "/^#Pi-hole-start/,/^#Pi-hole-end/d" "$SCRIPTS/update.sh"
 
+    # Remove apache conf
+    a2dissite pihole.conf &>/dev/null
+    rm -f "$SITES_AVAILABLE/pihole.conf"
+    restart_webserver
+
     # Inform the user
     msg_box "Pi-hole was successfully uninstalled!
 Please reset the DNS on your router/clients to restore internet connectivity"
@@ -227,7 +232,6 @@ cat << PIHOLE_UPDATE >> "$SCRIPTS/update.sh"
 #Pi-hole-start - Please don't remove or change this line
 check_command pihole -up
 check_command sed -i 's|^server\.port.*|server\.port = 8093|' /etc/lighttpd/lighttpd.conf
-# TODO: rewrite to https? Doesn't seem to be easily doable.
 sleep 5 # Wait for lighttpd
 check_command systemctl restart lighttpd
 # Please don't remove or change this line! Pi-hole installed programs=${INSTALLED[@]}
@@ -281,8 +285,6 @@ fi
 # Change the port to 8093
 check_command sudo sed -i '/^server.port/s/80/8093/' /etc/lighttpd/lighttpd.conf
 
-# TODO: rewrite to https? Doesn't seem to be easily doable.
-
 # Wait for lighttpd to startup
 print_text_in_color "$ICyan" "Restarting lighttpd..."
 sleep 5
@@ -292,6 +294,71 @@ if ! systemctl restart lighttpd
 then
     msg_box "Couldn't restart lighttpd.
 Please report this to $ISSUES"
+    exit 1
+fi
+
+# Install Apache2 
+print_text_in_color "$ICyan" "Configuring Apache..."
+install_if_not apache2
+a2enmod headers
+a2enmod rewrite
+a2enmod ssl
+a2enmod proxy
+a2enmod proxy_http
+
+# Only add TLS 1.3 on Ubuntu later than 20.04
+if version 20.04 "$DISTRO" 20.04.10
+then
+    TLS13="+TLSv1.3"
+fi
+
+cat << PIHOLE_CONF > "$SITES_AVAILABLE/pihole.conf"
+Listen 8094
+<VirtualHost *:8094>
+    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+		
+    # Intermediate configuration
+    SSLEngine               on
+    SSLCompression          off
+    SSLProtocol             -all +TLSv1.2 $TLS13
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
+    ServerSignature         off
+		
+    # Logs
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+		
+    # Just in case - see below
+    SSLProxyEngine On
+    SSLProxyVerify None
+    SSLProxyCheckPeerCN Off
+    SSLProxyCheckPeerName Off
+		
+    # This is needed to redirect access on http://$ADDRESS:8094/ to https://$ADDRESS:8094/
+    ErrorDocument 400 https://$ADDRESS:8094/admin/
+		
+    # basic proxy settings
+    ProxyRequests off
+    ProxyPass / "http://127.0.0.1:8093/"
+    ProxyPassReverse / "http://127.0.0.1:8093/"
+		
+### LOCATION OF CERT FILES ###
+    SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+    SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+</VirtualHost>
+PIHOLE_CONF
+
+# Enable config
+check_command a2ensite pihole.conf
+
+# Restart webserver
+if ! restart_webserver
+then
+    msg_box "Apache2 could not restart...
+The script will exit."
     exit 1
 fi
 
@@ -309,7 +376,7 @@ IPV6_ADDRESS="${IPV6_ADDRESS##*IPV6_ADDRESS=}"
 # Show that everything was setup correctly
 msg_box "Congratulations, your Pi-hole was setup correctly!
 It is now reachable on:
-http://$ADDRESS:8093/admin
+https://$ADDRESS:8094/admin
 
 Your password is: $PASSWORD"
 
