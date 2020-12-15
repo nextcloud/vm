@@ -240,6 +240,7 @@ then
 else
     msg_box "This server is designed to run with two disks, one for OS and one for DATA. \
 This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
+
 Though not recommended, you can still choose to only run on one disk, \
 if for example it's your only option on the hypervisor you're running.
 
