@@ -913,6 +913,7 @@ if is_this_installed unattended-upgrades
 then
     apt purge unattended-upgrades -y
     apt autoremove -y
+    rm -rf /var/log/unattended-upgrades
 fi
 
 # Put IP address in /etc/issue (shown before the login)
