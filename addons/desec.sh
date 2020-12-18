@@ -15,7 +15,7 @@ DEDYNPASS==$(gen_passwd "$SHUF" "a-zA-Z0-9")
 msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to use"
 while :
 do
-    SUBDEDYN=$(input_box_flow "Please enter the subdomain (*example*.dedyn.io) that you want to use
+    SUBDEDYN=$(input_box_flow "Please enter the subdomain (*example*.dedyn.io) that you want to use)
 The only allowed characters for the username are:
 'a-z', 'A-Z', and '0-9'")
     if [[ "$SUBDEDYN" == *" "* ]]
