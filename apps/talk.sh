@@ -249,7 +249,7 @@ mkdir -p /etc/nats
 echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf
 ## Installation
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nats-server.asc" "https://packaging.gitlab.io/nats-server/gpg.key"
-echo "deb [arch=amd64] https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list
+echo "deb https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list
 apt update -q4 & spinner_loading
 install_if_not nats-server
 chown nats:nats /etc/nats/nats.conf
@@ -262,7 +262,7 @@ check_command systemctl enable nats-server
 # shellcheck disable=SC1091
 source /etc/lsb-release
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-janus.asc" "https://packaging.gitlab.io/janus/gpg.key"
-echo "deb [arch=amd64] https://packaging.gitlab.io/janus/$DISTRIB_CODENAME $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-janus.list
+echo "deb https://packaging.gitlab.io/janus/$DISTRIB_CODENAME $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-janus.list
 apt update -q4 & spinner_loading
 install_if_not janus
 ## Configuration
@@ -276,7 +276,7 @@ check_command systemctl enable janus
 # HPB
 ## Installation
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc" "https://packaging.gitlab.io/nextcloud-spreed-signaling/gpg.key"
-echo "deb [arch=amd64] https://packaging.gitlab.io/nextcloud-spreed-signaling signaling main" > /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list
+echo "deb https://packaging.gitlab.io/nextcloud-spreed-signaling signaling main" > /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list
 apt update -q4 & spinner_loading
 install_if_not nextcloud-spreed-signaling
 ## Configuration
