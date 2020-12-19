@@ -18,7 +18,7 @@ Server installation. Simplified. :cloud:
 ## Dependencies:
 (Ubuntu Server 20.04 LTS 64-bit)
 <br>
-(Linux Kernel: 5.14)
+(Linux Kernel: 5.4)
 - Apache 2.4
 - PostgreSQL 12
 - PHP-FPM 7.4
