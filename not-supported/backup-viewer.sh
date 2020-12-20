@@ -139,15 +139,6 @@ then
     exit 1
 fi
 
-# Find out which one was mounted
-if [ "$choice" = "$DAILY_BACKUP_TARGET" ]
-then
-    BACKUP_MOUNTPOINT="$DAILY_BACKUP_MOUNTPOINT"
-elif [ "$choice" = "$OFFSHORE_BACKUP_TARGET" ]
-then
-    BACKUP_MOUNTPOINT="$OFFSHORE_BACKUP_MOUNTPOINT"
-fi
-
 # Check the mountpoint
 if mountpoint -q /tmp/borg
 then
@@ -157,6 +148,19 @@ then
         msg_box "There is still something mounted on /tmp/borg. Cannot proceed."
         exit 1
     fi
+fi
+
+# Find out which one was mounted
+if [ "$choice" = "$DAILY_BACKUP_TARGET" ]
+then
+    BACKUP_MOUNTPOINT="$DAILY_BACKUP_MOUNTPOINT"
+elif [ "$choice" = "$OFFSHORE_BACKUP_TARGET" ]
+then
+    BACKUP_MOUNTPOINT="$OFFSHORE_BACKUP_MOUNTPOINT"
+    # Work around issue with borg
+    # https://github.com/borgbackup/borg/issues/3428#issuecomment-380399036
+    mv /root/.config/borg/security/ /root/.config/borg/security.bak
+    mv /root/.cache/borg/ /root/.cache/borg.bak
 fi
 
 # Mount the repository
@@ -214,6 +218,15 @@ if ! umount /tmp/borg
 then
     msg_box "Could not unmount the backup repository."
     exit 1
+fi
+
+# Restore original cache and security folder
+if [ "$BACKUP_MOUNTPOINT" = "$OFFSHORE_BACKUP_MOUNTPOINT" ]
+then
+    rm -r /root/.config/borg/security
+    mv /root/.config/borg/security.bak/ /root/.config/borg/security
+    rm -r /root/.cache/borg
+    mv /root/.cache/borg.bak/ /root/.cache/borg
 fi
 
 # Re-rename the snapshot to represent that it is done
