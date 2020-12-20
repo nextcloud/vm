@@ -150,6 +150,13 @@ then
     fi
 fi
 
+# Rename the snapshot to represent that the backup is locked
+if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+then
+    msg_box "Could not rename the snapshot. Please reboot your server!"
+    exit 1
+fi
+
 # Find out which one was mounted
 if [ "$choice" = "$DAILY_BACKUP_TARGET" ]
 then
@@ -198,13 +205,6 @@ cat << MC_INI > "/root/.config/mc/panels.ini"
 list_format=user
 user_format=full name | mtime:15 | size:15 | owner:12 | group:12 | perm:12
 MC_INI
-
-# Rename the snapshot to represent that the backup is locked
-if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
-then
-    msg_box "Could not rename the snapshot. Please reboot your server!"
-    exit 1
-fi
 
 # Show Midnight commander
 if ! mc /tmp/borg
