@@ -78,7 +78,7 @@ then
     # Always chown root dir
     chown "${htuser}":"${htgroup}" "${NCDATA}"/
     # Check subdirs as well
-    if find "${NCDATA}" -maxdepth 4 -type d -exec stat --printf='%U:%G\n' {} \; | grep -v "${htuser}:${htgroup}"
+    if find "${NCDATA}" -maxdepth 2 -type d -exec stat --printf='%U:%G\n' {} \; | grep -v "${htuser}":"${htgroup}"
     then
         chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
     fi
@@ -90,11 +90,11 @@ print_text_in_color "$ICyan" "chmod/chown .htaccess"
 if [ -f "${NCPATH}"/.htaccess ]
 then
     chmod 0644 "${NCPATH}"/.htaccess
-    chown "${rootuser}":"${htgroup}" "${NCPATH}"/.htaccess
+    chown "${htuser}":"${htgroup}" "${NCPATH}"/.htaccess
 fi
 if [ -f "${NCDATA}"/.htaccess ]
 then
     chmod 0644 "${NCDATA}"/.htaccess
-    chown "${rootuser}":"${htgroup}" "${NCDATA}"/.htaccess
+    chown "${htuser}":"${htgroup}" "${NCDATA}"/.htaccess
 fi
 
