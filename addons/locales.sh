@@ -16,8 +16,6 @@ debug_mode
 # Must be root
 root_check
 
-##################################################################
-
 # Set locales
 print_text_in_color "$ICyan" "Setting locales..."
 if [ "$KEYBOARD_LAYOUT" = "us" ]
