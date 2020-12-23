@@ -37,6 +37,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "PLEX Media Server" "(Multimedia server application)" OFF \
 "Remotedesktop" "(Install a remotedesktop based on xrdp)" OFF \
 "SMB-server" "(Create and manage a SMB-server on OS level)" OFF \
+"System Restore" "(Restore the system partition from a backup)" OFF \
 "Veracrypt" "(Format, encrypt and mount drives with Veracrypt)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -87,6 +88,10 @@ case "$choice" in
     *"SMB-server"*)
         print_text_in_color "$ICyan" "Downloading the SMB Server script..."
         run_script NOT_SUPPORTED_FOLDER smbserver
+    ;;&
+    *"System Restore"*
+        print_text_in_color "$ICyan" "Downloading the System Restore script..."
+        run_script NOT_SUPPORTED_FOLDER system-restore
     ;;&
     *"Veracrypt"*)
         print_text_in_color "$ICyan" "Downloading the Veracrypt script..."
