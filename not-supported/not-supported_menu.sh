@@ -89,7 +89,7 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the SMB Server script..."
         run_script NOT_SUPPORTED_FOLDER smbserver
     ;;&
-    *"System Restore"*
+    *"System Restore"*)
         print_text_in_color "$ICyan" "Downloading the System Restore script..."
         run_script NOT_SUPPORTED_FOLDER system-restore
     ;;&
