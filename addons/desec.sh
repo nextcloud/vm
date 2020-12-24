@@ -31,7 +31,7 @@ The only allowed characters for the username are:
 done
 
 # Email address
-msg_box "You will now be prompted to enter an email adress. It's very important that the email adress you enter it a 100% valid one.
+msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter it a 100% valid one.
 
 Every 6 months you will get an email asking you to confrim your domain. If deSeC doesn't get an answer within 3 weeks, you domain will be destroyed!"
 
@@ -58,7 +58,7 @@ curl -X POST https://desec.io/api/v1/auth/ \
 EOF
 
 # Ask user to check email and confirm to get the token
-msg_box "If the registration was sucessful you should have got an email with your auth token.
+msg_box "If the registration was successful you should have got an email with your auth token.
 
 Please copy that and enter it in the next box after you hit OK."
 
