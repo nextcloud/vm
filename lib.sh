@@ -39,7 +39,7 @@ SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
 IFACE=$(ip r | grep "default via" | awk '{print $5}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
-REPO=$(grep deb-src /etc/apt/sources.list | grep http | awk '{print $3}' | head -1)
+REPO=$(grep "^deb " /etc/apt/sources.list | grep http | awk '{print $2}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
 WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
@@ -370,7 +370,8 @@ get_newest_dat_files() {
             print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
             sleep 1
             check_command curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
-            check_command rm /usr/share/GeoIP/GeoIP.dat
+            mkdir -p /usr/share/GeoIP
+            rm -f /usr/share/GeoIP/GeoIP.dat
             check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
             check_command mv "/usr/share/GeoIP/$IPV4_NAME" /usr/share/GeoIP/GeoIP.dat
             chown root:root /usr/share/GeoIP/GeoIP.dat
@@ -395,7 +396,8 @@ get_newest_dat_files() {
             print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
             sleep 1
             check_command curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
-            check_command rm /usr/share/GeoIP/GeoIPv6.dat
+            mkdir -p /usr/share/GeoIP
+            rm -f /usr/share/GeoIP/GeoIPv6.dat
             check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
             check_command mv "/usr/share/GeoIP/$IPV6_NAME" /usr/share/GeoIP/GeoIPv6.dat
             chown root:root /usr/share/GeoIP/GeoIPv6.dat

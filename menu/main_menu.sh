@@ -16,8 +16,6 @@ debug_mode
 # Must be root
 root_check
 
-##################################################################
-
 # Main menu
 choice=$(whiptail --title "$TITLE" --menu \
 "Choose what you want to do.
