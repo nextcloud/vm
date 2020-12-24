@@ -35,7 +35,7 @@ msg_box "You will now be prompted to enter an email address. It's very important
 
 Every 6 months you will get an email asking you to confrim your domain. If deSeC doesn't get an answer within 3 weeks, you domain will be destroyed!"
 
-VALIDEMAIL=$(input_box_flow "Please enter a valid email adress. NOT a fake or a temporary one.")
+VALIDEMAIL=$(input_box_flow "Please enter a valid email address. NOT a fake or a temporary one.")
 
 msg_box "Your account for deSEC password is:
 
