@@ -72,5 +72,5 @@ then
       https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6=fd08::1234
 
     curl https://update6.dedyn.io/?hostname="$DEDYNDOMAIN"?myipv4="$WANIP4"\&myipv6=fd08::1234 \
-      --header "Authorization: Token $AUTHTOKEN"
+      --header "Authorization: Token $DEDYNAUTHTOKEN"
 fi
