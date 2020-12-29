@@ -754,7 +754,7 @@ you can also connect using the IP-address: '$ADDRESS' instead of nextcloud." "$S
     NEWNAME_BACKUP="$NEWNAME"
 
     # Ask if the default name can be used
-    if yesno_box_yes "Do you want to use a different name for this external storage inside Nextcloud or \
+    if yesno_box_no "Do you want to use a different name for this external storage inside Nextcloud or \
 just use the default sharename $NEWNAME?\nThis time spaces are possible." "$SUBTITLE"
     then
         while :
