@@ -170,7 +170,7 @@ then
     msg_box "Something failed while testing the DDNS update.
 Please try again by running this script again!"
 else
-    msg_box "Concratulations, it seems like the initial DDNS update worked!
+    msg_box "Congratulations, it seems like the initial DDNS update worked!
 DDclient is now set up correctly!"
 fi
 exit
