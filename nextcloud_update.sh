@@ -223,7 +223,6 @@ if ! grep -qFx extension=redis.so "$PHP_INI"
 then
     echo "extension=redis.so" >> "$PHP_INI"
 fi
-restart_webserver
 
 # Upgrade APCu and igbinary
 if [ "${CURRENTVERSION%%.*}" -ge "17" ]
@@ -281,6 +280,9 @@ then
         fi
     fi
 fi
+
+# Make sure services are restarted
+restart_webserver
 
 # Update adminer
 if [ -d $ADMINERDIR ]
