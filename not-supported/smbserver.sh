@@ -825,7 +825,7 @@ four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
     # Mount it to the admin group if no group or user chosen
     if [ -z "$SELECTED_USER" ] && [ "$NEWNAME" != "/" ]
     then
-        msg_box "No user SMB-user available in Nextcloud, mounting the local storage to the admin group."
+        msg_box "No SMB-user available in Nextcloud, mounting the local storage to the admin group."
         nextcloud_occ files_external:applicable --add-group=admin "$MOUNT_ID" -q
     fi
 
