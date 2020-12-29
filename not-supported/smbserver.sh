@@ -568,6 +568,7 @@ done
 # Define valid SMB-users
 choose_users() {
 VALID_USERS=""
+unset VALID_USERS_AR
 smb_user_menu "$1\nPlease select at least one SMB-user." "$2"
 if [ -z "${selected_options[*]}" ]
 then
@@ -578,6 +579,7 @@ do
     if [[ "${selected_options[*]}" == *"$user  "* ]]
     then
         VALID_USERS+="$user, "
+        VALID_USERS_AR+=("$user")
     fi
 done
 }
@@ -737,7 +739,7 @@ you can also connect using the IP-address: '$ADDRESS' instead of nextcloud." "$S
     then
         return
     # Ask if the same directory shall get mounted as external storage to NC
-    elif ! yesno_box_no "Do you want to mount the directory $NEWPATH to Nextcloud as local external storage?" "$SUBTITLE"
+    elif ! yesno_box_yes "Do you want to mount the directory $NEWPATH to Nextcloud as local external storage?" "$SUBTITLE"
     then
         return
     fi
@@ -752,7 +754,7 @@ you can also connect using the IP-address: '$ADDRESS' instead of nextcloud." "$S
     NEWNAME_BACKUP="$NEWNAME"
 
     # Ask if the default name can be used
-    if yesno_box_no "Do you want to use a different name for this external storage inside Nextcloud or \
+    if yesno_box_yes "Do you want to use a different name for this external storage inside Nextcloud or \
 just use the default sharename $NEWNAME?\nThis time spaces are possible." "$SUBTITLE"
     then
         while :
@@ -783,115 +785,48 @@ four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
     # Choose if it shall be writeable in NC
     if [ "$WRITEABLE" = "yes" ]
     then
-        if ! yesno_box_yes "Do you want to mount this new \
-external storage $NEWNAME as writeable in your Nextcloud?" "$SUBTITLE"
-        then
-            READONLY="true"
-        else
-            READONLY="false"
-        fi
+        READONLY="false"
     elif [ "$WRITEABLE" = "no" ]
     then
-        if ! yesno_box_no "Do you want to mount this new \
-external storage $NEWNAME as writeable in your Nextcloud?" "$SUBTITLE"
-        then
-            READONLY="true"
-        else
-            READONLY="false"
-        fi
+        READONLY="true"
     fi
 
     # Choose if sharing shall get enabled for that mount
-    if [ "$NEWNAME" != "/" ]
+    if [ "$NEWNAME" = "/" ]
     then
-        if yesno_box_yes "Do you want to enable sharing for this external storage $NEWNAME?" "$SUBTITLE"
-        then
-            SHARING="true"
-        else
-            SHARING="false"
-        fi
+        SHARING="false"
+        SELECTED_USER=""
     else
-        if yesno_box_no "Do you want to enable sharing for this external storage $NEWNAME?" "$SUBTITLE"
-        then
-            SHARING="true"
-        else
-            SHARING="false"
-        fi
-    fi
-
-    # Select NC groups and/or users
-    choice=$(whiptail --title "$TITLE - $SUBTITLE" --checklist \
-"You can now choose to enable the this external storage $NEWNAME for specific Nextcloud users or groups.
-If you select no group and no user, the external storage will be visible to all users of your instance.
-Please note that you cannot come back to this menu.
-$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Choose some Nextcloud groups" "" ON \
-"Choose some Nextcloud users" "" OFF 3>&1 1>&2 2>&3)
-    unset SELECTED_USER
-    unset SELECTED_GROUPS
-
-    # Choose from NC groups
-    if [[ "$choice" == *"Choose some Nextcloud groups"* ]]
-    then
-        args=(whiptail --title "$TITLE - $SUBTITLE" --checklist \
-"Please select which Nextcloud groups shall get access to the new external storage $NEWNAME.
-If you select no group and no user, the external storage will be visible to all users of your instance.
-$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
-        NC_GROUPS=$(nextcloud_occ_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||g')
-        mapfile -t NC_GROUPS <<< "$NC_GROUPS"
-        for GROUP in "${NC_GROUPS[@]}"
+        SHARING="true"
+        SELECTED_USER=""
+        UNAVAILABLE_USER=""
+        # Choose from NC users
+        NC_USER=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+        for user in "${VALID_USERS_AR[@]}"
         do
-            if [ "$GROUP" = "admin" ]
+            if echo "$NC_USER" | grep -q "^$user$"
             then
-                args+=("$GROUP  " "" ON)
+                SELECTED_USER+="$user  "
             else
-                args+=("$GROUP  " "" OFF)
+                UNAVAILABLE_USER+="$user " 
             fi
         done
-        SELECTED_GROUPS=$("${args[@]}" 3>&1 1>&2 2>&3)
-    fi
-
-    # Choose from NC users
-    if [[ "$choice" == *"Choose some Nextcloud users"* ]]
-    then
-        args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
-"Please select which Nextcloud users shall get access to the new external storage $NEWNAME.
-If you select no group and no user, the external storage will be visible to all users of your instance.
-$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
-        NC_USER=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
-        mapfile -t NC_USER <<< "$NC_USER"
-        for USER in "${NC_USER[@]}"
-        do
-            args+=("$USER  " "" OFF)
-        done
-        SELECTED_USER=$("${args[@]}" 3>&1 1>&2 2>&3)
+        if [ -n "$UNAVAILABLE_USER" ]
+        then
+            msg_box "Some chosen SMB-users weren't available in Nextcloud: $UNAVAILABLE_USER"
+        fi
     fi
 
     # Create and mount external storage
+    print_text_in_color "$ICyan" "Mounting the local storage to Nextcloud."
     MOUNT_ID=$(nextcloud_occ files_external:create "$NEWNAME" local null::null -c datadir="$NEWPATH" )
     MOUNT_ID=${MOUNT_ID//[!0-9]/}
 
     # Mount it to the admin group if no group or user chosen
-    if [ -z "$SELECTED_GROUPS" ] && [ -z "$SELECTED_USER" ]
+    if [ -z "$SELECTED_USER" ] && [ "$NEWNAME" != "/" ]
     then
-        if ! yesno_box_no "Attention! You haven't selected any Nextcloud group or user.
-Is this correct?\nIf you select 'yes', it will be visible to all users of your Nextcloud instance.
-If you select 'no', it will be only visible to Nextcloud users in the admin group." "$SUBTITLE"
-        then
-            nextcloud_occ files_external:applicable --add-group=admin "$MOUNT_ID" -q
-        fi
-    fi
-
-    # Mount it to selected groups
-    if [ -n "$SELECTED_GROUPS" ]
-    then
-        nextcloud_occ_no_check group:list | grep ".*:$" | sed 's|^  - ||g' | sed 's|:$||' | while read -r NC_GROUPS
-        do
-            if [[ "$SELECTED_GROUPS" = *"$NC_GROUPS  "* ]]
-            then
-                nextcloud_occ files_external:applicable --add-group="$NC_GROUPS" "$MOUNT_ID" -q
-            fi
-        done
+        msg_box "No user SMB-user available in Nextcloud, mounting the local storage to the admin group."
+        nextcloud_occ files_external:applicable --add-group=admin "$MOUNT_ID" -q
     fi
 
     # Mount it to selected users
