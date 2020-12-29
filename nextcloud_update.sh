@@ -313,15 +313,20 @@ then
             if does_this_docker_exist 'containrrr/watchtower'
             then
                 docker stop watchtower
+                WATCHTOWER=1
             elif does_this_docker_exist 'v2tec/watchtower'
             then
                 docker stop watchtower
+                WATCHTOWER=1
             fi
             docker container prune -f
             docker image prune -a -f
             docker volume prune -f
-            notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, \
+            if [ -n "$WATCHTOWER" ]
+            then
+                notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, \
 we have removed Watchtower from this server. Updates will now happen for each container separately."
+            fi
         fi
     fi
     # Update selected images
