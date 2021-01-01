@@ -28,7 +28,6 @@ PR's are more than welcome. Happy Nextclouding!
 - Fixes to DDclient
 - Minor bugfixes and improvements
 
-
 ### Full changelog:
 - https://github.com/nextcloud/vm/compare/20.0.3..20.0.4
 - https://nextcloud.com/changelog/#latest20
