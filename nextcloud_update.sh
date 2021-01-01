@@ -13,7 +13,7 @@ source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 ncdb
 nc_update
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

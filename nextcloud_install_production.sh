@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # Prefer IPv4 for apt
 echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
@@ -211,6 +211,14 @@ stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
+
+# We don't want automatic updates since they might fail (we use our own script)
+if is_this_installed unattended-upgrades
+then
+    apt purge unattended-upgrades -y
+    apt autoremove -y
+    rm -rf /var/log/unattended-upgrades
+fi
 
 # Create $SCRIPTS dir
 if [ ! -d "$SCRIPTS" ]
@@ -907,14 +915,6 @@ fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
-
-# We don't want automatic updates since they might fail (we use our own script)
-if is_this_installed unattended-upgrades
-then
-    apt purge unattended-upgrades -y
-    apt autoremove -y
-    rm -rf /var/log/unattended-upgrades
-fi
 
 # Put IP address in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
