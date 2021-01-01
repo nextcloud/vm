@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="ClamAV"
@@ -107,8 +107,8 @@ SCRIPT_PATH="$SCRIPTS/nextcloud-av-notification.sh"
 cat << AV_NOTIFICATION >> "$SCRIPT_PATH"
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 # Copyright © Georgiy Sitnikov
 # Inspired by/based on https://github.com/GAS85/nextcloud_scripts/blob/master/nextcloud-av-notification.sh
 
@@ -246,7 +246,7 @@ esac
 cat << CLAMAV_REPORT > "$SCRIPTS"/clamav-fullscan.sh
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

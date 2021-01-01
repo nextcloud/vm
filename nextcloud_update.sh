@@ -13,7 +13,7 @@ source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 ncdb
 nc_update
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -127,7 +127,7 @@ else
     chmod +x "$SECURE"
 fi
 
-# Move all logs to new dir (2019-09-04) # updated 2020-11-29
+# Move all logs to new dir (2019-09-04) # updated 2021-11-29
 bash $SECURE & spinner_loading
 nextcloud_occ config:system:set log_type --value=file
 nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
@@ -149,7 +149,7 @@ then
     rm -f "$NCDATA"/*.log*
 fi
 
-# Remove the local lib.sh since it's causing issues with new functions (2020-06-01)
+# Remove the local lib.sh since it's causing issues with new functions (2021-06-01)
 if [ -f $SCRIPTS/lib.sh ]
 then
     rm -f $SCRIPTS/lib.sh

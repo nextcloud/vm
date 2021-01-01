@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="Off-Shore Backup Wizard"
@@ -255,8 +255,8 @@ msg_box "We will create the off-shore backup script now."
 cat << WRITE_BACKUP_SCRIPT > "$BACKUP_SCRIPT_NAME"
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="Off-Shore Rsync Backup"
