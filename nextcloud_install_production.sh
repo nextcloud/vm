@@ -212,6 +212,14 @@ stop_if_installed php7.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
+# We don't want automatic updates since they might fail (we use our own script)
+if is_this_installed unattended-upgrades
+then
+    apt purge unattended-upgrades -y
+    apt autoremove -y
+    rm -rf /var/log/unattended-upgrades
+fi
+
 # Create $SCRIPTS dir
 if [ ! -d "$SCRIPTS" ]
 then
@@ -907,14 +915,6 @@ fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
-
-# We don't want automatic updates since they might fail (we use our own script)
-if is_this_installed unattended-upgrades
-then
-    apt purge unattended-upgrades -y
-    apt autoremove -y
-    rm -rf /var/log/unattended-upgrades
-fi
 
 # Put IP address in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
