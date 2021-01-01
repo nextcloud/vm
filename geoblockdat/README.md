@@ -16,7 +16,7 @@ All .dat files in this folder are from https://www.miyuru.lk/geoiplegacy and con
 `yyyy-mm-Maxmind-Country-IPv6.dat`<br>
 _(Year and month should be chosen based on when the files were updated by Sankalpa)_<br><br>
 **One example is:**<br>
-`2021-09-Maxmind-Country-IPv4.dat`<br>
+`2020-09-Maxmind-Country-IPv4.dat`<br>
 and<br>
-`2021-09-Maxmind-Country-IPv6.dat`<br>
-_(If the files were updated on September 2021 by Sankalpa)_
+`2020-09-Maxmind-Country-IPv6.dat`<br>
+_(If the files were updated on September 2020 by Sankalpa)_

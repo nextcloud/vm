@@ -970,7 +970,7 @@ nextcloud_occ_no_check() {
 sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
-# Backwards compatibility (2021-10-08)
+# Backwards compatibility (2020-10-08)
 occ_command() {
 nextcloud_occ "$@";
 }
@@ -1193,7 +1193,7 @@ run_main_script() {
 run_script GITHUB_REPO "${1}"
 }
 
-# Backwards compatibility (2021-10-25) Needed for update.sh to run in all VMs, even those several years old
+# Backwards compatibility (2020-10-25) Needed for update.sh to run in all VMs, even those several years old
 run_static_script() {
 run_script STATIC "${1}"
 }
