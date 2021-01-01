@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="Bitlocker Mount"
