@@ -20,11 +20,8 @@ debug_mode
 root_check
 
 # Check if already installed
-if ! is_this_installed plexmediaserver
+if is_this_installed plexmediaserver
 then
-    # Ask for installing
-    install_popup "$SCRIPT_NAME"
-else
     msg_box "It seems like PLEX Media Server is already installed.
 
 If you want to delete PLEX Media Server and it's data to be able \
@@ -36,26 +33,99 @@ Attention! This will delete the user-data:
 'sudo rm -r /var/lib/plexmediaserver'"
     exit 1
 fi
-
-# Show warning
-msg_box "Please note that we will add a 3rd-party repository to your server \
-to be able to install and update PLEX Media Server using the apt packet manager.
-This can set your server under risk, though!"
-if ! yesno_box_yes "Do you want to continue nonetheless?"
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^plex$"
 then
+    msg_box "It seems like PLEX Media Server is already installed.
+
+If you want to delete PLEX Media Server and it's data to be able \
+to start from scratch, run the following two commands:
+'sudo docker stop plex'
+'sudo docker rm plex'
+
+Attention! This will delete the user-data:
+'sudo rm -r /home/plex'"
     exit 1
 fi
 
-# Install PLEX
-if curl -fsSL https://downloads.plex.tv/plex-keys/PLEXSign.key | sudo apt-key add -
+# Ask for installing
+install_popup "$SCRIPT_NAME"
+
+# Test Hardware transcoding
+if lspci -v -s "$(lspci | grep VGA | cut -d" " -f 1)" | grep -q "Kernel driver in use: i915"
 then
-    echo "deb https://downloads.plex.tv/repo/deb/ public main" > /etc/apt/sources.list.d/plexmediaserver.list
-    apt update -q4 & spinner_loading
-    check_command apt install plexmediaserver -y -o Dpkg::Options::="--force-confold"
+    msg_box "Hardware transcoding is available. It is recommended to activate this in Plex later \
+but requires a Plex Pass. You can learn more about Plex Pass here: 'www.plex.tv/plex-pass'"
+else
+    msg_box "Hardware transcoding is NOT available. It is not recommended to continue."
+    if ! yesno_box_no "Do you want to continue nonetheless?"
+    then
+        exit 1
+    fi
 fi
 
-# Put the new plex user into the www-data group
-check_command usermod --append --groups www-data plex
+# Find mounts
+DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 2 -type d | grep -v "/mnt/ncdata")
+mapfile -t DIRECTORIES <<< "$DIRECTORIES"
+for directory in "${DIRECTORIES[@]}"
+do
+    if mountpoint -q "$directory" && [ "$(stat -c '%a' "$directory")" = "770" ]
+    then
+        if [ "$(stat -c '%U' "$directory")" = "www-data" ] && [ "$(stat -c '%G' "$directory")" = "www-data" ]
+        then
+            MOUNTS+=(-v "$directory:$directory:ro")
+        elif [ "$(stat -c '%U' "$directory")" = "plex" ] && [ "$(stat -c '%G' "$directory")" = "plex" ]
+        then
+            MOUNTS+=(-v "$directory:$directory:ro")
+        fi
+    fi
+done
+if [ -z "${MOUNTS[*]}" ]
+then
+    msg_box "No usable drive found. You have to mount a new drive in /mnt."
+    exit 1
+fi
+
+# Install Docker
+install_docker
+
+# Create plex user
+if ! id plex &>/dev/null
+then
+    check_command adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "plex"
+fi
+
+PLEX_UID="$(id -u plex)"
+PLEX_GID="$(id -g www-data)"
+
+# Create home directory
+mkdir -p /home/plex/config
+mkdir -p /home/plex/transcode
+chown -R plex:plex /home/plex
+chmod -R 770 /home/plex
+
+# Get docker container
+print_text_in_color "$ICyan" "Getting Plex Media Server..."
+docker pull plexinc/pms-docker
+
+# Create Plex
+# Plex needs ports: 32400/tcp 3005/tcp 8324/tcp 32469/tcp 1900/udp 32410/udp 32412/udp 32413/udp 32414/udp
+print_text_in_color "$ICyan" "Installing Plex Media Server..."
+docker run -d \
+--name plex \
+--restart always \
+--network=host \
+-e PLEX_UID="$PLEX_UID" \
+-e PLEX_GID="$PLEX_GID" \
+-v /etc/timezone:/etc/timezone:ro \
+-v /etc/localtime:/etc/localtime:ro \
+-v /home/plex/config:/config \
+-v /home/plex/transcode:/transcode \
+"${MOUNTS[@]}" \
+--device=/dev/dri:/dev/dri \
+plexinc/pms-docker
+
+# Add prune command
+add_dockerprune
 
 # Inform the user
 msg_box "PLEX Media Server was successfully installed.
@@ -77,6 +147,6 @@ You will have the option to automatically open this port by using UPNP in the ne
 fi
 
 msg_box "You should visit 'http://$ADDRESS:32400/web' to setup your PLEX Media Server next.
-Advice: All your media should be mounted in a subfolder of '/mnt' or '/media'"
+Advice: All your drives should be mounted in a subfolder of '/mnt'"
 
 exit

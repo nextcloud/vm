@@ -55,11 +55,7 @@ do
     if mountpoint -q "$directory" && [ "$(stat -c '%a' "$directory")" = "770" ] \
 && [ "$(stat -c '%U' "$directory")" = "www-data" ] && [ "$(stat -c '%G' "$directory")" = "www-data" ]
     then
-        if grep -q " \"$directory\"$" "$SCRIPTS/veracrypt-automount.sh" &>/dev/null \
-|| grep -q "^/media/bitlocker/1/dislocker-file $directory " /etc/fstab
-        then
-            MOUNTS+=("$directory/")
-        fi
+        MOUNTS+=("$directory/")
     fi
 done
 if [ -z "${MOUNTS[*]}" ]

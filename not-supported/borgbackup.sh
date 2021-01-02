@@ -254,7 +254,7 @@ borg --version
 BORG_OPTS=(--stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
 # System backup
-EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache var/cache lost+found run var/run dev tmp)
+EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache home/plex/transcode var/cache lost+found run var/run dev tmp)
 # mnt, media, sys, prob don't need to be excluded because of the usage of lvm-snapshots and the --one-file-system flag
 for directory in "${EXCLUDED_DIRECTORIES[@]}"
 do
