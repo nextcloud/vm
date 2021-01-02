@@ -340,6 +340,8 @@ we have removed Watchtower from this server. Updates will now happen for each co
     docker_update_specific 'onlyoffice/documentserver' 'OnlyOffice'
     # Full Text Search
     docker_update_specific 'ark74/nc_fts' 'Full Text Search'
+    # Plex
+    docker_update_specific 'plexinc/pms-docker' "Plex Media Server"
 fi
 
 # Cleanup un-used packages

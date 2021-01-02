@@ -129,6 +129,12 @@ then
     LABEL="partition-label"
 fi
 
+# Create plex user
+if ! id plex &>/dev/null
+then
+    check_command adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "plex"
+fi
+
 # Enter the mountpoint
 while :
 do
@@ -159,7 +165,7 @@ If you want to cancel, type 'exit' and press [ENTER].")
         msg_box "The directory isn't allowed to start with '/mnt/smbshares'"
     else
         echo "UUID=$UUID $MOUNT_PATH ntfs-3g \
-windows_names,uid=www-data,gid=www-data,umask=007,nofail,x-systemd.automount,x-systemd.idle-timeout=60 0 0" >> /etc/fstab
+windows_names,uid=plex,gid=plex,umask=007,nofail,x-systemd.automount,x-systemd.idle-timeout=60 0 0" >> /etc/fstab
         mkdir -p "$MOUNT_PATH"
         if ! mount "$MOUNT_PATH"
         then
@@ -181,6 +187,38 @@ if ! yesno_box_no "Is this drive meant to be a backup drive?
 If you choose yes, it will only get mounted by a backup script \
 and will restrict the read/write permissions to the root user."
 then
+    # Test if Plex is installed
+    if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^plex$"
+    then
+        # Reconfiguring Plex
+        msg_box "Plex Media Server found. We are now adjusting Plex to be able to use the new drive.
+This can take a while. Please be patient!"
+        print_text_in_color "$ICyan" "Downloading the needed tool to get the current Plex config..."
+        docker pull assaflavie/runlike
+        echo '#/bin/bash' > /tmp/pms-conf
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p plex >> /tmp/pms-conf
+        if ! grep -q "$MOUNT_PATH:$MOUNT_PATH:ro" /tmp/pms-conf
+        then
+            MOUNT_PATH_SED="${MOUNT_PATH//\//\\/}"
+            sed -i "0,/--volume/s// -v $MOUNT_PATH_SED:$MOUNT_PATH_SED:ro \\\\\n&/" /tmp/pms-conf
+            docker stop plex
+            if ! docker rm plex
+            then
+                msg_box "Something failed while removing the old container."
+                return
+            fi
+            if ! bash /tmp/pms-conf
+            then
+                msg_box "Starting the new container failed. You can find the config here: '/tmp/pms-conf'"
+                return
+            fi
+            rm /tmp/pms-conf
+            msg_box "Plex was adjusted!"
+        else
+            rm /tmp/pms-conf
+            msg_box "No need to update Plex, since the drive is already mounted to Plex."
+        fi
+    fi
     return
 fi
 

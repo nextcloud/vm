@@ -87,8 +87,8 @@ POWER
     sleep 5
     check_command systemctl restart acpid
 
-    # Add the user to the www-data group to be able to write to all disks
-    usermod -a -G www-data "$UNIXUSER"
+    # Add the user to the www-data and plex group to be able to write to all disks
+    usermod --append --groups www-data,plex "$UNIXUSER"
 
     # Inform the user
     msg_box "XRDP was successfully installed. 

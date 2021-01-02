@@ -160,4 +160,37 @@ msg_box "Congratulations! The mount was successful.
 You can now access the Bitlocker drive here:
 $MOUNT_PATH"
 
+# Test if Plex is installed
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^plex$"
+then
+    # Reconfiguring Plex
+    msg_box "Plex Media Server found. We are now adjusting Plex to be able to use the new drive.
+This can take a while. Please be patient!"
+    print_text_in_color "$ICyan" "Downloading the needed tool to get the current Plex config..."
+    docker pull assaflavie/runlike
+    echo '#/bin/bash' > /tmp/pms-conf
+    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p plex >> /tmp/pms-conf
+    if ! grep -q "$MOUNT_PATH:$MOUNT_PATH:ro" /tmp/pms-conf
+    then
+        MOUNT_PATH_SED="${MOUNT_PATH//\//\\/}"
+        sed -i "0,/--volume/s// -v $MOUNT_PATH_SED:$MOUNT_PATH_SED:ro \\\\\n&/" /tmp/pms-conf
+        docker stop plex
+        if ! docker rm plex
+        then
+            msg_box "Something failed while removing the old container."
+            exit 1
+        fi
+        if ! bash /tmp/pms-conf
+        then
+            msg_box "Starting the new container failed. You can find the config here: '/tmp/pms-conf'"
+            exit 1
+        fi
+        rm /tmp/pms-conf
+        msg_box "Plex was adjusted!"
+    else
+        rm /tmp/pms-conf
+        msg_box "No need to update Plex, since the drive is already mounted to Plex."
+    fi
+fi
+
 exit
