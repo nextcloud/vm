@@ -49,7 +49,7 @@ case "$choice" in
         SUBTITLE="Fail2ban Unban IP"
         if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
         then
-            UNBANIP="$(input_box_flow "Enter the IP adress that you want to unban.")" "$SUBTITLE"
+            UNBANIP="$(input_box_flow "Enter the IP address that you want to unban.")" "$SUBTITLE"
             if ! iptables -L -n | grep -qv "$UNBANIP"
             then
                 msg_box "It seems that $UNBANIP isn't banned. Please try again."
@@ -57,10 +57,10 @@ case "$choice" in
             else
                 if fail2ban-client set nextcloud unbanip "$UNBANIP"
                 then
-                    msg_box "$UNBANIP was sucessfully removed from the Nextcloud block list!"
+                    msg_box "$UNBANIP was successfully removed from the Nextcloud block list!"
                 elif fail2ban-client set sshd unbanip "$UNBANIP"
                 then
-                    msg_box "$UNBANIP was sucessfully removed from the SSH block list!"
+                    msg_box "$UNBANIP was successfully removed from the SSH block list!"
                 else
                     msg_box "It seems like something went wrong, please report this issue to $ISSUES."
                     exit
