@@ -55,9 +55,12 @@ case "$choice" in
                 msg_box "It seems that $UNBANIP isn't banned. Please try again."
                 run_script MENU fail2ban_menu
             else
-                if fail2ban-client set ssh unbanip "$UNBANIP"
+                if fail2ban-client set nextcloud unbanip "$UNBANIP"
                 then
-                    msg_box "$UNBANIP was sucessfully removed from the block list!"
+                    msg_box "$UNBANIP was sucessfully removed from the Nextcloud block list!"
+                elif fail2ban-client set sshd unbanip "$UNBANIP"
+                then
+                    msg_box "$UNBANIP was sucessfully removed from the SSH block list!"
                 else
                     msg_box "It seems like something went wrong, please report this issue to $ISSUES."
                     exit
