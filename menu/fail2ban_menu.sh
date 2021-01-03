@@ -28,7 +28,8 @@ choice=$(whiptail --title "$TITLE" --checklist \
 "Automatically install and configure Fail2ban.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Install-Fail2ban" "(Install Fail2ban and protect Nextcloud + SSH)" "$STARTUP_SWITCH" \
-"Fail2ban-Statuscheck" "(Check status of currently blocked attacks)" OFF 3>&1 1>&2 2>&3)
+"Fail2ban-Statuscheck" "(Check status of currently blocked attacks)" OFF \
+"Fail2ban-UnbanIP" "(Unban blocked IP addresses)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Install-Fail2ban"*)
@@ -44,8 +45,29 @@ case "$choice" in
             msg_box "Fail2ban isn't installed. Please run 'sudo bash /var/scripts/menu.sh' to install it." "$SUBTITLE"
         fi
     ;;&
+    *"Fail2ban-UnbanIP"*)
+        SUBTITLE="Fail2ban Unban IP"
+        if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
+        then
+            UNBANIP="$(input_box_flow "Enter the IP adress that you want to unban.")" "$SUBTITLE"
+            if ! iptables -L -n | grep -qv "$UNBANIP"
+            then
+                msg_box "It seems that $UNBANIP isn't banned. Please try again."
+                run_script MENU fail2ban_menu
+            else
+                if fail2ban-client set ssh unbanip "$UNBANIP"
+                then
+                    msg_box "$UNBANIP was sucessfully removed from the block list!"
+                else
+                    msg_box "It seems like something went wrong, please report this issue to $ISSUES."
+                    exit
+                fi
+            fi
+        else
+            msg_box "Fail2ban isn't installed. Please run 'sudo bash /var/scripts/menu.sh' to install it." "$SUBTITLE"
+        fi
+    ;;&
     *)
     ;;
 esac
 exit
-
