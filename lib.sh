@@ -1648,7 +1648,7 @@ if ! crontab -u root -l | grep -q 'dockerprune.sh'
 then
     print_text_in_color "$ICyan" "Adding cronjob for Docker weekly prune..."
     mkdir -p "$SCRIPTS"
-    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh > /dev/null"; } | crontab -u root -
     check_command echo "#!/bin/bash" > "$SCRIPTS/dockerprune.sh"
     check_command echo "docker system prune -a --force" >> "$SCRIPTS/dockerprune.sh"
     check_command echo "exit" >> "$SCRIPTS/dockerprune.sh"
