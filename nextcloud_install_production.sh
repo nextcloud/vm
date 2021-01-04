@@ -933,11 +933,25 @@ fi
 # chmod +x
 # Set permissions for ncadmin in the change scripts
 
+
+print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
+
 # Get needed scripts for first bootup
 download_script GITHUB_REPO nextcloud-startup-script
 download_script STATIC instruction
 download_script STATIC history
 download_script NETWORK static_ip
+# moved from the startup script 2021-01-04
+download_script LETS_ENC activate-tls
+download_script STATIC temporary-fix
+download_script STATIC update
+download_script STATIC setup_secure_permissions_nextcloud
+download_script STATIC change_db_pass
+download_script STATIC nextcloud
+download_script MENU menu
+download_script MENU server_configuration
+download_script MENU nextcloud_configuration
+download_script MENU additional_apps
 
 # Make $SCRIPTS excutable
 chmod +x -R "$SCRIPTS"
@@ -946,6 +960,7 @@ chown root:root -R "$SCRIPTS"
 # Prepare first bootup
 check_command run_script STATIC change-ncadmin-profile
 check_command run_script STATIC change-root-profile
+
 
 if home_sme_server
 then
