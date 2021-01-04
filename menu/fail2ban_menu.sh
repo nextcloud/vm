@@ -50,7 +50,7 @@ case "$choice" in
         if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
         then
             UNBANIP="$(input_box_flow 'Enter the IP address that you want to unban.')"
-            if [ "$(iptables -L -n | grep REJECT | awk '{print$4}')" != "$UNBANIP" ]
+            if ! iptables -L -n | grep -q "$UNBANIP"
             then
                 msg_box "It seems that $UNBANIP isn't banned. Please try again." "$SUBTITLE"
                 run_script MENU fail2ban_menu
