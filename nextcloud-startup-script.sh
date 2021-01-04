@@ -247,10 +247,6 @@ sed -i "s|DocumentRoot /var/www/html|DocumentRoot $HTML|g" /etc/apache2/sites-av
  sed -i '19i\   </FilesMatch>' /etc/apache2/sites-available/000-default.conf
  sed -i '20i\    ' /etc/apache2/sites-available/000-default.conf
 
-# Make $SCRIPTS excutable
-chmod +x -R $SCRIPTS
-chown root:root -R $SCRIPTS
-
 # Allow $UNIXUSER to run figlet script
 chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
 
@@ -262,7 +258,6 @@ It will also do the following:
 - Install selected apps and automatically configure them
 - Detect and set hostname
 - Detect and set trusted domains
-- Detect the best Ubuntu mirrors based on your location
 - Upgrade your system and Nextcloud to latest version
 - Set secure permissions to Nextcloud
 - Set new passwords to Linux and Nextcloud
