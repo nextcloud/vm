@@ -24,12 +24,20 @@ else
     STARTUP_SWITCH="OFF"
 fi
 
+# Set the FAIL2BAN switch
+if is_this_installed fail2ban && [ -f "/etc/fail2ban/filter.d/nextcloud.conf" ]
+then
+    FAIL2BAN_SWITCH="ON"
+else
+    FAIL2BAN_SWITCH="OFF"
+fi
+
 choice=$(whiptail --title "$TITLE" --checklist \
 "Automatically install and configure Fail2ban.
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Install-Fail2ban" "(Install Fail2ban and protect Nextcloud + SSH)" "$STARTUP_SWITCH" \
-"Fail2ban-Statuscheck" "(Check status of currently blocked attacks)" OFF \
-"Fail2ban-UnbanIP" "(Unban blocked IP addresses)" OFF 3>&1 1>&2 2>&3)
+"Fail2ban-Statuscheck" "(Check status of currently blocked attacks)" "$FAIL2BAN_SWITCH" \
+"Fail2ban-UnbanIP" "(Unban blocked IP addresses)" "$FAIL2BAN_SWITCH" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Install-Fail2ban"*)
@@ -44,7 +52,6 @@ case "$choice" in
         else
             msg_box "Fail2ban isn't installed. Please run 'sudo bash /var/scripts/menu.sh' to install it." "$SUBTITLE"
         fi
-        run_script MENU fail2ban_menu
     ;;&
     *"Fail2ban-UnbanIP"*)
         SUBTITLE="Fail2ban Unban IP"
