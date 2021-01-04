@@ -44,6 +44,7 @@ case "$choice" in
         else
             msg_box "Fail2ban isn't installed. Please run 'sudo bash /var/scripts/menu.sh' to install it." "$SUBTITLE"
         fi
+        run_script MENU fail2ban_menu
     ;;&
     *"Fail2ban-UnbanIP"*)
         SUBTITLE="Fail2ban Unban IP"
@@ -52,13 +53,13 @@ case "$choice" in
             UNBANIP="$(input_box_flow 'Enter the IP address that you want to unban.')"
             if ! iptables -L -n | grep -q "$UNBANIP"
             then
-                msg_box "It seems that $UNBANIP isn't banned. Please try again." "$SUBTITLE"
+                msg_box "It seems that $UNBANIP isn't banned. Please run the Fail2ban statuscheck to check currently banned IP addresses." "$SUBTITLE"
                 run_script MENU fail2ban_menu
             else
-                if fail2ban-client set nextcloud unbanip "$UNBANIP"
+                if fail2ban-client set nextcloud unbanip "$UNBANIP" >/dev/null 2>&1
                 then
                     msg_box "$UNBANIP was successfully removed from the Nextcloud block list!" "$SUBTITLE"
-                elif fail2ban-client set sshd unbanip "$UNBANIP"
+                elif fail2ban-client set sshd unbanip "$UNBANIP" >/dev/null 2>&1
                 then
                     msg_box "$UNBANIP was successfully removed from the SSH block list!" "$SUBTITLE"
                 else
