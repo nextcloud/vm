@@ -941,7 +941,7 @@ download_script GITHUB_REPO nextcloud-startup-script
 download_script STATIC instruction
 download_script STATIC history
 download_script NETWORK static_ip
-# moved from the startup script 2021-01-04
+# Moved from the startup script 2021-01-04
 download_script LETS_ENC activate-tls
 download_script STATIC temporary-fix
 download_script STATIC update
@@ -960,7 +960,6 @@ chown root:root -R "$SCRIPTS"
 # Prepare first bootup
 check_command run_script STATIC change-ncadmin-profile
 check_command run_script STATIC change-root-profile
-
 
 if home_sme_server
 then
