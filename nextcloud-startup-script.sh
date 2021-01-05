@@ -224,19 +224,6 @@ fi
 
 touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 
-print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
-# Scripts in static (.sh, .php, .py)
-download_script LETS_ENC activate-tls
-download_script STATIC temporary-fix
-download_script STATIC update
-download_script STATIC setup_secure_permissions_nextcloud
-download_script STATIC change_db_pass
-download_script STATIC nextcloud
-download_script MENU menu
-download_script MENU server_configuration
-download_script MENU nextcloud_configuration
-download_script MENU additional_apps
-
 if home_sme_server
 then
     download_script STATIC nhss_index
@@ -260,10 +247,6 @@ sed -i "s|DocumentRoot /var/www/html|DocumentRoot $HTML|g" /etc/apache2/sites-av
  sed -i '19i\   </FilesMatch>' /etc/apache2/sites-available/000-default.conf
  sed -i '20i\    ' /etc/apache2/sites-available/000-default.conf
 
-# Make $SCRIPTS excutable
-chmod +x -R $SCRIPTS
-chown root:root -R $SCRIPTS
-
 # Allow $UNIXUSER to run figlet script
 chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS/nextcloud.sh"
 
@@ -275,7 +258,6 @@ It will also do the following:
 - Install selected apps and automatically configure them
 - Detect and set hostname
 - Detect and set trusted domains
-- Detect the best Ubuntu mirrors based on your location
 - Upgrade your system and Nextcloud to latest version
 - Set secure permissions to Nextcloud
 - Set new passwords to Linux and Nextcloud
