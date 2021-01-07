@@ -1144,7 +1144,9 @@ download_script() {
         print_text_in_color "$IRed" "Downloading ${2} failed"
         sleep 2
         msg_box "Script failed to download. Please run: \
-'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again."
+'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again.
+
+If it still fails, please report this issue to: $ISSUES."
         exit 1
     fi
 }
@@ -1174,7 +1176,9 @@ run_script() {
         print_text_in_color "$IRed" "Running ${2} failed"
         sleep 2
         msg_box "Script failed to execute. Please run: \
-'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again."
+'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again.
+
+If it still fails, please report this issue to: $ISSUES."
         exit 1
     fi
 }
