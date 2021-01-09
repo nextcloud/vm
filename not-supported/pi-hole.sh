@@ -230,6 +230,7 @@ mapfile -t INSTALLED <<< "${INSTALLED[@]}"
 cat << PIHOLE_UPDATE >> "$SCRIPTS/update.sh"
 
 #Pi-hole-start - Please don't remove or change this line
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 check_command pihole -up
 check_command sed -i 's|^server\.port.*|server\.port = 8093|' /etc/lighttpd/lighttpd.conf
 sleep 5 # Wait for lighttpd
