@@ -640,7 +640,14 @@ then
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     if [ -n "$SNAPSHOT_EXISTS" ]
     then
-        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+        if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+        then
+            nextcloud_occ maintenance:mode --off
+            msg_box "Could not rename the snapshot before starting the update.\n
+It is possible that a backup is currently running.\n
+Advice: don't restart your system now if that is the case!"
+            exit 1
+        fi
     fi
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
