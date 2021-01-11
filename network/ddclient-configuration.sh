@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="DynDNS with ddclient"
@@ -164,8 +164,13 @@ $HOSTNAME
 DDCLIENT_CONF
 
 # Test connection
-msg_box "Everything is setup by now and we will check the connection."
-OUTPUT="$(ddclient -verbose)"
-msg_box "Please check the logs below and make sure that everything looks good. If not, just run this script again.
-If you are certain that you entered all things correctly and it didn't work, please report this to\n$ISSUES\n\n$OUTPUT"
+msg_box "Everything is set up by now and we will check the connection."
+if ! ddclient -verbose
+then
+    msg_box "Something failed while testing the DDNS update.
+Please try again by running this script again!"
+else
+    msg_box "Congratulations, it seems like the initial DDNS update worked!
+DDclient is now set up correctly!"
+fi
 exit

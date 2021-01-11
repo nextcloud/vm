@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="Backup Viewer"
@@ -148,6 +148,14 @@ then
         msg_box "There is still something mounted on /tmp/borg. Cannot proceed."
         exit 1
     fi
+fi
+
+# Check if pending snapshot is existing a second time and cancel the viewing in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    msg_box "The snapshot pending does exist. Can currently not show the backup.
+Please try again later."
+    exit 1
 fi
 
 # Rename the snapshot to represent that the backup is locked

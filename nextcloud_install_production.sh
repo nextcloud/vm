@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # Prefer IPv4 for apt
 echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
@@ -211,6 +211,14 @@ stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
+
+# We don't want automatic updates since they might fail (we use our own script)
+if is_this_installed unattended-upgrades
+then
+    apt purge unattended-upgrades -y
+    apt autoremove -y
+    rm -rf /var/log/unattended-upgrades
+fi
 
 # Create $SCRIPTS dir
 if [ ! -d "$SCRIPTS" ]
@@ -908,14 +916,6 @@ fi
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
 
-# We don't want automatic updates since they might fail (we use our own script)
-if is_this_installed unattended-upgrades
-then
-    apt purge unattended-upgrades -y
-    apt autoremove -y
-    rm -rf /var/log/unattended-upgrades
-fi
-
 # Put IP address in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
 then
@@ -933,11 +933,25 @@ fi
 # chmod +x
 # Set permissions for ncadmin in the change scripts
 
+
+print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
+
 # Get needed scripts for first bootup
 download_script GITHUB_REPO nextcloud-startup-script
 download_script STATIC instruction
 download_script STATIC history
 download_script NETWORK static_ip
+# Moved from the startup script 2021-01-04
+download_script LETS_ENC activate-tls
+download_script STATIC temporary-fix
+download_script STATIC update
+download_script STATIC setup_secure_permissions_nextcloud
+download_script STATIC change_db_pass
+download_script STATIC nextcloud
+download_script MENU menu
+download_script MENU server_configuration
+download_script MENU nextcloud_configuration
+download_script MENU additional_apps
 
 # Make $SCRIPTS excutable
 chmod +x -R "$SCRIPTS"

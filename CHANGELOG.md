@@ -15,6 +15,24 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 20.0.4
+
+### Major changes:
+- We upgraded the compatibility for VMware. More info [here](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration). Changes are based on [this](https://github.com/nextcloud/vm/issues/1358) issue.
+
+### Small changelog:
+- Happy new year!
+- Add ban notifications to Fail2ban
+- Remove unattended upgrades to improve stability (we have our own auto updater)
+- Fixes to the SMB Mount script
+- Fixes to DDclient
+- Minor bugfixes and improvements
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/20.0.3..20.0.4
+- https://nextcloud.com/changelog/#latest20
+
+
 ## 20.0.3
 
 ### Small changelog:

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="Borg Backup"
@@ -36,15 +36,15 @@ stop_services() {
     inform_user "$ICyan" "Stopping services..."
     if is_docker_running
     then
-        check_command systemctl stop docker
+        systemctl stop docker
     fi
-    nextcloud_occ maintenance:mode --on
+    nextcloud_occ_no_check maintenance:mode --on
     systemctl stop postgresql
 }
 start_services() {
     inform_user "$ICyan" "Starting services..."
     systemctl start postgresql
-    nextcloud_occ maintenance:mode --off
+    nextcloud_occ_no_check maintenance:mode --off
     start_if_stopped docker
 }
 paste_log_file() {
@@ -191,6 +191,12 @@ then
     fi
 fi
 
+# Check if pending snapshot is existing and cancel the backup in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
+fi
+
 # Create LVM snapshot & Co.
 inform_user "$ICyan" "Creating LVM snapshot..."
 stop_services
@@ -254,7 +260,7 @@ borg --version
 BORG_OPTS=(--stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
 # System backup
-EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache var/cache lost+found run var/run dev tmp)
+EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache home/plex/transcode var/cache lost+found run var/run dev tmp)
 # mnt, media, sys, prob don't need to be excluded because of the usage of lvm-snapshots and the --one-file-system flag
 for directory in "${EXCLUDED_DIRECTORIES[@]}"
 do
@@ -423,6 +429,12 @@ then
     then
         send_error_mail "Could not mount the backup drive. Is it connected?" "Backup integrity check"
     fi
+fi
+
+# Check if pending snapshot is existing and cancel the backup check in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    send_error_mail "NcVM-snapshot-pending exists. Please try again later!" "Backup integrity check"
 fi
 
 # Rename the snapshot to represent that the backup is pending

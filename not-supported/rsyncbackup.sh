@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="Rsync Backup"
@@ -150,6 +150,12 @@ then
     then
         send_error_mail "Could not mount the off-shore backup drive. Please connect it!"
     fi
+fi
+
+# Check if pending snapshot is existing and cancel the backup in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
 fi
 
 # Rename the snapshot to represent that the backup is pending

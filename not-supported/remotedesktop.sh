@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
-# Copyright © 2020 Simon Lindner (https://github.com/szaimen)
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="Remotedesktop"
@@ -87,8 +87,8 @@ POWER
     sleep 5
     check_command systemctl restart acpid
 
-    # Add the user to the www-data group to be able to write to all disks
-    usermod -a -G www-data "$UNIXUSER"
+    # Add the user to the www-data and plex group to be able to write to all disks
+    usermod --append --groups www-data,plex "$UNIXUSER"
 
     # Inform the user
     msg_box "XRDP was successfully installed. 
@@ -136,6 +136,14 @@ else
     MAKEMKV_SWITCH=ON
 fi
 
+# OnlyOffice
+if is_this_installed onlyoffice-desktopeditors
+then
+    ONLYOFFICE_SWITCH=OFF
+else
+    ONLYOFFICE_SWITCH=ON
+fi
+
 # File manager nautilus
 if is_this_installed nautilus
 then
@@ -173,27 +181,23 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Gedit" "(Text Editor)" "$GEDIT_SWITCH" \
 "MakeMKV" "(Rip DVDs and Blu-rays)" "$MAKEMKV_SWITCH" \
 "Nautilus" "(File Manager)" "$NAUTILUS_SWITCH" \
+"OnlyOffice" "(Open Source Office Suite)" "$ONLYOFFICE_SWITCH" \
 "Sound Juicer" "(Rip CDs)" "$SJ_SWITCH" \
 "VLC" "(Play Videos and Audio)" "$VLC_SWITCH" \
 "XRDP" "(Uninstall XRDP and all listed desktop apps)" OFF 3>&1 1>&2 2>&3)
 
 # Function for installing or removing packets
 install_remove_packet() {
-    local SUBTITLE="$2"
     if is_this_installed "$1"
     then
-        if yesno_box_yes "It seems like $2 is already installed.\nDo you want to uninstall it?" "$SUBTITLE"
-        then
-            apt purge "$1" -y
-            apt autoremove -y
-            msg_box "$2 was successfully uninstalled." "$SUBTITLE"
-        fi
+        print_text_in_color "$ICyan" "Uninstalling $2"
+        apt purge "$1" -y
+        apt autoremove -y
+        print_text_in_color "$ICyan" "$2 was successfully uninstalled."
     else
-        if yesno_box_yes "Do you want to install $2?" "$SUBTITLE"
-        then
-            install_if_not "$1"
-            msg_box "$2 was successfully installed." "$SUBTITLE"
-        fi
+        print_text_in_color "$ICyan" "Installing $2"
+        install_if_not "$1"
+        print_text_in_color "$ICyan" "$2 was successfully installed"
     fi
 }
 
@@ -204,8 +208,8 @@ case "$choice" in
 as well as the gnome desktop." "$SUBTITLE"
         if yesno_box_no "Do you want to do this?" "$SUBTITLE"
         then
-            APPS=(evince eog firefox gedit makemkv-oss makemkv-bin nautilus sound-juicer vlc acpid \
-gnome-shell-extension-dash-to-panel gnome-session xrdp)
+            APPS=(evince eog firefox gedit makemkv-oss makemkv-bin nautilus onlyoffice-desktopeditors sound-juicer \
+vlc acpid gnome-shell-extension-dash-to-panel gnome-session xrdp)
             for app in "${APPS[@]}"
             do
                 if is_this_installed "$app"
@@ -240,25 +244,26 @@ gnome-shell-extension-dash-to-panel gnome-session xrdp)
         SUBTITLE="MakeMKV"
         if is_this_installed makemkv-oss || is_this_installed makemkv-bin
         then
-            if yesno_box_yes "It seems like MakeMKV is already installed.\nDo you want to uninstall it?" "$SUBTITLE"
-            then
-                apt purge makemkv-oss -y
-                apt purge makemkv-bin -y
-                apt autoremove -y
-                add-apt-repository --remove ppa:heyarje/makemkv-beta -y
-                apt update -q4 & spinner_loading
-                msg_box "MakeMKV was successfully uninstalled." "$SUBTITLE"
-            fi
+            print_text_in_color "$ICyan" "Uninstalling $SUBTITLE"
+            apt purge makemkv-oss -y
+            apt purge makemkv-bin -y
+            apt autoremove -y
+            add-apt-repository --remove ppa:heyarje/makemkv-beta -y
+            apt update -q4 & spinner_loading
+            print_text_in_color "$ICyan" "$SUBTITLE was successfully uninstalled."
         else
             msg_box "MakeMKV is not open source. This is their official website: makemkv.com
 We will need to add a 3rd party repository to install it which can set your server under risk." "$SUBTITLE"
             if yesno_box_yes "Do you want to install MakeMKV nonetheless?" "$SUBTITLE"
             then
-                if add-apt-repository ppa:heyarje/makemkv-beta
+                print_text_in_color "$ICyan" "Installing $SUBTITLE"
+                if add-apt-repository ppa:heyarje/makemkv-beta -y
                 then
                     apt update -q4 & spinner_loading
                     apt install makemkv-oss makemkv-bin -y
-                    msg_box "MakeMKV was successfully installed." "$SUBTITLE"
+                    print_text_in_color "$ICyan" "$SUBTITLE was successfully installed"
+                else
+                    msg_box "Something failed while trying to add the new repository" "$SUBTITLE"
                 fi
             fi
         fi
@@ -266,6 +271,34 @@ We will need to add a 3rd party repository to install it which can set your serv
     ;;&
     *"Nautilus"*)
         install_remove_packet nautilus Nautilus
+    ;;&
+    *"OnlyOffice"*)
+        SUBTITLE="OnlyOffice"
+        if is_this_installed onlyoffice-desktopeditors
+        then
+            print_text_in_color "$ICyan" "Uninstalling $SUBTITLE"
+            apt purge onlyoffice-desktopeditors -y
+            apt autoremove -y
+            rm -f /etc/apt/sources.list.d/onlyoffice-desktopeditors.list
+            apt update -q4 & spinner_loading
+            print_text_in_color "$ICyan" "$SUBTITLE was successfully uninstalled."
+        else
+            msg_box "OnlyOffice Desktop Editors are open source but not existing in the Ubuntu repositories.
+Hence, we will add a 3rd-party repository to your server \
+to be able to install and update OnlyOffice Desktop Editors using the apt packet manager.
+This can set your server under risk, though!" "$SUBTITLE"
+            if yesno_box_yes "Do you want to install OnlyOffice Desktop Editors nonetheless?" "$SUBTITLE"
+            then
+                print_text_in_color "$ICyan" "Installing $SUBTITLE"
+                apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CB2DE8E5
+                echo "deb https://download.onlyoffice.com/repo/debian squeeze main" \
+> /etc/apt/sources.list.d/onlyoffice-desktopeditors.list
+                apt update -q4 & spinner_loading
+                install_if_not onlyoffice-desktopeditors
+                print_text_in_color "$ICyan" "$SUBTITLE was successfully installed"
+            fi
+        fi
+        unset SUBTITLE
     ;;&
     *"Sound Juicer"*)
         install_remove_packet sound-juicer "Sound Juicer"

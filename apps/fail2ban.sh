@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 # Inspired by https://github.com/nextcloud/nextcloudpi/blob/master/etc/nextcloudpi-config.d/fail2ban.sh
 
 true
@@ -118,9 +118,8 @@ nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
 # Test: failregex = Login failed.*Remote IP.*<HOST>
 cat << NCONF > /etc/fail2ban/filter.d/nextcloud.conf
 [Definition]
-failregex=^{"reqId":".*","remoteAddr":".*","app":"core","message":"Login failed: '.*' \(Remote IP: '<HOST>'\)","level":2,"time":".*"}$
-            ^{"reqId":".*","level":2,"time":".*","remoteAddr":".*","app":"core".*","message":"Login failed: '.*' \(Remote IP: '<HOST>'\)".*}$
-            ^.*\"remoteAddr\":\"<HOST>\".*Trusted domain error.*\$
+failregex = Login failed.*Remote IP.*<HOST>
+ignoreregex =
 NCONF
 
 # Create jail.local file
@@ -196,7 +195,7 @@ fi
 # Create Fail2ban report script
 cat << FAIL2BAN_REPORT > "$SCRIPTS/daily_fail2ban_report.sh"
 #!/bin/bash
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # Look for ip addresses
 BANNED_IPS=\$(grep "Ban " /var/log/fail2ban.log | grep "\$(date +%Y-%m-%d)" \

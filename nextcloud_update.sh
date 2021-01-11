@@ -13,7 +13,7 @@ source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 ncdb
 nc_update
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -32,8 +32,7 @@ is_process_running dpkg
 
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
-    msg_box "It seems like the last update was not successful.
-Cannot proceed, as you would lose the last snapshot."
+    msg_box "Cannot run this script currently. Please try again later!"
     exit 1
 fi
 
@@ -223,7 +222,6 @@ if ! grep -qFx extension=redis.so "$PHP_INI"
 then
     echo "extension=redis.so" >> "$PHP_INI"
 fi
-restart_webserver
 
 # Upgrade APCu and igbinary
 if [ "${CURRENTVERSION%%.*}" -ge "17" ]
@@ -282,6 +280,9 @@ then
     fi
 fi
 
+# Make sure services are restarted
+restart_webserver
+
 # Update adminer
 if [ -d $ADMINERDIR ]
 then
@@ -313,15 +314,20 @@ then
             if does_this_docker_exist 'containrrr/watchtower'
             then
                 docker stop watchtower
+                WATCHTOWER=1
             elif does_this_docker_exist 'v2tec/watchtower'
             then
                 docker stop watchtower
+                WATCHTOWER=1
             fi
             docker container prune -f
             docker image prune -a -f
             docker volume prune -f
-            notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, \
+            if [ -n "$WATCHTOWER" ]
+            then
+                notify_admin_gui "Watchtower removed" "Due to compatibility issues with Bitwarden and Watchtower, \
 we have removed Watchtower from this server. Updates will now happen for each container separately."
+            fi
         fi
     fi
     # Update selected images
@@ -333,6 +339,8 @@ we have removed Watchtower from this server. Updates will now happen for each co
     docker_update_specific 'onlyoffice/documentserver' 'OnlyOffice'
     # Full Text Search
     docker_update_specific 'ark74/nc_fts' 'Full Text Search'
+    # Plex
+    docker_update_specific 'plexinc/pms-docker' "Plex Media Server"
 fi
 
 # Cleanup un-used packages
@@ -631,7 +639,14 @@ then
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     if [ -n "$SNAPSHOT_EXISTS" ]
     then
-        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+        if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+        then
+            nextcloud_occ maintenance:mode --off
+            msg_box "Could not rename the snapshot before starting the update.\n
+It is possible that a backup is currently running.\n
+Advice: don't restart your system now if that is the case!"
+            exit 1
+        fi
     fi
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
@@ -798,6 +813,10 @@ Maintenance mode is kept on."
     notify_admin_gui \
     "Nextcloud update failed!" \
     "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
+    if [ -n "$SNAPSHOT_EXISTS" ]
+    then
+        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
+    fi
     nextcloud_occ status
     exit 1
 fi

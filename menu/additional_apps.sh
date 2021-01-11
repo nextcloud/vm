@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Additional Apps Menu"
@@ -42,6 +42,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitwarden" "(External password manager)" OFF \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
 "Adminer" "(PostgreSQL GUI)" OFF \
+"ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
@@ -68,6 +69,10 @@ case "$choice" in
     *"Adminer"*)
         print_text_in_color "$ICyan" "Downloading the Adminer script..."
         run_script APP adminer
+    ;;&
+    *"ClamAV"*)
+        print_text_in_color "$ICyan" "Downloading the ClamAV script..."
+        run_script APP clamav
     ;;&
     *"Netdata"*)
         print_text_in_color "$ICyan" "Downloading the Netdata script..."
