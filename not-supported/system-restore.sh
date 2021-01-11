@@ -104,6 +104,13 @@ then
     exit 1
 fi
 
+# Ask if a backup was created
+msg_box "It is recommended to make a backup and/or snapshot of your NcVM before restoring the system."
+if ! yesno_box_no "Have you made a backup of your NcVM?"
+then
+    exit 1
+fi
+
 # View backup repository menu
 args=(whiptail --title "$TITLE" --menu \
 "Please select the backup repository that you want to view.
