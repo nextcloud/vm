@@ -32,8 +32,7 @@ is_process_running dpkg
 
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
-    msg_box "It seems like the last update was not successful.
-Cannot proceed, as you would lose the last snapshot."
+    msg_box "Cannot run this script currently. Please try again later!"
     exit 1
 fi
 
