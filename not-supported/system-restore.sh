@@ -104,6 +104,13 @@ then
     exit 1
 fi
 
+# Ask if a backup was created
+msg_box "It is recommended to make a backup and/or snapshot of your NcVM before restoring the system."
+if ! yesno_box_no "Have you made a backup of your NcVM?"
+then
+    exit 1
+fi
+
 # View backup repository menu
 args=(whiptail --title "$TITLE" --menu \
 "Please select the backup repository that you want to view.
@@ -178,6 +185,14 @@ then
         msg_box "There is still something mounted on /tmp/borgsystem. Cannot proceed."
         exit 1
     fi
+fi
+
+# Check if pending snapshot is existing and cancel the restore process in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    msg_box "The snapshot pending does exist. Can currently not restore the backup.
+Please try again later."
+    exit 1
 fi
 
 # Rename the snapshot to represent that the backup is locked
@@ -331,6 +346,8 @@ do
     choice=$(whiptail --title "$TITLE" --menu \
 "The dry-run was successful.
 You can get further information about the dry-run by selecting an option.
+If you get directly redirected to this Menu after selecting an option, \
+the list is most likely too long to be shown.\n
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Continue" "(Continue with the process)" \
 "Deleted Files" "(Show files that will get deleted)" \
@@ -373,6 +390,10 @@ fi
 
 # Start the restore
 print_text_in_color "$ICyan" "Starting the restore process..."
+
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
 
 # Stop services
 print_text_in_color "$ICyan" "Stopping services..."

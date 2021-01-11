@@ -36,15 +36,15 @@ stop_services() {
     inform_user "$ICyan" "Stopping services..."
     if is_docker_running
     then
-        check_command systemctl stop docker
+        systemctl stop docker
     fi
-    nextcloud_occ maintenance:mode --on
+    nextcloud_occ_no_check maintenance:mode --on
     systemctl stop postgresql
 }
 start_services() {
     inform_user "$ICyan" "Starting services..."
     systemctl start postgresql
-    nextcloud_occ maintenance:mode --off
+    nextcloud_occ_no_check maintenance:mode --off
     start_if_stopped docker
 }
 paste_log_file() {
@@ -189,6 +189,12 @@ then
     then
         send_error_mail "Could not mount the backup drive. Is it connected?"
     fi
+fi
+
+# Check if pending snapshot is existing and cancel the backup in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
 fi
 
 # Create LVM snapshot & Co.
@@ -423,6 +429,12 @@ then
     then
         send_error_mail "Could not mount the backup drive. Is it connected?" "Backup integrity check"
     fi
+fi
+
+# Check if pending snapshot is existing and cancel the backup check in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    send_error_mail "NcVM-snapshot-pending exists. Please try again later!" "Backup integrity check"
 fi
 
 # Rename the snapshot to represent that the backup is pending

@@ -32,8 +32,7 @@ is_process_running dpkg
 
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
-    msg_box "It seems like the last update was not successful.
-Cannot proceed, as you would lose the last snapshot."
+    msg_box "Cannot run this script currently. Please try again later!"
     exit 1
 fi
 
@@ -643,7 +642,14 @@ then
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     if [ -n "$SNAPSHOT_EXISTS" ]
     then
-        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+        if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+        then
+            nextcloud_occ maintenance:mode --off
+            msg_box "Could not rename the snapshot before starting the update.\n
+It is possible that a backup is currently running.\n
+Advice: don't restart your system now if that is the case!"
+            exit 1
+        fi
     fi
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
@@ -810,6 +816,10 @@ Maintenance mode is kept on."
     notify_admin_gui \
     "Nextcloud update failed!" \
     "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
+    if [ -n "$SNAPSHOT_EXISTS" ]
+    then
+        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
+    fi
     nextcloud_occ status
     exit 1
 fi
