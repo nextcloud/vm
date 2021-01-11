@@ -150,6 +150,14 @@ then
     fi
 fi
 
+# Check if pending snapshot is existing a second time and cancel the viewing in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    msg_box "The snapshot pending does exist. Can currently not show the backup.
+Please try again later."
+    exit 1
+fi
+
 # Rename the snapshot to represent that the backup is locked
 if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
 then
