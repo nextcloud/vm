@@ -212,7 +212,7 @@ then
 
     # Prepare update.sh by removing the exit and restart lines
     sed -i 's|^/sbin/shutdown -r +1||' "$SCRIPTS/update.sh"
-    sed -i 's|^exit.*||' "$SCRIPTS/update.sh"
+    sed -i 's|^exit$||' "$SCRIPTS/update.sh"
     STATE=old
 else
     mkdir -p "$SCRIPTS"

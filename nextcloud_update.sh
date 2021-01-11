@@ -155,6 +155,9 @@ then
     rm -f $SCRIPTS/lib.sh
 fi
 
+# Allow update.sh to exit if the nextcloud_update.sh fails (2020-01-11)
+sed -i 's/^run_script GITHUB_REPO nextcloud_update$/run_script GITHUB_REPO nextcloud_update || exit 1/' "$SCRIPTS/update.sh"
+
 # Update updatenotification.sh
 if [ -f $SCRIPTS/updatenotification.sh ]
 then

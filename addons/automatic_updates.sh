@@ -42,7 +42,7 @@ touch $VMLOGS/update.log
 crontab -u root -l | { cat; echo "0 $AUT_UPDATES_TIME * * 6 $SCRIPTS/update.sh minor >> $VMLOGS/update.log 2>&1"; } | crontab -u root -
 if yesno_box_yes "Do you want to reboot your server after every update? *recommended*"
 then
-    sed -i "s|exit|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
+    sed -i "s|^exit$|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
     echo "exit" >> "$SCRIPTS"/update.sh
 fi
 

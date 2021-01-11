@@ -1160,7 +1160,10 @@ run_script() {
     then
         if [ -f "${SCRIPTS}/${2}".sh ]
         then
-            bash "${SCRIPTS}/${2}.sh"
+            if ! bash "${SCRIPTS}/${2}.sh"
+            then
+                return 1
+            fi
             rm -f "${SCRIPTS}/${2}.sh"
         elif [ -f "${SCRIPTS}/${2}".php ]
         then
