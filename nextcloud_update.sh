@@ -813,6 +813,10 @@ Maintenance mode is kept on."
     notify_admin_gui \
     "Nextcloud update failed!" \
     "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
+    if [ -n "$SNAPSHOT_EXISTS" ]
+    then
+        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
+    fi
     nextcloud_occ status
     exit 1
 fi
