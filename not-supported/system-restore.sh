@@ -346,7 +346,8 @@ do
     choice=$(whiptail --title "$TITLE" --menu \
 "The dry-run was successful.
 You can get further information about the dry-run by selecting an option.
-If you get directly redirected to this Menu after selecting an option, the list is most likely very long.\n
+If you get directly redirected to this Menu after selecting an option, \
+the list is most likely too long to be shown.\n
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Continue" "(Continue with the process)" \
 "Deleted Files" "(Show files that will get deleted)" \
