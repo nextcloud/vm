@@ -69,7 +69,7 @@ We will now remove the old docker and install the app from Nextcloud instead."
 fi
 
 # Check if Collabora is installed using the new method
-if is_app_enabled richdocumentscode
+if ! is_app_installed richdocumentscode
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
