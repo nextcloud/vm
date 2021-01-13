@@ -152,6 +152,14 @@ then
     fi
 fi
 
+# Send mail that backup was started
+if ! send_mail "Off-shore backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+then
+    notify_admin_gui "Off-shore backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+fi
+
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
