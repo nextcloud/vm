@@ -3,6 +3,7 @@
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
+# shellcheck disable=2024
 true
 SCRIPT_NAME="Borg Backup"
 SCRIPT_EXPLAINER="This script creates the Borg backup of your server."
