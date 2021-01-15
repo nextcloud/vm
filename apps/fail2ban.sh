@@ -71,7 +71,7 @@ deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/ne
         nextcloud_occ config:system:set loglevel --value=2
         touch "$VMLOGS/nextcloud.log"
         chown www-data:www-data "$VMLOGS/nextcloud.log"
-        break
+        return
     fi
 }
 
