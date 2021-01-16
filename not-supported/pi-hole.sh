@@ -232,9 +232,10 @@ cat << PIHOLE_UPDATE >> "$SCRIPTS/update.sh"
 #Pi-hole-start - Please don't remove or change this line
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 check_command pihole -up
+systemctl stop lighttpd
 check_command sed -i 's|^server\.port.*|server\.port = 8093|' /etc/lighttpd/lighttpd.conf
-sleep 5 # Wait for lighttpd
-check_command systemctl restart lighttpd
+sleep 10 # Wait for lighttpd
+check_command systemctl start lighttpd
 # Please don't remove or change this line! Pi-hole installed programs=${INSTALLED[@]}
 # Please don't remove or change this line! Pi-hole update script is $STATE.
 #Pi-hole-end - Please don't remove or change this line
