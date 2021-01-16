@@ -71,7 +71,6 @@ deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/ne
         nextcloud_occ config:system:set loglevel --value=2
         touch "$VMLOGS/nextcloud.log"
         chown www-data:www-data "$VMLOGS/nextcloud.log"
-        return
     fi
 }
 
@@ -90,6 +89,7 @@ do
             break
         else
            find_log
+           break
         fi
     elif [ -n "$(nextcloud_occ_no_check config:system:get logfile)" ]
     then
@@ -102,6 +102,7 @@ do
         break
     else
         find_log
+        break
     fi
 done
 
