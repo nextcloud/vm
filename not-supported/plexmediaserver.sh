@@ -127,6 +127,11 @@ plexinc/pms-docker
 # Add prune command
 add_dockerprune
 
+# Add crontab entry
+# Needed because e.g. Veracrypt drives get mounted after boot process but need to be mounted before plex ist (re)started
+crontab -u root -l | grep -v "docker restart plex"  | crontab -u root -
+crontab -u root -l | { cat; echo "@reboot sleep 20 && docker restart plex > /dev/null"; } | crontab -u root -
+
 # Inform the user
 msg_box "PLEX Media Server was successfully installed.
 This script is not at the end yet so please continue."
