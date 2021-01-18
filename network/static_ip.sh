@@ -224,6 +224,7 @@ $(cat /etc/netplan/nextcloud.yaml)"
     then
         sleep 1
         msg_box "Static IP successfully set!"
+        rm -f /etc/netplan/00-installer-config.yaml
         break
     fi
 
