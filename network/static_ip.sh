@@ -195,7 +195,7 @@ IPCONFIG
 
         msg_box "These are your settings, please make sure they are correct:
 
-$(cat /etc/netplan/01-netcfg.yaml)"
+$(cat /etc/netplan/nextcloud.yaml)"
         netplan try
         set_systemd_resolved_dns "$IFACE"
     else
@@ -215,7 +215,7 @@ IPCONFIGnonvmware
 
         msg_box "These are your settings, please make sure they are correct:
 
-$(cat /etc/netplan/01-netcfg.yaml)"
+$(cat /etc/netplan/nextcloud.yaml)"
         netplan try
         set_systemd_resolved_dns "$IFACE2"
     fi
