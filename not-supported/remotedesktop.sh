@@ -87,6 +87,12 @@ POWER
     sleep 5
     check_command systemctl restart acpid
 
+    # Create plex user
+    if ! id plex &>/dev/null
+    then
+        check_command adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "plex"
+    fi
+
     # Add the user to the www-data and plex group to be able to write to all disks
     usermod --append --groups www-data,plex "$UNIXUSER"
 
@@ -144,6 +150,14 @@ else
     ONLYOFFICE_SWITCH=ON
 fi
 
+# Picard
+if is_this_installed picard
+then
+    PICARD_SWITCH=OFF
+else
+   PICARD_SWITCH=ON
+fi
+
 # File manager nautilus
 if is_this_installed nautilus
 then
@@ -182,6 +196,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "MakeMKV" "(Rip DVDs and Blu-rays)" "$MAKEMKV_SWITCH" \
 "Nautilus" "(File Manager)" "$NAUTILUS_SWITCH" \
 "OnlyOffice" "(Open Source Office Suite)" "$ONLYOFFICE_SWITCH" \
+"Picard" "(Music tagger)" "$PICARD_SWITCH" \
 "Sound Juicer" "(Rip CDs)" "$SJ_SWITCH" \
 "VLC" "(Play Videos and Audio)" "$VLC_SWITCH" \
 "XRDP" "(Uninstall XRDP and all listed desktop apps)" OFF 3>&1 1>&2 2>&3)
@@ -299,6 +314,9 @@ This can set your server under risk, though!" "$SUBTITLE"
             fi
         fi
         unset SUBTITLE
+    ;;&
+    *"Picard"*)
+        install_remove_packet picard Picard
     ;;&
     *"Sound Juicer"*)
         install_remove_packet sound-juicer "Sound Juicer"
