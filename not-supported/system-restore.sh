@@ -277,21 +277,25 @@ else
 fi
 
 # Inform user
-msg_box "We will now check the archive integrity and perform a dry-run of restoring the backup.
+msg_box "We will now check if extracting works and perform a dry-run of restoring the backup.
 (which means that no files/folders will get restored/deleted during this step)."
-msg_box "Attention! It is crutial that you wait until you see the next menu!
-You will have the chance to cancel the restore process afterwards."
+msg_box "Please wait until you see the next menu!
+You will have the chance to cancel the restore process afterwards.
+
+Otherwise you can cancel always by pressing '[CTRL] + [C]'"
 
 # Verify integrity of selected archives
 print_text_in_color "$ICyan" "Checking the system partition archive integrity. Please be patient!"
-if ! borg check --verify-data --verbose "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-system-partition"
+mkdir -p /tmp/borgextract
+cd /tmp/borgextract
+if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-system-partition"
 then
     msg_box "Some errors were reported while checking the system partition archive integrity."
     restore_original_state
     exit 1
 fi
 print_text_in_color "$ICyan" "Checking the boot partition archive integrity. Please be patient!"
-if ! borg check --verify-data --verbose "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-boot-partition"
+if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-boot-partition"
 then
     msg_box "Some errors were reported while checking the boot partition archive integrity."
     restore_original_state
@@ -327,12 +331,27 @@ done
 
 # Dry run of everything
 print_text_in_color "$ICyan" "Performing a dry-run before restoring. Please be patient!"
-OUTPUT=$(rsync --archive --human-readable --dry-run --verbose --delete /tmp/borgboot/boot/ /boot)
-OUTPUT=$(echo "$OUTPUT" | sed -r '/^[a-zA-Z0-9]+\//s/^/boot\//')
-OUTPUT+=$(rsync --archive --verbose --human-readable \
---dry-run --delete --one-file-system --stats "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ /)
+if ! rsync --archive --human-readable --dry-run --verbose --delete /tmp/borgboot/boot/ /boot \
+| tee /tmp/dry-run.out
+then
+    msg_box "Something failed while performing the boot-partition dry-run."
+    umount /tmp/borgsystem
+    restore_original_state
+    exit 1
+fi
+sed -i -r '/^[a-zA-Z0-9]+\//s/^/boot\//' /tmp/dry-run.out
+if ! rsync --archive --verbose --human-readable \
+--dry-run --delete --one-file-system --stats "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ / \
+| tee -a /tmp/dry-run.out
+then
+    msg_box "Something failed while performing the system-partition dry-run."
+    umount /tmp/borgsystem
+    restore_original_state
+    exit 1
+fi
 
 # Prepare output
+OUTPUT=$(cat /tmp/dry-run.out)
 OUTPUT=$(echo "$OUTPUT" | sed -r '/^[a-zA-Z0-9]+\//s/^/changing or creating /')
 DELETED_FILES=$(echo "$OUTPUT" | grep "^deleting " | grep -v "/$" | sort)
 DELETED_FOLDERS=$(echo "$OUTPUT" | grep "^deleting .*/$" | sort)
