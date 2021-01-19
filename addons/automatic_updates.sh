@@ -42,8 +42,8 @@ touch $VMLOGS/update.log
 crontab -u root -l | { cat; echo "0 $AUT_UPDATES_TIME * * 6 $SCRIPTS/update.sh minor >> $VMLOGS/update.log 2>&1"; } | crontab -u root -
 if yesno_box_yes "Do you want to reboot your server after every update? *recommended*"
 then
-    sed -i "s|^exit$|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
-    echo "exit" >> "$SCRIPTS"/update.sh
+    sed -i "s|^#placeholder_for_automatic_updates$|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
+    echo "#placeholder_for_automatic_updates" >> "$SCRIPTS"/update.sh
 fi
 
 msg_box "Please remember to keep backups in case something goes wrong, as you never know."
