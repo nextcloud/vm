@@ -32,4 +32,6 @@ fi
 # Delete, download, run
 run_script GITHUB_REPO nextcloud_update || exit 1
 
+#placeholder_for_automatic_updates
+
 exit
