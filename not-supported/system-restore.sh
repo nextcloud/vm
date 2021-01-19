@@ -339,7 +339,7 @@ then
     restore_original_state
     exit 1
 fi
-cat /tmp/dry-run.out | sed -r '/^[a-zA-Z0-9]+\//s/^/boot\//' > /tmp/dry-run.out
+sed -i -r '/^[a-zA-Z0-9]+\//s/^/boot\//' /tmp/dry-run.out
 if ! rsync --archive --verbose --human-readable \
 --dry-run --delete --one-file-system --stats "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ / \
 | tee -a /tmp/dry-run.out
