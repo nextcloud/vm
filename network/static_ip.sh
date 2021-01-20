@@ -195,7 +195,7 @@ IPCONFIG
 
         msg_box "These are your settings, please make sure they are correct:
 
-$(cat /etc/netplan/01-netcfg.yaml)"
+$(cat /etc/netplan/nextcloud.yaml)"
         netplan try
         set_systemd_resolved_dns "$IFACE"
     else
@@ -215,7 +215,7 @@ IPCONFIGnonvmware
 
         msg_box "These are your settings, please make sure they are correct:
 
-$(cat /etc/netplan/01-netcfg.yaml)"
+$(cat /etc/netplan/nextcloud.yaml)"
         netplan try
         set_systemd_resolved_dns "$IFACE2"
     fi
@@ -224,6 +224,7 @@ $(cat /etc/netplan/01-netcfg.yaml)"
     then
         sleep 1
         msg_box "Static IP successfully set!"
+        rm -f /etc/netplan/00-installer-config.yaml
         break
     fi
 

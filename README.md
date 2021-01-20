@@ -13,6 +13,8 @@ Server installation. Simplified. :cloud:
 #### All Systems Go
 > NcVM can check for and install _stable_ updates to keep things current, smooth, and secure.
 
+![alt tag](https://i.imgur.com/nBEvczb.png)
+
 --------------------
 
 ## Dependencies:

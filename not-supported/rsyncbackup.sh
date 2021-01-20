@@ -152,6 +152,20 @@ then
     fi
 fi
 
+# Send mail that backup was started
+if ! send_mail "Off-shore backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+then
+    notify_admin_gui "Off-shore backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+fi
+
+# Check if pending snapshot is existing and cancel the backup in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
+fi
+
 # Rename the snapshot to represent that the backup is pending
 inform_user "$ICyan" "Renaming the snapshot..."
 if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending

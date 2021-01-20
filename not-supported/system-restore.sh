@@ -104,6 +104,13 @@ then
     exit 1
 fi
 
+# Ask if a backup was created
+msg_box "It is recommended to make a backup and/or snapshot of your NcVM before restoring the system."
+if ! yesno_box_no "Have you made a backup of your NcVM?"
+then
+    exit 1
+fi
+
 # View backup repository menu
 args=(whiptail --title "$TITLE" --menu \
 "Please select the backup repository that you want to view.
@@ -178,6 +185,14 @@ then
         msg_box "There is still something mounted on /tmp/borgsystem. Cannot proceed."
         exit 1
     fi
+fi
+
+# Check if pending snapshot is existing and cancel the restore process in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    msg_box "The snapshot pending does exist. Can currently not restore the backup.
+Please try again later."
+    exit 1
 fi
 
 # Rename the snapshot to represent that the backup is locked
@@ -262,21 +277,25 @@ else
 fi
 
 # Inform user
-msg_box "We will now check the archive integrity and perform a dry-run of restoring the backup.
+msg_box "We will now check if extracting works and perform a dry-run of restoring the backup.
 (which means that no files/folders will get restored/deleted during this step)."
-msg_box "Attention! It is crutial that you wait until you see the next menu!
-You will have the chance to cancel the restore process afterwards."
+msg_box "Please wait until you see the next menu!
+You will have the chance to cancel the restore process afterwards.
+
+Otherwise you can cancel always by pressing '[CTRL] + [C]'"
 
 # Verify integrity of selected archives
 print_text_in_color "$ICyan" "Checking the system partition archive integrity. Please be patient!"
-if ! borg check --verify-data --verbose "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-system-partition"
+mkdir -p /tmp/borgextract
+cd /tmp/borgextract
+if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-system-partition"
 then
     msg_box "Some errors were reported while checking the system partition archive integrity."
     restore_original_state
     exit 1
 fi
 print_text_in_color "$ICyan" "Checking the boot partition archive integrity. Please be patient!"
-if ! borg check --verify-data --verbose "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-boot-partition"
+if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-boot-partition"
 then
     msg_box "Some errors were reported while checking the boot partition archive integrity."
     restore_original_state
@@ -312,12 +331,27 @@ done
 
 # Dry run of everything
 print_text_in_color "$ICyan" "Performing a dry-run before restoring. Please be patient!"
-OUTPUT=$(rsync --archive --human-readable --dry-run --verbose --delete /tmp/borgboot/boot/ /boot)
-OUTPUT=$(echo "$OUTPUT" | sed -r '/^[a-zA-Z0-9]+\//s/^/boot\//')
-OUTPUT+=$(rsync --archive --verbose --human-readable \
---dry-run --delete --one-file-system --stats "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ /)
+if ! rsync --archive --human-readable --dry-run --verbose --delete /tmp/borgboot/boot/ /boot \
+| tee /tmp/dry-run.out
+then
+    msg_box "Something failed while performing the boot-partition dry-run."
+    umount /tmp/borgsystem
+    restore_original_state
+    exit 1
+fi
+sed -i -r '/^[a-zA-Z0-9]+\//s/^/boot\//' /tmp/dry-run.out
+if ! rsync --archive --verbose --human-readable \
+--dry-run --delete --one-file-system --stats "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ / \
+| tee -a /tmp/dry-run.out
+then
+    msg_box "Something failed while performing the system-partition dry-run."
+    umount /tmp/borgsystem
+    restore_original_state
+    exit 1
+fi
 
 # Prepare output
+OUTPUT=$(cat /tmp/dry-run.out)
 OUTPUT=$(echo "$OUTPUT" | sed -r '/^[a-zA-Z0-9]+\//s/^/changing or creating /')
 DELETED_FILES=$(echo "$OUTPUT" | grep "^deleting " | grep -v "/$" | sort)
 DELETED_FOLDERS=$(echo "$OUTPUT" | grep "^deleting .*/$" | sort)
@@ -331,6 +365,8 @@ do
     choice=$(whiptail --title "$TITLE" --menu \
 "The dry-run was successful.
 You can get further information about the dry-run by selecting an option.
+If you get directly redirected to this Menu after selecting an option, \
+the list is most likely too long to be shown.\n
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Continue" "(Continue with the process)" \
 "Deleted Files" "(Show files that will get deleted)" \
@@ -373,6 +409,10 @@ fi
 
 # Start the restore
 print_text_in_color "$ICyan" "Starting the restore process..."
+
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
 
 # Stop services
 print_text_in_color "$ICyan" "Stopping services..."

@@ -3,6 +3,7 @@
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
+# shellcheck disable=2024
 true
 SCRIPT_NAME="Borg Backup"
 SCRIPT_EXPLAINER="This script creates the Borg backup of your server."
@@ -32,19 +33,10 @@ inform_user() {
     echo -e "\n\n# $2"
     print_text_in_color "$1" "$2"
 }
-stop_services() {
-    inform_user "$ICyan" "Stopping services..."
-    if is_docker_running
-    then
-        check_command systemctl stop docker
-    fi
-    nextcloud_occ maintenance:mode --on
-    systemctl stop postgresql
-}
 start_services() {
     inform_user "$ICyan" "Starting services..."
     systemctl start postgresql
-    nextcloud_occ maintenance:mode --off
+    nextcloud_occ_no_check maintenance:mode --off
     start_if_stopped docker
 }
 paste_log_file() {
@@ -108,6 +100,12 @@ get_expiration_time() {
     DURATION_HOUR=$((DURATION / 3600))
     DURATION_READABLE=$(printf "%02d hours %02d minutes %02d seconds" $DURATION_HOUR $DURATION_MIN $DURATION_SEC)
 }
+check_snapshot_pending() {
+    if does_snapshot_exist "NcVM-snapshot-pending"
+    then
+        send_error_mail "NcVM-snapshot-pending exists. Please try again later!" "$1"
+    fi
+}
 
 # Secure the backup file
 chown root:root "$SCRIPTS/daily-borg-backup.sh"
@@ -168,10 +166,7 @@ else
 fi
 
 # Check if pending snapshot is existing and cancel the backup in this case.
-if does_snapshot_exist "NcVM-snapshot-pending"
-then
-    send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
-fi
+check_snapshot_pending
 
 # Check if snapshot can get created
 check_free_space
@@ -191,9 +186,52 @@ then
     fi
 fi
 
+# Send mail that backup was started
+if ! send_mail "Daily backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+then
+    notify_admin_gui "Daily backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+fi
+
+# Check if pending snapshot is existing and cancel the backup in this case.
+check_snapshot_pending
+
+# Stop services
+inform_user "$ICyan" "Stopping services..."
+if is_docker_running
+then
+    systemctl stop docker
+fi
+nextcloud_occ_no_check maintenance:mode --on
+# Database export
+# Not really necessary since the root partition gets backed up but easier to restore on new systems
+ncdb # get NCCONFIGDB
+rm -f "$SCRIPTS"/nextclouddb.sql
+rm -f "$SCRIPTS"/alldatabases.sql
+if sudo -Hiu postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep -q "1 row"
+then
+    inform_user "$ICyan" "Doing pgdump of $NCCONFIGDB..."
+    sudo -Hiu postgres pg_dump "$NCCONFIGDB"  > "$SCRIPTS"/nextclouddb.sql
+    chown root:root "$SCRIPTS"/nextclouddb.sql
+    chmod 600 "$SCRIPTS"/nextclouddb.sql
+else
+    inform_user "$ICyan" "Doing pgdump of all databases..."
+    sudo -Hiu postgres pg_dumpall > "$SCRIPTS"/alldatabases.sql
+    chown root:root "$SCRIPTS"/alldatabases.sql
+    chmod 600 "$SCRIPTS"/alldatabases.sql
+fi
+systemctl stop postgresql
+
+# Check if pending snapshot is existing and cancel the backup in this case.
+if does_snapshot_exist "NcVM-snapshot-pending"
+then
+    start_services
+    send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
+fi
+
 # Create LVM snapshot & Co.
 inform_user "$ICyan" "Creating LVM snapshot..."
-stop_services
 if does_snapshot_exist "NcVM-snapshot"
 then
     if ! lvremove /dev/ubuntu-vg/NcVM-snapshot -y
@@ -210,6 +248,9 @@ else
     inform_user "$IGreen" "Snapshot successfully created!"
 fi
 start_services
+
+# Check if pending snapshot is existing and cancel the backup in this case.
+check_snapshot_pending
 
 # Rename the snapshot to represent that the backup is pending
 inform_user "$ICyan" "Renaming the snapshot..."
@@ -409,10 +450,7 @@ CURRENT_DATE_READABLE=$(date --date @"$START_TIME" +"%d.%m.%Y - %H:%M:%S")
 inform_user "$IGreen" "Backup integrity check started! $CURRENT_DATE_READABLE"
 
 # Check if pending snapshot is existing and cancel the backup check in this case.
-if does_snapshot_exist "NcVM-snapshot-pending"
-then
-    send_error_mail "NcVM-snapshot-pending exists. Please try again later!" "Backup integrity check"
-fi
+check_snapshot_pending "Backup integrity check"
 
 # Prepare backup repository
 inform_user "$ICyan" "Mounting the backup drive..."
@@ -424,6 +462,17 @@ then
         send_error_mail "Could not mount the backup drive. Is it connected?" "Backup integrity check"
     fi
 fi
+
+# Send mail that backup was started
+if ! send_mail "Weekly backup check started!" "You will be notified again when the check is finished!
+Please don't restart or shutdown your server until then!"
+then
+    notify_admin_gui "Weekly backup check started!" "You will be notified again when the check is finished!
+Please don't restart or shutdown your server until then!"
+fi
+
+# Check if pending snapshot is existing and cancel the backup check in this case.
+check_snapshot_pending "Backup integrity check"
 
 # Rename the snapshot to represent that the backup is pending
 inform_user "$ICyan" "Renaming the snapshot..."
