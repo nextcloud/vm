@@ -1521,7 +1521,19 @@ done
 # e.g.: send_mail "subject" "text"
 send_mail() {
     local RECIPIENT
-    if [ -f /etc/msmtprc ]
+    if [ -f /home/msmtpd/receiver ] && is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^msmtpd$"
+    then
+        source /home/msmtpd/receiver
+        if [ -n "$RECIPIENT" ]
+        then
+            print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
+            if docker exec msmtpd bash -c "echo -e '$2' | mail -s 'NcVM - $1' $RECIPIENT" | grep -q "smtpstatus=250"
+            then
+                return 0
+            fi
+        fi
+    # Old smtp-mail routine. TODO: Remove e.g. with Ubuntu 22.04 LTS
+    elif [ -f /etc/msmtprc ]
     then
         RECIPIENT=$(grep "recipient=" /etc/msmtprc)
         RECIPIENT="${RECIPIENT##*recipient=}"

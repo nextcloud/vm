@@ -357,6 +357,8 @@ we have removed Watchtower from this server. Updates will now happen for each co
     docker_update_specific 'ark74/nc_fts' 'Full Text Search'
     # Plex
     docker_update_specific 'plexinc/pms-docker' "Plex Media Server"
+    # MSMTP
+    docker_update_specific 'crazymax/msmtpd' "MSMTP"
 fi
 
 # Cleanup un-used packages
