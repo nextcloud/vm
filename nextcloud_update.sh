@@ -30,10 +30,19 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
+# Check for pending-snapshot
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
-    msg_box "Cannot run this script currently. Please try again later!"
-    exit 1
+    msg_box "Cannot proceed with the update currently because NcVM-snapshot-pending exists.\n
+It is possible that a backup is currently running.\n
+Advice: don't restart your system now if that is the case!"
+    # Don't exit the script while the snapshot exists to disable any automatic restart during backups
+    while does_snapshot_exist "NcVM-snapshot-pending"
+    do
+        print_text_in_color "$ICyan" "Waiting for NcVM-snapshot-pending to vanish... (press '[CTRL] + [C]' to cancel)"
+        sleep 5
+    done
+    print_text_in_color "$ICyan" "Continuing the update..."
 fi
 
 # Create a snapshot before doing anything else
@@ -72,6 +81,13 @@ This should work again after a reboot of your server."
         msg_box "The creation of a snapshot failed.
 If you just merged and old one, please reboot your server again. 
 It should then start working again."
+        exit 1
+    fi
+    if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+    then
+        nextcloud_occ maintenance:mode --off
+        start_if_stopped docker
+        msg_box "Could not rename the snapshot before starting the update. Please reboot your system!"
         exit 1
     fi
     nextcloud_occ maintenance:mode --off
@@ -449,6 +465,12 @@ as it's not currently possible to downgrade.\n\nPlease only continue if you have
     fi
 fi
 
+# Rename snapshot
+if [ -n "$SNAPSHOT_EXISTS" ]
+then
+    check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
+fi
+
 # Major versions unsupported
 if [[ "${CURRENTVERSION%%.*}" -le "$NCBAD" ]]
 then
@@ -532,6 +554,12 @@ then
 fi
 
 countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort." "10"
+
+# Rename snapshot
+if [ -n "$SNAPSHOT_EXISTS" ]
+then
+    check_command lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+fi
 
 # Backup app status
 # Fixing https://github.com/nextcloud/server/issues/4538
@@ -645,17 +673,6 @@ then
     "Please don't shutdown or reboot your server during the update! $(date +%T)"
     nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
-    if [ -n "$SNAPSHOT_EXISTS" ]
-    then
-        if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
-        then
-            nextcloud_occ maintenance:mode --off
-            msg_box "Could not rename the snapshot before starting the update.\n
-It is possible that a backup is currently running.\n
-Advice: don't restart your system now if that is the case!"
-            exit 1
-        fi
-    fi
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
     check_command tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
@@ -821,10 +838,6 @@ Maintenance mode is kept on."
     notify_admin_gui \
     "Nextcloud update failed!" \
     "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
-    if [ -n "$SNAPSHOT_EXISTS" ]
-    then
-        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
-    fi
     nextcloud_occ status
     exit 1
 fi
