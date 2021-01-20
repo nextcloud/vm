@@ -1523,6 +1523,7 @@ send_mail() {
     local RECIPIENT
     if [ -f /home/msmtpd/receiver ] && is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^msmtpd$"
     then
+        # shellcheck disable=SC1091
         source /home/msmtpd/receiver
         if [ -n "$RECIPIENT" ]
         then
