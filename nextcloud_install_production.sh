@@ -334,6 +334,7 @@ install_docker
 mkdir -p /home/nextcloud-postgresql
 chown -R nobody:nogroup /home/nextcloud-postgresql
 chmod -R 770 /home/nextcloud-postgresql
+docker pull postgres:12
 docker run -d --name nextcloud-postgresql \
 --user nobody \
 --restart always \
@@ -483,7 +484,7 @@ cd "$NCPATH"
 nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
---datapase-port=5432 \
+--database-port=5432 \
 --database-name=nextcloud_db \
 --database-user="$NCUSER" \
 --database-pass="$PGDB_PASS" \
