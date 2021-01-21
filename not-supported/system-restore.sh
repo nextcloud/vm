@@ -416,12 +416,12 @@ is_process_running dpkg
 
 # Stop services
 print_text_in_color "$ICyan" "Stopping services..."
+nextcloud_occ_no_check maintenance:mode --on
+systemctl stop postgresql
 if is_docker_running
 then
     systemctl stop docker
 fi
-nextcloud_occ_no_check maintenance:mode --on
-systemctl stop postgresql
 
 # Restore the system partition
 print_text_in_color "$ICyan" "Restoring the files..."
@@ -447,9 +447,9 @@ fi
 
 # Start services
 print_text_in_color "$ICyan" "Starting services..."
+start_if_stopped docker
 systemctl start postgresql
 nextcloud_occ_no_check maintenance:mode --off
-start_if_stopped docker
 
 # Restore original state
 umount /tmp/borgsystem

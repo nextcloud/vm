@@ -35,9 +35,9 @@ inform_user() {
 }
 start_services() {
     inform_user "$ICyan" "Starting services..."
+    start_if_stopped docker
     systemctl start postgresql
     nextcloud_occ_no_check maintenance:mode --off
-    start_if_stopped docker
 }
 paste_log_file() {
     cat "$LOG_FILE" >> "$BORGBACKUP_LOG"
@@ -199,29 +199,35 @@ check_snapshot_pending
 
 # Stop services
 inform_user "$ICyan" "Stopping services..."
-if is_docker_running
-then
-    systemctl stop docker
-fi
 nextcloud_occ_no_check maintenance:mode --on
 # Database export
 # Not really necessary since the root partition gets backed up but easier to restore on new systems
 ncdb # get NCCONFIGDB
 rm -f "$SCRIPTS"/nextclouddb.sql
 rm -f "$SCRIPTS"/alldatabases.sql
-if sudo -Hiu postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep -q "1 row"
+if is_this_installed postgresql-common
 then
-    inform_user "$ICyan" "Doing pgdump of $NCCONFIGDB..."
-    sudo -Hiu postgres pg_dump "$NCCONFIGDB"  > "$SCRIPTS"/nextclouddb.sql
-    chown root:root "$SCRIPTS"/nextclouddb.sql
-    chmod 600 "$SCRIPTS"/nextclouddb.sql
-else
-    inform_user "$ICyan" "Doing pgdump of all databases..."
-    sudo -Hiu postgres pg_dumpall > "$SCRIPTS"/alldatabases.sql
-    chown root:root "$SCRIPTS"/alldatabases.sql
-    chmod 600 "$SCRIPTS"/alldatabases.sql
+    if sudo -Hiu postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep -q "1 row"
+    then
+        inform_user "$ICyan" "Doing pgdump of $NCCONFIGDB..."
+        sudo -Hiu postgres pg_dump "$NCCONFIGDB"  > "$SCRIPTS"/nextclouddb.sql
+        chown root:root "$SCRIPTS"/nextclouddb.sql
+        chmod 600 "$SCRIPTS"/nextclouddb.sql
+    else
+        inform_user "$ICyan" "Doing pgdump of all databases..."
+        sudo -Hiu postgres pg_dumpall > "$SCRIPTS"/alldatabases.sql
+        chown root:root "$SCRIPTS"/alldatabases.sql
+        chmod 600 "$SCRIPTS"/alldatabases.sql
+    fi
+    systemctl stop postgresql
+elif is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^nextcloud-postgresql$"
+then
+    check_command docker exec nextcloud-postgresql pg_dumpall -U "$NCUSER" > "$SCRIPTS"/alldatabases.sql
 fi
-systemctl stop postgresql
+if is_docker_running
+then
+    systemctl stop docker
+fi
 
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"

@@ -330,17 +330,19 @@ done
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
 # curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-apt update -q4 & spinner_loading
-apt install postgresql -y
-
-# Create DB
-cd /tmp
-sudo -u postgres psql <<END
-CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
-CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
-END
-print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
-systemctl restart postgresql.service
+install_docker
+mkdir -p /home/nextcloud-postgresql
+chown -R nobody:nogroup /home/nextcloud-postgresql
+chmod -R 770 /home/nextcloud-postgresql
+docker run -d --name nextcloud-postgresql \
+--user nobody \
+--restart always \
+-v /home/nextcloud-postgresql:/var/lib/postgresql/data \
+-p 5432:5432 \
+-e POSTGRES_PASSWORD=$PGDB_PASS \
+-e POSTGRES_DB=nextcloud_db \
+-e POSTGRES_USER="$NCUSER" \
+postgres:12
 
 # Install Apache
 check_command apt install apache2 -y
@@ -481,6 +483,7 @@ cd "$NCPATH"
 nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
+--datapase-port=5432 \
 --database-name=nextcloud_db \
 --database-user="$NCUSER" \
 --database-pass="$PGDB_PASS" \

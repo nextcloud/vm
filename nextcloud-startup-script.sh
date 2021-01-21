@@ -150,7 +150,8 @@ DEBUG=0
 debug_mode
 
 # Check that this run on the PostgreSQL VM
-if ! is_this_installed postgresql-common
+if ! is_this_installed postgresql-common \
+&& ! (is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^nextcloud-postgresql$")
 then
     print_text_in_color "$IRed" "This script is intended to be \
 run using a PostgreSQL database, but PostgreSQL is not installed."
@@ -540,7 +541,7 @@ Please hit OK in all the following prompts and let the server reboot to complete
 
 msg_box "TIPS & TRICKS:
 1. Publish your server online: https://goo.gl/iUGE2U
-2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
+2. To login to PostgreSQL just type: docker exec -it nextcloud-postgresql psql nextcloud_db -U ncadmin
 3. To update this server just type: sudo bash /var/scripts/update.sh
 4. Install apps, configure Nextcloud, and server: sudo bash $SCRIPTS/menu.sh"
 

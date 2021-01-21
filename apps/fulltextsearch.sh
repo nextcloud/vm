@@ -35,7 +35,13 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Reset database table
-    check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
+    if is_this_installed postgresql-common
+    then
+        check_command sudo -Hiu postgres psql "$NCCONFIGDB" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
+    elif is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^nextcloud-postgresql$"
+    then
+        docker exec nextcloud-postgresql psql "$NCCONFIGDB" -U "$NCUSER" -c "TRUNCATE TABLE oc_fulltextsearch_ticks;"
+    fi
     # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
     nextcloud_occ_no_check fulltextsearch:reset
     APPS=(fulltextsearch fulltextsearch_elasticsearch files_fulltextsearch)

@@ -51,11 +51,12 @@ if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM
 || does_snapshot_exist "NcVM-snapshot" || [ "$FREE_SPACE" -ge 50 ] )
 then
     SNAPSHOT_EXISTS=1
+    nextcloud_occ maintenance:mode --on
+    systemctl stop postgresql
     if is_docker_running
     then
         check_command systemctl stop docker
     fi
-    nextcloud_occ maintenance:mode --on
     if does_snapshot_exist "NcVM-startup"
     then
         check_command lvremove /dev/ubuntu-vg/NcVM-startup -y
@@ -63,8 +64,10 @@ then
     then
         if ! lvremove /dev/ubuntu-vg/NcVM-snapshot -y
         then
-            nextcloud_occ maintenance:mode --off
             start_if_stopped docker
+            systemctl start postgresql
+            nextcloud_occ maintenance:mode --off
+            
             notify_admin_gui "Update failed!" \
 "Could not remove NcVM-snapshot - Please reboot your server! $(date +%T)"
             msg_box "It seems like the old snapshot could not get removed.
@@ -74,8 +77,9 @@ This should work again after a reboot of your server."
     fi
     if ! lvcreate --size 5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
     then
-        nextcloud_occ maintenance:mode --off
         start_if_stopped docker
+        systemctl start postgresql
+        nextcloud_occ maintenance:mode --off
         notify_admin_gui "Update failed!" \
 "Could not create NcVM-snapshot - Please reboot your server! $(date +%T)"
         msg_box "The creation of a snapshot failed.
@@ -85,13 +89,15 @@ It should then start working again."
     fi
     if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
     then
-        nextcloud_occ maintenance:mode --off
         start_if_stopped docker
+        systemctl start postgresql
+        nextcloud_occ maintenance:mode --off
         msg_box "Could not rename the snapshot before starting the update. Please reboot your system!"
         exit 1
     fi
-    nextcloud_occ maintenance:mode --off
-    start_if_stopped docker
+        start_if_stopped docker
+        systemctl start postgresql
+        nextcloud_occ maintenance:mode --off
 fi
 
 # Check if /boot is filled more than 90% and exit the script if that's 
@@ -357,6 +363,11 @@ we have removed Watchtower from this server. Updates will now happen for each co
     docker_update_specific 'ark74/nc_fts' 'Full Text Search'
     # Plex
     docker_update_specific 'plexinc/pms-docker' "Plex Media Server"
+    # Postgresql
+    docker_update_specific 'postgres' "Postgresql"
+    # TODO: Postgres upgrade
+    # if does_this_docker_exist "postgres:12"; then...
+    # https://josepostiga.com/how-to-upgrade-postgresql-version-and-transfer-your-old-data-using-docker/
 fi
 
 # Cleanup un-used packages
@@ -591,6 +602,9 @@ then
         print_text_in_color "$ICyan" "Doing pgdump of all databases..."
         check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.sql
     fi
+elif is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^nextcloud-postgresql$"
+then
+    check_command docker exec nextcloud-postgresql pg_dumpall -U "$NCUSER" > "$BACKUP"/alldatabases.sql
 fi
 
 # Check if backup exists and move to old
