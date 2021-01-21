@@ -177,13 +177,14 @@ docker run -d \
 msg_box "Everything is set up by now and we will check the connection."
 
 # Test connection
-if ! docker exec ddclient bash -c "ddclient -file /config/ddclient.conftemp -verbose"
+if ! docker exec --user nobody ddclient bash -c "ddclient -file /config/ddclient.conftemp -verbose"
 then
     msg_box "Something failed while testing the DDNS update.
 Please try again by running this script again!"
 else
-    mv /home/ddclient/ddclient.conftemp /home/ddclient/ddclient.conf
     msg_box "Congratulations, it seems like the initial DDNS update worked!
 DDclient is now set up correctly!"
 fi
+# Move the file to the correct location
+mv /home/ddclient/ddclient.conftemp /home/ddclient/ddclient.conf
 exit
