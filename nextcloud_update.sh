@@ -7,7 +7,7 @@
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/docker-postgresql/lib.sh)
 
 # Get all needed variables from the library
 ncdb
