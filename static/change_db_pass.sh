@@ -20,10 +20,17 @@ debug_mode
 cd /tmp
 sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
 
-if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^nextcloud-postgresql$"
+if is_this_installed postgresql-common
+then
+    OUTPUT="$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)"
+elif is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^nextcloud-postgresql$"
 then
     OUTPUT="$(docker exec nextcloud-postgresql psql "$NCCONFIGDB" -U "$NCUSER" -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)"
+else
+    exit 1
 fi
+
+# Check if it was successful
 if [ "$OUTPUT" == "ALTER ROLE" ]
 then
     sleep 1
