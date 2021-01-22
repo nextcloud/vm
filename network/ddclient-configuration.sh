@@ -187,5 +187,6 @@ else
 DDclient is now set up correctly!"
 fi
 # Move the file to the correct location
-mv /home/ddclient/ddclient.conftemp /home/ddclient/ddclient.conf
+cat /home/ddclient/ddclient.conftemp > /home/ddclient/ddclient.conf
+rm /home/ddclient/ddclient.conftemp
 exit
