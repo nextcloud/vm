@@ -50,7 +50,7 @@ then
     docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p nextcloud-postgresql \
 >> /tmp/psql-conf
     cat /tmp/psql-conf
-    sed -i "s|POSTGRES_PASSWORD.*|POSTGRES_PASSWORD=$NEWPGPASS \\\\|" /tmp/psql-conf
+    sed -i "/POSTGRES_PASSWORD/s/--env=.*/--env=POSTGRES_PASSWORD=$NEWPGPASS \\\\/" /tmp/psql-conf
     docker stop nextcloud-postgresql
     docker rm nextcloud-postgresql
     check_command bash /tmp/psql-conf
