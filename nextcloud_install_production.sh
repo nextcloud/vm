@@ -340,7 +340,7 @@ docker run -d --name nextcloud-postgresql \
 --restart always \
 -v /home/nextcloud-postgresql:/var/lib/postgresql/data \
 -p 5432:5432 \
--e POSTGRES_PASSWORD=$PGDB_PASS \
+-e POSTGRES_PASSWORD="$PGDB_PASS" \
 -e POSTGRES_DB=nextcloud_db \
 -e POSTGRES_USER="$NCUSER" \
 postgres:12
