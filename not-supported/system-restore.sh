@@ -278,28 +278,38 @@ fi
 
 # Inform user
 msg_box "We will now check if extracting works and perform a dry-run of restoring the backup.
-(which means that no files/folders will get restored/deleted during this step)."
+(which means that no files/folders will get modified during this step).
+Checking the extracting can take a very long time, though."
+if yesno_box_yes "Do you want to check if extracting works?
+You can skip the extracting check by selecting 'No'. 
+The dry-run of restoring the backup will run always. (No files/folders will get modified.) 
+It is recommended to select 'Yes' to run the extracting check."
+then
+    EXTRACT_CHECK=1
+fi
 msg_box "Please wait until you see the next menu!
-You will have the chance to cancel the restore process afterwards.
-
+You will have the chance to cancel the restore process afterwards.\n
 Otherwise you can cancel always by pressing '[CTRL] + [C]'"
 
 # Verify integrity of selected archives
-print_text_in_color "$ICyan" "Checking the system partition archive integrity. Please be patient!"
-mkdir -p /tmp/borgextract
-cd /tmp/borgextract
-if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-system-partition"
+if [ -n "$EXTRACT_CHECK" ]
 then
-    msg_box "Some errors were reported while checking the system partition archive integrity."
-    restore_original_state
-    exit 1
-fi
-print_text_in_color "$ICyan" "Checking the boot partition archive integrity. Please be patient!"
-if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-boot-partition"
-then
-    msg_box "Some errors were reported while checking the boot partition archive integrity."
-    restore_original_state
-    exit 1
+    print_text_in_color "$ICyan" "Checking the system partition archive integrity. Please be patient!"
+    mkdir -p /tmp/borgextract
+    cd /tmp/borgextract
+    if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-system-partition"
+    then
+        msg_box "Some errors were reported while checking the system partition archive integrity."
+        restore_original_state
+        exit 1
+    fi
+    print_text_in_color "$ICyan" "Checking the boot partition archive integrity. Please be patient!"
+    if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-boot-partition"
+    then
+        msg_box "Some errors were reported while checking the boot partition archive integrity."
+        restore_original_state
+        exit 1
+    fi
 fi
 
 # Mount system archive
@@ -360,6 +370,7 @@ CHANGED_FOLDERS=$(echo "$OUTPUT" | grep "^changing or creating .*/$" | sort)
 STATS=$(echo "$OUTPUT" | grep -v "^access.log\|error.log\|\./\|^deleting \|^changing or creating ")
 
 # Show output
+msg_box "Here are the stats from the dry-run:\n$STATS\n\n" "STATS"
 while :
 do
     choice=$(whiptail --title "$TITLE" --menu \
@@ -398,7 +409,8 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     esac
 done
 
-msg_box "Here are the stats from the dry-run:\n$STATS\n\n" "STATS"
+# Inform user
+msg_box "Here are the stats from the dry-run again:\n$STATS\n\n" "STATS"
 if ! yesno_box_no "Are you sure that you want to restore your system to this state?"
 then
     umount /tmp/borgsystem
