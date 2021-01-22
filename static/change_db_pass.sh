@@ -18,6 +18,7 @@ debug_mode
 
 # Change PostgreSQL Password
 cd /tmp
+cat "$NCPATH"/config/config.php # TODO
 sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
 
 if is_this_installed postgresql-common
@@ -49,9 +50,10 @@ then
     echo '#/bin/bash' > /tmp/psql-conf
     docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p nextcloud-postgresql \
 >> /tmp/psql-conf
-    cat /tmp/psql-conf
+    cat /tmp/psql-conf # TODO
     sed -i "/POSTGRES_PASSWORD/s/--env=.*/--env=POSTGRES_PASSWORD=$NEWPGPASS \\\\/" /tmp/psql-conf
     docker stop nextcloud-postgresql
     docker rm nextcloud-postgresql
     check_command bash /tmp/psql-conf
+cat "$NCPATH"/config/config.php # TODO
 fi

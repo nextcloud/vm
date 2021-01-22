@@ -18,6 +18,8 @@ debug_mode
 # Check if root
 root_check
 
+cat "$NCPATH"/config/config.php # TODO
+
 # PHP 7.x is needed
 if is_this_installed php5.6-common || is_this_installed php5.5-common
 then
