@@ -327,6 +327,9 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     fi
 done
 
+# Get needed variable
+ncdbpass
+
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
 # curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
@@ -344,6 +347,8 @@ docker run -d --name nextcloud-postgresql \
 -e POSTGRES_DB=nextcloud_db \
 -e POSTGRES_USER="$NCUSER" \
 postgres:12
+echo "$PGDB_PASS" #TODO
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p nextcloud-postgresql # TODO
 
 # Install Apache
 check_command apt install apache2 -y
@@ -482,6 +487,7 @@ bash $SECURE & spinner_loading
 print_text_in_color "$ICyan" "Installing Nextcloud..."
 echo "$NCUSER" #TODO
 cd "$NCPATH"
+echo "$PGDB_PASS" #TODO
 nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \

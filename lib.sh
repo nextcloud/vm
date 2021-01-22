@@ -105,13 +105,13 @@ BITWARDEN_USER=bitwarden
 BITWARDEN_HOME=/home/"$BITWARDEN_USER"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
-PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 ncdb() {
     NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 }
 [ -n "$NCDB" ] && ncdb # TODO: remove this line someday
 ncdbpass() {
+    PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 }
 [ -n "$NCDBPASS" ] && ncdbpass # TODO: remove this line someday
