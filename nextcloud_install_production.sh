@@ -496,8 +496,8 @@ nextcloud_occ maintenance:install \
 --database-pass="$PGDB_PASS" \
 --admin-user="$NCUSER" \
 --admin-pass="$NCPASS"
-sed -i "s|  'dbuser' =>.*|  'dbuser' => '$PGDB_PASS',|g" "$NCPATH"/config/config.php
-sed -i "s|  'dbpassword' =>.*|  'dbpassword' => '$NCUSER',|g" "$NCPATH"/config/config.php
+sed -i "s|  'dbuser' =>.*|  'dbuser' => '$NCUSER',|g" "$NCPATH"/config/config.php
+sed -i "s|  'dbpassword' =>.*|  'dbpassword' => '$PGDB_PASS',|g" "$NCPATH"/config/config.php
 sleep 2
 echo
 print_text_in_color "$ICyan" "Nextcloud version:"
