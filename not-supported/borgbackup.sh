@@ -223,6 +223,8 @@ then
 elif is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^nextcloud-postgresql$"
 then
     check_command docker exec nextcloud-postgresql pg_dumpall -U "$NCUSER" > "$SCRIPTS"/alldatabases.sql
+    chown root:root "$SCRIPTS"/alldatabases.sql
+    chmod 600 "$SCRIPTS"/alldatabases.sql
 fi
 if is_docker_running
 then

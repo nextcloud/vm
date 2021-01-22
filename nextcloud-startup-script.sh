@@ -293,8 +293,6 @@ When the setup is done, the server will automatically reboot.
 
 Please report any issues to: $ISSUES"
 
-cat "$NCPATH"/config/config.php #TODO
-
 # Change timezone in PHP
 sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 
@@ -322,17 +320,11 @@ sleep 3
 # Server configurations
 bash $SCRIPTS/server_configuration.sh
 
-cat "$NCPATH"/config/config.php #TODO
-
 # Nextcloud configuration
 bash $SCRIPTS/nextcloud_configuration.sh
 
-cat "$NCPATH"/config/config.php #TODO
-
 # Install apps
 bash $SCRIPTS/additional_apps.sh
-
-cat "$NCPATH"/config/config.php # TODO 
 
 ### Change passwords
 # CLI USER
