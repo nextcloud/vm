@@ -480,6 +480,7 @@ bash $SECURE & spinner_loading
 
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
+echo "$NCUSER" #TODO
 cd "$NCPATH"
 nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
@@ -495,6 +496,7 @@ print_text_in_color "$ICyan" "Nextcloud version:"
 nextcloud_occ status
 sleep 3
 echo
+cat "$NCPATH"/config/config.php #TODO
 
 # Prepare cron.php to be run every 15 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
@@ -506,7 +508,7 @@ print_text_in_color "$ICyan" "Configuring update notifications specific for this
 download_script STATIC updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
 crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
-
+cat "$NCPATH"/config/config.php #TODO
 # Change values in php.ini (increase max file size)
 # max_execution_time
 sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" "$PHP_INI"
@@ -545,7 +547,7 @@ nextcloud_occ config:system:set versions_retention_obligation --value="auto, 365
 
 # Remove simple signup
 nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
-
+cat "$NCPATH"/config/config.php #TODO
 # Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 phpenmod opcache
@@ -664,7 +666,7 @@ if [ "${CURRENTVERSION%%.*}" -ge "20" ]
 then
     nextcloud_occ db:add-missing-primary-keys
 fi
-
+cat "$NCPATH"/config/config.php #TODO
 # Install Figlet
 install_if_not figlet
 
@@ -822,7 +824,7 @@ a2ensite "$TLS_CONF"
 a2ensite "$HTTP_CONF"
 a2dissite default-ssl
 restart_webserver
-
+cat "$NCPATH"/config/config.php #TODO
 if [ -n "$PROVISIONING" ]
 then
     choice="Calendar Contacts IssueTemplate PDFViewer Extract Text Mail Deck Group-Folders"
@@ -925,7 +927,7 @@ if [ -f /etc/issue ]
 then
     echo "\4" >> /etc/issue
 fi
-
+cat "$NCPATH"/config/config.php #TODO
 # Force MOTD to show correct number of updates
 if is_this_installed update-notifier-common
 then
@@ -970,7 +972,7 @@ then
     # Change nextcloud-startup-script.sh
     check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
 fi
-
+cat "$NCPATH"/config/config.php #TODO
 # Disable hibernation
 print_text_in_color "$ICyan" "Disable hibernation..."
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
