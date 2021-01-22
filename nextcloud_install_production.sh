@@ -485,7 +485,6 @@ cd "$NCPATH"
 nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
---database-port=5432 \
 --database-name=nextcloud_db \
 --database-user="$NCUSER" \
 --database-pass="$PGDB_PASS" \
