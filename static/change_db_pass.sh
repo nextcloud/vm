@@ -36,6 +36,7 @@ then
     docker stop nextcloud-postgresql
     docker rm nextcloud-postgresql
     check_command bash /tmp/psql-conf
+    docker exec nextcloud-postgresql psql "$NCCONFIGDB" -U "$NCUSER" -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";
 cat "$NCPATH"/config/config.php # TODO
 else
     exit 1
@@ -43,4 +44,4 @@ fi
 
 # Check if occ works
 sleep 2
-nextcloud_occ > /dev/null
+nextcloud_occ -V
