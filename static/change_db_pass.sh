@@ -23,27 +23,8 @@ sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGP
 
 if is_this_installed postgresql-common
 then
-    OUTPUT="$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)"
+    sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";
 elif is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^nextcloud-postgresql$"
-then
-    OUTPUT="$(docker exec nextcloud-postgresql psql "$NCCONFIGDB" -U "$NCUSER" -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)"
-else
-    exit 1
-fi
-
-# Check if it was successful
-if [ "$OUTPUT" == "ALTER ROLE" ]
-then
-    sleep 1
-else
-    print_text_in_color "$IRed" "Changing PostgreSQL Nextcloud password failed."
-    sed -i "s|  'dbpassword' =>.*|  'dbpassword' => '$NCCONFIGDBPASS',|g" /var/www/nextcloud/config/config.php
-    print_text_in_color "$IRed" "Nothing is changed. Your old password is: $NCCONFIGDBPASS"
-    exit 1
-fi
-
-# Change it for the docker config, too
-if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^nextcloud-postgresql$"
 then
     print_text_in_color "$ICyan" "Downloading the needed tool to get the current Postgresql config..."
     docker pull assaflavie/runlike
@@ -56,4 +37,10 @@ then
     docker rm nextcloud-postgresql
     check_command bash /tmp/psql-conf
 cat "$NCPATH"/config/config.php # TODO
+else
+    exit 1
 fi
+
+# Check if occ works
+sleep 2
+nextcloud_occ > /dev/null
