@@ -167,6 +167,7 @@ chmod 600 -R /home/ddclient
 # Create docker container
 docker run -d \
   --name=ddclient \
+  --restart always \
   -e PUID=65534 \
   -e PGID=65534 \
   -v /home/ddclient:/config \
