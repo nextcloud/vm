@@ -141,6 +141,7 @@ mkdir -p /home/ddclient
 # Write information to ddclient.conf
 cat << DDCLIENT_CONF > "/home/ddclient/ddclient.conftemp"
 # Default system settings
+daemon=300
 use=if, if=$IFACE
 use=web, web=https://ipv4bot.whatismyipaddress.com
 
