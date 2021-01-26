@@ -13,8 +13,6 @@ Server installation. Simplified. :cloud:
 #### All Systems Go
 > NcVM can check for and install _stable_ updates to keep things current, smooth, and secure.
 
-![alt tag](https://i.imgur.com/nBEvczb.png)
-
 --------------------
 
 ## Dependencies:
@@ -73,6 +71,8 @@ Please report any issues you can find. Improvements are welcome!
 ![alt tag](https://i.imgur.com/tiF4chg.png)
 #### Webmin (Server Administration GUI) *not default*
 ![alt tag](https://i.imgur.com/hLkmA1D.png)
+#### TLS rating
+![alt tag](https://i.imgur.com/nBEvczb.png)
 
 ## The usual tags
 **Downloads from Github (not the main downloads location):**
