@@ -130,18 +130,6 @@ for upgrading your server: https://shop.hanssonit.se/product/premium-support-per
     exit 0
 fi
 
-# Set secure permissions
-if [ ! -f "$SECURE" ]
-then
-    mkdir -p "$SCRIPTS"
-    download_script STATIC setup_secure_permissions_nextcloud
-    chmod +x "$SECURE"
-else
-    rm "$SECURE"
-    download_script STATIC setup_secure_permissions_nextcloud
-    chmod +x "$SECURE"
-fi
-
 # Check if the DIR actually is a file
 if [ -f /var/log/nextcloud ]
 then
@@ -180,6 +168,18 @@ elif [ -n "$(find "$NCDATA" -maxdepth 1 -name "*.log")" ]
 then
     rsync -Aaxz "$NCDATA"/*.log "$VMLOGS"
     rm -f "$NCDATA"/*.log*
+fi
+
+# Set secure permissions
+if [ ! -f "$SECURE" ]
+then
+    mkdir -p "$SCRIPTS"
+    download_script STATIC setup_secure_permissions_nextcloud
+    chmod +x "$SECURE"
+else
+    rm "$SECURE"
+    download_script STATIC setup_secure_permissions_nextcloud
+    chmod +x "$SECURE"
 fi
 
 # Remove the local lib.sh since it's causing issues with new functions (2020-06-01)
