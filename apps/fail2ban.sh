@@ -54,6 +54,12 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
+# Check if the DIR actually is a file
+if [ -f /var/log/nextcloud ]
+then
+    rm -f /var/log/nextcloud
+fi
+
 # Create $VMLOGS dir
 mkdir -p "$VMLOGS"
 

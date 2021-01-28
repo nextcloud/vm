@@ -130,25 +130,31 @@ for upgrading your server: https://shop.hanssonit.se/product/premium-support-per
     exit 0
 fi
 
-# Set secure permissions
-if [ ! -f "$SECURE" ]
+# Check if the DIR actually is a file
+if [ -f /var/log/nextcloud ]
 then
-    mkdir -p "$SCRIPTS"
-    download_script STATIC setup_secure_permissions_nextcloud
-    chmod +x "$SECURE"
-else
-    rm "$SECURE"
-    download_script STATIC setup_secure_permissions_nextcloud
-    chmod +x "$SECURE"
+    rm -f /var/log/nextcloud
 fi
 
-# Move all logs to new dir (2019-09-04) # updated 2020-11-29
-bash $SECURE & spinner_loading
-nextcloud_occ config:system:set log_type --value=file
-nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
-nextcloud_occ config:system:set loglevel --value=2
-touch "$VMLOGS/nextcloud.log"
-chown www-data:www-data "$VMLOGS/nextcloud.log"
+# Move all logs to new dir (2019-09-04) # updated 2021-01-27
+mkdir -p "$VMLOGS"
+
+find_log() {
+    NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
+    if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
+    then
+        # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
+        print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - \
+deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
+        xargs rm -f <<< "$NCLOG"
+        # Set logging
+        nextcloud_occ config:system:set log_type --value=file
+        nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
+        nextcloud_occ config:system:set loglevel --value=2
+        touch "$VMLOGS/nextcloud.log"
+        chown www-data:www-data "$VMLOGS/nextcloud.log"
+    fi
+}
 if [ -d /var/log/ncvm/ ]
 then
     rsync -Aaxz /var/log/ncvm/ "$VMLOGS"
@@ -162,6 +168,18 @@ elif [ -n "$(find "$NCDATA" -maxdepth 1 -name "*.log")" ]
 then
     rsync -Aaxz "$NCDATA"/*.log "$VMLOGS"
     rm -f "$NCDATA"/*.log*
+fi
+
+# Set secure permissions
+if [ ! -f "$SECURE" ]
+then
+    mkdir -p "$SCRIPTS"
+    download_script STATIC setup_secure_permissions_nextcloud
+    chmod +x "$SECURE"
+else
+    rm "$SECURE"
+    download_script STATIC setup_secure_permissions_nextcloud
+    chmod +x "$SECURE"
 fi
 
 # Remove the local lib.sh since it's causing issues with new functions (2020-06-01)
