@@ -47,7 +47,17 @@ case "$choice" in
     "Update Nextcloud major")
         if [ -f "$SCRIPTS"/update.sh ]
         then
-            bash "$SCRIPTS"/update.sh
+            if yesno_box_yes "Do you want to fetch the latest update.sh script?"
+            then
+                print_text_in_color "$ICyan" "Removing the old script..." 
+                rm -f "$SCRIPTS"/update.sh
+                print_text_in_color "$ICyan" "Downloading the Update script..."
+                download_script STATIC update
+                chmod +x "$SCRIPTS"/update.sh
+                bash "$SCRIPTS"/update.sh
+            else
+                bash "$SCRIPTS"/update.sh
+            fi
         else
             print_text_in_color "$ICyan" "Downloading the Update script..."
             download_script STATIC update
@@ -58,7 +68,17 @@ case "$choice" in
     "Update Nextcloud minor")
         if [ -f "$SCRIPTS"/update.sh ]
         then
-            bash "$SCRIPTS"/update.sh minor
+            if yesno_box_yes "Do you want to fetch the latest update.sh script?"
+            then
+                print_text_in_color "$ICyan" "Removing the old script..." 
+                rm -f "$SCRIPTS"/update.sh
+                print_text_in_color "$ICyan" "Downloading the Update script..."
+                download_script STATIC update
+                chmod +x "$SCRIPTS"/update.sh
+                bash "$SCRIPTS"/update.sh minor
+            else
+                bash "$SCRIPTS"/update.sh minor
+            fi
         else
             print_text_in_color "$ICyan" "Downloading the Update script..."
             download_script STATIC update
