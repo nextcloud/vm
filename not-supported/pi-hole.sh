@@ -199,7 +199,7 @@ fi
 mapfile -t INSTALLED <<< "${INSTALLED[@]}"
 
 # Insert the new lines into pihole
-echo "# Please don't remove or change this line! Pi-hole installed programs=${INSTALLED[@]}" > "$SCRIPTS/pihole"
+echo "# Please don't remove or change this line! Pi-hole installed programs=${INSTALLED[*]}" > "$SCRIPTS/pihole"
 
 # Check if Pi-hole was successfully installed
 if ! pihole &>/dev/null
