@@ -331,6 +331,21 @@ then
     exit 1
 fi
 
+# Check if all system entries are there
+SYS_DRIVES=$(grep "^/dev/disk/by-" /etc/fstab | grep defaults | awk '{print $1}')
+mapfile -t SYS_DRIVES <<< "$SYS_DRIVES"
+for drive in "${SYS_DRIVES[@]}"
+do
+    if ! grep -q "$drive" /tmp/borgsystem/system/etc/fstab
+    then
+        msg_box "Cannot restore to this archive point since fstab entries are missing/not there."
+        umount /tmp/borgsystem
+        umount /tmp/borgboot
+        restore_original_state
+        exit 1
+    fi
+done
+
 # Exclude some dirs; mnt, media, sys, prob don't need to be excluded because of the usage of --one-file-system flag
 EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache root/.config/borg var/cache \
 lost+found run var/run tmp var/tmp etc/lvm/archive snap)
@@ -346,6 +361,7 @@ if ! rsync --archive --human-readable --dry-run --verbose --delete /tmp/borgboot
 then
     msg_box "Something failed while performing the boot-partition dry-run."
     umount /tmp/borgsystem
+    umount /tmp/borgboot
     restore_original_state
     exit 1
 fi
@@ -356,6 +372,7 @@ if ! rsync --archive --verbose --human-readable \
 then
     msg_box "Something failed while performing the system-partition dry-run."
     umount /tmp/borgsystem
+    umount /tmp/borgboot
     restore_original_state
     exit 1
 fi
