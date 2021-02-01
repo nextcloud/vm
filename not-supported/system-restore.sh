@@ -338,7 +338,8 @@ for drive in "${SYS_DRIVES[@]}"
 do
     if ! grep -q "$drive" /tmp/borgsystem/system/etc/fstab
     then
-        msg_box "Cannot restore to this archive point since fstab entries are missing/not there."
+        msg_box "Cannot restore to this archive point since fstab entries are missing/not there.
+This might be because the archive was created on a different Ubuntu installation."
         umount /tmp/borgsystem
         umount /tmp/borgboot
         restore_original_state
