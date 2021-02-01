@@ -19,16 +19,15 @@ debug_mode
 root_check
 
 # Check if bitwarden_rs is already installed
-if [ -d /home/bitwarden_rs ] || docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
+if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
 then
     msg_box "It seems like you have already installed Bitwarden RS.
-You cannot install it again because you would lose all your data and passwords.
 
-If you are certain that you definitely want to delete Bitwarden RS and all \
-its data to be able to reinstall it, you can execute the following commands:
-
+If you want to reinstall Bitwarden RS, you can execute the following commands:
 'sudo docker stop bitwarden_rs'
 'sudo docker rm bitwarden_rs'
+
+This command will delete all private data:
 'sudo rm -r /home/bitwarden_rs'"
     exit 1
 fi
