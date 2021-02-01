@@ -475,6 +475,16 @@ as it's not currently possible to downgrade.\n\nPlease only continue if you have
     fi
 fi
 
+# Update Pi-hole
+if pihole &>/dev/null
+then
+    pihole -up
+    systemctl stop lighttpd
+    sed -i 's|^server\.port.*|server\.port = 8093|' /etc/lighttpd/lighttpd.conf
+    sleep 10 # Wait for lighttpd
+    systemctl start lighttpd
+fi
+
 # Rename snapshot
 if [ -n "$SNAPSHOT_EXISTS" ]
 then

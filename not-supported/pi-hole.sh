@@ -53,8 +53,8 @@ Uninstalling Pi-hole will reset all its config and will reboot your NcVM afterwa
         exit 1
     fi
 
-    # Get initially installed programs from update.sh
-    INSTALLED=$(grep "Pi-hole installed programs=" "$SCRIPTS/update.sh")
+    # Get initially installed programs from pihole
+    INSTALLED=$(grep "Pi-hole installed programs=" "$SCRIPTS/pihole")
     INSTALLED="${INSTALLED##*programs=}"
 
     # Inform the user
@@ -109,11 +109,8 @@ Please report this to $ISSUES"
     # Delete unbound config
     rm /etc/unbound/unbound.conf.d/pi-hole.conf
 
-    # Rename update script, if it is new
-    if grep -q "Pi-hole update script is new." "$SCRIPTS/update.sh"
-    then
-        mv "$SCRIPTS/update.sh" "$SCRIPTS/update.old"
-    fi
+    # Delete pihole file
+    rm -f "$SCRIPTS/pihole"
 
     # Remove all initially installed applications
     for program in "${INSTALLED[@]}"
@@ -129,9 +126,6 @@ Please report this to $ISSUES"
 
     # Remove not needed dependencies
     apt autoremove -y
-
-    # Remove that section from update.sh
-    check_command sed -i "/^#Pi-hole-start/,/^#Pi-hole-end/d" "$SCRIPTS/update.sh"
 
     # Remove apache conf
     a2dissite pihole.conf &>/dev/null
@@ -201,48 +195,11 @@ then
 Please report this to $ISSUES"
 fi
 
-if [ -f "$SCRIPTS/update.sh" ]
-then
-    # Check if auto restart was configured
-    Restart=""
-    if grep -q "/sbin/shutdown -r +1" "$SCRIPTS/update.sh"
-    then
-        RESTART="/sbin/shutdown -r +1"
-    fi
-
-    # Prepare update.sh by removing the exit and restart lines
-    sed -i 's|^/sbin/shutdown -r +1||' "$SCRIPTS/update.sh"
-    sed -i 's|^exit.*||' "$SCRIPTS/update.sh"
-    STATE=old
-else
-    mkdir -p "$SCRIPTS"
-
-    echo "#!/bin/bash" > "$SCRIPTS/update.sh"
-    echo ". <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)" >> "$SCRIPTS/update.sh"
-    NO_UPDATE_SCRIPT=1
-    STATE=new
-fi
-
 # Make an array from installed applications
 mapfile -t INSTALLED <<< "${INSTALLED[@]}"
 
-# Insert the new lines into update.sh
-cat << PIHOLE_UPDATE >> "$SCRIPTS/update.sh"
-
-#Pi-hole-start - Please don't remove or change this line
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
-check_command pihole -up
-systemctl stop lighttpd
-check_command sed -i 's|^server\.port.*|server\.port = 8093|' /etc/lighttpd/lighttpd.conf
-sleep 10 # Wait for lighttpd
-check_command systemctl start lighttpd
-# Please don't remove or change this line! Pi-hole installed programs=${INSTALLED[@]}
-# Please don't remove or change this line! Pi-hole update script is $STATE.
-#Pi-hole-end - Please don't remove or change this line
-
-$RESTART
-exit
-PIHOLE_UPDATE
+# Insert the new lines into pihole
+echo "# Please don't remove or change this line! Pi-hole installed programs=${INSTALLED[@]}" > "$SCRIPTS/pihole"
 
 # Check if Pi-hole was successfully installed
 if ! pihole &>/dev/null
