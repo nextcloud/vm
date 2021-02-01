@@ -515,10 +515,14 @@ then
 fi
 
 ############# Don't upgrade since 20,0.6 is very buggy with apps
-msg_box "Due to serious bugs with apps in Nextcloud 20.0.6 we won't upgrade to that version. 
+if [[ "$NCVERSION" == "20.0.6" ]]
+then
+msg_box "Due to serious bugs with apps in Nextcloud 20.0.6 we won't upgrade to that version.
 
 When 20.0.7 are out we will test that version and remove this text."
 exit
+fi
+
 
 # Check if PHP version is compatible with $NCVERSION
 PHP_VER=71
