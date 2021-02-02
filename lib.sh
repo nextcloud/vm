@@ -43,7 +43,7 @@ REPO=$(grep "^deb " /etc/apt/sources.list | grep http | awk '{print $2}' | head 
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
 WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
-INTERFACES="/etc/netplan/01-netcfg.yaml"
+INTERFACES="/etc/netplan/nextcloud.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 # Internet DNS required when a check needs to be made to a server outside the home/SME
 INTERNET_DNS="9.9.9.9"

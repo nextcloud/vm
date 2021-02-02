@@ -277,25 +277,39 @@ else
 fi
 
 # Inform user
-msg_box "We will now check the archive integrity and perform a dry-run of restoring the backup.
-(which means that no files/folders will get restored/deleted during this step)."
-msg_box "Attention! It is crutial that you wait until you see the next menu!
-You will have the chance to cancel the restore process afterwards."
+msg_box "We will now check if extracting works and perform a dry-run of restoring the backup.
+(which means that no files/folders will get modified during this step).
+Checking the extracting can take a very long time, though."
+if yesno_box_yes "Do you want to check if extracting works?
+You can skip the extracting check by selecting 'No'. 
+The dry-run of restoring the backup will run always. (No files/folders will get modified.) 
+It is recommended to select 'Yes' to run the extracting check."
+then
+    EXTRACT_CHECK=1
+fi
+msg_box "Please wait until you see the next menu!
+You will have the chance to cancel the restore process afterwards.\n
+Otherwise you can cancel always by pressing '[CTRL] + [C]'"
 
 # Verify integrity of selected archives
-print_text_in_color "$ICyan" "Checking the system partition archive integrity. Please be patient!"
-if ! borg check --verify-data --verbose "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-system-partition"
+if [ -n "$EXTRACT_CHECK" ]
 then
-    msg_box "Some errors were reported while checking the system partition archive integrity."
-    restore_original_state
-    exit 1
-fi
-print_text_in_color "$ICyan" "Checking the boot partition archive integrity. Please be patient!"
-if ! borg check --verify-data --verbose "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-boot-partition"
-then
-    msg_box "Some errors were reported while checking the boot partition archive integrity."
-    restore_original_state
-    exit 1
+    print_text_in_color "$ICyan" "Checking the system partition archive integrity. Please be patient!"
+    mkdir -p /tmp/borgextract
+    cd /tmp/borgextract
+    if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-system-partition"
+    then
+        msg_box "Some errors were reported while checking the system partition archive integrity."
+        restore_original_state
+        exit 1
+    fi
+    print_text_in_color "$ICyan" "Checking the boot partition archive integrity. Please be patient!"
+    if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-boot-partition"
+    then
+        msg_box "Some errors were reported while checking the boot partition archive integrity."
+        restore_original_state
+        exit 1
+    fi
 fi
 
 # Mount system archive
@@ -317,6 +331,22 @@ then
     exit 1
 fi
 
+# Check if all system entries are there
+SYS_DRIVES=$(grep "^/dev/disk/by-" /etc/fstab | grep defaults | awk '{print $1}')
+mapfile -t SYS_DRIVES <<< "$SYS_DRIVES"
+for drive in "${SYS_DRIVES[@]}"
+do
+    if ! grep -q "$drive" /tmp/borgsystem/system/etc/fstab
+    then
+        msg_box "Cannot restore to this archive point since fstab entries are missing/not there.
+This might be because the archive was created on a different Ubuntu installation."
+        umount /tmp/borgsystem
+        umount /tmp/borgboot
+        restore_original_state
+        exit 1
+    fi
+done
+
 # Exclude some dirs; mnt, media, sys, prob don't need to be excluded because of the usage of --one-file-system flag
 EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache root/.config/borg var/cache \
 lost+found run var/run tmp var/tmp etc/lvm/archive snap)
@@ -327,12 +357,29 @@ done
 
 # Dry run of everything
 print_text_in_color "$ICyan" "Performing a dry-run before restoring. Please be patient!"
-OUTPUT=$(rsync --archive --human-readable --dry-run --verbose --delete /tmp/borgboot/boot/ /boot)
-OUTPUT=$(echo "$OUTPUT" | sed -r '/^[a-zA-Z0-9]+\//s/^/boot\//')
-OUTPUT+=$(rsync --archive --verbose --human-readable \
---dry-run --delete --one-file-system --stats "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ /)
+if ! rsync --archive --human-readable --dry-run --verbose --delete /tmp/borgboot/boot/ /boot \
+| tee /tmp/dry-run.out
+then
+    msg_box "Something failed while performing the boot-partition dry-run."
+    umount /tmp/borgsystem
+    umount /tmp/borgboot
+    restore_original_state
+    exit 1
+fi
+sed -i -r '/^[a-zA-Z0-9]+\//s/^/boot\//' /tmp/dry-run.out
+if ! rsync --archive --verbose --human-readable \
+--dry-run --delete --one-file-system --stats "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ / \
+| tee -a /tmp/dry-run.out
+then
+    msg_box "Something failed while performing the system-partition dry-run."
+    umount /tmp/borgsystem
+    umount /tmp/borgboot
+    restore_original_state
+    exit 1
+fi
 
 # Prepare output
+OUTPUT=$(cat /tmp/dry-run.out)
 OUTPUT=$(echo "$OUTPUT" | sed -r '/^[a-zA-Z0-9]+\//s/^/changing or creating /')
 DELETED_FILES=$(echo "$OUTPUT" | grep "^deleting " | grep -v "/$" | sort)
 DELETED_FOLDERS=$(echo "$OUTPUT" | grep "^deleting .*/$" | sort)
@@ -341,6 +388,7 @@ CHANGED_FOLDERS=$(echo "$OUTPUT" | grep "^changing or creating .*/$" | sort)
 STATS=$(echo "$OUTPUT" | grep -v "^access.log\|error.log\|\./\|^deleting \|^changing or creating ")
 
 # Show output
+msg_box "Here are the stats from the dry-run:\n$STATS\n\n" "STATS"
 while :
 do
     choice=$(whiptail --title "$TITLE" --menu \
@@ -379,7 +427,8 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     esac
 done
 
-msg_box "Here are the stats from the dry-run:\n$STATS\n\n" "STATS"
+# Inform user
+msg_box "Here are the stats from the dry-run again:\n$STATS\n\n" "STATS"
 if ! yesno_box_no "Are you sure that you want to restore your system to this state?"
 then
     umount /tmp/borgsystem

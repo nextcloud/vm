@@ -54,8 +54,31 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
+# Check if the DIR actually is a file
+if [ -f /var/log/nextcloud ]
+then
+    rm -f /var/log/nextcloud
+fi
+
 # Create $VMLOGS dir
 mkdir -p "$VMLOGS"
+
+find_log() {
+    NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
+    if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
+    then
+        # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
+        print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - \
+deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
+        xargs rm -f <<< "$NCLOG"
+        # Set logging
+        nextcloud_occ config:system:set log_type --value=file
+        nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
+        nextcloud_occ config:system:set loglevel --value=2
+        touch "$VMLOGS/nextcloud.log"
+        chown www-data:www-data "$VMLOGS/nextcloud.log"
+    fi
+}
 
 ### Local variables ###
 # location of Nextcloud logs
@@ -70,6 +93,9 @@ do
             nextcloud_occ config:system:set log_type --value=file
             nextcloud_occ config:system:set loglevel --value=2
             break
+        else
+           find_log
+           break
         fi
     elif [ -n "$(nextcloud_occ_no_check config:system:get logfile)" ]
     then
@@ -81,25 +107,14 @@ do
         chown www-data:www-data "$VMLOGS/nextcloud.log"
         break
     else
-        NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
-        if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
-        then
-            # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
-            print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - \
-deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
-            xargs rm -f <<< "$NCLOG"
-            # Set logging
-            nextcloud_occ config:system:set log_type --value=file
-            nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
-            nextcloud_occ config:system:set loglevel --value=2
-            touch "$VMLOGS/nextcloud.log"
-            chown www-data:www-data "$VMLOGS/nextcloud.log"
-            break
-        fi
+        find_log
+        break
     fi
 done
+
 # remove ncdata, else it will be used
 rm -f $NCDATA/nextcloud.log
+
 # time to ban an IP that exceeded attempts
 BANTIME_=1209600
 # cooldown time for incorrect passwords

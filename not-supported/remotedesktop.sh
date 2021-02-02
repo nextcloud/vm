@@ -44,8 +44,11 @@ If you have already installed a desktop environment, you will not need to instal
             # Install gnome-session
             print_text_in_color "$ICyan" "Installing gnome-session..."
             apt install gnome-session --no-install-recommends -y
+            gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
             install_if_not gnome-shell-extension-dash-to-panel
             check_command sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable dash-to-panel@jderose9.github.com
+            install_if_not gnome-shell-extension-arc-menu
+            sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable arc-menu@linxgem33.com
         fi
     fi
     
@@ -86,6 +89,12 @@ POWER
     print_text_in_color "$ICyan" "Waiting for acpid to restart..."
     sleep 5
     check_command systemctl restart acpid
+
+    # Create plex user
+    if ! id plex &>/dev/null
+    then
+        check_command adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "plex"
+    fi
 
     # Add the user to the www-data and plex group to be able to write to all disks
     usermod --append --groups www-data,plex "$UNIXUSER"
@@ -144,6 +153,14 @@ else
     ONLYOFFICE_SWITCH=ON
 fi
 
+# Picard
+if is_this_installed picard
+then
+    PICARD_SWITCH=OFF
+else
+   PICARD_SWITCH=ON
+fi
+
 # File manager nautilus
 if is_this_installed nautilus
 then
@@ -182,6 +199,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "MakeMKV" "(Rip DVDs and Blu-rays)" "$MAKEMKV_SWITCH" \
 "Nautilus" "(File Manager)" "$NAUTILUS_SWITCH" \
 "OnlyOffice" "(Open Source Office Suite)" "$ONLYOFFICE_SWITCH" \
+"Picard" "(Music tagger)" "$PICARD_SWITCH" \
 "Sound Juicer" "(Rip CDs)" "$SJ_SWITCH" \
 "VLC" "(Play Videos and Audio)" "$VLC_SWITCH" \
 "XRDP" "(Uninstall XRDP and all listed desktop apps)" OFF 3>&1 1>&2 2>&3)
@@ -193,10 +211,28 @@ install_remove_packet() {
         print_text_in_color "$ICyan" "Uninstalling $2"
         apt purge "$1" -y
         apt autoremove -y
+        if [ "$1" = "nautilus" ]
+        then
+            rm -f /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
+            rm -f /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
+        fi
         print_text_in_color "$ICyan" "$2 was successfully uninstalled."
     else
         print_text_in_color "$ICyan" "Installing $2"
         install_if_not "$1"
+        # Settings for nautilus
+        if [ "$1" = "nautilus" ]
+        then
+            mkdir -p /home/"$UNIXUSER"/.local/share/applications/
+            cp /usr/share/applications/org.gnome.Nautilus.desktop /home/"$UNIXUSER"/.local/share/applications/
+            sed -i 's|^Exec=nautilus.*|Exec=nautilus --new-window /mnt|' /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
+            sed -i 's|DBusActivatable=true|# DBusActivatable=true|' /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
+            chmod +x /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
+            mkdir -p /home/"$UNIXUSER"/.config/gtk-3.0
+            echo "file:///mnt" > /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
+            chmod 664 /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
+            chown -R "$UNIXUSER":"$UNIXUSER" /home/"$UNIXUSER"
+        fi
         print_text_in_color "$ICyan" "$2 was successfully installed"
     fi
 }
@@ -208,8 +244,8 @@ case "$choice" in
 as well as the gnome desktop." "$SUBTITLE"
         if yesno_box_no "Do you want to do this?" "$SUBTITLE"
         then
-            APPS=(evince eog firefox gedit makemkv-oss makemkv-bin nautilus onlyoffice-desktopeditors sound-juicer \
-vlc acpid gnome-shell-extension-dash-to-panel gnome-session xrdp)
+            APPS=(evince eog firefox gedit makemkv-oss makemkv-bin nautilus onlyoffice-desktopeditors picard sound-juicer \
+vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-extension-arc-menu gnome-session xrdp)
             for app in "${APPS[@]}"
             do
                 if is_this_installed "$app"
@@ -224,6 +260,8 @@ vlc acpid gnome-shell-extension-dash-to-panel gnome-session xrdp)
             rm -f /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
             rm -f /etc/polkit-1/localauthority/50-local.d/allow-update-repo.pkla
             rm -f /etc/polkit-1/localauthority/50-local.d/color.pkla
+            rm -f /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
+            rm -f /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
             msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
             exit
         fi
@@ -299,6 +337,9 @@ This can set your server under risk, though!" "$SUBTITLE"
             fi
         fi
         unset SUBTITLE
+    ;;&
+    *"Picard"*)
+        install_remove_packet picard Picard
     ;;&
     *"Sound Juicer"*)
         install_remove_packet sound-juicer "Sound Juicer"

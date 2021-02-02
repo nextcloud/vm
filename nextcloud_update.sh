@@ -30,10 +30,19 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
+# Check for pending-snapshot
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
-    msg_box "Cannot run this script currently. Please try again later!"
-    exit 1
+    msg_box "Cannot proceed with the update currently because NcVM-snapshot-pending exists.\n
+It is possible that a backup is currently running.\n
+Advice: don't restart your system now if that is the case!"
+    # Don't exit the script while the snapshot exists to disable any automatic restart during backups
+    while does_snapshot_exist "NcVM-snapshot-pending"
+    do
+        print_text_in_color "$ICyan" "Waiting for NcVM-snapshot-pending to vanish... (press '[CTRL] + [C]' to cancel)"
+        sleep 5
+    done
+    print_text_in_color "$ICyan" "Continuing the update..."
 fi
 
 # Create a snapshot before doing anything else
@@ -72,6 +81,13 @@ This should work again after a reboot of your server."
         msg_box "The creation of a snapshot failed.
 If you just merged and old one, please reboot your server again. 
 It should then start working again."
+        exit 1
+    fi
+    if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+    then
+        nextcloud_occ maintenance:mode --off
+        start_if_stopped docker
+        msg_box "Could not rename the snapshot before starting the update. Please reboot your system!"
         exit 1
     fi
     nextcloud_occ maintenance:mode --off
@@ -114,25 +130,31 @@ for upgrading your server: https://shop.hanssonit.se/product/premium-support-per
     exit 0
 fi
 
-# Set secure permissions
-if [ ! -f "$SECURE" ]
+# Check if the DIR actually is a file
+if [ -f /var/log/nextcloud ]
 then
-    mkdir -p "$SCRIPTS"
-    download_script STATIC setup_secure_permissions_nextcloud
-    chmod +x "$SECURE"
-else
-    rm "$SECURE"
-    download_script STATIC setup_secure_permissions_nextcloud
-    chmod +x "$SECURE"
+    rm -f /var/log/nextcloud
 fi
 
-# Move all logs to new dir (2019-09-04) # updated 2020-11-29
-bash $SECURE & spinner_loading
-nextcloud_occ config:system:set log_type --value=file
-nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
-nextcloud_occ config:system:set loglevel --value=2
-touch "$VMLOGS/nextcloud.log"
-chown www-data:www-data "$VMLOGS/nextcloud.log"
+# Move all logs to new dir (2019-09-04) # updated 2021-01-27
+mkdir -p "$VMLOGS"
+
+find_log() {
+    NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
+    if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
+    then
+        # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
+        print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - \
+deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
+        xargs rm -f <<< "$NCLOG"
+        # Set logging
+        nextcloud_occ config:system:set log_type --value=file
+        nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
+        nextcloud_occ config:system:set loglevel --value=2
+        touch "$VMLOGS/nextcloud.log"
+        chown www-data:www-data "$VMLOGS/nextcloud.log"
+    fi
+}
 if [ -d /var/log/ncvm/ ]
 then
     rsync -Aaxz /var/log/ncvm/ "$VMLOGS"
@@ -146,6 +168,18 @@ elif [ -n "$(find "$NCDATA" -maxdepth 1 -name "*.log")" ]
 then
     rsync -Aaxz "$NCDATA"/*.log "$VMLOGS"
     rm -f "$NCDATA"/*.log*
+fi
+
+# Set secure permissions
+if [ ! -f "$SECURE" ]
+then
+    mkdir -p "$SCRIPTS"
+    download_script STATIC setup_secure_permissions_nextcloud
+    chmod +x "$SECURE"
+else
+    rm "$SECURE"
+    download_script STATIC setup_secure_permissions_nextcloud
+    chmod +x "$SECURE"
 fi
 
 # Remove the local lib.sh since it's causing issues with new functions (2020-06-01)
@@ -441,6 +475,12 @@ as it's not currently possible to downgrade.\n\nPlease only continue if you have
     fi
 fi
 
+# Rename snapshot
+if [ -n "$SNAPSHOT_EXISTS" ]
+then
+    check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
+fi
+
 # Major versions unsupported
 if [[ "${CURRENTVERSION%%.*}" -le "$NCBAD" ]]
 then
@@ -473,6 +513,16 @@ then
         exit 0
     fi
 fi
+
+############# Don't upgrade since 20,0.6 is very buggy with apps
+if [[ "$NCVERSION" == "20.0.6" ]]
+then
+msg_box "Due to serious bugs with apps in Nextcloud 20.0.6 we won't upgrade to that version.
+
+When 20.0.7 are out we will test that version and remove this text."
+exit
+fi
+
 
 # Check if PHP version is compatible with $NCVERSION
 PHP_VER=71
@@ -524,6 +574,12 @@ then
 fi
 
 countdown "Backing up files and upgrading to Nextcloud $NCVERSION in 10 seconds... Press CTRL+C to abort." "10"
+
+# Rename snapshot
+if [ -n "$SNAPSHOT_EXISTS" ]
+then
+    check_command lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
+fi
 
 # Backup app status
 # Fixing https://github.com/nextcloud/server/issues/4538
@@ -637,17 +693,6 @@ then
     "Please don't shutdown or reboot your server during the update! $(date +%T)"
     nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
-    if [ -n "$SNAPSHOT_EXISTS" ]
-    then
-        if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
-        then
-            nextcloud_occ maintenance:mode --off
-            msg_box "Could not rename the snapshot before starting the update.\n
-It is possible that a backup is currently running.\n
-Advice: don't restart your system now if that is the case!"
-            exit 1
-        fi
-    fi
     rm -rf $NCPATH
     print_text_in_color "$IGreen" "Extracting new package...."
     check_command tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
@@ -813,10 +858,6 @@ Maintenance mode is kept on."
     notify_admin_gui \
     "Nextcloud update failed!" \
     "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
-    if [ -n "$SNAPSHOT_EXISTS" ]
-    then
-        check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
-    fi
     nextcloud_occ status
     exit 1
 fi
