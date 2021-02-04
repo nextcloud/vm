@@ -53,8 +53,8 @@ Uninstalling Pi-hole will reset all its config and will reboot your NcVM afterwa
         exit 1
     fi
 
-    # Get initially installed programs from update.sh
-    INSTALLED=$(grep "Pi-hole installed programs=" "$SCRIPTS/update.sh")
+    # Get initially installed programs from pihole-update.sh
+    INSTALLED=$(grep "Pi-hole installed programs=" "$SCRIPTS/pihole-update.sh")
     INSTALLED="${INSTALLED##*programs=}"
 
     # Inform the user
@@ -87,7 +87,8 @@ Please report this to $ISSUES"
     # Uninstall Pi-hole
     check_command yes | bash "$SCRIPTS"/pihole-uninstall.sh
 
-    # Remove the file
+    # Remove the file and crontab
+    crontab -u root -l | grep -v "pihole-update.sh"  | crontab -u root -
     check_command rm "$SCRIPTS"/pihole-uninstall.sh
 
     # Delete the pihole user
@@ -109,11 +110,8 @@ Please report this to $ISSUES"
     # Delete unbound config
     rm /etc/unbound/unbound.conf.d/pi-hole.conf
 
-    # Rename update script, if it is new
-    if grep -q "Pi-hole update script is new." "$SCRIPTS/update.sh"
-    then
-        mv "$SCRIPTS/update.sh" "$SCRIPTS/update.old"
-    fi
+    # Remove update script
+    rm -f "$SCRIPTS/pihole-update.sh"
 
     # Remove all initially installed applications
     for program in "${INSTALLED[@]}"
@@ -129,9 +127,6 @@ Please report this to $ISSUES"
 
     # Remove not needed dependencies
     apt autoremove -y
-
-    # Remove that section from update.sh
-    check_command sed -i "/^#Pi-hole-start/,/^#Pi-hole-end/d" "$SCRIPTS/update.sh"
 
     # Remove apache conf
     a2dissite pihole.conf &>/dev/null
@@ -201,35 +196,16 @@ then
 Please report this to $ISSUES"
 fi
 
-if [ -f "$SCRIPTS/update.sh" ]
-then
-    # Check if auto restart was configured
-    Restart=""
-    if grep -q "/sbin/shutdown -r +1" "$SCRIPTS/update.sh"
-    then
-        RESTART="/sbin/shutdown -r +1"
-    fi
-
-    # Prepare update.sh by removing the exit and restart lines
-    sed -i 's|^/sbin/shutdown -r +1||' "$SCRIPTS/update.sh"
-    sed -i 's|^exit.*||' "$SCRIPTS/update.sh"
-    STATE=old
-else
-    mkdir -p "$SCRIPTS"
-
-    echo "#!/bin/bash" > "$SCRIPTS/update.sh"
-    echo ". <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)" >> "$SCRIPTS/update.sh"
-    NO_UPDATE_SCRIPT=1
-    STATE=new
-fi
-
 # Make an array from installed applications
 mapfile -t INSTALLED <<< "${INSTALLED[@]}"
 
-# Insert the new lines into update.sh
-cat << PIHOLE_UPDATE >> "$SCRIPTS/update.sh"
+# Create update script
+mkdir -p "$SCRIPTS"
 
-#Pi-hole-start - Please don't remove or change this line
+# Insert the new lines into pihole-update.sh
+cat << PIHOLE_UPDATE > "$SCRIPTS/pihole-update.sh"
+#!/bin/bash
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 check_command pihole -up
 systemctl stop lighttpd
@@ -237,12 +213,11 @@ check_command sed -i 's|^server\.port.*|server\.port = 8093|' /etc/lighttpd/ligh
 sleep 10 # Wait for lighttpd
 check_command systemctl start lighttpd
 # Please don't remove or change this line! Pi-hole installed programs=${INSTALLED[@]}
-# Please don't remove or change this line! Pi-hole update script is $STATE.
-#Pi-hole-end - Please don't remove or change this line
-
-$RESTART
-exit
 PIHOLE_UPDATE
+
+# Secure the file
+chown root:root "$SCRIPTS/pihole-update.sh"
+chmod 700 "$SCRIPTS/pihole-update.sh"
 
 # Check if Pi-hole was successfully installed
 if ! pihole &>/dev/null
@@ -374,6 +349,9 @@ check_command pihole -a -p "$PASSWORD"
 IPV6_ADDRESS=$(grep "IPV6_ADDRESS=" /etc/pihole/setupVars.conf)
 IPV6_ADDRESS="${IPV6_ADDRESS##*IPV6_ADDRESS=}"
 
+# Create contab entry
+crontab -u root -l | grep -v "pihole-update.sh"  | crontab -u root -
+crontab -u root -l | { cat; echo "30 19 * * 6 $SCRIPTS/pihole-update.sh >/dev/null" ; } | crontab -u root -
 
 # Show that everything was setup correctly
 msg_box "Congratulations, your Pi-hole was setup correctly!
@@ -397,19 +375,11 @@ A list of available options is shown by running:
 'pihole -h'"
 
 # Inform about updates
-if [ -z "$NO_UPDATE_SCRIPT" ]
-then
-    msg_box "Concerning updates:
-You don't have to think about updating the Pi-hole manually, \
-since it will be updated together with your server with the \
-integrated update.sh script."
-else
-    msg_box "Concerning updates:
+msg_box "Concerning updates:
 We have created an update script that you can use to update your Pi-hole by running:
-'bash $SCRIPTS/update.sh'
+'bash $SCRIPTS/pihole-update.sh'
 
-Of course you are free to schedule updates via a cronjob."
-fi
+Updates will automatically be executed every saturday at 19:30"
 
 # Ask if the user wants to install unbound
 if ! yesno_box_yes "Do you want to enables your Pi-hole to be a recursive DNS server?
