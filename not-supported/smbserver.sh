@@ -66,7 +66,6 @@ fi
 
 # Install all needed tools
 install_if_not samba
-install_if_not members
 
 # Use SMB3
 if ! grep -q "^protocol" "$SMB_CONF"
@@ -129,12 +128,17 @@ samba_start() {
     service nmbd restart
 }
 
+# Get SMB users
+get_users() {
+    echo $(cat /etc/group | grep "$1" | cut -d ":" -f 4 | sed 's|,| |g')
+}
+
 # Choose from a list of SMB-user
 smb_user_menu() {
     args=(whiptail --title "$TITLE - $2" --checklist \
 "$1
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
-    USERS=$(members "$SMB_GROUP")
+    USERS=$(get_users "$SMB_GROUP")
     read -r -a USERS <<< "$USERS"
     for user in "${USERS[@]}"
     do
@@ -281,7 +285,7 @@ show_user() {
     local TEST=""
     local args
     unset args
-    USERS=$(members "$SMB_GROUP")
+    USERS=$(get_users "$SMB_GROUP")
     read -r -a USERS <<< "$USERS"
     local SUBTITLE="Show all SMB-shares from a SMB-user"
 
@@ -483,7 +487,7 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Delete SMB-users" "" \
 "Return to the Main Menu" "" 3>&1 1>&2 2>&3)
 
-    if [ -n "$choice" ] && [ "$choice" != "Add a SMB-user" ] && [ "$choice" != "Return to the Main Menu" ] && [ -z "$(members "$SMB_GROUP")" ]
+    if [ -n "$choice" ] && [ "$choice" != "Add a SMB-user" ] && [ "$choice" != "Return to the Main Menu" ] && [ -z "$(get_users "$SMB_GROUP")" ]
     then
         msg_box "Please create at least one SMB-user before doing anything else."
     else
@@ -1217,7 +1221,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 
 # SMB-share Menu
 share_menu() {
-if [ -z "$(members "$SMB_GROUP")" ]
+if [ -z "$(get_users "$SMB_GROUP")" ]
 then
     msg_box "Please create at least one SMB-user before creating a share." "SMB-share Menu"
     return
