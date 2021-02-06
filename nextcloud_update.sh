@@ -518,7 +518,7 @@ fi
 DONOTUPDATETO='20.0.6'
 if [[ "$NCVERSION" == "$DONOTUPDATETO" ]]
 then
-    msg_box "Due to serious bugs with version "$DONOTUPDATETO" we won't upgrade to that version."
+    msg_box "Due to serious bugs with version $DONOTUPDATETO we won't upgrade to that version."
     exit
 fi
 
