@@ -130,7 +130,7 @@ samba_start() {
 
 # Get SMB users
 get_users() {
-    echo $(cat /etc/group | grep "$1" | cut -d ":" -f 4 | sed 's|,| |g')
+    cat /etc/group | grep "$1" | cut -d ":" -f 4 | sed 's|,| |g'
 }
 
 # Choose from a list of SMB-user
