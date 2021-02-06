@@ -18,6 +18,7 @@ PR's are more than welcome. Happy Nextclouding!
 ## 20.0.7
 
 ### Small changelog:
+- Ask to get the latest `update.sh` script when running updates from `menu.sh`
 - Minor bugfixes and improvements
 
 ### Full changelog:
