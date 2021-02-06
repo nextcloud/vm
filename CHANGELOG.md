@@ -19,6 +19,9 @@ PR's are more than welcome. Happy Nextclouding!
 
 ### Small changelog:
 - Ask to get the latest `update.sh` script when running updates from `menu.sh`
+- Allow to reinstall Bitwarden RS also if local files are present
+- Updated geoblock database files
+- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
 - Minor bugfixes and improvements
 
 ### Full changelog:
