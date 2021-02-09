@@ -25,13 +25,8 @@ root_check
 install_if_not whiptail
 print_text_in_color "$ICyan" "Checking prerequisites..."
 # Check if Restoring is possible
-if [ ! -f "$NCPATH/occ" ]
-then
-    msg_box "It seems like the default Nextcloud is not installed in $NCPATH.\nThis is not supported."
-    exit 1
-fi
-# Check if activate-tls exists
-if [ -f "$SCRIPTS/daily-borg-backup.sh" ]
+# Check if daily-borg-backup exists
+if ! nextcloud_occ_no_check -V || [ -f "$SCRIPTS/daily-borg-backup.sh" ]
 then
     SNAPSHOT_USED=$(lvs -o name,data_percent | grep "NcVM-reserved" | awk '{print $2}' | sed 's|\..*||')
     if [ -n "$SNAPSHOT_USED" ] && [ "$SNAPSHOT_USED" -lt 100 ]
@@ -47,8 +42,13 @@ Do you want to reset your system to the state before a backup restore was attemp
     msg_box "It seems like the daily-borg-backup.sh exists.\nThis is not supported. Please start all over again with a new NcVM."
     exit 1
 fi
+if [ ! -f "$NCPATH/occ" ]
+then
+    msg_box "It seems like the default Nextcloud is not installed in $NCPATH.\nThis is not supported."
+    exit 1
+fi
 # Check webserveruser
-if [ "$(stat -c '%U' "$NCPATH"/occ)" != "www-data" ]
+if [ "$(stat -c '%G' "$NCPATH"/occ)" != "www-data" ]
 then 
     msg_box "It seems like the webserveruser is not www-data.\nThis is not supported."
     exit 1
@@ -84,7 +84,7 @@ then
     exit 1
 fi
 # Check if apache2 is installed
-if ! installed apache2
+if ! is_this_installed apache2
 then
     msg_box "It seems like your webserver is not apache2.\nThis is not supported."
     exit 1
@@ -107,8 +107,19 @@ then
     exit 1
 elif ! does_snapshot_exist "NcVM-reserved"
 then
-    msg_box "Unfortunately NcVM-reserved doesn't exist, hence you are not able to restore the system."
-    exit 1
+    check_free_space
+    if [ "$FREE_SPACE" -lt 30 ]
+    then
+        msg_box "Unfortunately NcVM-reserved doesn't exist, hence you are not able to restore the system."
+        exit 1
+    else
+        lvchange --refresh ubuntu-vg
+        if ! lvcreate --size 30G --name "NcVM-reserved" ubuntu-vg
+        then
+            msg_box "Could not create NcVM-reserved snapshot! Please reboot your server and try again!"
+            exit 1
+        fi
+    fi
 fi
 
 # Check if /mnt/ncdata is mounted
@@ -260,7 +271,8 @@ for repository in "${BORG_REPOS[@]}"
 do
     if grep -q "\[repository\]" "$repository"
     then
-        VALID_REPOS+=("$repository")
+
+        VALID_REPOS+=("${repository%/config}")
     fi
 done
 if [ -z "${VALID_REPOS[*]}" ]
@@ -302,7 +314,7 @@ do
         exit 1
     fi
     export BORG_PASSPHRASE="$PASSPHRASE"
-    if ! borg list "$BORG_REPO"
+    if ! borg list "$BORG_REPO" >/dev/null
     then
         msg_box "It seems like the passphrase was wrong. Please try again!"
     else
@@ -333,6 +345,7 @@ fi
 if ! yesno_box_no "Do you want to restore your backup?
 This is the last step where you can cancel!"
 then
+    umount "$DRIVE_MOUNT"
     exit 1
 fi
 
@@ -380,10 +393,24 @@ rm -rf "$NCPATH"
 rm -rf "$NCDATA"
 
 # Important folders
+# manually include 
 IMPORTANT_FOLDERS=(home/plex home/bitwarden_rs "$SCRIPTS" mnt media "$NCPATH" root/.smbcredentials)
 for directory in "${IMPORTANT_FOLDERS[@]}"
 do
     directory="${directory#/*}"
+    if echo "$directory" | grep -q '/'
+    then
+        PARENT3="${directory%/*}"
+        PARENT2="${PARENT3%/*}"
+        PARENT1="${PARENT2%/*}"
+        for parent in "$PARENT1" "$PARENT2" "$PARENT3"
+        do
+            if [ -n "$parent" ]
+            then
+                INCLUDE_DIRS+=(--include="$parent")
+            fi
+        done
+    fi
     mkdir -p "/$directory"
     INCLUDE_DIRS+=(--include="$directory/***")
 done
@@ -392,6 +419,20 @@ done
 IMPORTANT_FILES=(var/lib/samba/private/passdb.tdb var/lib/samba/private/secrets.tdb etc/samba/smb.conf)
 for file in "${IMPORTANT_FILES[@]}"
 do
+    if echo "$file" | grep -q '/'
+    then
+        PARENT4="${file%/*}"
+        PARENT3="${PARENT4%/*}"
+        PARENT2="${PARENT3%/*}"
+        PARENT1="${PARENT2%/*}"
+        for parent in "$PARENT1" "$PARENT2" "$PARENT3" "$PARENT4"
+        do
+            if [ -n "$parent" ]
+            then
+                INCLUDE_DIRS+=(--include="$parent")
+            fi
+        done
+    fi
     FILE=$(echo "$file" | rev | cut -d '/' -f 1 | rev)
     mkdir -p "$(echo "/$file" | sed "s|/$FILE$||")"
     INCLUDE_FILES+=(--include="$file")
@@ -399,8 +440,13 @@ done
 
 # Restore files
 # Rsync include/exclude patterns: https://stackoverflow.com/a/48010623
-rsync --archive --human-readable --one-file-system --progress \
+rsync --archive -vv --human-readable --one-file-system --stats \
 "${INCLUDE_DIRS[@]}" "${INCLUDE_FILES[@]}" --exclude='*' "$SYSTEM_DIR/" /
+
+# TODO: (remove it again)
+umount "$BORG_MOUNT"
+umount "$DRIVE_MOUNT"
+exit
 
 # Database
 print_text_in_color "$ICyan" "Restoring the database..."
