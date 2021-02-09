@@ -61,13 +61,13 @@ then
     exit 1
 fi
 # Check if dbname is nextcloud_db
-if [ "$(occ config:system:get dbname)" != "nextcloud_db" ]
+if [ "$(nextcloud_occ config:system:get dbname)" != "nextcloud_db" ]
 then
     msg_box "It seems like the default dbname is not nextcloud_db.\nThis is not supported."
     exit 1
 fi
 # Check if dbuser is ncadmin
-if [ "$(occ config:system:get dbuser)" != "$NCUSER" ]
+if [ "$(nextcloud_occ config:system:get dbuser)" != "$NCUSER" ]
 then
     msg_box "It seems like the default dbuser is not ncadmin.\nThis is not supported."
     exit 1
