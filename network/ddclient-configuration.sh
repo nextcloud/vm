@@ -55,6 +55,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" \
 "deSEC" "(desec.io)" \
 "Duck DNS" "(duckdns.org)" \
+"No-IP" "(noip.com)" \
 "Strato" "(strato.de)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -80,6 +81,14 @@ case "$choice" in
         GUIDE="https://www.duckdns.org/faqs.jsp"
         PROTOCOL="duckdns"
         SERVER="www.duckdns.org"
+        USE_SSL="yes"
+    ;;
+    "No-IP")
+        PROVIDER="No-IP"
+        INSTRUCTIONS="get a DDNS account with password"
+        GUIDE="https://youtu.be/1eeMxhpT868"
+        PROTOCOL="dyndns2"
+        SERVER="dynupdate.no-ip.com"
         USE_SSL="yes"
     ;;
     "Strato")
