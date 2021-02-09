@@ -440,13 +440,8 @@ done
 
 # Restore files
 # Rsync include/exclude patterns: https://stackoverflow.com/a/48010623
-rsync --archive -vv --human-readable --one-file-system --stats \
+rsync --archive --human-readable --one-file-system --progress \
 "${INCLUDE_DIRS[@]}" "${INCLUDE_FILES[@]}" --exclude='*' "$SYSTEM_DIR/" /
-
-# TODO: (remove it again)
-umount "$BORG_MOUNT"
-umount "$DRIVE_MOUNT"
-exit
 
 # Database
 print_text_in_color "$ICyan" "Restoring the database..."
@@ -500,12 +495,13 @@ if grep -q "^smb-users:" "$SYSTEM_DIR/etc/group"
 then
     SMB_USERS=$(grep "^smb-users:" "$SYSTEM_DIR/etc/group" | cut -d ":" -f 4 | sed 's|,| |g')
     read -r -a SMB_USERS <<< "$SMB_USERS"
+    groupadd "smb-users"
     for user in "${SMB_USERS[@]}"
     do
         adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "$user" &>/dev/null
         usermod --append --groups smb-users,www-data "$user"
     done
-    install_if_not samba
+    DEBIAN_FRONTEND=noninteractive apt install samba -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
     # No need to sync files since they are already synced via rsync
 fi
 
@@ -523,6 +519,8 @@ fi
 # Restore old redis password
 REDIS_PASS=$(grep \'password\' "$SYSTEM_DIR/$NCPATH/config/config.php" | awk '{print $3}' | sed "s/[',]//g")
 sed -i "s|^requirepass.*|requirepass $REDIS_PASS|g" /etc/redis/redis.conf
+# Restart redis
+systemctl restart redis
 # Flush redis
 redis-cli -s /var/run/redis/redis-server.sock -c FLUSHALL
 
@@ -585,6 +583,15 @@ mount -a -v
 if [ -f "$SCRIPTS/veracrypt-automount.sh" ]
 then
     bash "$SCRIPTS/veracrypt-automount.sh"
+fi
+# Restart samba
+if is_this_installed samba
+then
+    update-rc.d smbd defaults
+    update-rc.d smbd enable
+    service smbd restart
+    update-rc.d nmbd enable
+    service nmbd restart
 fi
 
 # Test Nextcloud manually
