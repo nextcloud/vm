@@ -449,7 +449,7 @@ then
     done
     install_if_not samba
     # No need to sync files since they are already synced via rsync
-done
+fi
 
 # Previewgenerator
 if grep -q 'Movie' "$SYSTEM_DIR/$NCPATH/config/config.php"
@@ -471,7 +471,7 @@ redis-cli -s /var/run/redis/redis-server.sock -c FLUSHALL
 # Start web server
 systemctl start apache2
 
-# Disbale maintenance mode
+# Disable maintenance mode
 nextcloud_occ_no_check maintenance:mode --off
 
 # Update the system data-fingerprint
