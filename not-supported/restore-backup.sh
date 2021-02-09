@@ -3,6 +3,7 @@
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
+# shellcheck disable=SC2024
 true
 SCRIPT_NAME="Restore Backup"
 SCRIPT_EXPLAINER="This script allows to restore Nextcloud and other important data that are \
@@ -36,8 +37,7 @@ then
     exit 1
 fi
 # Check webserveruser
-WEBUNAME=$(ls -l "$NCPATH"/occ | awk '{print \$4}')
-if [ "$WEBUNAME" != "www-data" ]
+if [ "$(stat -c '%U' "$NCPATH"/occ)" != "www-data" ]
 then 
     msg_box "It seems like the webserveruser is not www-data.\nThis is not supported."
     exit 1
@@ -61,7 +61,7 @@ then
     exit 1
 fi
 # Check if dbname is nextcloud_db
-if [ "\$(occ config:system:get dbname)" != "nextcloud_db" ]
+if [ "$(occ config:system:get dbname)" != "nextcloud_db" ]
 then
     msg_box "It seems like the default dbname is not nextcloud_db.\nThis is not supported."
     exit 1
@@ -371,8 +371,8 @@ rm -rf "$NCDATA"
 IMPORTANT_FOLDERS=(home/plex home/bitwarden_rs "$SCRIPTS" mnt media "$NCPATH" root/.smbcredentials)
 for directory in "${IMPORTANT_FOLDERS[@]}"
 do
+    directory="${directory#/*}"
     mkdir -p "/$directory"
-    directory=$(echo "$directory" | sed 's|^/||')
     INCLUDE_DIRS+=(--include="$directory/***")
 done
 
@@ -445,7 +445,7 @@ then
     for user in "${SMB_USERS[@]}"
     do
         adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "$user" &>/dev/null
-        usermod --append --groups "smb-users","www-data" "$user"
+        usermod --append --groups smb-users,www-data "$user"
     done
     install_if_not samba
     # No need to sync files since they are already synced via rsync
