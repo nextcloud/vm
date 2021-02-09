@@ -34,7 +34,7 @@ fi
 if [ -f "$SCRIPTS/daily-borg-backup.sh" ]
 then
     SNAPSHOT_USED=$(lvs -o name,data_percent | grep "NcVM-reserved" | awk '{print $2}' | sed 's|\..*||')
-    if [ -n "$SNAPSHOT_USED"] && [ "$SNAPSHOT_USED" -lt 100 ]
+    if [ -n "$SNAPSHOT_USED" ] && [ "$SNAPSHOT_USED" -lt 100 ]
     then
         if yesno_box_no "A usable snapshot was found! \
 Do you want to reset your system to the state before a backup restore was attempted?"
