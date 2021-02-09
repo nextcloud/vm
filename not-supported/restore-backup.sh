@@ -520,7 +520,7 @@ Please connect all external drives that were connected to the old server now!"
     then
         break
     fi
-fi
+done
 # Mount all drives
 print_text_in_color "$ICyan" "Mounting all drives..."
 mount -a -v
