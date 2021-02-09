@@ -31,9 +31,20 @@ then
     exit 1
 fi
 # Check if activate-tls exists
-if [ ! -f /var/scripts/activate-tls.sh ]
+if [ -f "$SCRIPTS/daily-borg-backup.sh" ]
 then
-    msg_box "It seems like you have already run the activate-tls.sh script.\nThis is not supported. Please start all over again with a new NcVM."
+    SNAPSHOT_USED=$(lvs -o name,data_percent | grep "NcVM-reserved" | awk '{print $2}' | sed 's|\..*||')
+    if [ -n "$SNAPSHOT_USED"] && [ "$SNAPSHOT_USED" -lt 100 ]
+    then
+        if yesno_box_no "A usable snapshot was found! \
+Do you want to reset your system to the state before a backup restore was attempted?"
+        then
+            lvconvert --merge /dev/ubuntu-vg/NcVM-reserved -y
+            msg_box "We will now reboot your system to finalize the merging of the snapshot."
+            reboot
+        fi
+    fi
+    msg_box "It seems like the daily-borg-backup.sh exists.\nThis is not supported. Please start all over again with a new NcVM."
     exit 1
 fi
 # Check webserveruser
@@ -99,6 +110,7 @@ then
     msg_box "Unfortunately NcVM-reserved doesn't exist, hence you are not able to restore the system."
     exit 1
 fi
+
 # Check if /mnt/ncdata is mounted
 if grep -q " /mnt/ncdata " /etc/mtab
 then
