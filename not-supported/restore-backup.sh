@@ -114,6 +114,13 @@ This is currently not supported."
     exit 1
 fi
 
+# Ask for execution
+msg_box "$SCRIPT_EXPLAINER"
+if ! yesno_box_yes "Do you want to restore your server from backup?"
+then
+    exit 1
+fi
+
 # Mount drive
 msg_box "Please disconnect your drive for now and connect it again AFTER you hit OK.
 Otherwise we will not be able to detect it."
