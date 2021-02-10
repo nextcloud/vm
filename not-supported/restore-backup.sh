@@ -411,7 +411,6 @@ do
             fi
         done
     fi
-    mkdir -p "/$directory"
     INCLUDE_DIRS+=(--include="$directory/***")
 done
 
@@ -433,8 +432,6 @@ do
             fi
         done
     fi
-    FILE=$(echo "$file" | rev | cut -d '/' -f 1 | rev)
-    mkdir -p "$(echo "/$file" | sed "s|/$FILE$||")"
     INCLUDE_FILES+=(--include="$file")
 done
 
