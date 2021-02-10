@@ -769,9 +769,6 @@ then
     fi
 fi
 
-# Recover apps that exists in the backed up apps folder
-run_script STATIC recover_apps
-
 # Restore app status
 # Fixing https://github.com/nextcloud/server/issues/4538
 if [ "${APPSTORAGE[0]}" != "no-export-done" ]
@@ -779,15 +776,14 @@ then
     print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
     for app in "${!APPSTORAGE[@]}"
     do
-        if [ -n "${APPSTORAGE[$app]}" ]
+        nextcloud_occ_no_check app:install "$app"
+        if ! is_app_enabled "$app"
         then
-            if echo "${APPSTORAGE[$app]}" | grep -q "^\[\".*\"\]$"
-            then
-                if is_app_enabled "$app"
-                then
-                    nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
-                fi
-            fi
+            nextcloud_occ_no_check app:enable "$app" &>/dev/null
+        fi
+        if [ -n "${APPSTORAGE[$app]}" ] && is_app_enabled "$app"
+        then
+            nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
         fi
     done
 fi
