@@ -784,7 +784,12 @@ then
         fi
         if [ -n "${APPSTORAGE[$app]}" ] && [ "${APPSTORAGE[$app]}" != "yes" ] && is_app_enabled "$app"
         then
-            nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+            if [ "${APPSTORAGE[$app]}" = "no" ]
+            then
+                nextcloud_occ_no_check app:disable "$app"
+            else
+                nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+            fi
         fi
     done
 fi
