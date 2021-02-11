@@ -197,6 +197,10 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 check_snapshot_pending
 
+# Fix too large Borg cache
+# https://borgbackup.readthedocs.io/en/stable/faq.html#the-borg-cache-eats-way-too-much-disk-space-what-can-i-do
+find /root/.cache/borg/ -maxdepth 2 -name chunks.archive.d -type d -exec rm -r {} \; -exec touch {} \;
+
 # Stop services
 inform_user "$ICyan" "Stopping services..."
 if is_docker_running
