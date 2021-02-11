@@ -778,7 +778,10 @@ then
     print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
     for app in "${!APPSTORAGE[@]}"
     do
-        nextcloud_occ_no_check app:install "$app"
+        if ! is_app_installed "$app"
+        then
+            nextcloud_occ_no_check app:install "$app"
+        fi
         if [ -n "${APPSTORAGE[$app]}" ] && is_app_enabled "$app"
         then
             nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
