@@ -593,7 +593,7 @@ else
     declare -Ag APPSTORAGE
     for app in $NC_APPS
     do
-        APPSTORAGE[$app]=$(nextcloud_occ_no_check config:app:get "$app" enabled)
+        APPSTORAGE[$app]=$(nextcloud_occ_no_check config:app:get "$app" enabled >/dev/null 2>&1)
     done
 fi
 
