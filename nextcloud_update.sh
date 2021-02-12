@@ -780,11 +780,16 @@ then
     do
         if [ -n "${APPSTORAGE[$app]}" ]
         then
+            # Check if the app is in Nextclouds app storage
             if ! [ -d "$NC_APPS_PATH/$app" ]
             then
+                # If the app is missing from the apps folder and was installed and enabled before the upgrade was done,
+                # then reinstall it
                 if [ "${APPSTORAGE[$app]}" = "yes" ]
                 then
                     install_and_enable_app "$app"
+                # If the app is missing from the apps folder and was installed but not enabled before the upgrade was done, 
+                # then reinstall it but keep it disabled
                 elif [ "${APPSTORAGE[$app]}" != "yes" ]
                 then
                     install_and_enable_app "$app"
