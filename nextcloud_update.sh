@@ -794,24 +794,26 @@ then
                 then
                     install_and_enable_app "$app"
                     nextcloud_occ_no_check app:disable "$app"
-                # Cover the case where the app is enabled for certain groups
-                else
-                    install_and_enable_app "$app"
-                    if is_app_enabled "$app"
-                    then
-                        # Only restore the group settings, if the app was enabled (and is thus compatible with the new NC version)
-                        nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
-                    fi
                 fi
             fi
             # If the app still isn't enabled (maybe because it's incompatible), then at least restore from backup,
             # and make sure it's disabled
             if ! [ -d "$NC_APPS_PATH/$app" ] && [ -d "$BACKUP/apps/$app" ]
             then
-                print_text_in_color "$ICyan" "Restoring $app from $BACKUP/apps..."
-                rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
-                bash "$SECURE"
-                nextcloud_occ_no_check app:disable "$app"
+                if yesno_box_no "$app couln't be enabled. Do you want to restore it from backup?\n\nWARNING: It may result in failed integrity checks."
+                then
+                    print_text_in_color "$ICyan" "Restoring $app from $BACKUP/apps..."
+                    rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
+                    bash "$SECURE"
+                    nextcloud_occ_no_check app:disable "$app"
+                    nextcloud_occ upgrade
+                fi
+            fi
+            # Cover the case where the app is enabled for certain groups
+            if [ "${APPSTORAGE[$app]}" != "yes" ] && [ "${APPSTORAGE[$app]}" != "no" ] && is_app_enabled "$app"
+            then
+                # Only restore the group settings, if the app was enabled (and is thus compatible with the new NC version)
+                nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
             fi
         fi
     done
