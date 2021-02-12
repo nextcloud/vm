@@ -778,17 +778,26 @@ then
     print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
     for app in "${!APPSTORAGE[@]}"
     do
-        if ! is_app_installed "$app"
+        if [ -n "${APPSTORAGE[$app]}" ]
         then
-            nextcloud_occ_no_check app:install "$app"
-        fi
-        if [ -n "${APPSTORAGE[$app]}" ] && [ "${APPSTORAGE[$app]}" != "yes" ] && is_app_enabled "$app"
-        then
-            if [ "${APPSTORAGE[$app]}" = "no" ]
+            # Check if the app is in Nextclouds app storage
+            if ! [ -d "$NC_APPS_PATH/$app" ]
             then
-                nextcloud_occ_no_check app:disable "$app"
-            else
-                nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+                # If the app is missing from the apps folder and was installed and enabled before the upgrade was done,
+                # then reinstall it
+                if [ "${APPSTORAGE[$app]}" = "yes" ]
+                then
+                    install_and_enable_app "$app"
+                # If the app is missing from the apps folder and was installed but not enabled before the upgrade was done, 
+                # then reinstall it but keep it disabled
+                elif [ "${APPSTORAGE[$app]}" != "yes" ]
+                then
+                    if ! is_app_installed "$app"
+                    then
+                        nextcloud_occ_no_check app:install "$app"
+                        nextcloud_occ_no_check app:disable "$app"
+                    fi
+                fi
             fi
         fi
     done
