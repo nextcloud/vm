@@ -790,10 +790,18 @@ then
                     install_and_enable_app "$app"
                 # If the app is missing from the apps folder and was installed but not enabled before the upgrade was done, 
                 # then reinstall it but keep it disabled
-                elif [ "${APPSTORAGE[$app]}" != "yes" ]
+                elif [ "${APPSTORAGE[$app]}" = "no" ]
                 then
                     install_and_enable_app "$app"
                     nextcloud_occ_no_check app:disable "$app"
+                # Cover the case where the app is enabled for certain groups
+                else
+                    install_and_enable_app "$app"
+                    if is_app_enabled "$app"
+                    then
+                        # Only restore the group settings, if the app was enabled (and is thus compatible with the new NC version)
+                        nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+                    fi
                 fi
             fi
             # If the app still isn't enabled (maybe because it's incompatible), then at least restore from backup,
