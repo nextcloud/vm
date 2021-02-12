@@ -796,6 +796,15 @@ then
                     nextcloud_occ_no_check app:disable "$app"
                 fi
             fi
+            # If the app still isn't enabled (maybe because it's incompatible), then at least restore from backup,
+            # and make sure it's disabled
+            if ! [ -d "$NC_APPS_PATH/$app" ] && [ -d "$BACKUP/apps/$app" ]
+            then
+                print_text_in_color "$ICyan" "Restoring $app from $BACKUP/apps..."
+                rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
+                bash "$SECURE"
+                nextcloud_occ_no_check app:disable "$app"
+            fi
         fi
     done
 fi
