@@ -4,11 +4,13 @@
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
-SCRIPT_NAME="Notify Push for Nextcloud"
-SCRIPT_EXPLAINER="Notify Push for Nextcloud attempts to solve the issue where Nextcloud clients have to \
-periodically check the server if any files have been changed which increases the load on the server. \
+SCRIPT_NAME="Push Notifications for Nextcloud"
+SCRIPT_EXPLAINER="$SCRIPT_NAME attempts to solve the issue where Nextcloud clients have to \
+periodically check the server if any files have been changed, new activities were created, \
+or a notification was created/processed/dismissed, which increases the load on the server. \
 By providing a way for the server to send update notifications to the clients, \
-the need for the clients to make these checks can be greatly reduced."
+the need for the clients to make these checks can be greatly reduced, \
+which reduces the load on the server. Also, notifications can get delivered faster."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

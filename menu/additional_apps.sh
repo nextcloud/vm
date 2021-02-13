@@ -48,6 +48,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Midnight Commander" "(CLI file manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
+"Notify Push" "(Push Notifications for Nextcloud)" \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
