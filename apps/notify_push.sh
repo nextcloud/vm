@@ -49,6 +49,10 @@ if ! [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
 then
     msg_box "The apache conf for $NCDOMAIN isn't available. This is not supported!"
     exit 1
+elif ! grep -q '<VirtualHost *:443>' "$SITES_AVAILABLE/$NCDOMAIN.conf"
+then
+    msg_box "The virtualhost config doesn't seem to be the default. Cannot proceed."
+    exit 1
 fi
 
 # Check if notify_push is already installed
@@ -64,7 +68,7 @@ else
     then
         nextcloud_occ_no_check app:remove notify_push
     fi
-    sed -i "/^#Notify-push-start/,/^#Notify-push-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+    sed -i "/#Notify-push-start/,/#Notify-push-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
     systemctl restart apache2
     systemctl stop notify_push &>/dev/null
     rm -f "$SERVICE_PATH"
@@ -109,7 +113,7 @@ sed -i "/<VirtualHost \*:443>/a $NOTIFY_PUSH_CONF" "$SITES_AVAILABLE/$NCDOMAIN.c
 if ! systemctl restart apache2
 then
     msg_box "Failed to restart apache2. Will restore the old NCDOMAIN config now."
-    sed -i "/^#Notify-push-start/,/^#Notify-push-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+    sed -i "/#Notify-push-start/,/#Notify-push-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
     systemctl stop notify_push
     rm "$SERVICE_PATH"
     systemctl restart apache2
