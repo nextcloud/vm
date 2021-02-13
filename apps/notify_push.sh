@@ -47,7 +47,7 @@ fi
 # Check apache conf
 if ! [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
 then
-    msg_box "The apache conf for $NCDOMAIN isn't availabe. This is not supported!"
+    msg_box "The apache conf for $NCDOMAIN isn't available. This is not supported!"
     exit 1
 fi
 
