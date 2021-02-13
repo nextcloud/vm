@@ -95,6 +95,10 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the PreviewGenerator script..."
         run_script APP previewgenerator
     ;;&
+    *"Notify Push"*)
+        print_text_in_color "$ICyan" "Downloading the Notify Push script..."
+        run_script APP notify_push
+    ;;&
     *"LDAP"*)
         SUBTITLE="LDAP"
         print_text_in_color "$ICyan" "Installing LDAP..."
