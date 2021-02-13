@@ -10,7 +10,7 @@ periodically check the server if any files have been changed, new activities wer
 or a notification was created/processed/dismissed, which increases the load on the server. \
 By providing a way for the server to send update notifications to the clients, \
 the need for the clients to make these checks can be greatly reduced, \
-which reduces the load on the server. Also, notifications can get delivered faster."
+which reduces the load on the servern and delivers notifications to the clients in some cases faster."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
