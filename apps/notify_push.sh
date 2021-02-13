@@ -125,4 +125,12 @@ fi
 install_and_enable_app notify_push
 nextcloud_occ_no_check notify_push:setup "https://$NCDOMAIN/push"
 
-# TODO: test if it works? how? Also report that it was successfully installed if test successful
+# Test if it works
+if ! nextcloud_occ_no_check notify_push:self-test
+then
+    msg_box "Something didn't work while testing $SCRIPT_NAME.
+Please try again by running this script again!"
+    exit 1
+else
+    msg_box "Congratulations! $SCRIPT_NAME was set up correctly!"
+fi
