@@ -65,6 +65,7 @@ else
         nextcloud_occ_no_check app:remove notify_push
     fi
     sed -i "/^#Notify-push-start/,/^#Notify-push-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+    systemctl restart apache2
     systemctl stop notify_push &>/dev/null
     rm -f "$SERVICE_PATH"
     # Show successful uninstall if applicable
