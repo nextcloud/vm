@@ -112,6 +112,15 @@ fi
 # Ubuntu 16.04 is deprecated
 check_distro_version
 
+# Remove leftovers
+if [ -f /root/php-upgrade.sh ]
+then
+    rm -f /root/php-upgrade.sh
+elif [ -f /tmp/php-upgrade.sh ]
+then
+    rm -f /tmp/php-upgrade.sh
+fi
+
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
 apt update -q4 & spinner_loading
@@ -120,8 +129,8 @@ then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
 Holding PHP to avoid upgrading to a newer version without migration..."
     apt-mark hold php*
-    check_php
-    apt-mark unhold php"$PHPVER"*
+    #check_php
+    #apt-mark unhold php"$PHPVER"*
 fi
 
 # Don't allow MySQL/MariaDB
