@@ -25,6 +25,7 @@ root_check
 
 # Variables
 SERVICE_PATH="/etc/systemd/system/notify_push.service"
+ARCHITECTURE=$(uname -p)
 
 # Test prequesites
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
@@ -54,6 +55,12 @@ then
 elif ! grep -q '<VirtualHost *:443>' "$SITES_AVAILABLE/$NCDOMAIN.conf"
 then
     msg_box "The virtualhost config doesn't seem to be the default. Cannot proceed."
+    exit 1
+fi
+# Check processor architecture
+if [ "$ARCHITECTURE" != "x86_64" ] && [ "$ARCHITECTURE" != "aarch64" ] && [ "$ARCHITECTURE" != "armv7" ]
+then
+    msg_box "No compatible processor architecture found. Cannot proceed."
     exit 1
 fi
 
@@ -90,7 +97,7 @@ Description = Push daemon for Nextcloud clients
 
 [Service]
 Environment = PORT=7867
-ExecStart = $NC_APPS_PATH/notify_push/bin/x86_64/notify_push $NCPATH/config/config.php
+ExecStart = $NC_APPS_PATH/notify_push/bin/$ARCHITECTURE/notify_push $NCPATH/config/config.php
 User = www-data
 
 [Install]
