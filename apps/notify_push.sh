@@ -90,7 +90,7 @@ Description = Push daemon for Nextcloud clients
 
 [Service]
 Environment = PORT=7867
-ExecStart = $NC_APPS_PATH/notify_push $NCPATH/config/config.php
+ExecStart = $NC_APPS_PATH/notify_push/bin/x86_64/notify_push $NCPATH/config/config.php
 User = www-data
 
 [Install]
