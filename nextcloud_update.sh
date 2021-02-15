@@ -368,15 +368,15 @@ we have removed Watchtower from this server. Updates will now happen for each co
     fi
     # Update selected images
     # Bitwarden RS
-    docker_update_specific 'bitwardenrs/server' "Bitwarden RS"
+    docker_update_specific 'bitwarden_rs' "Bitwarden RS"
     # Collabora CODE
-    docker_update_specific 'collabora/code' 'Collabora'
+    docker_update_specific 'code' 'Collabora'
     # OnlyOffice
-    docker_update_specific 'onlyoffice/documentserver' 'OnlyOffice'
+    docker_update_specific 'onlyoffice' 'OnlyOffice'
     # Full Text Search
-    docker_update_specific 'ark74/nc_fts' 'Full Text Search'
+    docker_update_specific 'fts_esror' 'Full Text Search'
     # Plex
-    docker_update_specific 'plexinc/pms-docker' "Plex Media Server"
+    docker_update_specific 'plex' "Plex Media Server"
 fi
 
 # Cleanup un-used packages
