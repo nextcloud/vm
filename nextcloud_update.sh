@@ -129,8 +129,8 @@ then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
 Holding PHP to avoid upgrading to a newer version without migration..."
     apt-mark hold php*
-    check_php
-    apt-mark unhold php"$PHPVER"*
+    #check_php
+    #apt-mark unhold php"$PHPVER"*
 fi
 
 # Don't allow MySQL/MariaDB
