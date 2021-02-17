@@ -496,7 +496,7 @@ echo
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Run the updatenotification on a schedule
-nextcloud_occ config:system:set upgrade.disable-web --value="true"
+nextcloud_occ config:system:set upgrade.disable-web --type=bool --value=true
 nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_script STATIC updatenotification
