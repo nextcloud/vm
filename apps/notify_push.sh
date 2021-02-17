@@ -52,7 +52,7 @@ if ! [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
 then
     msg_box "The apache conf for $NCDOMAIN isn't available. This is not supported!"
     exit 1
-elif ! grep -q '<VirtualHost *:443>' "$SITES_AVAILABLE/$NCDOMAIN.conf"
+elif ! grep -q "<VirtualHost \*:443>" "$SITES_AVAILABLE/$NCDOMAIN.conf"
 then
     msg_box "The virtualhost config doesn't seem to be the default. Cannot proceed."
     exit 1
@@ -85,6 +85,9 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
+rm -f "$SCRIPTS/notify_push.tar.gz" # TODO: remove me
+wget https://github.com/nextcloud/notify_push/releases/download/v0.1.0-beta1/notify_push.tar.gz -P "$SCRIPTS" # TODO: remove me
+tar -xvzf "$SCRIPTS/notify_push.tar.gz" -C "$NC_APPS_PATH" # TODO: remove me
 # Install the app
 install_and_enable_app notify_push
 # The app needs to be disabled before the setup
@@ -112,13 +115,16 @@ systemctl enable notify_push
 sudo a2enmod proxy
 sudo a2enmod proxy_http
 sudo a2enmod proxy_wstunnel
-NOTIFY_PUSH_CONF="    #Notify-push-start - Please don't remove or change this line
+cat << APACHE_PUSH_CONF > /tmp/apache.conf
+    #Notify-push-start - Please don't remove or change this line
     ProxyPass /push/ws ws://localhost:7867/ws
     ProxyPass /push/ http://localhost:7867/
     ProxyPassReverse /push/ http://localhost:7867/
     #Notify-push-end - Please don't remove or change this line"
+APACHE_PUSH_CONF
 NOTIFY_PUSH_CONF=${NOTIFY_PUSH_CONF//\//\\/}
-sed -i "/<VirtualHost \*:443>/a $NOTIFY_PUSH_CONF" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+sed -i '/<VirtualHost \*:443>/r /tmp/apache.conf' "$SITES_AVAILABLE/$NCDOMAIN.conf"
+rm -f /tmp/apache.conf
 if ! systemctl restart apache2
 then
     msg_box "Failed to restart apache2. Will restore the old NCDOMAIN config now."
@@ -130,12 +136,11 @@ then
     exit 1
 fi
 
-# Enable and configure the Nextcloud app
+# Enable Nextcloud app
 install_and_enable_app notify_push
-nextcloud_occ_no_check notify_push:setup "https://$NCDOMAIN/push"
 
-# Test if it works
-if ! nextcloud_occ_no_check notify_push:self-test
+# Configure the Nextcloud app and test if it works
+if ! nextcloud_occ_no_check notify_push:setup "https://$NCDOMAIN/push"
 then
     msg_box "Something didn't work while testing $SCRIPT_NAME.
 Please try again by running this script again!"
