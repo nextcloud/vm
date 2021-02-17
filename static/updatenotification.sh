@@ -78,6 +78,7 @@ fi
 if version_gt "$NCVERSION" "$REPORTEDMAJ" && version_gt "$NCVERSION" "$CURRENTVERSION"
 then
     sed -i "s|^REPORTEDMAJ.*|REPORTEDMAJ=$NCVERSION|" $SCRIPTS/updatenotification.sh
+    nextcloud_occ config:system:set updater.release.channel --value="beta"
     notify_admin_gui \
     "New major Nextcloud Update!" \
     "Nextcloud $NCVERSION just became available. Please run 'sudo bash \

@@ -870,6 +870,7 @@ To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/app
 Thank you for using T&M Hansson IT's updater!"
     nextcloud_occ status
     nextcloud_occ maintenance:mode --off
+    nextcloud_occ config:system:set updater.release.channel --value="stable"
     print_text_in_color "$ICyan" "Sending notification about the successful update to all admins..."
     notify_admin_gui \
     "Nextcloud is now updated!" \
