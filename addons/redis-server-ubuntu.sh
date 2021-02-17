@@ -44,6 +44,16 @@ exit 1
 else
     printf "${IGreen}\nPHP module installation OK!${Color_Off}\n"
 fi
+if [ ! -f $PHP_MODS_DIR/redis.ini ]
+then
+    touch $PHP_MODS_DIR/redis.ini
+fi
+if ! grep -qFx extension=redis.so $PHP_MODS_DIR/redis.ini
+then
+    echo "# PECL redis" > $PHP_MODS_DIR/redis.ini
+    echo "extension=redis.so" >> $PHP_MODS_DIR/redis.ini
+    check_command phpenmod -v ALL redis
+fi
 install_if_not redis-server
 
 # Setting direct to PHP-FPM as it's installed with PECL (globally doesn't work)

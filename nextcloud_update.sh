@@ -267,6 +267,18 @@ if ! grep -qFx extension=redis.so "$PHP_INI"
 then
     echo "extension=redis.so" >> "$PHP_INI"
 fi
+# Check if redis is enabled and create the file if not
+if [ ! -f $PHP_MODS_DIR/redis.ini ]
+then
+    touch $PHP_MODS_DIR/redis.ini
+fi
+# Enable new redis
+if ! grep -qFx extension=redis.so $PHP_MODS_DIR/redis.ini
+then
+    echo "# PECL redis" > $PHP_MODS_DIR/redis.ini
+    echo "extension=redis.so" >> $PHP_MODS_DIR/redis.ini
+    check_command phpenmod -v ALL redis
+fi
 
 # Upgrade APCu and igbinary
 if [ "${CURRENTVERSION%%.*}" -ge "17" ]
@@ -281,6 +293,18 @@ then
             if ! grep -qFx extension=igbinary.so "$PHP_INI"
             then
                 echo "extension=igbinary.so" >> "$PHP_INI"
+            fi
+            # Check if igbinary is enabled and create the file if not
+            if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
+            then
+                touch $PHP_MODS_DIR/igbinary.ini
+            fi
+            # Enable new igbinary
+            if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
+            then
+                echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
+                echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
+                check_command phpenmod -v ALL igbinary
             fi
         fi
         if pecl list | grep -q smbclient
@@ -311,6 +335,18 @@ then
             if ! grep -qFx extension=apcu.so "$PHP_INI"
             then
                 echo "extension=apcu.so" >> "$PHP_INI"
+            fi
+            # Check if apcu is enabled and create the file if not
+            if [ ! -f $PHP_MODS_DIR/apcu.ini ]
+            then
+                touch $PHP_MODS_DIR/apcu.ini
+            fi
+            # Enable new apcu
+            if ! grep -qFx extension=apcu.so $PHP_MODS_DIR/apcu.ini
+            then
+                echo "# PECL apcu" > $PHP_MODS_DIR/apcu.ini
+                echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
+                check_command phpenmod -v ALL apcu
             fi
         fi
         if pecl list | grep -q inotify
