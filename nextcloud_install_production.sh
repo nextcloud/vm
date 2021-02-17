@@ -961,12 +961,6 @@ chown root:root -R "$SCRIPTS"
 check_command run_script STATIC change-ncadmin-profile
 check_command run_script STATIC change-root-profile
 
-if home_sme_server
-then
-    # Change nextcloud-startup-script.sh
-    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
-fi
-
 # Disable hibernation
 print_text_in_color "$ICyan" "Disable hibernation..."
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
