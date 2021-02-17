@@ -122,7 +122,6 @@ cat << APACHE_PUSH_CONF > /tmp/apache.conf
     ProxyPassReverse /push/ http://localhost:7867/
     #Notify-push-end - Please don't remove or change this line"
 APACHE_PUSH_CONF
-NOTIFY_PUSH_CONF=${NOTIFY_PUSH_CONF//\//\\/}
 sed -i '/<VirtualHost \*:443>/r /tmp/apache.conf' "$SITES_AVAILABLE/$NCDOMAIN.conf"
 rm -f /tmp/apache.conf
 if ! systemctl restart apache2
