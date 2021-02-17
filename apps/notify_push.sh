@@ -85,10 +85,12 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-rm -f "$SCRIPTS/notify_push.tar.gz" # TODO: remove me
-wget https://github.com/nextcloud/notify_push/releases/download/v0.1.0-beta1/notify_push.tar.gz -P "$SCRIPTS" # TODO: remove me
-tar -xvzf "$SCRIPTS/notify_push.tar.gz" -C "$NC_APPS_PATH" # TODO: remove me
-chown -R www-data:www-data "$NC_APPS_PATH/notify_push" # TODO: remove me
+# Workaround as long as the app isn't installable via the appstore
+# rm -f "$SCRIPTS/notify_push.tar.gz" # TODO: remove me
+#wget https://github.com/nextcloud/notify_push/releases/download/v0.1.0-beta1/notify_push.tar.gz -P "$SCRIPTS" # TODO: remove me
+#tar -xvzf "$SCRIPTS/notify_push.tar.gz" -C "$NC_APPS_PATH" # TODO: remove me
+#chown -R www-data:www-data "$NC_APPS_PATH/notify_push" # TODO: remove me
+
 # Install the app
 install_and_enable_app notify_push
 # The app needs to be disabled before the setup
