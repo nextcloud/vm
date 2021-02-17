@@ -261,11 +261,10 @@ then
     yes no | pecl upgrade redis
     systemctl restart redis-server.service
 fi
-
-# Double check if redis.so is enabled
-if ! grep -qFx extension=redis.so "$PHP_INI"
+# Remove old redis
+if grep -qFx extension=redis.so "$PHP_INI"
 then
-    echo "extension=redis.so" >> "$PHP_INI"
+    sed -i "s|extension=redis.so||g" "$PHP_INI"
 fi
 # Check if redis is enabled and create the file if not
 if [ ! -f $PHP_MODS_DIR/redis.ini ]
