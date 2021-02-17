@@ -606,7 +606,6 @@ then
     fi
 {
 echo "# igbinary for PHP"
-echo "extension=igbinary.so"
 echo "session.serialize_handler=igbinary"
 echo "igbinary.compact_strings=On"
 } >> "$PHP_INI"
@@ -635,7 +634,6 @@ then
     fi
 {
 echo "# APCu settings for Nextcloud"
-echo "extension=apcu.so"
 echo "apc.enabled=1"
 echo "apc.max_file_size=5M"
 echo "apc.shm_segments=1"
