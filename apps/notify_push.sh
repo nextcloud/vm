@@ -31,6 +31,13 @@ ARCHITECTURE=$(uname -p)
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
 # Get all needed variables from the library
 nc_update
+# Check redis
+if ! php -m | grep -q redis
+then
+    msg_box "The redis php extension isn't enabled. Please run the an update to fix this."
+    exit 1
+fi
+# NC21
 if [ "${CURRENTVERSION%%.*}" -lt "21" ]
 then
     msg_box "This app is only supported from NC 21 and higher. Cannot proceed!"
