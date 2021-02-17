@@ -136,6 +136,22 @@ then
     exit 1
 fi
 
+# Add localhost to trusted proxies
+count=0
+while [ "$count" -lt 10 ]
+do
+    if [ "$(nextcloud_occ_no_check config:system:get trusted_proxies "$count")" = "127.0.0.1" ]
+    then
+        break
+    elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_proxies "$count")" ]
+    then
+        nextcloud_occ_no_check config:system:set trusted_proxies "$count" --value="127.0.0.1"
+        break
+    else
+        count=$((count+1))
+    fi
+done
+
 # Enable Nextcloud app
 install_and_enable_app notify_push
 
