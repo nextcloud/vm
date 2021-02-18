@@ -5,10 +5,10 @@
 
 true
 SCRIPT_NAME="Push Notifications for Nextcloud"
-SCRIPT_EXPLAINER="$SCRIPT_NAME attempts to solve the issue where Nextcloud Desktop clients have to \
+SCRIPT_EXPLAINER="$SCRIPT_NAME attempts to solve the issue where Nextcloud clients have to \
 periodically check the server if any files have been changed, new activities were created, \
 or a notification was created/processed/dismissed, which increases the load on the server. \
-By providing a way for the server to send update notifications to the Desktop clients, \
+By providing a way for the server to send update notifications to the clients, \
 the need for the clients to make these checks can be greatly reduced, \
 which reduces the load on the servern and delivers notifications to the clients in some cases faster."
 # shellcheck source=lib.sh
