@@ -1079,7 +1079,7 @@ or when a new version of the app is released with the following command:
         then
             if ! is_app_enabled "$1"
             then
-                nextcloud_occ app:enable "$1"
+                nextcloud_occ_no_check app:enable "$1"
                 chown -R www-data:www-data "$NC_APPS_PATH"
             fi
         fi
