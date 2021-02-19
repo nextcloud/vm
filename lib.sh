@@ -1633,9 +1633,13 @@ then
 #   export PHPVER=8.0
 fi
 
-export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
-export PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
+# Export other PHP variables based on PHPVER
+export PHP_FPM_DIR=/etc/php/$PHPVER/fpm
+export PHP_INI=$PHP_FPM_DIR/php.ini
+export PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
+export PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 
+# Show version
 print_text_in_color "$IGreen" PHPVER="$PHPVER"
 }
 
