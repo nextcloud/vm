@@ -261,11 +261,22 @@ then
     yes no | pecl upgrade redis
     systemctl restart redis-server.service
 fi
-
-# Double check if redis.so is enabled
-if ! grep -qFx extension=redis.so "$PHP_INI"
+# Remove old redis
+if grep -qFx extension=redis.so "$PHP_INI"
 then
-    echo "extension=redis.so" >> "$PHP_INI"
+    sed -i "/extension=redis.so/d" "$PHP_INI"
+fi
+# Check if redis is enabled and create the file if not
+if [ ! -f $PHP_MODS_DIR/redis.ini ]
+then
+    touch $PHP_MODS_DIR/redis.ini
+fi
+# Enable new redis
+if ! grep -qFx extension=redis.so $PHP_MODS_DIR/redis.ini
+then
+    echo "# PECL redis" > $PHP_MODS_DIR/redis.ini
+    echo "extension=redis.so" >> $PHP_MODS_DIR/redis.ini
+    check_command phpenmod -v ALL redis
 fi
 
 # Upgrade APCu and igbinary
@@ -277,10 +288,22 @@ then
         if pecl list | grep igbinary >/dev/null 2>&1
         then
             yes no | pecl upgrade igbinary
-            # Check if igbinary.so is enabled
-            if ! grep -qFx extension=igbinary.so "$PHP_INI"
+            # Remove old igbinary
+            if grep -qFx extension=igbinary.so "$PHP_INI"
             then
-                echo "extension=igbinary.so" >> "$PHP_INI"
+                sed -i "/extension=igbinary.so/d" "$PHP_INI"
+            fi
+            # Check if igbinary is enabled and create the file if not
+            if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
+            then
+                touch $PHP_MODS_DIR/igbinary.ini
+            fi
+            # Enable new igbinary
+            if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
+            then
+                echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
+                echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
+                check_command phpenmod -v ALL igbinary
             fi
         fi
         if pecl list | grep -q smbclient
@@ -301,25 +324,47 @@ then
             # Remove old smbclient
             if grep -qFx extension=smbclient.so "$PHP_INI"
             then
-                sed -i "s|extension=smbclient.so||g" "$PHP_INI"
+                sed -i "/extension=smbclient.so/d" "$PHP_INI"
             fi
         fi
         if pecl list | grep -q apcu
         then
             yes no | pecl upgrade apcu
-            # Check if apcu.so is enabled
-            if ! grep -qFx extension=apcu.so "$PHP_INI"
+            # Remove old igbinary
+            if grep -qFx extension=apcu.so "$PHP_INI"
             then
-                echo "extension=apcu.so" >> "$PHP_INI"
+                sed -i "/extension=apcu.so/d" "$PHP_INI"
+            fi
+            # Check if apcu is enabled and create the file if not
+            if [ ! -f $PHP_MODS_DIR/apcu.ini ]
+            then
+                touch $PHP_MODS_DIR/apcu.ini
+            fi
+            # Enable new apcu
+            if ! grep -qFx extension=apcu.so $PHP_MODS_DIR/apcu.ini
+            then
+                echo "# PECL apcu" > $PHP_MODS_DIR/apcu.ini
+                echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
+                check_command phpenmod -v ALL apcu
             fi
         fi
         if pecl list | grep -q inotify
         then 
-            yes no | pecl upgrade inotify
-            # Check if inotify.so is enabled
-            if ! grep -qFx extension=inotify.so "$PHP_INI"
+            # Remove old inotify
+            if grep -qFx extension=inotify.so "$PHP_INI"
             then
-                echo "extension=inotify.so" >> "$PHP_INI"
+                sed -i "/extension=inotify.so/d" "$PHP_INI"
+            fi
+            yes no | pecl upgrade inotify
+            if [ ! -f $PHP_MODS_DIR/inotify.ini ]
+            then
+                touch $PHP_MODS_DIR/inotify.ini
+            fi
+            if ! grep -qFx extension=inotify.so $PHP_MODS_DIR/inotify.ini
+            then
+                echo "# PECL inotify" > $PHP_MODS_DIR/inotify.ini
+                echo "extension=inotify.so" >> $PHP_MODS_DIR/inotify.ini
+                check_command phpenmod -v ALL inotify
             fi
         fi
     fi
