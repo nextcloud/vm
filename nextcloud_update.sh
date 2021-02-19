@@ -264,7 +264,7 @@ fi
 # Remove old redis
 if grep -qFx extension=redis.so "$PHP_INI"
 then
-    sed -i "s|extension=redis.so||g" "$PHP_INI"
+    sed -i "/extension=redis.so/d" "$PHP_INI"
 fi
 # Check if redis is enabled and create the file if not
 if [ ! -f $PHP_MODS_DIR/redis.ini ]
@@ -291,7 +291,7 @@ then
             # Remove old igbinary
             if grep -qFx extension=igbinary.so "$PHP_INI"
             then
-                sed -i "s|extension=igbinary.so||g" "$PHP_INI"
+                sed -i "/extension=igbinary.so/d" "$PHP_INI"
             fi
             # Check if igbinary is enabled and create the file if not
             if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
@@ -324,7 +324,7 @@ then
             # Remove old smbclient
             if grep -qFx extension=smbclient.so "$PHP_INI"
             then
-                sed -i "s|extension=smbclient.so||g" "$PHP_INI"
+                sed -i "/extension=smbclient.so/d" "$PHP_INI"
             fi
         fi
         if pecl list | grep -q apcu
@@ -333,7 +333,7 @@ then
             # Remove old igbinary
             if grep -qFx extension=apcu.so "$PHP_INI"
             then
-                sed -i "s|extension=apcu.so||g" "$PHP_INI"
+                sed -i "/extension=apcu.so/d" "$PHP_INI"
             fi
             # Check if apcu is enabled and create the file if not
             if [ ! -f $PHP_MODS_DIR/apcu.ini ]
@@ -353,7 +353,7 @@ then
             # Remove old inotify
             if grep -qFx extension=inotify.so "$PHP_INI"
             then
-                sed -i "s|extension=inotify.so||g" "$PHP_INI"
+                sed -i "/extension=inotify.so/d" "$PHP_INI"
             fi
             yes no | pecl upgrade inotify
             if [ ! -f $PHP_MODS_DIR/inotify.ini ]
