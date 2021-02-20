@@ -15,6 +15,16 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 21.0.0
+
+### Small changelog:
+- 
+- Minor bugfixes and improvements
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/20.0.7..21.0.0
+- https://nextcloud.com/changelog/#latest21
+
 ## 20.0.7
 
 ### Small changelog:
