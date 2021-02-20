@@ -26,6 +26,8 @@ Tell us what happens instead
 
 **Server OS** (Ubuntu server is default)
 
+**PHP Version** (e.g. 7.4)
+
 **How did you install the VM?** (Scripted install from master **OR** Released version)
 
 ## Network
