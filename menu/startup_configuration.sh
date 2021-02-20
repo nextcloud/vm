@@ -75,6 +75,9 @@ case "$choice" in
             setupcon --force
             # Set locales
             run_script ADDONS locales
+            # New source is needed for the new phone region setting (this reloads the new Keyboard Layout for the startup-script)
+            # shellcheck source=lib.sh
+            source /var/scripts/fetch_lib.sh
             input_box "Please try out all buttons (e.g: @ # \$ : y n) \
 to find out if the keyboard settings were correctly applied.
 If the keyboard is still wrong, you will be offered to reboot the server in the next step.

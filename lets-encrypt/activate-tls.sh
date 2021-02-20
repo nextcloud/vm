@@ -133,7 +133,7 @@ then
     </FilesMatch>
 
     # Intermediate configuration
-    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+    Header add Strict-Transport-Security: "max-age=15552000;includeSubdomains"
     SSLEngine               on
     SSLCompression          off
     SSLProtocol             -all +TLSv1.2 $TLS13
