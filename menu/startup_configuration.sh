@@ -82,6 +82,8 @@ If the keyboard is still wrong, you will be offered to reboot the server in the 
 Please continue by hitting [ENTER]" "$SUBTITLE" >/dev/null
             if ! yesno_box_yes "Did the keyboard work as expected?\n\nIf you choose 'No' \
 the server will be rebooted. After the reboot, please login as usual and run this script again." "$SUBTITLE"
+            # shellcheck source=lib.sh
+            source /var/scripts/fetch_lib.sh
             then
                 reboot
             fi
