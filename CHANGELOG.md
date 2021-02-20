@@ -23,7 +23,7 @@ PR's are more than welcome. Happy Nextclouding!
 - DDclient - added No-IP
 - Updated geoblock database files
 - Avoid double crontabs when reexecuting some scripts
-- Don't enabled disabled apps after update
+- Don't enable disabled apps after update
 - Geoblock - allow some IP-addresses by default
 - Fix watchtower updates
 - Geoblock - add Let's Encrypt advice
