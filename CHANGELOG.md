@@ -20,6 +20,17 @@ PR's are more than welcome. Happy Nextclouding!
 ### Small changelog:
 - Add phone region (new in 21)
 - Improve Strict Transport Security in TLS
+- DDclient - added No-IP
+- Updated geoblock database files
+- Avoid double crontabs when reexecuting some scripts
+- Don't enabled disabled apps after update
+- Geoblock - allow some IP-addresses by default
+- Fix watchtower updates
+- Geoblock - add Let's Encrypt advice
+- Fix upgrade.disable-web
+- Don't break update when enabling app
+- Fix not enabled PECL extensions
+- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
 - Minor bugfixes and improvements
 
 ### Full changelog:
