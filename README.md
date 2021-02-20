@@ -45,7 +45,7 @@ Server installation. Simplified. :cloud:
 ## I want to test a Release Candidate (RC), or Beta!
 No problem, brave explorer! We made it simple. 
 
-In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://cloud.hanssonit.se/s/zjsqkrSpzqJGE9N?path=%2FTESTING) folder on the download server. 
+In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://cloud.kafit.se/s/7qzap5RL6EF3RyZ?path=%2FTESTING) folder on the download server. 
 
 If you want to try the latest version yourself, there are two variables that you could use:
 
