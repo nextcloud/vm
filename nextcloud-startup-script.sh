@@ -306,10 +306,13 @@ nextcloud_occ config:system:set htaccess.RewriteBase --value="/"
 nextcloud_occ maintenance:update:htaccess
 bash $SECURE & spinner_loading
 
-# Set phone region
-if [ -n "$KEYBOARD_LAYOUT"
+if [ "${CURRENTVERSION%%.*}" -ge "21" ]
 then
-    nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
+    # Set phone region
+    if [ -n "$KEYBOARD_LAYOUT" ]
+    then
+        nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
+    fi
 fi
 
 # Generate new SSH Keys
