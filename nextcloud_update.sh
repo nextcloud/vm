@@ -745,6 +745,11 @@ then
     send_mail \
     "Nextcloud update started!" \
     "Please don't shutdown or reboot your server during the update! $(date +%T)"
+    if [ "${CURRENTVERSION%%.*}" -lt "${NCVERSION%%.*}" ]
+    then
+        print_text_in_color "$ICyan" "Deleting 'app_install_overwrite array' to prevent app breakage..."
+        nextcloud_occ config:system:delete app_install_overwrite
+    fi
     nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
