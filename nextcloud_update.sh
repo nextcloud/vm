@@ -771,6 +771,14 @@ then
     then
         nextcloud_occ db:add-missing-primary-keys
     fi
+    if [ "${CURRENTVERSION%%.*}" -ge "21" ]
+    then
+        # Set phone region
+        if [ -n "$KEYBOARD_LAYOUT" ]
+        then
+            nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
+        fi
+    fi
 else
     msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if the folders exist."
