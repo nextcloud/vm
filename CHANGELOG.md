@@ -30,6 +30,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Fix upgrade.disable-web
 - Don't break update when enabling app
 - Fix not enabled PECL extensions
+- Prevent apps from breaking the update due to incompatibility
 - Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
 - Minor bugfixes and improvements
 
