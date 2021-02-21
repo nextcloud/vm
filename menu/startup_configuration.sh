@@ -15,7 +15,7 @@ debug_mode
 
 # Update the lib once during the startup script
 # TODO: delete this again e.g. with NC 20.0.1
-download_script GITHUB_REPO lib
+# download_script GITHUB_REPO lib # deleted in 21.0.0
 
 # Must be root
 root_check
@@ -78,6 +78,15 @@ case "$choice" in
             # New source is needed for the new phone region setting (this reloads the new Keyboard Layout for the startup-script)
             # shellcheck source=lib.sh
             source /var/scripts/fetch_lib.sh
+            nc_update
+            if [ "${CURRENTVERSION%%.*}" -ge "21" ]
+            then
+                # Set phone region
+                if [ -n "$KEYBOARD_LAYOUT" ]
+                then
+                    nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
+                fi
+            fi
             input_box "Please try out all buttons (e.g: @ # \$ : y n) \
 to find out if the keyboard settings were correctly applied.
 If the keyboard is still wrong, you will be offered to reboot the server in the next step.
