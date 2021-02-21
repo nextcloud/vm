@@ -308,7 +308,9 @@ bash $SECURE & spinner_loading
 
 if [ "${CURRENTVERSION%%.*}" -ge "21" ]
 then
-    # Set phone region
+    # Set phone region (needs the latest KEYBOARD_LAYOUT from lib)
+    # shellcheck source=lib.sh
+    source /var/scripts/fetch_lib.sh
     if [ -n "$KEYBOARD_LAYOUT" ]
     then
         nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
