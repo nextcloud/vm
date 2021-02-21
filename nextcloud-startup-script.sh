@@ -134,6 +134,18 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
     exit 1
 fi
 
+# Check that this run on the PostgreSQL VM
+if ! is_this_installed postgresql-common
+then
+    print_text_in_color "$IRed" "This script is intended to be \
+run using a PostgreSQL database, but PostgreSQL is not installed."
+    print_text_in_color "$IRed" "Aborting..."
+    exit 1
+fi
+
+# Run the startup menu
+run_script MENU startup_configuration
+
 true
 SCRIPT_NAME="Nextcloud Startup Script"
 # shellcheck source=lib.sh
@@ -149,23 +161,17 @@ nc_update
 DEBUG=0
 debug_mode
 
-# Check that this run on the PostgreSQL VM
-if ! is_this_installed postgresql-common
-then
-    print_text_in_color "$IRed" "This script is intended to be \
-run using a PostgreSQL database, but PostgreSQL is not installed."
-    print_text_in_color "$IRed" "Aborting..."
-    exit 1
-fi
-
-# Nextcloud 18 is required
-lowest_compatible_nc 18
+# Nextcloud 21 is required
+lowest_compatible_nc 21
 
 # Import if missing and export again to import it with UUID
 zpool_import_if_missing
 
-# Run the startup menu
-run_script MENU startup_configuration
+# Set phone region
+if [ -n "$KEYBOARD_LAYOUT" ]
+then
+    nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
+fi
 
 # Is this run as a pure root user?
 if is_root
@@ -305,17 +311,6 @@ nextcloud_occ config:system:set overwrite.cli.url --value="http://localhost/"
 nextcloud_occ config:system:set htaccess.RewriteBase --value="/"
 nextcloud_occ maintenance:update:htaccess
 bash $SECURE & spinner_loading
-
-if [ "${CURRENTVERSION%%.*}" -ge "21" ]
-then
-    # Set phone region (needs the latest KEYBOARD_LAYOUT from lib)
-    # shellcheck source=lib.sh
-    source /var/scripts/fetch_lib.sh
-    if [ -n "$KEYBOARD_LAYOUT" ]
-    then
-        nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
-    fi
-fi
 
 # Generate new SSH Keys
 printf "\nGenerating new SSH keys for the server...\n"
