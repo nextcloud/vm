@@ -193,14 +193,18 @@ We will do this for you when you hit OK."
        bash $SCRIPTS/adduser.sh "$SCRIPTS/nextcloud-startup-script.sh"
        rm $SCRIPTS/adduser.sh
        else
-            msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
+           msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
 which could be the case if you are running directly from the scripts on Github and not the VM.
 
 As long as the user you created have sudo permissions it's safe to continue.
 This would be the case if you created a new user with the script in the previous step.
 
 If the user you are running this script with is a user that doesn't have sudo permissions,
-please abort this script (CTRL+C) and report this issue to $ISSUES."
+please abort this script and report this issue to $ISSUES."
+            if yesno_box_yes "Do you want to abort this script?"
+            then
+                exit
+            fi
         fi
     fi
 fi
