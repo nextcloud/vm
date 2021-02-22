@@ -18,6 +18,7 @@ PR's are more than welcome. Happy Nextclouding!
 ## 21.0.0
 
 ### Small changelog:
+- Added Push Notifications for Nextcloud (`High Performance Backend for Nextcloud files`)
 - Add phone region (new in 21)
 - Improve Strict Transport Security in TLS
 - DDclient - added No-IP
