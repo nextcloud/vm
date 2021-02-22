@@ -20,6 +20,9 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 DEBUG=0
 debug_mode
 
+# NC 21 required
+lowest_compatible_nc 21
+
 # Check if root
 root_check
 
