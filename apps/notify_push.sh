@@ -96,6 +96,8 @@ fi
 install_and_enable_app notify_push
 # The app needs to be disabled before the setup
 nextcloud_occ_no_check app:disable notify_push
+# configure correct rights (otherwise the daemon might fail to start)
+chmod 770 -R "$NC_APPS_PATH/notify_push" 
 
 # Setting up the service
 cat << NOTIFY_PUSH > "$SERVICE_PATH"
