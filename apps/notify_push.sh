@@ -20,11 +20,11 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 DEBUG=0
 debug_mode
 
-# NC 21 required
-lowest_compatible_nc 21
-
 # Check if root
 root_check
+
+# NC 21 required
+lowest_compatible_nc 21
 
 # Variables
 SERVICE_PATH="/etc/systemd/system/notify_push.service"
@@ -32,18 +32,10 @@ ARCHITECTURE=$(uname -p)
 
 # Test prequesites
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-# Get all needed variables from the library
-nc_update
 # Check redis
 if ! php -m | grep -q redis
 then
     msg_box "The redis php extension isn't enabled. Please run the an update to fix this."
-    exit 1
-fi
-# NC21
-if [ "${CURRENTVERSION%%.*}" -lt "21" ]
-then
-    msg_box "This app is only supported from NC 21 and higher. Cannot proceed!"
     exit 1
 fi
 # Check TLS
