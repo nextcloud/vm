@@ -758,7 +758,7 @@ then
 # </VirtualHost>
 
 <VirtualHost *:443>
-    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+    Header add Strict-Transport-Security: "max-age=15552000;includeSubdomains"
 
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
