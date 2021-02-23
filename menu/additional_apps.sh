@@ -48,6 +48,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Midnight Commander" "(CLI file manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
+"Notify Push" "(Push Notifications for Nextcloud)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
@@ -94,6 +95,10 @@ case "$choice" in
     *"PreviewGenerator"*)
         print_text_in_color "$ICyan" "Downloading the PreviewGenerator script..."
         run_script APP previewgenerator
+    ;;&
+    *"Notify Push"*)
+        print_text_in_color "$ICyan" "Downloading the Notify Push script..."
+        run_script APP notify_push
     ;;&
     *"LDAP"*)
         SUBTITLE="LDAP"
