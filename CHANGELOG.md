@@ -19,6 +19,8 @@ PR's are more than welcome. Happy Nextclouding!
 
 ### Small changelog:
 - Added Push Notifications for Nextcloud (`High Performance Backend for Nextcloud files`)
+- Added Whiteboard for Nextcloud (`New in Nextcloud 21`)
+- Moved Extract for Nextcloud to its own script
 - Add phone region (new in 21)
 - Improve Strict Transport Security in TLS
 - DDclient - added No-IP
