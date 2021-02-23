@@ -24,7 +24,7 @@ root_check
 # NC 21 is required
 lowest_compatible_nc 21
 
-# Check if webmin is already installed
+# Check if whiteboard is already installed
 if ! is_app_installed integration_whiteboard
 then
     # Ask for installing
