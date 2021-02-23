@@ -675,6 +675,15 @@ then
     fi
 fi
 
+# Prevent apps from breaking the update due to incompatibility
+# Fixes errors like https://github.com/nextcloud/vm/issues/1834
+# Needs to be executed before backing up the config directory
+if [ "${CURRENTVERSION%%.*}" -lt "${NCVERSION%%.*}" ]
+then
+    print_text_in_color "$ICyan" "Deleting 'app_install_overwrite array' to prevent app breakage..."
+    nextcloud_occ config:system:delete app_install_overwrite
+fi
+
 # Check if backup exists and move to old
 print_text_in_color "$ICyan" "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
@@ -745,11 +754,6 @@ then
     send_mail \
     "Nextcloud update started!" \
     "Please don't shutdown or reboot your server during the update! $(date +%T)"
-    if [ "${CURRENTVERSION%%.*}" -lt "${NCVERSION%%.*}" ]
-    then
-        print_text_in_color "$ICyan" "Deleting 'app_install_overwrite array' to prevent app breakage..."
-        nextcloud_occ config:system:delete app_install_overwrite
-    fi
     nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf $NCPATH
