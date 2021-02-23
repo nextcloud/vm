@@ -43,6 +43,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
+"Extract" "(Archive extraction for Nextcloud)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
@@ -52,6 +53,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
+"Whiteboard" "(Whiteboard for Nextcloud)" OFF \
 "SMB-mount" "(Mount SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -74,6 +76,10 @@ case "$choice" in
     *"ClamAV"*)
         print_text_in_color "$ICyan" "Downloading the ClamAV script..."
         run_script APP clamav
+    ;;&
+    *"Extract"*)
+        print_text_in_color "$ICyan" "Downloading the Extract script..."
+        run_script APP extract
     ;;&
     *"Netdata"*)
         print_text_in_color "$ICyan" "Downloading the Netdata script..."
@@ -117,6 +123,10 @@ to finish the setup once this script is done." "$SUBTITLE"
     *"Webmin"*)
         print_text_in_color "$ICyan" "Downloading the Webmin script..."
         run_script APP webmin
+    ;;&
+    *"Whiteboard"*)
+        print_text_in_color "$ICyan" "Downloading the Whiteboard script..."
+        run_script APP whiteboard
     ;;&
     *"SMB-mount"*)
         print_text_in_color "$ICyan" "Downloading the SMB-mount script..."
