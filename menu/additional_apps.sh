@@ -53,6 +53,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
+"Whiteboard" "(Whiteboard for Nextcloud)" OFF \
 "SMB-mount" "(Mount SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -122,6 +123,10 @@ to finish the setup once this script is done." "$SUBTITLE"
     *"Webmin"*)
         print_text_in_color "$ICyan" "Downloading the Webmin script..."
         run_script APP webmin
+    ;;&
+    *"Whiteboard"*)
+        print_text_in_color "$ICyan" "Downloading the Whiteboard script..."
+        run_script APP whiteboard
     ;;&
     *"SMB-mount"*)
         print_text_in_color "$ICyan" "Downloading the SMB-mount script..."
