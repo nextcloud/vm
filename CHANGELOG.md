@@ -15,6 +15,33 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 21.0.0
+
+### Small changelog:
+- Added Push Notifications for Nextcloud (`High Performance Backend for Nextcloud files`)
+- Added Whiteboard for Nextcloud (`New in Nextcloud 21`)
+- Moved Extract for Nextcloud to its own script
+- Add phone region (new in 21)
+- Made sure that all docker containers only listen on localhost 
+- Improve Strict Transport Security in TLS
+- DDclient - added No-IP
+- Updated geoblock database files
+- Avoid double crontabs when reexecuting some scripts
+- Don't enable disabled apps after update
+- Geoblock - allow some IP-addresses by default
+- Fix watchtower updates
+- Geoblock - add Let's Encrypt advice
+- Fix upgrade.disable-web
+- Don't break update when enabling app
+- Fix not enabled PECL extensions
+- Prevent apps from breaking the update due to incompatibility
+- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
+- Minor bugfixes and improvements
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/20.0.7..21.0.0
+- https://nextcloud.com/changelog/#latest21
+
 ## 20.0.7
 
 ### Small changelog:
