@@ -22,6 +22,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Added Whiteboard for Nextcloud (`New in Nextcloud 21`)
 - Moved Extract for Nextcloud to its own script
 - Add phone region (new in 21)
+- Made sure that all docker containers only listen on localhost 
 - Improve Strict Transport Security in TLS
 - DDclient - added No-IP
 - Updated geoblock database files
