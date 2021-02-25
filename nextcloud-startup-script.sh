@@ -134,6 +134,18 @@ Please also post this issue on: https://github.com/nextcloud/vm/issues"
     exit 1
 fi
 
+# Check that this run on the PostgreSQL VM
+if ! is_this_installed postgresql-common
+then
+    print_text_in_color "$IRed" "This script is intended to be \
+run using a PostgreSQL database, but PostgreSQL is not installed."
+    print_text_in_color "$IRed" "Aborting..."
+    exit 1
+fi
+
+# Run the startup menu
+run_script MENU startup_configuration
+
 true
 SCRIPT_NAME="Nextcloud Startup Script"
 # shellcheck source=lib.sh
@@ -149,23 +161,23 @@ nc_update
 DEBUG=0
 debug_mode
 
-# Check that this run on the PostgreSQL VM
-if ! is_this_installed postgresql-common
-then
-    print_text_in_color "$IRed" "This script is intended to be \
-run using a PostgreSQL database, but PostgreSQL is not installed."
-    print_text_in_color "$IRed" "Aborting..."
-    exit 1
-fi
-
-# Nextcloud 18 is required
-lowest_compatible_nc 18
+# Nextcloud 20 is required until 21.0.3 is out. Then NC 21 will be required.
+lowest_compatible_nc 20
 
 # Import if missing and export again to import it with UUID
 zpool_import_if_missing
 
-# Run the startup menu
-run_script MENU startup_configuration
+# Set phone region
+if [ "${CURRENTVERSION%%.*}" -ge "21" ]
+then
+    # Set phone region (needs the latest KEYBOARD_LAYOUT from lib)
+    # shellcheck source=lib.sh
+    source /var/scripts/fetch_lib.sh
+    if [ -n "$KEYBOARD_LAYOUT" ]
+    then
+        nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
+    fi
+fi
 
 # Is this run as a pure root user?
 if is_root
@@ -187,14 +199,18 @@ We will do this for you when you hit OK."
        bash $SCRIPTS/adduser.sh "$SCRIPTS/nextcloud-startup-script.sh"
        rm $SCRIPTS/adduser.sh
        else
-            msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
+           msg_box "You probably see this message if the user 'ncadmin' does not exist on the system,
 which could be the case if you are running directly from the scripts on Github and not the VM.
 
 As long as the user you created have sudo permissions it's safe to continue.
 This would be the case if you created a new user with the script in the previous step.
 
 If the user you are running this script with is a user that doesn't have sudo permissions,
-please abort this script (CTRL+C) and report this issue to $ISSUES."
+please abort this script and report this issue to $ISSUES."
+            if yesno_box_yes "Do you want to abort this script?"
+            then
+                exit
+            fi
         fi
     fi
 fi

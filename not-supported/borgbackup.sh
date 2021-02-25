@@ -197,6 +197,10 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 check_snapshot_pending
 
+# Fix too large Borg cache
+# https://borgbackup.readthedocs.io/en/stable/faq.html#the-borg-cache-eats-way-too-much-disk-space-what-can-i-do
+find /root/.cache/borg/ -maxdepth 2 -name chunks.archive.d -type d -exec rm -r {} \; -exec touch {} \;
+
 # Stop services
 inform_user "$ICyan" "Stopping services..."
 if is_docker_running
@@ -336,6 +340,17 @@ then
     send_error_mail "Could not unmount the LVM snapshot."
 fi
 
+# Prune options
+BORG_PRUNE_OPTS=(--stats --keep-within=7d --keep-weekly=4 --keep-monthly=6 "$BACKUP_TARGET_DIRECTORY")
+
+# Prune system archives
+inform_user "$ICyan" "Pruning the system archives..."
+if ! borg prune --prefix '*_*-NcVM-system-partition' "${BORG_PRUNE_OPTS[@]}"
+then
+    re_rename_snapshot
+    send_error_mail "Some errors were reported by the prune system command."
+fi
+
 # Boot partition backup
 inform_user "$ICyan" "Creating boot partition backup..."
 if ! borg create "${BORG_OPTS[@]}" "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-boot-partition" "/boot/"
@@ -345,6 +360,14 @@ then
     show_drive_usage
     re_rename_snapshot
     send_error_mail "Some errors were reported during the boot partition backup!"   
+fi
+
+# Prune boot archives
+inform_user "$ICyan" "Pruning the boot archives..."
+if ! borg prune --prefix '*_*-NcVM-boot-partition' "${BORG_PRUNE_OPTS[@]}"
+then
+    re_rename_snapshot
+    send_error_mail "Some errors were reported by the prune boot command."
 fi
 
 # Backup additional locations
@@ -378,18 +401,15 @@ do
         re_rename_snapshot
         send_error_mail "Some errors were reported during the $DIRECTORY_NAME backup!"
     fi
-done
 
-# Prune the backup repository
-inform_user "$ICyan" "Pruning the backup..."
-if ! borg prune --progress --stats "$BACKUP_TARGET_DIRECTORY" \
---keep-within=7d \
---keep-weekly=4 \
---keep-monthly=6
-then
-    re_rename_snapshot
-    send_error_mail "Some errors were reported by the prune command."
-fi
+    # Prune archives
+    inform_user "$ICyan" "Pruning the $DIRECTORY_NAME archives..."
+    if ! borg prune --prefix "*_*-NcVM-$DIRECTORY_NAME-directory" "${BORG_PRUNE_OPTS[@]}"
+    then
+        re_rename_snapshot
+        send_error_mail "Some errors were reported by the prune $DIRECTORY_NAME command."
+    fi
+done
 
 # Rename the snapshot back to normal
 if ! re_rename_snapshot

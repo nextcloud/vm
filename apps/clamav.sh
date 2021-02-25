@@ -69,11 +69,11 @@ sed -i "s|^StreamMaxLength.*|StreamMaxLength 100M|" /etc/clamav/clamd.conf
 check_command systemctl restart clamav-freshclam
 check_command systemctl restart clamav-daemon
 
-print_text_in_color "$ICyan" "Waiting for ClamAV daemon to start up. This can take a while..."
+print_text_in_color "$ICyan" "Waiting for ClamAV daemon to start up. This can take a while... (max 60s)"
 counter=0
-while ! [ -a "/var/run/clamav/clamd.ctl" ] && [ "$counter" -lt 4 ]
+while ! [ -a "/var/run/clamav/clamd.ctl" ] && [ "$counter" -lt 12 ]
 do
-    sleep 5
+    sleep 5 & spinner_loading
     ((counter++))
 done
 
@@ -93,6 +93,7 @@ check_command systemctl daemon-reload
 check_command systemctl restart clamav-daemon
 
 # Install Nextcloud app
+echo ""
 install_and_enable_app files_antivirus
 
 # Configure Nextcloud app
@@ -184,6 +185,7 @@ chown root:root "$SCRIPT_PATH"
 chmod 700 "$SCRIPT_PATH"
 
 # Create the cronjob
+crontab -u root -l | grep -v "$SCRIPT_PATH" | crontab -u root -
 crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPT_PATH > /dev/null 2>&1"; } | crontab -u root -
 
 # Inform the user
@@ -276,6 +278,7 @@ CLAMAV_REPORT
 chmod +x "$SCRIPTS"/clamav-fullscan.sh
 
 # Create the cronjob
+crontab -u root -l | grep -v "$SCRIPTS/clamav-fullscan.sh" | crontab -u root -
 crontab -u root -l | { cat; echo "0 10 * * 7 $SCRIPTS/clamav-fullscan.sh > /dev/null 2>&1"; } | crontab -u root -
 
 # Create the log-file

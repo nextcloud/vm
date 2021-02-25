@@ -5,7 +5,10 @@
 
 true
 SCRIPT_NAME="GeoBlock"
-SCRIPT_EXPLAINER="This script lets you restrict access to your server, only allowing the countries you choose."
+SCRIPT_EXPLAINER="This script lets you restrict access to your webserver, only allowing the countries you choose.\n
+Attention!
+Geoblock can break the certificate renewal via \"Let's encrypt!\" if done too strict!
+If you have problems with \"Let's encrypt!\", please uninstall geoblock first to see if that fixes those issues!"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -181,6 +184,9 @@ GEOIP_CONF+="  Allow from env=AllowCountryOrContinent
   Allow from 192.168.0.0/16
   Allow from 172.16.0.0/12
   Allow from 10.0.0.0/8
+  Allow from scan.nextcloud.com
+  # Allow scans from observatory.mozilla.org:
+  Allow from 63.245.208.0/24
   Order Deny,Allow
   Deny from all
 </Location>

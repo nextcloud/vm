@@ -524,7 +524,7 @@ echo
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Run the updatenotification on a schedule
-nextcloud_occ config:system:set upgrade.disable-web --value="true"
+nextcloud_occ config:system:set upgrade.disable-web --type=bool --value=true
 nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_script STATIC updatenotification
@@ -634,10 +634,19 @@ then
     fi
 {
 echo "# igbinary for PHP"
-echo "extension=igbinary.so"
 echo "session.serialize_handler=igbinary"
 echo "igbinary.compact_strings=On"
 } >> "$PHP_INI"
+if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
+then
+    touch $PHP_MODS_DIR/igbinary.ini
+fi
+if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
+then
+    echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
+    echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
+    check_command phpenmod -v ALL igbinary
+fi
 restart_webserver
 fi
 
@@ -653,7 +662,6 @@ then
     fi
 {
 echo "# APCu settings for Nextcloud"
-echo "extension=apcu.so"
 echo "apc.enabled=1"
 echo "apc.max_file_size=5M"
 echo "apc.shm_segments=1"
@@ -669,6 +677,16 @@ echo "apc.serializer=igbinary"
 echo "apc.coredump_unmap=0"
 echo "apc.preload_path"
 } >> "$PHP_INI"
+if [ ! -f $PHP_MODS_DIR/apcu.ini ]
+then
+    touch $PHP_MODS_DIR/apcu.ini
+fi
+if ! grep -qFx extension=apcu.so $PHP_MODS_DIR/apcu.ini
+then
+    echo "# PECL apcu" > $PHP_MODS_DIR/apcu.ini
+    echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
+    check_command phpenmod -v ALL apcu
+fi
 restart_webserver
 fi
 
@@ -768,7 +786,7 @@ then
 # </VirtualHost>
 
 <VirtualHost *:443>
-    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+    Header add Strict-Transport-Security: "max-age=15552000;includeSubdomains"
 
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
@@ -988,12 +1006,6 @@ chown root:root -R "$SCRIPTS"
 # Prepare first bootup
 check_command run_script STATIC change-ncadmin-profile
 check_command run_script STATIC change-root-profile
-
-if home_sme_server
-then
-    # Change nextcloud-startup-script.sh
-    check_command sed -i "s|VM|Home/SME Server|g" $SCRIPTS/nextcloud-startup-script.sh
-fi
 
 # Disable hibernation
 print_text_in_color "$ICyan" "Disable hibernation..."

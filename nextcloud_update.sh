@@ -112,6 +112,15 @@ fi
 # Ubuntu 16.04 is deprecated
 check_distro_version
 
+# Remove leftovers
+if [ -f /root/php-upgrade.sh ]
+then
+    rm -f /root/php-upgrade.sh
+elif [ -f /tmp/php-upgrade.sh ]
+then
+    rm -f /tmp/php-upgrade.sh
+fi
+
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
 apt update -q4 & spinner_loading
@@ -120,6 +129,8 @@ then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
 Holding PHP to avoid upgrading to a newer version without migration..."
     apt-mark hold php*
+    #check_php
+    #apt-mark unhold php"$PHPVER"*
 fi
 
 # Don't allow MySQL/MariaDB
@@ -250,11 +261,22 @@ then
     yes no | pecl upgrade redis
     systemctl restart redis-server.service
 fi
-
-# Double check if redis.so is enabled
-if ! grep -qFx extension=redis.so "$PHP_INI"
+# Remove old redis
+if grep -qFx extension=redis.so "$PHP_INI"
 then
-    echo "extension=redis.so" >> "$PHP_INI"
+    sed -i "/extension=redis.so/d" "$PHP_INI"
+fi
+# Check if redis is enabled and create the file if not
+if [ ! -f $PHP_MODS_DIR/redis.ini ]
+then
+    touch $PHP_MODS_DIR/redis.ini
+fi
+# Enable new redis
+if ! grep -qFx extension=redis.so $PHP_MODS_DIR/redis.ini
+then
+    echo "# PECL redis" > $PHP_MODS_DIR/redis.ini
+    echo "extension=redis.so" >> $PHP_MODS_DIR/redis.ini
+    check_command phpenmod -v ALL redis
 fi
 
 # Upgrade APCu and igbinary
@@ -266,10 +288,22 @@ then
         if pecl list | grep igbinary >/dev/null 2>&1
         then
             yes no | pecl upgrade igbinary
-            # Check if igbinary.so is enabled
-            if ! grep -qFx extension=igbinary.so "$PHP_INI"
+            # Remove old igbinary
+            if grep -qFx extension=igbinary.so "$PHP_INI"
             then
-                echo "extension=igbinary.so" >> "$PHP_INI"
+                sed -i "/extension=igbinary.so/d" "$PHP_INI"
+            fi
+            # Check if igbinary is enabled and create the file if not
+            if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
+            then
+                touch $PHP_MODS_DIR/igbinary.ini
+            fi
+            # Enable new igbinary
+            if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
+            then
+                echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
+                echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
+                check_command phpenmod -v ALL igbinary
             fi
         fi
         if pecl list | grep -q smbclient
@@ -290,25 +324,47 @@ then
             # Remove old smbclient
             if grep -qFx extension=smbclient.so "$PHP_INI"
             then
-                sed -i "s|extension=smbclient.so||g" "$PHP_INI"
+                sed -i "/extension=smbclient.so/d" "$PHP_INI"
             fi
         fi
         if pecl list | grep -q apcu
         then
             yes no | pecl upgrade apcu
-            # Check if apcu.so is enabled
-            if ! grep -qFx extension=apcu.so "$PHP_INI"
+            # Remove old igbinary
+            if grep -qFx extension=apcu.so "$PHP_INI"
             then
-                echo "extension=apcu.so" >> "$PHP_INI"
+                sed -i "/extension=apcu.so/d" "$PHP_INI"
+            fi
+            # Check if apcu is enabled and create the file if not
+            if [ ! -f $PHP_MODS_DIR/apcu.ini ]
+            then
+                touch $PHP_MODS_DIR/apcu.ini
+            fi
+            # Enable new apcu
+            if ! grep -qFx extension=apcu.so $PHP_MODS_DIR/apcu.ini
+            then
+                echo "# PECL apcu" > $PHP_MODS_DIR/apcu.ini
+                echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
+                check_command phpenmod -v ALL apcu
             fi
         fi
         if pecl list | grep -q inotify
         then 
-            yes no | pecl upgrade inotify
-            # Check if inotify.so is enabled
-            if ! grep -qFx extension=inotify.so "$PHP_INI"
+            # Remove old inotify
+            if grep -qFx extension=inotify.so "$PHP_INI"
             then
-                echo "extension=inotify.so" >> "$PHP_INI"
+                sed -i "/extension=inotify.so/d" "$PHP_INI"
+            fi
+            yes no | pecl upgrade inotify
+            if [ ! -f $PHP_MODS_DIR/inotify.ini ]
+            then
+                touch $PHP_MODS_DIR/inotify.ini
+            fi
+            if ! grep -qFx extension=inotify.so $PHP_MODS_DIR/inotify.ini
+            then
+                echo "# PECL inotify" > $PHP_MODS_DIR/inotify.ini
+                echo "extension=inotify.so" >> $PHP_MODS_DIR/inotify.ini
+                check_command phpenmod -v ALL inotify
             fi
         fi
     fi
@@ -366,15 +422,15 @@ we have removed Watchtower from this server. Updates will now happen for each co
     fi
     # Update selected images
     # Bitwarden RS
-    docker_update_specific 'bitwardenrs/server' "Bitwarden RS"
+    docker_update_specific 'bitwarden_rs' "Bitwarden RS"
     # Collabora CODE
-    docker_update_specific 'collabora/code' 'Collabora'
+    docker_update_specific 'code' 'Collabora'
     # OnlyOffice
-    docker_update_specific 'onlyoffice/documentserver' 'OnlyOffice'
+    docker_update_specific 'onlyoffice' 'OnlyOffice'
     # Full Text Search
-    docker_update_specific 'ark74/nc_fts' 'Full Text Search'
+    docker_update_specific 'fts_esror' 'Full Text Search'
     # Plex
-    docker_update_specific 'plexinc/pms-docker' "Plex Media Server"
+    docker_update_specific 'plex' "Plex Media Server"
 fi
 
 # Cleanup un-used packages
@@ -619,6 +675,15 @@ then
     fi
 fi
 
+# Prevent apps from breaking the update due to incompatibility
+# Fixes errors like https://github.com/nextcloud/vm/issues/1834
+# Needs to be executed before backing up the config directory
+if [ "${CURRENTVERSION%%.*}" -lt "${NCVERSION%%.*}" ]
+then
+    print_text_in_color "$ICyan" "Deleting 'app_install_overwrite array' to prevent app breakage..."
+    nextcloud_occ config:system:delete app_install_overwrite
+fi
+
 # Check if backup exists and move to old
 print_text_in_color "$ICyan" "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
@@ -715,6 +780,14 @@ then
     then
         nextcloud_occ db:add-missing-primary-keys
     fi
+    if [ "${CURRENTVERSION%%.*}" -ge "21" ]
+    then
+        # Set phone region
+        if [ -n "$KEYBOARD_LAYOUT" ]
+        then
+            nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
+        fi
+    fi
 else
     msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if the folders exist."
@@ -769,9 +842,6 @@ then
     fi
 fi
 
-# Recover apps that exists in the backed up apps folder
-run_script STATIC recover_apps
-
 # Restore app status
 # Fixing https://github.com/nextcloud/server/issues/4538
 if [ "${APPSTORAGE[0]}" != "no-export-done" ]
@@ -781,12 +851,40 @@ then
     do
         if [ -n "${APPSTORAGE[$app]}" ]
         then
-            if echo "${APPSTORAGE[$app]}" | grep -q "^\[\".*\"\]$"
+            # Check if the app is in Nextclouds app storage
+            if ! [ -d "$NC_APPS_PATH/$app" ]
             then
-                if is_app_enabled "$app"
+                # If the app is missing from the apps folder and was installed and enabled before the upgrade was done,
+                # then reinstall it
+                if [ "${APPSTORAGE[$app]}" = "yes" ]
                 then
-                    nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
+                    install_and_enable_app "$app"
+                # If the app is missing from the apps folder and was installed but not enabled before the upgrade was done, 
+                # then reinstall it but keep it disabled
+                elif [ "${APPSTORAGE[$app]}" = "no" ]
+                then
+                    install_and_enable_app "$app"
+                    nextcloud_occ_no_check app:disable "$app"
                 fi
+            fi
+            # If the app still isn't enabled (maybe because it's incompatible), then at least restore from backup,
+            # and make sure it's disabled
+            if ! [ -d "$NC_APPS_PATH/$app" ] && [ -d "$BACKUP/apps/$app" ]
+            then
+                if yesno_box_no "$app couln't be enabled. Do you want to restore it from backup?\n\nWARNING: It may result in failed integrity checks."
+                then
+                    print_text_in_color "$ICyan" "Restoring $app from $BACKUP/apps..."
+                    rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
+                    bash "$SECURE"
+                    nextcloud_occ_no_check app:disable "$app"
+                    nextcloud_occ upgrade
+                fi
+            fi
+            # Cover the case where the app is enabled for certain groups
+            if [ "${APPSTORAGE[$app]}" != "yes" ] && [ "${APPSTORAGE[$app]}" != "no" ] && is_app_enabled "$app"
+            then
+                # Only restore the group settings, if the app was enabled (and is thus compatible with the new NC version)
+                nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
             fi
         fi
     done
