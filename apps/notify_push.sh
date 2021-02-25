@@ -82,8 +82,8 @@ else
     sed -i "/#Notify-push-start/,/#Notify-push-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
     systemctl restart apache2
     systemctl stop notify_push &>/dev/null
+    systemctl disable notify_push &>/dev/null
     rm -f "$SERVICE_PATH"
-    systemctl daemon-reload
     count=0
     while [ "$count" -lt 10 ]
     do
