@@ -82,7 +82,19 @@ else
     sed -i "/#Notify-push-start/,/#Notify-push-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
     systemctl restart apache2
     systemctl stop notify_push &>/dev/null
+    systemctl disable notify_push &>/dev/null
     rm -f "$SERVICE_PATH"
+    count=0
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_proxies "$count")" = "127.0.0.1" ]
+        then
+            nextcloud_occ_no_check config:system:delete trusted_proxies "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -156,6 +168,7 @@ done
 install_and_enable_app notify_push
 
 # Configure the Nextcloud app and test if it works
+countdown "Waiting for the setup check to take place..." "3"
 if ! nextcloud_occ_no_check notify_push:setup "https://$NCDOMAIN/push"
 then
     msg_box "Something didn't work while testing $SCRIPT_NAME.
