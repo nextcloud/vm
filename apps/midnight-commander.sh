@@ -37,7 +37,7 @@ else
 fi
 
 # Install mc
-check_command apt install mc -y
+install_if_not mc
 
 # Show successful installation
 msg_box "Midnight Commander was successfully installed.
