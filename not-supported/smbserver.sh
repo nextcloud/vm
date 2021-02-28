@@ -270,6 +270,32 @@ Please note that this option could be a security risk, if the chosen password wa
 
     # Inform the user
     msg_box "The new Nextcloud user $NEWNAME was successfully created." "$SUBTITLE"
+
+    # Configure mail address
+    msg_box "It is recommended to set a mail address for every Nextcloud user \
+so that Nextcloud is able to send mails to them."
+    if ! yesno_box_yes "Do you want to add a mail address to this user?"
+    then
+        return
+    fi
+    while :
+    do
+        MAIL_ADDRESS="$(input_box_flow "Please type in the mail-address of the new Nextcloud user $NEWNAME!
+This mail-address needs to be valid. Otherwise Nextcloud won't be able to send mails to that user.
+If you want to cancel, just type in 'exit' and press [ENTER]." "$SUBTITLE")"
+        if [ "$MAIL_ADDRESS" = "exit" ]
+        then
+            return
+        elif ! echo "$MAIL_ADDRESS" | grep -q "@" || echo "$MAIL_ADDRESS" | grep -q " " \
+|| echo "$MAIL_ADDRESS" | grep -q "^@" || echo "$MAIL_ADDRESS" | grep -q "@$" 
+        then
+            msg_box "The mail-address isn't valid. Please try again!"
+        else
+            nextcloud_occ user:setting "$NEWNAME" settings email "$MAIL_ADDRESS"
+            msg_box "Congratulations!\nThe mail-address of $NEWNAME was successfully set to $MAIL_ADDRESS!"
+            break
+        fi
+    done
 }
 
 # Show all SMB-shares from a SMB-user

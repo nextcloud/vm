@@ -45,61 +45,91 @@ install_if_not msmtp
 install_if_not msmtp-mta
 install_if_not mailutils
 
-# Enter Mail Server
-MAIL_SERVER=$(input_box_flow "Please enter the SMTP Relay URL that you want to use.\nE.g. smtp.mail.com")
+# Default providers
+choice=$(whiptail --title "$TITLE" --nocancel --menu \
+"Please choose the mail provider that you want to use.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"mail.de" "(German mail provider)" \
+"Manual" "(Complete manual setup)" 3>&1 1>&2 2>&3)
 
-# Enter if you want to use ssl
-PROTOCOL=$(whiptail --title "$TITLE" --nocancel --menu \
+case "$choice" in
+    "mail.de")
+        NEEDS_CREDENTIALS=1
+        MAIL_SERVER="smtp.mail.de"
+        PROTOCOL="SSL"
+        SMTP_PORT="465"
+    ;;
+    # Manual setup will be handled a few lines below
+    "")
+        msg_box "You haven't selected any option. Exiting!"
+        exit 1
+    ;;
+    *)
+    ;;
+esac
+
+print_text_in_color "$ICyan" "$choice was chosen..."
+sleep 1
+
+# Set everything up manually
+if [ "$choice" = "Manual" ]
+then
+    # Enter Mail Server
+    MAIL_SERVER=$(input_box_flow "Please enter the SMTP Relay URL that you want to use.\nE.g. smtp.mail.com")
+
+    # Enter if you want to use ssl
+    PROTOCOL=$(whiptail --title "$TITLE" --nocancel --menu \
 "Please choose the encryption protocol for your SMTP Relay.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "SSL" "" \
 "STARTTLS" "" \
 "NO-ENCRYPTION" "" 3>&1 1>&2 2>&3)
 
-if [ -z "$PROTOCOL" ]
-then
-    exit 1
-fi
+    if [ -z "$PROTOCOL" ]
+    then
+        exit 1
+    fi
 
-case "$PROTOCOL" in
-    "SSL")
-        DEFAULT_PORT=465
-    ;;
-    "STARTTLS")
-        DEFAULT_PORT=587
-    ;;
-    "NO-ENCRYPTION")
-        DEFAULT_PORT=25
-    ;;
-    *)
-    ;;
-esac
+    case "$PROTOCOL" in
+        "SSL")
+            DEFAULT_PORT=465
+        ;;
+        "STARTTLS")
+            DEFAULT_PORT=587
+        ;;
+        "NO-ENCRYPTION")
+            DEFAULT_PORT=25
+        ;;
+        *)
+        ;;
+    esac
 
-# Enter custom port or just use the default port
-SMTP_PORT=$(whiptail --title "$TITLE" --nocancel --menu \
+    # Enter custom port or just use the default port
+    SMTP_PORT=$(whiptail --title "$TITLE" --nocancel --menu \
 "Based on your selection of encryption the default port is $DEFAULT_PORT. Would you like to use that port or something else?
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Use default port" "($DEFAULT_PORT)" \
 "Enter another port" ""  3>&1 1>&2 2>&3)
 
-if [ -z "$SMTP_PORT" ]
-then
-    exit 1
+    if [ -z "$SMTP_PORT" ]
+    then
+        exit 1
+    fi
+
+    case "$SMTP_PORT" in
+        "Use default port")
+            SMTP_PORT="$DEFAULT_PORT"
+        ;;
+        "Enter another port")
+            SMTP_PORT="$(input_box_flow 'Please enter the port for your SMTP Relay.')"
+        ;;
+        *)
+        ;;
+    esac
 fi
 
-case "$SMTP_PORT" in
-    "Use default port")
-        SMTP_PORT="$DEFAULT_PORT"
-    ;;
-    "Enter another port")
-        SMTP_PORT="$(input_box_flow 'Please enter the port for your SMTP Relay.')"
-    ;;
-    *)
-    ;;
-esac
-
 # Enter your SMTP username
-if yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
+if [ -n "$NEEDS_CREDENTIALS" ] || yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
 then
     MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com")
 
