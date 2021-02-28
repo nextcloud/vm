@@ -314,9 +314,9 @@ msg_box "The mail settings in Nextcloud were successfully set!"
 args=(whiptail --title "$TITLE" --menu \
 "Please select the admin user that will have $RECIPIENT as mail address.
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
-NC_USERS=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
-mapfile -t NC_USERS <<< "$NC_USERS"
-for user in "${NC_USERS[@]}"
+NC_USERS_NEW=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+mapfile -t NC_USERS_NEW <<< "$NC_USERS_NEW"
+for user in "${NC_USERS_NEW[@]}"
 do
     if nextcloud_occ_no_check user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
     then
