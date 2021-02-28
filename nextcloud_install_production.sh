@@ -852,7 +852,8 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Text" "" ON \
 "Mail" "" ON \
 "Deck" "" ON \
-"Group-Folders" "" ON 3>&1 1>&2 2>&3)
+"Group-Folders" "" ON \
+"2FA" "Two-Factor Authentication via Nextcloud notification" ON 3>&1 1>&2 2>&3)
 fi
 
 case "$choice" in
@@ -887,6 +888,9 @@ case "$choice" in
     ;;&
     *"Group-Folders"*)
         install_and_enable_app groupfolders
+    ;;&
+    *"2FA"*)
+        install_and_enable_app twofactor_nextcloud_notification
     ;;&
     *)
     ;;
