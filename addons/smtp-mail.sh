@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="SMTP Relay with msmtp"
@@ -266,4 +267,74 @@ fi
 # Success message
 msg_box "Congratulations, the test email was successfully sent!
 Please check the inbox for $RECIPIENT. The test email should arrive soon."
-exit
+
+# Only offer to use the same settings in Nextcloud if a password was chosen
+if [ "$MAIL_USERNAME" = "no-reply@nextcloudvm.com" ]
+then
+    exit
+fi
+
+# Offer to use the same settings in Nextcloud
+if ! yesno_box_no "Do you want to use the same mail server settings in your Nextcloud?
+If you choose 'Yes', your Nextcloud will use the same mail settings that you've entered here."
+then
+    exit
+fi
+
+# SMTP mode
+nextcloud_occ config:system:set mail_smtpmode --value="smtp"
+nextcloud_occ config:system:set mail_sendmailmode --value="smtp"
+
+# Encryption
+if [ "$PROTOCOL" = "SSL" ]
+then
+    nextcloud_occ config:system:set mail_smtpsecure --value="ssl"
+elif [ "$PROTOCOL" = "STARTTLS" ]
+then
+    nextcloud_occ config:system:set mail_smtpsecure --value="tls"
+elif [ "$PROTOCOL" = "NO-ENCRYPTION" ]
+then
+    nextcloud_occ config:system:delete mail_smtpsecure
+fi
+
+# Authentification
+nextcloud_occ config:system:set mail_smtpauthtype --value="LOGIN"
+nextcloud_occ config:system:set mail_smtpauth --type=integer --value=1
+nextcloud_occ config:system:set mail_from_address --value="${MAIL_USERNAME%%@*}"
+nextcloud_occ config:system:set mail_domain --value="${MAIL_USERNAME##*@}"
+nextcloud_occ config:system:set mail_smtphost --value="$MAIL_SERVER"
+nextcloud_occ config:system:set mail_smtpport --value="$SMTP_PORT"
+nextcloud_occ config:system:set mail_smtpname --value="$MAIL_USERNAME"
+nextcloud_occ config:system:set mail_smtppassword --value="$MAIL_PASSWORD"
+
+# Show success
+msg_box "The mail settings in Nextcloud were successfully set!"
+
+# Get admin users and create menu
+args=(whiptail --title "$TITLE" --menu \
+"Please select the admin user that will have $RECIPIENT as mail address.
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+NC_USERS=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+mapfile -t NC_USERS <<< "$NC_USERS"
+for user in "${NC_USERS[@]}"
+do
+    if nextcloud_occ_no_check user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
+    then
+        args+=("$user" "")
+    fi
+done
+choice=$("${args[@]}" 3>&1 1>&2 2>&3)
+if [ -z "$choice" ]
+then
+    msg_box "No admin user selected. Exiting."
+    exit 1
+fi
+
+# Set mail address for selected user
+nextcloud_occ user:setting "$choice" settings email "$RECIPIENT"
+
+# Here, it would be cool to test if sending a mail from Nextcloud works
+# but this is unfortunately currently not possible via OCC, afaics
+
+# Last message
+msg_box "Congratulations, everything is now set up!"
