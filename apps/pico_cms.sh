@@ -132,7 +132,7 @@ nextcloud_occ config:app:set cms_pico link_mode --value=2
 msg_box "Congratulations, the base configuration of Pico CMS was successfully installed!"
 
 # Make it available on a different domain
-if ! yesno_box_no "Do you want to make your sites availble on a different domain than your Nextcloud Domain?"
+if ! yesno_box_no "Do you want to make your sites available on a different domain than your Nextcloud Domain?"
 then
     exit
 fi
