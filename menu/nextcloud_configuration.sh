@@ -35,7 +35,8 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
 "Disable workspaces" "(disable top notes in GUI)" OFF \
 "Disable user flows" "(Disable user settings for Nextcloud Flow)" OFF \
-"Enable logrotate" "(Use logrotate to keep more Nextcloud logs)" OFF 3>&1 1>&2 2>&3)
+"Enable logrotate" "(Use logrotate to keep more Nextcloud logs)" OFF \
+"2FA" "Two-Factor Authentication via Nextcloud notification" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"CookieLifetime"*)
@@ -112,6 +113,16 @@ NEXTCLOUD_CONF
             chown www-data:www-data "${VMLOGS}"/
             
             msg_box "Logrotate was successfully enabled." "$SUBTITLE"
+        fi
+    ;;&
+    *"2FA"*)
+        SUBTITLE="2FA Notifications"
+        msg_box "This option will install the Nextcloud Notification 2FA Provider \
+which allows you to further protect the login to your Nextcloud account." "$SUBTITLE"
+        if yesno_box_yes "Do you want to install this app?" "$SUBTITLE"
+        then
+            install_and_enable_app twofactor_nextcloud_notification
+            msg_box "The app was successfully installed."
         fi
     ;;&
     *)
