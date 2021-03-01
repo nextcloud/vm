@@ -32,6 +32,16 @@ on your domain to be able to run this script.
 If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain."
     exit 1
 fi
+# Check apache conf
+if ! [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
+then
+    msg_box "The apache conf for $NCDOMAIN isn't available. This is not supported!"
+    exit 1
+elif ! grep -q "<VirtualHost \*:443>" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+then
+    msg_box "The virtualhost config doesn't seem to be the default. Cannot proceed."
+    exit 1
+fi
 
 # Check if Pico CMS is already installed
 if ! is_app_installed cms_pico
@@ -108,18 +118,30 @@ then
     exit 1
 fi
 
-# Incompatible with text
-if is_app_enabled text
-then
-    msg_box "It seems like the default Text app of Nextcloud is enabled.
-Unfortunately, it has some incompatibility issues with Pico CMS.
-Because of that it is recommended to disable it.
-This script will install the Markdown editor and Plain text editor in exchange."
-    if yesno_box_yes "Do you want to disable the text app?"
+# Disable incompatible apps
+# $1=app-id, $2=app-name, $3=additional-text
+disable_incompatible_app() {
+    if is_app_enabled "$1"
     then
-        nextcloud_occ app:disable text
+        msg_box "It seems like the $2 is enabled.
+Unfortunately, it has some incompatibility issues with Pico CMS.
+Because of that it is recommended to disable it. $3"
+        if yesno_box_yes "Do you want to disable the $2?"
+        then
+            nextcloud_occ app:disable "$1"
+        fi
     fi
-fi
+}
+
+# Incompatible with text
+disable_incompatible_app text "default Text app of Nextcloud" \
+"\nThis script will install the Markdown editor and Plain text editor in exchange."
+
+# Incompatible with issuetemplate
+disable_incompatible_app issuetemplate "Issue Template app"
+
+# Incompatible with terms_of_service
+disable_incompatible_app terms_of_service "Terms of Service app"
 
 # Install markdown and plain text editor
 install_and_enable_app files_texteditor
