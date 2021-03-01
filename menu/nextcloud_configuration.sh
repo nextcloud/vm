@@ -122,7 +122,12 @@ which allows you to further protect the login to your Nextcloud account." "$SUBT
         if yesno_box_yes "Do you want to install this app?" "$SUBTITLE"
         then
             install_and_enable_app twofactor_nextcloud_notification
-            msg_box "The app was successfully installed."
+            if is_app_enabled twofactor_nextcloud_notification
+            then
+                msg_box "The app was successfully installed." "$SUBTITLE"
+            else
+                msg_box "Something failed while installing the app. Please try again!" "$SUBTITLE"
+            fi
         fi
     ;;&
     *)
