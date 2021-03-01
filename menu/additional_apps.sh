@@ -48,6 +48,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
+"Pico CMS" "(Leightweight CMS integration in Nextcloud)" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
@@ -96,6 +97,10 @@ case "$choice" in
     *"FullTextSearch"*)
         print_text_in_color "$ICyan" "Downloading the FullTextSearch script..."
         run_script APP fulltextsearch
+    ;;&
+    *"Pico CMS"*)
+        print_text_in_color "$ICyan" "Downloading the Pico CMS script..."
+        run_script APP pico_cms
     ;;&
     *"PreviewGenerator"*)
         print_text_in_color "$ICyan" "Downloading the PreviewGenerator script..."
