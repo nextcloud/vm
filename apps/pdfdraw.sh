@@ -71,7 +71,7 @@ else
     rm -f "$SERVICE_PATH"
     pip uninstall svglib -y &>/dev/null
     python2 -m pip uninstall pip -y &>/dev/null
-    for packet in nodejs npm pdftk pdftk-java python2-pip python-pypdf2
+    for packet in nodejs npm pdftk python-pypdf2
     do
         if is_this_installed "$packet"
         then
