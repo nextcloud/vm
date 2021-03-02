@@ -69,7 +69,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    sed -i '/<VirtualHost \*:443>/r /tmp/apache.conf' "$SITES_AVAILABLE/$NCDOMAIN.conf"
+    sed -i "/#pdfdraw-start/,/#pdfdraw-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
     systemctl restart apache2
     systemctl stop pdfdraw &>/dev/null
     systemctl disable pdfdraw &>/dev/null
