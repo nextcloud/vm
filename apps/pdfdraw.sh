@@ -82,7 +82,7 @@ else
     if is_app_installed pdfdraw
     then
         nextcloud_occ config:app:delete pdfdraw backend
-        #nextcloud_occ app:remove pdfdraw
+        nextcloud_occ app:remove pdfdraw
     fi
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
