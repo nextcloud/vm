@@ -147,6 +147,7 @@ if ! systemctl start pdfdraw
 then
     msg_box "Something failed while starting the pdfdraw server.
 Please try again by running this script again!"
+    exit 1
 fi
 systemctl enable pdfdraw
 
