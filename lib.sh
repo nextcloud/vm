@@ -176,7 +176,7 @@ turn_install() {
     JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
-    NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443)
+    NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8090 8443 9443)
 }
 [ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
 
