@@ -114,6 +114,7 @@ pip install svglib
 cd "$NC_APPS_PATH/pdfdraw/server"
 # The packages.json file is unfortunately not part of the release file. Don't know why.
 # Is tracked here: https://github.com/strukturag/pdfdraw/issues/23
+# TODO: delete this when package.json is included in the apps release.
 wget https://raw.githubusercontent.com/strukturag/pdfdraw/master/server/package.json
 npm install
 # Adjust config
