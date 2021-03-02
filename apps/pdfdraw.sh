@@ -23,6 +23,11 @@ root_check
 SERVICE_PATH="/etc/systemd/system/pdfdraw.service"
 
 # Check requirements
+if [ "$(lsb_release -cs)" != "focal" ]
+then
+    msg_box "This script currently only works on Ubuntu 20.04 LTS."
+    exit 1
+fi
 if is_app_enabled files_external || is_app_enabled groupfolders
 then
     msg_box "The app is unfortunately not yet compatible with Nextcloud's external storage and groupfolders. \
