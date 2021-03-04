@@ -119,6 +119,7 @@ pip install svglib
 # Copy server to another folder
 mkdir -p /var/www/pdfdraw
 check_command cp "$NC_APPS_PATH/pdfdraw/server/"* /var/www/pdfdraw
+
 # Install all needed node dependencies
 cd /var/www/pdfdraw
 # The packages.json file is unfortunately not part of the release file. Don't know why.
@@ -126,9 +127,11 @@ cd /var/www/pdfdraw
 # TODO: delete this when package.json is included in the apps release.
 wget https://raw.githubusercontent.com/strukturag/pdfdraw/master/server/package.json
 npm install
+
 # Can remove npm after installing dependencies
 apt purge npm -y
 apt autoremove -y
+
 # Adjust config
 PDFDRAW_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 check_command cp config.js.in config.js
@@ -136,9 +139,11 @@ check_command grep -q "^config.secret" config.js
 sed -i "s|^config.secret.*|config.secret = '$PDFDRAW_SECRET';|" config.js
 check_command grep -q "^config.port" config.js
 sed -i "s|^config.port.*|config.port = 8090;|" config.js
+
 # Configure rights
 chmod 770 -R /var/www/pdfdraw
 chown www-data:www-data -R /var/www/pdfdraw
+
 # Create service
 check_command cp pdfdraw.service "$SERVICE_PATH"
 chown root:root "$SERVICE_PATH"
