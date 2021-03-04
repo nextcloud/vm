@@ -47,6 +47,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
+"Face Recognition" "(Scan your photos for faces in Nextcloud)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "Pico CMS" "(Leightweight CMS integration in Nextcloud)" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
@@ -93,6 +94,10 @@ case "$choice" in
     *"Midnight Commander"*)
         print_text_in_color "$ICyan" "Downloading the Midnight Commander script..."
         run_script APP midnight-commander
+    ;;&
+    *"Face Recognition"*)
+        print_text_in_color "$ICyan" "Downloading the Face Recognition script..."
+        run_script APP face-recognition
     ;;&
     *"FullTextSearch"*)
         print_text_in_color "$ICyan" "Downloading the FullTextSearch script..."
