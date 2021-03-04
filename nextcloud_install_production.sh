@@ -609,16 +609,16 @@ echo "# igbinary for PHP"
 echo "session.serialize_handler=igbinary"
 echo "igbinary.compact_strings=On"
 } >> "$PHP_INI"
-if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
-then
-    touch $PHP_MODS_DIR/igbinary.ini
-fi
-if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
-then
-    echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
-    echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
-    check_command phpenmod -v ALL igbinary
-fi
+    if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
+    then
+        touch $PHP_MODS_DIR/igbinary.ini
+    fi
+    if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
+    then
+        echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
+        echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
+        check_command phpenmod -v ALL igbinary
+    fi
 restart_webserver
 fi
 
