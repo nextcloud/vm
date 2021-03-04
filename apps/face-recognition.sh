@@ -131,9 +131,9 @@ fi
 
 # Allow the background scanner to scan the files for each user again and enable face scanning for all users
 # https://github.com/matiasdelellis/facerecognition/wiki/Settings#notes
-NC_USERS=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
-mapfile -t NC_USERS <<< "$NC_USERS"
-for user in "${NC_USERS[@]}"
+NC_USERS_NEW=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+mapfile -t NC_USERS_NEW <<< "$NC_USERS_NEW"
+for user in "${NC_USERS_NEW[@]}"
 do
     nextcloud_occ user:setting "$user" facerecognition full_image_scan_done false
     nextcloud_occ user:setting "$user" facerecognition enabled true
