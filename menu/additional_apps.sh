@@ -49,7 +49,6 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Midnight Commander" "(CLI file manager)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "Pico CMS" "(Leightweight CMS integration in Nextcloud)" OFF \
-"PDF Annotations" "(Annotate PDF files collaboratively in Nextcloud)" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
@@ -102,10 +101,6 @@ case "$choice" in
     *"Pico CMS"*)
         print_text_in_color "$ICyan" "Downloading the Pico CMS script..."
         run_script APP pico_cms
-    ;;&
-    *"PDF Annotations"*)
-        print_text_in_color "$ICyan" "Downloading the PDF Annotations script..."
-        run_script APP pdfdraw
     ;;&
     *"PreviewGenerator"*)
         print_text_in_color "$ICyan" "Downloading the PreviewGenerator script..."

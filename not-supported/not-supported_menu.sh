@@ -31,6 +31,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Backup Viewer" "(View your Backups)" OFF \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
+"PDF Annotations" "(Annotate PDF files collaboratively in Nextcloud)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
 "PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
 "PLEX Media Server" "(Multimedia server application)" OFF \
@@ -63,6 +64,10 @@ case "$choice" in
     *"Off-Shore Backup Wizard"*)
         print_text_in_color "$ICyan" "Downloading the Off-Shore Backup Wizard script..."
         run_script NOT_SUPPORTED_FOLDER offshore-backup-wizard
+    ;;&
+    *"PDF Annotations"*)
+        print_text_in_color "$ICyan" "Downloading the PDF Annotations script..."
+        run_script APP pdfdraw
     ;;&
     *"Pi-hole"*)
         print_text_in_color "$ICyan" "Downloading the Pi-hole script..."
