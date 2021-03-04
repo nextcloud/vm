@@ -85,9 +85,12 @@ else
         fi
     done
     apt autoremove -y
-    if is_app_installed pdfdraw
+    if is_app_enabled pdfdraw
     then
         nextcloud_occ config:app:delete pdfdraw backend
+    fi
+    if is_app_installed pdfdraw
+    then
         nextcloud_occ app:remove pdfdraw
     fi
     # Show successful uninstall if applicable
