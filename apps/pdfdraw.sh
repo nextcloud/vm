@@ -74,6 +74,7 @@ else
     systemctl stop pdfdraw &>/dev/null
     systemctl disable pdfdraw &>/dev/null
     rm -f "$SERVICE_PATH"
+    rm -rf /var/www/pdfdraw
     pip uninstall svglib -y &>/dev/null
     python2 -m pip uninstall pip -y &>/dev/null
     for packet in nodejs pdftk python-pypdf2
@@ -115,8 +116,11 @@ python2 get-pip.py
 rm -f get-pip.py
 pip install svglib 
 
+# Copy server to another folder
+mkdir -p /var/www/pdfdraw
+check_command cp "$NC_APPS_PATH/pdfdraw/server/"* /var/www/pdfdraw
 # Install all needed node dependencies
-cd "$NC_APPS_PATH/pdfdraw/server"
+cd /var/www/pdfdraw
 # The packages.json file is unfortunately not part of the release file. Don't know why.
 # Is tracked here: https://github.com/strukturag/pdfdraw/issues/23
 # TODO: delete this when package.json is included in the apps release.
@@ -133,8 +137,8 @@ sed -i "s|^config.secret.*|config.secret = '$PDFDRAW_SECRET';|" config.js
 check_command grep -q "^config.port" config.js
 sed -i "s|^config.port.*|config.port = 8090;|" config.js
 # Configure rights
-chmod 770 -R "$NC_APPS_PATH/pdfdraw"
-chown www-data:www-data -R "$NC_APPS_PATH/pdfdraw"
+chmod 770 -R /var/www/pdfdraw
+chown www-data:www-data -R /var/www/pdfdraw
 # Create service
 check_command cp pdfdraw.service "$SERVICE_PATH"
 chown root:root "$SERVICE_PATH"
@@ -142,7 +146,7 @@ chmod 644 "$SERVICE_PATH"
 check_command grep -q "^User=" "$SERVICE_PATH"
 sed -i 's|^User=.*|User=www-data|' "$SERVICE_PATH"
 check_command grep -q "^WorkingDirectory=" "$SERVICE_PATH"
-sed -i "s|^WorkingDirectory=.*|WorkingDirectory=$NC_APPS_PATH/pdfdraw/server|" "$SERVICE_PATH"
+sed -i "s|^WorkingDirectory=.*|WorkingDirectory=/var/www/pdfdraw|" "$SERVICE_PATH"
 
 # Start and enable server
 sleep 1
