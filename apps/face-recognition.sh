@@ -104,7 +104,7 @@ fi
 # https://github.com/matiasdelellis/facerecognition/wiki/Models#comparison
 nextcloud_occ face:setup -m 3
 
-# Set temporay files size
+# Set temporary files size
 nextcloud_occ config:app:set facerecognition analysis_image_area --value="4320000"
 
 # Additional settings
