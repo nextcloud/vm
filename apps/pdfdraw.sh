@@ -76,7 +76,7 @@ else
     rm -f "$SERVICE_PATH"
     pip uninstall svglib -y &>/dev/null
     python2 -m pip uninstall pip -y &>/dev/null
-    for packet in nodejs npm pdftk python-pypdf2
+    for packet in nodejs pdftk python-pypdf2
     do
         if is_this_installed "$packet"
         then
@@ -104,7 +104,7 @@ fi
 # Install dependencies
 # https://github.com/strukturag/pdfdraw/tree/master/server#requirements
 install_if_not nodejs
-install_if_not npm # TODO: remove this in case https://github.com/strukturag/pdfdraw/pull/28 get merged
+install_if_not npm
 install_if_not pdftk
 install_if_not python2
 install_if_not python-pypdf2
@@ -122,6 +122,9 @@ cd "$NC_APPS_PATH/pdfdraw/server"
 # TODO: delete this when package.json is included in the apps release.
 wget https://raw.githubusercontent.com/strukturag/pdfdraw/master/server/package.json
 npm install
+# Can remove npm after installing dependencies
+apt purge npm -y
+apt autoremove -y
 # Adjust config
 PDFDRAW_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
 check_command cp config.js.in config.js
