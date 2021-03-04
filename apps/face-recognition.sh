@@ -110,7 +110,7 @@ nextcloud_occ config:app:set facerecognition analysis_image_area --value="432000
 # Additional settings
 # https://github.com/matiasdelellis/facerecognition/wiki/Settings#hidden-settings
 if yesno_box_no "Do you want the $SCRIPT_NAME app to scan external storages?
-This is currently highly inefficient since it will scan all external storges for each user \
+This is currently highly inefficient since it will scan all external storges multiple times (once for each user) \
 and can produce a lot of network traffic.
 (The scan will need to access all files, also if they are stored externally.)
 Hence, you should only enable this option if you are only using local external storage \
@@ -119,12 +119,12 @@ then
     nextcloud_occ config:app:set facerecognition handle_external_files --value true
 fi
 if yesno_box_no "Do you want the $SCRIPT_NAME app to scan groupfolders?
-This is currently highly inefficient since it will scan all groupfolders for each user."
+This is currently highly inefficient since it will scan all groupfolders multiple times (once for each user)."
 then
     nextcloud_occ config:app:set facerecognition handle_group_files --value true
 fi
 if yesno_box_no "Do you want the $SCRIPT_NAME app to scan shared folders/files?
-This is currently highly inefficient since it will scan all shared folders/files for each user."
+This is currently highly inefficient since it will scan all shared folders/files multiple times (once for each user)."
 then
     nextcloud_occ config:app:set facerecognition handle_shared_files --value true
 fi
