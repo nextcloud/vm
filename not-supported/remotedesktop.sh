@@ -99,6 +99,9 @@ POWER
     # Add the user to the www-data and plex group to be able to write to all disks
     usermod --append --groups www-data,plex "$UNIXUSER"
 
+    # Add firewall rule
+    ufw allow 3389/tcp comment Remotedesktop &>/dev/null
+
     # Inform the user
     msg_box "XRDP was successfully installed. 
 You should be able to connect via an RDP client with your server \
@@ -262,6 +265,7 @@ vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-extension-arc-menu gno
             rm -f /etc/polkit-1/localauthority/50-local.d/color.pkla
             rm -f /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
             rm -f /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
+            ufw delete allow 3389/tcp &>/dev/null
             msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
             exit
         fi
