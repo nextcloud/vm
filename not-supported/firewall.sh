@@ -116,4 +116,4 @@ fi
 print_text_in_color "$ICyan" "Enable Firewall"
 ufw --force enable
 
-msg_box "The Firewall was configured sucessfully!"
+msg_box "The Firewall was configured successfully!"
