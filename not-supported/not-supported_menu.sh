@@ -30,6 +30,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "NTFS Mount" "(Mount NTFS drives)" OFF \
 "Backup Viewer" "(View your Backups)" OFF \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
+"Firewall" "(Setting up a firewall)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
 "PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
@@ -59,6 +60,10 @@ case "$choice" in
     *"Daily Backup Wizard"*)
         print_text_in_color "$ICyan" "Downloading the Daily Backup Wizard script..."
         run_script NOT_SUPPORTED_FOLDER daily-backup-wizard
+    ;;&
+    *"Firewall"*)
+        print_text_in_color "$ICyan" "Downloading the Firewall script..."
+        run_script NOT_SUPPORTED_FOLDER firewall
     ;;&
     *"Off-Shore Backup Wizard"*)
         print_text_in_color "$ICyan" "Downloading the Off-Shore Backup Wizard script..."

@@ -67,6 +67,9 @@ fi
 # Install all needed tools
 install_if_not samba
 
+# Add firewall rules
+ufw allow samba comment Samba &>/dev/null
+
 # Use SMB3
 if ! grep -q "^protocol" "$SMB_CONF"
 then
