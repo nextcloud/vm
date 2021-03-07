@@ -69,6 +69,9 @@ and automatically reboot your server afterwards."
     msg_box "After you hit okay, we will remove PiVPN, all its settings and all listed programs \
 and reboot your server automatically."
     
+    # Remove firewall rule
+    ufw delete allow 51820/udp &>/dev/null
+
     # Remove PiVPN and reboot
     yes | pivpn uninstall
     
@@ -230,6 +233,9 @@ else
 Please report this to $ISSUES"
     exit 1
 fi
+
+# Add firewall rule
+ufw allow 51820/udp comment 'PiVPN' &>/dev/null
 
 # Inform the user about successfully installing PiVPN
 msg_box "Congratulations, your PiVPN was setup correctly!

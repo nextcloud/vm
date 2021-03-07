@@ -132,6 +132,11 @@ Please report this to $ISSUES"
     a2dissite pihole.conf &>/dev/null
     rm -f "$SITES_AVAILABLE/pihole.conf"
     restart_webserver
+    
+    # Delete firewall entry
+    ufw delete allow 53/tcp &>/dev/null
+    ufw delete allow 53/udp &>/dev/null
+    ufw delete allow 8094/tcp &>/dev/null
 
     # Inform the user
     msg_box "Pi-hole was successfully uninstalled!
@@ -352,6 +357,11 @@ IPV6_ADDRESS="${IPV6_ADDRESS##*IPV6_ADDRESS=}"
 # Create contab entry
 crontab -u root -l | grep -v "pihole-update.sh"  | crontab -u root -
 crontab -u root -l | { cat; echo "30 19 * * 6 $SCRIPTS/pihole-update.sh >/dev/null" ; } | crontab -u root -
+
+# Add firewall entry
+ufw allow 53/tcp comment 'Pi-hole TCP' &>/dev/null
+ufw allow 53/udp comment 'Pi-hole UDP' &>/dev/null
+ufw allow 8094/tcp comment 'Pi-hole Web' &>/dev/null
 
 # Show that everything was setup correctly
 msg_box "Congratulations, your Pi-hole was setup correctly!
