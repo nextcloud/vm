@@ -63,7 +63,20 @@ msg_box "If the registration was successful you should have got an email with yo
 
 Please copy that and enter it in the next box after you hit OK."
 
-DEDYNAUTHTOKEN=$(input_box_flow "Please enter your auth token for deSEC, please make sure it's valid!")
+# Check if DEYNAUTH is valid
+while :
+do
+    DEDYNAUTHTOKEN=$(input_box_flow "Please enter your auth token for deSEC, please make sure it's valid!")
+    if [ $(curl -s -o /dev/null -w '%{http_code}' --user "$DEDYNDOMAIN":"$DEDYNAUTHTOKEN" https://update.dedyn.io/?myipv4=\&myipv6=) -eq 401 ]
+    then
+        if ! yesno_box_yes "Sorry, but it seems like the CAPTCHA is incorrect. Do you want to try again?"
+        then
+           exit
+        fi
+    else
+       break
+    fi
+done
 
 WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
 
