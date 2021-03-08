@@ -124,16 +124,6 @@ download_script STATIC fetch_lib
 # Set locales
 run_script ADDONS locales
 
-# Offer to use archive.ubuntu.com
-if [ -z "$PROVISIONING" ]
-then
-    msg_box "Your current download repository is $REPO"
-fi
-if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
-then
-    sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
-fi
-
 # Create new current user
 download_script STATIC adduser
 bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
