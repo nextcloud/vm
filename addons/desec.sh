@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="deSEC Registration"
@@ -24,7 +24,7 @@ The only allowed characters for the username are:
     else
         DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
         # Check for SOA record
-        if host -t SOA $DEDYNDOMAIN
+        if host -t SOA $DEDYNDOMAIN >/dev/null 2>&1
         then
             if ! yesno_box_yes "Sorry, but it seems like $DEDYNDOMAIN is taken. Do you want to try again?"
             then
@@ -62,7 +62,7 @@ msg_box "If the registration was successful you should have got an email with yo
 
 Please copy that and enter it in the next box after you hit OK."
 
-# Check if DEYNAUTH is valid
+# Check if DEDYNAUTH is valid
 while :
 do
     DEDYNAUTHTOKEN=$(input_box_flow "Please enter your auth token (update password) for deSEC, exactly as it was displayed (use correct casing, no extra spaces).")
@@ -84,5 +84,8 @@ if yesno_box_yes "Do you want to add automatic updates of your WAN IP - IPv4 and
 then
     # Add DynDNS
     curl --user "$DEDYNDOMAIN":"$DEDYNAUTHTOKEN" \
-      https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6="$WANIP6"
+      https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6="$WANIP6" >/dev/null 2>&1
 fi
+
+#### TODO
+# Ask if the user wants to add TLS (use the function)
