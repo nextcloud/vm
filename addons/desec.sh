@@ -70,6 +70,6 @@ if yesno_box_yes "Do you want to add automatic updates of your WAN IP - IPv4 and
 then
     # Add DynDNS
     curl --user "$DEDYNDOMAIN":"$AUTHTOKEN" \
-      https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6=$WANIP6 \
+      https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6="$WANIP6" \
       --header "Authorization: Token $DEDYNAUTHTOKEN"
 fi
