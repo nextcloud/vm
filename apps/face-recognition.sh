@@ -66,7 +66,7 @@ The background scanner will then have to rescan all files for faces when you ins
         nextcloud_occ config:app:set facerecognition handle_group_files --value false
         nextcloud_occ config:app:set facerecognition handle_shared_files --value false
     fi
-    if is_app_installed
+    if is_app_installed facerecognition
     then
         nextcloud_occ app:remove facerecognition
     fi
