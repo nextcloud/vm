@@ -97,7 +97,7 @@ PASSWORD=$(input_box_flow "Please enter a new password that will secure your GRU
 # Set grub password
 # https://selivan.github.io/2017/12/21/grub2-password-for-all-but-default-menu-entries.html
 GRUB_PASS="$(echo -e "$PASSWORD\n$PASSWORD" | grub-mkpasswd-pbkdf2 | grep -oP 'grub\.pbkdf2\.sha512\.10000\..*')"
-if [ -n "$(echo $GRUB_PASS | sed 's|grub\.pbkdf2\.sha512\.10000\.||')" ]
+if [ -n "${PASSWORD##grub.pbkdf2.sha512.10000.}" ]
 then
     cat << GRUB_CONF >> /etc/grub.d/40_custom
 
