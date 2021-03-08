@@ -12,7 +12,7 @@ POOLNAME=ncdata
 NCDATA=/mnt/"$POOLNAME"
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
-SHA256_DIR=/tmp/shas56
+SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
 NC_APPS_PATH=$NCPATH/apps
@@ -176,7 +176,7 @@ turn_install() {
     JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
-    NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7983 8983 10000 8081 8443 9443)
+    NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443)
 }
 [ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
 
@@ -1079,7 +1079,7 @@ or when a new version of the app is released with the following command:
         then
             if ! is_app_enabled "$1"
             then
-                nextcloud_occ app:enable "$1"
+                nextcloud_occ_no_check app:enable "$1"
                 chown -R www-data:www-data "$NC_APPS_PATH"
             fi
         fi
@@ -1394,9 +1394,9 @@ fi
 
 
 # Update specific Docker image
-# docker_update_specific bitwarden_rs Bitwarden RS (actual docker image = $1, the name in text = $2
+# docker_update_specific 'bitwarden_rs' 'Bitwarden RS' (docker conainter name = $1, the name in text = $2)
 docker_update_specific() {
-if does_this_docker_exist "$1" "$2"
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
     docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
     print_text_in_color "$IGreen" "$2 docker image just got updated!"
@@ -1453,7 +1453,7 @@ home_sme_server() {
 # OLD MEMORY: BLS16G4 (Balistix Sport) || 18ASF2G72HZ (ECC)
 if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH"
 then
-    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1"
+    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1\|9905744-076"
     then
         if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B"
         then
@@ -1633,9 +1633,13 @@ then
 #   export PHPVER=8.0
 fi
 
-export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
-export PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
+# Export other PHP variables based on PHPVER
+export PHP_FPM_DIR=/etc/php/$PHPVER/fpm
+export PHP_INI=$PHP_FPM_DIR/php.ini
+export PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
+export PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 
+# Show version
 print_text_in_color "$IGreen" PHPVER="$PHPVER"
 }
 

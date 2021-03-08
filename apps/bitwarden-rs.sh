@@ -219,10 +219,10 @@ docker run -d --name bitwarden_rs \
   -e SIGNUPS_VERIFY=true \
   -e DOMAIN="https://$SUBDOMAIN" \
   -e SIGNUPS_ALLOWED=false \
-  -p 1024:1024 \
+  -p 127.0.0.1:1024:1024 \
   -e ROCKET_PORT=1024 \
   -e WEBSOCKET_ENABLED=true \
-  -p 3012:3012 \
+  -p 127.0.0.1:3012:3012 \
   -e LOG_FILE=/data/bitwarden.log \
   -e LOG_LEVEL=warn \
   -v /home/bitwarden_rs/:/data/ \

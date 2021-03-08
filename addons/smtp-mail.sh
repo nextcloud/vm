@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="SMTP Relay with msmtp"
@@ -44,61 +45,91 @@ install_if_not msmtp
 install_if_not msmtp-mta
 install_if_not mailutils
 
-# Enter Mail Server
-MAIL_SERVER=$(input_box_flow "Please enter the SMTP Relay URL that you want to use.\nE.g. smtp.mail.com")
+# Default providers
+choice=$(whiptail --title "$TITLE" --nocancel --menu \
+"Please choose the mail provider that you want to use.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"mail.de" "(German mail provider)" \
+"Manual" "(Complete manual setup)" 3>&1 1>&2 2>&3)
 
-# Enter if you want to use ssl
-PROTOCOL=$(whiptail --title "$TITLE" --nocancel --menu \
+case "$choice" in
+    "mail.de")
+        NEEDS_CREDENTIALS=1
+        MAIL_SERVER="smtp.mail.de"
+        PROTOCOL="SSL"
+        SMTP_PORT="465"
+    ;;
+    # Manual setup will be handled a few lines below
+    "")
+        msg_box "You haven't selected any option. Exiting!"
+        exit 1
+    ;;
+    *)
+    ;;
+esac
+
+print_text_in_color "$ICyan" "$choice was chosen..."
+sleep 1
+
+# Set everything up manually
+if [ "$choice" = "Manual" ]
+then
+    # Enter Mail Server
+    MAIL_SERVER=$(input_box_flow "Please enter the SMTP Relay URL that you want to use.\nE.g. smtp.mail.com")
+
+    # Enter if you want to use ssl
+    PROTOCOL=$(whiptail --title "$TITLE" --nocancel --menu \
 "Please choose the encryption protocol for your SMTP Relay.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "SSL" "" \
 "STARTTLS" "" \
 "NO-ENCRYPTION" "" 3>&1 1>&2 2>&3)
 
-if [ -z "$PROTOCOL" ]
-then
-    exit 1
-fi
+    if [ -z "$PROTOCOL" ]
+    then
+        exit 1
+    fi
 
-case "$PROTOCOL" in
-    "SSL")
-        DEFAULT_PORT=465
-    ;;
-    "STARTTLS")
-        DEFAULT_PORT=587
-    ;;
-    "NO-ENCRYPTION")
-        DEFAULT_PORT=25
-    ;;
-    *)
-    ;;
-esac
+    case "$PROTOCOL" in
+        "SSL")
+            DEFAULT_PORT=465
+        ;;
+        "STARTTLS")
+            DEFAULT_PORT=587
+        ;;
+        "NO-ENCRYPTION")
+            DEFAULT_PORT=25
+        ;;
+        *)
+        ;;
+    esac
 
-# Enter custom port or just use the default port
-SMTP_PORT=$(whiptail --title "$TITLE" --nocancel --menu \
+    # Enter custom port or just use the default port
+    SMTP_PORT=$(whiptail --title "$TITLE" --nocancel --menu \
 "Based on your selection of encryption the default port is $DEFAULT_PORT. Would you like to use that port or something else?
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Use default port" "($DEFAULT_PORT)" \
 "Enter another port" ""  3>&1 1>&2 2>&3)
 
-if [ -z "$SMTP_PORT" ]
-then
-    exit 1
+    if [ -z "$SMTP_PORT" ]
+    then
+        exit 1
+    fi
+
+    case "$SMTP_PORT" in
+        "Use default port")
+            SMTP_PORT="$DEFAULT_PORT"
+        ;;
+        "Enter another port")
+            SMTP_PORT="$(input_box_flow 'Please enter the port for your SMTP Relay.')"
+        ;;
+        *)
+        ;;
+    esac
 fi
 
-case "$SMTP_PORT" in
-    "Use default port")
-        SMTP_PORT="$DEFAULT_PORT"
-    ;;
-    "Enter another port")
-        SMTP_PORT="$(input_box_flow 'Please enter the port for your SMTP Relay.')"
-    ;;
-    *)
-    ;;
-esac
-
 # Enter your SMTP username
-if yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
+if [ -n "$NEEDS_CREDENTIALS" ] || yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
 then
     MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com")
 
@@ -266,4 +297,74 @@ fi
 # Success message
 msg_box "Congratulations, the test email was successfully sent!
 Please check the inbox for $RECIPIENT. The test email should arrive soon."
-exit
+
+# Only offer to use the same settings in Nextcloud if a password was chosen
+if [ "$MAIL_USERNAME" = "no-reply@nextcloudvm.com" ]
+then
+    exit
+fi
+
+# Offer to use the same settings in Nextcloud
+if ! yesno_box_no "Do you want to use the same mail server settings in your Nextcloud?
+If you choose 'Yes', your Nextcloud will use the same mail settings that you've entered here."
+then
+    exit
+fi
+
+# SMTP mode
+nextcloud_occ config:system:set mail_smtpmode --value="smtp"
+nextcloud_occ config:system:set mail_sendmailmode --value="smtp"
+
+# Encryption
+if [ "$PROTOCOL" = "SSL" ]
+then
+    nextcloud_occ config:system:set mail_smtpsecure --value="ssl"
+elif [ "$PROTOCOL" = "STARTTLS" ]
+then
+    nextcloud_occ config:system:set mail_smtpsecure --value="tls"
+elif [ "$PROTOCOL" = "NO-ENCRYPTION" ]
+then
+    nextcloud_occ config:system:delete mail_smtpsecure
+fi
+
+# Authentification
+nextcloud_occ config:system:set mail_smtpauthtype --value="LOGIN"
+nextcloud_occ config:system:set mail_smtpauth --type=integer --value=1
+nextcloud_occ config:system:set mail_from_address --value="${MAIL_USERNAME%%@*}"
+nextcloud_occ config:system:set mail_domain --value="${MAIL_USERNAME##*@}"
+nextcloud_occ config:system:set mail_smtphost --value="$MAIL_SERVER"
+nextcloud_occ config:system:set mail_smtpport --value="$SMTP_PORT"
+nextcloud_occ config:system:set mail_smtpname --value="$MAIL_USERNAME"
+nextcloud_occ config:system:set mail_smtppassword --value="$MAIL_PASSWORD"
+
+# Show success
+msg_box "The mail settings in Nextcloud were successfully set!"
+
+# Get admin users and create menu
+args=(whiptail --title "$TITLE" --menu \
+"Please select the admin user that will have $RECIPIENT as mail address.
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+NC_USERS_NEW=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+mapfile -t NC_USERS_NEW <<< "$NC_USERS_NEW"
+for user in "${NC_USERS_NEW[@]}"
+do
+    if nextcloud_occ_no_check user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
+    then
+        args+=("$user" "")
+    fi
+done
+choice=$("${args[@]}" 3>&1 1>&2 2>&3)
+if [ -z "$choice" ]
+then
+    msg_box "No admin user selected. Exiting."
+    exit 1
+fi
+
+# Set mail address for selected user
+nextcloud_occ user:setting "$choice" settings email "$RECIPIENT"
+
+# Here, it would be cool to test if sending a mail from Nextcloud works
+# but this is unfortunately currently not possible via OCC, afaics
+
+# Last message
+msg_box "Congratulations, everything is now set up!"

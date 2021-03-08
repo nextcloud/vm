@@ -44,7 +44,7 @@ If you have already installed a desktop environment, you will not need to instal
             # Install gnome-session
             print_text_in_color "$ICyan" "Installing gnome-session..."
             apt install gnome-session --no-install-recommends -y
-            gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
+            sudo -u "$UNIXUSER" dbus-launch gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
             install_if_not gnome-shell-extension-dash-to-panel
             check_command sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable dash-to-panel@jderose9.github.com
             install_if_not gnome-shell-extension-arc-menu
@@ -98,6 +98,9 @@ POWER
 
     # Add the user to the www-data and plex group to be able to write to all disks
     usermod --append --groups www-data,plex "$UNIXUSER"
+
+    # Add firewall rule
+    ufw allow 3389/tcp comment Remotedesktop &>/dev/null
 
     # Inform the user
     msg_box "XRDP was successfully installed. 
@@ -262,6 +265,7 @@ vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-extension-arc-menu gno
             rm -f /etc/polkit-1/localauthority/50-local.d/color.pkla
             rm -f /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
             rm -f /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
+            ufw delete allow 3389/tcp &>/dev/null
             msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
             exit
         fi

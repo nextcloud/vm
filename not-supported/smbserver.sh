@@ -67,6 +67,9 @@ fi
 # Install all needed tools
 install_if_not samba
 
+# Add firewall rules
+ufw allow samba comment Samba &>/dev/null
+
 # Use SMB3
 if ! grep -q "^protocol" "$SMB_CONF"
 then
@@ -270,6 +273,32 @@ Please note that this option could be a security risk, if the chosen password wa
 
     # Inform the user
     msg_box "The new Nextcloud user $NEWNAME was successfully created." "$SUBTITLE"
+
+    # Configure mail address
+    msg_box "It is recommended to set a mail address for every Nextcloud user \
+so that Nextcloud is able to send mails to them."
+    if ! yesno_box_yes "Do you want to add a mail address to this user?"
+    then
+        return
+    fi
+    while :
+    do
+        MAIL_ADDRESS="$(input_box_flow "Please type in the mail-address of the new Nextcloud user $NEWNAME!
+This mail-address needs to be valid. Otherwise Nextcloud won't be able to send mails to that user.
+If you want to cancel, just type in 'exit' and press [ENTER]." "$SUBTITLE")"
+        if [ "$MAIL_ADDRESS" = "exit" ]
+        then
+            return
+        elif ! echo "$MAIL_ADDRESS" | grep -q "@" || echo "$MAIL_ADDRESS" | grep -q " " \
+|| echo "$MAIL_ADDRESS" | grep -q "^@" || echo "$MAIL_ADDRESS" | grep -q "@$" 
+        then
+            msg_box "The mail-address isn't valid. Please try again!"
+        else
+            nextcloud_occ user:setting "$NEWNAME" settings email "$MAIL_ADDRESS"
+            msg_box "Congratulations!\nThe mail-address of $NEWNAME was successfully set to $MAIL_ADDRESS!"
+            break
+        fi
+    done
 }
 
 # Show all SMB-shares from a SMB-user
@@ -754,36 +783,13 @@ you can also connect using the IP-address: '$ADDRESS' instead of nextcloud." "$S
         install_and_enable_app files_external
     fi
 
-    # Safe NEWNAME in a backup variable
-    NEWNAME_BACKUP="$NEWNAME"
-
-    # Ask if the default name can be used
-    if yesno_box_no "Do you want to use a different name for this external storage inside Nextcloud or \
-just use the default sharename $NEWNAME?\nThis time spaces are possible." "$SUBTITLE"
+    # Mount directory as root directory if only one user was chosen
+    if [ "${#VALID_USERS_AR[*]}" -eq 1 ] && [ "$WRITEABLE" = "yes" ]
     then
-        while :
-        do
-            # Type in the new mountname that will be used in NC
-            NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this path $NEWPATH.
-You can type in 'exit' and press [ENTER] to use the default $NEWNAME_BACKUP
-Allowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.
-Also, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.
-Advice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
-            if ! echo "$NEWNAME" | grep -q "^[a-zA-Z/]"
-            then
-                msg_box "The name has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid." "$SUBTITLE"
-            elif ! [[ "$NEWNAME" =~ ^[-._a-zA-Z0-9\ /]+$ ]]
-            then
-                msg_box "Allowed characters are only spaces, those \
-four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
-            elif [ "$NEWNAME" = "exit" ]
-            then
-                NEWNAME="$NEWNAME_BACKUP"
-                break
-            else
-                break
-            fi
-        done
+        if yesno_box_yes "Do you want to make $NEWPATH the root folder for ${VALID_USERS_AR[*]}?"
+        then
+            NEWNAME="/"
+        fi
     fi
 
     # Choose if it shall be writeable in NC
@@ -795,29 +801,27 @@ four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
         READONLY="true"
     fi
 
-    # Choose if sharing shall get enabled for that mount
-    if [ "$NEWNAME" = "/" ]
-    then
-        SHARING="false"
-        SELECTED_USER=""
-    else
-        SHARING="true"
-        SELECTED_USER=""
-        UNAVAILABLE_USER=""
-        # Choose from NC users
-        NC_USER=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
-        for user in "${VALID_USERS_AR[@]}"
-        do
-            if echo "$NC_USER" | grep -q "^$user$"
-            then
-                SELECTED_USER+="$user  "
-            else
-                UNAVAILABLE_USER+="$user " 
-            fi
-        done
-        if [ -n "$UNAVAILABLE_USER" ]
+    # Find other attributes
+    SHARING="true"
+    SELECTED_USER=""
+    UNAVAILABLE_USER=""
+    # Choose from NC users
+    NC_USER=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+    for user in "${VALID_USERS_AR[@]}"
+    do
+        if echo "$NC_USER" | grep -q "^$user$"
         then
-            msg_box "Some chosen SMB-users weren't available in Nextcloud: $UNAVAILABLE_USER"
+            SELECTED_USER+="$user  "
+        else
+            UNAVAILABLE_USER+="$user " 
+        fi
+    done
+    if [ -n "$UNAVAILABLE_USER" ]
+    then
+        msg_box "Some chosen SMB-users weren't available in Nextcloud:\n$UNAVAILABLE_USER"
+        if ! yesno_box_no "Do you want to continue nonetheless?"
+        then
+            return
         fi
     fi
 
@@ -827,15 +831,18 @@ four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
     MOUNT_ID=${MOUNT_ID//[!0-9]/}
 
     # Mount it to the admin group if no group or user chosen
-    if [ -z "$SELECTED_USER" ] && [ "$NEWNAME" != "/" ]
+    if [ -z "$SELECTED_USER" ]
     then
-        msg_box "No SMB-user available in Nextcloud, mounting the local storage to the admin group."
-        nextcloud_occ files_external:applicable --add-group=admin "$MOUNT_ID" -q
-    fi
-
-    # Mount it to selected users
-    if [ -n "$SELECTED_USER" ]
-    then
+        if [ "$NEWNAME" != "/" ]
+        then
+            nextcloud_occ files_external:applicable --add-group=admin "$MOUNT_ID" -q
+            msg_box "No SMB-user available in Nextcloud, mounted the local storage to the admin group."
+        else
+            nextcloud_occ files_external:delete "$MOUNT_ID" -y
+            msg_box "No SMB-user available in Nextcloud, could not add the storage to Nextcloud!"
+            return
+        fi
+    else
         nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r NC_USER
         do
             if [[ "$SELECTED_USER" = *"$NC_USER  "* ]]
@@ -851,7 +858,7 @@ four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
     nextcloud_occ files_external:option "$MOUNT_ID" enable_sharing "$SHARING"
 
     # Inform the user that mounting was successful
-    msg_box "Your mount $NEWNAME was successful, congratulations!
+    msg_box "Your mount was successful, congratulations!
 You are now using the Nextcloud external storage app to access files there.
 The Share has been mounted to the Nextcloud admin-group if not specifically changed to users or groups.
 You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' \
