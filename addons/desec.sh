@@ -24,7 +24,7 @@ The only allowed characters for the username are:
     else
         DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
         # Check for SOA record
-        if host -t SOA $DEDYNDOMAIN >/dev/null 2>&1
+        if host -t SOA "$DEDYNDOMAIN" >/dev/null 2>&1
         then
             if ! yesno_box_yes "Sorry, but it seems like $DEDYNDOMAIN is taken. Do you want to try again?"
             then
