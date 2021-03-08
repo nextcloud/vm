@@ -8,8 +8,6 @@ SCRIPT_EXPLAINER="This script will automatically register a domain of your likin
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-# Maybe move to lib
-
 # Enter the subdomain
 msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to use"
 while :
@@ -64,6 +62,8 @@ msg_box "If the registration was successful you should have got an email with yo
 Please copy that and enter it in the next box after you hit OK."
 
 DEDYNAUTHTOKEN=$(input_box_flow "Please enter your auth token for deSEC, please make sure it's valid!")
+
+WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
 
 # Ask user if DynDNS should be added to the domain
 if yesno_box_yes "Do you want to add automatic updates of your WAN IP - IPv4 and/or IPv6?"
