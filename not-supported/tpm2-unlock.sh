@@ -105,11 +105,14 @@ then
 set superusers="grub"
 password_pbkdf2 grub $GRUB_PASS
 GRUB_CONF
+    # Allow to run the default grub options without requiring the grub password
     if ! grep -q '^CLASS=.*--unrestricted"' /etc/grub.d/10_linux && grep -q '^CLASS=.*"$' /etc/grub.d/10_linux
     then
         sed -i '/^CLASS=/s/"$/ --unrestricted"/' /etc/grub.d/10_linux
     fi
 else
+    msg_box "Something went wrong while setting the grub password. \
+Please report this to $ISSUES"
     exit 1
 fi
 
