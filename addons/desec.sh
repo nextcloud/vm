@@ -52,7 +52,6 @@ curl -X POST https://desec.io/api/v1/auth/ \
       "email": "$VALIDEMAIL",
       "password": null,
       "domain": "$DEDYNDOMAIN"
-      },
     }
 EOF
 
