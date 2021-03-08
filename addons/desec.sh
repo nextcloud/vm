@@ -8,8 +8,7 @@ SCRIPT_EXPLAINER="This script will automatically register a domain of your likin
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-# Maybe move to lib?
-DEDYNPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9")
+# Maybe move to lib
 
 # Enter the subdomain
 msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to use"
@@ -44,21 +43,16 @@ Every 6 months you will get an email asking you to confrim your domain. If deSeC
 
 VALIDEMAIL=$(input_box_flow "Please enter a valid email address. NOT a fake or a temporary one.")
 
-msg_box "Your account for deSEC password is:
+msg_box "If you want to enter your account, please reset your password here:
 
-$DEDYNPASS
-
-Please write this down now."
+https://desec.io/reset-password"
 
 # Register the domain
 curl -X POST https://desec.io/api/v1/auth/ \
     --header "Content-Type: application/json" --data @- <<EOF
     {
       "email": "$VALIDEMAIL",
-      "password": "$DEDYNPASS",
-      "captcha": {
-        "id": "00010203-0405-0607-0809-0a0b0c0d0e0f",
-        "solution": "12H45"
+      "password": null,
       },
       "domain": "$DEDYNDOMAIN"
     }
