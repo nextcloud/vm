@@ -30,7 +30,7 @@ The only allowed characters for the username are:
 done
 
 # Check for SOA record
-if dig SOA $DEDYNDOMAIN
+if host -t SOA $DEDYNDOMAIN
 then
     msg_box "Sorry, but it seems like $DEDYNDOMAIN is taken. Please try with another domain."
     exit
