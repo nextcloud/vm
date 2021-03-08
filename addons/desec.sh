@@ -68,7 +68,7 @@ do
     DEDYNAUTHTOKEN=$(input_box_flow "Please enter your auth token for deSEC, please make sure it's valid!")
     if [ $(curl -s -o /dev/null -w '%{http_code}' --user "$DEDYNDOMAIN":"$DEDYNAUTHTOKEN" https://update.dedyn.io/?myipv4=\&myipv6=) -eq 401 ]
     then
-        if ! yesno_box_yes "Sorry, but it seems like the CAPTCHA is incorrect. Do you want to try again?"
+        if ! yesno_box_yes "Sorry, but it seems like the auth token (update password) is incorrect. Do you want to try again?"
         then
            exit
         fi
