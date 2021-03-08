@@ -42,9 +42,10 @@ Every 6 months you will get an email asking you to confrim your domain. If you d
 
 VALIDEMAIL=$(input_box_flow "Please enter a valid email address. NOT a fake or a temporary one.")
 
-msg_box "If you want to enter your account, please reset your password here:
+msg_box "```suggestion
+msg_box "If you later want to log into your deSEC account, you need to set a login password here: https://desec.io/reset-password
 
-https://desec.io/reset-password"
+You don't need to do this now."
 
 # Register the domain
 curl -X POST https://desec.io/api/v1/auth/ \
