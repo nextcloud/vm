@@ -25,16 +25,15 @@ The only allowed characters for the username are:
         msg_box "Allowed characters for the username are:\na-z', 'A-Z', and '0-9'\n\nPlease try again."
     else
         DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
+    fi
+    # Check for SOA record
+    if ! host -t SOA $DEDYNDOMAIN
+    then
+        msg_box "Sorry, but it seems like $DEDYNDOMAIN is taken. Please try with another domain."
+    else
         break
     fi
 done
-
-# Check for SOA record
-if host -t SOA $DEDYNDOMAIN
-then
-    msg_box "Sorry, but it seems like $DEDYNDOMAIN is taken. Please try with another domain."
-    exit
-fi
 
 # Email address
 msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter it a 100% valid one.
