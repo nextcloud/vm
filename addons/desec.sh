@@ -66,7 +66,7 @@ Please copy that and enter it in the next box after you hit OK."
 while :
 do
     DEDYNAUTHTOKEN=$(input_box_flow "Please enter your auth token (update password) for deSEC, exactly as it was displayed (use correct casing, no extra spaces).")
-    if [ $(curl -s -o /dev/null -w '%{http_code}' --user "$DEDYNDOMAIN":"$DEDYNAUTHTOKEN" https://update.dedyn.io/?myipv4=\&myipv6=) -eq 401 ]
+    if [ $(curl -s -o /dev/null -w '%{http_code}' --header "Authorization: Token $DEDYNAUTHTOKEN" https://desec.io/api/v1/auth/account/) -eq 401 ]
     then
         if ! yesno_box_yes "Sorry, but it seems like the auth token (update password) is incorrect. Do you want to try again?"
         then
