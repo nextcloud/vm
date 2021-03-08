@@ -24,9 +24,12 @@ The only allowed characters for the username are:
     else
         DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
         # Check for SOA record
-        if ! host -t SOA $DEDYNDOMAIN
+        if host -t SOA $DEDYNDOMAIN
         then
-            msg_box "Sorry, but it seems like $DEDYNDOMAIN is taken. Please try with another domain."
+            if ! yesno_box_yes "Sorry, but it seems like $DEDYNDOMAIN is taken. Do you want to try again?"
+            then
+               exit
+            fi
         else
             break
         fi
@@ -68,7 +71,6 @@ WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
 if yesno_box_yes "Do you want to add automatic updates of your WAN IP - IPv4 and/or IPv6?"
 then
     # Add DynDNS
-    curl --user "$DEDYNDOMAIN":"$AUTHTOKEN" \
-      https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6="$WANIP6" \
-      --header "Authorization: Token $DEDYNAUTHTOKEN"
+    curl --user "$DEDYNDOMAIN":"$DEDYNAUTHTOKEN" \
+      https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6="$WANIP6"
 fi
