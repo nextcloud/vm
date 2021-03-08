@@ -38,7 +38,7 @@ done
 # Email address
 msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter it a 100% valid one. deSEC will verify your email address by sending you a verification link.
 
-Every 6 months you will get an email asking you to confrim your domain. If deSeC doesn't get an answer within 3 weeks, you domain will be destroyed!"
+Every 6 months you will get an email asking you to confrim your domain. If you do not react within a few weeks, your domain will be destroyed!"```
 
 VALIDEMAIL=$(input_box_flow "Please enter a valid email address. NOT a fake or a temporary one.")
 
