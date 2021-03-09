@@ -29,7 +29,7 @@ then
     echo "${1}" > /tmp/prerelease.version
 elif [[ "${1}" == *"nextmajor"* ]]
 then
-    echo "${1}" > /tmp/nextmajor.version
+    echo "$NCNEXT" > /tmp/nextmajor.version
 fi
 
 # Delete, download, run
