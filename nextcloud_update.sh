@@ -509,6 +509,11 @@ elif [ -f /tmp/nextmajor.version ]
 then
     NCBAD=$(cat /tmp/nextmajor.version)
     NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep $NCNEXT | tail -1)
+    if [ -z "$NCVERSION" ]
+    then
+        msg_box "The version that you are trying to upgrade to doesn't exist."
+        exit 1
+    fi
     export NCVERSION
     export STABLEVERSION="nextcloud-$NCVERSION"
     rm -f /tmp/nextmajor.version
