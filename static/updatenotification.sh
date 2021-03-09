@@ -81,7 +81,7 @@ then
     notify_admin_gui \
     "New major Nextcloud Update!" \
     "Nextcloud $NCVERSION just became available. Please run 'sudo bash \
-/var/scripts/update.sh' from your CLI to update your server to Nextcloud $NCVERSION. \
+/var/scripts/update.sh nextmajor' from your CLI to update your server to Nextcloud $NCVERSION. \
 Before updating though, you should visit https://your-nc-domain/settings/admin/overview \
 and make sure that all apps are compatible with the new version. And please never forget to \
 create a backup and/or snapshot before updating!"

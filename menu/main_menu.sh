@@ -54,15 +54,15 @@ case "$choice" in
                 print_text_in_color "$ICyan" "Downloading the Update script..."
                 download_script STATIC update
                 chmod +x "$SCRIPTS"/update.sh
-                bash "$SCRIPTS"/update.sh
+                bash "$SCRIPTS"/update.sh nextmajor
             else
-                bash "$SCRIPTS"/update.sh
+                bash "$SCRIPTS"/update.sh nextmajor
             fi
         else
             print_text_in_color "$ICyan" "Downloading the latest update script..."
             download_script STATIC update
             chmod +x "$SCRIPTS"/update.sh
-            bash "$SCRIPTS"/update.sh
+            bash "$SCRIPTS"/update.sh nextmajor
         fi
     ;;
     "Update Nextcloud minor")
