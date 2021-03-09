@@ -507,8 +507,7 @@ then
     rm -f /tmp/minor.version
 elif [ -f /tmp/nextmajor.version ]
 then
-    NCBAD=$(cat /tmp/nextminor.version)
-    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep $NCNEXT | tail -1)
+    NCVERSION=$(cat /tmp/nextminor.version)
     export NCVERSION
     export STABLEVERSION="nextcloud-$NCVERSION"
     rm -f /tmp/nextmajor.version
