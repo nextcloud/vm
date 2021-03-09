@@ -124,6 +124,7 @@ nc_update() {
     STABLEVERSION="nextcloud-$NCVERSION"
     NCMAJOR="${NCVERSION%%.*}"
     NCBAD=$((NCMAJOR-2))
+    NCNEXT=$((NCMAJOR-1))
 }
 [ -n "$NC_UPDATE" ] && nc_update # TODO: remove this line someday
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.

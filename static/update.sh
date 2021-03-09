@@ -27,6 +27,9 @@ then
 elif [[ "${1}" == *"RC"* ]]
 then
     echo "${1}" > /tmp/prerelease.version
+elif [[ "${1}" == *"nextmajor"* ]]
+then
+    echo "$NCNEXT" > /tmp/nextmajor.version
 fi
 
 # Delete, download, run

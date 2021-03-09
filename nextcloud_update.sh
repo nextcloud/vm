@@ -505,6 +505,12 @@ then
     export NCVERSION
     export STABLEVERSION="nextcloud-$NCVERSION"
     rm -f /tmp/minor.version
+elif [ -f /tmp/nextmajor.version ]
+then
+    NCVERSION=$(cat /tmp/nextminor.version)
+    export NCVERSION
+    export STABLEVERSION="nextcloud-$NCVERSION"
+    rm -f /tmp/nextmajor.version
 elif [ -f /tmp/prerelease.version ]
 then
     PRERELEASE_VERSION=yes
