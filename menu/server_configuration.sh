@@ -66,8 +66,13 @@ case "$choice" in
         run_script ADDONS security
     ;;&
     *"deSEC"*)
-        print_text_in_color "$ICyan" "Downloading the deSEC script..."
-        run_script ADDONS desec
+        if [ -f $SCRIPTS/desec.sh ]
+        then
+            bash $SCRIPTS/desec.sh
+        else
+            print_text_in_color "$ICyan" "Downloading the deSEC script..."
+            run_script ADDONS desec
+        fi
     ;;&
     *"DDclient Configuration"*)
         if [[ "$choice" != *"deSEC"* ]]
