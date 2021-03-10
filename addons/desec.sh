@@ -4,7 +4,7 @@
 
 true
 SCRIPT_NAME="deSEC Registration"
-SCRIPT_EXPLAINER="This script will automatically register a domain of your liking, and set it to automatically update your external IP address."
+SCRIPT_EXPLAINER="This script will automatically register a domain of your liking, secure it with TLS, and set it to automatically update your external IP address with DDNS."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -37,9 +37,11 @@ The only allowed characters for the username are:
 done
 
 # Email address
-msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter it a 100% valid one. deSEC will verify your email address by sending you a verification link.
+msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter it a 100% valid one! deSEC will verify your email address by sending you a verification link.
 
-Every 6 months you will get an email asking you to confrim your domain. If you do not react within a few weeks, your domain will be destroyed!"
+Every 6 months you will get an email asking you to confirm your domain. If you do not react within a few weeks, your domain will be destroyed!"
+
+msg_box "Please note: If you already entered an account with deSEC you won't get an email with a captcha. In that case, please use your already existing account to setup your domain at the deSEC website."
 
 VALIDEMAIL=$(input_box_flow "Please enter a valid email address. NOT a fake or a temporary one.")
 
