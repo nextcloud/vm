@@ -88,7 +88,6 @@ then
     export DEDYNDOMAIN
     export DEDYNAUTHTOKEN
     run_script NETWORK ddclient-configuration
-    unset DEDYNAUTHTOKEN
 fi
 
 # Ask if the user wants to add TLS (use script)
@@ -97,5 +96,8 @@ and activate TLS for your Nextcloud using Let's encrypt?"
 then
     export DEDYNDOMAIN # Not needed since already exported but added for readability
     run_script LETS_ENC activate-tls
-    unset DEDYNDOMAIN
 fi
+
+# Make sure they are gone
+unset DEDYNDOMAIN
+unset DEDYNAUTHTOKEN
