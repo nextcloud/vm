@@ -36,12 +36,17 @@ The only allowed characters for the username are:
     fi
 done
 
+### TODO, is it possible to check if the email address already exists with deSEC? In that case we could skip this whole info and replace it with a function instead.
 # Email address
 msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter it a 100% valid one! deSEC will verify your email address by sending you a verification link.
 
-Every 6 months you will get an email asking you to confirm your domain. If you do not react within a few weeks, your domain will be destroyed!"
+Every 6 months you will get an email asking you to confirm your domain. If you don't react within a few weeks, your domain will be destroyed!"
 
-msg_box "Please note: If you already entered an account with deSEC you won't get an email with a captcha. In that case, please use your already existing account to setup your domain at the deSEC website."
+msg_box "Please note: If you already created an account with deSEC you can't use the same email adress in this script as you won't get an email with a captcha. In that case, please use your already existing account to setup your domain at the deSEC website.
+
+Another option is to use another email address in this setup, and then email the deSEC suport that you want to merge your two accounts together, or delete the first one.
+
+In other words, the email address used in this script has to be uniqe, and can not be registred with deSEC since before."
 
 VALIDEMAIL=$(input_box_flow "Please enter a valid email address. NOT a fake or a temporary one.")
 
