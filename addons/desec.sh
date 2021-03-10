@@ -91,8 +91,8 @@ then
 fi
 
 # Ask if the user wants to add TLS (use script)
-if yesno_box_yes "Do you want to set this domain as your Nextcoud-domain \
-and activate TLS for your Nextcloud using Let's encrypt?"
+if yesno_box_yes "Do you want to set this domain as your Nextcoud domain \
+and activate TLS for your Nextcloud using Let's Encrypt?"
 then
     export DEDYNDOMAIN # Not needed since already exported but added for readability
     run_script LETS_ENC activate-tls
