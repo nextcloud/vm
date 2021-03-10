@@ -77,15 +77,23 @@ do
     fi
 done
 
-WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
-
 # Ask user if DynDNS should be added to the domain
-if yesno_box_yes "Do you want to add automatic updates of your WAN IP - IPv4 and/or IPv6?"
+if yesno_box_yes "Do you want to add automatic updates of your WAN IP using ddclient?
+Please note: this will reset any configuration that might be already in place with ddclient."
 then
     # Add DynDNS
-    curl --user "$DEDYNDOMAIN":"$DEDYNAUTHTOKEN" \
-      https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6="$WANIP6" >/dev/null 2>&1
+    # WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
+    # curl --user "$DEDYNDOMAIN":"$DEDYNAUTHTOKEN" \
+    #   https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6="$WANIP6" >/dev/null 2>&1
+    export DEDYNDOMAIN
+    export DEDYNAUTHTOKEN
+    run_script NETWORK ddclient-configuration
 fi
 
-#### TODO
-# Ask if the user wants to add TLS (use the function)
+# Ask if the user wants to add TLS (use script)
+if yesno_box_yes "Do you want to set this domain as your Nextcoud-domain \
+and activate TLS for your Nextcloud using Let's encrypt?"
+then
+    export DEDYNDOMAIN # Not needed since already exported but added for readability
+    run_script LETS_ENC activate-tls
+fi
