@@ -347,10 +347,9 @@ then
                 echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
                 check_command phpenmod -v ALL apcu
             fi
-            # Fix https://help.nextcloud.com/t/nc-21-manual-update-issues/108693/4?u=enoch85
-            if ! grep -qFx extension=apcu.so $PHP_MODS_DIR/apcu.ini
-            then 
-                rm $PHP_MODS_DIR/apcu.ini
+            # Fix https://help.nextcloud.com/t/nc-21-manual-update-issues/108693/4?$
+            if ! grep -qFx apc.enable_cli=1 $PHP_MODS_DIR/apcu.ini
+            then
                 echo "apc.enable_cli=1" >> $PHP_MODS_DIR/apcu.ini
                 check_command phpenmod -v ALL apcu
             fi
