@@ -471,7 +471,7 @@ Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
 
     msg_box "As you noticed your WAN IP and DNS record doesn't match. \
 This can happen when using DDNS for example, or in other edge cases.
-If you feel brave, or are sure that everything is setup correctly, \
+If you feel brave, or are sure that everything is set up correctly, \
 then you can choose to skip this test in the next step.
 
 If needed, you can always contact us for further support: \

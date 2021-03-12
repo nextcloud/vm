@@ -424,8 +424,8 @@ There are still a few steps left but they are automated so sit back and relax! :
 
 # Add default notifications
 notify_admin_gui \
-"Please setup SMTP" \
-"Please remember to setup SMTP to be able to send shared links, user notifications and more via email. \
+"Please set up SMTP" \
+"Please remember to set up SMTP to be able to send shared links, user notifications and more via email. \
 Please go here and start setting it up: https://your-nextcloud/settings/admin."
 
 notify_admin_gui \

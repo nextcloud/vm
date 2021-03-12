@@ -3,7 +3,7 @@
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 true
-SCRIPT_NAME="Setup Secure Permissions for Nextcloud"
+SCRIPT_NAME="Set up Secure Permissions for Nextcloud"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

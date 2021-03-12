@@ -5,7 +5,7 @@
 
 true
 SCRIPT_NAME="DynDNS with ddclient"
-SCRIPT_EXPLAINER="This script lets you setup DynDNS by using the Linux ddclient software."
+SCRIPT_EXPLAINER="This script lets you set up DynDNS by using the Linux ddclient software."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -56,7 +56,7 @@ then
     choice="deSEC"
 else
     choice=$(whiptail --title "$TITLE" --menu \
-"Please choose your DynDNS-Provider.\nYou have to setup an account before you can start.\n
+"Please choose your DynDNS-Provider.\nYou have to set up an account before you can start.\n
 If your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" \
