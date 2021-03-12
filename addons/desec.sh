@@ -42,9 +42,9 @@ msg_box "You will now be prompted to enter an email address. It's very important
 
 Every 6 months you will get an email asking you to confirm your domain. If you don't react within a few weeks, your domain will be destroyed!"
 
-msg_box "Please note: If you already created an account with deSEC you can't use the same email adress in this script as you won't get an email with a captcha. In that case, please use your already existing account to setup your domain at the deSEC website.
+msg_box "Please note: If you already created an account with deSEC you can't use the same email address in this script as you won't get an email with a captcha. In that case, please use your already existing account to setup your domain at the deSEC website.
 
-Another option is to use another email address in this setup, and then email the deSEC suport that you want to merge your two accounts together, or delete the first one.
+Another option is to use another email address in this setup, and then email the deSEC support that you want to merge your two accounts together, or delete the first one.
 
 In other words, the email address used in this script has to be uniqe, and can not be registred with deSEC since before."
 
@@ -81,6 +81,7 @@ do
         fi
     else
        break
+       msg_box "$DEDYNDOMAIN was successfully setup with deSEC! Now please continue with the DDNS and TLS setup for the domain."
     fi
 done
 

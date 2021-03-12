@@ -48,7 +48,7 @@ case "$choice" in
 other users appear in a folder named 'Shared' in the Nextcloud GUI.
 
 If you don't enable this option, all shares will appear directly in \
-the Nextcloud GUI root folder, which is the default behaviour." "$SUBTITLE"
+the Nextcloud GUI root folder, which is the default behavior." "$SUBTITLE"
         if yesno_box_yes "Do you want to enable this option?" "$SUBTITLE"
         then
             nextcloud_occ config:system:set share_folder --value="/Shared"
