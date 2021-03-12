@@ -26,7 +26,7 @@ The only allowed characters for the username are:
         # Check for SOA record
         if host -t SOA "$DEDYNDOMAIN" >/dev/null 2>&1
         then
-            if ! yesno_box_yes "Sorry, but it seems like $DEDYNDOMAIN is taken. Do you want to try again?"
+            if ! yesno_box_yes "Sorry, but it seems like $DEDYNDOMAIN(.dedyn.io) is taken. Do you want to try again?"
             then
                exit
             fi
@@ -81,6 +81,7 @@ do
         fi
     else
        break
+       msg_box "$DEDYNDOMAIN(.dedyn.io) was sucessfully setup! Now please continue with the DDNS and TLS setup for the domain."
     fi
 done
 
