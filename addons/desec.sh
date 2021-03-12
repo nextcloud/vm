@@ -81,7 +81,7 @@ do
         fi
     else
        break
-       msg_box "$DEDYNDOMAIN was sucessfully setup with deSEC! Now please continue with the DDNS and TLS setup for the domain."
+       msg_box "$DEDYNDOMAIN was successfully setup with deSEC! Now please continue with the DDNS and TLS setup for the domain."
     fi
 done
 
