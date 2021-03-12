@@ -15,7 +15,7 @@ debug_mode
 
 # Update the lib once during the startup script
 # TODO: delete this again e.g. with NC 20.0.1
-# download_script GITHUB_REPO lib #### removed in 21.0.0, delete it completley in a later version
+# download_script GITHUB_REPO lib #### removed in 21.0.0, delete it completely in a later version
 
 # Must be root
 root_check
