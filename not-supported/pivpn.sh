@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="PiVPN"
 SCRIPT_EXPLAINER="PiVPN is one of the fastest and most user friendly ways to get a running Wireguard VPN server.
-This script will setup a Wireguard VPN server to connect devices to your home net from everywhere.
+This script will set up a Wireguard VPN server to connect devices to your home net from everywhere.
 Wireguard is a relatively new VPN protocol, that is much faster and better then e.g. OpenVPN."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -238,7 +238,7 @@ fi
 ufw allow 51820/udp comment 'PiVPN' &>/dev/null
 
 # Inform the user about successfully installing PiVPN
-msg_box "Congratulations, your PiVPN was setup correctly!
+msg_box "Congratulations, your PiVPN was set up correctly!
 
 You can now generate new client profiles for your devices by running:
 'pivpn -a'

@@ -157,7 +157,7 @@ You will have the option to automatically open this port by using UPNP in the ne
     check_open_port 32400 "$WANIP4"
 fi
 
-msg_box "You should visit 'http://$ADDRESS:32400/web' to setup your PLEX Media Server next.
+msg_box "You should visit 'http://$ADDRESS:32400/web' to set up your PLEX Media Server next.
 Advice: All your drives should be mounted in a subfolder of '/mnt'"
 
 exit

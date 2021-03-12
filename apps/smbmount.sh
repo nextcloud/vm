@@ -292,7 +292,7 @@ The Share has been mounted to the Nextcloud admin-group if not specifically chan
 You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' \
 to edit external storages in Nextcloud."
 
-            # Inform the user that he can setup inotify for this external storage
+            # Inform the user that he can set up inotify for this external storage
             if ! yesno_box_no "Do you want to enable inotify for this external storage in Nextcloud?
 It is only recommended if the content can get changed externally and \
 will let Nextcloud track if this external storage was externally changed.
@@ -353,7 +353,7 @@ We please you to do the math yourself if the number is high enough for your setu
                 if ! yesno_box_yes "The inotify PHP extension was successfully installed, \
 the max folder variable was set to 524288 and $VMLOGS/files_inotify.log was created.
 Just press [ENTER] (on the default 'yes') to install the needed \
-files_inotify app and setup the cronjob for this external storage."
+files_inotify app and set up the cronjob for this external storage."
                 then
                     break
                 fi

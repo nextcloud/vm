@@ -58,7 +58,7 @@ fi
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "It seems to be currently running a backup or update.
-Cannot setup the off-shore backup now. Please try again later."
+Cannot set up the off-shore backup now. Please try again later."
     exit 1
 elif does_snapshot_exist "NcVM-startup"
 then
