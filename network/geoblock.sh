@@ -185,7 +185,6 @@ GEOIP_CONF+="  Allow from env=AllowCountryOrContinent
   Allow from 172.16.0.0/12
   Allow from 10.0.0.0/8
   Allow from scan.nextcloud.com
-  Allow from raw.githubusercontent.com
   # Allow scans from observatory.mozilla.org:
   Allow from 63.245.208.0/24
   Order Deny,Allow
