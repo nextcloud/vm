@@ -88,7 +88,7 @@ else
 fi
 
 # Check if Nextcloud is installed with TLS
-check_nextcloud_https "Collabora (Integrated)"
+check_nextcloud_https "Documentserver --> Collabora (Integrated)"
 
 # Check if Onlyoffice is installed and remove every trace of it
 if does_this_docker_exist 'onlyoffice/documentserver'
