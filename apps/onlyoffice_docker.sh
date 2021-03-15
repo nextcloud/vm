@@ -200,7 +200,7 @@ ram_check 2 OnlyOffice
 cpu_check 2 OnlyOffice
 
 # Check if Nextcloud is installed with TLS
-check_nextcloud_https "OnlyOffice (Docker)"
+check_nextcloud_https "DocumentServer --> OnlyOffice (Docker)"
 
 # Install Docker
 install_docker
