@@ -695,7 +695,7 @@ You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
 More info here: https://bit.ly/37wRCin
 
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
-Main path --> (Sub path) --> $1."
+Additional Apps --> $1."
         exit
     fi
 }
