@@ -180,7 +180,7 @@ fi
 lowest_compatible_nc 18
 
 # Check if Nextcloud is installed with TLS
-check_nextcloud_https "OnlyOffice (Integrated)"
+check_nextcloud_https "DocumentServer --> OnlyOffice  (Integrated)"
 
 # Install OnlyOffice
 msg_box "We will now install OnlyOffice.
