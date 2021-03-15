@@ -50,13 +50,9 @@ If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and 
     exit 1
 fi
 # Check apache conf
-if ! [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
+if ! check_nextcloud_https "Notify Push"
 then
-    msg_box "The apache conf for $NCDOMAIN isn't available. This is not supported!"
-    exit 1
-elif ! grep -q "<VirtualHost \*:443>" "$SITES_AVAILABLE/$NCDOMAIN.conf"
-then
-    msg_box "The virtualhost config doesn't seem to be the default. Cannot proceed."
+    msg_box "Nextcloud doesn't seem to run on HTTPS. This is not supported!"
     exit 1
 fi
 # Check processor architecture
