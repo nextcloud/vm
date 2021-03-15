@@ -190,7 +190,7 @@ ram_check 2 Collabora
 cpu_check 2 Collabora
 
 # Check if Nextcloud is installed with TLS
-check_nextcloud_https "Collabora (Docker)"
+check_nextcloud_https "Documentserver --> Collabora (Docker)"
 
 # Install Docker
 install_docker
