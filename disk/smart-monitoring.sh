@@ -86,6 +86,7 @@ done
 if [ -z "$VALID_DRIVES" ]
 then
     msg_box "It seems like not even one drive supports smart monitoring/is healthy.
+This is completely normal if you run this script in a VM since virtual drives don't support smart monitoring.
 We will uninstall smart monitoring now since you won't get any helpful notification out of this going forward."
     apt purge smartmontools -y
     apt autoremove -y
