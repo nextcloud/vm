@@ -108,14 +108,6 @@ You should be able to connect via an RDP client with your server \
 using the credentials of $UNIXUSER and the server ip-address $ADDRESS"
 fi
 
-# Evince
-if is_this_installed evince
-then
-    EVINCE_SWTICH=OFF
-else
-    EVINCE_SWTICH=ON
-fi
-
 # Eye of Gnome
 if is_this_installed eog
 then
@@ -195,7 +187,6 @@ It is smart and has selected only options that are not yet installed.
 Choose which ones you want to install.
 If you select apps that are already installed you will have the choice to uninstall them.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Evince" "(PDF Viewer)" "$EVINCE_SWTICH" \
 "Eye of Gnome" "(Image Viewer)" "$EOG_SWITCH" \
 "Firefox" "(Internet Browser)" "$FIREFOX_SWITCH" \
 "Gedit" "(Text Editor)" "$GEDIT_SWITCH" \
@@ -235,6 +226,9 @@ install_remove_packet() {
             echo "file:///mnt" > /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
             chmod 664 /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
             chown -R "$UNIXUSER":"$UNIXUSER" /home/"$UNIXUSER"
+        elif [ "$1" = "vlc" ]
+        then
+            sudo sed -i 's|geteuid|getppid|' /usr/bin/vlc
         fi
         print_text_in_color "$ICyan" "$2 was successfully installed"
     fi
@@ -269,9 +263,6 @@ vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-extension-arc-menu gno
             msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
             exit
         fi
-    ;;&
-    *"Evince"*)
-        install_remove_packet evince Evince
     ;;&
     *"Eye of Gnome"*)
         install_remove_packet eog "Eye of Gnome"
