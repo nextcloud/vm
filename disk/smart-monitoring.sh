@@ -74,7 +74,8 @@ do
     then
         print_text_in_color "$IRed" "/dev/$drive doesn't support smart monitoring or isn't healthy"
         msg_box "It seems like /dev/$drive doesn't support smart monitoring or isn't healthy.
-Please run 'sudo smartctl -a /dev/$drive' to check it yourself or check this script's output."
+Please check this script's output for more info!
+Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
     else
         print_text_in_color "$IGreen" "/dev/$drive supports smart monitoring and is healthy"
         VALID_DRIVES+="$drive"
