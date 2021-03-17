@@ -30,6 +30,8 @@ then
     msg_box "It seems like you have encryption enabled which is unsupported by the $SCRIPT_NAME app!"
     exit 1
 fi
+# Compatible with NC21 and above
+lowest_compatible_nc 21
 
 # Hardware requirements
 # https://github.com/matiasdelellis/facerecognition/wiki/Requirements-and-Limitations#hardware-requirements
@@ -146,7 +148,8 @@ crontab -u www-data -l | { cat; echo "@daily rm -f $VMLOGS/face_background_job.l
 # Schedule background scan
 # https://github.com/matiasdelellis/facerecognition/wiki/Schedule-Background-Task#cron
 crontab -u www-data -l | grep -v "face:background_job" | crontab -u www-data -
-crontab -u www-data -l | { cat; echo "*/30 * * * * php -f $NCPATH/occ face:background_job -t 900 >> $VMLOGS/face_background_job.log"; } | crontab -u www-data -
+crontab -u www-data -l | { cat; echo "*/30 * * * * php -f $NCPATH/occ \
+face:background_job -t 900 --defer-clustering >> $VMLOGS/face_background_job.log"; } | crontab -u www-data -
 
 msg_box "Congratulations, $SCRIPT_NAME was successfully installed!
 You just need to wait now and let the background job do its work.
