@@ -48,6 +48,7 @@ choice=$(whiptail --title "$TITLE" --checklist \
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
+"deSEC" "(Automatically set up a dedyn.io domain, together with DDNS and TLS)" "$STARTUP_SWITCH" \
 "DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \
 "Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
 "GeoBlock" "(Only allow certain countries to access your server)" OFF \
@@ -64,35 +65,50 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Security script..."
         run_script ADDONS security
     ;;&
+    *"deSEC"*)
+        if [ -f $SCRIPTS/desec.sh ]
+        then
+            bash $SCRIPTS/desec.sh
+        else
+            print_text_in_color "$ICyan" "Downloading the deSEC script..."
+            run_script ADDONS desec
+        fi
+    ;;&
     *"DDclient Configuration"*)
-        print_text_in_color "$ICyan" "Downloading the DDclient Configuration script..."
-        run_script NETWORK ddclient-configuration
+        if [[ "$choice" != *"deSEC"* ]]
+        then
+            print_text_in_color "$ICyan" "Downloading the DDclient Configuration script..."
+            run_script NETWORK ddclient-configuration
+        fi
     ;;&
     *"Activate TLS"*)
-        SUBTITLE="Activate TLS"
-        msg_box "The following script will install a trusted
+        if [[ "$choice" != *"deSEC"* ]]
+        then
+            SUBTITLE="Activate TLS"
+            msg_box "The following script will install a trusted
 TLS certificate through Let's Encrypt.
 It's recommended to use TLS (https) together with Nextcloud.
 Please open port 80 and 443 to this servers IP before you continue.
 More information can be found here:
 https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
 
-        if yesno_box_yes "Do you want to install TLS?" "$SUBTITLE"
-        then
-            if [ -f $SCRIPTS/activate-tls.sh ]
+            if yesno_box_yes "Do you want to install TLS?" "$SUBTITLE"
             then
-                bash $SCRIPTS/activate-tls.sh
+                if [ -f $SCRIPTS/activate-tls.sh ]
+                then
+                    bash $SCRIPTS/activate-tls.sh
+                else
+                    print_text_in_color "$ICyan" "Downloading the Let's Encrypt script..."
+                    download_script LETS_ENC activate-tls
+                    bash $SCRIPTS/activate-tls.sh
+                fi
             else
-                print_text_in_color "$ICyan" "Downloading the Let's Encrypt script..."
-                download_script LETS_ENC activate-tls
-                bash $SCRIPTS/activate-tls.sh
+                msg_box "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh" "$SUBTITLE"
             fi
-        else
-            msg_box "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh" "$SUBTITLE"
+            
+            # Just make sure it is gone
+            rm -f "$SCRIPTS/test-new-config.sh"
         fi
-        
-        # Just make sure it is gone
-        rm -f "$SCRIPTS/test-new-config.sh"
     ;;&
     *"GeoBlock"*)
         print_text_in_color "$ICyan" "Downloading the Geoblock script..."

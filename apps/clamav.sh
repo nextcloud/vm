@@ -6,7 +6,7 @@ true
 SCRIPT_NAME="ClamAV"
 SCRIPT_EXPLAINER="This script installs the open-source antivirus-software ClamAV on your server \
 and configures Nextcloud to detect infected files already during the upload.
-At the end of the script, you will be able to choose to setup a weekly full scan of all files."
+At the end of the script, you will be able to choose to set up a weekly full scan of all files."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -194,7 +194,7 @@ msg_box "ClamAV was successfully installed.
 Your Nextcloud should be more secure now."
 
 # Ask for full-scan
-if ! yesno_box_yes "Do you want to setup a weekly full scan of all your files?
+if ! yesno_box_yes "Do you want to set up a weekly full scan of all your files?
 It will run on Sundays starting at 10:00 and will continue for a maximum of 12 hours (hardcoded). 
 You will be notified when it's finished so that you can check the final result."
 then

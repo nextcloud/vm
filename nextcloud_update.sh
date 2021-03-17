@@ -347,6 +347,12 @@ then
                 echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
                 check_command phpenmod -v ALL apcu
             fi
+            # Fix https://help.nextcloud.com/t/nc-21-manual-update-issues/108693/4?$
+            if ! grep -qFx apc.enable_cli=1 $PHP_MODS_DIR/apcu.ini
+            then
+                echo "apc.enable_cli=1" >> $PHP_MODS_DIR/apcu.ini
+                check_command phpenmod -v ALL apcu
+            fi
         fi
         if pecl list | grep -q inotify
         then 
@@ -505,6 +511,18 @@ then
     export NCVERSION
     export STABLEVERSION="nextcloud-$NCVERSION"
     rm -f /tmp/minor.version
+elif [ -f /tmp/nextmajor.version ]
+then
+    NCBAD=$(cat /tmp/nextmajor.version)
+    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep $NCNEXT | tail -1)
+    if [ -z "$NCVERSION" ]
+    then
+        msg_box "The version that you are trying to upgrade to doesn't exist."
+        exit 1
+    fi
+    export NCVERSION
+    export STABLEVERSION="nextcloud-$NCVERSION"
+    rm -f /tmp/nextmajor.version
 elif [ -f /tmp/prerelease.version ]
 then
     PRERELEASE_VERSION=yes

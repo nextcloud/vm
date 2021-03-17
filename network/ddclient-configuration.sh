@@ -5,7 +5,7 @@
 
 true
 SCRIPT_NAME="DynDNS with ddclient"
-SCRIPT_EXPLAINER="This script lets you setup DynDNS by using the Linux ddclient software."
+SCRIPT_EXPLAINER="This script lets you set up DynDNS by using the Linux ddclient software."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -19,7 +19,10 @@ debug_mode
 root_check
 
 # Check if ddclient is already installed
-if ! is_this_installed ddclient
+if [ -n "$DEDYNDOMAIN" ]
+then
+    print_text_in_color "$ICyan" "Setting up ddclient for deSEC..."
+elif ! is_this_installed ddclient
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -48,8 +51,12 @@ then
     exit 1
 fi
 
-choice=$(whiptail --title "$TITLE" --menu \
-"Please choose your DynDNS-Provider.\nYou have to setup an account before you can start.\n
+if [ -n "$DEDYNDOMAIN" ]
+then
+    choice="deSEC"
+else
+    choice=$(whiptail --title "$TITLE" --menu \
+"Please choose your DynDNS-Provider.\nYou have to set up an account before you can start.\n
 If your DDNS provider isn't already supported, please open a new issue here:\n$ISSUES
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" \
@@ -57,6 +64,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Duck DNS" "(duckdns.org)" \
 "No-IP" "(noip.com)" \
 "Strato" "(strato.de)" 3>&1 1>&2 2>&3)
+fi
 
 case "$choice" in
     "Cloudflare")
@@ -107,44 +115,51 @@ case "$choice" in
     ;;
 esac
 
-# Instructions
-msg_box "Before you can continue, you have to access $PROVIDER and $INSTRUCTIONS.\n\nHere is a guide:\n$GUIDE"
-
-# Ask if everything is prepared
-if ! yesno_box_yes "Are you ready to continue?"
+if [ -n "$DEDYNDOMAIN" ]
 then
-    exit
-fi
+    HOSTNAME="$DEDYNDOMAIN"
+    LOGIN="$DEDYNDOMAIN"
+    PASSWORD="$DEDYNAUTHTOKEN"
+else
+    # Instructions
+    msg_box "Before you can continue, you have to access $PROVIDER and $INSTRUCTIONS.\n\nHere is a guide:\n$GUIDE"
 
-# Enter your Hostname
-HOSTNAME=$(input_box_flow "Please enter the Host that you want to configure DDNS for.\nE.g. 'example.com'")
+    # Ask if everything is prepared
+    if ! yesno_box_yes "Are you ready to continue?"
+    then
+        exit
+    fi
 
-# Enter your login
-LOGIN=$(input_box_flow "Please enter the login for your DDNS provider.\nIt will be most likely the domain \
+    # Enter your Hostname
+    HOSTNAME=$(input_box_flow "Please enter the Host that you want to configure DDNS for.\nE.g. 'example.com'")
+
+    # Enter your login
+    LOGIN=$(input_box_flow "Please enter the login for your DDNS provider.\nIt will be most likely the domain \
 or registered email address depending on your DDNS Provider.\nE.g. 'example.com' or 'mail@example.com'
 If you are not sure, please refer to the documentation of your DDNS provider.")
 
-# Enter your password
-PASSWORD=$(input_box_flow "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.
+    # Enter your password
+    PASSWORD=$(input_box_flow "Please enter the password or api-key that you've got for DynDNS from your DDNS provider.
 If you are not sure, please refer to the documentation of your DDNS provider.")
 
-# Present what we gathered
-msg_box "You will see now a list of all entered information. Please check that everything seems correct.\n
+    # Present what we gathered
+    msg_box "You will see now a list of all entered information. Please check that everything seems correct.\n
 Provider=$PROVIDER
 Host=$HOSTNAME
 Login=$LOGIN
 Password=$PASSWORD"
 
-# If everything okay, write to file
-if ! yesno_box_yes "Do you want to proceed?"
-then
-    exit
-fi
+    # If everything okay, write to file
+    if ! yesno_box_yes "Do you want to proceed?"
+    then
+        exit
+    fi
 
-# needed for cloudflare to work
-if [ "$PROVIDER" = "Cloudflare" ]
-then
-    install_if_not libjson-any-perl
+    # needed for cloudflare to work
+    if [ "$PROVIDER" = "Cloudflare" ]
+    then
+        install_if_not libjson-any-perl
+    fi
 fi
 
 # Write information to ddclient.conf

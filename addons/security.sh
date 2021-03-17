@@ -4,7 +4,7 @@
 
 # shellcheck disable=SC2154
 true
-SCRIPT_NAME="Setup Extra Security"
+SCRIPT_NAME="Set up Extra Security"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

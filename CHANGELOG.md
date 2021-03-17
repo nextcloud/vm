@@ -198,7 +198,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Make Adminer work on HTTP/2
 - Introduce fetch_lib and chain libaries - this is now the new way of fetching the libs
 - Add more menu scripts
-- Add more Yes/No boxes and fix occurances where the text wasn't shown due to print_text_in_color
+- Add more Yes/No boxes and fix occurrences where the text wasn't shown due to print_text_in_color
 - Standardize Whiptails even more
 - Change to TLS1.2 all over
 - Make functions out of all special variables
