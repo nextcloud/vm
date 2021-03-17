@@ -565,6 +565,9 @@ echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
+# Install PECL dependencies
+install_if_not php"$PHPVER"-dev
+
 # Install Redis (distributed cache)
 run_script ADDONS redis-server-ubuntu
 
