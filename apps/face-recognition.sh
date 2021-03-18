@@ -82,7 +82,7 @@ msg_box "Please note that the $SCRIPT_NAME app needs an additional PHP dependenc
 to work which will need to be installed from an external repository.
 This can set your server under risk."
 if ! yesno_box_yes "Do you want to install the required dependency?
-If you choose 'No', the script will get exited."
+If you choose 'No', the installation will be aborted."
 then
     exit 1
 fi
