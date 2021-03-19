@@ -55,6 +55,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
 "Whiteboard" "(Whiteboard for Nextcloud)" OFF \
+"Face Recognition" "(Scan your photos for faces in Nextcloud)" OFF \
 "SMB-mount" "(Mount SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -93,6 +94,10 @@ case "$choice" in
     *"Midnight Commander"*)
         print_text_in_color "$ICyan" "Downloading the Midnight Commander script..."
         run_script APP midnight-commander
+    ;;&
+    *"Face Recognition"*)
+        print_text_in_color "$ICyan" "Downloading the Face Recognition script..."
+        run_script APP face-recognition
     ;;&
     *"FullTextSearch"*)
         print_text_in_color "$ICyan" "Downloading the FullTextSearch script..."
