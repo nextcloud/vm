@@ -47,7 +47,6 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
-"Face Recognition" "(Scan your photos for faces in Nextcloud)" OFF \
 "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "Pico CMS" "(Leightweight CMS integration in Nextcloud)" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
@@ -56,6 +55,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
 "Whiteboard" "(Whiteboard for Nextcloud)" OFF \
+"Face Recognition" "(Scan your photos for faces in Nextcloud)" OFF \
 "SMB-mount" "(Mount SMB-shares from your local network)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
