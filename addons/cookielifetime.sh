@@ -28,7 +28,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "172800s" "2 days" \
 "604800s" "1 week" \
 "2419200s" "4 weeks" \
-"Custom" "setup a custom time" 3>&1 1>&2 2>&3)
+"Custom" "set up a custom time" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "1800s")

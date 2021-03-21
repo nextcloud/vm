@@ -39,6 +39,14 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
+# Get all physical drives
+DRIVES=$(lsblk -o KNAME,TYPE | grep disk | awk '{print $1}')
+if [ -z "$DRIVES" ]
+then
+    msg_box "Not even one drive found. Cannot proceed."
+    exit 1
+fi
+
 # Choose between direct notification or weekly
 choice=$(whiptail --title "$TITLE" --menu \
 "Please choose if you want to get informed weekly or directly if an error occurs.
@@ -54,6 +62,48 @@ fi
 
 # Install needed tools
 install_if_not smartmontools
+
+# Test drives
+print_text_in_color "$ICyan" "Testing if all drives support smart monitoring and are healthy..."
+mapfile -t DRIVES <<< "$DRIVES"
+for drive in "${DRIVES[@]}"
+do
+    echo '#########################'
+    print_text_in_color "$ICyan" "Testing /dev/$drive"
+    OUTPUT=$(smartctl -a "/dev/$drive")
+    if ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result:'
+    then
+        print_text_in_color "$IRed" "/dev/$drive doesn't support smart monitoring"
+        echo "$OUTPUT"
+        msg_box "It seems like /dev/$drive doesn't support smart monitoring.
+Please check this script's output for more info!
+Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
+    elif ! echo "$OUTPUT" | grep -q 'No Errors Logged'
+    then
+        print_text_in_color "$IRed" "/dev/$drive isn't healthy"
+        echo "$OUTPUT"
+        msg_box "It seems like /dev/$drive isn't healthy.
+Please check this script's output for more info!
+Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
+        VALID_DRIVES+="$drive"
+    else
+        print_text_in_color "$IGreen" "/dev/$drive supports smart monitoring and is healthy"
+        VALID_DRIVES+="$drive"
+    fi
+done
+
+# Test if at least one drive is healthy/suppports smart monitoring
+if [ -z "$VALID_DRIVES" ]
+then
+    msg_box "It seems like not even one drive supports smart monitoring.
+This is completely normal if you run this script in a VM since virtual drives don't support smart monitoring.
+We will uninstall smart monitoring now since you won't get any helpful notification out of this going forward."
+    apt purge smartmontools -y
+    apt autoremove -y
+    exit 1
+fi
+
+# Stop smartmontools for now
 check_command systemctl stop smartmontools
 
 # Weekly notification

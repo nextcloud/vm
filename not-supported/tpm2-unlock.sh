@@ -5,7 +5,8 @@
 
 true
 SCRIPT_NAME="TPM2 Unlock"
-SCRIPT_EXPLAINER="This script helps automatically unlocking the root partition during boot."
+SCRIPT_EXPLAINER="This script helps automatically unlocking the root partition during boot \
+and securing your GRUB (bootloader)."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -91,8 +92,42 @@ then
     exit 1
 fi
 
+PASSWORD=$(input_box_flow "Please enter a new password that will secure your GRUB (bootloader).")
+
+# Set grub password
+# https://selivan.github.io/2017/12/21/grub2-password-for-all-but-default-menu-entries.html
+GRUB_PASS="$(echo -e "$PASSWORD\n$PASSWORD" | grub-mkpasswd-pbkdf2 | grep -oP 'grub\.pbkdf2\.sha512\.10000\..*')"
+if [ -n "${PASSWORD##grub.pbkdf2.sha512.10000.}" ]
+then
+    cat << GRUB_CONF >> /etc/grub.d/40_custom
+
+# Password-protect GRUB
+set superusers="grub"
+password_pbkdf2 grub $GRUB_PASS
+GRUB_CONF
+    # Allow to run the default grub options without requiring the grub password
+    if ! grep -q '^CLASS=.*--unrestricted"' /etc/grub.d/10_linux && grep -q '^CLASS=.*"$' /etc/grub.d/10_linux
+    then
+        sed -i '/^CLASS=/s/"$/ --unrestricted"/' /etc/grub.d/10_linux
+    fi
+else
+    msg_box "Something went wrong while setting the grub password. \
+Please report this to $ISSUES"
+    exit 1
+fi
+
+# Adjust grub (https://github.com/nextcloud/vm/issues/1694)
+if ! grep -q "GRUB_DISABLE_OS_PROBER" /etc/default/grub
+then
+    echo "GRUB_DISABLE_OS_PROBER=true" >> /etc/default/grub
+fi
+
+# Update grub
+print_text_in_color "$ICyan" "Updating grub..."
+update-grub
+
 # Inform user
-msg_box "TPM2 Unlock was setup successfully.
+msg_box "TPM2 Unlock and securing your GRUB (bootloader) was set up successfully.
 We will reboot after you hit okay.\n
 Please check if it automatically unlocks the root partition.
 If not something has failed."

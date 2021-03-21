@@ -35,7 +35,9 @@ fi
 # Check apache conf
 if ! [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
 then
-    msg_box "The apache conf for $NCDOMAIN isn't available. This is not supported!"
+    msg_box "It seems like you haven't used the built-in 'Activate TLS' script to enable 'Let's Encrypt!' \
+on your instance. Unfortunately is this a requirement to be able to configure $SCRIPT_NAME successfully.
+The installation will be aborted."
     exit 1
 elif ! grep -q "<VirtualHost \*:443>" "$SITES_AVAILABLE/$NCDOMAIN.conf"
 then

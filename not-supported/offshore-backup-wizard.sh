@@ -58,7 +58,7 @@ fi
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "It seems to be currently running a backup or update.
-Cannot setup the off-shore backup now. Please try again later."
+Cannot set up the off-shore backup now. Please try again later."
     exit 1
 elif does_snapshot_exist "NcVM-startup"
 then
@@ -291,6 +291,21 @@ then
     sed -i "s|^DAYS_SINCE_LAST_BACKUP.*|DAYS_SINCE_LAST_BACKUP=\$DAYS_SINCE_LAST_BACKUP|" "\$BASH_SOURCE"
     echo "Not yet enough days over to make the next off-shore backup \$(date +%Y-%m-%d_%H-%M-%S)" >> "\$RSYNC_BACKUP_LOG"
     print_text_in_color "\$ICyan" "Not yet enough days over to make the next off-shore backup"
+    # Test if backup drive is still connected
+    umount "\$BACKUP_MOUNTPOINT" &>/dev/null
+    mount "\$BACKUP_MOUNTPOINT" &>/dev/null
+    if mountpoint -q "\$BACKUP_MOUNTPOINT"
+    then
+        umount "\$BACKUP_MOUNTPOINT" &>/dev/null
+        if ! send_mail "Off-shore Backup drive still connected!" \
+"It seems like the Off-shore Backup drive ist still connected.
+Please disconnect it from your server and store it somewhere safe outside your home!"
+        then
+            notify_admin_gui "Off-shore Backup drive still connected!" \
+"It seems like the Off-shore Backup drive ist still connected.
+Please disconnect it from your server and store it somewhere safe outside your home!"
+        fi
+    fi
     exit
 fi
 

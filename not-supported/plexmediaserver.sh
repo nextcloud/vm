@@ -127,10 +127,14 @@ plexinc/pms-docker
 # Add prune command
 add_dockerprune
 
-# Add crontab entry
-# Needed because e.g. Veracrypt drives get mounted after boot process but need to be mounted before plex ist (re)started
+# Crontab entry no longer needed
 crontab -u root -l | grep -v "docker restart plex"  | crontab -u root -
-crontab -u root -l | { cat; echo "@reboot sleep 20 && docker restart plex > /dev/null"; } | crontab -u root -
+
+# Add firewall rules
+for port in 32400/tcp 3005/tcp 8324/tcp 32469/tcp 1900/udp 32410/udp 32412/udp 32413/udp 32414/udp
+do
+    ufw allow "$port" comment "Plex $port" &>/dev/null
+done
 
 # Inform the user
 msg_box "PLEX Media Server was successfully installed.
@@ -151,7 +155,7 @@ You will have the option to automatically open this port by using UPNP in the ne
     check_open_port 32400 "$WANIP4"
 fi
 
-msg_box "You should visit 'http://$ADDRESS:32400/web' to setup your PLEX Media Server next.
+msg_box "You should visit 'http://$ADDRESS:32400/web' to set up your PLEX Media Server next.
 Advice: All your drives should be mounted in a subfolder of '/mnt'"
 
 exit

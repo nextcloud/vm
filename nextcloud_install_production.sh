@@ -124,16 +124,6 @@ download_script STATIC fetch_lib
 # Set locales
 run_script ADDONS locales
 
-# Offer to use archive.ubuntu.com
-if [ -z "$PROVISIONING" ]
-then
-    msg_box "Your current download repository is $REPO"
-fi
-if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
-then
-    sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
-fi
-
 # Create new current user
 download_script STATIC adduser
 bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
@@ -575,6 +565,9 @@ echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
+# Install PECL dependencies
+install_if_not php"$PHPVER"-dev
+
 # Install Redis (distributed cache)
 run_script ADDONS redis-server-ubuntu
 
@@ -609,16 +602,16 @@ echo "# igbinary for PHP"
 echo "session.serialize_handler=igbinary"
 echo "igbinary.compact_strings=On"
 } >> "$PHP_INI"
-if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
-then
-    touch $PHP_MODS_DIR/igbinary.ini
-fi
-if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
-then
-    echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
-    echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
-    check_command phpenmod -v ALL igbinary
-fi
+    if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
+    then
+        touch $PHP_MODS_DIR/igbinary.ini
+    fi
+    if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
+    then
+        echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
+        echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
+        check_command phpenmod -v ALL igbinary
+    fi
 restart_webserver
 fi
 
@@ -961,6 +954,7 @@ download_script STATIC history
 download_script NETWORK static_ip
 # Moved from the startup script 2021-01-04
 download_script LETS_ENC activate-tls
+download_script ADDONS desec
 download_script STATIC temporary-fix
 download_script STATIC update
 download_script STATIC setup_secure_permissions_nextcloud

@@ -32,7 +32,7 @@ fi
 # Check if restore is possible
 if ! [ -f "$DAILY_BACKUP_FILE" ]
 then
-    msg_box "It seems like you haven't setup daily borg backups.
+    msg_box "It seems like you haven't set up daily borg backups.
 Please do that before you can view backups."
     exit 1
 fi

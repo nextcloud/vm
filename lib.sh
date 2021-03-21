@@ -12,7 +12,7 @@ POOLNAME=ncdata
 NCDATA=/mnt/"$POOLNAME"
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
-SHA256_DIR=/tmp/shas56
+SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
 NC_APPS_PATH=$NCPATH/apps
@@ -124,6 +124,7 @@ nc_update() {
     STABLEVERSION="nextcloud-$NCVERSION"
     NCMAJOR="${NCVERSION%%.*}"
     NCBAD=$((NCMAJOR-2))
+    NCNEXT="$((${CURRENTVERSION%%.*}+1))"
 }
 [ -n "$NC_UPDATE" ] && nc_update # TODO: remove this line someday
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
@@ -470,7 +471,7 @@ Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
 
     msg_box "As you noticed your WAN IP and DNS record doesn't match. \
 This can happen when using DDNS for example, or in other edge cases.
-If you feel brave, or are sure that everything is setup correctly, \
+If you feel brave, or are sure that everything is set up correctly, \
 then you can choose to skip this test in the next step.
 
 If needed, you can always contact us for further support: \
@@ -632,10 +633,10 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 18.04 "$DISTRO" 20.04.6
+if ! version 18.04 "$DISTRO" 20.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-18.04 - 20.04.4 to run this script."
+18.04 - 20.04.10 to run this script."
     print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -865,8 +866,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 18.04 "$DISTRO" 20.04.4; then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
+if ! version 18.04 "$DISTRO" 20.04.10; then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -991,7 +992,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 18.04 "$DISTRO" 20.04.6
+if version 18.04 "$DISTRO" 20.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if ! netplan apply
@@ -1012,7 +1013,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.6 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -1628,9 +1629,9 @@ then
 elif grep 7.4 <<< "$GETPHP" >/dev/null 2>&1
 then
    export PHPVER=7.4
-#elif grep 8.0 <<< "$GETPHP" >/dev/null 2>&1
-#then
-#   export PHPVER=8.0
+elif grep 8.0 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.0
 fi
 
 # Export other PHP variables based on PHPVER
