@@ -70,12 +70,22 @@ for drive in "${DRIVES[@]}"
 do
     echo '#########################'
     print_text_in_color "$ICyan" "Testing /dev/$drive"
-    if ! smartctl -a "/dev/$drive"
+    OUTPUT=$(smartctl -a "/dev/$drive")
+    if ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result: PASSED'
     then
-        print_text_in_color "$IRed" "/dev/$drive doesn't support smart monitoring or isn't healthy"
-        msg_box "It seems like /dev/$drive doesn't support smart monitoring or isn't healthy.
+        print_text_in_color "$IRed" "/dev/$drive doesn't support smart monitoring"
+        echo "$OUTPUT"
+        msg_box "It seems like /dev/$drive doesn't support smart monitoring.
 Please check this script's output for more info!
 Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
+    elif ! echo "$OUTPUT" | grep -q 'No Errors Logged'
+    then
+        print_text_in_color "$IRed" "/dev/$drive isn't healthy"
+        echo "$OUTPUT"
+        msg_box "It seems like /dev/$drive isn't healthy.
+Please check this script's output for more info!
+Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
+        VALID_DRIVES+="$drive"
     else
         print_text_in_color "$IGreen" "/dev/$drive supports smart monitoring and is healthy"
         VALID_DRIVES+="$drive"
@@ -85,7 +95,7 @@ done
 # Test if at least one drive is healthy/suppports smart monitoring
 if [ -z "$VALID_DRIVES" ]
 then
-    msg_box "It seems like not even one drive supports smart monitoring/is healthy.
+    msg_box "It seems like not even one drive supports smart monitoring.
 This is completely normal if you run this script in a VM since virtual drives don't support smart monitoring.
 We will uninstall smart monitoring now since you won't get any helpful notification out of this going forward."
     apt purge smartmontools -y
