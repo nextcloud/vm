@@ -485,6 +485,22 @@ then
     apt update -q4 & spinner_loading
     apt install veracrypt --no-install-recommends -y
     # No need to copy the file since it is already synced via rsync
+    # Create startup service
+    cat << SERVICE > /etc/systemd/system/veracrypt-automount.service
+[Unit]
+Description=Mount Veracrypt Devices
+After=boot.mount
+Before=network.target
+
+[Service]
+Type=forking
+ExecStart=/bin/bash $SCRIPTS/veracrypt-automount.sh
+TimeoutStopSec=1
+
+[Install]
+WantedBy=multi-user.target
+SERVICE
+    systemctl enable veracrypt-automount
 fi
 
 # SMB-server
