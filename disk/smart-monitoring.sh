@@ -71,7 +71,7 @@ do
     echo '#########################'
     print_text_in_color "$ICyan" "Testing /dev/$drive"
     OUTPUT=$(smartctl -a "/dev/$drive")
-    if ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result: PASSED'
+    if ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result:'
     then
         print_text_in_color "$IRed" "/dev/$drive doesn't support smart monitoring"
         echo "$OUTPUT"
