@@ -109,17 +109,13 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     fi
 fi
 
+# Remove leftovers
+rm -f /root/php-upgrade.sh
+rm -f /tmp/php-upgrade.sh
+rm -f /root/db-migration.sh
+
 # Ubuntu 16.04 is deprecated
 check_distro_version
-
-# Remove leftovers
-if [ -f /root/php-upgrade.sh ]
-then
-    rm -f /root/php-upgrade.sh
-elif [ -f /tmp/php-upgrade.sh ]
-then
-    rm -f /tmp/php-upgrade.sh
-fi
 
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
@@ -239,6 +235,20 @@ then
         install_if_not cmake # Needed for Netdata in newer versions
         bash "$NETDATA_UPDATER_PATH"
     fi
+fi
+
+# Reinstall certbot (use snap instead of package)
+# https://askubuntu.com/a/1271565
+if dpkg -l | grep certbot
+then
+    print_text_in_color "$ICyan" "Reinstalling certbot (Let's Encrypt) as a snap instead..."
+    apt remove certbot -y
+    apt autoremove -y
+    install_if_not snapd
+    snap install core
+    snap install certbot --classic
+    # Update $PATH in current session (login and logout is required otherwise)
+    check_command hash -r
 fi
 
 # Fix PHP error message
