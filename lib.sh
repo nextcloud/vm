@@ -797,8 +797,7 @@ add_crontab_le() {
 DATE=\$(date +%Y-%m-%d_%H:%M)
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
-    LINE=\$(grep 'Allow from env=AllowCountryOrContinent' /etc/apache2/apache2.conf)
-    sed -i 's|.*Allow from env=AllowCountryOrContinent.*|# Allow from env=AllowCountryOrContinent|' /etc/apache2/apache2.conf
+    sed -i 's|.*Deny from all.*|# Deny from all|' /etc/apache2/apache2.conf
     systemctl restart apache2
 fi
 if ! certbot renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1
@@ -809,7 +808,7 @@ else
 fi
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
-    sed -i "s|# Allow from env=AllowCountryOrContinent|\$LINE|" /etc/apache2/apache2.conf
+    sed -i "s|# Deny from all|  Deny from all|" /etc/apache2/apache2.conf
     systemctl restart apache2
 fi
 # Check if service is running
