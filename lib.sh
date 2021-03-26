@@ -794,6 +794,7 @@ restart_webserver
 add_crontab_le() {
     cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 DATE=\$(date +%Y-%m-%d_%H:%M)
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
