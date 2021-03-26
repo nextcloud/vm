@@ -795,13 +795,14 @@ add_crontab_le() {
     cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+echo '###################################'
 DATE=\$(date +%Y-%m-%d_%H:%M)
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
     sed -i 's|.*Deny from all.*|# Deny from all|' /etc/apache2/apache2.conf
     systemctl restart apache2
 fi
-if ! certbot renew --quiet >> /var/log/letsencrypt/cronjob.log 2>&1
+if ! certbot renew >> /var/log/letsencrypt/cronjob.log 2>&1
 then
     echo "Let's Encrypt FAILED!--\$DATE" >> /var/log/letsencrypt/cronjob.log
 else
