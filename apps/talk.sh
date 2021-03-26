@@ -432,6 +432,9 @@ else
     exit 1
 fi
 
+# Add Let's Encrypt! crontab
+add_crontab_le
+
 ## TODO
 # Add to /etc/hosts
 # Based on https://help.nextcloud.com/t/nextcloud-talk-signaling-server-now-automated-installation/90567/17?u=enoch85

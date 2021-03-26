@@ -790,6 +790,41 @@ fi
 restart_webserver
 }
 
+# Add Let's Encrypt! crontab
+add_crontab_le() {
+    cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
+#!/bin/bash
+DATE=\$(date +%Y-%m-%d_%H:%M)
+if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
+then
+    LINE=\$(grep 'Allow from env=AllowCountryOrContinent' /etc/apache2/apache2.conf)
+    sed -i 's|.*Allow from env=AllowCountryOrContinent.*|# Allow from env=AllowCountryOrContinent|' /etc/apache2/apache2.conf
+    systemctl restart apache2
+fi
+if ! certbot renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1
+then
+        echo "Let's Encrypt FAILED!--\$DATE" >> /var/log/letsencrypt/cronjob.log
+else
+        echo "Let's Encrypt SUCCESS!--\$DATE" >> /var/log/letsencrypt/cronjob.log
+fi
+if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
+then
+    sed -i "s|# Allow from env=AllowCountryOrContinent|\$LINE|" /etc/apache2/apache2.conf
+    systemctl restart apache2
+fi
+# Check if service is running
+if ! pgrep apache2 > /dev/null
+then
+    systemctl start apache2.service
+fi
+CRONTAB
+    # Make letsencryptrenew.sh executable
+    chmod +x $SCRIPTS/letsencryptrenew.sh
+    # Add cronjob
+    crontab -u root -l | grep -v "$SCRIPTS/letsencryptrenew.sh" | crontab -u root -
+    crontab -u root -l | { cat; echo "0 3 * * 7 $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+}
+
 # Use like this: open_port 443 TCP
 # or e.g. open_port 3478 UDP
 open_port() {

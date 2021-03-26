@@ -200,6 +200,9 @@ else
     exit 1
 fi
 
+# Add Let's Encrypt! crontab
+add_crontab_le
+
 # Install docker
 install_docker
 

@@ -5,10 +5,7 @@
 
 true
 SCRIPT_NAME="GeoBlock"
-SCRIPT_EXPLAINER="This script lets you restrict access to your webserver, only allowing the countries you choose.\n
-Attention!
-Geoblock can break the certificate renewal via \"Let's encrypt!\" if done too strict!
-If you have problems with \"Let's encrypt!\", please uninstall geoblock first to see if that fixes those issues!"
+SCRIPT_EXPLAINER="This script lets you restrict access to your webserver, only allowing the countries you choose."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

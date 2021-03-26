@@ -336,6 +336,9 @@ else
     exit 1
 fi
 
+# Add Let's Encrypt! crontab
+add_crontab_le
+
 # Remove Watchtower
 if is_docker_running
 then

@@ -332,6 +332,9 @@ else
     exit 1
 fi
 
+# Add Let's Encrypt! crontab
+add_crontab_le
+
 # Appending the new local IP-address to trusted Domains
 print_text_in_color "$ICyan" "Appending the new subdomain to trusted Domains..."
 count=0

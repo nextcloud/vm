@@ -327,6 +327,9 @@ else
     exit 1
 fi
 
+# Add Let's Encrypt! crontab
+add_crontab_le
+
 # Set config for RichDocuments (Collabora App)
 if is_app_installed richdocuments
 then

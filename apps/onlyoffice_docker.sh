@@ -322,6 +322,9 @@ else
     exit 1
 fi
 
+# Add Let's Encrypt! crontab
+add_crontab_le
+
 # Set config for OnlyOffice
 if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
