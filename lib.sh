@@ -801,7 +801,7 @@ then
     sed -i 's|.*Deny from all.*|# Deny from all|' /etc/apache2/apache2.conf
     systemctl restart apache2
 fi
-if ! certbot renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1
+if ! certbot renew --quiet >> /var/log/letsencrypt/cronjob.log 2>&1
 then
     echo "Let's Encrypt FAILED!--\$DATE" >> /var/log/letsencrypt/cronjob.log
 else
