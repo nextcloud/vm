@@ -802,9 +802,9 @@ then
 fi
 if ! certbot renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1
 then
-        echo "Let's Encrypt FAILED!--\$DATE" >> /var/log/letsencrypt/cronjob.log
+    echo "Let's Encrypt FAILED!--\$DATE" >> /var/log/letsencrypt/cronjob.log
 else
-        echo "Let's Encrypt SUCCESS!--\$DATE" >> /var/log/letsencrypt/cronjob.log
+    echo "Let's Encrypt SUCCESS!--\$DATE" >> /var/log/letsencrypt/cronjob.log
 fi
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
