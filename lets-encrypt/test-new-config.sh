@@ -63,6 +63,12 @@ fi
 if ! pgrep apache2 > /dev/null
 then
     systemctl start apache2.service
+    if ! pgrep apache2 > /dev/null
+    then
+        # shellcheck source=lib.sh
+        source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+        notify_admin_gui "Could not start Apache!" "Please report this to $ISSUES!"
+    fi
 fi
 CRONTAB
 # Make letsencryptrenew.sh executable
