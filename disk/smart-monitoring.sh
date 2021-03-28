@@ -184,8 +184,7 @@ You can find further information below!\n
 then
     notify_admin_gui "\$SMARTD_FAILTYPE issue on \$SMARTD_DEVICE" \
 "\$SMARTD_MESSAGE\n
-You can find further information below!\n
-\$SMART_STATS"
+You might run 'sudo smartctl -a \$SMARTD_DEVICE' to get further information."
 fi
 exit
 SMART_NOTIFICATION
