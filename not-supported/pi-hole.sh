@@ -106,8 +106,10 @@ Please report this to $ISSUES"
     rm -rf /usr/bin/pihole-FTL
     rm -rf /usr/local/bin/pihole
     rm -rf /var/www/html/admin
+    rm -f /var/www/html/pihole
 
     # Delete unbound config
+    crontab -u root -l | grep -v "systemctl restart unbound"  | crontab -u root -
     rm /etc/unbound/unbound.conf.d/pi-hole.conf
 
     # Remove update script
@@ -128,6 +130,10 @@ Please report this to $ISSUES"
     # Remove not needed dependencies
     apt autoremove -y
 
+    # Delete other files
+    rm -f /var/www/html/index.lighttpd.orig
+    rm -rf /etc/lighttpd
+
     # Remove apache conf
     a2dissite pihole.conf &>/dev/null
     rm -f "$SITES_AVAILABLE/pihole.conf"
@@ -142,6 +148,7 @@ Please report this to $ISSUES"
     msg_box "Pi-hole was successfully uninstalled!
 Please reset the DNS on your router/clients to restore internet connectivity"
     msg_box "After you hit OK, your NcVM will get restarted."
+    rm -f "$SCRIPTS/pi-hole.sh"
     # Reboot the NcVM because it would cause problems if not
     reboot
 fi
@@ -461,6 +468,10 @@ then
 Please report this to $ISSUES"
     exit 1
 fi
+
+# Fix dns disconnections
+crontab -u root -l | grep -v "systemctl restart unbound"  | crontab -u root -
+crontab -u root -l | { cat; echo "@hourly systemctl restart unbound" ; } | crontab -u root -
 
 # Inform the user
 msg_box "Congratulations!
