@@ -494,7 +494,7 @@ DB_PASSWORD=$(grep "dbpassword" "$SYSTEM_DIR/$NCPATH/config/config.php" | awk '{
 sudo -Hiu postgres psql nextcloud_db -c "ALTER USER ncadmin WITH PASSWORD '$DB_PASSWORD'"
 sudo -Hiu postgres psql -c "DROP DATABASE nextcloud_db;"
 sudo -Hiu postgres psql -c "CREATE DATABASE nextcloud_db WITH OWNER ncadmin TEMPLATE template0 ENCODING \"UTF8\";"
-sudo -Hiu postgres psql nextcloud_db < "$SCRIPTS/nextclouddb.sql"
+if ! sudo -Hiu postgres psql nextcloud_db < "$SCRIPTS/nextclouddb.sql"
 then
     msg_box "An issue was reported while restoring the database."
     umount "$BORG_MOUNT"
