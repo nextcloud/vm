@@ -74,7 +74,13 @@ and reboot your server automatically."
 
     # Remove PiVPN and reboot
     yes | pivpn uninstall
-    
+
+    # Remove some leftovers
+    rm -r  /etc/wireguard*
+    ip link set down wg0
+    ip link del dev wg0
+    rm -f "$SCRIPTS/pivpn.sh"
+
     # Just to make sure
     reboot
 fi
