@@ -174,13 +174,11 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 # Check if root
 root_check
 
-SMART_STATS="\$(/usr/sbin/smartctl -a \$SMARTD_DEVICE)"
-
 # Send the message
 if ! send_mail "\$SMARTD_FAILTYPE issue on \$SMARTD_DEVICE" \
 "\$SMARTD_MESSAGE\n
 You can find further information below!\n
-\$SMART_STATS"
+\$(/usr/sbin/smartctl -a \$SMARTD_DEVICE)"
 then
     notify_admin_gui "\$SMARTD_FAILTYPE issue on \$SMARTD_DEVICE" \
 "\$SMARTD_MESSAGE\n
