@@ -43,6 +43,7 @@ If you have already installed a desktop environment, you will not need to instal
         then
             # Install gnome-session
             print_text_in_color "$ICyan" "Installing gnome-session..."
+            apt update -q4 & spinner_loading
             apt install gnome-session --no-install-recommends -y
             sudo -u "$UNIXUSER" dbus-launch gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
             install_if_not gnome-shell-extension-dash-to-panel
