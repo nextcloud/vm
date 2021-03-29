@@ -260,7 +260,6 @@ AV_REPORT="\$(clamscan \
 --log="$VMLOGS/clamav-fullscan.log" \
 "$ARGUMENT$AV_PATH" \
 "$EXCLUDE_AV_PATH" \
---max-scantime=43200000 \
 --max-filesize=1000M \
 --pcre-max-filesize=1000M \
 --max-dir-recursion=30 \
@@ -287,7 +286,7 @@ chown clamav:clamav "$VMLOGS"/clamav-fullscan.log
 
 # Inform the user
 msg_box "The full scan was successfully setup.
-It will run on Sundays starting at 10:00 and will continue for a maximum of 12 hours (hardcoded).
+It will run on Sundays starting at 10:00.
 You will be notified when it's finished so that you can check the final result."
 
 exit
