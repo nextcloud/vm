@@ -195,8 +195,9 @@ Your Nextcloud should be more secure now."
 
 # Ask for full-scan
 if ! yesno_box_yes "Do you want to set up a weekly full scan of all your files?
+It will run on Sundays starting at 10:00.
 The first scan will scan all your files. 
-All following scans will only scan files that were changed during the week and will run for max 12h.
+All following scans will only scan files that were changed during the week.
 You will be notified when it's finished so that you can check the final result."
 then
     exit
@@ -259,12 +260,10 @@ FIND_OPTS=(-maxdepth 30 -type f -not -path "/proc/*" -not -path "/sys/*" -not -p
 if [ -n "\$FULLSCAN_DONE" ]
 then
     FIND_OPTS+=(-ctime -7)
-    TIMEOUT=(timeout 12h)
 fi
 
 find / "\${FIND_OPTS[@]}" | tee /tmp/scanlist
 
-"\${TIMEOUT[@]}" \
 clamscan \
 "$ARGUMENT$AV_PATH" \
 --file-list=/tmp/scanlist \
@@ -298,6 +297,7 @@ chown clamav:clamav "$VMLOGS"/clamav-fullscan.log
 
 # Inform the user
 msg_box "The full scan was successfully set up.
+It will run on Sundays starting at 10:00.
 The first scan will scan all your files. 
-All following scans will only scan files that were changed during the week and will run for max 12h.
+All following scans will only scan files that were changed during the week.
 You will be notified when it's finished so that you can check the final result."
