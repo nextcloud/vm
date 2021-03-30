@@ -254,16 +254,26 @@ cat << CLAMAV_REPORT > "$SCRIPTS"/clamav-fullscan.sh
 
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
+# Variables/arrays
 FULLSCAN_DONE=""
 FIND_OPTS=(-maxdepth 30 -type f -not -path "/proc/*" -not -path "/sys/*" -not -path "/dev/*")
 
+# Exit if clamscan is already running
+if pgrep clamscan &>/dev/null
+then
+    exit
+fi
+
+# Only scan for changed files in the last week if initial full-scan is done
 if [ -n "\$FULLSCAN_DONE" ]
 then
     FIND_OPTS+=(-ctime -7)
 fi
 
+# Find all applicable files
 find / "\${FIND_OPTS[@]}" | tee /tmp/scanlist
 
+# Run the scan and delete the temp file afterwards
 clamscan \
 "$ARGUMENT$AV_PATH" \
 --file-list=/tmp/scanlist \
@@ -273,11 +283,13 @@ clamscan \
 | tee "$VMLOGS/clamav-fullscan.log" \
 && rm -f /tmp/scanlist
 
+# Set the full-scan variable to done
 if [ -z "\$FULLSCAN_DONE" ]
 then
     sed -i "s|^FULLSCAN_DONE.*|FULLSCAN_DONE=1|"  "$SCRIPTS"/clamav-fullscan.sh
 fi
 
+# Send notification
 notify_admin_gui \
 "Your weekly full-scan ClamAV report" \
 "\$(sed -n '/----------- SCAN SUMMARY -----------/,\$p' $VMLOGS/clamav-fullscan.log)\n
