@@ -71,14 +71,15 @@ do
     echo '#########################'
     print_text_in_color "$ICyan" "Testing /dev/$drive"
     OUTPUT=$(smartctl -a "/dev/$drive")
-    if ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result:'
+    if ! echo "$OUTPUT" | grep -q '=== START OF INFORMATION SECTION ===' 
     then
         print_text_in_color "$IRed" "/dev/$drive doesn't support smart monitoring"
         echo "$OUTPUT"
         msg_box "It seems like /dev/$drive doesn't support smart monitoring.
 Please check this script's output for more info!
 Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
-    elif ! echo "$OUTPUT" | grep -q 'No Errors Logged'
+    elif ! echo "$OUTPUT" | grep -q 'No Errors Logged' \
+|| ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result: PASSED'
     then
         print_text_in_color "$IRed" "/dev/$drive isn't healthy"
         echo "$OUTPUT"
@@ -154,7 +155,7 @@ then
     # Write conf to file
     # https://wiki.debianforum.de/Festplattendiagnostik-_und_%C3%9Cberwachung#Beispiel_3
     echo "DEVICESCAN -a -I 194 -W 5,45,55 -r 5 -R 5 -n standby,24 -m <nomailer> -M exec \
-$SCRIPTS/smart-notification.sh -s (O/../../(2|4|6)/02|S/../../5/02|L/../20/./02)" > /etc/smartd.conf
+$SCRIPTS/smart-notification.sh -s (S/../.././01|L/../../6/02)" > /etc/smartd.conf
 
     # Create smart notification script
     cat << SMART_NOTIFICATION > "$SCRIPTS/smart-notification.sh"
@@ -173,16 +174,15 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 # Check if root
 root_check
 
-# Save the message (STDIN) to the MESSAGE variable:
-MESSAGE=\$(cat)
-
-# Append the output of smartctl -a to the message:
-MESSAGE+=\$(/usr/sbin/smartctl -a -d \$SMARTD_DEVICETYPE \$SMARTD_DEVICE)
-
-# Now send the message
-if ! send_mail "\$SMARTD_SUBJECT on \$SMARTD_DEVICE" "\$MESSAGE"
+# Send the message
+if ! send_mail "\$SMARTD_FAILTYPE issue on \$SMARTD_DEVICE" \
+"\$SMARTD_MESSAGE\n
+You can find further information below!\n
+\$(/usr/sbin/smartctl -a \$SMARTD_DEVICE)"
 then
-    notify_admin_gui "\$SMARTD_SUBJECT on \$SMARTD_DEVICE" "\$MESSAGE"
+    notify_admin_gui "\$SMARTD_FAILTYPE issue on \$SMARTD_DEVICE" \
+"\$SMARTD_MESSAGE\n
+You might run 'sudo smartctl -a \$SMARTD_DEVICE' to get further information."
 fi
 exit
 SMART_NOTIFICATION

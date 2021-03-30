@@ -31,8 +31,6 @@ If you need to edit the crontab please type: crontab -u root -e
 If you need to edit the script itself, please check: $SCRIPTS/letsencryptrenew.sh
 
 Feel free to contribute to this project: https://goo.gl/3fQD65"
-    crontab -u root -l | grep -v "$SCRIPTS/letsencryptrenew.sh" | crontab -u root -
-    crontab -u root -l | { cat; echo "3 */12 * * * $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
 if [ "$(hostname)" != "$FQDOMAIN" ]
@@ -49,28 +47,35 @@ fi
 # Set trusted domains
 run_script NETWORK trusted
 
-add_crontab_le() {
-# shellcheck disable=SC2016
-DATE='$(date +%Y-%m-%d_%H:%M)'
+# Add crontab
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
-#!/bin/sh
-if ! certbot renew --quiet --no-self-upgrade > /var/log/letsencrypt/renew.log 2>&1 ; then
-        echo "Let's Encrypt FAILED!"--$DATE >> /var/log/letsencrypt/cronjob.log
+#!/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+echo '###################################'
+DATE=\$(date +%Y-%m-%d_%H:%M)
+if ! certbot renew >> /var/log/letsencrypt/cronjob.log 2>&1
+then
+    echo "Let's Encrypt FAILED!--\$DATE" >> /var/log/letsencrypt/cronjob.log
 else
-        echo "Let's Encrypt SUCCESS!"--$DATE >> /var/log/letsencrypt/cronjob.log
+    echo "Let's Encrypt SUCCESS!--\$DATE" >> /var/log/letsencrypt/cronjob.log
 fi
-
 # Check if service is running
 if ! pgrep apache2 > /dev/null
 then
     systemctl start apache2.service
+    if ! pgrep apache2 > /dev/null
+    then
+        # shellcheck source=lib.sh
+        source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+        notify_admin_gui "Could not start Apache!" "Please report this to $ISSUES!"
+    fi
 fi
 CRONTAB
-}
-add_crontab_le
-
-# Makeletsencryptrenew.sh executable
+# Make letsencryptrenew.sh executable
 chmod +x $SCRIPTS/letsencryptrenew.sh
+# Add cronjob
+crontab -u root -l | grep -v "$SCRIPTS/letsencryptrenew.sh" | crontab -u root -
+crontab -u root -l | { cat; echo "3 */12 * * * $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
 
 # Cleanup
 rm -f $SCRIPTS/test-new-config.sh
