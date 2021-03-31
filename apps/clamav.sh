@@ -195,7 +195,9 @@ Your Nextcloud should be more secure now."
 
 # Ask for full-scan
 if ! yesno_box_yes "Do you want to set up a weekly full scan of all your files?
-It will run on Sundays starting at 10:00 and will continue for a maximum of 12 hours (hardcoded). 
+It will run on Sundays starting at 10:00.
+The first scan will scan all your files. 
+All following scans will only scan files that were changed during the week.
 You will be notified when it's finished so that you can check the final result."
 then
     exit
@@ -222,7 +224,7 @@ case "$choice" in
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
-        EXCLUDE_AV_PATH="--exclude-dir=^$AV_PATH/"
+        EXCLUDE_AV_PATH="--exclude-dir=$AV_PATH/"
     ;;
     "Move to a folder")
         ARGUMENT="--move="
@@ -231,7 +233,7 @@ case "$choice" in
         mkdir -p "$AV_PATH"
         chown -R clamav:clamav "$AV_PATH"
         chmod -R 600 "$AV_PATH"
-        EXCLUDE_AV_PATH="--exclude-dir=^$AV_PATH/"
+        EXCLUDE_AV_PATH="--exclude-dir=$AV_PATH/"
     ;;
     "Remove")
         ARGUMENT="--remove=yes"
@@ -252,25 +254,46 @@ cat << CLAMAV_REPORT > "$SCRIPTS"/clamav-fullscan.sh
 
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-AV_REPORT="\$(clamscan \
---recursive \
---stdout \
---infected \
---cross-fs \
---log="$VMLOGS/clamav-fullscan.log" \
+# Variables/arrays
+FULLSCAN_DONE=""
+FIND_OPTS=(-maxdepth 30 -type f -not -path "/proc/*" -not -path "/sys/*" -not -path "/dev/*")
+
+# Exit if clamscan is already running
+if pgrep clamscan &>/dev/null
+then
+    exit
+fi
+
+# Only scan for changed files in the last week if initial full-scan is done
+if [ -n "\$FULLSCAN_DONE" ]
+then
+    FIND_OPTS+=(-ctime -7)
+fi
+
+# Find all applicable files
+find / "\${FIND_OPTS[@]}" | tee /tmp/scanlist
+
+# Run the scan and delete the temp file afterwards
+clamscan \
 "$ARGUMENT$AV_PATH" \
-"$EXCLUDE_AV_PATH" \
+--file-list=/tmp/scanlist \
 --max-filesize=1000M \
 --pcre-max-filesize=1000M \
---max-dir-recursion=30 \
---exclude-dir=^/sys/ \
---exclude-dir=^/proc/ \
---exclude-dir=^/dev/ \
-/ )"
+"$EXCLUDE_AV_PATH" \
+| tee "$VMLOGS/clamav-fullscan.log" \
+&& rm -f /tmp/scanlist
 
+# Set the full-scan variable to done
+if [ -z "\$FULLSCAN_DONE" ]
+then
+    sed -i "s|^FULLSCAN_DONE.*|FULLSCAN_DONE=1|"  "$SCRIPTS"/clamav-fullscan.sh
+fi
+
+# Send notification
 notify_admin_gui \
 "Your weekly full-scan ClamAV report" \
-"\$AV_REPORT"
+"\$(sed -n '/----------- SCAN SUMMARY -----------/,\$p' $VMLOGS/clamav-fullscan.log)\n
+\$(grep -i infected $VMLOGS/clamav-fullscan.log | grep -v "Infected files:")"
 CLAMAV_REPORT
 
 # Make the script executable
@@ -278,15 +301,15 @@ chmod +x "$SCRIPTS"/clamav-fullscan.sh
 
 # Create the cronjob
 crontab -u root -l | grep -v "$SCRIPTS/clamav-fullscan.sh" | crontab -u root -
-crontab -u root -l | { cat; echo "0 10 * * 7 $SCRIPTS/clamav-fullscan.sh > /dev/null 2>&1"; } | crontab -u root -
+crontab -u root -l | { cat; echo "0 10 * * 7 $SCRIPTS/clamav-fullscan.sh > /dev/null"; } | crontab -u root -
 
 # Create the log-file
 touch "$VMLOGS"/clamav-fullscan.log
 chown clamav:clamav "$VMLOGS"/clamav-fullscan.log
 
 # Inform the user
-msg_box "The full scan was successfully setup.
+msg_box "The full scan was successfully set up.
 It will run on Sundays starting at 10:00.
+The first scan will scan all your files. 
+All following scans will only scan files that were changed during the week.
 You will be notified when it's finished so that you can check the final result."
-
-exit
