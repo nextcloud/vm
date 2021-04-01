@@ -48,10 +48,18 @@ fi
 # MC is needed for this
 if ! is_this_installed mc
 then
-    msg_box "For viewing backups we will need Midnight Commander, which is a command line file explorer.
-Please install it before you can continue with this script by running:
-'sudo bash /var/scripts/menu.sh' choose 'Main Menu => Additional Apps'"
-    exit 1
+    msg_box "For viewing backups we will need Midnight Commander, which is a command line file explorer."
+    if yesno_box_yes "Do you want to install it now?"
+    then
+        run_script APP midnight-commander
+    else
+        exit 1
+    fi
+    if ! is_this_installed mc
+    then
+        msg_box "It seems like Midnight Commander stil isn't installed. Cannot proceed!"
+        exit 1
+    fi
 fi
 # Also get variables from the offshore backup file
 if [ -f "$OFFSHORE_BACKUP_FILE" ]

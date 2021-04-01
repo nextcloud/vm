@@ -109,7 +109,6 @@ do
         chmod -R 600 $SMB_CREDENTIALS
         echo "username=$SMB_USER" > $SMB_CREDENTIALS/SMB$count
         echo "password=$SMB_PASSWORD" >> $SMB_CREDENTIALS/SMB$count
-        unset SMB_USER && unset SMB_PASSWORD
         mkdir -p "$SMBSHARES/$count"
         mount "$SMBSHARES/$count"
         
@@ -132,7 +131,19 @@ As a hint:
             # Inform the user that mounting was successful
             msg_box "Your mount was successful, congratulations!
 It's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
+            # Allow to make it a backup mount
+            if yesno_box_no "Do you want to use this mount for backups?
+If you choose 'Yes', you will be able to use this mount as target directory for backups of the built-in backup solution!"
+            then
+                umount "$SMBSHARES/$count"
+                sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+                echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
+                unset SMB_USER && unset SMB_PASSWORD
+                msg_box "The backup mount was successfully created!"
+                break
+            fi
             # Check if Nextcloud is existing
+            unset SMB_USER && unset SMB_PASSWORD
             NEWNAME="SMB$count"
             if ! [ -f $NCPATH/occ ]
             then

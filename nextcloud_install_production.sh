@@ -56,7 +56,8 @@ if [ -z "$PROVISIONING" ]
 then
     if ! does_snapshot_exist "NcVM-installation" && yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
 Please note: this feature will not be used by this script but by other scripts later on.
-For now we will only create a placeholder volume that will be used to let some space for snapshot volumes."
+For now we will only create a placeholder volume that will be used to let some space for snapshot volumes.
+Be aware that you will not be able to use the built-in backup solution if you choose 'No'!"
     then
         check_free_space
         if [ "$FREE_SPACE" -ge 50 ]

@@ -127,7 +127,7 @@ fi
 if grep -q " /mnt/ncdata " /etc/mtab
 then
     msg_box "The '/mnt/ncdata' directory is mounted and not existing on the root drive.
-This is currently not supported."
+This is currently not supported by this script."
     exit 1
 fi
 # The same with the /home directory
@@ -470,7 +470,7 @@ do
 done
 
 # Exclude some dirs
-EXCLUDE_DIRECTORIES=("home/plex/config/Library/Application Support/Plex Media Server/Cache" "$NCDATA"/appdata_*/preview)
+EXCLUDE_DIRECTORIES=("home/plex/config/Library/Application Support/Plex Media Server/Cache" "$NCDATA"/appdata_*/preview "$NCDATA"/*/files_trashbin "$NCDATA"/*/files_versions)
 for directory in "${EXCLUDE_DIRECTORIES[@]}"
 do
     directory="${directory#/*}"
@@ -649,6 +649,10 @@ do
         count=$((count+1))
     fi
 done
+
+# Cleanup trashbin and files_versions because we removed them
+nextcloud_occ_no_check trashbin:cleanup --all-users -vvv
+nextcloud_occ_no_check versions:cleanup -vvv
 
 # Rescan appdata because we removed all previews
 nextcloud_occ_no_check files:scan-app-data -vvv
