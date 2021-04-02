@@ -325,6 +325,13 @@ do
     fi
 done
 
+# Break the borg lock if it exists because we have the snapshot that prevents such situations
+if [ -f "$BORG_REPO/lock.roster" ]
+then
+    print_text_in_color "$ICyan" "Breaking the borg lock..."
+    borg break-lock "$BORG_REPO"
+fi
+
 # Find available archives
 ALL_ARCHIVES=$(borg list "$BORG_REPO")
 SYSTEM_ARCHIVES=$(echo "$ALL_ARCHIVES" | grep "NcVM-system-partition" | awk -F "-" '{print $1}' | sort -r)

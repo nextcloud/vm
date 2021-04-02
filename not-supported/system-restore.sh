@@ -251,6 +251,13 @@ fi
 # Export passphrase
 export BORG_PASSPHRASE="$ENCRYPTION_KEY"
 
+# Break the borg lock if it exists because we have the snapshot that prevents such situations
+if [ -f "$BACKUP_TARGET_DIRECTORY/lock.roster" ]
+then
+    print_text_in_color "$ICyan" "Breaking the borg lock..."
+    borg break-lock "$BACKUP_TARGET_DIRECTORY"
+fi
+
 # Find available archives
 ALL_ARCHIVES=$(borg list "$BACKUP_TARGET_DIRECTORY")
 SYSTEM_ARCHIVES=$(echo "$ALL_ARCHIVES" | grep "NcVM-system-partition" | awk -F "-" '{print $1}' | sort -r)

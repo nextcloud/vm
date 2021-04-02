@@ -190,15 +190,20 @@ then
     mv /root/.cache/borg/ /root/.cache/borg.bak
 fi
 
-# Mount the repository
+# Mount the drive
 mount "$BACKUP_MOUNTPOINT"
+
+# Break the borg lock if it exists because we have the snapshot that prevents such situations
+if [ -f "$BACKUP_TARGET_DIRECTORY/lock.roster" ]
+then
+    print_text_in_color "$ICyan" "Breaking the borg lock..."
+    borg break-lock "$BACKUP_TARGET_DIRECTORY"
+fi
+
+# Mount the repository
 export BORG_PASSPHRASE="$ENCRYPTION_KEY"
 mkdir -p /tmp/borg
-if ! borg mount "$choice" /tmp/borg
-then
-    msg_box "Something failed while mounting the backup repository. Please try again."
-    exit 1
-fi
+borg mount "$choice" /tmp/borg
 unset BORG_PASSPHRASE
 unset ENCRYPTION_KEY
 
@@ -227,18 +232,10 @@ user_format=full name | mtime:15 | size:15 | owner:12 | group:12 | perm:12
 MC_INI
 
 # Show Midnight commander
-if ! mc /tmp/borg
-then
-    msg_box "Something went wrong while showing MC"
-    exit 1
-fi
+mc /tmp/borg
 
 # Unmount borg backup
-if ! umount /tmp/borg
-then
-    msg_box "Could not unmount the backup repository."
-    exit 1
-fi
+umount /tmp/borg
 
 # Restore original cache and security folder
 if [ "$BACKUP_MOUNTPOINT" = "$OFFSHORE_BACKUP_MOUNTPOINT" ]
