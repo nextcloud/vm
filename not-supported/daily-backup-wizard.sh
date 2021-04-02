@@ -57,6 +57,14 @@ fi
 # Check if pending snapshot is existing and cancel the setup in this case.
 if does_snapshot_exist "NcVM-startup"
 then
+    # Cannot get executed during the startup script
+    if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+    then
+        msg_box "The daily backup cannot get configured during the startup script.
+Please try again after it is finished by running: 
+'sudo bash $SCRIPTS/menu.sh' -> 'Server Configuration' -> 'Daily Backup Wizard'."
+        exit
+    fi
     msg_box "You need to run the update script once before you can continue with creating the backup script."
     if yesno_box_yes "Do you want to do this now?"
     then
@@ -87,14 +95,7 @@ then
 create a LVM-snapshot which is a requirement to create a backup script."
     exit 1
 fi
-# Cannot get executed during the startup script
-if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
-then
-    msg_box "The daily backup cannot get configured during the startup script.
-Please try again after it is finished by running: 
-'sudo bash $SCRIPTS/menu.sh' -> 'Server Configuration' -> 'Daily Backup Wizard'."
-    exit
-fi
+
 # Check if backup drives existing
 get_backup_mounts
 if [ "$BACKUP_MOUNTS" = "\n" ]
