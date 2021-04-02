@@ -35,7 +35,9 @@ if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "Cannot proceed with the update currently because NcVM-snapshot-pending exists.\n
 It is possible that a backup is currently running.\n
-Advice: don't restart your system now if that is the case!"
+Advice: don't restart your system now if that is the case!\n
+If you are sure that not backup is currently running, you can fix this by executing:
+'sudo lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot'"
     # Don't exit the script while the snapshot exists to disable any automatic restart during backups
     while does_snapshot_exist "NcVM-snapshot-pending"
     do
