@@ -208,6 +208,9 @@ unset BORG_PASSPHRASE
 unset ENCRYPTION_KEY
 
 # Show last msg_box
+msg_box "Advice: If Webmin is installed on your server, you should be able to access your backups by visiting in a Browser:
+https://$ADDRESS:1000/filemin/index.cgi?path=/tmp/borg \n
+If you haven't been logged in to Webmin, yet, you might need to log in first and open the link after you've done that."
 while :
 do
     msg_box "We will now open Midnight Commander so that you can view the content of your backup repository.\n
@@ -219,11 +222,6 @@ Otherwise we will not be able to unmount the backup repository again and there w
 most likely be problems during the next regular backup."
     if yesno_box_no "Do you remember all three points?"
     then
-        msg_box "Advice: If Webmin is installed on your server, you should be able to access your backups by visiting in a Browser:
-https://$ADDRESS:1000/filemin/index.cgi?path=/tmp/borg
-If you haven't been logged in to Webmin, yet, you might need to log in first and open the link after you've done that.\n
-Please don't forget to close Midnight Commander that gets opened after this popup by pressing [F10] \
-when you are done which will unmount your backups!"
         break
     fi
 done
