@@ -219,6 +219,11 @@ Otherwise we will not be able to unmount the backup repository again and there w
 most likely be problems during the next regular backup."
     if yesno_box_no "Do you remember all three points?"
     then
+        msg_box "Advice: If Webmin is installed on your server, you should be able to access your backups by visiting in a Browser:
+https://$ADDRESS:1000/filemin/index.cgi?path=/tmp/borg
+If you haven't been logged in to Webmin, yet, you might need to log in first and open the link after you've done that.\n
+Please don't forget to close Midnight Commander that gets opened after this popup by pressing [F10] \
+when you are done which will unmount your backups!"
         break
     fi
 done
@@ -233,9 +238,6 @@ MC_INI
 
 # Show Midnight commander
 mc /tmp/borg
-
-# Unmount borg backup
-umount /tmp/borg
 
 # Restore original cache and security folder
 if [ "$BACKUP_MOUNTPOINT" = "$OFFSHORE_BACKUP_MOUNTPOINT" ]
@@ -253,6 +255,12 @@ then
     exit 1
 fi
 
+# Unmount borg backup
+if ! umount /tmp/borg
+then
+    msg_box "Could not unmount the backup archives."
+fi
+
 # Revert panel settings to MC
 echo "" > "/root/.config/mc/panels.ini"
 
@@ -260,7 +268,7 @@ echo "" > "/root/.config/mc/panels.ini"
 sleep 1
 if ! umount "$BACKUP_MOUNTPOINT"
 then
-    msg_box "Something went wrong while unmounting the backup drive."
+    msg_box "Could not unmount the backup drive."
     exit 1
 fi
 
