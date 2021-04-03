@@ -39,6 +39,7 @@ Advice: don't restart your system now if that is the case!\n
 If you are sure that no backup is currently running, you can fix this by executing:
 'sudo lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot'"
     # Kill all "$SCRIPTS/update.sh" processes to make sure that no automatic restart happens after exiting this script
+    # shellcheck disable=2009
     PROCESS_IDS=$(ps aux | grep "$SCRIPTS/update.sh" | grep -v grep | awk '{print $2}')
     if [ -n "$PROCESS_IDS" ]
     then
