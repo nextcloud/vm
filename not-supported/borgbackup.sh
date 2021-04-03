@@ -397,6 +397,7 @@ if ! umount "$LVM_MOUNT"
 then
     send_error_mail "Could not unmount the LVM snapshot."
 fi
+rm -r "$LVM_MOUNT"
 
 # Prune options
 BORG_PRUNE_OPTS=(--stats --keep-within=7d --keep-weekly=4 --keep-monthly=6 "$BACKUP_TARGET_DIRECTORY")
@@ -455,6 +456,7 @@ then
         re_rename_snapshot
         send_error_mail "Could not unmount the ZFS snapshot."
     fi
+    rm -r "$ZFS_MOUNT"
 fi
 
 # Backup additional locations
