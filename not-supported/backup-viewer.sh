@@ -45,22 +45,6 @@ then
     msg_box "Some daily backup variables are empty. This is wrong."
     exit 1
 fi
-# MC is needed for this
-if ! is_this_installed mc
-then
-    msg_box "For viewing backups we will need Midnight Commander, which is a command line file explorer."
-    if yesno_box_yes "Do you want to install it now?"
-    then
-        run_script APP midnight-commander
-    else
-        exit 1
-    fi
-    if ! is_this_installed mc
-    then
-        msg_box "It seems like Midnight Commander stil isn't installed. Cannot proceed!"
-        exit 1
-    fi
-fi
 # Also get variables from the offshore backup file
 if [ -f "$OFFSHORE_BACKUP_FILE" ]
 then
@@ -94,6 +78,66 @@ then
     msg_box "The NcVM-snapshot doesn't exist. This isn't allowed."
     exit 1
 fi
+
+# Select your way of showing the backups
+choice=$(whiptail --title "$TITLE" --menu \
+"Which way do you prefer of showing your backups?
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Midnight Commander" "(Only for viewing your backups, no easy way to copy and move files)" \
+"Webmin" "(Copy and move files via webpage but has bad mimetype support)" \
+"Remotedesktop" "(Best way to copy and move files but needs xrdp to be installed)" 3>&1 1>&2 2>&3)
+
+case "$choice" in
+    "Midnight Commander")
+        if ! is_this_installed mc
+        then
+            msg_box "It seems like Midnight Commander isn't installed, yet."
+            if yesno_box_yes "Do you want to install it now?"
+            then
+                run_script APP midnight-commander
+            else
+                exit 1
+            fi
+            if ! is_this_installed mc
+            then
+                msg_box "It seems like Midnight Commander stil isn't installed. Cannot proceed!"
+                exit 1
+            fi
+        fi
+    ;;
+    "Webmin")
+        if ! is_this_installed webmin
+        then
+            msg_box "It seems like Webmin isn't installed, yet."
+            if yesno_box_yes "Do you want to install it now?"
+            then
+                run_script APP webmin
+            else
+                exit 1
+            fi
+            if ! is_this_installed webmin
+            then
+                msg_box "It seems like Webmin stil isn't installed. Cannot proceed!"
+                exit 1
+            fi
+        fi
+    ;;
+    "Remotedesktop")
+        if ! is_this_installed xrdp
+        then
+            msg_box "It seems like Remotedesktop isn't installed, yet.
+You need to install it on your server before you can use it.
+To do that, you need to manually download and execute the following script on your server:
+$NOT_SUPPORTED_FOLDER/remotedesktop.sh"
+            exit 1
+        fi
+    ;;
+    *)
+    ;;
+esac
+
+# Safe the choice in a new variable
+PROGRAM_CHOICE="$choice"
 
 # View backup repository menu
 args=(whiptail --title "$TITLE" --menu \
@@ -207,35 +251,50 @@ borg mount "$choice" /tmp/borg
 unset BORG_PASSPHRASE
 unset ENCRYPTION_KEY
 
-# Show last msg_box
-msg_box "Advice: If Webmin is installed on your server, you should be able to access your backups by visiting in a Browser:
-https://$ADDRESS:1000/filemin/index.cgi?path=/tmp/borg \n
-If you haven't been logged in to Webmin, yet, you might need to log in first and open the link after you've done that."
-while :
-do
-    msg_box "We will now open Midnight Commander so that you can view the content of your backup repository.\n
+case "$PROGRAM_CHOICE" in
+    "Midnight Commander")
+        while :
+        do
+            msg_box "We will now open Midnight Commander so that you can view the content of your backup repository.\n
 Please remember a few things for Midnight Commander:
 1. You can simply navigate with the [ARROW] keys and [ENTER]
-2. Opening one backup snapshot can take a long time! Please be patient!
-3. When you are done, please close Midnight Commander completely by pressing [F10]. \
+2. When you are done, please close Midnight Commander completely by pressing [F10]. \
 Otherwise we will not be able to unmount the backup repository again and there will \
 most likely be problems during the next regular backup."
-    if yesno_box_no "Do you remember all three points?"
-    then
-        break
-    fi
-done
-
-# Set the needed settings for mc
-mkdir -p "/root/.config/mc"
-cat << MC_INI > "/root/.config/mc/panels.ini"
+            if yesno_box_no "Do you remember all two points?"
+            then
+                break
+            fi
+        done
+        # Set the needed settings for mc
+        mkdir -p "/root/.config/mc"
+        cat << MC_INI > "/root/.config/mc/panels.ini"
 [New Left Panel]
 list_format=user
 user_format=full name | mtime:15 | size:15 | owner:12 | group:12 | perm:12
 MC_INI
+        # Show Midnight commander
+        mc /tmp/borg
 
-# Show Midnight commander
-mc /tmp/borg
+        # Revert panel settings to MC
+        echo "" > "/root/.config/mc/panels.ini"
+    ;;
+    "Webmin")
+        msg_box "For showing your backups with Webmin, you should be able to access them by visiting in a Browser:
+https://$ADDRESS:10000/filemin/index.cgi?path=/tmp/borg \n
+If you haven't been logged in to Webmin, yet, you might need to log in first and open the link after you've done that.\n
+After you are done, just press [ENTER] here to unmount the backup again."
+    ;;
+    "Remotedesktop")
+        msg_box "For showing your backups with Remotedesktop, you need to connect to your server using an RDP client.
+After you are connected, open a terminal in the session and execute the following command \
+which should open the file manager with the correct location:\n
+xhost +si:localuser:root && sudo nautilus /tmp/borg \n
+After you are done, just press [ENTER] here to unmount the backup again."
+    ;;
+    *)
+    ;;
+esac
 
 # Restore original cache and security folder
 if [ "$BACKUP_MOUNTPOINT" = "$OFFSHORE_BACKUP_MOUNTPOINT" ]
@@ -258,9 +317,6 @@ if ! umount /tmp/borg
 then
     msg_box "Could not unmount the backup archives."
 fi
-
-# Revert panel settings to MC
-echo "" > "/root/.config/mc/panels.ini"
 
 # Unmount the backup drive
 sleep 1
