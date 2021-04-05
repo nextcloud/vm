@@ -94,7 +94,9 @@ fi
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "It seems to be currently running a backup or update.
-Cannot restore the backup now. Please try again later."
+Cannot restore the backup now. Please try again later.\n
+If you are sure that no backup or update is currently running, you can fix this by executing:
+'sudo lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot'"
     exit 1
 elif does_snapshot_exist "NcVM-startup"
 then
@@ -127,7 +129,7 @@ fi
 if grep -q " /mnt/ncdata " /etc/mtab
 then
     msg_box "The '/mnt/ncdata' directory is mounted and not existing on the root drive.
-This is currently not supported."
+This is currently not supported by this script."
     exit 1
 fi
 # The same with the /home directory
@@ -323,6 +325,13 @@ do
     fi
 done
 
+# Break the borg lock if it exists because we have the snapshot that prevents such situations
+if [ -f "$BORG_REPO/lock.roster" ]
+then
+    print_text_in_color "$ICyan" "Breaking the borg lock..."
+    borg break-lock "$BORG_REPO"
+fi
+
 # Find available archives
 ALL_ARCHIVES=$(borg list "$BORG_REPO")
 SYSTEM_ARCHIVES=$(echo "$ALL_ARCHIVES" | grep "NcVM-system-partition" | awk -F "-" '{print $1}' | sort -r)
@@ -470,7 +479,7 @@ do
 done
 
 # Exclude some dirs
-EXCLUDE_DIRECTORIES=("home/plex/config/Library/Application Support/Plex Media Server/Cache" "$NCDATA"/appdata_*/preview)
+EXCLUDE_DIRECTORIES=("home/plex/config/Library/Application Support/Plex Media Server/Cache" "$NCDATA"/appdata_*/preview "$NCDATA"/*/files_trashbin "$NCDATA"/*/files_versions)
 for directory in "${EXCLUDE_DIRECTORIES[@]}"
 do
     directory="${directory#/*}"
@@ -649,6 +658,10 @@ do
         count=$((count+1))
     fi
 done
+
+# Cleanup trashbin and files_versions because we removed them
+nextcloud_occ_no_check trashbin:cleanup --all-users -vvv
+nextcloud_occ_no_check versions:cleanup -vvv
 
 # Rescan appdata because we removed all previews
 nextcloud_occ_no_check files:scan-app-data -vvv

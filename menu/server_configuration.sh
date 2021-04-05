@@ -54,7 +54,8 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "GeoBlock" "(Only allow certain countries to access your server)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "SMTP Mail" "(Enable being notified by mail from your server)" OFF \
-"Disk Monitoring" "(Check for S.M.A.R.T errors on your disks)" OFF 3>&1 1>&2 2>&3)
+"Disk Monitoring" "(Check for S.M.A.R.T errors on your disks)" OFF \
+"Daily Backup Wizard" "([BETA] Create a Daily Backup script)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Static IP"*)
@@ -125,6 +126,10 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
     *"Disk Monitoring"*)
         print_text_in_color "$ICyan" "Downloading the Disk Monitoring script..."
         run_script DISK smart-monitoring
+    ;;&
+    *"Daily Backup Wizard"*)
+        print_text_in_color "$ICyan" "Downloading the Daily Backup Wizard script..."
+        run_script NOT_SUPPORTED_FOLDER daily-backup-wizard
     ;;&
     *)
     ;;
