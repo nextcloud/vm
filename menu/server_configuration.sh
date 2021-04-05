@@ -55,7 +55,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "SMTP Mail" "(Enable being notified by mail from your server)" OFF \
 "Disk Monitoring" "(Check for S.M.A.R.T errors on your disks)" OFF \
-"Daily Backup Wizard" "(Create a Daily Backup script)" OFF 3>&1 1>&2 2>&3)
+"Daily Backup Wizard" "([BETA] Create a Daily Backup script)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Static IP"*)
