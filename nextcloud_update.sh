@@ -614,7 +614,7 @@ then
 fi
 
 ############# Don't upgrade to specific version
-DONOTUPDATETO='20.0.6'
+DONOTUPDATETO='21.0.1'
 if [[ "$NCVERSION" == "$DONOTUPDATETO" ]]
 then
     msg_box "Due to serious bugs with version $DONOTUPDATETO we won't upgrade to that version."
