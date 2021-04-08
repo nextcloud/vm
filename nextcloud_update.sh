@@ -617,7 +617,7 @@ fi
 DONOTUPDATETO='21.0.1'
 if [[ "$NCVERSION" == "$DONOTUPDATETO" ]]
 then
-    msg_box "Due to serious bugs with version $DONOTUPDATETO we won't upgrade to that version."
+    msg_box "Due to serious bugs with Nextcloud $DONOTUPDATETO we won't upgrade to that version."
     exit
 fi
 
