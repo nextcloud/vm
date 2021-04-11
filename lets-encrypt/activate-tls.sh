@@ -218,6 +218,7 @@ fi
 # Generate certs and auto-configure if successful
 if [ -n "$DEDYNDOMAIN" ]
 then
+    print_text_in_color "$ICyan" "Renewing TLS with DNS, please don't abort the hook, it may take a while..."
     # Renew with DNS by default
     certbot --manual \
     --text \
