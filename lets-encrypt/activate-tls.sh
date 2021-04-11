@@ -225,8 +225,8 @@ then
     --no-eff-email \
     --agree-tos \
     --preferred-challenges dns \
-    --manual-auth-hook "$SCRIPTS"/deSEC//hook.sh  \
-    --manual-cleanup-hook "$SCRIPTS"/deSEC//hook.sh \
+    --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh  \
+    --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh \
     -d "$DEDYNDOMAIN" \
     certonly
 else
