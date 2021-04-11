@@ -102,17 +102,16 @@ fi
 if yesno_box_yes "Do you want to set this domain as your Nextcoud domain \
 and activate TLS for your Nextcloud using Let's Encrypt?"
 then
-    export DEDYNDOMAIN # Not needed since already exported but added for readability
     # Add DNS renewals with the deSEC hoock script
     print_text_in_color "$ICyan" "Preparing for DNS-renewals..."
     mkdir -p "$SCRIPTS"/deSEC
-    curl_to_dir https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master hook.sh "$SCRIPTS"/deSEC
-    curl_to_dir https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master .dedynauth "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master" "hook.sh" "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master" ".dedynauth" "$SCRIPTS"/deSEC
     check_command sed -i "s|DEDYN_TOKEN=.*|DEDYN_TOKEN=$DEDYNAUTHTOKEN|g" "$SCRIPTS"/deSEC/.dedynauth
     check_command sed -i "s|DEDYN_NAME=.*|DEDYN_NAME=$DEDYNDOMAIN|g" "$SCRIPTS"/deSEC/.dedynauth
-    msg_box "DNS updates for deSEC are now set. This means you don't have to open any ports (80|443) since deSEC TLS renewals will be run with a built in hook.
+    msg_box "DNS updates for deSEC are now set. This means you don't have to open any ports (80|443) since deSEC TLS renewals will be run with a built in hook. \
 
-The hook files will end up in $SCRIPTS/deSEC, please don't touch that folder unless you know what you're doing.
+The hook files will end up in $SCRIPTS/deSEC, please don't touch that folder unless you know what you're doing. \
 You can read more about it here: https://github.com/desec-io/desec-certbot-hook"
     
     # Run the TLS script
