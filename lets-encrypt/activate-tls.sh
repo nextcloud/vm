@@ -256,8 +256,6 @@ the automatic renewal of the cert. If port 80 is closed the cert will expire in 
 You don't need to worry about security as port 80 is directly forwarded to 443, so \
 no traffic will actually be on port 80, except for the forwarding to 443 (HTTPS)."
     fi
-    exit 0
-fi
 else
     last_fail_tls "$SCRIPTS"/activate-tls.sh cleanup
 fi
