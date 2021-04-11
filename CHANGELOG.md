@@ -18,6 +18,7 @@ PR's are more than welcome. Happy Nextclouding!
 ## 21.0.0
 
 ### Small changelog:
+- Add TLS with DNS and deSEC. It's now possible to get DNS from a local machine without any open ports!
 - 
 - Minor bugfixes and improvements
 
