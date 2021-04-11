@@ -18,6 +18,16 @@ PR's are more than welcome. Happy Nextclouding!
 ## 21.0.0
 
 ### Small changelog:
+- 
+- Minor bugfixes and improvements
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/21.0.0..21.0.1
+- https://nextcloud.com/changelog/#latest21
+
+## 21.0.0
+
+### Small changelog:
 - Added Push Notifications for Nextcloud (`High Performance Backend for Nextcloud files`)
 - Added Whiteboard for Nextcloud (`New in Nextcloud 21`)
 - Moved Extract for Nextcloud to its own script
