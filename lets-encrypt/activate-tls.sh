@@ -58,7 +58,7 @@ bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
 Make sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
 fi
 
-if ! [ -n "$DEDYNDOMAIN" ]
+if [ -z "$DEDYNDOMAIN" ]
 then
    msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $TLSDOMAIN, \
 and opened port 80 and 443 directly to this servers IP. A full extensive guide can be found here:
@@ -85,7 +85,7 @@ echo
 print_text_in_color "$ICyan" "Checking if $TLSDOMAIN exists and is reachable..."
 domain_check_200 "$TLSDOMAIN"
 
-if ! [ -n "$DEDYNDOMAIN" ]
+if [ -z "$DEDYNDOMAIN" ]
 then
     # Check if port is open with NMAP
     sed -i "s|127.0.1.1.*|127.0.1.1       $TLSDOMAIN nextcloud|g" /etc/hosts
