@@ -113,7 +113,8 @@ then
     export DEDYNDNS=yes-its-set
     msg_box "DNS updates for deSEC are now set. This means you don't have to open any ports (80|443) since deSEC TLS renewals will be run with a built in hook.
 
-The hook files will end up in "$SCRIPTS"/deSEC, please don't touch that folder unless you know what you're doing."
+The hook files will end up in "$SCRIPTS"/deSEC, please don't touch that folder unless you know what you're doing.
+You can read more about it here: https://github.com/desec-io/desec-certbot-hook"
     
     # Run the TLS script
     run_script LETS_ENC activate-tls
