@@ -106,7 +106,7 @@ then
     # Add DNS renewals with the deSEC hoock script
     print_text_in_color "$ICyan" "Preparing for DNS-renewals..."
     mkdir -p "$SCRIPTS"/deSEC
-    https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master hook.sh "$SCRIPTS"/deSEC
+    curl_to_dir https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master hook.sh "$SCRIPTS"/deSEC
     curl_to_dir https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master .dedynauth "$SCRIPTS"/deSEC
     check_command sed -i "s|DEDYN_TOKEN=.*|DEDYN_TOKEN=$DEDYNAUTHTOKEN|g" "$SCRIPTS"/deSEC/.dedynauth
     check_command sed -i "s|DEDYN_NAME=.*|DEDYN_NAME=$DEDYNDOMAIN|g" "$SCRIPTS"/deSEC/.dedynauth
