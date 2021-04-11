@@ -89,10 +89,6 @@ done
 if yesno_box_yes "Do you want to add automatic updates of your WAN IP using ddclient?
 Please note: this will reset any configuration that might be already in place with ddclient."
 then
-    # Add DynDNS
-    # WANIP6=$(curl -s -k -m 5 https://ipv6bot.whatismyipaddress.com)
-    # curl --user "$DEDYNDOMAIN":"$DEDYNAUTHTOKEN" \
-    #   https://update.dedyn.io/?myipv4="$WANIP4"\&myipv6="$WANIP6" >/dev/null 2>&1
     export DEDYNDOMAIN
     export DEDYNAUTHTOKEN
     run_script NETWORK ddclient-configuration
@@ -106,14 +102,14 @@ then
     print_text_in_color "$ICyan" "Preparing for DNS-renewals..."
     mkdir -p "$SCRIPTS"/deSEC
     curl_to_dir "https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master" "hook.sh" "$SCRIPTS"/deSEC
+    chmod +x "$SCRIPTS"/deSEC/hook.sh
     curl_to_dir "https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master" ".dedynauth" "$SCRIPTS"/deSEC
     check_command sed -i "s|DEDYN_TOKEN=.*|DEDYN_TOKEN=$DEDYNAUTHTOKEN|g" "$SCRIPTS"/deSEC/.dedynauth
     check_command sed -i "s|DEDYN_NAME=.*|DEDYN_NAME=$DEDYNDOMAIN|g" "$SCRIPTS"/deSEC/.dedynauth
     msg_box "DNS updates for deSEC are now set. This means you don't have to open any ports (80|443) since deSEC TLS renewals will be run with a built in hook. \
-
 The hook files will end up in $SCRIPTS/deSEC, please don't touch that folder unless you know what you're doing. \
 You can read more about it here: https://github.com/desec-io/desec-certbot-hook"
-    
+
     # Run the TLS script
     run_script LETS_ENC activate-tls
 fi
