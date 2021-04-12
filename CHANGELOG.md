@@ -15,11 +15,23 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
-## 21.0.0
+## 21.0.1
 
 ### Small changelog:
 - Add TLS with DNS and deSEC. It's now possible to get DNS from a local machine without any open ports!
-- 
+- ClamAV - give the daemon more time to start
+- SMB-server - completely rework how directories get mounted to Nextcloud
+- SMTP-mail - add providers
+- Create a script for the Pico CMS Nextcloud app
+- Add a Firewall script to the not-supported folder
+- Add SSH hardening
+- Add deSEC magic
+- S.M.A.R.T. Monitoring - test drives directly
+- Add a script for the Facerecognition Nextcloud app
+- ClamAV - improve weekly full-scan tremendously
+- Update geoblock database - april
+- Speed up the network check if the network already works
+- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
 - Minor bugfixes and improvements
 
 ### Full changelog:
