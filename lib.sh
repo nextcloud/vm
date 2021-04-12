@@ -995,6 +995,10 @@ version(){
 if version 18.04 "$DISTRO" 20.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
+    if site_200 github.com
+    then
+        return
+    fi
     if ! netplan apply
     then
         systemctl restart systemd-networkd > /dev/null
