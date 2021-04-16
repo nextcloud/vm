@@ -220,44 +220,35 @@ if [ -n "$DEDYNDOMAIN" ]
 then
     print_text_in_color "$ICyan" "Renewing TLS with DNS, please don't abort the hook, it may take a while..."
     # Renew with DNS by default
-    certbot --manual \
-    --text \
-    --rsa-key-size 4096 \
-    --renew-by-default \
-    --server https://acme-v02.api.letsencrypt.org/directory \
-    --no-eff-email \
-    --agree-tos \
-    --preferred-challenges dns \
-    --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh  \
-    --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh \
-    -d "$DEDYNDOMAIN" \
-    certonly
-else
-    generate_cert "$TLSDOMAIN"
-fi
-
-# Generate DHparams
-if [ -d "$CERTFILES" ]
-then
-    if [ ! -f "$DHPARAMS_TLS" ]
+    if certbot certonly --manual --text --rsa-key-size 4096 --renew-by-default --server https://acme-v02.api.letsencrypt.org/directory no-eff-email --agree-tos --preferred-challenges dns --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh -d "$DEDYNDOMAIN"
     then
-        openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
+        # Generate DHparams cipher
+        if [ ! -f "$DHPARAMS_TLS" ]
+        then
+            openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
+        fi
     fi
-fi
-
-# Activate new config
-if check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
-then
-    if [ -z "$DEDYNDOMAIN" ]
+else
+    if generate_cert "$TLSDOMAIN"
     then
-        msg_box "Please remember to keep port 80 (and 443) open so that Let's Encrypt can do \
+        if [ -d "$CERTFILES" ]
+        then
+            # Generate DHparams cipher
+            if [ ! -f "$DHPARAMS_TLS" ]
+            then
+                openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
+            fi
+            # Activate new config
+            check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
+            msg_box "Please remember to keep port 80 (and 443) open so that Let's Encrypt can do \
 the automatic renewal of the cert. If port 80 is closed the cert will expire in 3 months.
-
 You don't need to worry about security as port 80 is directly forwarded to 443, so \
 no traffic will actually be on port 80, except for the forwarding to 443 (HTTPS)."
+            exit 0
+        fi
+    else
+        last_fail_tls "$SCRIPTS"/activate-tls.sh cleanup
     fi
-else
-    last_fail_tls "$SCRIPTS"/activate-tls.sh cleanup
 fi
 
 exit
