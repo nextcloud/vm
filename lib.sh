@@ -448,16 +448,13 @@ domain_check_200() {
     install_if_not dnsutils
 
     # Try to resolve the domain with nslookup using $DNS as resolver
-    if nslookup "${1}" "$INTERNET_DNS" >/dev/null 2>&1
+    if nslookup "${1}" "$INTERNET_DNS"
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with nslookup!"
     else
         msg_box "DNS lookup failed with nslookup. \
 Please check your DNS settings! Maybe the domain isn't propagated?
-Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct.
-
-The following error got reported:
-$(nslookup ${1} $INTERNET_DNS)"
+You can use this site to check if the IP seems correct: https://www.whatsmydns.net/#A/${1}"
         if ! yesno_box_no "Are you 100% sure the domain is correct?"
         then
             exit
