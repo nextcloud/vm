@@ -453,12 +453,11 @@ domain_check_200() {
         print_text_in_color "$IGreen" "DNS seems correct when checking with nslookup!"
     else
         msg_box "DNS lookup failed with nslookup. \
-        msg_box "DNS lookup failed with nslookup. \
 Please check your DNS settings! Maybe the domain isn't propagated? \
 Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct. \
 
+The following error got reported: \
 $(nslookup ${1} $INTERNET_DNS)"
-        if ! yesno_box_no "Are you
         if ! yesno_box_no "Are you 100% sure the domain is correct?"
         then
             exit
