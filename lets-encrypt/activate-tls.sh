@@ -227,6 +227,7 @@ then
         then
             openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
         fi
+    fi
 else
     if generate_cert "$TLSDOMAIN"
     then
