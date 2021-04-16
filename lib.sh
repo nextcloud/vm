@@ -452,11 +452,16 @@ domain_check_200() {
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with nslookup!"
     else
-        print_text_in_color "$IRed" "DNS lookup failed with nslookup."
-        print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
-        print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
-        nslookup "${1}" "$INTERNET_DNS"
-        return 1
+        msg_box "DNS lookup failed with nslookup.
+Please check your DNS settings! Maybe the domain isn't propagated?
+Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct.
+
+The following error was reported:
+$(nslookup ${1} $INTERNET_DNS)"
+        if ! yesno_box_no "Are you 100% sure the domain is correct?"
+        then
+            exit
+        fi
     fi
 
     # Is the DNS record same as the external IP address of the server?
@@ -477,7 +482,7 @@ then you can choose to skip this test in the next step.
 If needed, you can always contact us for further support: \
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
         if ! yesno_box_no "Do you feel brave and want to continue?"
-            then
+        then
             exit
         fi
     fi
