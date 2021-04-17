@@ -52,6 +52,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
+"PDF Annotations" "(Annotate PDF files in Nextcloud)" OFF \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
 "Whiteboard" "(Whiteboard for Nextcloud)" OFF \
@@ -95,10 +96,6 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Midnight Commander script..."
         run_script APP midnight-commander
     ;;&
-    *"Face Recognition"*)
-        print_text_in_color "$ICyan" "Downloading the Face Recognition script..."
-        run_script APP face-recognition
-    ;;&
     *"FullTextSearch"*)
         print_text_in_color "$ICyan" "Downloading the FullTextSearch script..."
         run_script APP fulltextsearch
@@ -126,6 +123,10 @@ to finish the setup once this script is done." "$SUBTITLE"
             msg_box "LDAP installation failed." "$SUBTITLE"
         fi
     ;;&
+    *"PDF Annotations"*)
+        print_text_in_color "$ICyan" "Downloading the PDF Annotations script..."
+        run_script APP pdfannotate
+    ;;&
     *"Talk"*)
         print_text_in_color "$ICyan" "Downloading the Talk script..."
         run_script APP talk
@@ -137,6 +138,10 @@ to finish the setup once this script is done." "$SUBTITLE"
     *"Whiteboard"*)
         print_text_in_color "$ICyan" "Downloading the Whiteboard script..."
         run_script APP whiteboard
+    ;;&
+    *"Face Recognition"*)
+        print_text_in_color "$ICyan" "Downloading the Face Recognition script..."
+        run_script APP face-recognition
     ;;&
     *"SMB-mount"*)
         print_text_in_color "$ICyan" "Downloading the SMB-mount script..."
