@@ -60,5 +60,6 @@ if ! is_app_enabled pdfannotate
 then
     msg_box "Could not install $SCRIPT_NAME!"
 else
-    msg_box "$SCRIPT_NAME was successfully installed!"
+    msg_box "$SCRIPT_NAME was successfully installed!\n
+Hint: You can Annotate PDF files in the Nextcloud Files app by right-clicking on them and selecting 'Annotate'."
 fi
