@@ -119,6 +119,11 @@ check_snapshot_pending() {
 chown root:root "$SCRIPTS/daily-borg-backup.sh"
 chmod 700 "$SCRIPTS/daily-borg-backup.sh"
 
+# Add automatical unlock upon reboot
+crontab -u root -l | grep -v "lvrename /dev/ubuntu-vg/NcVM-snapshot-pending"  | crontab -u root -
+crontab -u root -l | { cat; echo "@reboot /usr/sbin/lvrename /dev/ubuntu-vg/NcVM-snapshot-pending \
+/dev/ubuntu-vg/NcVM-snapshot &>/dev/null" ; } | crontab -u root -
+
 # Write output to logfile.
 exec > >(tee -i "$LOG_FILE")
 exec 2>&1

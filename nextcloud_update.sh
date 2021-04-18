@@ -34,10 +34,9 @@ is_process_running dpkg
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "Cannot proceed with the update currently because NcVM-snapshot-pending exists.\n
-It is possible that a backup is currently running.\n
+It is possible that a backup is currently running or an update wasn't successful.\n
 Advice: don't restart your system now if that is the case!\n
-If you are sure that no backup is currently running, you can fix this by executing:
-'sudo lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot'"
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     # Kill all "$SCRIPTS/update.sh" processes to make sure that no automatic restart happens after exiting this script
     # shellcheck disable=2009
     PROCESS_IDS=$(ps aux | grep "$SCRIPTS/update.sh" | grep -v grep | awk '{print $2}')
@@ -61,6 +60,10 @@ check_free_space
 if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
 || does_snapshot_exist "NcVM-snapshot" || [ "$FREE_SPACE" -ge 50 ] )
 then
+    # Add automatical unlock upon reboot
+    crontab -u root -l | grep -v "lvrename /dev/ubuntu-vg/NcVM-snapshot-pending"  | crontab -u root -
+    crontab -u root -l | { cat; echo "@reboot /usr/sbin/lvrename /dev/ubuntu-vg/NcVM-snapshot-pending \
+/dev/ubuntu-vg/NcVM-snapshot &>/dev/null" ; } | crontab -u root -
     SNAPSHOT_EXISTS=1
     if is_docker_running
     then
@@ -998,5 +1001,23 @@ Maintenance mode is kept on."
     "Nextcloud update failed!" \
     "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
     nextcloud_occ status
+    if [ -n "$SNAPSHOT_EXISTS" ]
+    then
+        # Kill all "$SCRIPTS/update.sh" processes to make sure that no automatic restart happens after exiting this script
+        # shellcheck disable=2009
+        PROCESS_IDS=$(ps aux | grep "$SCRIPTS/update.sh" | grep -v grep | awk '{print $2}')
+        if [ -n "$PROCESS_IDS" ]
+        then
+            mapfile -t PROCESS_IDS <<< "$PROCESS_IDS"
+            for process in "${PROCESS_IDS[@]}"
+            do
+                print_text_in_color "$ICyan" "Killing the process with PID $process to prevent a potential automatic restart..."
+                if ! kill "$process"
+                then
+                    print_text_in_color "$IRed" "Couldn't kill the process with PID $process..."
+                fi
+            done
+        fi
+    fi
     exit 1
 fi

@@ -82,8 +82,7 @@ if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "It seems to be currently running a backup or update.
 Cannot set up the daily backup now. Please try again later.\n
-If you are sure that no backup or update is currently running, you can fix this by executing:
-'sudo lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot'"
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     exit 1
 fi
 
