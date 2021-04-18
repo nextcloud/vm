@@ -1005,11 +1005,11 @@ Maintenance mode is kept on."
     then
         # Kill all "$SCRIPTS/update.sh" processes to make sure that no automatic restart happens after exiting this script
         # shellcheck disable=2009
-        PROCESS_IDS=$(ps aux | grep "$SCRIPTS/update.sh" | grep -v grep | awk '{print $2}')
-        if [ -n "$PROCESS_IDS" ]
+        PROCESS_IDS_NEW=$(ps aux | grep "$SCRIPTS/update.sh" | grep -v grep | awk '{print $2}')
+        if [ -n "$PROCESS_IDS_NEW" ]
         then
-            mapfile -t PROCESS_IDS <<< "$PROCESS_IDS"
-            for process in "${PROCESS_IDS[@]}"
+            mapfile -t PROCESS_IDS_NEW <<< "$PROCESS_IDS_NEW"
+            for process in "${PROCESS_IDS_NEW[@]}"
             do
                 print_text_in_color "$ICyan" "Killing the process with PID $process to prevent a potential automatic restart..."
                 if ! kill "$process"
