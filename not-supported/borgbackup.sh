@@ -111,6 +111,9 @@ get_expiration_time() {
 check_snapshot_pending() {
     if does_snapshot_exist "NcVM-snapshot-pending"
     then
+        msg_box "The snapshot pending does exist. Can currently not proceed.
+Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
         send_error_mail "NcVM-snapshot-pending exists. Please try again later!" "$1"
     fi
 }

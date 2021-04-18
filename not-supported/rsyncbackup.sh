@@ -113,6 +113,9 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
+    msg_box "The snapshot pending does exist. Can currently not proceed.
+Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
 fi
 
@@ -163,6 +166,9 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
+    msg_box "The snapshot pending does exist. Can currently not proceed.
+Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
 fi
 
