@@ -88,8 +88,7 @@ if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "The snapshot pending does exist. Can currently not show the backup.
 Please try again later.\n
-If you are sure that no backup or update is currently running, you can fix this by executing:
-'sudo lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot'"
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     exit 1
 fi
 # Check if startup snapshot is existing and cancel the viewing in this case.
@@ -214,8 +213,7 @@ if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "The snapshot pending does exist. Can currently not restore the backup.
 Please try again later.\n
-If you are sure that no backup or update is currently running, you can fix this by executing:
-'sudo lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot'"
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     exit 1
 fi
 
