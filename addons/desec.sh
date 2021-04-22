@@ -74,7 +74,7 @@ if ! yesno_box_yes "Did you receive the email?"
 then
     msg_box "OK, please try again later by executing the deSEC script like this:
 
-sudo bash $SCRIPTS/menu.sh --> Additional Apps --> deSEC
+sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC
 
 Please also email support@desec.io for further support, maybe the subdomain is already in use?"
     exit 1
