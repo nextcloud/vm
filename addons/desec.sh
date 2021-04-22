@@ -65,9 +65,25 @@ curl -X POST https://desec.io/api/v1/auth/ \
 EOF
 
 # Ask user to check email and confirm to get the token
-msg_box "If the registration was successful you should have got an email with your auth token.
+msg_box "If the registration was successful you should have got an email with a link to configure your auth token.
 
-Please copy that and enter it in the next box after you hit OK."
+Please wait up to 5 minutes for the email to arrive."
+
+# Did the user get the email?
+if ! yesno_box_yes "Did you receive the email?"
+then
+    msg_box "OK, please try again later by executing the deSEC script like this:
+
+sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC
+
+Please also email support@desec.io for further support, maybe the subdomain is already in use?"
+    exit 1
+else
+    if ! yesno_box_yes "Great! Did you copy the token you received?"
+    then
+        msg_box "OK, please copy the token and enter it in the next box after you hit 'OK'"
+    fi
+fi
 
 # Check if DEDYNAUTH is valid
 while :
