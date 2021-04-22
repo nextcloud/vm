@@ -111,6 +111,9 @@ get_expiration_time() {
 check_snapshot_pending() {
     if does_snapshot_exist "NcVM-snapshot-pending"
     then
+        msg_box "The snapshot pending does exist. Can currently not proceed.
+Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
         send_error_mail "NcVM-snapshot-pending exists. Please try again later!" "$1"
     fi
 }
@@ -118,6 +121,11 @@ check_snapshot_pending() {
 # Secure the backup file
 chown root:root "$SCRIPTS/daily-borg-backup.sh"
 chmod 700 "$SCRIPTS/daily-borg-backup.sh"
+
+# Add automatical unlock upon reboot
+crontab -u root -l | grep -v "lvrename /dev/ubuntu-vg/NcVM-snapshot-pending"  | crontab -u root -
+crontab -u root -l | { cat; echo "@reboot /usr/sbin/lvrename /dev/ubuntu-vg/NcVM-snapshot-pending \
+/dev/ubuntu-vg/NcVM-snapshot &>/dev/null" ; } | crontab -u root -
 
 # Write output to logfile.
 exec > >(tee -i "$LOG_FILE")
