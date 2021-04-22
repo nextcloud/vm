@@ -65,7 +65,7 @@ curl -X POST https://desec.io/api/v1/auth/ \
 EOF
 
 # Ask user to check email and confirm to get the token
-msg_box "If the registration was successful you should have got an email with a link to your auth token.
+msg_box "If the registration was successful you should have got an email with a link to configure your auth token.
 
 Please wait up to 5 minutes for the email to arrive."
 
