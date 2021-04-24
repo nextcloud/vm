@@ -249,8 +249,8 @@ then
 
   # Logs
   LogLevel warn
-  CustomLog ${APACHE_LOG_DIR}/access.log combined
-  ErrorLog ${APACHE_LOG_DIR}/error.log
+  CustomLog \${APACHE_LOG_DIR}/access.log combined
+  ErrorLog \${APACHE_LOG_DIR}/error.log
 
   # Encoded slashes need to be allowed
   AllowEncodedSlashes NoDecode
