@@ -557,7 +557,7 @@ local mount
 local LOCALDIRECTORIES
 
 # Find usable directories
-LOCALDIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d | grep -v "/mnt/ncdata")
+LOCALDIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d | grep -v "/mnt/ncdata" | grep -v '/.snapshots')
 for mount in "${MOUNTS[@]}"
 do
     VALID_DIRS+="$mount\n"
