@@ -438,6 +438,12 @@ unset ENCRYPTION_KEY
 chown root:root "$BACKUP_SCRIPT_NAME"
 chmod 700 "$BACKUP_SCRIPT_NAME"
 
+# Add a variable for enabling/disabling btrfs scrub for the backup drive
+if grep "$BACKUP_MOUNT" /etc/fstab | grep -q btrfs
+then
+    echo 'export BTRFS_SCRUB_BACKUP_DRIVE="yes"' >> "$BACKUP_SCRIPT_NAME"
+fi
+
 # Write additional backup sources to the script
 SOURCES='export ADDITIONAL_BACKUP_DIRECTORIES="'
 for source in "${ADDITIONAL_BACKUP_DIRECTORIES[@]}"

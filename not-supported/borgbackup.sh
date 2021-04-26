@@ -638,7 +638,7 @@ fi
 show_drive_usage
 
 # Adjust permissions and scrub volume
-if [ -n "$IS_BTRFS_PART" ]
+if [ -n "$IS_BTRFS_PART" ] && [ "$BTRFS_SCRUB_BACKUP_DRIVE" = "yes" ]
 then
     inform_user "$ICyan" "Scrubbing BTRFS partition..."
     if ! btrfs scrub start -B "$BACKUP_MOUNTPOINT"
