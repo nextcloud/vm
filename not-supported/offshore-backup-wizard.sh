@@ -302,9 +302,8 @@ then
     # Test if backup drive is still connected
     umount "\$BACKUP_MOUNTPOINT" &>/dev/null
     mount "\$BACKUP_MOUNTPOINT" &>/dev/null
-    if mountpoint -q "\$BACKUP_MOUNTPOINT"
+    if mountpoint -q "\$BACKUP_MOUNTPOINT" && ! grep "\$BACKUP_MOUNTPOINT" /etc/fstab | grep -q " cifs "
     then
-        umount "\$BACKUP_MOUNTPOINT" &>/dev/null
         if ! send_mail "Off-shore Backup drive still connected!" \
 "It seems like the Off-shore Backup drive ist still connected.
 Please disconnect it from your server and store it somewhere safe outside your home!"
@@ -314,6 +313,7 @@ Please disconnect it from your server and store it somewhere safe outside your h
 Please disconnect it from your server and store it somewhere safe outside your home!"
         fi
     fi
+    umount "\$BACKUP_MOUNTPOINT" &>/dev/null
     exit
 fi
 
