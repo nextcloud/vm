@@ -1,7 +1,5 @@
 Nextcloud VM Appliance
 ============
-Developed by Daniel Hansson and the Nextcloud community. This VM is not supported by Nextcloud GmbH.
-
 
 Server installation. Simplified. :cloud:
 --------------------------------
@@ -14,6 +12,10 @@ Server installation. Simplified. :cloud:
 
 #### All Systems Go
 > NcVM can check for and install _stable_ updates to keep things current, smooth, and secure.
+
+## FYI
+
+Developed by [Daniel Hansson](https://github.com/enoch85) and the Nextcloud community. The [master branch](https://github.com/nextcloud/vm/tree/master) (full-version) of this VM is not supported by Nextcloud GmbH. You can download the official VM ([also from this repo](https://github.com/nextcloud/vm/tree/official-basic-vm)) from [our website](https://download.nextcloud.com/vm/Official-Nextcloud-VM.zip).
 
 --------------------
 
