@@ -1,5 +1,7 @@
 Nextcloud VM Appliance
 ============
+Developed by Daniel Hansson and the Nextcloud community. This VM is not supported by Nextcloud GmbH.
+
 
 Server installation. Simplified. :cloud:
 --------------------------------
