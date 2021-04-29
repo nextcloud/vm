@@ -256,7 +256,7 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 
 # Variables/arrays
 FULLSCAN_DONE=""
-FIND_OPTS=(-maxdepth 30 -type f -not -path "/proc/*" -not -path "/sys/*" -not -path "/dev/*")
+FIND_OPTS=(-maxdepth 30 -type f -not -path "/proc/*" -not -path "/sys/*" -not -path "/dev/*" -not -path "*/.snapshots/*")
 
 # Exit if clamscan is already running
 if pgrep clamscan &>/dev/null
