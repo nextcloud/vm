@@ -13,11 +13,14 @@ Server installation. Simplified. :cloud:
 #### All Systems Go
 > NcVM can check for and install _stable_ updates to keep things current, smooth, and secure.
 
-## FYI
-
-Developed by [Daniel Hansson](https://github.com/enoch85) and the Nextcloud community. The [master branch](https://github.com/nextcloud/vm/tree/master) (full-version) of this VM is not supported by Nextcloud GmbH. You can download the official VM ([also from this repo](https://github.com/nextcloud/vm/tree/official-basic-vm)) from [our website](https://download.nextcloud.com/vm/Official-Nextcloud-VM.zip).
 
 --------------------
+
+## FYI
+
+Developed by [Daniel Hansson](https://github.com/enoch85) and the Nextcloud community. Nextcloud GmbH does not offer support for the VM in the [master branch](https://github.com/nextcloud/vm/tree/master) (full-version), as we only support manual tarball/zip-package installations. You can download the official Nextcloud VM appliance ([also from this repo](https://github.com/nextcloud/vm/tree/official-basic-vm)) from [our website](https://download.nextcloud.com/vm/Official-Nextcloud-VM.zip) to get a stripped down version for testing if you rather want to skip all the manual steps in our documentation.
+
+If you want support regarding the full-version VM in master, please contact our partner [Hansson IT](https://www.hanssonit.se/nextcloud-vm).
 
 ## Dependencies:
 (Ubuntu Server 20.04 LTS 64-bit)
