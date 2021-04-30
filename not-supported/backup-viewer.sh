@@ -326,4 +326,10 @@ fi
 
 # End message
 msg_box "Just unmounted the backup repository and drive again."
-exit
+
+# Adjust permissions
+if [ -f "$SCRIPTS/adjust-startup-permissions.sh" ]
+then
+    print_text_in_color "$ICyan" "Adjusting permissions..."
+    bash "$SCRIPTS/adjust-startup-permissions.sh"
+fi

@@ -96,13 +96,20 @@ then
 fi
 # Check if backup drives existing
 BACKUP_MOUNTS="$(grep "ntfs-3g" /etc/fstab | grep "windows_names" | grep "uid=root" \
-| grep "gid=root" | grep "umask=177" | grep "noauto" | grep -v " $DAILY_BACKUP_MOUNTPOINT " | awk '{print $2}')"
-if [ -z "$BACKUP_MOUNTS" ]
+| grep "gid=root" | grep "umask=177" | grep "noauto" | awk '{print $2}')"
+BACKUP_MOUNTS+="\n"
+BACKUP_MOUNTS+="$(grep cifs /etc/fstab | grep "uid=root" | grep "gid=root" \
+| grep "file_mode=0600" | grep "dir_mode=0600" | grep "noauto" | awk '{print $2}')"
+BACKUP_MOUNTS+="\n"
+BACKUP_MOUNTS+="$(grep btrfs /etc/fstab | grep ",noauto" | awk '{print $2}')"
+if [ "$BACKUP_MOUNTS" = "\n\n" ]
 then
     msg_box "No backup drive found that can be used as off-shore backup target.
-Please mount an additional one with the NTFS Mount script from the Not-Supported Menu."
+Please mount one with the SMB Mount script from the Additional Apps Menu \
+or with the BTRFS Mount script or NTFS Mount script from the Not-Supported Menu."
     exit 1
 fi
+BACKUP_MOUNTS="$(echo -e "$BACKUP_MOUNTS" | grep -v "$DAILY_BACKUP_MOUNTPOINT")"
 mapfile -t BACKUP_MOUNTS <<< "$BACKUP_MOUNTS"
 for drive in "${BACKUP_MOUNTS[@]}"
 do
@@ -295,9 +302,8 @@ then
     # Test if backup drive is still connected
     umount "\$BACKUP_MOUNTPOINT" &>/dev/null
     mount "\$BACKUP_MOUNTPOINT" &>/dev/null
-    if mountpoint -q "\$BACKUP_MOUNTPOINT"
+    if mountpoint -q "\$BACKUP_MOUNTPOINT" && ! grep "\$BACKUP_MOUNTPOINT" /etc/fstab | grep -q " cifs "
     then
-        umount "\$BACKUP_MOUNTPOINT" &>/dev/null
         if ! send_mail "Off-shore Backup drive still connected!" \
 "It seems like the Off-shore Backup drive ist still connected.
 Please disconnect it from your server and store it somewhere safe outside your home!"
@@ -307,6 +313,7 @@ Please disconnect it from your server and store it somewhere safe outside your h
 Please disconnect it from your server and store it somewhere safe outside your home!"
         fi
     fi
+    umount "\$BACKUP_MOUNTPOINT" &>/dev/null
     exit
 fi
 

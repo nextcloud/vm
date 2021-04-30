@@ -202,7 +202,7 @@ do
     do
         STATS=$(echo "$PARTITION_STATS" | grep "^$partition ")
         FSTYPE=$(echo "$STATS" | awk '{print $2}')
-        if [ "$FSTYPE" != "ntfs" ]
+        if [ "$FSTYPE" != "ntfs" ] && [ "$FSTYPE" != "btrfs" ]
         then
             continue
         fi
@@ -232,7 +232,7 @@ done
 if [ -z "$UUIDS" ] 
 then
     msg_box "No drive found that can get mounted.
-Most likely none is NTFS formatted."
+Most likely none is NTFS or BTRFS formatted."
     exit 1
 fi
 
@@ -514,6 +514,12 @@ fi
 if grep -q " ntfs-3g " "$SYSTEM_DIR/etc/fstab"
 then
     grep " ntfs-3g " "$SYSTEM_DIR/etc/fstab" >> /etc/fstab
+fi
+
+# BTRFS
+if grep -q " btrfs " "$SYSTEM_DIR/etc/fstab"
+then
+    grep " btrfs " "$SYSTEM_DIR/etc/fstab" >> /etc/fstab
 fi
 
 # Dislocker

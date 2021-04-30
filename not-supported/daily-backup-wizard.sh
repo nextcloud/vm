@@ -38,6 +38,8 @@ get_backup_mounts() {
     BACKUP_MOUNTS+="\n"
     BACKUP_MOUNTS+="$(grep cifs /etc/fstab | grep "uid=root" | grep "gid=root" \
 | grep "file_mode=0600" | grep "dir_mode=0600" | grep "noauto" | awk '{print $2}')"
+    BACKUP_MOUNTS+="\n"
+    BACKUP_MOUNTS+="$(grep btrfs /etc/fstab | grep ",noauto" | awk '{print $2}')"
 }
 
 # Ask for execution
@@ -97,11 +99,11 @@ fi
 
 # Check if backup drives existing
 get_backup_mounts
-if [ "$BACKUP_MOUNTS" = "\n" ]
+if [ "$BACKUP_MOUNTS" = "\n\n" ]
 then
     msg_box "No backup mount found that can be used as daily backup target.
 Please mount one with the SMB Mount script from the Additional Apps Menu \
-or with the NTFS Mount script from the Not-Supported Menu."
+or with the BTRFS Mount script or NTFS Mount script from the Not-Supported Menu."
     if yesno_box_yes "Do you want to mount a SMB-share that can be used as backup target with the SMB Mount script?
 (This requires a SMB-server in your network.)"
     then
@@ -110,7 +112,7 @@ or with the NTFS Mount script from the Not-Supported Menu."
         exit 1
     fi
     get_backup_mounts
-    if [ "$BACKUP_MOUNTS" = "\n" ]
+    if [ "$BACKUP_MOUNTS" = "\n\n" ]
     then
         msg_box "Still haven't found any backup mount that can be used as daily backup target. Cannot proceed!"
         exit 1
@@ -427,14 +429,20 @@ export ENCRYPTION_KEY="$ENCRYPTION_KEY"
 export BACKUP_TARGET_DIRECTORY="$BACKUP_TARGET_DIRECTORY"
 export BACKUP_MOUNTPOINT="$BACKUP_MOUNT"
 export BORGBACKUP_LOG="$VMLOGS/borgbackup.log"
-export CHECK_BACKUP_INTERVAL_DAYS=7
-export DAYS_SINCE_LAST_BACKUP_CHECK=7
+export CHECK_BACKUP_INTERVAL_DAYS=14
+export DAYS_SINCE_LAST_BACKUP_CHECK=14
 WRITE_BACKUP_SCRIPT
 unset ENCRYPTION_KEY
 
 # Secure the file
 chown root:root "$BACKUP_SCRIPT_NAME"
 chmod 700 "$BACKUP_SCRIPT_NAME"
+
+# Add a variable for enabling/disabling btrfs scrub for the backup drive
+if grep "$BACKUP_MOUNT" /etc/fstab | grep -q btrfs
+then
+    echo 'export BTRFS_SCRUB_BACKUP_DRIVE="yes"' >> "$BACKUP_SCRIPT_NAME"
+fi
 
 # Write additional backup sources to the script
 SOURCES='export ADDITIONAL_BACKUP_DIRECTORIES="'
