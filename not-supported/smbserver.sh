@@ -557,10 +557,9 @@ local mount
 local LOCALDIRECTORIES
 
 # Find usable directories
-LOCALDIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d | grep -v "/mnt/ncdata" | grep -v '/.snapshots')
 for mount in "${MOUNTS[@]}"
 do
-    VALID_DIRS+="$mount\n"
+    LOCALDIRECTORIES=$(find "$mount" -maxdepth 2 -type d | grep -v '/.snapshots')
     VALID_DIRS+="$(echo -e "$LOCALDIRECTORIES" | grep "^$mount")\n"
 done
 while :
@@ -577,6 +576,13 @@ If you don't know any, and you want to cancel, just type in 'exit' and press [EN
         if echo "$NEWPATH" | grep -q "^$mount"
         then
             VALID=1
+            if grep " ${mount%/} " /etc/mtab | grep -q btrfs
+            then
+                BTRFS_ROOT_DIR="$mount"
+            else
+                BTRFS_ROOT_DIR=""
+            fi
+            break
         fi
     done
     if [ "$NEWPATH" = "exit" ]
@@ -734,13 +740,23 @@ create_share() {
     directory mask = 0770
     force create mode = 0770
     force directory mode = 0770
-    vfs objects = recycle
     recycle:repository = .recycle
     recycle:keeptree = yes
     recycle:versions = yes
     recycle:directory_mode = 0770
-#SMB$count-end - Please don't remove or change this line
 EOF
+            if [ -n "$BTRFS_ROOT_DIR" ]
+            then
+                local SHADOW_COPY=", shadow_copy2, btrfs"
+                cat >> "$SMB_CONF" <<EOF
+    shadow:format = @%Y%m%d_%H%M%S  
+    shadow:sort = desc
+    shadow:snapdir = $BTRFS_ROOT_DIR.snapshots
+    shadow:localtime = yes
+EOF
+            fi
+            echo "    vfs objects = recycle$SHADOW_COPY" >> "$SMB_CONF"
+            echo "#SMB$count-end - Please don't remove or change this line" >> "$SMB_CONF"
             samba_start
             break
         else
@@ -1113,6 +1129,17 @@ you want to use for that SMB-share $SELECTED_SHARE." "$SUBTITLE"
             chown -R "$WEB_USER":"$WEB_GROUP" "$NEWPATH"
             NEWPATH=${NEWPATH//\//\\/}
             STORAGE=$(echo "$STORAGE" | sed "/path = /s/path.*/path = $NEWPATH/")
+            STORAGE=$(echo "$STORAGE" | grep -v "^    shadow:")
+            if [ -z "$BTRFS_ROOT_DIR" ]
+            then
+                STORAGE=$(echo "$STORAGE" | sed "/vfs objects = /s/vfs objects =.*/vfs objects = recycle/")
+            else
+                STORAGE=$(echo "$STORAGE" | sed "/vfs objects = /s/vfs objects =.*/vfs objects = recycle, shadow_copy2, btrfs/")
+                STORAGE=$(echo "$STORAGE" | sed '/vfs objects =/a\ \ \ \ shadow:format = @%Y%m%d_%H%M%S')
+                STORAGE=$(echo "$STORAGE" | sed '/vfs objects =/a\ \ \ \ shadow:sort = desc')
+                STORAGE=$(echo "$STORAGE" | sed "/vfs objects =/a\ \ \ \ shadow:snapdir = $BTRFS_ROOT_DIR.snapshots")
+                STORAGE=$(echo "$STORAGE" | sed '/vfs objects =/a\ \ \ \ shadow:localtime = yes')
+            fi
         ;;&
         *"Change valid SMB-users"*)
             if ! choose_users "Please choose the SMB-users \
