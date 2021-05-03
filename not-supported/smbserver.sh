@@ -53,7 +53,7 @@ mapfile -t DIRECTORIES <<< "$DIRECTORIES"
 for directory in "${DIRECTORIES[@]}"
 do
     if mountpoint -q "$directory" && [ "$(stat -c '%a' "$directory")" = "770" ] \
-&& [ "$(stat -c '%U' "$directory")" = "www-data" ] && [ "$(stat -c '%G' "$directory")" = "www-data" ]
+&& [ "$(stat -c '%U' "$directory")" = "$WEB_USER" ] && [ "$(stat -c '%G' "$directory")" = "$WEB_GROUP" ]
     then
         MOUNTS+=("$directory/")
     fi
@@ -268,7 +268,7 @@ Please note that this option could be a security risk, if the chosen password wa
     OC_PASS="$PASSWORD"
     unset PASSWORD
     export OC_PASS
-    check_command su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWNAME --password-from-env"
+    check_command su -s /bin/sh "$WEB_USER" -c "php $NCPATH/occ user:add $NEWNAME --password-from-env"
     unset OC_PASS
 
     # Inform the user
@@ -406,8 +406,6 @@ do
 
         # Change it to the new one if correct
         check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$user"
-        HASH="$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')"
-        echo "$HASH" >> "$HASH_HISTORY"
 
         # Inform the user
         msg_box "The password for $user was successfully changed." "$SUBTITLE"
@@ -443,7 +441,7 @@ No chance to change the password of the Nextcloud account." "$SUBTITLE"
         OC_PASS="$PASSWORD"
         unset PASSWORD
         export OC_PASS
-        check_command su -s /bin/sh www-data -c "php $NCPATH/occ user:resetpassword $user --password-from-env"
+        check_command su -s /bin/sh "$WEB_USER" -c "php $NCPATH/occ user:resetpassword $user --password-from-env"
         unset OC_PASS
 
         # Inform the user
@@ -933,7 +931,7 @@ We please you to do the math yourself if the number is high enough for your setu
 
     # Create syslog for files_inotify
     touch "$VMLOGS"/files_inotify.log
-    chown www-data:www-data "$VMLOGS"/files_inotify.log
+    chown "$WEB_USER":"$WEB_GROUP" "$VMLOGS"/files_inotify.log
 
     # Inform the user
     if [ -n "$INOTIFY_INSTALL" ]
@@ -970,10 +968,10 @@ files_inotify app and set up the cronjob for this external storage."
 
     # Add crontab for this external storage
     print_text_in_color "$ICyan" "Generating crontab..."
-    crontab -u www-data -l | { cat; echo "@reboot sleep 20 && php -f $NCPATH/occ files_external:notify -v $MOUNT_ID >> $VMLOGS/files_inotify.log"; } | crontab -u www-data -
+    crontab -u "$WEB_USER" -l | { cat; echo "@reboot sleep 20 && php -f $NCPATH/occ files_external:notify -v $MOUNT_ID >> $VMLOGS/files_inotify.log"; } | crontab -u "$WEB_USER" -
 
     # Run the command in a subshell and don't exit if the smbmount script exits
-    nohup sudo -u www-data php "$NCPATH"/occ files_external:notify -v "$MOUNT_ID" >> $VMLOGS/files_inotify.log &
+    nohup sudo -u "$WEB_USER" php "$NCPATH"/occ files_external:notify -v "$MOUNT_ID" >> $VMLOGS/files_inotify.log &
     
     # Inform the user
     msg_box "Congratulations, everything was successfully installed and setup.
