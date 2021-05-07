@@ -737,7 +737,7 @@ then
     rm -rf "$BACKUP"-OLD
     mkdir -p "$BACKUP"-OLD
     mv "$BACKUP" "$BACKUP"-OLD
-    rm -R "$BACKUP"
+    rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
 fi
 
