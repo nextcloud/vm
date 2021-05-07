@@ -736,8 +736,7 @@ if [ -d "$BACKUP" ]
 then
     rm -rf "$BACKUP"-OLD
     mkdir -p "$BACKUP"-OLD
-    install_if_not rsync
-    rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD
+    mv "$BACKUP" "$BACKUP"-OLD
     rm -R "$BACKUP"
     mkdir -p "$BACKUP"
 fi
