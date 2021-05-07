@@ -735,7 +735,6 @@ print_text_in_color "$ICyan" "Backing up data..."
 if [ -d "$BACKUP" ]
 then
     rm -rf "$BACKUP"-OLD
-    mkdir -p "$BACKUP"-OLD
     mv "$BACKUP" "$BACKUP"-OLD
     rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
