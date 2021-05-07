@@ -732,12 +732,12 @@ fi
 
 # Check if backup exists and move to old
 print_text_in_color "$ICyan" "Backing up data..."
-DATE=$(date +%Y-%m-%d-%H%M%S)
 if [ -d "$BACKUP" ]
 then
-    mkdir -p "$BACKUP"-OLD/"$DATE"
+    rm -rf "$BACKUP"-OLD
+    mkdir -p "$BACKUP"-OLD
     install_if_not rsync
-    rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
+    rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD
     rm -R "$BACKUP"
     mkdir -p "$BACKUP"
 fi
