@@ -703,7 +703,6 @@ check_command systemctl stop apache2.service
 # Create backup dir (/mnt/NCBACKUP/)
 if [ ! -d "$BACKUP" ]
 then
-    BACKUP=/var/NCBACKUP
     mkdir -p $BACKUP
 fi
 
@@ -730,6 +729,10 @@ then
     nextcloud_occ config:system:delete app_install_overwrite
 fi
 
+# Move backups to location according to $VAR
+mv /var/NCBACKUP/ "$BACKUP"
+mv /var/NCBACKUP-OLD/ "$BACKUP"-OLD
+
 # Check if backup exists and move to old
 print_text_in_color "$ICyan" "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
@@ -738,7 +741,9 @@ then
     mkdir -p "$BACKUP"-OLD/"$DATE"
     install_if_not rsync
     rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
-    rm -R "$BACKUP"
+    DATE=$(date --date='1 year ago' +%Y)
+    rm -rf /var/NCBACKUP-OLD/$DATE*
+    rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
 fi
 
