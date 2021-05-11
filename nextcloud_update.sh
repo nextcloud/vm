@@ -742,7 +742,7 @@ then
     install_if_not rsync
     rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
     DATE=$(date --date='1 year ago' +%Y)
-    rm -rf /var/NCBACKUP-OLD/$DATE*
+    rm -rf /var/NCBACKUP-OLD/"$DATE"*
     rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
 fi
