@@ -524,10 +524,10 @@ nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
 # Set logrotate (max 10 MB)
 nextcloud_occ config:system:set log_rotate_size --value="10485760"
 
-# Set trashbin retention obligation (save it in trashbin for 30 days or delete when space is needed)
+# Set trashbin retention obligation (save it in trashbin for 60 days or delete when space is needed)
 nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 60"
 
-# Set versions retention obligation (save versions for 30 days or delete when space is needed)
+# Set versions retention obligation (save versions for 180 days or delete when space is needed)
 nextcloud_occ config:system:set versions_retention_obligation --value="auto, 180"
 
 # Remove simple signup
