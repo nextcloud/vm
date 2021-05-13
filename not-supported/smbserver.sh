@@ -116,19 +116,13 @@ fi
 # Samba stop function
 samba_stop() {
     print_text_in_color "$ICyan" "Stopping the SMB-server..."
-    service smbd stop
-    update-rc.d smbd disable
-    update-rc.d nmbd disable
+    systemctl stop smbd
 }
 
 # Samba start function
 samba_start() {
     print_text_in_color "$ICyan" "Starting the SMB-server..."
-    update-rc.d smbd defaults
-    update-rc.d smbd enable
-    service smbd restart
-    update-rc.d nmbd enable
-    service nmbd restart
+    systemctl start smbd
 }
 
 # Get SMB users
