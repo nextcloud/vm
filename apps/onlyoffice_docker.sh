@@ -17,13 +17,6 @@ debug_mode
 # Check if root
 root_check
 
-# Remove OnlyOffice-documentserver if activated
-if is_app_enabled documentserver_community
-then
-    any_key "The integrated OnlyOffice Documentserver will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    nextcloud_occ app:remove documentserver_community
-fi
-
 # Check if collabora is already installed
 if ! does_this_docker_exist 'onlyoffice/documentserver'
 then
@@ -72,48 +65,6 @@ else
     done
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
-fi
-
-# Check if collabora is installed and remove every trace of it
-if does_this_docker_exist 'collabora/code'
-then
-    msg_box "You can't run both Collabora and OnlyOffice on the same VM. We will now remove Collabora from the server."
-    # Remove docker image
-    docker_prune_this 'collabora/code'
-    # Revoke LE
-    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
-    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
-    then
-        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-        for remove in $REMOVE_OLD
-            do rm -rf "$remove"
-        done
-    fi
-    # Remove Apache2 config
-    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
-    then
-        a2dissite "$SUBDOMAIN".conf
-        restart_webserver
-        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
-    fi
-    # Disable Collabora App if activated
-    if is_app_installed richdocuments
-    then
-       nextcloud_occ app:remove richdocuments
-    fi
-    # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
 fi
 
 # Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
@@ -196,11 +147,24 @@ check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
 
 # Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 OnlyOffice
-cpu_check 2 OnlyOffice
+if does_this_docker_exist 'collabora/code'
+then
+    ram_check 3 OnlyOffice
+    cpu_check 3 OnlyOffice
+else
+    ram_check 2 OnlyOffice
+    cpu_check 2 OnlyOffice
+fi
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https "OnlyOffice (Docker)"
+
+# Remove OnlyOffice-documentserver if activated
+if is_app_enabled documentserver_community
+then
+    any_key "The integrated OnlyOffice Documentserver will get uninstalled. Press any key to continue. Press CTRL+C to abort"
+    nextcloud_occ app:remove documentserver_community
+fi
 
 # Install Docker
 install_docker
@@ -327,7 +291,21 @@ if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
     nextcloud_occ config:app:set onlyoffice DocumentServerUrl --value=https://"$SUBDOMAIN/"
     chown -R www-data:www-data "$NC_APPS_PATH"
-    nextcloud_occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    print_text_in_color "$ICyan" "Appending the new subdomain to trusted Domains..."
+    count=0
+    while [ "$count" -le 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$SUBDOMAIN" ]
+        then
+            break
+        elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
+        then
+            nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$SUBDOMAIN"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
     # Add prune command
     add_dockerprune
     # Restart Docker

@@ -68,55 +68,6 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Check if OnlyOffice is previously installed
-# If yes, then stop and prune the docker container
-if does_this_docker_exist 'onlyoffice/documentserver'
-then
-    docker_prune_this 'onlyoffice/documentserver'
-    # Revoke LE
-    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
-    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
-    then
-        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-        for remove in $REMOVE_OLD
-            do rm -rf "$remove"
-        done
-    fi
-    # Remove Apache2 config
-    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
-    then
-        a2dissite "$SUBDOMAIN".conf
-        restart_webserver
-        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
-    fi
-    # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
-fi
-
-# remove OnlyOffice-documentserver if activated
-if is_app_enabled documentserver_community
-then
-    any_key "OnlyOffice will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    nextcloud_occ app:remove documentserver_community
-fi
-
-# Disable OnlyOffice App if activated
-if is_app_installed onlyoffice
-then
-    nextcloud_occ app:remove onlyoffice
-fi
-
 # Ask for the domain for Collabora
 SUBDOMAIN=$(input_box_flow "Collabora subdomain e.g: office.yourdomain.com
 
@@ -186,11 +137,24 @@ check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
 
 # Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 Collabora
-cpu_check 2 Collabora
+if does_this_docker_exist 'onlyoffice/documentserver'
+then
+    ram_check 3 Collabora
+    cpu_check 3 Collabora
+else
+    ram_check 2 Collabora
+    cpu_check 2 Collabora
+fi
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https "Collabora (Docker)"
+
+# Remove Richdocumentscode if activated
+if is_app_enabled richdocumentscode
+then
+    any_key "The integrated Collabora Documentserver will get uninstalled. Press any key to continue. Press CTRL+C to abort"
+    nextcloud_occ app:remove richdocumentscode
+fi
 
 # Install Docker
 install_docker
@@ -332,7 +296,21 @@ if is_app_installed richdocuments
 then
     nextcloud_occ config:app:set richdocuments wopi_url --value=https://"$SUBDOMAIN"
     chown -R www-data:www-data "$NC_APPS_PATH"
-    nextcloud_occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    print_text_in_color "$ICyan" "Appending the new subdomain to trusted Domains..."
+    count=0
+    while [ "$count" -le 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$SUBDOMAIN" ]
+        then
+            break
+        elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
+        then
+            nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$SUBDOMAIN"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
     # Add prune command
     add_dockerprune
     # Restart Docker
