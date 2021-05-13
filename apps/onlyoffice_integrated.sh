@@ -45,15 +45,6 @@ lowest_compatible_nc 19
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https "OnlyOffice (Integrated)"
 
-if does_this_docker_exist 'collabora/code' || is_app_enabled richdocumentscode
-then
-    ram_check 3 OnlyOffice
-    cpu_check 3 OnlyOffice
-else
-    ram_check 2 OnlyOffice
-    cpu_check 2 OnlyOffice
-fi
-
 # Check if OnlyOffice is installed using the old method
 if does_this_docker_exist 'onlyoffice/documentserver'
 then
