@@ -147,7 +147,7 @@ check_open_port 80 "$SUBDOMAIN"
 check_open_port 443 "$SUBDOMAIN"
 
 # Test RAM size (2GB min) + CPUs (min 2)
-if does_this_docker_exist 'collabora/code'
+if does_this_docker_exist 'collabora/code' || is_app_enabled richdocumentscode
 then
     ram_check 3 OnlyOffice
     cpu_check 3 OnlyOffice
