@@ -534,7 +534,7 @@ nextcloud_occ config:system:set versions_retention_obligation --value="auto, 180
 nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
 
 # Set chunk_size for files app to 100MB (defaults to 10MB)
-nextcloud_occ config:app:set files max_chunk_size --value="1048576000"
+nextcloud_occ config:app:set files max_chunk_size --value="104857600"
 
 # Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
