@@ -15,7 +15,7 @@ debug_mode
 
 # Update the lib once during the startup script
 # TODO: delete this again e.g. with NC 20.0.1
-# download_script GITHUB_REPO lib #### removed in 21.0.0, delete it completley in a later version
+# download_script GITHUB_REPO lib #### removed in 21.0.0, delete it completely in a later version
 
 # Must be root
 root_check
@@ -48,7 +48,7 @@ fi
 if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
 then
     msg_box "Running a server, it's important that certain things are correct.
-In the following menu you will be asked to setup the most basic stuff of your server.
+In the following menu you will be asked to set up the most basic stuff of your server.
 
 The script is smart, and have already pre-selected the values that you'd want to change based on the current settings."
 fi

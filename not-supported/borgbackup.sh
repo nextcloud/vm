@@ -21,6 +21,7 @@ root_check
 
 # Variables
 LVM_MOUNT="/system"
+ZFS_MOUNT="/ncdata"
 START_TIME=$(date +%s)
 CURRENT_DATE=$(date --date @"$START_TIME" +"%Y%m%d_%H%M%S")
 CURRENT_DATE_READABLE=$(date --date @"$START_TIME" +"%d.%m.%Y - %H:%M:%S")
@@ -53,6 +54,13 @@ show_drive_usage() {
     df -h | grep -v "loop[0-9]" | grep -v "tmpfs" | grep -v "^udev" | grep -v "^overlay"
 }
 send_error_mail() {
+    if [ -n "$ZFS_PART_EXISTS" ]
+    then
+        if mountpoint -q "$ZFS_MOUNT"
+        then
+            umount "$ZFS_MOUNT"
+        fi
+    fi
     if [ -d "$BACKUP_TARGET_DIRECTORY" ]
     then
         inform_user "$ICyan" "Unmounting the backup drive..."
@@ -103,6 +111,9 @@ get_expiration_time() {
 check_snapshot_pending() {
     if does_snapshot_exist "NcVM-snapshot-pending"
     then
+        msg_box "The snapshot pending does exist. Can currently not proceed.
+Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
         send_error_mail "NcVM-snapshot-pending exists. Please try again later!" "$1"
     fi
 }
@@ -110,6 +121,11 @@ check_snapshot_pending() {
 # Secure the backup file
 chown root:root "$SCRIPTS/daily-borg-backup.sh"
 chmod 700 "$SCRIPTS/daily-borg-backup.sh"
+
+# Add automatical unlock upon reboot
+crontab -u root -l | grep -v "lvrename /dev/ubuntu-vg/NcVM-snapshot-pending"  | crontab -u root -
+crontab -u root -l | { cat; echo "@reboot /usr/sbin/lvrename /dev/ubuntu-vg/NcVM-snapshot-pending \
+/dev/ubuntu-vg/NcVM-snapshot &>/dev/null" ; } | crontab -u root -
 
 # Write output to logfile.
 exec > >(tee -i "$LOG_FILE")
@@ -126,6 +142,18 @@ inform_user "$IGreen" "Daily backup started! $CURRENT_DATE_READABLE"
 if ! [ -f "$SCRIPTS/daily-borg-backup.sh" ]
 then
     send_error_mail "The daily-borg-backup.sh doesn't exist."
+fi
+
+# Check if /mnt/ncdata is mounted
+if grep -q " /mnt/ncdata " /etc/mtab && ! grep " /mnt/ncdata " /etc/mtab | grep -q zfs
+then
+    msg_box "The '/mnt/ncdata' directory is mounted and not existing on the root drive."
+    exit 1
+fi
+# The home directory must exist on the root drive
+if grep -q " /home " /etc/mtab
+then
+    send_error_mail "The '/home' directory is mounted and not existing on the root drive."
 fi
 
 # Check if all needed variables are there (they get exported by the local daily-backup-script.sh)
@@ -184,6 +212,19 @@ then
     then
         send_error_mail "Could not mount the backup drive. Is it connected?"
     fi
+fi
+
+# Test if btrfs volume
+if grep " $BACKUP_MOUNTPOINT " /etc/mtab | grep -q btrfs
+then
+    IS_BTRFS_PART=1
+    mkdir -p "$BACKUP_MOUNTPOINT/.snapshots"
+    btrfs subvolume snapshot -r "$BACKUP_MOUNTPOINT" "$BACKUP_MOUNTPOINT/.snapshots/@$CURRENT_DATE"
+    while [ "$(find "$BACKUP_MOUNTPOINT/.snapshots/" -maxdepth 1 -mindepth 1 -type d -name '@*_*' | wc -l)" -gt 14 ]
+    do
+        DELETE_SNAP="$(find "$BACKUP_MOUNTPOINT/.snapshots/" -maxdepth 1 -mindepth 1 -type d -name '@*_*' | sort | head -1)"
+        btrfs subvolume delete "$DELETE_SNAP"
+    done
 fi
 
 # Send mail that backup was started
@@ -253,6 +294,33 @@ else
 fi
 start_services
 
+# Cover zfs snapshots
+if grep " /mnt/ncdata " /etc/mtab | grep -q zfs
+then
+    ZFS_PART_EXISTS=1
+    sed -i "s|date --utc|date|g" /usr/sbin/zfs-auto-snapshot
+    if ! zfs-auto-snapshot -r ncdata
+    then
+        send_error_mail "Could not create ZFS snapshot!"
+    fi
+    inform_user "$IGreen" "ZFS snapshot successfully created!"
+    ZFS_SNAP_NAME="$(zfs list -t snapshot | grep ncdata | grep snap-202 | sort -r | head -1 | awk '{print $1}')"
+    # Mount zfs snapshot
+    if mountpoint -q "$ZFS_MOUNT"
+    then
+        if ! umount "$ZFS_MOUNT"
+        then
+            send_error_mail "Could not unmount '$ZFS_MOUNT'!"
+        fi
+    fi
+    mkdir -p "$ZFS_MOUNT"
+    inform_user "$ICyan" "Mounting the ZFS snapshot..."
+    if ! mount --read-only --types zfs "$ZFS_SNAP_NAME" "$ZFS_MOUNT"
+    then
+        send_error_mail "Could not mount the ZFS snapshot!"
+    fi
+fi
+
 # Check if pending snapshot is existing and cancel the backup in this case.
 check_snapshot_pending
 
@@ -292,6 +360,17 @@ export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
 # Log Borg version
 borg --version
+
+# Break the borg lock if it exists because we have the snapshot that prevents such situations
+if [ -f "$BACKUP_TARGET_DIRECTORY/lock.roster" ]
+then
+    inform_user "$ICyan" "Breaking the borg lock..."
+    if ! borg break-lock "$BACKUP_TARGET_DIRECTORY"
+    then
+        re_rename_snapshot
+        send_error_mail "Some errors were reported while breaking the borg lock!"
+    fi
+fi
 
 # Borg options
 # auto,zstd compression seems to has the best ratio based on:
@@ -339,6 +418,7 @@ if ! umount "$LVM_MOUNT"
 then
     send_error_mail "Could not unmount the LVM snapshot."
 fi
+rm -r "$LVM_MOUNT"
 
 # Prune options
 BORG_PRUNE_OPTS=(--stats --keep-within=7d --keep-weekly=4 --keep-monthly=6 "$BACKUP_TARGET_DIRECTORY")
@@ -370,6 +450,36 @@ then
     send_error_mail "Some errors were reported by the prune boot command."
 fi
 
+# Create ZFS backup
+if [ -n "$ZFS_PART_EXISTS" ]
+then
+    inform_user "$ICyan" "Creating ncdata partition backup..."
+    if ! borg create "${BORG_OPTS[@]}" --one-file-system \
+"$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-ncdata-partition" "$ZFS_MOUNT/"
+    then
+        inform_user "$ICyan" "Deleting the failed ncdata backup archive..."
+        borg delete --stats "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-ncdata-partition"
+        show_drive_usage
+        re_rename_snapshot
+        send_error_mail "Some errors were reported during the ncdata partition backup!"
+    fi
+    # Prune ncdata archives
+    inform_user "$ICyan" "Pruning the ncdata archives..."
+    if ! borg prune --prefix '*_*-NcVM-ncdata-partition' "${BORG_PRUNE_OPTS[@]}"
+    then
+        re_rename_snapshot
+        send_error_mail "Some errors were reported by the prune ncdata command."
+    fi
+    # Unmount ZFS snapshot
+    inform_user "$ICyan" "Unmounting the ZFS snapshot..."
+    if ! umount "$ZFS_MOUNT"
+    then
+        re_rename_snapshot
+        send_error_mail "Could not unmount the ZFS snapshot."
+    fi
+    rm -r "$ZFS_MOUNT"
+fi
+
 # Backup additional locations
 for directory in "${ADDITIONAL_BACKUP_DIRECTORIES[@]}"
 do
@@ -392,7 +502,7 @@ do
 
     # Create backup
     inform_user "$ICyan" "Creating $DIRECTORY_NAME backup..."
-    if ! borg create "${BORG_OPTS[@]}" --one-file-system \
+    if ! borg create "${BORG_OPTS[@]}" --one-file-system --exclude "$DIRECTORY/.snapshots/" \
 "$BACKUP_TARGET_DIRECTORY::$CURRENT_DATE-NcVM-$DIRECTORY_NAME-directory" "$DIRECTORY/"
     then
         inform_user "$ICyan" "Deleting the failed $DIRECTORY_NAME backup archive..."
@@ -419,6 +529,14 @@ fi
 
 # Print usage of drives into log
 show_drive_usage
+
+# Adjust permissions and scrub volume
+if [ -n "$IS_BTRFS_PART" ]
+then
+    inform_user "$ICyan" "Adjusting permissions..."
+    find "$BACKUP_MOUNTPOINT/" -not -path "$BACKUP_MOUNTPOINT/.snapshots/*" \
+\( ! -perm 600 -o ! -group root -o ! -user root \) -exec chmod 600 {} \; -exec chown root:root {} \; 
+fi
 
 # Unmount the backup drive
 inform_user "$ICyan" "Unmounting the backup drive..."
@@ -518,6 +636,16 @@ fi
 
 # Print usage of drives into log
 show_drive_usage
+
+# Adjust permissions and scrub volume
+if [ -n "$IS_BTRFS_PART" ] && [ "$BTRFS_SCRUB_BACKUP_DRIVE" = "yes" ]
+then
+    inform_user "$ICyan" "Scrubbing BTRFS partition..."
+    if ! btrfs scrub start -B "$BACKUP_MOUNTPOINT"
+    then
+        send_error_mail "Some errors were reported while scrubbing the BTRFS partition."
+    fi
+fi
 
 # Unmount the backup drive
 inform_user "$ICyan" "Unmounting the backup drive..."

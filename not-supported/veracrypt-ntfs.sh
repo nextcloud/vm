@@ -189,8 +189,7 @@ If you want to cancel, type 'exit' and press [ENTER].")
     else
         mkdir -p "$MOUNT_PATH"
         if ! echo "$PASSWORD" | veracrypt -t -k "" --pim=0 --protect-hidden=no \
---fs-options=windows_names,uid=www-data,gid=www-data,umask=007,\
-x-systemd.automount,x-systemd.idle-timeout=60 \
+--fs-options=windows_names,uid=www-data,gid=www-data,umask=007 \
 "/dev/disk/by-partuuid/$PARTUUID" "$MOUNT_PATH"
         then
             msg_box "Something failed while trying to mount the Volume. Please try again."
@@ -218,7 +217,7 @@ fi
 # Write to file
 cat << AUTOMOUNT >> "$SCRIPTS/veracrypt-automount.sh"
 echo "$PASSWORD" | veracrypt -t -k "" --pim=0 --protect-hidden=no \
---fs-options=windows_names,uid=www-data,gid=www-data,umask=007,x-systemd.automount,x-systemd.idle-timeout=60 \
+--fs-options=windows_names,uid=www-data,gid=www-data,umask=007 \
 "/dev/disk/by-partuuid/$PARTUUID" "$MOUNT_PATH"
 AUTOMOUNT
 
@@ -226,10 +225,28 @@ AUTOMOUNT
 chown root:root "$SCRIPTS/veracrypt-automount.sh"
 chmod 700 "$SCRIPTS/veracrypt-automount.sh"
 
-# Create crontab
+# Delete crontab
 crontab -u root -l | grep -v 'veracrypt-automount.sh'  | crontab -u root -
-# Here we want to get informed if something fails hence not redirecting stderr to /dev/null
-crontab -u root -l | { cat; echo "@reboot $SCRIPTS/veracrypt-automount.sh > /dev/null"; } | crontab -u root -
+# Create service instead
+if ! [ -f /etc/systemd/system/veracrypt-automount.service ]
+then
+    cat << SERVICE > /etc/systemd/system/veracrypt-automount.service
+[Unit]
+Description=Mount Veracrypt Devices
+After=boot.mount
+Before=network.target
+
+[Service]
+Type=forking
+ExecStart=/bin/bash $SCRIPTS/veracrypt-automount.sh
+TimeoutStopSec=1
+
+[Install]
+WantedBy=multi-user.target
+SERVICE
+    systemctl enable veracrypt-automount
+fi
+
 
 # Inform the user
 msg_box "Congratulations! The mount was successful.

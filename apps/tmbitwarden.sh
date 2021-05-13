@@ -194,7 +194,7 @@ countdown "Waiting for the DB to come online..." 5
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh updatedb
 
 # Produce reverse-proxy config and get lets-encrypt certificate
-msg_box "We'll now setup the Apache Proxy that will act as TLS front for your Bitwarden installation."
+msg_box "We'll now set up the Apache Proxy that will act as TLS front for your Bitwarden installation."
 
 msg_box "Before continuing, please make sure that you have you have \
 edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
@@ -273,8 +273,8 @@ then
 
     # Logs
     LogLevel warn
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/error.log
 
     # Just in case - see below
     SSLProxyEngine On
@@ -362,7 +362,7 @@ fi
 # Add prune command
 add_dockerprune
 
-msg_box "Bitwarden was successfully installed! Please visit $SUBDOMAIN to setup your account.
+msg_box "Bitwarden was successfully installed! Please visit $SUBDOMAIN to set up your account.
 
 After the account is registered, please disable user registration by running sudo bash $SCRIPTS/menu.sh and choose:
 Additional Apps --> Bitwarden --> Bitwarden Registration

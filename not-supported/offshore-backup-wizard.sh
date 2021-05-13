@@ -58,7 +58,8 @@ fi
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "It seems to be currently running a backup or update.
-Cannot setup the off-shore backup now. Please try again later."
+Cannot set up the off-shore backup now. Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     exit 1
 elif does_snapshot_exist "NcVM-startup"
 then
@@ -95,13 +96,20 @@ then
 fi
 # Check if backup drives existing
 BACKUP_MOUNTS="$(grep "ntfs-3g" /etc/fstab | grep "windows_names" | grep "uid=root" \
-| grep "gid=root" | grep "umask=177" | grep "noauto" | grep -v " $DAILY_BACKUP_MOUNTPOINT " | awk '{print $2}')"
-if [ -z "$BACKUP_MOUNTS" ]
+| grep "gid=root" | grep "umask=177" | grep "noauto" | awk '{print $2}')"
+BACKUP_MOUNTS+="\n"
+BACKUP_MOUNTS+="$(grep cifs /etc/fstab | grep "uid=root" | grep "gid=root" \
+| grep "file_mode=0600" | grep "dir_mode=0600" | grep "noauto" | awk '{print $2}')"
+BACKUP_MOUNTS+="\n"
+BACKUP_MOUNTS+="$(grep btrfs /etc/fstab | grep ",noauto" | awk '{print $2}')"
+if [ "$BACKUP_MOUNTS" = "\n\n" ]
 then
     msg_box "No backup drive found that can be used as off-shore backup target.
-Please mount an additional one with the NTFS Mount script from the Not-Supported Menu."
+Please mount one with the SMB Mount script from the Additional Apps Menu \
+or with the BTRFS Mount script or NTFS Mount script from the Not-Supported Menu."
     exit 1
 fi
+BACKUP_MOUNTS="$(echo -e "$BACKUP_MOUNTS" | grep -v "$DAILY_BACKUP_MOUNTPOINT")"
 mapfile -t BACKUP_MOUNTS <<< "$BACKUP_MOUNTS"
 for drive in "${BACKUP_MOUNTS[@]}"
 do
@@ -291,6 +299,21 @@ then
     sed -i "s|^DAYS_SINCE_LAST_BACKUP.*|DAYS_SINCE_LAST_BACKUP=\$DAYS_SINCE_LAST_BACKUP|" "\$BASH_SOURCE"
     echo "Not yet enough days over to make the next off-shore backup \$(date +%Y-%m-%d_%H-%M-%S)" >> "\$RSYNC_BACKUP_LOG"
     print_text_in_color "\$ICyan" "Not yet enough days over to make the next off-shore backup"
+    # Test if backup drive is still connected
+    umount "\$BACKUP_MOUNTPOINT" &>/dev/null
+    mount "\$BACKUP_MOUNTPOINT" &>/dev/null
+    if mountpoint -q "\$BACKUP_MOUNTPOINT" && ! grep "\$BACKUP_MOUNTPOINT" /etc/fstab | grep -q " cifs "
+    then
+        if ! send_mail "Off-shore Backup drive still connected!" \
+"It seems like the Off-shore Backup drive ist still connected.
+Please disconnect it from your server and store it somewhere safe outside your home!"
+        then
+            notify_admin_gui "Off-shore Backup drive still connected!" \
+"It seems like the Off-shore Backup drive ist still connected.
+Please disconnect it from your server and store it somewhere safe outside your home!"
+        fi
+    fi
+    umount "\$BACKUP_MOUNTPOINT" &>/dev/null
     exit
 fi
 

@@ -39,6 +39,14 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
+# Get all physical drives
+DRIVES=$(lsblk -o KNAME,TYPE | grep disk | awk '{print $1}')
+if [ -z "$DRIVES" ]
+then
+    msg_box "Not even one drive found. Cannot proceed."
+    exit 1
+fi
+
 # Choose between direct notification or weekly
 choice=$(whiptail --title "$TITLE" --menu \
 "Please choose if you want to get informed weekly or directly if an error occurs.
@@ -54,6 +62,49 @@ fi
 
 # Install needed tools
 install_if_not smartmontools
+
+# Test drives
+print_text_in_color "$ICyan" "Testing if all drives support smart monitoring and are healthy..."
+mapfile -t DRIVES <<< "$DRIVES"
+for drive in "${DRIVES[@]}"
+do
+    echo '#########################'
+    print_text_in_color "$ICyan" "Testing /dev/$drive"
+    OUTPUT=$(smartctl -a "/dev/$drive")
+    if ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result:'
+    then
+        print_text_in_color "$IRed" "/dev/$drive doesn't support smart monitoring"
+        echo "$OUTPUT"
+        msg_box "It seems like /dev/$drive doesn't support smart monitoring.
+Please check this script's output for more info!
+Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
+    elif ! echo "$OUTPUT" | grep -q 'No Errors Logged' \
+|| ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result: PASSED'
+    then
+        print_text_in_color "$IRed" "/dev/$drive isn't healthy"
+        echo "$OUTPUT"
+        msg_box "It seems like /dev/$drive isn't healthy.
+Please check this script's output for more info!
+Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
+        VALID_DRIVES+="$drive"
+    else
+        print_text_in_color "$IGreen" "/dev/$drive supports smart monitoring and is healthy"
+        VALID_DRIVES+="$drive"
+    fi
+done
+
+# Test if at least one drive is healthy/suppports smart monitoring
+if [ -z "$VALID_DRIVES" ]
+then
+    msg_box "It seems like not even one drive supports smart monitoring.
+This is completely normal if you run this script in a VM since virtual drives don't support smart monitoring.
+We will uninstall smart monitoring now since you won't get any helpful notification out of this going forward."
+    apt purge smartmontools -y
+    apt autoremove -y
+    exit 1
+fi
+
+# Stop smartmontools for now
 check_command systemctl stop smartmontools
 
 # Weekly notification
@@ -104,7 +155,7 @@ then
     # Write conf to file
     # https://wiki.debianforum.de/Festplattendiagnostik-_und_%C3%9Cberwachung#Beispiel_3
     echo "DEVICESCAN -a -I 194 -W 5,45,55 -r 5 -R 5 -n standby,24 -m <nomailer> -M exec \
-$SCRIPTS/smart-notification.sh -s (O/../../(2|4|6)/02|S/../../5/02|L/../20/./02)" > /etc/smartd.conf
+$SCRIPTS/smart-notification.sh -s (S/../.././01|L/../../6/02)" > /etc/smartd.conf
 
     # Create smart notification script
     cat << SMART_NOTIFICATION > "$SCRIPTS/smart-notification.sh"
@@ -123,16 +174,15 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 # Check if root
 root_check
 
-# Save the message (STDIN) to the MESSAGE variable:
-MESSAGE=\$(cat)
-
-# Append the output of smartctl -a to the message:
-MESSAGE+=\$(/usr/sbin/smartctl -a -d \$SMARTD_DEVICETYPE \$SMARTD_DEVICE)
-
-# Now send the message
-if ! send_mail "\$SMARTD_SUBJECT on \$SMARTD_DEVICE" "\$MESSAGE"
+# Send the message
+if ! send_mail "\$SMARTD_FAILTYPE issue on \$SMARTD_DEVICE" \
+"\$SMARTD_MESSAGE\n
+You can find further information below!\n
+\$(/usr/sbin/smartctl -a \$SMARTD_DEVICE)"
 then
-    notify_admin_gui "\$SMARTD_SUBJECT on \$SMARTD_DEVICE" "\$MESSAGE"
+    notify_admin_gui "\$SMARTD_FAILTYPE issue on \$SMARTD_DEVICE" \
+"\$SMARTD_MESSAGE\n
+You might run 'sudo smartctl -a \$SMARTD_DEVICE' to get further information."
 fi
 exit
 SMART_NOTIFICATION

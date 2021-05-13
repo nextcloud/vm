@@ -33,7 +33,7 @@ choice=$(whiptail --title "$TITLE" --checklist \
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
 "Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
-"Disable workspaces" "(disable top notes in GUI)" OFF \
+"Disable workspaces" "(Disable top notes in GUI)" OFF \
 "Disable user flows" "(Disable user settings for Nextcloud Flow)" OFF \
 "Enable logrotate" "(Use logrotate to keep more Nextcloud logs)" OFF 3>&1 1>&2 2>&3)
 
@@ -48,7 +48,7 @@ case "$choice" in
 other users appear in a folder named 'Shared' in the Nextcloud GUI.
 
 If you don't enable this option, all shares will appear directly in \
-the Nextcloud GUI root folder, which is the default behaviour." "$SUBTITLE"
+the Nextcloud GUI root folder, which is the default behavior." "$SUBTITLE"
         if yesno_box_yes "Do you want to enable this option?" "$SUBTITLE"
         then
             nextcloud_occ config:system:set share_folder --value="/Shared"

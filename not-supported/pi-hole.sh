@@ -106,8 +106,10 @@ Please report this to $ISSUES"
     rm -rf /usr/bin/pihole-FTL
     rm -rf /usr/local/bin/pihole
     rm -rf /var/www/html/admin
+    rm -f /var/www/html/pihole
 
     # Delete unbound config
+    crontab -u root -l | grep -v "systemctl restart unbound"  | crontab -u root -
     rm /etc/unbound/unbound.conf.d/pi-hole.conf
 
     # Remove update script
@@ -128,15 +130,25 @@ Please report this to $ISSUES"
     # Remove not needed dependencies
     apt autoremove -y
 
+    # Delete other files
+    rm -f /var/www/html/index.lighttpd.orig
+    rm -rf /etc/lighttpd
+
     # Remove apache conf
     a2dissite pihole.conf &>/dev/null
     rm -f "$SITES_AVAILABLE/pihole.conf"
     restart_webserver
+    
+    # Delete firewall entry
+    ufw delete allow 53/tcp &>/dev/null
+    ufw delete allow 53/udp &>/dev/null
+    ufw delete allow 8094/tcp &>/dev/null
 
     # Inform the user
     msg_box "Pi-hole was successfully uninstalled!
 Please reset the DNS on your router/clients to restore internet connectivity"
     msg_box "After you hit OK, your NcVM will get restarted."
+    rm -f "$SCRIPTS/pi-hole.sh"
     # Reboot the NcVM because it would cause problems if not
     reboot
 fi
@@ -227,7 +239,7 @@ Please report this to $ISSUES"
     exit 1
 fi
 
-# Setup REV_SERVER for local DNS entries because Pi-hole isn't the DHCP server and some other settings
+# Set up REV_SERVER for local DNS entries because Pi-hole isn't the DHCP server and some other settings
 if [ -f /etc/pihole/setupVars.conf ] && ! grep -q "REV_SERVER" /etc/pihole/setupVars.conf
 then
     cat << PIHOLE_CONF >> /etc/pihole/setupVars.conf
@@ -305,8 +317,8 @@ Listen 8094
 		
     # Logs
     LogLevel warn
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/error.log
 		
     # Just in case - see below
     SSLProxyEngine On
@@ -353,8 +365,13 @@ IPV6_ADDRESS="${IPV6_ADDRESS##*IPV6_ADDRESS=}"
 crontab -u root -l | grep -v "pihole-update.sh"  | crontab -u root -
 crontab -u root -l | { cat; echo "30 19 * * 6 $SCRIPTS/pihole-update.sh >/dev/null" ; } | crontab -u root -
 
-# Show that everything was setup correctly
-msg_box "Congratulations, your Pi-hole was setup correctly!
+# Add firewall entry
+ufw allow 53/tcp comment 'Pi-hole TCP' &>/dev/null
+ufw allow 53/udp comment 'Pi-hole UDP' &>/dev/null
+ufw allow 8094/tcp comment 'Pi-hole Web' &>/dev/null
+
+# Show that everything was set up correctly
+msg_box "Congratulations, your Pi-hole was set up correctly!
 It is now reachable on:
 https://$ADDRESS:8094/admin
 
@@ -436,7 +453,7 @@ then
 Please report this to $ISSUES"
 fi
 
-# Setup Pi-hole
+# Set up Pi-hole
 sed -i 's|^PIHOLE_DNS_1=.*|PIHOLE_DNS_1=127.0.0.1#5335|' /etc/pihole/setupVars.conf
 sed -i '/^PIHOLE_DNS_2=.*/d' /etc/pihole/setupVars.conf
 
@@ -451,6 +468,10 @@ then
 Please report this to $ISSUES"
     exit 1
 fi
+
+# Fix dns disconnections
+crontab -u root -l | grep -v "systemctl restart unbound"  | crontab -u root -
+crontab -u root -l | { cat; echo "@hourly systemctl restart unbound" ; } | crontab -u root -
 
 # Inform the user
 msg_box "Congratulations!

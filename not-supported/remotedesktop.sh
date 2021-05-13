@@ -43,6 +43,7 @@ If you have already installed a desktop environment, you will not need to instal
         then
             # Install gnome-session
             print_text_in_color "$ICyan" "Installing gnome-session..."
+            apt update -q4 & spinner_loading
             apt install gnome-session --no-install-recommends -y
             sudo -u "$UNIXUSER" dbus-launch gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
             install_if_not gnome-shell-extension-dash-to-panel
@@ -99,18 +100,13 @@ POWER
     # Add the user to the www-data and plex group to be able to write to all disks
     usermod --append --groups www-data,plex "$UNIXUSER"
 
+    # Add firewall rule
+    ufw allow 3389/tcp comment Remotedesktop &>/dev/null
+
     # Inform the user
     msg_box "XRDP was successfully installed. 
 You should be able to connect via an RDP client with your server \
 using the credentials of $UNIXUSER and the server ip-address $ADDRESS"
-fi
-
-# Evince
-if is_this_installed evince
-then
-    EVINCE_SWTICH=OFF
-else
-    EVINCE_SWTICH=ON
 fi
 
 # Eye of Gnome
@@ -192,7 +188,6 @@ It is smart and has selected only options that are not yet installed.
 Choose which ones you want to install.
 If you select apps that are already installed you will have the choice to uninstall them.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Evince" "(PDF Viewer)" "$EVINCE_SWTICH" \
 "Eye of Gnome" "(Image Viewer)" "$EOG_SWITCH" \
 "Firefox" "(Internet Browser)" "$FIREFOX_SWITCH" \
 "Gedit" "(Text Editor)" "$GEDIT_SWITCH" \
@@ -232,6 +227,9 @@ install_remove_packet() {
             echo "file:///mnt" > /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
             chmod 664 /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
             chown -R "$UNIXUSER":"$UNIXUSER" /home/"$UNIXUSER"
+        elif [ "$1" = "vlc" ]
+        then
+            sudo sed -i 's|geteuid|getppid|' /usr/bin/vlc
         fi
         print_text_in_color "$ICyan" "$2 was successfully installed"
     fi
@@ -262,12 +260,10 @@ vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-extension-arc-menu gno
             rm -f /etc/polkit-1/localauthority/50-local.d/color.pkla
             rm -f /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
             rm -f /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
+            ufw delete allow 3389/tcp &>/dev/null
             msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
             exit
         fi
-    ;;&
-    *"Evince"*)
-        install_remove_packet evince Evince
     ;;&
     *"Eye of Gnome"*)
         install_remove_packet eog "Eye of Gnome"

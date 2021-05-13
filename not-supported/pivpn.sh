@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="PiVPN"
 SCRIPT_EXPLAINER="PiVPN is one of the fastest and most user friendly ways to get a running Wireguard VPN server.
-This script will setup a Wireguard VPN server to connect devices to your home net from everywhere.
+This script will set up a Wireguard VPN server to connect devices to your home net from everywhere.
 Wireguard is a relatively new VPN protocol, that is much faster and better then e.g. OpenVPN."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -69,9 +69,18 @@ and automatically reboot your server afterwards."
     msg_box "After you hit okay, we will remove PiVPN, all its settings and all listed programs \
 and reboot your server automatically."
     
+    # Remove firewall rule
+    ufw delete allow 51820/udp &>/dev/null
+
     # Remove PiVPN and reboot
     yes | pivpn uninstall
-    
+
+    # Remove some leftovers
+    rm -r  /etc/wireguard*
+    ip link set down wg0
+    ip link del dev wg0
+    rm -f "$SCRIPTS/pivpn.sh"
+
     # Just to make sure
     reboot
 fi
@@ -231,8 +240,11 @@ Please report this to $ISSUES"
     exit 1
 fi
 
+# Add firewall rule
+ufw allow 51820/udp comment 'PiVPN' &>/dev/null
+
 # Inform the user about successfully installing PiVPN
-msg_box "Congratulations, your PiVPN was setup correctly!
+msg_box "Congratulations, your PiVPN was set up correctly!
 
 You can now generate new client profiles for your devices by running:
 'pivpn -a'

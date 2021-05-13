@@ -35,6 +35,7 @@ then
 Do you want to reset your system to the state before a backup restore was attempted?"
         then
             lvconvert --merge /dev/ubuntu-vg/NcVM-reserved -y
+            sleep 1
             msg_box "We will now reboot your system to finalize the merging of the snapshot."
             reboot
         fi
@@ -93,7 +94,8 @@ fi
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "It seems to be currently running a backup or update.
-Cannot restore the backup now. Please try again later."
+Cannot restore the backup now. Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     exit 1
 elif does_snapshot_exist "NcVM-startup"
 then
@@ -107,13 +109,13 @@ then
     exit 1
 elif ! does_snapshot_exist "NcVM-reserved"
 then
+    lvchange --refresh ubuntu-vg
     check_free_space
     if [ "$FREE_SPACE" -lt 30 ]
     then
         msg_box "Unfortunately NcVM-reserved doesn't exist, hence you are not able to restore the system."
         exit 1
     else
-        lvchange --refresh ubuntu-vg
         if ! lvcreate --size 30G --name "NcVM-reserved" ubuntu-vg
         then
             msg_box "Could not create NcVM-reserved snapshot! Please reboot your server and try again!"
@@ -126,7 +128,7 @@ fi
 if grep -q " /mnt/ncdata " /etc/mtab
 then
     msg_box "The '/mnt/ncdata' directory is mounted and not existing on the root drive.
-This is currently not supported."
+This is currently not supported by this script."
     exit 1
 fi
 # The same with the /home directory
@@ -200,7 +202,7 @@ do
     do
         STATS=$(echo "$PARTITION_STATS" | grep "^$partition ")
         FSTYPE=$(echo "$STATS" | awk '{print $2}')
-        if [ "$FSTYPE" != "ntfs" ]
+        if [ "$FSTYPE" != "ntfs" ] && [ "$FSTYPE" != "btrfs" ]
         then
             continue
         fi
@@ -230,7 +232,7 @@ done
 if [ -z "$UUIDS" ] 
 then
     msg_box "No drive found that can get mounted.
-Most likely none is NTFS formatted."
+Most likely none is NTFS or BTRFS formatted."
     exit 1
 fi
 
@@ -322,9 +324,49 @@ do
     fi
 done
 
-# Get latest Backup archive
-BORG_ARCHIVE=$(borg list "$BORG_REPO" | grep "NcVM-system-partition" | awk '{print $1}' | sort -r | head -1)
-print_text_in_color "$ICyan" "Using the latest borg archive $BORG_ARCHIVE..."
+# Break the borg lock if it exists because we have the snapshot that prevents such situations
+if [ -f "$BORG_REPO/lock.roster" ]
+then
+    print_text_in_color "$ICyan" "Breaking the borg lock..."
+    borg break-lock "$BORG_REPO"
+fi
+
+# Find available archives
+ALL_ARCHIVES=$(borg list "$BORG_REPO")
+SYSTEM_ARCHIVES=$(echo "$ALL_ARCHIVES" | grep "NcVM-system-partition" | awk -F "-" '{print $1}' | sort -r)
+# Test if at least one valid archive was found
+if [ -z "$SYSTEM_ARCHIVES" ]
+then
+    msg_box "Not even one valid archive found. Cannot continue."
+    restore_original_state
+    exit 1
+fi
+mapfile -t SYSTEM_ARCHIVES <<< "$SYSTEM_ARCHIVES"
+
+# Create menu to select from available archives
+unset args
+args=(whiptail --title "$TITLE" --menu \
+"Please select the backup archive that you want to restore.
+$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+for archive in "${SYSTEM_ARCHIVES[@]}"
+do
+    HUMAN_DATE=$(echo "$ALL_ARCHIVES" | grep "$archive" | head -1 | awk '{print $3}')
+    HUMAN_TIME=$(echo "$ALL_ARCHIVES" | grep "$archive" | head -1 | awk '{print $4}')
+    args+=("$archive" "The backup was made on $HUMAN_DATE $HUMAN_TIME")
+done
+
+# Show the menu
+choice=$("${args[@]}" 3>&1 1>&2 2>&3)
+if [ -z "$choice" ]
+then
+    msg_box "No archive selected. Exiting."
+    umount "$DRIVE_MOUNT"
+    exit 1
+fi
+
+# Get archive
+BORG_ARCHIVE="$choice-NcVM-system-partition"
+print_text_in_color "$ICyan" "Using the borg archive $BORG_ARCHIVE..."
 
 # Test borg archive
 msg_box "We will now check if extracting of the backup works.
@@ -394,7 +436,7 @@ rm -rf "$NCDATA"
 
 # Important folders
 # manually include 
-IMPORTANT_FOLDERS=(home/plex home/bitwarden_rs "$SCRIPTS" mnt media "$NCPATH" root/.smbcredentials)
+IMPORTANT_FOLDERS=(home/plex home/bitwarden_rs home/bitwarden "$SCRIPTS" mnt media "$NCPATH" root/.smbcredentials)
 for directory in "${IMPORTANT_FOLDERS[@]}"
 do
     directory="${directory#/*}"
@@ -435,10 +477,24 @@ do
     INCLUDE_FILES+=(--include="$file")
 done
 
+# Exclude some dirs
+EXCLUDE_DIRECTORIES=("home/plex/config/Library/Application Support/Plex Media Server/Cache" "$NCDATA"/appdata_*/preview "$NCDATA"/*/files_trashbin "$NCDATA"/*/files_versions)
+for directory in "${EXCLUDE_DIRECTORIES[@]}"
+do
+    directory="${directory#/*}"
+    EXCLUDE_DIRS+=(--exclude "$directory/*")
+done
+
 # Restore files
 # Rsync include/exclude patterns: https://stackoverflow.com/a/48010623
-rsync --archive --human-readable --one-file-system --progress \
-"${INCLUDE_DIRS[@]}" "${INCLUDE_FILES[@]}" --exclude='*' "$SYSTEM_DIR/" /
+if ! rsync --archive --human-readable --one-file-system --progress \
+"${EXCLUDE_DIRS[@]}" "${INCLUDE_DIRS[@]}" "${INCLUDE_FILES[@]}" --exclude='*' "$SYSTEM_DIR/" /
+then
+    msg_box "An issue was reported while restoring all needed files."
+    umount "$BORG_MOUNT"
+    umount "$DRIVE_MOUNT"
+    exit 1
+fi
 
 # Database
 print_text_in_color "$ICyan" "Restoring the database..."
@@ -446,12 +502,24 @@ DB_PASSWORD=$(grep "dbpassword" "$SYSTEM_DIR/$NCPATH/config/config.php" | awk '{
 sudo -Hiu postgres psql nextcloud_db -c "ALTER USER ncadmin WITH PASSWORD '$DB_PASSWORD'"
 sudo -Hiu postgres psql -c "DROP DATABASE nextcloud_db;"
 sudo -Hiu postgres psql -c "CREATE DATABASE nextcloud_db WITH OWNER ncadmin TEMPLATE template0 ENCODING \"UTF8\";"
-sudo -Hiu postgres psql nextcloud_db < "$SYSTEM_DIR/$SCRIPTS/nextclouddb.sql"
+if ! sudo -Hiu postgres psql nextcloud_db < "$SCRIPTS/nextclouddb.sql"
+then
+    msg_box "An issue was reported while restoring the database."
+    umount "$BORG_MOUNT"
+    umount "$DRIVE_MOUNT"
+    exit 1
+fi
 
 # NTFS
 if grep -q " ntfs-3g " "$SYSTEM_DIR/etc/fstab"
 then
     grep " ntfs-3g " "$SYSTEM_DIR/etc/fstab" >> /etc/fstab
+fi
+
+# BTRFS
+if grep -q " btrfs " "$SYSTEM_DIR/etc/fstab"
+then
+    grep " btrfs " "$SYSTEM_DIR/etc/fstab" >> /etc/fstab
 fi
 
 # Dislocker
@@ -485,6 +553,22 @@ then
     apt update -q4 & spinner_loading
     apt install veracrypt --no-install-recommends -y
     # No need to copy the file since it is already synced via rsync
+    # Create startup service
+    cat << SERVICE > /etc/systemd/system/veracrypt-automount.service
+[Unit]
+Description=Mount Veracrypt Devices
+After=boot.mount
+Before=network.target
+
+[Service]
+Type=forking
+ExecStart=/bin/bash $SCRIPTS/veracrypt-automount.sh
+TimeoutStopSec=1
+
+[Install]
+WantedBy=multi-user.target
+SERVICE
+    systemctl enable veracrypt-automount
 fi
 
 # SMB-server
@@ -524,30 +608,6 @@ redis-cli -s /var/run/redis/redis-server.sock -c FLUSHALL
 # Start web server
 systemctl start apache2
 
-# Disable maintenance mode
-nextcloud_occ_no_check maintenance:mode --off
-
-# Update the system data-fingerprint
-nextcloud_occ_no_check maintenance:data-fingerprint
-
-# repairing the Database, if it got corupted
-nextcloud_occ_no_check maintenance:repair 
-
-# Appending the new local IP-address to trusted Domains
-print_text_in_color "$ICyan" "Appending the new Ip-Address to trusted Domains..."
-IP_ADDR=$(hostname -I | awk '{print $1}' | sed 's/ //')
-i=0
-while [ "$i" -le 10 ]
-do
-    if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$i")" = "" ]
-    then
-        nextcloud_occ_no_check config:system:set trusted_domains "$i" --value="$IP_ADDR"
-        break
-    else
-        i=$((i+1))
-    fi
-done
-
 # Import old crontabs
 grep -v '^#' "$SYSTEM_DIR/var/spool/cron/crontabs/root" | crontab -u root -
 grep -v '^#' "$SYSTEM_DIR/var/spool/cron/crontabs/www-data" | crontab -u www-data -
@@ -555,13 +615,6 @@ grep -v '^#' "$SYSTEM_DIR/var/spool/cron/crontabs/www-data" | crontab -u www-dat
 # Umount the backup drive
 umount "$BORG_MOUNT"
 umount "$DRIVE_MOUNT"
-
-# Test Nextcloud automatically
-if ! nextcloud_occ_no_check -V
-then
-    msg_box "Something failed while restoring Nextcloud.\nPlease try again!"
-    exit 1
-fi
 
 # Connect all drives
 while :
@@ -581,9 +634,54 @@ if [ -f "$SCRIPTS/veracrypt-automount.sh" ]
 then
     bash "$SCRIPTS/veracrypt-automount.sh"
 fi
+
+# Show info
+msg_box "We will now adjust a few last things."
+
+# Disable maintenance mode
+nextcloud_occ_no_check maintenance:mode --off
+
+# Update the system data-fingerprint
+nextcloud_occ_no_check maintenance:data-fingerprint
+
+# repairing the Database, if it got corupted
+nextcloud_occ_no_check maintenance:repair 
+
+# Appending the new local IP-address to trusted Domains
+print_text_in_color "$ICyan" "Appending the new Ip-Address to trusted Domains..."
+count=0
+while [ "$count" -le 10 ]
+do
+    if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$ADDRESS" ]
+    then
+        break
+    elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
+    then
+        nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$ADDRESS"
+        break
+    else
+        count=$((count+1))
+    fi
+done
+
+# Cleanup trashbin and files_versions because we removed them
+nextcloud_occ_no_check trashbin:cleanup --all-users -vvv
+nextcloud_occ_no_check versions:cleanup -vvv
+
+# Rescan appdata because we removed all previews
+nextcloud_occ_no_check files:scan-app-data -vvv
+
+# Test Nextcloud automatically
+if ! nextcloud_occ_no_check -V
+then
+    msg_box "Something failed while restoring Nextcloud.\nPlease try again!"
+    exit 1
+fi
+
 # Restart samba
 if is_this_installed samba
 then
+    print_text_in_color "$ICyan" "Restarting Samba..."
     update-rc.d smbd defaults
     update-rc.d smbd enable
     service smbd restart
@@ -593,7 +691,7 @@ fi
 
 # Test Nextcloud manually
 msg_box "The time has come to login to your Nextcloud in a Browser \
-by opening 'https://$IP_ADDR' to check if Nextcloud works as expected.
+by opening 'https://$ADDRESS' to check if Nextcloud works as expected.
 (e.g. check the Nextcloud logs and try out all installed apps).
 If yes, just press '[ENTER]'."
 
@@ -603,7 +701,7 @@ You can now simply reinstall all apps and addons that were installed on your ser
 Those need to get installed (if they were installed on the old server before):
 Geoblocking, Disk Monitoring, Fail2Ban, ClamAV, SMTP Mail, DDclient, Activate TLS, OnlyOffice, Push Notifications for Nextcloud, \
 High-Performance backend for Nextcloud Talk, Whiteboard for Nextcloud, Extract for Nextcloud, Bitwarden RS, Pi-hole, PiVPN, \
-Plex Media Server, Remotedesktop and Midnight Commander.\n
+Plex Media Server, Previewgenerator, Remotedesktop and Midnight Commander.\n
 Note:
 Bitwarden RS and Plex Media Server files were restored (if they were installed before) but the containers need to get \
 installed again to make them run with the restored files."

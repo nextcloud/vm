@@ -94,7 +94,7 @@ If you want to cancel, type 'exit' and press [ENTER].")
     fi
     mkdir -p /media/bitlocker/1
     echo "PARTUUID=$PARTUUID /media/bitlocker/1 fuse.dislocker \
-user-password=$PASSWORD,nofail,x-systemd.automount,x-systemd.idle-timeout=60 0 0" >> /etc/fstab
+user-password=$PASSWORD,nofail 0 0" >> /etc/fstab
     if ! mount /media/bitlocker/1
     then
         msg_box "The password seems to be false. Please try again."
@@ -142,7 +142,7 @@ If you want to cancel, type 'exit' and press [ENTER].")
         msg_box "The directory isn't allowed to start with '/mnt/smbshares'"
     else
         echo "/media/bitlocker/1/dislocker-file $MOUNT_PATH ntfs-3g \
-windows_names,uid=www-data,gid=www-data,umask=007,nofail,x-systemd.automount,x-systemd.idle-timeout=60 0 0" >> /etc/fstab
+windows_names,uid=www-data,gid=www-data,umask=007,nofail 0 0" >> /etc/fstab
         mkdir -p "$MOUNT_PATH"
         if ! mount "$MOUNT_PATH"
         then

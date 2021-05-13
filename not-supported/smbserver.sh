@@ -53,7 +53,7 @@ mapfile -t DIRECTORIES <<< "$DIRECTORIES"
 for directory in "${DIRECTORIES[@]}"
 do
     if mountpoint -q "$directory" && [ "$(stat -c '%a' "$directory")" = "770" ] \
-&& [ "$(stat -c '%U' "$directory")" = "www-data" ] && [ "$(stat -c '%G' "$directory")" = "www-data" ]
+&& [ "$(stat -c '%U' "$directory")" = "$WEB_USER" ] && [ "$(stat -c '%G' "$directory")" = "$WEB_GROUP" ]
     then
         MOUNTS+=("$directory/")
     fi
@@ -66,6 +66,9 @@ fi
 
 # Install all needed tools
 install_if_not samba
+
+# Add firewall rules
+ufw allow samba comment Samba &>/dev/null
 
 # Use SMB3
 if ! grep -q "^protocol" "$SMB_CONF"
@@ -265,11 +268,37 @@ Please note that this option could be a security risk, if the chosen password wa
     OC_PASS="$PASSWORD"
     unset PASSWORD
     export OC_PASS
-    check_command su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWNAME --password-from-env"
+    check_command su -s /bin/sh "$WEB_USER" -c "php $NCPATH/occ user:add $NEWNAME --password-from-env"
     unset OC_PASS
 
     # Inform the user
     msg_box "The new Nextcloud user $NEWNAME was successfully created." "$SUBTITLE"
+
+    # Configure mail address
+    msg_box "It is recommended to set a mail address for every Nextcloud user \
+so that Nextcloud is able to send mails to them."
+    if ! yesno_box_yes "Do you want to add a mail address to this user?"
+    then
+        return
+    fi
+    while :
+    do
+        MAIL_ADDRESS="$(input_box_flow "Please type in the mail-address of the new Nextcloud user $NEWNAME!
+This mail-address needs to be valid. Otherwise Nextcloud won't be able to send mails to that user.
+If you want to cancel, just type in 'exit' and press [ENTER]." "$SUBTITLE")"
+        if [ "$MAIL_ADDRESS" = "exit" ]
+        then
+            return
+        elif ! echo "$MAIL_ADDRESS" | grep -q "@" || echo "$MAIL_ADDRESS" | grep -q " " \
+|| echo "$MAIL_ADDRESS" | grep -q "^@" || echo "$MAIL_ADDRESS" | grep -q "@$" 
+        then
+            msg_box "The mail-address isn't valid. Please try again!"
+        else
+            nextcloud_occ user:setting "$NEWNAME" settings email "$MAIL_ADDRESS"
+            msg_box "Congratulations!\nThe mail-address of $NEWNAME was successfully set to $MAIL_ADDRESS!"
+            break
+        fi
+    done
 }
 
 # Show all SMB-shares from a SMB-user
@@ -377,8 +406,6 @@ do
 
         # Change it to the new one if correct
         check_command echo -e "$PASSWORD\n$PASSWORD" | smbpasswd -s -a "$user"
-        HASH="$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')"
-        echo "$HASH" >> "$HASH_HISTORY"
 
         # Inform the user
         msg_box "The password for $user was successfully changed." "$SUBTITLE"
@@ -414,7 +441,7 @@ No chance to change the password of the Nextcloud account." "$SUBTITLE"
         OC_PASS="$PASSWORD"
         unset PASSWORD
         export OC_PASS
-        check_command su -s /bin/sh www-data -c "php $NCPATH/occ user:resetpassword $user --password-from-env"
+        check_command su -s /bin/sh "$WEB_USER" -c "php $NCPATH/occ user:resetpassword $user --password-from-env"
         unset OC_PASS
 
         # Inform the user
@@ -528,10 +555,9 @@ local mount
 local LOCALDIRECTORIES
 
 # Find usable directories
-LOCALDIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 3 -type d | grep -v "/mnt/ncdata")
 for mount in "${MOUNTS[@]}"
 do
-    VALID_DIRS+="$mount\n"
+    LOCALDIRECTORIES=$(find "$mount" -maxdepth 2 -type d | grep -v '/.snapshots')
     VALID_DIRS+="$(echo -e "$LOCALDIRECTORIES" | grep "^$mount")\n"
 done
 while :
@@ -548,6 +574,13 @@ If you don't know any, and you want to cancel, just type in 'exit' and press [EN
         if echo "$NEWPATH" | grep -q "^$mount"
         then
             VALID=1
+            if grep " ${mount%/} " /etc/mtab | grep -q btrfs
+            then
+                BTRFS_ROOT_DIR="$mount"
+            else
+                BTRFS_ROOT_DIR=""
+            fi
+            break
         fi
     done
     if [ "$NEWPATH" = "exit" ]
@@ -705,13 +738,23 @@ create_share() {
     directory mask = 0770
     force create mode = 0770
     force directory mode = 0770
-    vfs objects = recycle
     recycle:repository = .recycle
     recycle:keeptree = yes
     recycle:versions = yes
     recycle:directory_mode = 0770
-#SMB$count-end - Please don't remove or change this line
 EOF
+            if [ -n "$BTRFS_ROOT_DIR" ]
+            then
+                local SHADOW_COPY=", shadow_copy2, btrfs"
+                cat >> "$SMB_CONF" <<EOF
+    shadow:format = @%Y%m%d_%H%M%S  
+    shadow:sort = desc
+    shadow:snapdir = $BTRFS_ROOT_DIR.snapshots
+    shadow:localtime = yes
+EOF
+            fi
+            echo "    vfs objects = recycle$SHADOW_COPY" >> "$SMB_CONF"
+            echo "#SMB$count-end - Please don't remove or change this line" >> "$SMB_CONF"
             samba_start
             break
         else
@@ -754,36 +797,13 @@ you can also connect using the IP-address: '$ADDRESS' instead of nextcloud." "$S
         install_and_enable_app files_external
     fi
 
-    # Safe NEWNAME in a backup variable
-    NEWNAME_BACKUP="$NEWNAME"
-
-    # Ask if the default name can be used
-    if yesno_box_no "Do you want to use a different name for this external storage inside Nextcloud or \
-just use the default sharename $NEWNAME?\nThis time spaces are possible." "$SUBTITLE"
+    # Mount directory as root directory if only one user was chosen
+    if [ "${#VALID_USERS_AR[*]}" -eq 1 ] && [ "$WRITEABLE" = "yes" ]
     then
-        while :
-        do
-            # Type in the new mountname that will be used in NC
-            NEWNAME=$(input_box_flow "Please enter the name that will be used inside Nextcloud for this path $NEWPATH.
-You can type in 'exit' and press [ENTER] to use the default $NEWNAME_BACKUP
-Allowed characters are only spaces, those four special characters '.-_/' and 'a-z' 'A-Z' '0-9'.
-Also, it has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid.
-Advice: you can declare a directory as the Nextcloud users root storage by naming it '/'."  "$SUBTITLE")
-            if ! echo "$NEWNAME" | grep -q "^[a-zA-Z/]"
-            then
-                msg_box "The name has to start with a slash '/' or a letter 'a-z' or 'A-Z' to be valid." "$SUBTITLE"
-            elif ! [[ "$NEWNAME" =~ ^[-._a-zA-Z0-9\ /]+$ ]]
-            then
-                msg_box "Allowed characters are only spaces, those \
-four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
-            elif [ "$NEWNAME" = "exit" ]
-            then
-                NEWNAME="$NEWNAME_BACKUP"
-                break
-            else
-                break
-            fi
-        done
+        if yesno_box_yes "Do you want to make $NEWPATH the root folder for ${VALID_USERS_AR[*]}?"
+        then
+            NEWNAME="/"
+        fi
     fi
 
     # Choose if it shall be writeable in NC
@@ -795,29 +815,27 @@ four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
         READONLY="true"
     fi
 
-    # Choose if sharing shall get enabled for that mount
-    if [ "$NEWNAME" = "/" ]
-    then
-        SHARING="false"
-        SELECTED_USER=""
-    else
-        SHARING="true"
-        SELECTED_USER=""
-        UNAVAILABLE_USER=""
-        # Choose from NC users
-        NC_USER=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
-        for user in "${VALID_USERS_AR[@]}"
-        do
-            if echo "$NC_USER" | grep -q "^$user$"
-            then
-                SELECTED_USER+="$user  "
-            else
-                UNAVAILABLE_USER+="$user " 
-            fi
-        done
-        if [ -n "$UNAVAILABLE_USER" ]
+    # Find other attributes
+    SHARING="true"
+    SELECTED_USER=""
+    UNAVAILABLE_USER=""
+    # Choose from NC users
+    NC_USER=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+    for user in "${VALID_USERS_AR[@]}"
+    do
+        if echo "$NC_USER" | grep -q "^$user$"
         then
-            msg_box "Some chosen SMB-users weren't available in Nextcloud: $UNAVAILABLE_USER"
+            SELECTED_USER+="$user  "
+        else
+            UNAVAILABLE_USER+="$user " 
+        fi
+    done
+    if [ -n "$UNAVAILABLE_USER" ]
+    then
+        msg_box "Some chosen SMB-users weren't available in Nextcloud:\n$UNAVAILABLE_USER"
+        if ! yesno_box_no "Do you want to continue nonetheless?"
+        then
+            return
         fi
     fi
 
@@ -827,15 +845,18 @@ four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
     MOUNT_ID=${MOUNT_ID//[!0-9]/}
 
     # Mount it to the admin group if no group or user chosen
-    if [ -z "$SELECTED_USER" ] && [ "$NEWNAME" != "/" ]
+    if [ -z "$SELECTED_USER" ]
     then
-        msg_box "No SMB-user available in Nextcloud, mounting the local storage to the admin group."
-        nextcloud_occ files_external:applicable --add-group=admin "$MOUNT_ID" -q
-    fi
-
-    # Mount it to selected users
-    if [ -n "$SELECTED_USER" ]
-    then
+        if [ "$NEWNAME" != "/" ]
+        then
+            nextcloud_occ files_external:applicable --add-group=admin "$MOUNT_ID" -q
+            msg_box "No SMB-user available in Nextcloud, mounted the local storage to the admin group."
+        else
+            nextcloud_occ files_external:delete "$MOUNT_ID" -y
+            msg_box "No SMB-user available in Nextcloud, could not add the storage to Nextcloud!"
+            return
+        fi
+    else
         nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r NC_USER
         do
             if [[ "$SELECTED_USER" = *"$NC_USER  "* ]]
@@ -851,13 +872,13 @@ four special characters '.-_/' and 'a-z' 'A-Z' '0-9'." "$SUBTITLE"
     nextcloud_occ files_external:option "$MOUNT_ID" enable_sharing "$SHARING"
 
     # Inform the user that mounting was successful
-    msg_box "Your mount $NEWNAME was successful, congratulations!
+    msg_box "Your mount was successful, congratulations!
 You are now using the Nextcloud external storage app to access files there.
 The Share has been mounted to the Nextcloud admin-group if not specifically changed to users or groups.
 You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' \
 to edit external storages in Nextcloud." "$SUBTITLE"
 
-    # Inform the user that he can setup inotify for this external storage
+    # Inform the user that he can set up inotify for this external storage
     if ! yesno_box_no "Do you want to enable inotify for this external storage in Nextcloud?
 It is only recommended if the content can get changed externally and \
 will let Nextcloud track if this external storage was externally changed.
@@ -910,7 +931,7 @@ We please you to do the math yourself if the number is high enough for your setu
 
     # Create syslog for files_inotify
     touch "$VMLOGS"/files_inotify.log
-    chown www-data:www-data "$VMLOGS"/files_inotify.log
+    chown "$WEB_USER":"$WEB_GROUP" "$VMLOGS"/files_inotify.log
 
     # Inform the user
     if [ -n "$INOTIFY_INSTALL" ]
@@ -918,7 +939,7 @@ We please you to do the math yourself if the number is high enough for your setu
         if ! yesno_box_yes "The inotify PHP extension was successfully installed, \
 the max folder variable was set to 524288 and $VMLOGS/files_inotify.log was created.
 Just press [ENTER] (on the default 'yes') to install the needed \
-files_inotify app and setup the cronjob for this external storage."
+files_inotify app and set up the cronjob for this external storage."
         then
             return
         fi
@@ -947,10 +968,10 @@ files_inotify app and setup the cronjob for this external storage."
 
     # Add crontab for this external storage
     print_text_in_color "$ICyan" "Generating crontab..."
-    crontab -u www-data -l | { cat; echo "@reboot sleep 20 && php -f $NCPATH/occ files_external:notify -v $MOUNT_ID >> $VMLOGS/files_inotify.log"; } | crontab -u www-data -
+    crontab -u "$WEB_USER" -l | { cat; echo "@reboot sleep 20 && php -f $NCPATH/occ files_external:notify -v $MOUNT_ID >> $VMLOGS/files_inotify.log"; } | crontab -u "$WEB_USER" -
 
     # Run the command in a subshell and don't exit if the smbmount script exits
-    nohup sudo -u www-data php "$NCPATH"/occ files_external:notify -v "$MOUNT_ID" >> $VMLOGS/files_inotify.log &
+    nohup sudo -u "$WEB_USER" php "$NCPATH"/occ files_external:notify -v "$MOUNT_ID" >> $VMLOGS/files_inotify.log &
     
     # Inform the user
     msg_box "Congratulations, everything was successfully installed and setup.
@@ -1106,6 +1127,17 @@ you want to use for that SMB-share $SELECTED_SHARE." "$SUBTITLE"
             chown -R "$WEB_USER":"$WEB_GROUP" "$NEWPATH"
             NEWPATH=${NEWPATH//\//\\/}
             STORAGE=$(echo "$STORAGE" | sed "/path = /s/path.*/path = $NEWPATH/")
+            STORAGE=$(echo "$STORAGE" | grep -v "^    shadow:")
+            if [ -z "$BTRFS_ROOT_DIR" ]
+            then
+                STORAGE=$(echo "$STORAGE" | sed "/vfs objects = /s/vfs objects =.*/vfs objects = recycle/")
+            else
+                STORAGE=$(echo "$STORAGE" | sed "/vfs objects = /s/vfs objects =.*/vfs objects = recycle, shadow_copy2, btrfs/")
+                STORAGE=$(echo "$STORAGE" | sed '/vfs objects =/a\ \ \ \ shadow:format = @%Y%m%d_%H%M%S')
+                STORAGE=$(echo "$STORAGE" | sed '/vfs objects =/a\ \ \ \ shadow:sort = desc')
+                STORAGE=$(echo "$STORAGE" | sed "/vfs objects =/a\ \ \ \ shadow:snapdir = $BTRFS_ROOT_DIR.snapshots")
+                STORAGE=$(echo "$STORAGE" | sed '/vfs objects =/a\ \ \ \ shadow:localtime = yes')
+            fi
         ;;&
         *"Change valid SMB-users"*)
             if ! choose_users "Please choose the SMB-users \

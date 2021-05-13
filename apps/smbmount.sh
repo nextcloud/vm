@@ -77,9 +77,9 @@ then
     msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.
 If you really want to mount more, you can simply download the smb-mount script \
 directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:
-'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh /var/scripts'
-'sudo nano /var/scripts/smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file
-'sudo bash /var/scripts/smbmount.sh' # Execute the script." "$SUBTITLE"
+'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh' # Download the script
+'nano smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file
+'sudo bash smbmount.sh' # Execute the script." "$SUBTITLE"
     return
 fi
 
@@ -109,7 +109,6 @@ do
         chmod -R 600 $SMB_CREDENTIALS
         echo "username=$SMB_USER" > $SMB_CREDENTIALS/SMB$count
         echo "password=$SMB_PASSWORD" >> $SMB_CREDENTIALS/SMB$count
-        unset SMB_USER && unset SMB_PASSWORD
         mkdir -p "$SMBSHARES/$count"
         mount "$SMBSHARES/$count"
         
@@ -132,7 +131,19 @@ As a hint:
             # Inform the user that mounting was successful
             msg_box "Your mount was successful, congratulations!
 It's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
+            # Allow to make it a backup mount
+            if yesno_box_no "Do you want to use this mount for backups?
+If you choose 'Yes', you will be able to use this mount as target directory for backups of the built-in backup solution!"
+            then
+                umount "$SMBSHARES/$count"
+                sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+                echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
+                unset SMB_USER && unset SMB_PASSWORD
+                msg_box "The backup mount was successfully created!"
+                break
+            fi
             # Check if Nextcloud is existing
+            unset SMB_USER && unset SMB_PASSWORD
             NEWNAME="SMB$count"
             if ! [ -f $NCPATH/occ ]
             then
@@ -292,7 +303,7 @@ The Share has been mounted to the Nextcloud admin-group if not specifically chan
 You can now access 'https://yourdomain-or-ipaddress/settings/admin/externalstorages' \
 to edit external storages in Nextcloud."
 
-            # Inform the user that he can setup inotify for this external storage
+            # Inform the user that he can set up inotify for this external storage
             if ! yesno_box_no "Do you want to enable inotify for this external storage in Nextcloud?
 It is only recommended if the content can get changed externally and \
 will let Nextcloud track if this external storage was externally changed.
@@ -353,7 +364,7 @@ We please you to do the math yourself if the number is high enough for your setu
                 if ! yesno_box_yes "The inotify PHP extension was successfully installed, \
 the max folder variable was set to 524288 and $VMLOGS/files_inotify.log was created.
 Just press [ENTER] (on the default 'yes') to install the needed \
-files_inotify app and setup the cronjob for this external storage."
+files_inotify app and set up the cronjob for this external storage."
                 then
                     break
                 fi

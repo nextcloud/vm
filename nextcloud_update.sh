@@ -34,15 +34,25 @@ is_process_running dpkg
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "Cannot proceed with the update currently because NcVM-snapshot-pending exists.\n
-It is possible that a backup is currently running.\n
-Advice: don't restart your system now if that is the case!"
-    # Don't exit the script while the snapshot exists to disable any automatic restart during backups
-    while does_snapshot_exist "NcVM-snapshot-pending"
-    do
-        print_text_in_color "$ICyan" "Waiting for NcVM-snapshot-pending to vanish... (press '[CTRL] + [C]' to cancel)"
-        sleep 5
-    done
-    print_text_in_color "$ICyan" "Continuing the update..."
+It is possible that a backup is currently running or an update wasn't successful.\n
+Advice: don't restart your system now if that is the case!\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
+    # Kill all "$SCRIPTS/update.sh" processes to make sure that no automatic restart happens after exiting this script
+    # shellcheck disable=2009
+    PROCESS_IDS=$(ps aux | grep "$SCRIPTS/update.sh" | grep -v grep | awk '{print $2}')
+    if [ -n "$PROCESS_IDS" ]
+    then
+        mapfile -t PROCESS_IDS <<< "$PROCESS_IDS"
+        for process in "${PROCESS_IDS[@]}"
+        do
+            print_text_in_color "$ICyan" "Killing the process with PID $process to prevent a potential automatic restart..."
+            if ! kill "$process"
+            then
+                print_text_in_color "$IRed" "Couldn't kill the process with PID $process..."
+            fi
+        done
+    fi
+    exit 1
 fi
 
 # Create a snapshot before doing anything else
@@ -50,6 +60,10 @@ check_free_space
 if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
 || does_snapshot_exist "NcVM-snapshot" || [ "$FREE_SPACE" -ge 50 ] )
 then
+    # Add automatical unlock upon reboot
+    crontab -u root -l | grep -v "lvrename /dev/ubuntu-vg/NcVM-snapshot-pending"  | crontab -u root -
+    crontab -u root -l | { cat; echo "@reboot /usr/sbin/lvrename /dev/ubuntu-vg/NcVM-snapshot-pending \
+/dev/ubuntu-vg/NcVM-snapshot &>/dev/null" ; } | crontab -u root -
     SNAPSHOT_EXISTS=1
     if is_docker_running
     then
@@ -109,17 +123,13 @@ https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
     fi
 fi
 
+# Remove leftovers
+rm -f /root/php-upgrade.sh
+rm -f /tmp/php-upgrade.sh
+rm -f /root/db-migration.sh
+
 # Ubuntu 16.04 is deprecated
 check_distro_version
-
-# Remove leftovers
-if [ -f /root/php-upgrade.sh ]
-then
-    rm -f /root/php-upgrade.sh
-elif [ -f /tmp/php-upgrade.sh ]
-then
-    rm -f /tmp/php-upgrade.sh
-fi
 
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
@@ -241,6 +251,24 @@ then
     fi
 fi
 
+# Reinstall certbot (use snap instead of package)
+# https://askubuntu.com/a/1271565
+if dpkg -l | grep certbot >/dev/null 2>&1
+then
+    # certbot will be removed, but still listed, so we need to check if the snap is installed as well so that this doesn't run every time
+    if ! snap list certbot >/dev/null 2>&1
+    then
+        print_text_in_color "$ICyan" "Reinstalling certbot (Let's Encrypt) as a snap instead..."
+        apt remove certbot -y
+        apt autoremove -y
+        install_if_not snapd
+        snap install core
+        snap install certbot --classic
+        # Update $PATH in current session (login and logout is required otherwise)
+        check_command hash -r
+    fi
+fi
+
 # Fix PHP error message
 mkdir -p /tmp/pear/cache
 
@@ -345,6 +373,12 @@ then
             then
                 echo "# PECL apcu" > $PHP_MODS_DIR/apcu.ini
                 echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
+                check_command phpenmod -v ALL apcu
+            fi
+            # Fix https://help.nextcloud.com/t/nc-21-manual-update-issues/108693/4?$
+            if ! grep -qFx apc.enable_cli=1 $PHP_MODS_DIR/apcu.ini
+            then
+                echo "apc.enable_cli=1" >> $PHP_MODS_DIR/apcu.ini
                 check_command phpenmod -v ALL apcu
             fi
         fi
@@ -505,6 +539,18 @@ then
     export NCVERSION
     export STABLEVERSION="nextcloud-$NCVERSION"
     rm -f /tmp/minor.version
+elif [ -f /tmp/nextmajor.version ]
+then
+    NCBAD=$(cat /tmp/nextmajor.version)
+    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep $NCNEXT | tail -1)
+    if [ -z "$NCVERSION" ]
+    then
+        msg_box "The version that you are trying to upgrade to doesn't exist."
+        exit 1
+    fi
+    export NCVERSION
+    export STABLEVERSION="nextcloud-$NCVERSION"
+    rm -f /tmp/nextmajor.version
 elif [ -f /tmp/prerelease.version ]
 then
     PRERELEASE_VERSION=yes
@@ -574,7 +620,7 @@ fi
 DONOTUPDATETO='20.0.6'
 if [[ "$NCVERSION" == "$DONOTUPDATETO" ]]
 then
-    msg_box "Due to serious bugs with version $DONOTUPDATETO we won't upgrade to that version."
+    msg_box "Due to serious bugs with Nextcloud $DONOTUPDATETO we won't upgrade to that version."
     exit
 fi
 
@@ -657,7 +703,6 @@ check_command systemctl stop apache2.service
 # Create backup dir (/mnt/NCBACKUP/)
 if [ ! -d "$BACKUP" ]
 then
-    BACKUP=/var/NCBACKUP
     mkdir -p $BACKUP
 fi
 
@@ -684,6 +729,10 @@ then
     nextcloud_occ config:system:delete app_install_overwrite
 fi
 
+# Move backups to location according to $VAR
+mv /var/NCBACKUP/ "$BACKUP"
+mv /var/NCBACKUP-OLD/ "$BACKUP"-OLD
+
 # Check if backup exists and move to old
 print_text_in_color "$ICyan" "Backing up data..."
 DATE=$(date +%Y-%m-%d-%H%M%S)
@@ -692,7 +741,9 @@ then
     mkdir -p "$BACKUP"-OLD/"$DATE"
     install_if_not rsync
     rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
-    rm -R "$BACKUP"
+    DATE=$(date --date='1 year ago' +%Y)
+    rm -rf /var/NCBACKUP-OLD/"$DATE"*
+    rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
 fi
 
@@ -955,5 +1006,23 @@ Maintenance mode is kept on."
     "Nextcloud update failed!" \
     "Your Nextcloud update failed, please check the logs at $VMLOGS/update.log"
     nextcloud_occ status
+    if [ -n "$SNAPSHOT_EXISTS" ]
+    then
+        # Kill all "$SCRIPTS/update.sh" processes to make sure that no automatic restart happens after exiting this script
+        # shellcheck disable=2009
+        PROCESS_IDS_NEW=$(ps aux | grep "$SCRIPTS/update.sh" | grep -v grep | awk '{print $2}')
+        if [ -n "$PROCESS_IDS_NEW" ]
+        then
+            mapfile -t PROCESS_IDS_NEW <<< "$PROCESS_IDS_NEW"
+            for process in "${PROCESS_IDS_NEW[@]}"
+            do
+                print_text_in_color "$ICyan" "Killing the process with PID $process to prevent a potential automatic restart..."
+                if ! kill "$process"
+                then
+                    print_text_in_color "$IRed" "Couldn't kill the process with PID $process..."
+                fi
+            done
+        fi
+    fi
     exit 1
 fi

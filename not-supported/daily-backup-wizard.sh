@@ -31,6 +31,16 @@ mount_if_connected() {
     fi
     return 0
 }
+get_backup_mounts() {
+    BACKUP_MOUNTS=""
+    BACKUP_MOUNTS="$(grep "ntfs-3g" /etc/fstab | grep "windows_names" | grep "uid=root" \
+| grep "gid=root" | grep "umask=177" | grep "noauto" | awk '{print $2}')"
+    BACKUP_MOUNTS+="\n"
+    BACKUP_MOUNTS+="$(grep cifs /etc/fstab | grep "uid=root" | grep "gid=root" \
+| grep "file_mode=0600" | grep "dir_mode=0600" | grep "noauto" | awk '{print $2}')"
+    BACKUP_MOUNTS+="\n"
+    BACKUP_MOUNTS+="$(grep btrfs /etc/fstab | grep ",noauto" | awk '{print $2}')"
+}
 
 # Ask for execution
 msg_box "$SCRIPT_EXPLAINER"
@@ -47,16 +57,37 @@ Please rename or delete $BACKUP_SCRIPT_NAME if you want to reconfigure the backu
     exit 1
 fi
 # Check if pending snapshot is existing and cancel the setup in this case.
+if does_snapshot_exist "NcVM-startup"
+then
+    # Cannot get executed during the startup script
+    if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
+    then
+        msg_box "The daily backup cannot get configured during the startup script.
+Please try again after it is finished by running: 
+'sudo bash $SCRIPTS/menu.sh' -> 'Server Configuration' -> 'Daily Backup Wizard'."
+        exit
+    fi
+    msg_box "You need to run the update script once before you can continue with creating the backup script."
+    if yesno_box_yes "Do you want to do this now?"
+    then
+        bash "$SCRIPTS"/update.sh minor
+    else
+        exit 1
+    fi
+    if does_snapshot_exist "NcVM-startup"
+    then
+        msg_box "It seems like the statup script wasn't correctly removed. Cannot proceed."
+        exit 1
+    fi
+fi
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "It seems to be currently running a backup or update.
-Cannot setup the daily backup now. Please try again later."
-    exit 1
-elif does_snapshot_exist "NcVM-startup"
-then
-    msg_box "Please run the update script once before you can continue."
+Cannot set up the daily backup now. Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     exit 1
 fi
+
 # Check if snapshot/free space exists
 check_free_space
 if ! does_snapshot_exist "NcVM-snapshot" && ! [ "$FREE_SPACE" -ge 50 ]
@@ -65,15 +96,29 @@ then
 create a LVM-snapshot which is a requirement to create a backup script."
     exit 1
 fi
+
 # Check if backup drives existing
-BACKUP_MOUNTS="$(grep "ntfs-3g" /etc/fstab | grep "windows_names" | grep "uid=root" \
-| grep "gid=root" | grep "umask=177" | grep "noauto" | awk '{print $2}')"
-if [ -z "$BACKUP_MOUNTS" ]
+get_backup_mounts
+if [ "$BACKUP_MOUNTS" = "\n\n" ]
 then
-    msg_box "No backup drive found that can be used as daily backup target.
-Please mount one with the NTFS Mount script from the Not-Supported Menu."
-    exit 1
+    msg_box "No backup mount found that can be used as daily backup target.
+Please mount one with the SMB Mount script from the Additional Apps Menu \
+or with the BTRFS Mount script or NTFS Mount script from the Not-Supported Menu."
+    if yesno_box_yes "Do you want to mount a SMB-share that can be used as backup target with the SMB Mount script?
+(This requires a SMB-server in your network.)"
+    then
+        run_script APP smbmount
+    else
+        exit 1
+    fi
+    get_backup_mounts
+    if [ "$BACKUP_MOUNTS" = "\n\n" ]
+    then
+        msg_box "Still haven't found any backup mount that can be used as daily backup target. Cannot proceed!"
+        exit 1
+    fi
 fi
+BACKUP_MOUNTS="$(echo -e "$BACKUP_MOUNTS")"
 mapfile -t BACKUP_MOUNTS <<< "$BACKUP_MOUNTS"
 for drive in "${BACKUP_MOUNTS[@]}"
 do
@@ -90,10 +135,10 @@ then
 Please connect it to your server before you can continue."
     exit 1
 else
-    msg_box "At least one backup drive found. Please leave it connected."
+    msg_box "At least one backup mount found. Please leave it connected."
 fi
 # Check if /mnt/ncdata is mounted
-if grep -q " /mnt/ncdata " /etc/mtab
+if grep -q " /mnt/ncdata " /etc/mtab && ! grep " /mnt/ncdata " /etc/mtab | grep -q zfs
 then
     msg_box "The '/mnt/ncdata' directory is mounted and not existing on the root drive.
 This is currently not supported."
@@ -110,9 +155,19 @@ fi
 if ! send_mail "Testmail" \
 "This is a testmail to test if the server can send mails which is needed for the 'Daily Backup Wizard'."
 then
-    msg_box "The server is not configured to send mails.
-Please do that first by running the SMTP-Mail script from the Server Configuration Menu."
-    exit 1
+    msg_box "The server is not configured to send mails."
+    if yesno_box_yes "Do you want to do this now?"
+    then
+        run_script ADDONS smtp-mail
+    else
+        exit 1
+    fi
+    if ! send_mail "Testmail" \
+"This is a testmail to test if the server can send mails which is needed for the 'Daily Backup Wizard'."
+    then
+        msg_box "The server still cannot send mails. Cannot proceed!"
+        exit 1
+    fi
 fi
 
 # Drive Menu
@@ -226,7 +281,7 @@ fi
 if yesno_box_yes "Do you want to use the recommended backup directory which is:
 '$BACKUP_TARGET_DIRECTORY/borgbackup/NcVM'?"
 then
-    if [ -d "$BACKUP_TARGET_DIRECTORY/borgbackup/NcVM" ] && ! rm -d "$BACKUP_TARGET_DIRECTORY/borgbackup/NcVM"
+    if [ -d "$BACKUP_TARGET_DIRECTORY/borgbackup/NcVM" ] && ! rm -d "$BACKUP_TARGET_DIRECTORY/borgbackup/NcVM" &>/dev/null
     then
         msg_box "The directory '$BACKUP_TARGET_DIRECTORY/borgbackup/NcVM' exists and cannot be used.
 Please choose a custom one."
@@ -256,16 +311,16 @@ If you want to cancel, just type in 'exit' and press [ENTER].")
         elif ! echo "$SELECTED_DIRECTORY" | grep -q "^$BACKUP_TARGET_DIRECTORY/"
         then
             msg_box "The backup directory has to start with '$BACKUP_TARGET_DIRECTORY/'. Please try again."
-        elif [ -d "$SELECTED_DIRECTORY" ] && ! rm -d "$SELECTED_DIRECTORY"
+        elif [ -d "$SELECTED_DIRECTORY" ] && ! rm -d "$SELECTED_DIRECTORY" &>/dev/null
         then
             msg_box "This directory already exists. Please try again."
         else
             if ! mkdir -p "$SELECTED_DIRECTORY"
             then
                 msg_box "Couldn't create the directory. Please try again."
-                rm -d "$SELECTED_DIRECTORY"
+                rm -d "$SELECTED_DIRECTORY" &>/dev/null
             else
-                rm -d "$SELECTED_DIRECTORY"
+                rm -d "$SELECTED_DIRECTORY" &>/dev/null
                 BACKUP_TARGET_DIRECTORY="$SELECTED_DIRECTORY"
                 break
             fi
@@ -374,14 +429,20 @@ export ENCRYPTION_KEY="$ENCRYPTION_KEY"
 export BACKUP_TARGET_DIRECTORY="$BACKUP_TARGET_DIRECTORY"
 export BACKUP_MOUNTPOINT="$BACKUP_MOUNT"
 export BORGBACKUP_LOG="$VMLOGS/borgbackup.log"
-export CHECK_BACKUP_INTERVAL_DAYS=7
-export DAYS_SINCE_LAST_BACKUP_CHECK=7
+export CHECK_BACKUP_INTERVAL_DAYS=14
+export DAYS_SINCE_LAST_BACKUP_CHECK=14
 WRITE_BACKUP_SCRIPT
 unset ENCRYPTION_KEY
 
 # Secure the file
 chown root:root "$BACKUP_SCRIPT_NAME"
 chmod 700 "$BACKUP_SCRIPT_NAME"
+
+# Add a variable for enabling/disabling btrfs scrub for the backup drive
+if grep "$BACKUP_MOUNT" /etc/fstab | grep -q btrfs
+then
+    echo 'export BTRFS_SCRUB_BACKUP_DRIVE="yes"' >> "$BACKUP_SCRIPT_NAME"
+fi
 
 # Write additional backup sources to the script
 SOURCES='export ADDITIONAL_BACKUP_DIRECTORIES="'

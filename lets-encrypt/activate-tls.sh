@@ -16,8 +16,11 @@ debug_mode
 root_check
 
 # Information
-# Information
-msg_box "Before we begin the installation of your TLS certificate you need to:
+if [ -n "$DEDYNDOMAIN" ]
+then
+    TLSDOMAIN="$DEDYNDOMAIN"
+else
+    msg_box "Before we begin the installation of your TLS certificate you need to:
 
 1. Have a domain like: cloud.example.com
 If you want to get a domain at a fair price, please check this out: https://store.binero.se/?lang=en-US
@@ -29,44 +32,48 @@ It's also possible to automatically open ports with UPNP, if you have that enabl
 PLEASE NOTE:
 This script can be run again by executing: sudo bash $SCRIPTS/menu.sh, and choose 'Server Configuration' --> 'Activate TLS'"
 
-if ! yesno_box_yes "Are you sure you want to continue?"
-then
-    msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo \
+    if ! yesno_box_yes "Are you sure you want to continue?"
+    then
+        msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo \
 bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
-    exit
-fi
+        exit
+    fi
 
-if ! yesno_box_yes "Have you opened port 80 and 443 in your router, or are you using UPNP?"
-then
-    msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo \
+    if ! yesno_box_yes "Have you opened port 80 and 443 in your router, or are you using UPNP?"
+    then
+        msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo \
 bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
-    exit
-fi
+        exit
+    fi
 
-if ! yesno_box_yes "Do you have a domain that you will use?"
-then
-    msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo \
+    if ! yesno_box_yes "Do you have a domain that you will use?"
+    then
+        msg_box "OK, but if you want to run this script later, just execute this in your CLI: sudo \
 bash /var/scripts/menu.sh and choose 'Server Configuration' --> 'Activate TLS'"
-    exit
-fi
+        exit
+    fi
 
-# Nextcloud Main Domain (activate-tls.sh)
-TLSDOMAIN=$(input_box_flow "Please enter the domain name you will use for Nextcloud.
+    # Nextcloud Main Domain (activate-tls.sh)
+    TLSDOMAIN=$(input_box_flow "Please enter the domain name you will use for Nextcloud.
 Make sure it looks like this:\nyourdomain.com, or cloud.yourdomain.com")
+fi
 
-msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $TLSDOMAIN, \
+if [ -z "$DEDYNDOMAIN" ]
+then
+   msg_box "Before continuing, please make sure that you have you have edited the DNS settings for $TLSDOMAIN, \
 and opened port 80 and 443 directly to this servers IP. A full extensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
 This can be done automatically if you have UPNP enabled in your firewall/router. \
 You will be offered to use UPNP in the next step."
 
-if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
-then
-    unset FAIL
-    open_port 80 TCP
-    open_port 443 TCP
-    cleanup_open_port
+    if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
+    then
+        unset FAIL
+        open_port 80 TCP
+        open_port 443 TCP
+        cleanup_open_port
+    fi
 fi
 
 # Curl the lib another time to get the correct https_conf
@@ -78,11 +85,16 @@ echo
 print_text_in_color "$ICyan" "Checking if $TLSDOMAIN exists and is reachable..."
 domain_check_200 "$TLSDOMAIN"
 
-# Check if port is open with NMAP
+# Set /etc/hosts domain
 sed -i "s|127.0.1.1.*|127.0.1.1       $TLSDOMAIN nextcloud|g" /etc/hosts
 network_ok
-check_open_port 80 "$TLSDOMAIN"
-check_open_port 443 "$TLSDOMAIN"
+    
+if [ -z "$DEDYNDOMAIN" ]
+then
+    # Check if port is open with NMAP
+    check_open_port 80 "$TLSDOMAIN"
+    check_open_port 443 "$TLSDOMAIN"
+fi
 
 # Fetch latest version of test-new-config.sh
 check_command download_script LETS_ENC test-new-config
@@ -144,8 +156,8 @@ then
 
     # Logs
     LogLevel warn
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/error.log
 
     DocumentRoot $NCPATH
 
@@ -203,27 +215,40 @@ then
     sed -i "s|</FilesMatch.*|#|g" "$tls_conf"
 fi
 
-#Generate certs and auto-configure if successful
-if generate_cert "$TLSDOMAIN"
+# Generate certs and auto-configure if successful
+if [ -n "$DEDYNDOMAIN" ]
 then
-    if [ -d "$CERTFILES" ]
+    print_text_in_color "$ICyan" "Renewing TLS with DNS, please don't abort the hook, it may take a while..."
+    # Renew with DNS by default
+    if certbot certonly --manual --text --rsa-key-size 4096 --renew-by-default --server https://acme-v02.api.letsencrypt.org/directory no-eff-email --agree-tos --preferred-challenges dns --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh -d "$DEDYNDOMAIN"
     then
         # Generate DHparams cipher
         if [ ! -f "$DHPARAMS_TLS" ]
         then
             openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
         fi
-        # Activate new config
-        check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
-        msg_box "Please remember to keep port 80 (and 443) open so that Let's Encrypt can do \
-the automatic renewal of the cert. If port 80 is closed the cert will expire in 3 months.
-
-You don't need to worry about security as port 80 is directly forwarded to 443, so \
-no traffic will actually be on port 80, except for the forwarding to 443 (HTTPS)."
-        exit 0
     fi
 else
-    last_fail_tls "$SCRIPTS"/activate-tls.sh cleanup
+    if generate_cert "$TLSDOMAIN"
+    then
+        if [ -d "$CERTFILES" ]
+        then
+            # Generate DHparams cipher
+            if [ ! -f "$DHPARAMS_TLS" ]
+            then
+                openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
+            fi
+            # Activate new config
+            check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
+            msg_box "Please remember to keep port 80 (and 443) open so that Let's Encrypt can do \
+the automatic renewal of the cert. If port 80 is closed the cert will expire in 3 months.
+You don't need to worry about security as port 80 is directly forwarded to 443, so \
+no traffic will actually be on port 80, except for the forwarding to 443 (HTTPS)."
+            exit 0
+        fi
+    else
+        last_fail_tls "$SCRIPTS"/activate-tls.sh cleanup
+    fi
 fi
 
 exit

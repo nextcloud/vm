@@ -56,7 +56,8 @@ if [ -z "$PROVISIONING" ]
 then
     if ! does_snapshot_exist "NcVM-installation" && yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
 Please note: this feature will not be used by this script but by other scripts later on.
-For now we will only create a placeholder volume that will be used to let some space for snapshot volumes."
+For now we will only create a placeholder volume that will be used to let some space for snapshot volumes.
+Be aware that you will not be able to use the built-in backup solution if you choose 'No'!"
     then
         check_free_space
         if [ "$FREE_SPACE" -ge 50 ]
@@ -151,16 +152,6 @@ download_script STATIC fetch_lib
 
 # Set locales
 run_script ADDONS locales
-
-# Offer to use archive.ubuntu.com
-if [ -z "$PROVISIONING" ]
-then
-    msg_box "Your current download repository is $REPO"
-fi
-if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want use http://archive.ubuntu.com as repository for this server?"
-then
-    sed -i "s|http://.*archive.ubuntu.com|http://archive.ubuntu.com|g" /etc/apt/sources.list
-fi
 
 # Create new current user
 download_script STATIC adduser
@@ -561,11 +552,11 @@ nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
 # Set logrotate (max 10 MB)
 nextcloud_occ config:system:set log_rotate_size --value="10485760"
 
-# Set trashbin retention obligation (save it in trashbin for 6 months or delete when space is needed)
-nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 180"
+# Set trashbin retention obligation (save it in trashbin for 60 days or delete when space is needed)
+nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 60"
 
-# Set versions retention obligation (save versions for 12 months or delete when space is needed)
-nextcloud_occ config:system:set versions_retention_obligation --value="auto, 365"
+# Set versions retention obligation (save versions for 180 days or delete when space is needed)
+nextcloud_occ config:system:set versions_retention_obligation --value="auto, 180"
 
 # Remove simple signup
 nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
@@ -603,6 +594,9 @@ echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
+# Install PECL dependencies
+install_if_not php"$PHPVER"-dev
+
 # Install Redis (distributed cache)
 run_script ADDONS redis-server-ubuntu
 
@@ -637,16 +631,16 @@ echo "# igbinary for PHP"
 echo "session.serialize_handler=igbinary"
 echo "igbinary.compact_strings=On"
 } >> "$PHP_INI"
-if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
-then
-    touch $PHP_MODS_DIR/igbinary.ini
-fi
-if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
-then
-    echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
-    echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
-    check_command phpenmod -v ALL igbinary
-fi
+    if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
+    then
+        touch $PHP_MODS_DIR/igbinary.ini
+    fi
+    if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
+    then
+        echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
+        echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
+        check_command phpenmod -v ALL igbinary
+    fi
 restart_webserver
 fi
 
@@ -808,8 +802,8 @@ then
 
     # Logs
     LogLevel warn
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/error.log
 
     DocumentRoot $NCPATH
 
@@ -989,6 +983,7 @@ download_script STATIC history
 download_script NETWORK static_ip
 # Moved from the startup script 2021-01-04
 download_script LETS_ENC activate-tls
+download_script ADDONS desec
 download_script STATIC temporary-fix
 download_script STATIC update
 download_script STATIC setup_secure_permissions_nextcloud

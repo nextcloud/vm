@@ -59,7 +59,7 @@ fi
 # Check if restore is possible
 if ! [ -f "$DAILY_BACKUP_FILE" ]
 then
-    msg_box "It seems like you haven't setup daily borg backups.
+    msg_box "It seems like you haven't set up daily borg backups.
 Please do that before you can view backups."
     exit 1
 fi
@@ -87,7 +87,8 @@ fi
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "The snapshot pending does exist. Can currently not show the backup.
-Please try again later."
+Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     exit 1
 fi
 # Check if startup snapshot is existing and cancel the viewing in this case.
@@ -187,11 +188,32 @@ then
     fi
 fi
 
+# Check if /mnt/ncdata exists
+if grep -q " /mnt/ncdata " /etc/mtab
+then
+    NCDATA_PART_EXISTS=yes
+fi
+
+# Check the ncdata mountpoint
+if [ -n "$NCDATA_PART_EXISTS" ]
+then
+    if mountpoint -q /tmp/borgncdata
+    then
+        umount /tmp/borgboot
+        if mountpoint -q /tmp/borgncdata
+        then
+            msg_box "There is still something mounted on /tmp/borgncdata. Cannot proceed."
+            exit 1
+        fi
+    fi
+fi
+
 # Check if pending snapshot is existing and cancel the restore process in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
     msg_box "The snapshot pending does exist. Can currently not restore the backup.
-Please try again later."
+Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     exit 1
 fi
 
@@ -227,17 +249,51 @@ fi
 # Export passphrase
 export BORG_PASSPHRASE="$ENCRYPTION_KEY"
 
+# Break the borg lock if it exists because we have the snapshot that prevents such situations
+if [ -f "$BACKUP_TARGET_DIRECTORY/lock.roster" ]
+then
+    print_text_in_color "$ICyan" "Breaking the borg lock..."
+    borg break-lock "$BACKUP_TARGET_DIRECTORY"
+fi
+
 # Find available archives
 ALL_ARCHIVES=$(borg list "$BACKUP_TARGET_DIRECTORY")
 SYSTEM_ARCHIVES=$(echo "$ALL_ARCHIVES" | grep "NcVM-system-partition" | awk -F "-" '{print $1}' | sort -r)
 mapfile -t SYSTEM_ARCHIVES <<< "$SYSTEM_ARCHIVES"
-BOOT_ARCHIVES=$(echo "$ALL_ARCHIVES" | grep "NcVM-boot-partition" | awk -F "-" '{print $1}')
+BOOT_ARCHIVES=$(echo "$ALL_ARCHIVES" | grep "NcVM-boot-partition" | awk -F "-" '{print $1}' | sort -r)
 mapfile -t BOOT_ARCHIVES <<< "$BOOT_ARCHIVES"
+NCDATA_ARCHIVES=$(echo "$ALL_ARCHIVES" | grep "NcVM-ncdata-partition" | awk -F "-" '{print $1}' | sort -r)
+if [ -n "$NCDATA_ARCHIVES" ]
+then
+    NCDATA_ARCHIVE_EXISTS=yes
+fi
+mapfile -t NCDATA_ARCHIVES <<< "$NCDATA_ARCHIVES"
+
+# Check if the setup is correct
+if [ "$NCDATA_PART_EXISTS" != "$NCDATA_ARCHIVE_EXISTS" ]
+then
+    msg_box "Cannot restore the system since either the ncdata partition doesn't exist and is in the repository \
+or the partition exists and isn't in the repository."
+    restore_original_state
+    exit 1
+fi
+
+# Find valid archives
 for system_archive in "${SYSTEM_ARCHIVES[@]}"
 do
     for boot_archive in "${BOOT_ARCHIVES[@]}"
     do
-        if [ "$system_archive" = "$boot_archive" ]
+        if [ -n "$NCDATA_ARCHIVE_EXISTS" ]
+        then
+            for ncdata_archive in "${NCDATA_ARCHIVES[@]}"
+            do
+                if [ "$system_archive" = "$boot_archive" ] && [ "$system_archive" = "$ncdata_archive" ]
+                then
+                    VALID_ARCHIVES+=("$system_archive")
+                    continue
+                fi
+            done
+        elif [ "$system_archive" = "$boot_archive" ]
         then
             VALID_ARCHIVES+=("$system_archive")
             continue
@@ -310,6 +366,16 @@ then
         restore_original_state
         exit 1
     fi
+    if [ -n "$NCDATA_ARCHIVE_EXISTS" ]
+    then
+        print_text_in_color "$ICyan" "Checking the ncdata partition archive integrity. Please be patient!"
+        if ! borg extract --dry-run --list "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-ncdata-partition"
+        then
+            msg_box "Some errors were reported while checking the ncdata partition archive integrity."
+            restore_original_state
+            exit 1
+        fi
+    fi
 fi
 
 # Mount system archive
@@ -331,6 +397,20 @@ then
     exit 1
 fi
 
+# Mount ncdata archive
+if [ -n "$NCDATA_ARCHIVE_EXISTS" ]
+then
+    mkdir -p /tmp/borgncdata
+    if ! borg mount "$BACKUP_TARGET_DIRECTORY::$SELECTED_ARCHIVE-NcVM-ncdata-partition" /tmp/borgncdata
+    then
+        msg_box "Something failed while mounting the ncdata partition archive. Please try again."
+        umount /tmp/borgsystem
+        umount /tmp/borgboot
+        restore_original_state
+        exit 1
+    fi
+fi
+
 # Check if all system entries are there
 SYS_DRIVES=$(grep "^/dev/disk/by-" /etc/fstab | grep defaults | awk '{print $1}')
 mapfile -t SYS_DRIVES <<< "$SYS_DRIVES"
@@ -342,6 +422,7 @@ do
 This might be because the archive was created on a different Ubuntu installation."
         umount /tmp/borgsystem
         umount /tmp/borgboot
+        umount /tmp/borgncdata &>/dev/null
         restore_original_state
         exit 1
     fi
@@ -363,10 +444,12 @@ then
     msg_box "Something failed while performing the boot-partition dry-run."
     umount /tmp/borgsystem
     umount /tmp/borgboot
+    umount /tmp/borgncdata &>/dev/null
     restore_original_state
     exit 1
 fi
 sed -i -r '/^[a-zA-Z0-9]+\//s/^/boot\//' /tmp/dry-run.out
+sed -i 's|^deleting |deleting boot/|' /tmp/dry-run.out
 if ! rsync --archive --verbose --human-readable \
 --dry-run --delete --one-file-system --stats "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ / \
 | tee -a /tmp/dry-run.out
@@ -374,8 +457,27 @@ then
     msg_box "Something failed while performing the system-partition dry-run."
     umount /tmp/borgsystem
     umount /tmp/borgboot
+    umount /tmp/borgncdata &>/dev/null
     restore_original_state
     exit 1
+fi
+if [ -n "$NCDATA_ARCHIVE_EXISTS" ]
+then
+    if ! rsync --archive --verbose --human-readable \
+--dry-run --delete --one-file-system --stats /tmp/borgncdata/ncdata/ /mnt/ncdata \
+| tee /tmp/ncdata-dry-run.out
+    then
+        msg_box "Something failed while performing the ncdata-partition dry-run."
+        umount /tmp/borgsystem
+        umount /tmp/borgboot
+        umount /tmp/borgncdata
+        restore_original_state
+        exit 1
+    fi
+    sed -i -r '/^[a-zA-Z0-9]+\//s/^/mnt\/ncdata\//' /tmp/ncdata-dry-run.out
+    sed -i 's|^deleting |deleting mnt/ncdata/|' /tmp/ncdata-dry-run.out
+    cat /tmp/ncdata-dry-run.out >> /tmp/dry-run.out
+    rm /tmp/ncdata-dry-run.out
 fi
 
 # Prepare output
@@ -433,6 +535,7 @@ if ! yesno_box_no "Are you sure that you want to restore your system to this sta
 then
     umount /tmp/borgsystem
     umount /tmp/borgboot
+    umount /tmp/borgncdata &>/dev/null
     restore_original_state
     exit 1
 fi
@@ -461,6 +564,7 @@ then
     msg_box "Something failed while restoring the system partition."
     umount /tmp/borgsystem
     umount /tmp/borgboot
+    umount /tmp/borgncdata &>/dev/null
     restore_original_state
     exit 1
 fi
@@ -471,8 +575,24 @@ then
     msg_box "Something failed while restoring the boot partition."
     umount /tmp/borgsystem
     umount /tmp/borgboot
+    umount /tmp/borgncdata &>/dev/null
     restore_original_state
     exit 1
+fi
+
+# Restore the ncdata partition
+if [ -n "$NCDATA_ARCHIVE_EXISTS" ]
+then
+    if ! rsync --archive --human-readable --delete --one-file-system \
+--progress /tmp/borgncdata/ncdata/ /mnt/ncdata
+    then
+        msg_box "Something failed while restoring the ncdata partition."
+        umount /tmp/borgsystem
+        umount /tmp/borgboot
+        umount /tmp/borgncdata
+        restore_original_state
+        exit 1
+    fi
 fi
 
 # Start services
@@ -484,6 +604,7 @@ start_if_stopped docker
 # Restore original state
 umount /tmp/borgsystem
 umount /tmp/borgboot
+umount /tmp/borgncdata &>/dev/null
 restore_original_state
 
 # Allow to reboot: recommended

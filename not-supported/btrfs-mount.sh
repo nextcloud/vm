@@ -4,8 +4,8 @@
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
-SCRIPT_NAME="NTFS Mount"
-SCRIPT_EXPLAINER="This script automates mounting NTFS drives locally in your system."
+SCRIPT_NAME="BTRFS Mount"
+SCRIPT_EXPLAINER="This script automates mounting BTRFS drives locally in your system."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -81,7 +81,7 @@ do
     do
         STATS=$(echo "$PARTITION_STATS" | grep "^$partition ")
         FSTYPE=$(echo "$STATS" | awk '{print $2}')
-        if [ "$FSTYPE" != "ntfs" ]
+        if [ "$FSTYPE" != "btrfs" ]
         then
             continue
         fi
@@ -111,7 +111,7 @@ done
 if [ -z "$UUIDS" ] 
 then
     msg_box "No drive found that can get mounted.
-Most likely none is NTFS formatted."
+Most likely none is BTRFS formatted."
     return 1
 fi
 
@@ -164,8 +164,7 @@ If you want to cancel, type 'exit' and press [ENTER].")
     then
         msg_box "The directory isn't allowed to start with '/mnt/smbshares'"
     else
-        echo "UUID=$UUID $MOUNT_PATH ntfs-3g \
-windows_names,uid=plex,gid=plex,umask=007,nofail 0 0" >> /etc/fstab
+        echo "UUID=$UUID $MOUNT_PATH btrfs defaults 0 0" >> /etc/fstab
         mkdir -p "$MOUNT_PATH"
         if ! mount "$MOUNT_PATH"
         then
@@ -187,6 +186,94 @@ if ! yesno_box_no "Is this drive meant to be a backup drive?
 If you choose yes, it will only get mounted by a backup script \
 and will restrict the read/write permissions to the root user."
 then
+    print_text_in_color "$ICyan" "Adjusting permissions..."
+    chown -R plex:plex "$MOUNT_PATH" &>/dev/null
+    chmod -R 770 "$MOUNT_PATH" &>/dev/null
+
+    # Adjust permissions at start up
+    if ! [ -f "$SCRIPTS/adjust-startup-permissions.sh" ]
+    then
+    cat << PERMISSIONS > "$SCRIPTS/adjust-startup-permissions.sh"
+#!/bin/bash
+
+# Secure the file
+chown root:root "$SCRIPTS/adjust-startup-permissions.sh"
+chmod 700 "$SCRIPTS/adjust-startup-permissions.sh"
+
+# Entries
+PERMISSIONS
+    fi
+    cat << PERMISSIONS >> "$SCRIPTS/adjust-startup-permissions.sh"
+find "$MOUNT_PATH/" -not -path "$MOUNT_PATH/.snapshots/*" \\( ! -perm 770 -o ! -group plex \
+-o ! -user plex \\) -exec chmod 770 {} \\; -exec chown plex:plex {} \\;
+PERMISSIONS
+    chown root:root "$SCRIPTS/adjust-startup-permissions.sh"
+    chmod 700 "$SCRIPTS/adjust-startup-permissions.sh"
+    crontab -u root -l | grep -v "$SCRIPTS/adjust-startup-permissions.sh" | crontab -u root -
+    crontab -u root -l | { cat; echo "@reboot $SCRIPTS/adjust-startup-permissions.sh"; } | crontab -u root -
+
+    # Automatically create snapshots
+    mkdir -p "$MOUNT_PATH/.snapshots"
+    if ! [ -f "$SCRIPTS/create-daily-btrfs-snapshots.sh" ]
+    then
+        cat << SNAPSHOT > "$SCRIPTS/create-daily-btrfs-snapshots.sh"
+#!/bin/bash
+
+# Secure the file
+chown root:root "$SCRIPTS/create-daily-btrfs-snapshots.sh"
+chmod 700 "$SCRIPTS/create-daily-btrfs-snapshots.sh"
+
+# Variables
+MAX_SNAPSHOTS=14
+CURRENT_DATE=\$(date --date @"\$(date +%s)" +"%Y%m%d_%H%M%S")
+SNAPSHOT
+    fi
+    cat << SNAPSHOT >> "$SCRIPTS/create-daily-btrfs-snapshots.sh"
+
+# $MOUNT_PATH
+btrfs subvolume snapshot -r "$MOUNT_PATH/" "$MOUNT_PATH/.snapshots/@\$CURRENT_DATE"
+while [ "\$(find "$MOUNT_PATH/.snapshots/" -maxdepth 1 -mindepth 1 -type d -name '@*_*' | wc -l)" -gt "\$MAX_SNAPSHOTS" ]
+do
+    DELETE="\$(find "$MOUNT_PATH/.snapshots/" -maxdepth 1 -mindepth 1 -type d -name '@*_*' | sort | head -1)"
+    btrfs subvolume delete "\$DELETE"
+done
+SNAPSHOT
+    chown root:root "$SCRIPTS/create-daily-btrfs-snapshots.sh"
+    chmod 700 "$SCRIPTS/create-daily-btrfs-snapshots.sh"
+    crontab -u root -l | grep -v "$SCRIPTS/create-daily-btrfs-snapshots.sh" | crontab -u root -
+    crontab -u root -l | { cat; echo "@daily $SCRIPTS/create-daily-btrfs-snapshots.sh >/dev/null"; } | crontab -u root -
+
+    # Execute monthly scrubs
+    if ! [ -f "$SCRIPTS/scrub-btrfs-monthly.sh" ]
+    then
+        cat << SNAPSHOT > "$SCRIPTS/scrub-btrfs-monthly.sh"
+#!/bin/bash
+
+# Secure the file
+chown root:root "$SCRIPTS/scrub-btrfs-monthly.sh"
+chmod 700 "$SCRIPTS/scrub-btrfs-monthly.sh"
+
+# shellcheck source=lib.sh
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+SNAPSHOT
+    fi
+    cat << SNAPSHOT >> "$SCRIPTS/scrub-btrfs-monthly.sh"
+
+# $MOUNT_PATH
+if ! btrfs scrub start -B "$MOUNT_PATH"
+then
+    notify_admin_gui "Error while performing monthly BTRFS scrub!" \
+    "Error on $MOUNT_PATH\nPlease look at $VMLOGS/monthly-btrfs-scrub.log for further info!"
+else
+    notify_admin_gui "Monthly BTRFS scrub successful!" \
+    "$MOUNT_PATH was successfully tested!\nPlease look at $VMLOGS/monthly-btrfs-scrub.log for further info!"
+fi
+SNAPSHOT
+    chown root:root "$SCRIPTS/scrub-btrfs-monthly.sh"
+    chmod 700 "$SCRIPTS/scrub-btrfs-monthly.sh"
+    crontab -u root -l | grep -v "$SCRIPTS/scrub-btrfs-monthly.sh" | crontab -u root -
+    crontab -u root -l | { cat; echo "@monthly $SCRIPTS/scrub-btrfs-monthly.sh >> $VMLOGS/monthly-btrfs-scrub.log 2>&1"; } | crontab -u root -
+
     # Test if Plex is installed
     if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^plex$"
     then
@@ -223,9 +310,11 @@ This can take a while. Please be patient!"
 fi
 
 # Execute the change to a backup drive
+print_text_in_color "$ICyan" "Adjusting permissions..."
+sed -i "/$UUID/s/defaults/defaults,noauto/" /etc/fstab
+chown -R root:root "$MOUNT_PATH"
+chmod -R 600 "$MOUNT_PATH"
 umount "$MOUNT_PATH"
-sed -i "/$UUID/d" /etc/fstab
-echo "UUID=$UUID $MOUNT_PATH ntfs-3g windows_names,uid=root,gid=root,umask=177,nofail,noauto 0 0" >> /etc/fstab
 msg_box "Your Backup drive is ready."
 }
 
@@ -235,7 +324,7 @@ do
     choice=$(whiptail --title "$TITLE" --menu \
 "Choose what you want to do.
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Mount a drive" "(Interactively mount a NTFS drive)" \
+"Mount a drive" "(Interactively mount a BTRFS drive)" \
 "Exit" "(Exit this script)" 3>&1 1>&2 2>&3)
     case "$choice" in
         "Mount a drive")

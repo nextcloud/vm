@@ -25,24 +25,36 @@ So please run them on your own risk. Feedback is more than welcome, though and c
 
 Choose which one you want to execute.
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Bitlocker Mount" "(Mount Bitlocker encrypted drives)" OFF \
+"BTRFS Format" "(Format drives to BTRFS)" OFF \
+"BTRFS Mount" "(Mount BTRFS drives)" OFF \
+"BTRFS Veracrypt" "(Format, encrypt and mount Veracrypt BTRFS drives)" OFF \
 "NTFS Format" "(Format drives to NTFS)" OFF \
 "NTFS Mount" "(Mount NTFS drives)" OFF \
+"NTFS Veracrypt" "(Format, encrypt and mount Veracrypt NTFS drives)" OFF \
 "Backup Viewer" "(View your Backups)" OFF \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
+"Firewall" "(Setting up a firewall)" OFF \
+"Harden SSH" "(Harden SSH configuration)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
 "PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
 "PLEX Media Server" "(Multimedia server application)" OFF \
 "Remotedesktop" "(Install a remotedesktop based on xrdp)" OFF \
 "SMB-server" "(Create and manage a SMB-server on OS level)" OFF \
-"System Restore" "(Restore the system partition from a backup)" OFF \
-"Veracrypt" "(Format, encrypt and mount drives with Veracrypt)" OFF 3>&1 1>&2 2>&3)
+"System Restore" "(Restore the system partition from a backup)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
-    *"Bitlocker Mount"*)
-        print_text_in_color "$ICyan" "Downloading the Bitlocker Mount script..."
-        run_script NOT_SUPPORTED_FOLDER bitlocker-mount
+    *"BTRFS Format"*)
+        print_text_in_color "$ICyan" "Downloading the BTRFS Format script..."
+        run_script NOT_SUPPORTED_FOLDER btrfs-format
+    ;;&
+    *"BTRFS Mount"*)
+        print_text_in_color "$ICyan" "Downloading the BTRFS Mount script..."
+        run_script NOT_SUPPORTED_FOLDER btrfs-mount
+    ;;&
+    *"BTRFS Veracrypt"*)
+        print_text_in_color "$ICyan" "Downloading the Veracrypt script..."
+        run_script NOT_SUPPORTED_FOLDER veracrypt-btrfs
     ;;&
     *"NTFS Format"*)
         print_text_in_color "$ICyan" "Downloading the NTFS Format script..."
@@ -52,6 +64,10 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the NTFS Mount script..."
         run_script NOT_SUPPORTED_FOLDER ntfs-mount
     ;;&
+    *"NTFS Veracrypt"*)
+        print_text_in_color "$ICyan" "Downloading the Veracrypt script..."
+        run_script NOT_SUPPORTED_FOLDER veracrypt-ntfs
+    ;;&
     *"Backup Viewer"*)
         print_text_in_color "$ICyan" "Downloading the Daily Backup Viewer script..."
         run_script NOT_SUPPORTED_FOLDER backup-viewer
@@ -59,6 +75,14 @@ case "$choice" in
     *"Daily Backup Wizard"*)
         print_text_in_color "$ICyan" "Downloading the Daily Backup Wizard script..."
         run_script NOT_SUPPORTED_FOLDER daily-backup-wizard
+    ;;&
+    *"Firewall"*)
+        print_text_in_color "$ICyan" "Downloading the Firewall script..."
+        run_script NOT_SUPPORTED_FOLDER firewall
+    ;;&
+    *"Harden SSH"*)
+        print_text_in_color "$ICyan" "Downloading the Harden SSH script..."
+        run_script ADDONS harden-ssh
     ;;&
     *"Off-Shore Backup Wizard"*)
         print_text_in_color "$ICyan" "Downloading the Off-Shore Backup Wizard script..."
@@ -87,10 +111,6 @@ case "$choice" in
     *"System Restore"*)
         print_text_in_color "$ICyan" "Downloading the System Restore script..."
         run_script NOT_SUPPORTED_FOLDER system-restore
-    ;;&
-    *"Veracrypt"*)
-        print_text_in_color "$ICyan" "Downloading the Veracrypt script..."
-        run_script NOT_SUPPORTED_FOLDER veracrypt
     ;;&
     *)
     ;;

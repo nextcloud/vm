@@ -113,6 +113,9 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
+    msg_box "The snapshot pending does exist. Can currently not proceed.
+Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
 fi
 
@@ -152,6 +155,19 @@ then
     fi
 fi
 
+# Test if btrfs volume
+if grep " $BACKUP_MOUNTPOINT " /etc/mtab | grep -q btrfs
+then
+    IS_BTRFS_PART=1
+    mkdir -p "$BACKUP_MOUNTPOINT/.snapshots"
+    btrfs subvolume snapshot -r "$BACKUP_MOUNTPOINT" "$BACKUP_MOUNTPOINT/.snapshots/@$CURRENT_DATE"
+    while [ "$(find "$BACKUP_MOUNTPOINT/.snapshots/" -maxdepth 1 -mindepth 1 -type d -name '@*_*' | wc -l)" -gt 10 ]
+    do
+        DELETE_SNAP="$(find "$BACKUP_MOUNTPOINT/.snapshots/" -maxdepth 1 -mindepth 1 -type d -name '@*_*' | sort | head -1)"
+        btrfs subvolume delete "$DELETE_SNAP"
+    done
+fi
+
 # Send mail that backup was started
 if ! send_mail "Off-shore backup started!" "You will be notified again when the backup is finished!
 Please don't restart or shutdown your server until then!"
@@ -163,6 +179,9 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
+    msg_box "The snapshot pending does exist. Can currently not proceed.
+Please try again later.\n
+If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
     send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
 fi
 
@@ -190,6 +209,19 @@ fi
 
 # Print usage of drives into log
 show_drive_usage
+
+# Adjust permissions and scrub volume
+if [ -n "$IS_BTRFS_PART" ]
+then
+    inform_user "$ICyan" "Adjusting permissions..."
+    find "$BACKUP_MOUNTPOINT/" -not -path "$BACKUP_MOUNTPOINT/.snapshots/*" \
+\( ! -perm 600 -o ! -group root -o ! -user root \) -exec chmod 600 {} \; -exec chown root:root {} \;
+    inform_user "$ICyan" "Scrubbing BTRFS partition..."
+    if ! btrfs scrub start -B "$BACKUP_MOUNTPOINT"
+    then
+        send_error_mail "Some errors were reported while scrubbing the BTRFS partition."
+    fi
+fi
 
 # Unmount the backup drive
 inform_user "$ICyan" "Unmounting the off-shore backup drive..."

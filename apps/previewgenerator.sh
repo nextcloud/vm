@@ -238,7 +238,7 @@ fi
 msg_box "In the last step you can define a specific Nextcloud user for \
 which will be the user that runs the Preview Generation.
 
-The default behaviour (just hit [ENTER]) is to run with the \
+The default behavior (just hit [ENTER]) is to run with the \
 system user 'www-data' which will generate previews for all users.
 
 If you on the other hand choose to use a specific user, previews will ONLY be generated for that specific user."
