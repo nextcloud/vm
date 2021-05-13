@@ -902,7 +902,8 @@ then
         linux-virtual \
         linux-image-virtual \
         linux-tools-virtual \
-        linux-cloud-tools-virtual
+        linux-cloud-tools-virtual \
+        linux-azure
         # linux-image-extra-virtual only needed for AUFS driver with Docker
     fi
 fi
