@@ -73,34 +73,6 @@ Be aware that you will not be able to use the built-in backup solution if you ch
     fi
 fi
 
-# Install Azure-tuned kernel for Hyper-V based VMs
-#
-#  first check for Hyper-V based VM, based on dmidecode
-#  hypervcheck1 is "MicrosoftCorporationVirtualMachine" in case of Hyper-V
-hypervcheck1=`dmidecode -t system|grep 'Manufacturer\|Product' | cut -d ':' -f2 | tr -d " \t\n\r"`
-#
-#  second check for Hyper-V based VM, based on dmesg for safety
-#  hypervcheck2 is "MicrosoftHyper-V" in case of Hyper-V
-hypervcheck2=`dmesg --notime | grep -i "Hypervisor detected:" | cut -d ':' -f2 | tr -d " \t\n\r"`
-#
-#
-#  we trust the dmidecode result more than dmesg, thus make it mandatory - prior even using dmesg result.
-if [ "$hypervcheck1" = "MicrosoftCorporationVirtualMachine" ]
-then
-  print_text_in_color "$IGreen" "First check for Hyper-V using dmidecode was successful, Hyper-V found."
-  if [ "$hypervcheck2" = "MicrosoftHyper-V" ]
-  then
-    print_text_in_color "$IGreen" "Second check for Hyper-V using dmesg was successful, Hyper-V found."
-    print_text_in_color "$IGreen" "Now installing the Azure-tuned kernel to enable the latest virtual Hardware Enablement (HWE) kernel for up to date Linux Integration Services."
-    apt install linux-azure -y
-  else
-    echo "Second check for Hyper-V using dmesg was unsuccessful, Hyper-V not found via dmesg."
-    echo "As only 1 out 2 tests succeeded, Hyper-V was NOT safely detected. NOT installing Ubuntu Azure-tuned kernel."
-  fi
-else
-    echo "No Hyper-V detected. NOT installing Ubuntu Azure-tuned kernel."
-fi
-
 # Install lshw if not existing
 if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
@@ -932,6 +904,31 @@ then
         linux-tools-virtual \
         linux-cloud-tools-virtual
         # linux-image-extra-virtual only needed for AUFS driver with Docker
+        
+        # Install Azure-tuned kernel for Hyper-V based VMs
+        #  first check for Hyper-V based VM, based on dmidecode
+        #  hypervcheck1 is "MicrosoftCorporationVirtualMachine" in case of Hyper-V
+        hypervcheck1=$(dmidecode -t system|grep 'Manufacturer\|Product' | cut -d ':' -f2 | tr -d " \t\n\r")
+        #  second check for Hyper-V based VM, based on dmesg for safety
+        #  hypervcheck2 is "MicrosoftHyper-V" in case of Hyper-V
+        hypervcheck2="$(dmesg --notime | grep -i "Hypervisor detected:" | cut -d ':' -f2 | tr -d " \t\n\r")
+
+        #  we trust the dmidecode result more than dmesg, thus make it mandatory - prior even using dmesg result.
+        if [ "$hypervcheck1" = "MicrosoftCorporationVirtualMachine" ]
+        then
+            print_text_in_color "$IGreen" "First check for Hyper-V using dmidecode was successful, Hyper-V found."
+            if [ "$hypervcheck2" = "MicrosoftHyper-V" ]
+            then
+                print_text_in_color "$IGreen" "Second check for Hyper-V using dmesg was successful, Hyper-V found."
+                print_text_in_color "$IGreen" "Now installing the Azure-tuned kernel to enable the latest virtual Hardware Enablement (HWE) kernel for up to date Linux Integration Services."
+                apt install linux-azure -y
+            else
+                echo "Second check for Hyper-V using dmesg was unsuccessful, Hyper-V not found via dmesg."
+                echo "As only 1 out 2 tests succeeded, Hyper-V was NOT safely detected. NOT installing Ubuntu Azure-tuned kernel."
+            fi
+        else
+            echo "No Hyper-V detected. NOT installing Ubuntu Azure-tuned kernel."
+        fi
     fi
 fi
 
