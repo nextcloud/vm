@@ -61,9 +61,9 @@ start_if_stopped clamav-freshclam
 
 # Edit ClamAV settings to fit the installation
 sed -i "s|^MaxDirectoryRecursion.*|MaxDirectoryRecursion 30|" /etc/clamav/clamd.conf
-sed -i "s|^MaxFileSize.*|MaxFileSize 100M|" /etc/clamav/clamd.conf
-sed -i "s|^PCREMaxFileSize.*|PCREMaxFileSize 100M|" /etc/clamav/clamd.conf
-sed -i "s|^StreamMaxLength.*|StreamMaxLength 100M|" /etc/clamav/clamd.conf
+sed -i "s|^MaxFileSize.*|MaxFileSize 1000M|" /etc/clamav/clamd.conf
+sed -i "s|^PCREMaxFileSize.*|PCREMaxFileSize 1000M|" /etc/clamav/clamd.conf
+sed -i "s|^StreamMaxLength.*|StreamMaxLength 1000M|" /etc/clamav/clamd.conf
 
 # Start ClamAV
 check_command systemctl restart clamav-freshclam
@@ -99,7 +99,7 @@ install_and_enable_app files_antivirus
 # Configure Nextcloud app
 nextcloud_occ config:app:set files_antivirus av_mode --value="socket"
 nextcloud_occ config:app:set files_antivirus av_socket --value="/var/run/clamav/clamd.ctl"
-nextcloud_occ config:app:set files_antivirus av_stream_max_length --value="104857600"
+nextcloud_occ config:app:set files_antivirus av_stream_max_length --value="1048576000"
 nextcloud_occ config:app:set files_antivirus av_max_file_size --value="-1"
 nextcloud_occ config:app:set files_antivirus av_infected_action --value="only_log"
 
