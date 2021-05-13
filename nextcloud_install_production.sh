@@ -908,10 +908,10 @@ then
         # Install Azure-tuned kernel for Hyper-V based VMs
         #  first check for Hyper-V based VM, based on dmidecode
         #  hypervcheck1 is "MicrosoftCorporationVirtualMachine" in case of Hyper-V
-        hypervcheck1=$(dmidecode -t system|grep 'Manufacturer\|Product' | cut -d ':' -f2 | tr -d " \t\n\r")
+        hypervcheck1="$(dmidecode -t system|grep 'Manufacturer\|Product' | cut -d ':' -f2 | tr -d ' \t\n\r')"
         #  second check for Hyper-V based VM, based on dmesg for safety
         #  hypervcheck2 is "MicrosoftHyper-V" in case of Hyper-V
-        hypervcheck2="$(dmesg --notime | grep -i "Hypervisor detected:" | cut -d ':' -f2 | tr -d " \t\n\r")
+        hypervcheck2="$(dmesg --notime | grep -i 'Hypervisor detected:' | cut -d ':' -f2 | tr -d ' \t\n\r')"
 
         #  we trust the dmidecode result more than dmesg, thus make it mandatory - prior even using dmesg result.
         if [ "$hypervcheck1" = "MicrosoftCorporationVirtualMachine" ]
