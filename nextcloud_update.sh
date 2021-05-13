@@ -730,8 +730,11 @@ then
 fi
 
 # Move backups to location according to $VAR
-mv /var/NCBACKUP/ "$BACKUP"
-mv /var/NCBACKUP-OLD/ "$BACKUP"-OLD
+if [ -d /var/NCBACKUP/ ]
+then
+    mv /var/NCBACKUP/ "$BACKUP"
+    mv /var/NCBACKUP-OLD/ "$BACKUP"-OLD
+fi
 
 # Check if backup exists and move to old
 print_text_in_color "$ICyan" "Backing up data..."
