@@ -286,7 +286,7 @@ chown root:root "$SCRIPTS/create-hourly-btrfs-snapshots.sh"
 chmod 700 "$SCRIPTS/create-hourly-btrfs-snapshots.sh"
 
 # Variables
-MAX_SNAPSHOTS=48
+MAX_SNAPSHOTS=54
 CURRENT_DATE=\$(date --date @"\$(date +%s)" +"%Y%m%d_%H%M%S")
 SNAPSHOT
 fi
@@ -302,9 +302,16 @@ done
 SNAPSHOT
     chown root:root "$SCRIPTS/create-hourly-btrfs-snapshots.sh"
     chmod 700 "$SCRIPTS/create-hourly-btrfs-snapshots.sh"
-    crontab -u root -l | grep -v "$SCRIPTS/create-hourly-btrfs-snapshots.sh" | crontab -u root -
-    crontab -u root -l | { cat; echo "@hourly $SCRIPTS/create-hourly-btrfs-snapshots.sh >/dev/null"; } | crontab -u root -
-
+    if yesno_box_yes "Do you want snapshots to get created every 15 min? (Recommended for SSDs!)
+If at least one Veracrypt-BTRFS drive is a HDD, you should choose 'No' here to create snapshots every hour!"
+    then
+        crontab -u root -l | grep -v "$SCRIPTS/create-hourly-btrfs-snapshots.sh" | crontab -u root -
+        crontab -u root -l | { cat; echo "*/15 8-17 * * * $SCRIPTS/create-hourly-btrfs-snapshots.sh >/dev/null"; } | crontab -u root -
+        crontab -u root -l | { cat; echo "0 18-23,0-7 * * * $SCRIPTS/create-hourly-btrfs-snapshots.sh >/dev/null"; } | crontab -u root -
+    else
+        crontab -u root -l | grep -v "$SCRIPTS/create-hourly-btrfs-snapshots.sh" | crontab -u root -
+        crontab -u root -l | { cat; echo "@hourly $SCRIPTS/create-hourly-btrfs-snapshots.sh >/dev/null"; } | crontab -u root -
+    fi
     # Execute monthly scrubs
     if ! [ -f "$SCRIPTS/scrub-btrfs-weekly.sh" ]
     then
@@ -334,7 +341,7 @@ SNAPSHOT
     chown root:root "$SCRIPTS/scrub-btrfs-weekly.sh"
     chmod 700 "$SCRIPTS/scrub-btrfs-weekly.sh"
     crontab -u root -l | grep -v "$SCRIPTS/scrub-btrfs-weekly.sh" | crontab -u root -
-    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/scrub-btrfs-weekly.sh >> $VMLOGS/weekly-btrfs-scrub.log 2>&1"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "0 0 1,16 * * $SCRIPTS/scrub-btrfs-weekly.sh >> $VMLOGS/weekly-btrfs-scrub.log 2>&1"; } | crontab -u root -
 
 # Inform the user
 msg_box "Congratulations! The mount was successful.
