@@ -235,7 +235,7 @@ Please keep in mind NOT to use the following ports as they are likely in use alr
 ${NONO_PORTS[*]}"
             # Ask for port
             DEDYNPORT=$(input_box_flow "Please choose which port you want between 1024 - 49151.\n\nPlease remember to open this port in your firewall.")
-            if [ -n "$DEDYNPORT" ]
+            if (("$DEDYNPORT" >= 1024 && "$DEDYNPORT" <= 49151))
             then
                 if check_nono_ports "$DEDYNPORT"
                 then
@@ -247,6 +247,8 @@ ${NONO_PORTS[*]}"
                         break
                     fi
                 fi
+            else
+                msg_box "The port number needs to be between 1024 - 49151, please try again."
             fi
         done
     fi
