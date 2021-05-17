@@ -230,7 +230,7 @@ then
         
          # Choose which port for public access
         msg_box "You will now be able to choose which port you want to put your Nextcloud on for public access.\n
-The default port is 443 for HTTPS and if you don't change port, that's the port we will use.\n\n
+The default port is 443 for HTTPS and if you don't change port, that's the port we will use.\n
 Please keep in mind NOT to use the following ports as they are likely in use already:
 ${NONO_PORTS[*]}"
         if yesno_box_yes "Do you want to change port from the default 443 to something else?"
@@ -245,7 +245,10 @@ ${NONO_PORTS[*]}"
                     then
                         print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
                         sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
-                        echo Listen "$DEDYNPORT" >> /etc/apache2/ports.conf
+                        if grep -v "Listen $DEDYNPORT" /etc/apache2/ports.conf
+                        then
+                            echo Listen "$DEDYNPORT" >> /etc/apache2/ports.conf
+                        fi
                         check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
                         if restart_webserver
                         then
@@ -258,6 +261,7 @@ ${NONO_PORTS[*]}"
                 fi
             done
         fi
+        msg_box "msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN after you opened port 443 in your firewall"
     fi
 else
     if generate_cert "$TLSDOMAIN"
