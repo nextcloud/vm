@@ -131,6 +131,10 @@ $NOT_SUPPORTED_FOLDER/remotedesktop.sh"
             exit 1
         fi
     ;;
+    "")
+        msg_box "No option chosen. Exiting!"
+        exit 1
+    ;;
     *)
     ;;
 esac
@@ -142,6 +146,8 @@ PROGRAM_CHOICE="$choice"
 args=(whiptail --title "$TITLE" --menu \
 "Please select the backup repository that you want to view.
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+
+print_text_in_color "$ICyan" "Looking for connected Backup drives. This can take a while..."
 
 # Check if at least one drive is connected
 DAILY=1
@@ -330,6 +336,5 @@ msg_box "Just unmounted the backup repository and drive again."
 # Adjust permissions
 if [ -f "$SCRIPTS/adjust-startup-permissions.sh" ]
 then
-    print_text_in_color "$ICyan" "Adjusting permissions..."
-    bash "$SCRIPTS/adjust-startup-permissions.sh"
+    nohup bash "$SCRIPTS/adjust-startup-permissions.sh" &>/dev/null &
 fi
