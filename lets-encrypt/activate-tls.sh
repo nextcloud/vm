@@ -271,6 +271,14 @@ else
             fi
             # Activate new config
             check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
+            mss_box "This cert will expire in 90 days if you don't renew it.
+There are several ways of renewing this cert and here are some tips and tricks:
+https://goo.gl/c1JHR0
+To do your job a little bit easier we have added a auto renew script as a cronjob.
+If you need to edit the crontab please type: crontab -u root -e
+If you need to edit the script itself, please check: $SCRIPTS/letsencryptrenew.sh
+Feel free to contribute to this project: https://goo.gl/3fQD65"
+
             msg_box "Please remember to keep port 80 (and 443) open so that Let's Encrypt can do \
 the automatic renewal of the cert. If port 80 is closed the cert will expire in 3 months.
 You don't need to worry about security as port 80 is directly forwarded to 443, so \
