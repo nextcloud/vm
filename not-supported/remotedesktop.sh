@@ -133,6 +133,14 @@ else
     GEDIT_SWITCH=ON
 fi
 
+# grsync
+if is_this_installed grsync
+then
+    GRSYNC_SWITCH=OFF
+else
+    GRSYNC_SWITCH=ON
+fi
+
 # MakeMKV
 if is_this_installed makemkv-oss || is_this_installed makemkv-bin
 then
@@ -191,6 +199,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Eye of Gnome" "(Image Viewer)" "$EOG_SWITCH" \
 "Firefox" "(Internet Browser)" "$FIREFOX_SWITCH" \
 "Gedit" "(Text Editor)" "$GEDIT_SWITCH" \
+"Grsync" "(File sync)" "$GRSYNC_SWITCH" \
 "MakeMKV" "(Rip DVDs and Blu-rays)" "$MAKEMKV_SWITCH" \
 "Nautilus" "(File Manager)" "$NAUTILUS_SWITCH" \
 "OnlyOffice" "(Open Source Office Suite)" "$ONLYOFFICE_SWITCH" \
@@ -205,6 +214,10 @@ install_remove_packet() {
     then
         print_text_in_color "$ICyan" "Uninstalling $2"
         apt purge "$1" -y
+        if [ "$1" = "grsync" ]
+        then
+            apt purge gnome-themes-extra -y
+        fi
         apt autoremove -y
         if [ "$1" = "nautilus" ]
         then
@@ -230,6 +243,9 @@ install_remove_packet() {
         elif [ "$1" = "vlc" ]
         then
             sudo sed -i 's|geteuid|getppid|' /usr/bin/vlc
+        elif [ "$1" = "grsync" ]
+        then
+            install_if_not gnome-themes-extra
         fi
         print_text_in_color "$ICyan" "$2 was successfully installed"
     fi
@@ -242,8 +258,8 @@ case "$choice" in
 as well as the gnome desktop." "$SUBTITLE"
         if yesno_box_no "Do you want to do this?" "$SUBTITLE"
         then
-            APPS=(evince eog firefox gedit makemkv-oss makemkv-bin nautilus onlyoffice-desktopeditors picard sound-juicer \
-vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-extension-arc-menu gnome-session xrdp)
+            APPS=(evince eog firefox gedit grsync gnome-themes-extra makemkv-oss makemkv-bin nautilus onlyoffice-desktopeditors \
+picard sound-juicer vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-extension-arc-menu gnome-session xrdp)
             for app in "${APPS[@]}"
             do
                 if is_this_installed "$app"
@@ -273,6 +289,9 @@ vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-extension-arc-menu gno
     ;;&
     *"Gedit"*)
         install_remove_packet gedit Gedit
+    ;;&
+    *"Grsync"*)
+        install_remove_packet grsync Grsync
     ;;&
     *"MakeMKV"*)
         SUBTITLE="MakeMKV"
