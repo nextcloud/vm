@@ -268,8 +268,8 @@ ${NONO_PORTS[*]}"
                 fi
             done
         fi
-        msg_box msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN after you opened port 443 in your firewall"
     fi
+    msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN after you opened port 443 in your firewall."
 else
     if generate_cert "$TLSDOMAIN"
     then
