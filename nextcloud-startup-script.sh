@@ -492,6 +492,7 @@ rm -f "$SCRIPTS/server_configuration.sh"
 rm -f "$SCRIPTS/nextcloud_configuration.sh"
 rm -f "$SCRIPTS/additional_apps.sh"
 rm -f "$SCRIPTS/adduser.sh"
+rm -f "$SCRIPTS/desec.sh"
 rm -f "$NCDATA"/*.log
 
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name 'results' -o -name '*.zip*' \) -delete
