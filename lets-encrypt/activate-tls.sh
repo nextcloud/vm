@@ -121,6 +121,13 @@ then
     TLS13="+TLSv1.3"
 fi
 
+if [ -n "$DEDYNDOMAIN" ]
+then
+    VHOSTPORT="1234"
+else
+    VHOSTPORT="443"
+fi
+
 # Generate nextcloud_tls_domain.conf
 if [ ! -f "$tls_conf" ]
 then
@@ -133,7 +140,7 @@ then
     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
 </VirtualHost>
 
-<VirtualHost *:443>
+<VirtualHost *:$VHOSTPORT>
 ### YOUR SERVER ADDRESS ###
 
     ServerAdmin admin@$TLSDOMAIN
