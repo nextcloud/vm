@@ -233,7 +233,7 @@ then
 The default port is 443 for HTTPS and if you don't change port, that's the port we will use.\n
 Please keep in mind NOT to use the following ports as they are likely in use already:
 ${NONO_PORTS[*]}"
-        if yesno_box_yes "Do you want to change port from the default 443 to something else?"
+        if yesno_box_yes "Do you want to change the default HTTPS port (443) to something else?"
         then
             # Ask for port
             while :
@@ -261,7 +261,7 @@ ${NONO_PORTS[*]}"
                 fi
             done
         fi
-        msg_box "msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN after you opened port 443 in your firewall"
+        msg_box msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN after you opened port 443 in your firewall"
     fi
 else
     if generate_cert "$TLSDOMAIN"
