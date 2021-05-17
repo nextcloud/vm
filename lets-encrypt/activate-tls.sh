@@ -233,7 +233,7 @@ then
 The default port is 443 for HTTPS and if you don't change port, that's the port we will use.\n
 Please keep in mind NOT to use the following ports as they are likely in use already:
 ${NONO_PORTS[*]}"
-        if yesno_box_yes "Do you want to change the default HTTPS port (443) to something else?"
+        if ! yesno_box_no "Do you want to change the default HTTPS port (443) to something else?"
         then
             # Ask for port
             while :
