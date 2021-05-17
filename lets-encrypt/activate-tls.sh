@@ -227,8 +227,7 @@ then
         then
             openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
         fi
-        
-         # Choose which port for public access
+        # Choose which port for public access
         msg_box "You will now be able to choose which port you want to put your Nextcloud on for public access.\n
 The default port is 443 for HTTPS and if you don't change port, that's the port we will use.\n
 Please keep in mind NOT to use the following ports as they are likely in use already:
@@ -269,7 +268,11 @@ ${NONO_PORTS[*]}"
             done
         fi
     fi
-    msg_box "Congrats! You should now be able to access Nextcloud publicly on: https://$TLSDOMAIN after you opened port 443 in your firewall."
+    check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
+    if restart_webserver
+    then
+        msg_box "Congrats! You should now be able to access Nextcloud publicly on: https://$TLSDOMAIN after you opened port 443 in your firewall."
+    fi
 else
     if generate_cert "$TLSDOMAIN"
     then
