@@ -216,14 +216,61 @@ fi
 
 # Write to file
 cat << AUTOMOUNT >> "$SCRIPTS/veracrypt-automount.sh"
-echo "$PASSWORD" | veracrypt -t -k "" --pim=0 --protect-hidden=no \
+if ! echo "$PASSWORD" | veracrypt -t -k "" --pim=0 --protect-hidden=no \
 --fs-options=windows_names,uid=www-data,gid=www-data,umask=007 \
 "/dev/disk/by-partuuid/$PARTUUID" "$MOUNT_PATH"
+then
+    sed -i "/'maintenance'/s/false/true/" "$NCPATH/config/config.php"
+    source /var/scripts/fetch_lib.sh
+    nextcloud_occ_no_check maintenance:mode --on
+    send_mail "$MOUNT_PATH could not get mounted!" "Please connect the drive and reboot your server! \
+The maintenance mode was activated to prevent any issue with Nextcloud. \
+You can disable it after the drive is successfully mounted again!"
+fi
 AUTOMOUNT
 
 # Secure the file
 chown root:root "$SCRIPTS/veracrypt-automount.sh"
 chmod 700 "$SCRIPTS/veracrypt-automount.sh"
+
+# Test if drive is connected
+cat << CONNECTED > "$SCRIPTS/is-drive-connected.sh"
+#!/bin/bash
+
+# Secure the file
+chown root:root "$SCRIPTS/is-drive-connected.sh"
+chmod 700 "$SCRIPTS/is-drive-connected.sh"
+
+# Entries
+PARTUUID="\$1"
+
+# Test if drive is connected 
+while lsblk "/dev/disk/by-partuuid/\$PARTUUID" &>/dev/null
+do
+    sleep 1
+done
+
+# Continue if not
+if grep -q "'maintenance'" "$NCPATH/config/config.php"
+then
+    sed -i "/'maintenance'/s/false/true/" "$NCPATH/config/config.php"
+    source /var/scripts/fetch_lib.sh
+else
+    source /var/scripts/fetch_lib.sh
+    nextcloud_occ_no_check maintenance:mode --on
+fi
+send_mail "One veracrypt drive is not connected anymore!" "Please connect the drive and reboot your server!
+The maintenance mode was activated to prevent any issue with Nextcloud. 
+You can disable it after the drive is successfully mounted again!"
+CONNECTED
+
+# Secure the file
+chown root:root "$SCRIPTS/is-drive-connected.sh"
+chmod 700 "$SCRIPTS/is-drive-connected.sh"
+
+# Create crontab and start
+crontab -u root -l | { cat; echo "@reboot $SCRIPTS/is-drive-connected.sh '$PARTUUID' >/dev/null"; } | crontab -u root -
+nohup bash "$SCRIPTS/is-drive-connected.sh" "$PARTUUID" &>/dev/null &
 
 # Delete crontab
 crontab -u root -l | grep -v 'veracrypt-automount.sh'  | crontab -u root -
