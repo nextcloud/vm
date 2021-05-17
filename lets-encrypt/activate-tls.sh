@@ -268,7 +268,7 @@ ${NONO_PORTS[*]}"
             done
         fi
     fi
-    if "$SCRIPTS/test-new-config.sh"
+    if [ -f "$SCRIPTS/test-new-config.sh" ]
     then
         check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
         if restart_webserver
