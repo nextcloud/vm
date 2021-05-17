@@ -268,10 +268,13 @@ ${NONO_PORTS[*]}"
             done
         fi
     fi
-    check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
-    if restart_webserver
+    if "$SCRIPTS/test-new-config.sh"
     then
-        msg_box "Congrats! You should now be able to access Nextcloud publicly on: https://$TLSDOMAIN after you opened port 443 in your firewall."
+        check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
+        if restart_webserver
+        then
+            msg_box "Congrats! You should now be able to access Nextcloud publicly on: https://$TLSDOMAIN after you opened port 443 in your firewall."
+        fi
     fi
 else
     if generate_cert "$TLSDOMAIN"
