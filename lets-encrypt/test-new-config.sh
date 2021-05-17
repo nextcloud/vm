@@ -22,16 +22,6 @@ if restart_webserver
 then
     msg_box "New settings works! TLS is now activated and OK!
 
-This cert will expire in 90 days if you don't renew it.
-There are several ways of renewing this cert and here are some tips and tricks:
-https://goo.gl/c1JHR0
-
-To do your job a little bit easier we have added a auto renew script as a cronjob.
-If you need to edit the crontab please type: crontab -u root -e
-If you need to edit the script itself, please check: $SCRIPTS/letsencryptrenew.sh
-
-Feel free to contribute to this project: https://goo.gl/3fQD65"
-
 FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
 if [ "$(hostname)" != "$FQDOMAIN" ]
 then
