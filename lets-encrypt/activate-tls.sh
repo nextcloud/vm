@@ -245,7 +245,7 @@ ${NONO_PORTS[*]}"
                     then
                         print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
                         sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
-                        if grep -v "Listen $DEDYNPORT" /etc/apache2/ports.conf
+                        if ! grep -q "Listen $DEDYNPORT" /etc/apache2/ports.conf
                         then
                             echo Listen "$DEDYNPORT" >> /etc/apache2/ports.conf
                         fi
