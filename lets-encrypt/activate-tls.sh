@@ -245,7 +245,7 @@ ${NONO_PORTS[*]}"
                     then
                         print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
                         sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
-                        echo Listen $DEDYNPORT >> /etc/apache2/ports.conf
+                        echo Listen "$DEDYNPORT" >> /etc/apache2/ports.conf
                         check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
                         if restart_webserver
                         then
