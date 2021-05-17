@@ -37,7 +37,10 @@ inform_user() {
 start_services() {
     inform_user "$ICyan" "Starting services..."
     systemctl start postgresql
-    nextcloud_occ_no_check maintenance:mode --off
+    if [ -z "$MAINTENANCE_MODE_ON" ]
+    then
+        nextcloud_occ_no_check maintenance:mode --off
+    fi
     start_if_stopped docker
 }
 paste_log_file() {
@@ -247,6 +250,10 @@ inform_user "$ICyan" "Stopping services..."
 if is_docker_running
 then
     systemctl stop docker
+fi
+if [ "$nextcloud_occ_no_check config:system:get maintenance" = "true" ]
+then
+    MAINTENANCE_MODE_ON=1
 fi
 nextcloud_occ_no_check maintenance:mode --on
 # Database export
