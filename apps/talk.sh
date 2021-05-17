@@ -83,21 +83,27 @@ lowest_compatible_nc 19
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https "Nextclod Talk"
 
-# Let the user choose port. TURN_PORT in msg_box is taken from lib.sh and later changed if user decides to.
-msg_box "The default port for Talk used in this script is port $TURN_PORT.
+while :
+do
+    # Let the user choose port. TURN_PORT in msg_box is taken from lib.sh and later changed if user decides to.
+    msg_box "The default port for Talk used in this script is port $TURN_PORT.
 You can read more about that port here: https://www.speedguide.net/port.php?port=$TURN_PORT
 You will now be given the option to change this port to something of your own. 
 Please keep in mind NOT to use the following ports as they are likely in use already: 
 ${NONO_PORTS[*]}"
 
-if yesno_box_no "Do you want to change port?"
-then
-    # Ask for port
-    TURN_PORT=$(input_box_flow "Please enter the port you will use for Nextcloud Talk")
-fi
+    if yesno_box_no "Do you want to change port?"
+    then
+        # Ask for port
+        TURN_PORT=$(input_box_flow "Please enter the port you will use for Nextcloud Talk")
+    fi
 
-# Check if port is taken and exit if that's the case
-check_nono_ports "$TURN_PORT"
+    # Check if port is taken and exit if that's the case
+    if check_nono_ports "$TURN_PORT"
+    then
+        break
+    fi
+done
 
 # Install TURN
 check_command install_if_not coturn
