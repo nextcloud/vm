@@ -251,7 +251,7 @@ if is_docker_running
 then
     systemctl stop docker
 fi
-if [ "$nextcloud_occ_no_check config:system:get maintenance" = "true" ]
+if [ "$(nextcloud_occ_no_check config:system:get maintenance)" = "true" ]
 then
     MAINTENANCE_MODE_ON=1
 fi
