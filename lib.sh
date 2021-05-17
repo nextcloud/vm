@@ -50,6 +50,7 @@ INTERNET_DNS="9.9.9.9"
 # Default Quad9 DNS servers, overwritten by the systemd global DNS defined servers, if set
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
+NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443)
 use_global_systemd_dns() {
 if [ -f "/etc/systemd/resolved.conf" ]
 then
@@ -177,7 +178,6 @@ turn_install() {
     JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
-    NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443)
 }
 [ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
 
@@ -1661,6 +1661,21 @@ then
     check_command echo "exit" >> "$SCRIPTS/dockerprune.sh"
     chmod a+x "$SCRIPTS"/dockerprune.sh
     print_text_in_color "$IGreen" "Docker automatic prune job added."
+fi
+}
+
+test_nono_ports() {
+  local e match="$1"
+  shift
+  for e; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+check_nono_ports() {
+if test_nono_ports "${1}" "${NONO_PORTS[@]}"
+then
+    msg_box "You have to choose another port than $1. Please start over."
+    return 1
 fi
 }
 
