@@ -1672,7 +1672,7 @@ test_nono_ports () {
 }
 
 check_nono_ports() {
-if test_nono_ports "$TURN_PORT" "${NONO_PORTS[@]}"
+if test_nono_ports "${1}" "${NONO_PORTS[@]}"
 then
     msg_box "You have to choose another port. Please start over."
     exit 1
