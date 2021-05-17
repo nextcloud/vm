@@ -20,7 +20,7 @@ a2dissite "$HTTP_CONF"
 a2dissite 000-default.conf
 if restart_webserver
 then
-    msg_box "New settings works! TLS is now activated and OK!
+    msg_box "New settings works! TLS is now activated and OK!"
 
 FQDOMAIN=$(grep -m 1 "ServerName" "/etc/apache2/sites-enabled/$1" | awk '{print $2}')
 if [ "$(hostname)" != "$FQDOMAIN" ]
