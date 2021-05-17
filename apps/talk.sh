@@ -96,8 +96,8 @@ then
     TURN_PORT=$(input_box_flow "Please enter the port you will use for Nextcloud Talk")
 fi
 
-# Check if port is taken and exit
-check_nono_ports
+# Check if port is taken and exit if that's the case
+check_nono_ports "$TURN_PORT"
 
 # Install TURN
 check_command install_if_not coturn
