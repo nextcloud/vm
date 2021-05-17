@@ -228,13 +228,27 @@ then
             openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
         fi
         # Choose which port for public access
-        DEDYNPORT=$(input_box_flow "Please choose which port you want (1024 - 49151) for public access. Please remember to open this port in your firewall.")
-        if [ -n "$DEDYNPORT" ]
-        then
-            print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
-            sed -i "s|VirtualHost *:443|VirtualHost *:$DEDYNPORT|g" "$tls_conf"
-            restart_webserver
-        fi
+        while :
+        do
+            msg_box "You will now be able to choose which port you want to put your Nextcloud on for public access.\n
+Please keep in mind NOT to use the following ports as they are likely in use already:
+${NONO_PORTS[*]}"
+            # Ask for port
+            DEDYNPORT=$(input_box_flow "Please choose which port you want between 1024 - 49151.\n\nPlease remember to open this port in your firewall.")
+            if [ -n "$DEDYNPORT" ]
+            then
+                if check_nono_ports "$DEDYNPORT"
+                then
+                    print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
+                    sed -i "s|VirtualHost *:443|VirtualHost *:$DEDYNPORT|g" "$tls_conf"
+                    if restart_webserver
+                    then
+                        msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN:$DEDYNPORT"
+                        break
+                    fi
+                fi
+            fi
+        done
     fi
 else
     if generate_cert "$TLSDOMAIN"
