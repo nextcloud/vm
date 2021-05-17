@@ -96,18 +96,8 @@ then
     TURN_PORT=$(input_box_flow "Please enter the port you will use for Nextcloud Talk")
 fi
 
-containsElement () {
-  local e match="$1"
-  shift
-  for e; do [[ "$e" == "$match" ]] && return 0; done
-  return 1
-}
-
-if containsElement "$TURN_PORT" "${NONO_PORTS[@]}"
-then
-    msg_box "You have to choose another port. Please start over."
-    exit 1
-fi
+# Check if port is taken and exit
+check_nono_ports
 
 # Install TURN
 check_command install_if_not coturn
