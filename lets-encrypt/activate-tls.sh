@@ -244,11 +244,18 @@ ${NONO_PORTS[*]}"
                     if check_nono_ports "$DEDYNPORT"
                     then
                         print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
+                        # Main port
                         sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
                         if ! grep -q "Listen $DEDYNPORT" /etc/apache2/ports.conf
                         then
                             echo Listen "$DEDYNPORT" >> /etc/apache2/ports.conf
                         fi
+                        # HTTP redirect
+                        if ! grep -q {HTTP_HOST}:$DEDYNPORT "$tls_conf"
+                        then
+                            sed -i "s|{HTTP_HOST}|{HTTP_HOST}:$DEDYNPORT|g" "$tls_conf"
+                        fi
+                        # Test everything
                         check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
                         if restart_webserver
                         then
