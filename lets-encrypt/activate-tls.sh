@@ -251,7 +251,7 @@ ${NONO_PORTS[*]}"
                             echo Listen "$DEDYNPORT" >> /etc/apache2/ports.conf
                         fi
                         # HTTP redirect
-                        if ! grep -q '{HTTP_HOST}':$DEDYNPORT "$tls_conf"
+                        if ! grep -q '{HTTP_HOST}':"$DEDYNPORT" "$tls_conf"
                         then
                             sed -i "s|{HTTP_HOST}|{HTTP_HOST}:$DEDYNPORT|g" "$tls_conf"
                         fi
