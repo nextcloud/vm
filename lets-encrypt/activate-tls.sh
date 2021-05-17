@@ -253,7 +253,7 @@ ${NONO_PORTS[*]}"
                         # HTTP redirect
                         if ! grep -q {HTTP_HOST}:$DEDYNPORT "$tls_conf"
                         then
-                            sed -i "s|{HTTP_HOST}|{HTTP_HOST}:$DEDYNPORT|g" "$tls_conf"
+                            sed -i "s|'{HTTP_HOST}'|'{HTTP_HOST}':$DEDYNPORT|g" "$tls_conf"
                         fi
                         # Test everything
                         check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
