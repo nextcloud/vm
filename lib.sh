@@ -1664,7 +1664,7 @@ then
 fi
 }
 
-test_nono_ports () {
+test_nono_ports() {
   local e match="$1"
   shift
   for e; do [[ "$e" == "$match" ]] && return 0; done
