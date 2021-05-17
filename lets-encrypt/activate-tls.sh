@@ -240,7 +240,7 @@ ${NONO_PORTS[*]}"
                 if check_nono_ports "$DEDYNPORT"
                 then
                     print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
-                    sed -i "s|VirtualHost *:443|VirtualHost *:$DEDYNPORT|g" "$tls_conf"
+                    sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
                     if restart_webserver
                     then
                         msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN:$DEDYNPORT"
