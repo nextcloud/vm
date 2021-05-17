@@ -227,30 +227,37 @@ then
         then
             openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
         fi
-        # Choose which port for public access
-        while :
-        do
-            msg_box "You will now be able to choose which port you want to put your Nextcloud on for public access.\n
+        
+         # Choose which port for public access
+        msg_box "You will now be able to choose which port you want to put your Nextcloud on for public access.\n
+The default port is 443 for HTTPS and if you don't change port, that's the port we will use.\n\n
 Please keep in mind NOT to use the following ports as they are likely in use already:
 ${NONO_PORTS[*]}"
+        if yesno_box_yes "Do you want to change port from the default 443 to something else?"
+        then
             # Ask for port
-            DEDYNPORT=$(input_box_flow "Please choose which port you want between 1024 - 49151.\n\nPlease remember to open this port in your firewall.")
-            if (("$DEDYNPORT" >= 1024 && "$DEDYNPORT" <= 49151))
-            then
-                if check_nono_ports "$DEDYNPORT"
+            while :
+            do
+                DEDYNPORT=$(input_box_flow "Please choose which port you want between 1024 - 49151.\n\nPlease remember to open this port in your firewall.")
+                if (("$DEDYNPORT" >= 1024 && "$DEDYNPORT" <= 49151))
                 then
-                    print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
-                    sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
-                    if restart_webserver
+                    if check_nono_ports "$DEDYNPORT"
                     then
-                        msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN:$DEDYNPORT"
-                        break
+                        print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
+                        sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
+                        echo Listen $DEDYNPORT >> /etc/apache2/ports.conf
+                        check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
+                        if restart_webserver
+                        then
+                            msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN:$DEDYNPORT"
+                            break
+                        fi
                     fi
+                else
+                    msg_box "The port number needs to be between 1024 - 49151, please try again."
                 fi
-            else
-                msg_box "The port number needs to be between 1024 - 49151, please try again."
-            fi
-        done
+            done
+        fi
     fi
 else
     if generate_cert "$TLSDOMAIN"
