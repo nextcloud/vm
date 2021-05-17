@@ -16,14 +16,6 @@ debug_mode
 # Must be root
 root_check
 
-# Set the correct switch for activate_tls
-if [ -f $SCRIPTS/activate-tls.sh ]
-then
-    ACTIVATE_TLS_SWITCH="ON"
-else
-    ACTIVATE_TLS_SWITCH="OFF"
-fi
-
 # Set the startup switch
 if [ -f "$SCRIPTS/nextcloud-startup-script.sh" ]
 then
@@ -48,7 +40,7 @@ choice=$(whiptail --title "$TITLE" --checklist \
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "deSEC" "(Automatically set up a dedyn.io domain, together with DDNS and TLS)" "$STARTUP_SWITCH" \
 "DDclient Configuration" "(Use ddclient for automatic DDNS updates)" OFF \
-"Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$ACTIVATE_TLS_SWITCH" \
+"Activate TLS" "(Enable HTTPS with Let's Encrypt)" "$STARTUP_SWITCH" \
 "SMTP Mail" "(Enable being notified by mail from your server)" OFF \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
@@ -100,11 +92,10 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
                     bash $SCRIPTS/activate-tls.sh
                 else
                     print_text_in_color "$ICyan" "Downloading the Let's Encrypt script..."
-                    download_script LETS_ENC activate-tls
-                    bash $SCRIPTS/activate-tls.sh
+                    run_script LETS_ENC activate-tls
                 fi
             else
-                msg_box "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/activate-tls.sh" "$SUBTITLE"
+                msg_box "OK, but if you want to run it later, just type: sudo bash $SCRIPTS/menu.sh --> Server Configuration --> Activate TLS" "$SUBTITLE"
             fi
             
             # Just make sure it is gone
