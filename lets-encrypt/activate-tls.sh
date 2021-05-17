@@ -229,7 +229,7 @@ then
         fi
         # Choose which port for public access
         DEDYNPORT=$(input_box_flow "Please choose which port you want (1024 - 49151) for public access. Please remember to open this port in your firewall.")
-        if [ -n $DEDYNPORT ]
+        if [ -n "$DEDYNPORT" ]
         then
             print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
             sed -i "s|VirtualHost *:443|VirtualHost *:$DEDYNPORT|g" "$tls_conf"
