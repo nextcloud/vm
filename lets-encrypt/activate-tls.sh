@@ -248,7 +248,7 @@ ${NONO_PORTS[*]}"
                         sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
                         if ! grep -q "Listen $DEDYNPORT" /etc/apache2/ports.conf
                         then
-                            echo Listen "$DEDYNPORT" >> /etc/apache2/ports.conf
+                            echo "Listen $DEDYNPORT" >> /etc/apache2/ports.conf
                         fi
                         # HTTP redirect
                         if ! grep -q '{HTTP_HOST}':"$DEDYNPORT" "$tls_conf"
@@ -259,7 +259,7 @@ ${NONO_PORTS[*]}"
                         check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
                         if restart_webserver
                         then
-                            msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN:$DEDYNPORT"
+                            msg_box "Congrats! You should now be able to access Nextcloud publicly on: https://$TLSDOMAIN:$DEDYNPORT, after you opened port $DEDYNPORT in your firewall."
                             break
                         fi
                     fi
@@ -269,7 +269,7 @@ ${NONO_PORTS[*]}"
             done
         fi
     fi
-    msg_box "Congrats! You should now be able to access Nextcloud on: https://$TLSDOMAIN after you opened port 443 in your firewall."
+    msg_box "Congrats! You should now be able to access Nextcloud publicly on: https://$TLSDOMAIN after you opened port 443 in your firewall."
 else
     if generate_cert "$TLSDOMAIN"
     then
@@ -282,7 +282,7 @@ else
             fi
             # Activate new config
             check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
-            mss_box "This cert will expire in 90 days if you don't renew it.
+            msg_box "This cert will expire in 90 days if you don't renew it.
 There are several ways of renewing this cert and here are some tips and tricks:
 https://goo.gl/c1JHR0
 To do your job a little bit easier we have added a auto renew script as a cronjob.
