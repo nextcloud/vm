@@ -1674,7 +1674,9 @@ test_nono_ports() {
 check_nono_ports() {
 if test_nono_ports "${1}" "${NONO_PORTS[@]}"
 then
-    msg_box "You have to choose another port than $1. Please start over."
+    msg_box "You have to choose another port than $1. Please start over.\n
+Please keep in mind NOT to use the following ports as they are likely in use already:
+${NONO_PORTS[*]}"
     return 1
 fi
 }
