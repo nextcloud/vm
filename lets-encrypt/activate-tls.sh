@@ -266,14 +266,15 @@ ${NONO_PORTS[*]}"
                     msg_box "The port number needs to be between 1024 - 49151, please try again."
                 fi
             done
-        fi
-    fi
-    if "$SCRIPTS/test-new-config.sh"
-    then
-        check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
-        if restart_webserver
-        then
-            msg_box "Congrats! You should now be able to access Nextcloud publicly on: https://$TLSDOMAIN after you opened port 443 in your firewall."
+        else
+            if [ -f "$SCRIPTS/test-new-config.sh" ]
+            then
+                check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
+                if restart_webserver
+                then
+                    msg_box "Congrats! You should now be able to access Nextcloud publicly on: https://$TLSDOMAIN after you opened port 443 in your firewall."
+                fi
+            fi
         fi
     fi
 else
