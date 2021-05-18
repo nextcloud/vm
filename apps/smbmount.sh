@@ -133,7 +133,8 @@ As a hint:
 It's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
             # Allow to make it a backup mount
             if yesno_box_no "Do you want to use this mount for backups?
-If you choose 'Yes', you will be able to use this mount as target directory for backups of the built-in backup solution!"
+If you choose 'Yes', you will be able to use this mount as target directory for backups of the built-in backup solution!\n
+Attention: You will not be able to use this mount in Nextcloud if you choose 'Yes'!"
             then
                 umount "$SMBSHARES/$count"
                 sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
