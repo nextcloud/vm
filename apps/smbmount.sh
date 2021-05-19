@@ -133,28 +133,29 @@ As a hint:
 It's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
             # Allow to make it a backup mount
             choice=$(whiptail --title "$TITLE" --menu \
-            "How do you want to use your new mount?\n\nPlease choose one of the options below and hit ENTER:             
-            $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Backups" "Use the mount for backing up Nextcloud" \
-"Nextcloud External Storage" "Use the mount for mounting External SMB in Nextcloud" 3>&1 1>&2 2>&3)
+            "How do you want to use your new mount?\n
+$MENU_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Nextcloud External Storage" "(Mount External SMB storage in Nextcloud)" \
+"Backups" "(Use the mount for backing up Nextcloud)" 3>&1 1>&2 2>&3)
 
-case "$choice" in
-    "Backups")
-        print_text_in_color "$ICyan" "Using for backups..."
-        umount "$SMBSHARES/$count"
-        sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
-        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
-        unset SMB_USER && unset SMB_PASSWORD
-        msg_box "The backup mount was successfully created!"
-        break
-    ;;
-    "Nextcloud External Storage")
-        print_text_in_color "$ICyan" "Using for External SMB storage in Nextcloud..."
-        sleep 0.1 ### ?????
-    ;;
-    *)
-    ;;
-esac
+
+            case "$choice" in
+                "Nextcloud External Storage")
+                    print_text_in_color "$ICyan" "Using for External SMB storage in Nextcloud..."
+                    sleep 0.1 ### ?????
+                 "Backups")
+                 ;;
+                    print_text_in_color "$ICyan" "Using for backups..."
+                    umount "$SMBSHARES/$count"
+                    sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+                    echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
+                    unset SMB_USER && unset SMB_PASSWORD
+                    msg_box "The backup mount was successfully created!"
+                    break
+                ;;
+                *)
+                ;;
+            esac
             # Check if Nextcloud is existing
             unset SMB_USER && unset SMB_PASSWORD
             NEWNAME="SMB$count"
