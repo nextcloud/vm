@@ -140,17 +140,17 @@ It's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
 
 case "$choice" in
     "Backups")
-        print_text_in_color "$ICyan" "Downloading the Collabora (Docker) script..."
-        sleep 0.1 # ???
-    ;;
-    "Nextcloud External Storage")
-        print_text_in_color "$ICyan" "Downloading the Collabora (Integrated) script..."
+        print_text_in_color "$ICyan" "Using for backups..."
         umount "$SMBSHARES/$count"
         sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
         echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
         unset SMB_USER && unset SMB_PASSWORD
         msg_box "The backup mount was successfully created!"
         break
+    ;;
+    "Nextcloud External Storage")
+        print_text_in_color "$ICyan" "Using for External SMB storage in Nextcloud..."
+        sleep 0.1 ### ?????
     ;;
     *)
     ;;
