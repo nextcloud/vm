@@ -141,7 +141,7 @@ It's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
 case "$choice" in
     "Backups")
         print_text_in_color "$ICyan" "Downloading the Collabora (Docker) script..."
-        run_script APP collabora_docker
+        sleep 0.1 # ???
     ;;
     "Nextcloud External Storage")
         print_text_in_color "$ICyan" "Downloading the Collabora (Integrated) script..."
