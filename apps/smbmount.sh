@@ -142,8 +142,8 @@ $MENU_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
                 "Nextcloud External Storage")
                     print_text_in_color "$ICyan" "Using for External SMB storage in Nextcloud..."
                     sleep 0.1 ### ?????
-                 "Backups")
-                 ;;
+                ;;
+                "Backups")
                     print_text_in_color "$ICyan" "Using for backups..."
                     umount "$SMBSHARES/$count"
                     sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
