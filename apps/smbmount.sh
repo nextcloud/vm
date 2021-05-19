@@ -138,7 +138,6 @@ $MENU_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Nextcloud External Storage" "(Mount External SMB storage in Nextcloud)" \
 "Backups" "(Use the mount for backing up Nextcloud)" 3>&1 1>&2 2>&3)
 
-
             case "$choice" in
                 "Nextcloud External Storage")
                     print_text_in_color "$ICyan" "Using for External SMB storage in Nextcloud..."
