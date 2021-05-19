@@ -132,17 +132,29 @@ As a hint:
             msg_box "Your mount was successful, congratulations!
 It's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
             # Allow to make it a backup mount
-            if yesno_box_no "Do you want to use this mount for backups?
-If you choose 'Yes', you will be able to use this mount as target directory for backups of the built-in backup solution!\n
-Attention: You will not be able to use this mount in Nextcloud if you choose 'Yes'!"
-            then
-                umount "$SMBSHARES/$count"
-                sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
-                echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
-                unset SMB_USER && unset SMB_PASSWORD
-                msg_box "The backup mount was successfully created!"
-                break
-            fi
+            choice=$(whiptail --title "$TITLE" --menu \
+            "How do you want to use your new mount?\n\nPlease choose one of the options below and hit ENTER:             
+            $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Backups" "Use the mount for backing up Nextcloud" \
+"Nextcloud External Storage" "Use the mount for mounting External SMB in Nextcloud" 3>&1 1>&2 2>&3)
+
+case "$choice" in
+    "Backups")
+        print_text_in_color "$ICyan" "Downloading the Collabora (Docker) script..."
+        run_script APP collabora_docker
+    ;;
+    "Nextcloud External Storage")
+        print_text_in_color "$ICyan" "Downloading the Collabora (Integrated) script..."
+        umount "$SMBSHARES/$count"
+        sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+        echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
+        unset SMB_USER && unset SMB_PASSWORD
+        msg_box "The backup mount was successfully created!"
+        break
+    ;;
+    *)
+    ;;
+esac
             # Check if Nextcloud is existing
             unset SMB_USER && unset SMB_PASSWORD
             NEWNAME="SMB$count"
