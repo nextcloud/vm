@@ -97,26 +97,6 @@ do
         # Ask for port
         TURN_PORT=$(input_box_flow "Please enter the port you will use for Nextcloud Talk")
     fi
-    
-########## TEMPORARY
-NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443)
-test_nono_ports() {
-  local e match="$1"
-  shift
-  for e; do [[ "$e" == "$match" ]] && return 0; done
-  return 1
-}
-
-check_nono_ports() {
-if test_nono_ports "${1}" "${NONO_PORTS[@]}"
-then
-    msg_box "You have to choose another port than $1. Please start over.\n
-Please keep in mind NOT to use the following ports as they are likely in use already: 
-${NONO_PORTS[*]}"
-    return 1
-fi
-}
-########## TEMPORARY
 
     # Check if port is taken and exit if that's the case
     if check_nono_ports "$TURN_PORT"
