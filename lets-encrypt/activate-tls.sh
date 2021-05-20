@@ -240,8 +240,8 @@ ${NONO_PORTS[*]}"
                 DEDYNPORT=$(input_box_flow "Please choose which port you want between 1024 - 49151.\n\nPlease remember to open this port in your firewall.")
                 if (("$DEDYNPORT" >= 1024 && "$DEDYNPORT" <= 49151))
                 then
-                    #if check_nono_ports "$DEDYNPORT"
-                    #then
+                    if check_nono_ports "$DEDYNPORT"
+                    then
                         print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
                         # Main port
                         sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
@@ -261,7 +261,7 @@ ${NONO_PORTS[*]}"
                             msg_box "Congrats! You should now be able to access Nextcloud publicly on: https://$TLSDOMAIN:$DEDYNPORT, after you opened port $DEDYNPORT in your firewall."
                             break
                         fi
-                    #fi
+                    fi
                 else
                     msg_box "The port number needs to be between 1024 - 49151, please try again."
                 fi
