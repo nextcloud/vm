@@ -1224,21 +1224,17 @@ version_gt() {
 
 spinner_loading() {
     local pid
-    # Figure out what's begin run
     if [[ -n "${1}" ]]; then
       pid="${1}"
     else
       [[ -n "${!}" ]] && pid="${!}" || return
     fi
-    # Add some text before the loop begins
-    print_text_in_color "$ICyan" "Please wait..."
-    # echo output every 0.2 seconds
+    printf '['
     while ps "${pid}" > /dev/null; do
-      echo -n '> '
-      sleep '0.2'
+      echo -n '▓'
+      sleep '.7'
     done
-    # Add a new line
-    echo
+    echo ']'
 }
 
 any_key() {
