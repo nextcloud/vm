@@ -929,6 +929,12 @@ echo "alias run_update_nextcloud='bash /var/scripts/update.sh'"
 } > /root/.bash_aliases
 fi
 
+# Fix GRUB defaults
+if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT="maybe-ubiquity"' /etc/default/grub
+then
+    sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=|g" /etc/default/grub
+fi
+
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
 bash $SECURE & spinner_loading
 
