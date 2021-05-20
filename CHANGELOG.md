@@ -15,6 +15,28 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 21.0.2
+
+### Small changelog:
+- Make it possible to choose port for public access in the deSEC setup (only when you choose TLS)
+- Fix bugs with the deSEC script
+- Avoid ending up in a loop in the deSEC script
+- It's now possible to check for NONO ports with a function
+- Loop port selection in the Talk script
+- Move backups location to /mnt/NCBACKUPS and delete backups from last year
+- Tune chunking in GUI uploads
+- Clean up some more scripts in the end of each setup
+- Add the Azure kernel for Hyper-V VMs
+- Shorten the time files are stored in trashbin (can still be configured)
+- Escape all Apache Log dirs correctly
+- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/21.0.1..21.0.2
+- https://nextcloud.com/changelog/#latest21
+
 ## 21.0.1
 
 ### Small changelog:
