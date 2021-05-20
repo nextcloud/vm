@@ -1223,16 +1223,10 @@ version_gt() {
 }
 
 spinner_loading() {
-    local pid
-    if [[ -n "${1}" ]]; then
-      pid="${1}"
-    else
-      [[ -n "${!}" ]] && pid="${!}" || return
-    fi
     printf '['
-    while ps "${pid}" > /dev/null; do
-      echo -n '⣾⣽⣻'
-      sleep '.7'
+    while ps "$!" > /dev/null; do
+        echo -n '⣾⣽⣻'
+        sleep '.7'
     done
     echo ']'
 }
