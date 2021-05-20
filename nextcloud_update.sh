@@ -990,7 +990,9 @@ Thank you for using T&M Hansson IT's updater!"
     notify_admin_gui \
     "Nextcloud is now updated!" \
     "Your Nextcloud is updated to $CURRENTVERSION_after with the update script in the Nextcloud VM."
-    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/update.log
+    mkdir -p "$VMLOGS"/updates
+    rm -f "$VMLOGS"/update.log # old place
+    echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/updates/update.log
     if [ -n "$SNAPSHOT_EXISTS" ]
     then
         check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
