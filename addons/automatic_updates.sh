@@ -2,6 +2,8 @@
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
+# Disable https://github.com/koalaman/shellcheck/wiki/SC2016 since we don't want to expand DATE for the crontab
+# shellcheck disable=2016
 true
 SCRIPT_NAME="Automatic Updates"
 # shellcheck source=lib.sh
@@ -38,8 +40,9 @@ else
 fi
 
 # Install automatic updates
-touch $VMLOGS/update.log
-crontab -u root -l | { cat; echo "0 $AUT_UPDATES_TIME * * 6 $SCRIPTS/update.sh minor >> $VMLOGS/update.log 2>&1"; } | crontab -u root -
+DATE='`date +%Y-%m-%d_%H:%M`'
+mkdir -p "$VMLOGS"/updates
+crontab -u root -l | { cat; echo "0 $AUT_UPDATES_TIME * * 6 $SCRIPTS/update.sh minor >> $VMLOGS/updates/update-${DATE}.log 2>&1"; } | crontab -u root -
 if yesno_box_yes "Do you want to reboot your server after every update? *recommended*"
 then
     sed -i "s|exit|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
