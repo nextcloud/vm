@@ -132,25 +132,39 @@ As a hint:
             msg_box "Your mount was successful, congratulations!
 It's now accessible in your root directory under $SMBSHARES/$count." "$SUBTITLE"
             # Allow to make it a backup mount
-            if yesno_box_no "Do you want to use this mount for backups?
-If you choose 'Yes', you will be able to use this mount as target directory for backups of the built-in backup solution!"
-            then
-                umount "$SMBSHARES/$count"
-                sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
-                echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
-                unset SMB_USER && unset SMB_PASSWORD
-                msg_box "The backup mount was successfully created!"
-                break
-            fi
+            choice=$(whiptail --title "$TITLE" --menu \
+            "How do you want to use your new mount?\n
+$MENU_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Nextcloud External Storage" "(Mount as Local External storage to Nextcloud)" \
+"Backups" "(Use the mount for backing up your Nextcloud VM)" 3>&1 1>&2 2>&3)
+
+            case "$choice" in
+                "Nextcloud External Storage")
+                    print_text_in_color "$ICyan" "Mounting as Local External storage to Nextcloud..."
+                    sleep 1
+                ;;
+                "Backups")
+                    print_text_in_color "$ICyan" "Using for backups..."
+                    umount "$SMBSHARES/$count"
+                    sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
+                    echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
+                    unset SMB_USER && unset SMB_PASSWORD
+                    sleep 1
+                    msg_box "The backup mount was successfully created!"
+                    break
+                ;;
+                "")
+                    break
+                ;;
+                *)
+                ;;
+            esac
             # Check if Nextcloud is existing
             unset SMB_USER && unset SMB_PASSWORD
             NEWNAME="SMB$count"
             if ! [ -f $NCPATH/occ ]
             then
-                break
-            # Ask for mounting via the external storage app if existing
-            elif ! yesno_box_yes "Do you want to mount the directory to Nextcloud as local external storage?" "$SUBTITLE"
-            then
+                msg_box "Could not find a valid Nextcloud installation. Hence returning to the main menu."
                 break
             fi
             NEWPATH="$SMBSHARES/$count"
