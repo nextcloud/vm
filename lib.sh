@@ -1231,7 +1231,7 @@ spinner_loading() {
     fi
     printf '['
     while ps "${pid}" > /dev/null; do
-      echo -n '▓'
+      echo -n '⣾⣽⣻'
       sleep '.7'
     done
     echo ']'
