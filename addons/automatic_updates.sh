@@ -4,7 +4,7 @@
 
 true
 SCRIPT_NAME="Automatic Updates"
-# shellcheck source=lib.sh
+# shellcheck source=lib.sh disable=2016
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 SCRIPT_EXPLAINER="This option will update your server every week on Saturdays at $AUT_UPDATES_TIME:00.
 The update will run the built in script '$SCRIPTS/update.sh' which will update both the server packages and Nextcloud itself.\n
