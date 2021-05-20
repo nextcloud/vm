@@ -4,6 +4,7 @@
 
 true
 SCRIPT_NAME="Automatic Updates"
+# Disable https://github.com/koalaman/shellcheck/wiki/SC2016 since we don't want to expand DATE for the crontab
 # shellcheck source=lib.sh disable=2016
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 SCRIPT_EXPLAINER="This option will update your server every week on Saturdays at $AUT_UPDATES_TIME:00.
