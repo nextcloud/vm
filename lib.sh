@@ -1223,15 +1223,22 @@ version_gt() {
 }
 
 spinner_loading() {
-    pid=$!
-    spin='-\|/'
-    i=0
-    while kill -0 $pid 2>/dev/null
-    do
-        i=$(( (i+1) %4 ))
-        printf "\r[${spin:$i:1}] " # Add text here, something like "Please be patient..." maybe?
-        sleep .1
+    local pid
+    # Figure out what's begin run
+    if [[ -n "${1}" ]]; then
+      pid="${1}"
+    else
+      [[ -n "${!}" ]] && pid="${!}" || return
+    fi
+    # Add some text before the loop begins
+    print_text_in_color "$ICyan" "Please wait..."
+    # echo output every 0.2 seconds
+    while ps "${pid}" > /dev/null; do
+      echo -n '> '
+      sleep '0.2'
     done
+    # Add a new line
+    echo
 }
 
 any_key() {
