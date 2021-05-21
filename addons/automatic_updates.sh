@@ -40,7 +40,7 @@ else
 fi
 
 # Install automatic updates
-DATE='`date +%Y-%m-%d_%H:%M`'
+DATE='`date +\%Y-\%m-\%d_\%H:\%M`'
 mkdir -p "$VMLOGS"/updates
 crontab -u root -l | { cat; echo "0 $AUT_UPDATES_TIME * * 6 $SCRIPTS/update.sh minor >> $VMLOGS/updates/update-${DATE}.log 2>&1"; } | crontab -u root -
 if yesno_box_yes "Do you want to reboot your server after every update? *recommended*"
