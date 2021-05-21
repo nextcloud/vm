@@ -66,21 +66,5 @@ then
     zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand,encroot,keylocation > /etc/zfs/zfs-list.cache/"$POOLNAME"
 fi
 
-# Add daily snapshot prune
-cat << PRUNZE_ZFS > "$SCRIPTS/daily-zfs-prune.sh"
-#!/bin/bash
-
-# Source the library
-source /var/scripts/fetch_lib.sh
-
-# Check if root
-root_check
-
-# Run the script
-run_script DISK prune_zfs_snaphots
-PRUNZE_ZFS
-
-# Add crontab
-chmod +x "$SCRIPTS/daily-zfs-prune.sh"
-crontab -u root -l | grep -v "$SCRIPTS/daily-zfs-prune.sh"  | crontab -u root -
-crontab -u root -l | { cat; echo "@daily $SCRIPTS/daily-zfs-prune.sh >/dev/null" ; } | crontab -u root -
+# Create daily zfs prune script
+run_script DISK create-daily-zfs-prune
