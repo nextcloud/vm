@@ -16,9 +16,6 @@ debug_mode
 # Check if root
 root_check
 
-print_text_in_color "$ICyan" "Installing Extra Security..."
-
-
 msg_box "This script is based on:
 http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
 https://github.com/wallyhall/spamhaus-drop
@@ -29,7 +26,10 @@ Please run it own your own risk!"
 
 if ! yesno_box_no "Do you want to install Extra Security on your server?"
 then
+    print_text_in_color "$ICyan" "Installation aborted."
     exit
+else
+    print_text_in_color "$ICyan" "Installing Extra Security..."
 fi
 
 # Protect against DDOS
