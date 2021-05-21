@@ -2,8 +2,6 @@
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
-# Disable https://github.com/koalaman/shellcheck/wiki/SC2016 since we don't want to expand DATE for the crontab
-# shellcheck disable=2016
 true
 SCRIPT_NAME="Automatic Updates"
 # shellcheck source=lib.sh

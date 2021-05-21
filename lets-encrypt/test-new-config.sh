@@ -42,12 +42,11 @@ cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
 #!/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 echo '###################################'
-DATE=\$(date +%Y-%m-%d_%H:%M)
 if ! certbot renew >> /var/log/letsencrypt/cronjob.log 2>&1
 then
-    echo "Let's Encrypt FAILED!--\$DATE" >> /var/log/letsencrypt/cronjob.log
+    echo "Let's Encrypt FAILED!--$(date +%Y-%m-%d_%H:%M)" >> /var/log/letsencrypt/cronjob.log
 else
-    echo "Let's Encrypt SUCCESS!--\$DATE" >> /var/log/letsencrypt/cronjob.log
+    echo "Let's Encrypt SUCCESS!--$(date +%Y-%m-%d_%H:%M)" >> /var/log/letsencrypt/cronjob.log
 fi
 # Check if service is running
 if ! pgrep apache2 > /dev/null

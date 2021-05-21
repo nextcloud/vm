@@ -738,14 +738,12 @@ fi
 
 # Check if backup exists and move to old
 print_text_in_color "$ICyan" "Backing up data..."
-DATE=$(date +%Y-%m-%d-%H%M%S)
 if [ -d "$BACKUP" ]
 then
-    mkdir -p "$BACKUP"-OLD/"$DATE"
+    mkdir -p "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
     install_if_not rsync
-    rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD/"$DATE"
-    DATE=$(date --date='1 year ago' +%Y)
-    rm -rf /var/NCBACKUP-OLD/"$DATE"*
+    rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
+    rm -rf /var/NCBACKUP-OLD/"$(date --date='1 year ago' +%Y)*"
     rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
 fi
