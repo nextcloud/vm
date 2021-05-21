@@ -72,7 +72,7 @@ cat << SPAMHAUS_ENABLE > "$SCRIPTS/spamhaus_cronjob.sh"
 #!/bin/bash
 
 ## Source: https://raw.githubusercontent.com/wallyhall/spamhaus-drop/master/spamhaus-drop
-## Intially forked from cowgill, extended and improved for our mailserver needs.
+## Initially forked from cowgill, extended and improved for our mailserver needs.
 ## Credit: https://github.com/cowgill/spamhaus/blob/master/spamhaus.sh
 
 # based off the following two scripts
