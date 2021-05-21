@@ -184,6 +184,7 @@ fi
 # Import disk by actual name
 if zpool list -v | grep "$DEVTYPE"
 then
+    check_command partprobe -s
     zpool export $POOLNAME
     zpool import -d /dev/disk/by-id $POOLNAME
 fi
