@@ -77,10 +77,10 @@ crontab -u root -l | { cat; echo "10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1";
 # Run it for the first time
 msg_box "We will now add a number of bad IP-addresses to your IPtables block list, meaning that all IPs on that list will be blocked as they are known for doing bad stuff.
 
-The script will be run on a schelude to update the IP-addresses, and can be found in "$SCRIPTS"/spamhaus_cronjob.sh.
+The script will be run on a schelude to update the IP-addresses, and can be found in $SCRIPTS/spamhaus_cronjob.sh.
 
 To disable it, please remove the crontab by executing 'crontab -e' and remove this:
-'10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1'"
+10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1"
 
 if check_command bash "$SCRIPTS"/spamhaus_cronjob.sh
 then
