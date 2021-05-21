@@ -16,12 +16,6 @@ Server installation. Simplified. :cloud:
 
 --------------------
 
-## FYI
-
-Developed by [Daniel Hansson](https://github.com/enoch85) and the Nextcloud community. Nextcloud GmbH does not offer support for the VM in the [master branch](https://github.com/nextcloud/vm/tree/master) (full-version), as we only support manual tarball/zip-package installations. You can download the official Nextcloud VM appliance ([also from this repo](https://github.com/nextcloud/vm/tree/official-basic-vm)) from [our website](https://download.nextcloud.com/vm/Official-Nextcloud-VM.zip) to get a stripped down version for testing if you rather want to skip all the manual steps in our documentation.
-
-If you want support regarding the full-version VM in master, please contact our partner [Hansson IT](https://www.hanssonit.se/nextcloud-vm).
-
 ## Dependencies:
 (Ubuntu Server 20.04 LTS 64-bit)
 <br>
@@ -42,6 +36,12 @@ If you want support regarding the full-version VM in master, please contact our 
 * Test what's not yet released into the stable VM. Please have a look at [this subfolder](https://github.com/nextcloud/vm/tree/master/not-supported) for further information.
 * Write scripts so that the release process becomes automated with [Vagrant](https://www.vagrantup.com/docs/getting-started/), [Terraform](https://www.terraform.io/) or similar
 * **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB for both VMware, Hyper-V and [more](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration?currentPageId=bls17dahv0jgrltpif20)**
+
+**FYI**
+
+Developed by [Daniel Hansson](https://github.com/enoch85) and the Nextcloud community. Nextcloud GmbH does not offer support for the VM in the [master branch](https://github.com/nextcloud/vm/tree/master) (full-version), as we only support manual tarball/zip-package installations. You can download the official Nextcloud VM appliance ([also from this repo](https://github.com/nextcloud/vm/tree/official-basic-vm)) from [our website](https://download.nextcloud.com/vm/Official-Nextcloud-VM.zip) to get a stripped down version for testing if you rather want to skip all the manual steps in our documentation.
+
+If you want support regarding the full-version VM in master, please contact our partner [Hansson IT](https://www.hanssonit.se/nextcloud-vm).
   
 ## Full documentation
 * [VM](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm) (the easiest option)
@@ -52,7 +52,7 @@ If you want support regarding the full-version VM in master, please contact our 
 ## I want to test a Release Candidate (RC), or Beta!
 No problem, brave explorer! We made it simple. 
 
-In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://cloud.kafit.se/s/7qzap5RL6EF3RyZ?path=%2FTESTING) folder on the download server. 
+In some cases we do pre-releases of the VM as well. Those can be found in the [TESTING](https://download.kafit.se/s/dnkWptz8AK4JZDM?path=%2FTESTING) folder on the download server. 
 
 If you want to try the latest version yourself, there are two variables that you could use:
 
