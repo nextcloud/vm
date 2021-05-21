@@ -3,7 +3,15 @@
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 true
-SCRIPT_NAME="Set up Extra Security"
+SCRIPT_NAME="Extra Security"
+SCRIPT_EXPLAINER="This script is based on:
+http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
+https://github.com/wallyhall/spamhaus-drop
+
+As it's kind of intrusive, it could lead to things stop working. But on the other hand it raises the security on the server.
+
+Please run it own your own risk!"
+
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -13,23 +21,28 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 DEBUG=0
 debug_mode
 
-# Check if root
+# Must be root
 root_check
 
-msg_box "This script is based on:
-http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
-https://github.com/wallyhall/spamhaus-drop
-
-As it's kind of intrusive, it could lead to things stop working. But on the other hand it raises the security on the server.
-
-Please run it own your own risk!"
-
-if ! yesno_box_no "Do you want to install Extra Security on your server?"
+# Check if Extra Security is already installed
+if ! [ -d /var/log/apache2/evasive ]
 then
-    print_text_in_color "$ICyan" "Installation aborted."
-    exit
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
 else
-    print_text_in_color "$ICyan" "Installing Extra Security..."
+    # Ask for removal or reinstallation
+    reinstall_remove_menu "$SCRIPT_NAME"
+    # Removal
+    apt purge libapache2-mod-evasive -y
+    rm -rf /var/log/apache2/evasive
+    rm -f "$ENVASIVE"
+    a2dismod reqtimeout
+    bash "$SCRIPTS"/spamhaus_cronjob.sh deletechain
+    rm -f "$SCRIPTS"/spamhaus_cronjob.sh
+    crontab -u root -l | grep -v "$SCRIPTS/spamhaus_crontab.sh 2>&1" | crontab -u root -
+    restart_webserver
+    # Show successful uninstall if applicable
+    removal_popup "$SCRIPT_NAME"
 fi
 
 # Protect against DDOS
@@ -79,14 +92,21 @@ FILE="/tmp/drop.lasso"
 CHAIN="Spamhaus"
 
 # check to see if the chain already exists
-\$IPTABLES -L "\$CHAIN" -n
-
-# check to see if the chain already exists
-if [ \$? -eq 0 ]; then
+if \$IPTABLES -L "\$CHAIN" -n
+then
     # flush the old rules
+    \$IPTABLES -D INPUT -j "\$CHAIN"
+    \$IPTABLES -D FORWARD -j "\$CHAIN"
     \$IPTABLES -F "\$CHAIN"
 
-    echo "Flushed old rules. Applying updated Spamhaus list...."
+    if [ -n "\$1" ]
+    then
+        \$IPTABLES -X "\$CHAIN"
+        echo "\$CHAIN removed in iptables."
+        exit
+    else
+        echo "Flushed old rules. Applying updated Spamhaus list...."
+    fi
 else
     # create a new chain set
     \$IPTABLES -N "\$CHAIN"
