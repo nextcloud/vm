@@ -259,12 +259,16 @@ case "$choice" in
         run_script DISK format-sdb
         # Change to zfs-mount-generator
         run_script DISK change-to-zfs-mount-generator
+        # Create daily zfs prune script
+        run_script DISK create-daily-zfs-prune
 
     ;;
     "2 Disks Manual")
         run_script DISK format-chosen
         # Change to zfs-mount-generator
         run_script DISK change-to-zfs-mount-generator
+        # Create daily zfs prune script
+        run_script DISK create-daily-zfs-prune
     ;;
     "1 Disk")
         print_text_in_color "$IRed" "1 Disk setup chosen."
