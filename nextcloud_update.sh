@@ -740,9 +740,9 @@ fi
 print_text_in_color "$ICyan" "Backing up data..."
 if [ -d "$BACKUP" ]
 then
-    mkdir -p "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
     install_if_not rsync
-    rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
+    mkdir -p "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
+    rsync -Aaxz "$BACKUP" "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
     rm -rf "$BACKUP"-OLD/"$(date --date='1 year ago' +%Y)"*
     rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
