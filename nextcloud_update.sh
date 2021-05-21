@@ -743,7 +743,7 @@ then
     mkdir -p "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
     install_if_not rsync
     rsync -Aaxz "$BACKUP"/ "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
-    rm -rf /var/NCBACKUP-OLD/"$(date --date='1 year ago' +%Y)*"
+    rm -rf "$BACKUP"-OLD/"$(date --date='1 year ago' +%Y)"*
     rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
 fi
