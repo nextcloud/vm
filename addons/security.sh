@@ -51,20 +51,17 @@ exit
 # Protect against DNS Injection
 # Inspired by: https://www.c-rieger.de/nextcloud-13-nginx-installation-guide-for-ubuntu-18-04-lts/#spamhausproject
 
-# shellcheck disable=SC2016
-DATE='$(date +%Y-%m-%d)'
 cat << SPAMHAUS_ENABLE > "$SCRIPTS/spamhaus_cronjob.sh"
 #!/bin/bash
 # Thanks to @ank0m
-EXEC_DATE='date +%Y-%m-%d'
 SPAMHAUS_DROP="/usr/local/src/drop.txt"
 SPAMHAUS_eDROP="/usr/local/src/edrop.txt"
 URL="https://www.spamhaus.org/drop/drop.txt"
 eURL="https://www.spamhaus.org/drop/edrop.txt"
 DROP_ADD_TO_UFW="/usr/local/src/DROP2.txt"
 eDROP_ADD_TO_UFW="/usr/local/src/eDROP2.txt"
-DROP_ARCHIVE_FILE="/usr/local/src/DROP_{$EXEC_DATE}"
-eDROP_ARCHIVE_FILE="/usr/local/src/eDROP_{$EXEC_DATE}"
+DROP_ARCHIVE_FILE="/usr/local/src/DROP_"$(date +%Y-%m-%d)"
+eDROP_ARCHIVE_FILE="/usr/local/src/eDROP_"$(date +%Y-%m-%d)"
 # All credits for the following BLACKLISTS goes to "The Spamhaus Project" - https://www.spamhaus.org
 echo "Start time: $(date)"
 echo " "
