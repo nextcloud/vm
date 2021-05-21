@@ -56,7 +56,13 @@ fi
 a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 
 # Download SPAMHAUS droplist and block all IPs in that list with IPtables
-curl_to_dir https://raw.githubusercontent.com/wallyhall/spamhaus-drop/master/ spamhaus-drop "$SCRIPTS"
+if ! curl_to_dir https://raw.githubusercontent.com/wallyhall/spamhaus-drop/master/ spamhaus-drop "$SCRIPTS"
+then
+    msg_box "We couldn't download the script we need to block bad IP-addresses from SPAMHAUS.
+    
+    We added security for DDOS and Slowloris thogh."
+    exit
+fi
 
 # Rename file
 mv "$SCRIPTS"/spamhaus-drop  "$SCRIPTS"/spamhaus_cronjob.sh
@@ -69,6 +75,13 @@ crontab -u root -l | grep -v "$SCRIPTS/spamhaus_crontab.sh 2>&1" | crontab -u ro
 crontab -u root -l | { cat; echo "10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1"; } | crontab -u root -
 
 # Run it for the first time
+msg_box "We will now add a number of bad IP-addresses to your IPtables block list, meaning that all IPs on that list will be blocked as they are known for doing bad stuff.
+
+The script will be run on a schelude to update the IP-addresses, and can be found in "$SCRIPTS"/spamhaus_cronjob.sh.
+
+To disable it, please remove the crontab by executing 'crontab -e' and remove this:
+'10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1'"
+
 if check_command bash "$SCRIPTS"/spamhaus_cronjob.sh
 then
     print_text_in_color "$IGreen" "Security added!"
