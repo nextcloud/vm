@@ -202,6 +202,7 @@ fi
 # Check if UUID is used
 if zpool list -v | grep "$DEVTYPE"
 then
+    # Import disk by actual name
     check_command partprobe -s
     zpool export $POOLNAME
     zpool import -d /dev/disk/by-id $POOLNAME
