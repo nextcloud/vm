@@ -65,6 +65,3 @@ then
     print_text_in_color "$ICyan" "/etc/zfs/zfs-list.cache/$POOLNAME is empty, setting values manually instead."
     zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand,encroot,keylocation > /etc/zfs/zfs-list.cache/"$POOLNAME"
 fi
-
-# Create daily zfs prune script
-run_script DISK create-daily-zfs-prune
