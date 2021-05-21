@@ -2,7 +2,6 @@
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
-# shellcheck disable=SC2154
 true
 SCRIPT_NAME="Set up Extra Security"
 # shellcheck source=lib.sh
@@ -19,7 +18,19 @@ root_check
 
 print_text_in_color "$ICyan" "Installing Extra Security..."
 
-# Based on: http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
+
+msg_box "This script is based on:
+http://www.techrepublic.com/blog/smb-technologist/secure-your-apache-server-from-ddos-slowloris-and-dns-injection-attacks/
+https://github.com/wallyhall/spamhaus-drop
+
+As it's kind of intrusive, it could lead to things stop working. But on the other hand it raises the security on the server.
+
+Please run it own your own risk!"
+
+if ! yesno_box_no "Do you want to install Extra Security on your server?"
+then
+    exit
+fi
 
 # Protect against DDOS
 apt update -q4 & spinner_loading
@@ -44,74 +55,21 @@ fi
 #apt -y install libapache2-mod-qos
 a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 
-# Don't enable SpamHaus now as it's now working anyway
-# REMOVE disable of SC2154 WHEN PUTTING SPAMHAUS IN PRODUCTION (it's just to fixing travis for now) 
-exit
+# Download SPAMHAUS droplist and block all IPs in that list with IPtables
+curl_to_dir https://raw.githubusercontent.com/wallyhall/spamhaus-drop/master/ spamhaus-drop "$SCRIPTS"
 
-# Protect against DNS Injection
-# Inspired by: https://www.c-rieger.de/nextcloud-13-nginx-installation-guide-for-ubuntu-18-04-lts/#spamhausproject
-
-cat << SPAMHAUS_ENABLE > "$SCRIPTS/spamhaus_cronjob.sh"
-#!/bin/bash
-# Thanks to @ank0m
-SPAMHAUS_DROP="/usr/local/src/drop.txt"
-SPAMHAUS_eDROP="/usr/local/src/edrop.txt"
-URL="https://www.spamhaus.org/drop/drop.txt"
-eURL="https://www.spamhaus.org/drop/edrop.txt"
-DROP_ADD_TO_UFW="/usr/local/src/DROP2.txt"
-eDROP_ADD_TO_UFW="/usr/local/src/eDROP2.txt"
-DROP_ARCHIVE_FILE="/usr/local/src/DROP_"$(date +%Y-%m-%d)"
-eDROP_ARCHIVE_FILE="/usr/local/src/eDROP_"$(date +%Y-%m-%d)"
-# All credits for the following BLACKLISTS goes to "The Spamhaus Project" - https://www.spamhaus.org
-echo "Start time: $(date)"
-echo " "
-echo "Download daily DROP file:"
-curl -fsSL "$URL" > $SPAMHAUS_DROP
-grep -v '^;' $SPAMHAUS_DROP | cut -d ' ' -f 1 > $DROP_ADD_TO_UFW
-echo " "
-echo "Extract DROP IP addresses and add to UFW:"
-cat $DROP_ADD_TO_UFW | while read line
-do
-/usr/sbin/ufw insert 1 deny from "$line" comment 'DROP_Blacklisted_IPs'
-done
-echo " "
-echo "Downloading eDROP list and import to UFW"
-echo " "
-echo "Download daily eDROP file:"
-curl -fsSL "$eURL" > $SPAMHAUS_eDROP
-grep -v '^;' $SPAMHAUS_eDROP | cut -d ' ' -f 1 > $eDROP_ADD_TO_UFW
-echo " "
-echo "Extract eDROP IP addresses and add to UFW:"
-cat $eDROP_ADD_TO_UFW | while read line
-do
-/usr/sbin/ufw insert 1 deny from "$line" comment 'eDROP_Blacklisted_IPs'
-done
-echo " "
-#####
-## To remove or revert these rules, keep the list of IPs!
-## Run a command like so to remove the rules:
-# while read line; do ufw delete deny from $line; done < $ARCHIVE_FILE
-#####
-echo "Backup DROP IP address list:"
-mv $DROP_ADD_TO_UFW $DROP_ARCHIVE_FILE
-echo " "
-echo "Backup eDROP IP address list:"
-mv $eDROP_ADD_TO_UFW $eDROP_ARCHIVE_FILE
-echo " "
-echo End time: $(date)
-SPAMHAUS_ENABLE
+# Rename file
+mv "$SCRIPTS"/spamhaus-drop  "$SCRIPTS"/spamhaus_cronjob.sh
 
 # Make the file executable
 chmod +x "$SCRIPTS"/spamhaus_cronjob.sh
 
 # Add it to crontab
-(crontab -l ; echo "10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1") | crontab -u root -
+crontab -u root -l | grep -v "$SCRIPTS/spamhaus_crontab.sh 2>&1" | crontab -u root -
+crontab -u root -l | { cat; echo "10 2 * * * $SCRIPTS/spamhaus_crontab.sh 2>&1"; } | crontab -u root -
 
 # Run it for the first time
-check_command bash "$SCRIPTS"/spamhaus_cronjob.sh
-
-# Enable $SPAMHAUS
-if sed -i "s|#MS_WhiteList /etc/spamhaus.wl|MS_WhiteList $SPAMHAUS|g" /etc/apache2/mods-enabled/spamhaus.conf
+if check_command bash "$SCRIPTS"/spamhaus_cronjob.sh
 then
     print_text_in_color "$IGreen" "Security added!"
     restart_webserver
