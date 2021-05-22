@@ -734,6 +734,7 @@ create_share() {
     force create mode = 0770
     force directory mode = 0770
     recycle:repository = .recycle
+    recycle:touch = true
     recycle:keeptree = yes
     recycle:versions = yes
     recycle:directory_mode = 0770
@@ -1344,9 +1345,11 @@ It gets executed every day and cleans old files in the recycle bin folders that 
     # Execute
     cat << AUTOMATIC_CLEANUP > "$SCRIPTS/recycle-bin-cleanup.sh"
 #!/bin/bash
+
 # Secure the file
 chown root:root "$SCRIPTS/recycle-bin-cleanup.sh"
 chmod 700 "$SCRIPTS/recycle-bin-cleanup.sh"
+
 count=1
 while [ \$count -le $MAX_COUNT ]
 do
@@ -1467,7 +1470,8 @@ do
 "Choose what you want to do.
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Open the SMB-user Menu" "(manage SMB-users)" \
-"Open the SMB-share Menu  " "(manage SMB-shares)" \
+"Open the SMB-share Menu" "(manage SMB-shares)" \
+"Automatically empty recycle bins  " "(Schedule cleanup of recycle folders)" \
 "Empty recycle bins" "(Clean up recycle folders)" \
 "Exit" "(exit this script)" 3>&1 1>&2 2>&3)
 
@@ -1475,8 +1479,11 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         "Open the SMB-user Menu")
             user_menu
         ;;
-        "Open the SMB-share Menu  ")
+        "Open the SMB-share Menu")
             share_menu
+        ;;
+        "Automatically empty recycle bins  ")
+            automatically_empty_recycle_bins
         ;;
         "Empty recycle bins")
             empty_recycle_bins
