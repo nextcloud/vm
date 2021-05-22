@@ -534,6 +534,9 @@ nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 60"
 # Set versions retention obligation (save versions for 180 days or delete when space is needed)
 nextcloud_occ config:system:set versions_retention_obligation --value="auto, 180"
 
+# Set activity retention obligation (save activity feed for 120 days, defaults to 365 days otherwise)
+nextcloud_occ config:system:set activity_expire_days --value="120"
+
 # Remove simple signup
 nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
 
