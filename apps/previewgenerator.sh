@@ -63,7 +63,7 @@ else
     apt autoremove -y
     if yesno_box_no "Do you want to remove all previews that were generated until now?
 This will most likely clear a lot of space but your server will need to re-generate the previews \
-if you should opt to reenable previews again."
+if you should opt to re-enable previews again."
     then
         print_text_in_color "$ICyan" "Removing the preview folder. This can take a while..."
         rm -r "$NCDATA"/appdata_*/preview
