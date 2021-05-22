@@ -61,6 +61,17 @@ else
         apt purge ffmpeg -y
     fi
     apt autoremove -y
+    if yesno_box_no "Do you want to remove all previews that were generated until now?
+This will most likely clear a lot of space but your server will need to re-generate the previews \
+if you should opt to reenable previews again."
+    then
+        print_text_in_color "$ICyan" "Removing the preview folder. This can take a while..."
+        rm -r "$NCDATA"/appdata_*/preview
+        print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory after removing all previews. \
+This can take a while..."
+        nextcloud_occ files:scan-app-data -vvv
+        msg_box "All previews were successfully removed."
+    fi
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
