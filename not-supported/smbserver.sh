@@ -1308,7 +1308,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         CACHE=$(sed -n "/^#SMB$count-start/,/^#SMB$count-end/p" "$SMB_CONF")
         if [ -n "$CACHE" ]
         then
-            SMB_PATH="$(echo "$CACHE" | grep "path" | grep -oP '/.*')/.recycle/"
+            SMB_PATH="$(echo "$CACHE" | grep "path =" | grep -oP '/.*')/.recycle/"
             if [ -d "$SMB_PATH" ]
             then
                 FOLDER_SIZE="$(du -sh "$SMB_PATH" | awk '{print $1}')"
