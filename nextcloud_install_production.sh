@@ -666,6 +666,22 @@ fi
 restart_webserver
 fi
 
+# Adjust umask for new files (defaults to 0133 which gives everyone read access)
+# https://stackoverflow.com/questions/39290444/how-to-set-umask-for-www-data-user
+PHP_FPM_SERVICE_PATH="/etc/systemd/system/multi-user.target.wants/php$PHPVER-fpm.service"
+if [ -f "$PHP_FPM_SERVICE_PATH" ]
+then
+    print_text_in_color "$ICyan" "Adjusting umask for PHP-fpm..."
+    if ! grep -q 'UMask=' "$PHP_FPM_SERVICE_PATH"
+    then
+        sed -i "/\[Service\]/a UMask=0007" "$PHP_FPM_SERVICE_PATH"
+    else
+        sed -i "s|UMask=|UMask=0007|" "$PHP_FPM_SERVICE_PATH"
+    fi
+    check_command systemctl daemon-reload
+    restart_webserver
+fi
+
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
 yes | nextcloud_occ db:convert-filecache-bigint
