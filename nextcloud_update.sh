@@ -993,6 +993,9 @@ Thank you for using T&M Hansson IT's updater!"
     echo "NEXTCLOUD UPDATE success-$(date +"%Y%m%d")" >> "$VMLOGS"/updates/update.log
     # Remove logs from last year to save space
     rm -f "$VMLOGS"/updates/update-"$(date --date='1 year ago' +%Y)"*
+    # Update mimtype list
+    nextcloud_occ maintenance:mimetype:update-js
+    nextcloud_occ maintenance:mimetype:update-db
     if [ -n "$SNAPSHOT_EXISTS" ]
     then
         check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
