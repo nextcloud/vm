@@ -48,6 +48,7 @@ then
 fi
 
 # Find mounts
+print_text_in_color "$ICyan" "Getting all valid mounts. This can take a while..."
 DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 2 -type d | grep -v "/mnt/ncdata")
 mapfile -t DIRECTORIES <<< "$DIRECTORIES"
 for directory in "${DIRECTORIES[@]}"
@@ -1288,6 +1289,65 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 done  
 }
 
+empty_recycle_bins() {
+    local count
+    local selected_options
+    local args
+    local TEST=""
+    local FOLDER_SIZE
+    local SMB_PATH
+    local SUBTITLE="Empty recycle bins"
+
+    # Show a list with available SMB-shares
+    args=(whiptail --title "$TITLE - $SUBTITLE" --separate-output --checklist \
+"Please select which recycle folders you want to empty.
+$CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
+    count=1
+    while [ $count -le $MAX_COUNT ]
+    do
+        CACHE=$(sed -n "/^#SMB$count-start/,/^#SMB$count-end/p" "$SMB_CONF")
+        if [ -n "$CACHE" ]
+        then
+            SMB_PATH="$(echo "$CACHE" | grep "path" | grep -oP '/.*')/.recycle/"
+            if [ -d "$SMB_PATH" ]
+            then
+                FOLDER_SIZE="$(du -sh "$SMB_PATH" | awk '{print $1}')"
+            else
+                FOLDER_SIZE=0B
+            fi
+            args+=("$SMB_PATH" "$FOLDER_SIZE" ON)
+            TEST+="$SMB_PATH"
+        fi
+        count=$((count+1))
+    done
+
+    # Return if none created
+    if [ -z "$TEST" ]
+    then
+        msg_box "No SMB-share created. Please create a SMB-share first." "$SUBTITLE"
+        return
+    fi
+
+    # Show selected shares
+    selected_options=$("${args[@]}" 3>&1 1>&2 2>&3)
+    if [ -z "$selected_options" ]
+    then
+        msg_box "No option selected." "$SUBTITLE"
+        return
+    fi
+    mapfile -t selected_options <<< "$selected_options"
+    for element in "${selected_options[@]}"
+    do
+        print_text_in_color "$ICyan" "Emptying $element"
+        if [ -d "$element" ]
+        then
+            rm -r "$element"
+        fi
+    done
+    msg_box "All selected recycle folders were emptied!
+Please note: If you are using BTRFS as file system, it can take up to 54h until the space is released due to automatic snapshots." "$SUBTITLE"
+}
+
 # SMB-server Main Menu
 while :
 do
@@ -1296,6 +1356,7 @@ do
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Open the SMB-user Menu" "(manage SMB-users)" \
 "Open the SMB-share Menu  " "(manage SMB-shares)" \
+"Empty recycle bins" "(Clean up recycle folders)" \
 "Exit" "(exit this script)" 3>&1 1>&2 2>&3)
 
     case "$choice" in
@@ -1304,6 +1365,9 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         ;;
         "Open the SMB-share Menu  ")
             share_menu
+        ;;
+        "Empty recycle bins")
+            empty_recycle_bins
         ;;
         "Exit")
             break
