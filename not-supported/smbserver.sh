@@ -1346,6 +1346,22 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     done
     msg_box "All selected recycle folders were emptied!
 Please note: If you are using BTRFS as file system, it can take up to 54h until the space is released due to automatic snapshots." "$SUBTITLE"
+
+    # Allow to clean up Nextclouds trashbin, too
+    if yesno_box_no "Do you want to clean up Nextclouds trashbin, too?
+This will run the command 'occ trashbin:cleanup --all-users' for you!" "$SUBTITLE"
+    then
+        nextcloud_occ trashbin:cleanup --all-users -vvv
+        msg_box "The cleanup of Nextclouds trashbin was successful!" "$SUBTITLE"
+    fi
+
+    # Allow to clean up Nextclouds versions, too
+    if yesno_box_no "Do you want to clean up all file versions in Nextcloud?
+This will run the command 'occ versions:cleanup' for you!" "$SUBTITLE"
+    then
+        nextcloud_occ versions:cleanup -vvv
+        msg_box "The cleanup of all file versions in Nextcloud was successful!" "$SUBTITLE"
+    fi
 }
 
 # SMB-server Main Menu
