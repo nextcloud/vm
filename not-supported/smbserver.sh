@@ -1349,7 +1349,7 @@ Please note: If you are using BTRFS as file system, it can take up to 54h until 
 
     # Allow to clean up Nextclouds trashbin, too
     if yesno_box_no "Do you want to clean up Nextclouds trashbin, too?
-This will run the command 'occ trashbin:cleanup --all-users' for you!" "$SUBTITLE"
+This will run the command 'occ trashbin:cleanup --all-users' for you if you select 'Yes'!" "$SUBTITLE"
     then
         nextcloud_occ trashbin:cleanup --all-users -vvv
         msg_box "The cleanup of Nextclouds trashbin was successful!" "$SUBTITLE"
@@ -1357,7 +1357,7 @@ This will run the command 'occ trashbin:cleanup --all-users' for you!" "$SUBTITL
 
     # Allow to clean up Nextclouds versions, too
     if yesno_box_no "Do you want to clean up all file versions in Nextcloud?
-This will run the command 'occ versions:cleanup' for you!" "$SUBTITLE"
+This will run the command 'occ versions:cleanup' for you if you select 'Yes'!" "$SUBTITLE"
     then
         nextcloud_occ versions:cleanup -vvv
         msg_box "The cleanup of all file versions in Nextcloud was successful!" "$SUBTITLE"
