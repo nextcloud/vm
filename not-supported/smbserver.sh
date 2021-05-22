@@ -1290,7 +1290,7 @@ done
 }
 
 automatically_empty_recycle_bins() {
-    local SUBTITLE="Empty recycle bins"
+    local SUBTITLE="Automatically empty recycle bins"
     local count
     local TEST=""
 
