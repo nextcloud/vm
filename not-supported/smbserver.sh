@@ -1289,6 +1289,102 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 done  
 }
 
+automatically_empty_recycle_bins() {
+    local SUBTITLE="Automatically empty recycle bins"
+    local count
+    local TEST=""
+
+    # Ask for removal
+    if crontab -u root -l | grep -q "$SCRIPTS/recycle-bin-cleanup.sh"
+    then
+        if yesno_box_yes "It seems like automatic recycle bin cleanup is already configured. Do you want to disable it?" "$SUBTITLE"
+        then
+            crontab -u root -l | grep -v "$SCRIPTS/recycle-bin-cleanup.sh" | crontab -u root -
+            rm -rf "$SCRIPTS/recycle-bin-cleanup.sh"
+            msg_box "Automatic recycle bin cleanup was successfully disabled." "$SUBTITLE"
+        fi
+        return
+    fi
+
+    # Ask for installation
+    msg_box "Automatic recycle bin cleanup does clean up all recycle bin folders automatically in the background.
+It gets executed every day and cleans old files in the recycle bin folders that were deleted more than 2 days ago." "$SUBTITLE"
+    if ! yesno_box_yes "Do you want to enable automatic recycle bin cleanup?" "$SUBTITLE"
+    then
+        return
+    fi
+
+    # Adjust some things
+    count=1
+    while [ $count -le $MAX_COUNT ]
+    do
+        CACHE=$(sed -n "/^#SMB$count-start/,/^#SMB$count-end/p" "$SMB_CONF")
+        if [ -n "$CACHE" ]
+        then
+            TEST+="SMB$count"
+            if ! echo "$CACHE" | grep -q 'recycle:touch'
+            then
+                CACHE=$(echo "$CACHE" | sed "/recycle:repository/a \ \ \ \ recycle:touch = true")
+                sed -i "/^#SMB$count-start/,/^#SMB$count-end/d" "$SMB_CONF"
+                echo -e "\n$CACHE" >> "$SMB_CONF"
+            fi
+        fi
+        count=$((count+1))
+    done
+
+    # Return if none created
+    if [ -z "$TEST" ]
+    then
+        msg_box "No SMB-share created. Please create a SMB-share first." "$SUBTITLE"
+        return
+    else
+        systemctl restart smbd
+    fi
+
+    # Execute
+    cat << AUTOMATIC_CLEANUP > "$SCRIPTS/recycle-bin-cleanup.sh"
+#!/bin/bash
+# Secure the file
+chown root:root "$SCRIPTS/recycle-bin-cleanup.sh"
+chmod 700 "$SCRIPTS/recycle-bin-cleanup.sh"
+count=1
+while [ \$count -le $MAX_COUNT ]
+do
+    CACHE=\$(sed -n "/^#SMB\$count-start/,/^#SMB\$count-end/p" "$SMB_CONF")
+    if [ -n "\$CACHE" ]
+    then
+        SMB_PATH=\$(echo "\$CACHE" | grep "path =" | grep -oP '/.*')
+        if [ -d "\$SMB_PATH" ] && [ -d "\$SMB_PATH/.recycle/" ]
+        then
+            find "\$SMB_PATH/.recycle/" -type f -atime +2 -delete
+        fi
+    fi
+    count=\$((count+1))
+done
+AUTOMATIC_CLEANUP
+
+    # Secure the file
+    chown root:root "$SCRIPTS/recycle-bin-cleanup.sh"
+    chmod 700 "$SCRIPTS/recycle-bin-cleanup.sh"
+
+    # Add cronjob
+    crontab -u root -l | grep -v "$SCRIPTS/recycle-bin-cleanup.sh" | crontab -u root -
+    crontab -u root -l | { cat; echo "@daily $SCRIPTS/recycle-bin-cleanup.sh >/dev/null"; } | crontab -u root -
+
+    # Show message
+    msg_box "Automatic recycle bin cleanup was successfully configured!" "$SUBTITLE"
+
+    # Allow to adjust Nextcloud to do the same
+    if yesno_box_yes "Do you want Nextcloud to delete files in its trashbin that were deleted more than 2 days ago \
+and file versions that were created more than 2 days ago, too?" "$SUBTITLE"
+    then
+        nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 2"
+        nextcloud_occ config:system:set versions_retention_obligation --value="auto, 2"
+        msg_box "Nextcloud was successfully configured to delete files in its trashbin that were deleted more than 2 days ago \
+and file versions that were created more than 2 days ago!" "$SUBTITLE"
+    fi
+}
+
 empty_recycle_bins() {
     local count
     local selected_options
