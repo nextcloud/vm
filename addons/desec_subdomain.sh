@@ -129,3 +129,11 @@ then
         exit
     fi
 fi
+
+# Add TLS
+if generate_desec_cert $FINAL_SUBDOMAIN
+then
+    msg_box "Congrats! You should now be able to use $FINAL_SUBDOMAIN for setting up Talk, Collabora, OnlyOffice and other apps in Nextcloud.
+    
+Please remember to add the port number to the domain, if you chose a custom one, like this: $FINAL_SUBDOMAIN:portnumber"
+fi
