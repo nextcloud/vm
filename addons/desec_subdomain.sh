@@ -34,7 +34,7 @@ do
     then
         print_text_in_color "$IRed" "Still throttling..."
         msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to add the domain..."
-        countdown "Waiting for throttling to end, please wait for the script to continue..." "10"
+        countdown "Waiting for throttling to end, please wait for the script to continue..." "600"
         add_desec_subdomain
     else
         break
@@ -51,7 +51,7 @@ then
     systemctl restart ddclient
     if ddclient -syslog -noquiet -verbose -force
     then
-        msg_box "$FINAL_SUBDOMAIN was sucessfully updated."
+        msg_box "$FINAL_SUBDOMAIN was successfully updated."
     else
         msg_box "$FINAL_SUBDOMAIN failed to update, please report this to $ISSUES"
         exit
