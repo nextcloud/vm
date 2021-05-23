@@ -34,13 +34,15 @@ Please run sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC to conf
     fi
 fi
 
+SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
+
 # Function for adding a RRset (subddomain)
 add_desec_subdomain() {
 curl -X POST https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/ \
         --header "Authorization: Token $DEDYN_TOKEN" \
         --header "Content-Type: application/json" --data @- <<EOF
     {
-      "subname": "$1",
+      "subname": "$SUBDOMAIN",
       "type": "A",
       "ttl": 60,
       "records": ["127.0.0.1"]
@@ -49,29 +51,19 @@ EOF
 }
 
 delete_desec_subdomain() {
-curl -X DELETE https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/ \
-        --header "Authorization: Token $DEDYN_TOKEN" \
-        --header "Content-Type: application/json" --data @- <<EOF
-    {
-      "subname": "$1",
-      "type": "A",
-      "ttl": 60,
-      "records": [""]
-    }
-EOF
-}
-
-check_desec_subdomain() {
-curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$1"/A/ \
+curl -X DELETE https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
     --header "Authorization: Token $DEDYN_TOKEN"
 }
 
-SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
+check_desec_subdomain() {
+curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
+    --header "Authorization: Token $DEDYN_TOKEN"
+}
 
 ####################
 
 # Check if it's installed
-if ! check_desec_subdomain "$SUBDOMAIN"
+if check_desec_subdomain "$SUBDOMAIN" | grep -Po "Not found"
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -81,16 +73,19 @@ else
     # Delete the subdomain, but wait for throttling if it's there
     while :
     do
-        if grep -r "throttled" | delete_desec_subdomain "$SUBDOMAIN"
+        if delete_desec_subdomain | grep -Po "throttled"
         then
             print_text_in_color "$IRed" "Still throttling..."
-            msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to delete the domain..."
+            msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to delete $SUBDOMAIN(.DEDYN_NAME)..."
             countdown "Waiting for throttling to end, please wait for the script to continue..." "600"
-            delete_desec_subdomain "SUBDOMAIN"
+            delete_desec_subdomain
         else
             break
         fi
     done
+    # Remove from DDclient
+    sed '/$SUBDOMAIN/d' /etc/ddclient.conf
+    systemctl restart ddclient
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -100,12 +95,12 @@ fi
 # Add the subdomain, but wait for throttling if it's there
 while :
 do
-    if grep -r "throttled" | add_desec_subdomain "SUBDOMAIN"
+    if add_desec_subdomain | grep -Po "throttled"
     then
         print_text_in_color "$IRed" "Still throttling..."
-        msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to add the domain..."
+        msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to add $SUBDOMAIN(.DEDYN_NAME)..."
         countdown "Waiting for throttling to end, please wait for the script to continue..." "600"
-        add_desec_subdomain "SUBDOMAIN"
+        add_desec_subdomain
     else
         break
     fi
