@@ -1,6 +1,6 @@
 source /var/scripts/fetch_lib.sh
 
-if [ -f "$SCRIPTS"/deSEC/.dedynauth ] && [ -f [ /etc/ddclient.conf ]
+if [ -f "$SCRIPTS"/deSEC/.dedynauth ] && [ -f /etc/ddclient.conf ]
 then
     DEDYN_TOKEN=$(grep DEDYN_TOKEN "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
     DEDYN_NAME=$(grep DEDYN_NAME "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
