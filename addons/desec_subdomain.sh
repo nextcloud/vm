@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
-# SwITNet Ltd © - 2021, https://switnet.net/
 
 true
 SCRIPT_NAME="deSEC Subdomain"
@@ -88,7 +87,6 @@ else
             print_text_in_color "$IRed" "Still throttling..."
             msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to delete $SUBDOMAIN.$DEDYN_NAME..."
             countdown "Waiting for throttling to end, please wait for the script to continue..." "600"
-            delete_desec_subdomain
         else
             break
         fi
@@ -110,7 +108,6 @@ do
         print_text_in_color "$IRed" "Still throttling..."
         msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to add $SUBDOMAIN.$DEDYN_NAME..."
         countdown "Waiting for throttling to end, please wait for the script to continue..." "600"
-        add_desec_subdomain
     else
         break
     fi
