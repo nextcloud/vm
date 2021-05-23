@@ -117,6 +117,13 @@ then
     nextcloud_occ app:remove onlyoffice
 fi
 
+# remove richdocumentscode-documentserver if activated
+if is_app_enabled richdocumentscode
+then
+    any_key "Richdocumentscode will get uninstalled. Press any key to continue. Press CTRL+C to abort"
+    nextcloud_occ app:remove richdocumentscode
+fi
+
 # Ask for the domain for Collabora
 SUBDOMAIN=$(input_box_flow "Collabora subdomain e.g: office.yourdomain.com
 
