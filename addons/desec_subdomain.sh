@@ -86,7 +86,7 @@ else
         if delete_desec_subdomain | grep -Po "throttled"
         then
             print_text_in_color "$IRed" "Still throttling..."
-            msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to delete $SUBDOMAIN(.DEDYN_NAME)..."
+            msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to delete $SUBDOMAIN(.$DEDYN_NAME)..."
             countdown "Waiting for throttling to end, please wait for the script to continue..." "600"
             delete_desec_subdomain
         else
@@ -108,7 +108,7 @@ do
     if add_desec_subdomain | grep -Po "throttled"
     then
         print_text_in_color "$IRed" "Still throttling..."
-        msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to add $SUBDOMAIN(.DEDYN_NAME)..."
+        msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to add $SUBDOMAIN(.$DEDYN_NAME)..."
         countdown "Waiting for throttling to end, please wait for the script to continue..." "600"
         add_desec_subdomain
     else
