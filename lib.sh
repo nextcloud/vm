@@ -776,6 +776,8 @@ No TLS will be generated. Please report this to $ISSUES."
     exit 1
 fi
 
+DEDYN_CONF="$SITES_AVAILABLE/$1"
+
 print_text_in_color "$ICyan" "Generating new TLS cert with DNS and deSEC, please don't abort the hook, it may take a while..."
 # Renew with DNS by default
 if certbot certonly --manual --text --rsa-key-size 4096 --renew-by-default --server https://acme-v02.api.letsencrypt.org/directory --no-eff-email --agree-tos --preferred-challenges dns --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh -d "$1"
@@ -802,15 +804,15 @@ ${NONO_PORTS[*]}"
                 then
                     print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
                     # Main port
-                    sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
+                    sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$DEDYN_CONF"
                     if ! grep -q "Listen $DEDYNPORT" /etc/apache2/ports.conf
                     then
                         echo "Listen $DEDYNPORT" >> /etc/apache2/ports.conf
                     fi
                     # HTTP redirect
-                    if ! grep -q '{HTTP_HOST}':"$DEDYNPORT" "$tls_conf"
+                    if ! grep -q '{HTTP_HOST}':"$DEDYNPORT" "$DEDYN_CONF"
                     then
-                        sed -i "s|{HTTP_HOST}|{HTTP_HOST}:$DEDYNPORT|g" "$tls_conf"
+                        sed -i "s|{HTTP_HOST}|{HTTP_HOST}:$DEDYNPORT|g" "$DEDYN_CONF"
                     fi
                 fi
             else
