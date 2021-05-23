@@ -36,6 +36,12 @@ fi
 
 SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
 
+print_text_in_color "$ICyan" "Checking current WAN address (IPv4)..."
+if [ -z "$WANIP4" ]
+then
+    WANIP4="127.0.0.1"
+fi
+
 # Function for adding a RRset (subddomain)
 add_desec_subdomain() {
 curl -X POST https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/ \
@@ -45,7 +51,7 @@ curl -X POST https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/ \
       "subname": "$SUBDOMAIN",
       "type": "A",
       "ttl": 60,
-      "records": ["127.0.0.1"]
+      "records": ["$WANIP4"]
     }
 EOF
 }
@@ -63,7 +69,7 @@ curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
 ####################
 
 # Check if it's installed
-if check_desec_subdomain "$SUBDOMAIN" | grep -Po "Not found"
+if check_desec_subdomain | grep -Po "Not found"
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -84,7 +90,7 @@ else
         fi
     done
     # Remove from DDclient
-    sed '/$SUBDOMAIN/d' /etc/ddclient.conf
+    sed "/$SUBDOMAIN/d" /etc/ddclient.conf
     systemctl restart ddclient
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
