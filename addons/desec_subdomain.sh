@@ -73,7 +73,7 @@ curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
 ####################
 
 # Check the subdomain exist within the domain
-if check_desec_subdomain | grep -Po "Not found"
+if check_desec_subdomain | grep -qPo "Not found"
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -83,10 +83,10 @@ else
     # Delete the subdomain, but wait for throttling if it's there
     while :
     do
-        if delete_desec_subdomain | grep -Po "throttled"
+        if delete_desec_subdomain | grep -qPo "throttled"
         then
             print_text_in_color "$IRed" "Still throttling..."
-            msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to delete $SUBDOMAIN(.$DEDYN_NAME)..."
+            msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to delete $SUBDOMAIN.$DEDYN_NAME..."
             countdown "Waiting for throttling to end, please wait for the script to continue..." "600"
             delete_desec_subdomain
         else
@@ -105,10 +105,10 @@ fi
 # Add the subdomain, but wait for throttling if it's there
 while :
 do
-    if add_desec_subdomain | grep -Po "throttled"
+    if add_desec_subdomain | grep -qPo "throttled"
     then
         print_text_in_color "$IRed" "Still throttling..."
-        msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to add $SUBDOMAIN(.$DEDYN_NAME)..."
+        msg_box "To avoid throttling, we're now waiting for 5 minutes to be able to add $SUBDOMAIN.$DEDYN_NAME..."
         countdown "Waiting for throttling to end, please wait for the script to continue..." "600"
         add_desec_subdomain
     else
