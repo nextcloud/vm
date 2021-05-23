@@ -30,7 +30,7 @@ then
         DEDYN_NAME=$(grep DEDYN_NAME "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
     else
         msg_box "It seems like deSEC isn't configured on this server.
-Please run sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC to configure it."
+Please run 'sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC' to configure it."
         exit 1
     fi
 fi
