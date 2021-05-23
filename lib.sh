@@ -766,6 +766,61 @@ to validate them with the $f method. We have exhausted all the methods. Please c
 done
 }
 
+generate_desec_cert() {
+# Check if the hook is in place
+if [ ! -d "$SCRIPTS"/deSEC/hook.sh ]
+then
+    msg_box "Sorry, but it seems like the needed hook for this to work is missing.
+
+No TLS will be generated. Please report this to $ISSUES."
+    exit 1
+fi
+
+print_text_in_color "$ICyan" "Generating new TLS cert with DNS and deSEC, please don't abort the hook, it may take a while..."
+# Renew with DNS by default
+if certbot certonly --manual --text --rsa-key-size 4096 --renew-by-default --server https://acme-v02.api.letsencrypt.org/directory --no-eff-email --agree-tos --preferred-challenges dns --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh -d "$1"
+then
+    # Generate DHparams cipher
+    if [ ! -f "$DHPARAMS_TLS" ]
+    then
+        openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
+    fi
+    # Choose which port for public access
+    msg_box "You will now be able to choose which port you want to put your Nextcloud on for public access.\n
+The default port is 443 for HTTPS and if you don't change port, that's the port we will use.\n
+Please keep in mind NOT to use the following ports as they are likely in use already:
+${NONO_PORTS[*]}"
+    if yesno_box_no "Do you want to change the default HTTPS port (443) to something else?"
+    then
+        # Ask for port
+        while :
+        do
+            DEDYNPORT=$(input_box_flow "Please choose which port you want between 1024 - 49151.\n\nPlease remember to open this port in your firewall.")
+            if (("$DEDYNPORT" >= 1024 && "$DEDYNPORT" <= 49151))
+            then
+                if check_nono_ports "$DEDYNPORT"
+                then
+                    print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
+                    # Main port
+                    sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$tls_conf"
+                    if ! grep -q "Listen $DEDYNPORT" /etc/apache2/ports.conf
+                    then
+                        echo "Listen $DEDYNPORT" >> /etc/apache2/ports.conf
+                    fi
+                    # HTTP redirect
+                    if ! grep -q '{HTTP_HOST}':"$DEDYNPORT" "$tls_conf"
+                    then
+                        sed -i "s|{HTTP_HOST}|{HTTP_HOST}:$DEDYNPORT|g" "$tls_conf"
+                    fi
+                fi
+            else
+                msg_box "The port number needs to be between 1024 - 49151, please try again."
+            fi
+        done
+    fi
+fi
+}
+
 # Last message depending on with script that is being run when using the generate_cert() function
 last_fail_tls() {
     msg_box "All methods failed. :/
