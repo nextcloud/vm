@@ -42,6 +42,7 @@ else
 fi
 
 # install needed tool
+apt update -q4 & spinner_loading
 DEBIAN_FRONTEND=noninteractive apt install ddclient -y
 
 # Test if file exists
