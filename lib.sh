@@ -843,6 +843,43 @@ Please follow this guide to open ports in your router or firewall:\nhttps://www.
 fi
 }
 
+# $1=domain/ip-address
+add_to_trusted_domains() {
+    local element="$1"
+    local count=0
+    print_text_in_color "$ICyan" "Adding $element to trusted domains..."
+    while [ "$count" -le 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$element" ]
+        then
+            break
+        elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
+        then
+            nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$element"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
+}
+
+# $1=domain/ip-address
+remove_from_trusted_domains() {
+    local element="$1"
+    local count=0
+    print_text_in_color "$ICyan" "Removing $element from trusted domains..."
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$element" ]
+        then
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
+}
+
 check_distro_version() {
 # Check Ubuntu version
 if lsb_release -sc | grep -ic "bionic" &> /dev/null || lsb_release -sc | grep -ic "focal" &> /dev/null
