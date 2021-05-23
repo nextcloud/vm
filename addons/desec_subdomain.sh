@@ -120,4 +120,5 @@ then
     else
         msg_box "$FINAL_SUBDOMAIN failed to update, please report this to $ISSUES"
         exit
+    fi
 fi
