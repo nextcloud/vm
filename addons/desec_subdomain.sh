@@ -21,6 +21,7 @@ debug_mode
 # Must be root
 root_check
 
+# Check if deSEC is installed and add the needed variables if yes
 if [ -f "$SCRIPTS"/deSEC/.dedynauth ]
 then
     if [ -f /etc/ddclient.conf ]
@@ -34,6 +35,7 @@ Please run sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC to conf
     fi
 fi
 
+# Ask for subdomain
 SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
 
 print_text_in_color "$ICyan" "Checking current WAN address (IPv4)..."
@@ -42,7 +44,7 @@ then
     WANIP4="127.0.0.1"
 fi
 
-# Function for adding a RRset (subddomain)
+# Function for adding an RRset (subddomain)
 add_desec_subdomain() {
 curl -X POST https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/ \
         --header "Authorization: Token $DEDYN_TOKEN" \
@@ -56,11 +58,13 @@ curl -X POST https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/ \
 EOF
 }
 
+# Function for deleting an RRset (subddomain)
 delete_desec_subdomain() {
 curl -X DELETE https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
     --header "Authorization: Token $DEDYN_TOKEN"
 }
 
+# Function for checking if an RRset (subddomain) exists
 check_desec_subdomain() {
 curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
     --header "Authorization: Token $DEDYN_TOKEN"
@@ -68,7 +72,7 @@ curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
 
 ####################
 
-# Check if it's installed
+# Check the subdomain exist within the domain
 if check_desec_subdomain | grep -Po "Not found"
 then
     # Ask for installing
