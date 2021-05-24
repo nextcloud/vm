@@ -69,8 +69,7 @@ curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
     --header "Authorization: Token $DEDYN_TOKEN"
 }
 
-####################
-
+## Reinstall menu BEGIN
 # Check the subdomain exist within the domain
 if check_desec_subdomain | grep -qPo "Not found"
 then
@@ -94,11 +93,19 @@ else
     # Remove from DDclient
     sed "/$SUBDOMAIN/d" /etc/ddclient.conf
     systemctl restart ddclient
+    # Revoke cert if any
+    if [ -f "$CERTFILES/$SUBDOMAIN.$DEDYN_NAME/cert.pem" ]
+    then
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN.$DEDYN_NAME/cert.pem"
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf "$remove"
+        done
+    fi
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
-
-###################
+## Reinstall menu END
 
 # Add the subdomain, but wait for throttling if it's there
 while :
