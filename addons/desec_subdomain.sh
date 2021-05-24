@@ -147,3 +147,10 @@ then
 Please remember to add the port number to the domain, if you chose a custom one, like this: $FINAL_SUBDOMAIN:portnumber"
     fi
 fi
+
+# Export Apache2 config location for use in other scripts
+export DEDYN_CONF="$SITES_AVAILABLE"/"$FINAL_SUBDOMAIN"
+
+## Exported VARS:
+# $DEDYN_CONF
+# $FINAL_SUBDOMAIN
