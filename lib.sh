@@ -768,7 +768,7 @@ done
 
 generate_desec_cert() {
 # Check if the hook is in place
-if [ ! -d "$SCRIPTS"/deSEC/hook.sh ]
+if [ ! -f "$SCRIPTS"/deSEC/hook.sh ]
 then
     msg_box "Sorry, but it seems like the needed hook for this to work is missing.
 
