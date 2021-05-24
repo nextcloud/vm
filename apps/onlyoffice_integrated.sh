@@ -117,11 +117,6 @@ then
             count=$((count+1))
         fi
     done
-    # Disable onlyoffice App if activated
-    if is_app_installed onlyoffice
-    then
-        nextcloud_occ app:remove onlyoffice
-    fi
 fi
 
 # remove Richdocumentscode if activated

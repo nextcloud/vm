@@ -117,6 +117,12 @@ then
     nextcloud_occ app:remove onlyoffice
 fi
 
+# Disable RichDocuments (Collabora App) if activated
+if is_app_installed richdocuments
+then
+    nextcloud_occ app:remove richdocuments
+fi
+
 # remove richdocumentscode-documentserver if activated
 if is_app_enabled richdocumentscode
 then

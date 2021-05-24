@@ -46,11 +46,6 @@ else
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
-    # Disable RichDocuments (Collabora App) if activated
-    if is_app_installed onlyoffice
-    then
-        nextcloud_occ app:remove onlyoffice
-    fi
     # Remove trusted domain
     count=0
     while [ "$count" -lt 10 ]
@@ -90,11 +85,6 @@ then
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
-    # Disable Collabora App if activated
-    if is_app_installed richdocuments
-    then
-       nextcloud_occ app:remove richdocuments
-    fi
     # Remove trusted domain
     count=0
     while [ "$count" -lt 10 ]
@@ -120,6 +110,12 @@ fi
 if is_app_installed onlyoffice
 then
     nextcloud_occ app:remove onlyoffice
+fi
+
+# Disable Collabora App if activated
+if is_app_installed richdocuments
+then
+    nextcloud_occ app:remove richdocuments
 fi
 
 # remove richdocumentscode-documentserver if activated
