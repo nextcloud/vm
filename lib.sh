@@ -766,6 +766,23 @@ to validate them with the $f method. We have exhausted all the methods. Please c
 done
 }
 
+is_desec_installed() {
+# Check if deSEC is installed and add the needed variables if yes
+if [ -f "$SCRIPTS"/deSEC/.dedynauth ]
+then
+    if [ -f /etc/ddclient.conf ]
+    then
+        DEDYN_TOKEN=$(grep DEDYN_TOKEN "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
+        DEDYN_NAME=$(grep DEDYN_NAME "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
+        return 0
+    else
+        msg_box "It seems like deSEC isn't configured on this server.
+Please run 'sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC' to configure it."
+        return 1
+    fi
+fi
+}
+
 generate_desec_cert() {
 # Check if the hook is in place
 if [ ! -f "$SCRIPTS"/deSEC/hook.sh ]
