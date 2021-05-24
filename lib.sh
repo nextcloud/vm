@@ -814,6 +814,7 @@ ${NONO_PORTS[*]}"
                     then
                         sed -i "s|{HTTP_HOST}|{HTTP_HOST}:$DEDYNPORT|g" "$DEDYN_CONF"
                     fi
+                    break
                 fi
             else
                 msg_box "The port number needs to be between 1024 - 49151, please try again."
