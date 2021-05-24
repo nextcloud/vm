@@ -83,7 +83,7 @@ else
         fi
     done
     # Remove from DDclient
-    ddclientdomain="$(grep $SUBDOMAIN /etc/ddclient.conf)"
+    ddclientdomain="$(grep "$SUBDOMAIN" /etc/ddclient.conf)"
     for delete in $ddclientdomain
         do sed -i "/$delete/d" /etc/ddclient.conf
     done
@@ -98,7 +98,7 @@ else
         done
     fi
     # Remove from final subdomain
-    final_subdomain="$(grep $SUBDOMAIN $SCRIPTS/deSEC/.subdomain)"
+    final_subdomain="$(grep "$SUBDOMAIN" "$SCRIPTS"/deSEC/.subdomain)"
     for delete in $final_subdomain
         do sed -i "/$delete/d" "$SCRIPTS"/deSEC/.subdomain
     done
