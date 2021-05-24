@@ -766,17 +766,32 @@ to validate them with the $f method. We have exhausted all the methods. Please c
 done
 }
 
+is_desec_installed() {
+# Check if deSEC is installed and add the needed variables if yes
+if [ -f "$SCRIPTS"/deSEC/.dedynauth ]
+then
+    if [ -f /etc/ddclient.conf ]
+    then
+        DEDYN_TOKEN=$(grep DEDYN_TOKEN "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
+        DEDYN_NAME=$(grep DEDYN_NAME "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
+        return 0
+    else
+        msg_box "It seems like deSEC isn't configured on this server.
+Please run 'sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC' to configure it."
+        return 1
+    fi
+fi
+}
+
 generate_desec_cert() {
 # Check if the hook is in place
-if [ ! -d "$SCRIPTS"/deSEC/hook.sh ]
+if [ ! -f "$SCRIPTS"/deSEC/hook.sh ]
 then
     msg_box "Sorry, but it seems like the needed hook for this to work is missing.
 
 No TLS will be generated. Please report this to $ISSUES."
     exit 1
 fi
-
-DEDYN_CONF="$SITES_AVAILABLE/$1"
 
 print_text_in_color "$ICyan" "Generating new TLS cert with DNS and deSEC, please don't abort the hook, it may take a while..."
 # Renew with DNS by default
@@ -804,16 +819,12 @@ ${NONO_PORTS[*]}"
                 then
                     print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
                     # Main port
-                    sed -i "s|VirtualHost \*:443|VirtualHost \*:$DEDYNPORT|g" "$DEDYN_CONF"
                     if ! grep -q "Listen $DEDYNPORT" /etc/apache2/ports.conf
                     then
                         echo "Listen $DEDYNPORT" >> /etc/apache2/ports.conf
+                        restart_webserver
                     fi
-                    # HTTP redirect
-                    if ! grep -q '{HTTP_HOST}':"$DEDYNPORT" "$DEDYN_CONF"
-                    then
-                        sed -i "s|{HTTP_HOST}|{HTTP_HOST}:$DEDYNPORT|g" "$DEDYN_CONF"
-                    fi
+                    break
                 fi
             else
                 msg_box "The port number needs to be between 1024 - 49151, please try again."
