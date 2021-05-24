@@ -20,18 +20,10 @@ debug_mode
 # Must be root
 root_check
 
-# Check if deSEC is installed and add the needed variables if yes
-if [ -f "$SCRIPTS"/deSEC/.dedynauth ]
+# Check if desec is installed
+if ! is_desec_installed
 then
-    if [ -f /etc/ddclient.conf ]
-    then
-        DEDYN_TOKEN=$(grep DEDYN_TOKEN "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
-        DEDYN_NAME=$(grep DEDYN_NAME "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
-    else
-        msg_box "It seems like deSEC isn't configured on this server.
-Please run 'sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC' to configure it."
-        exit 1
-    fi
+    exit
 fi
 
 # Ask for subdomain
@@ -91,7 +83,10 @@ else
         fi
     done
     # Remove from DDclient
-    sed "/$SUBDOMAIN/d" /etc/ddclient.conf
+    ddclientdomain="$(grep $SUBDOMAIN /etc/ddclient.conf)"
+    for delete in $ddclientdomain
+        do sed -i "/$delete/d" /etc/ddclient.conf
+    done
     systemctl restart ddclient
     # Revoke cert if any
     if [ -f "$CERTFILES/$SUBDOMAIN.$DEDYN_NAME/cert.pem" ]
@@ -102,6 +97,11 @@ else
             do rm -rf "$remove"
         done
     fi
+    # Remove from final subdomain
+    final_subdomain="$(grep $SUBDOMAIN $SCRIPTS/deSEC/.subdomain)"
+    for delete in $final_subdomain
+        do sed -i "/$delete/d" "$SCRIPTS"/deSEC/.subdomain
+    done
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -121,7 +121,8 @@ do
 done
 
 # Export the final subdomain for use in other scripts
-export FINAL_SUBDOMAIN="$SUBDOMAIN.$DEDYN_NAME"
+FINAL_SUBDOMAIN="$SUBDOMAIN.$DEDYN_NAME"
+echo "FINAL_SUBDOMAIN=$SUBDOMAIN.$DEDYN_NAME" >> "$SCRIPTS"/deSEC/.subdomain
 
 # Add domain to ddclient
 if grep -q "$DEDYN_NAME" /etc/ddclient.conf
@@ -147,10 +148,3 @@ then
 Please remember to add the port number to the domain, if you chose a custom one, like this: $FINAL_SUBDOMAIN:portnumber"
     fi
 fi
-
-# Export Apache2 config location for use in other scripts
-export DEDYN_CONF="$SITES_AVAILABLE"/"$FINAL_SUBDOMAIN"
-
-## Exported VARS:
-# $DEDYN_CONF
-# $FINAL_SUBDOMAIN
