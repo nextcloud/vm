@@ -17,13 +17,6 @@ debug_mode
 # Check if root
 root_check
 
-# Remove OnlyOffice-documentserver if activated
-if is_app_enabled documentserver_community
-then
-    any_key "The integrated OnlyOffice Documentserver will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    nextcloud_occ app:remove documentserver_community
-fi
-
 # Check if collabora is already installed
 if ! does_this_docker_exist 'onlyoffice/documentserver'
 then
@@ -52,11 +45,6 @@ else
         a2dissite "$SUBDOMAIN".conf
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
-    fi
-    # Disable RichDocuments (Collabora App) if activated
-    if is_app_installed onlyoffice
-    then
-        nextcloud_occ app:remove onlyoffice
     fi
     # Remove trusted domain
     count=0
@@ -97,11 +85,6 @@ then
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
-    # Disable Collabora App if activated
-    if is_app_installed richdocuments
-    then
-       nextcloud_occ app:remove richdocuments
-    fi
     # Remove trusted domain
     count=0
     while [ "$count" -lt 10 ]
@@ -114,6 +97,32 @@ then
             count=$((count+1))
         fi
     done
+fi
+
+# remove OnlyOffice-documentserver if activated
+if is_app_enabled documentserver_community
+then
+    any_key "OnlyOffice will get uninstalled. Press any key to continue. Press CTRL+C to abort"
+    nextcloud_occ app:remove documentserver_community
+fi
+
+# Disable OnlyOffice App if activated
+if is_app_installed onlyoffice
+then
+    nextcloud_occ app:remove onlyoffice
+fi
+
+# Disable Collabora App if activated
+if is_app_installed richdocuments
+then
+    nextcloud_occ app:remove richdocuments
+fi
+
+# remove richdocumentscode-documentserver if activated
+if is_app_enabled richdocumentscode
+then
+    any_key "Richdocumentscode will get uninstalled. Press any key to continue. Press CTRL+C to abort"
+    nextcloud_occ app:remove richdocumentscode
 fi
 
 # Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
@@ -327,7 +336,21 @@ if [ -d "$NC_APPS_PATH"/onlyoffice ]
 then
     nextcloud_occ config:app:set onlyoffice DocumentServerUrl --value=https://"$SUBDOMAIN/"
     chown -R www-data:www-data "$NC_APPS_PATH"
-    nextcloud_occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    print_text_in_color "$ICyan" "Appending the new subdomain to trusted Domains..."
+    count=0
+    while [ "$count" -le 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$SUBDOMAIN" ]
+        then
+            break
+        elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
+        then
+            nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$SUBDOMAIN"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
     # Add prune command
     add_dockerprune
     # Restart Docker
