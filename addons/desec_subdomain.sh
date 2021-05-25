@@ -26,14 +26,18 @@ then
     exit
 fi
 
-# Ask for subdomain
-SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
-
-print_text_in_color "$ICyan" "Checking current WAN address (IPv4)..."
-if [ -z "$WANIP4" ]
-then
-    WANIP4="127.0.0.1"
-fi
+while :
+do
+    # Ask for subdomain
+    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
+    # Check if subdomain contains the actual DEDYN name
+    if echo "$SUBDOMAIN" | grep "$DEDYN_NAME"
+    then
+        msg_box "Please *only* enter the subomain name like 'yoursubdomain', not 'yoursubdomain.yourdomain.io'."
+    else
+        break
+    fi
+done
 
 # Function for adding an RRset (subddomain)
 add_desec_subdomain() {
@@ -42,22 +46,22 @@ curl -X POST https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/ \
         --header "Content-Type: application/json" --data @- <<EOF
     {
       "subname": "$SUBDOMAIN",
-      "type": "A",
-      "ttl": 60,
-      "records": ["$WANIP4"]
+      "type": "CNAME",
+      "ttl": 3600,
+      "records": ["$DEDYN_NAME."]
     }
 EOF
 }
 
 # Function for deleting an RRset (subddomain)
 delete_desec_subdomain() {
-curl -X DELETE https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
+curl -X DELETE https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/CNAME/ \
     --header "Authorization: Token $DEDYN_TOKEN"
 }
 
 # Function for checking if an RRset (subddomain) exists
 check_desec_subdomain() {
-curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
+curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/CNAME/ \
     --header "Authorization: Token $DEDYN_TOKEN"
 }
 
