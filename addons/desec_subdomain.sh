@@ -129,10 +129,9 @@ done
 FINAL_SUBDOMAIN="$SUBDOMAIN.$DEDYN_NAME"
 echo "FINAL_SUBDOMAIN=$SUBDOMAIN.$DEDYN_NAME" >> "$SCRIPTS"/deSEC/.subdomain
 
-# Add domain to ddclient
+# Restart and force update of DDNS
 if grep -q "$DEDYN_NAME" /etc/ddclient.conf
 then
-    echo "$FINAL_SUBDOMAIN" >> /etc/ddclient.conf
     systemctl restart ddclient
     if ddclient -syslog -noquiet -verbose -force
     then
