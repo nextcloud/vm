@@ -20,28 +20,25 @@ debug_mode
 # Must be root
 root_check
 
-# Check if deSEC is installed and add the needed variables if yes
-if [ -f "$SCRIPTS"/deSEC/.dedynauth ]
+# Check if desec is installed
+if ! is_desec_installed
 then
-    if [ -f /etc/ddclient.conf ]
+    exit
+fi
+
+# Check if the subdomain is valid
+while :
+do
+    # Ask for subdomain
+    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
+    # Check if subdomain contains a dot
+    if echo "$SUBDOMAIN" | grep '\.' >/dev/null 2>&1
     then
-        DEDYN_TOKEN=$(grep DEDYN_TOKEN "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
-        DEDYN_NAME=$(grep DEDYN_NAME "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
+        msg_box "Please *only* enter the subomain name like 'yoursubdomain', not 'yoursubdomain.yourdomain.io'."
     else
-        msg_box "It seems like deSEC isn't configured on this server.
-Please run 'sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC' to configure it."
-        exit 1
+        break
     fi
-fi
-
-# Ask for subdomain
-SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
-
-print_text_in_color "$ICyan" "Checking current WAN address (IPv4)..."
-if [ -z "$WANIP4" ]
-then
-    WANIP4="127.0.0.1"
-fi
+done
 
 # Function for adding an RRset (subddomain)
 add_desec_subdomain() {
@@ -50,27 +47,26 @@ curl -X POST https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/ \
         --header "Content-Type: application/json" --data @- <<EOF
     {
       "subname": "$SUBDOMAIN",
-      "type": "A",
-      "ttl": 60,
-      "records": ["$WANIP4"]
+      "type": "CNAME",
+      "ttl": 3600,
+      "records": ["$DEDYN_NAME."]
     }
 EOF
 }
 
 # Function for deleting an RRset (subddomain)
 delete_desec_subdomain() {
-curl -X DELETE https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
+curl -X DELETE https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/CNAME/ \
     --header "Authorization: Token $DEDYN_TOKEN"
 }
 
 # Function for checking if an RRset (subddomain) exists
 check_desec_subdomain() {
-curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/A/ \
+curl https://desec.io/api/v1/domains/"$DEDYN_NAME"/rrsets/"$SUBDOMAIN"/CNAME/ \
     --header "Authorization: Token $DEDYN_TOKEN"
 }
 
-####################
-
+## Reinstall menu BEGIN
 # Check the subdomain exist within the domain
 if check_desec_subdomain | grep -qPo "Not found"
 then
@@ -92,13 +88,29 @@ else
         fi
     done
     # Remove from DDclient
-    sed "/$SUBDOMAIN/d" /etc/ddclient.conf
+    ddclientdomain="$(grep "$SUBDOMAIN" /etc/ddclient.conf)"
+    for delete in $ddclientdomain
+        do sed -i "/$delete/d" /etc/ddclient.conf
+    done
     systemctl restart ddclient
+    # Revoke cert if any
+    if [ -f "$CERTFILES/$SUBDOMAIN.$DEDYN_NAME/cert.pem" ]
+    then
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN.$DEDYN_NAME/cert.pem"
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf "$remove"
+        done
+    fi
+    # Remove from final subdomain
+    final_subdomain="$(grep "$SUBDOMAIN" "$SCRIPTS"/deSEC/.subdomain)"
+    for delete in $final_subdomain
+        do sed -i "/$delete/d" "$SCRIPTS"/deSEC/.subdomain
+    done
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
-
-###################
+## Reinstall menu END
 
 # Add the subdomain, but wait for throttling if it's there
 while :
@@ -114,12 +126,12 @@ do
 done
 
 # Export the final subdomain for use in other scripts
-export FINAL_SUBDOMAIN="$SUBDOMAIN.$DEDYN_NAME"
+FINAL_SUBDOMAIN="$SUBDOMAIN.$DEDYN_NAME"
+echo "FINAL_SUBDOMAIN=$SUBDOMAIN.$DEDYN_NAME" >> "$SCRIPTS"/deSEC/.subdomain
 
-# Add domain to ddclient
+# Restart and force update of DDNS
 if grep -q "$DEDYN_NAME" /etc/ddclient.conf
 then
-    echo "$FINAL_SUBDOMAIN" >> /etc/ddclient.conf
     systemctl restart ddclient
     if ddclient -syslog -noquiet -verbose -force
     then
@@ -127,5 +139,16 @@ then
     else
         msg_box "$FINAL_SUBDOMAIN failed to update, please report this to $ISSUES"
         exit
+    fi
+fi
+
+# Add TLS
+if yesno_box_yes "Would you like to secure $FINAL_SUBDOMAIN with TLS?"
+then
+    if generate_desec_cert "$FINAL_SUBDOMAIN"
+    then
+        msg_box "Congrats! You should now be able to use $FINAL_SUBDOMAIN for setting up Talk, Collabora, OnlyOffice and other apps in Nextcloud.
+
+Please remember to add the port number to the domain, if you chose a custom one, like this: $FINAL_SUBDOMAIN:portnumber"
     fi
 fi
