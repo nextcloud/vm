@@ -26,12 +26,13 @@ then
     exit
 fi
 
+# Check if the subdomain is valid
 while :
 do
     # Ask for subdomain
     SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
-    # Check if subdomain contains the actual DEDYN name
-    if echo "$SUBDOMAIN" | grep "$DEDYN_NAME"
+    # Check if subdomain contains a dot
+    if echo "$SUBDOMAIN" | grep '\.' >/dev/null 2>&1
     then
         msg_box "Please *only* enter the subomain name like 'yoursubdomain', not 'yoursubdomain.yourdomain.io'."
     else
