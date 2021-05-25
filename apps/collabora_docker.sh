@@ -117,6 +117,19 @@ then
     nextcloud_occ app:remove onlyoffice
 fi
 
+# Disable RichDocuments (Collabora App) if activated
+if is_app_installed richdocuments
+then
+    nextcloud_occ app:remove richdocuments
+fi
+
+# remove richdocumentscode-documentserver if activated
+if is_app_enabled richdocumentscode
+then
+    any_key "Richdocumentscode will get uninstalled. Press any key to continue. Press CTRL+C to abort"
+    nextcloud_occ app:remove richdocumentscode
+fi
+
 # Ask for the domain for Collabora
 SUBDOMAIN=$(input_box_flow "Collabora subdomain e.g: office.yourdomain.com
 
@@ -332,7 +345,21 @@ if is_app_installed richdocuments
 then
     nextcloud_occ config:app:set richdocuments wopi_url --value=https://"$SUBDOMAIN"
     chown -R www-data:www-data "$NC_APPS_PATH"
-    nextcloud_occ config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+    print_text_in_color "$ICyan" "Appending the new subdomain to trusted Domains..."
+    count=0
+    while [ "$count" -le 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$SUBDOMAIN" ]
+        then
+            break
+        elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
+        then
+            nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$SUBDOMAIN"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
     # Add prune command
     add_dockerprune
     # Restart Docker
