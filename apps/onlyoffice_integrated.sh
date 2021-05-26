@@ -69,17 +69,7 @@ We will now remove Collabora from the server."
        nextcloud_occ app:remove richdocuments
     fi
     # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
+    remove_from_trusted_domains "$SUBDOMAIN"
 fi
 
 # Check if Onlyoffice is installed and remove every trace of it
@@ -106,17 +96,7 @@ then
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
     # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
+    remove_from_trusted_domains "$SUBDOMAIN"
 fi
 
 # remove Richdocumentscode if activated

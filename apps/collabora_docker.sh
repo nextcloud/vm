@@ -53,17 +53,7 @@ else
         nextcloud_occ app:remove richdocuments
     fi
     # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
+    remove_from_trusted_domains "$SUBDOMAIN"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -91,17 +81,7 @@ then
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
     # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
+    remove_from_trusted_domains "$SUBDOMAIN"
 fi
 
 # remove OnlyOffice-documentserver if activated
@@ -345,21 +325,8 @@ if is_app_installed richdocuments
 then
     nextcloud_occ config:app:set richdocuments wopi_url --value=https://"$SUBDOMAIN"
     chown -R www-data:www-data "$NC_APPS_PATH"
-    print_text_in_color "$ICyan" "Appending the new subdomain to trusted Domains..."
-    count=0
-    while [ "$count" -le 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$SUBDOMAIN" ]
-        then
-            break
-        elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
-        then
-            nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$SUBDOMAIN"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
+    # Appending the new domain to trusted domains
+    add_to_trusted_domains "$SUBDOMAIN"
     # Add prune command
     add_dockerprune
     # Restart Docker
