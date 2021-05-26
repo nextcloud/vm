@@ -26,7 +26,7 @@ then
             notify_admin_gui \
             "Disk space almost full!" \
             "The disk space for ncdata is almost full. We have automatically deleted \
-ZFS snapshots older than 4 weeks and cleaned up your trashbin to free up some space \
+ZFS snapshots older than 2 days and cleaned up your trashbin to free up some space \
 and avoid a fatal crash. Please check $VMLOGS/zfs_prune.log for the results."
             # On screen information
             msg_box "Your disk space is almost full (more than 70%).
