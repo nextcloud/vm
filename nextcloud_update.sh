@@ -732,8 +732,8 @@ fi
 # Move backups to location according to $VAR
 if [ -d /var/NCBACKUP/ ]
 then
-    mv /var/NCBACKUP/ "$BACKUP"
-    mv /var/NCBACKUP-OLD/ "$BACKUP"-OLD
+    mv /var/NCBACKUP "$BACKUP"
+    mv /var/NCBACKUP-OLD "$BACKUP"-OLD/
 fi
 
 # Check if backup exists and move to old
@@ -742,7 +742,7 @@ if [ -d "$BACKUP" ]
 then
     install_if_not rsync
     mkdir -p "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
-    rsync -Aaxz "$BACKUP" "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
+    rsync -Aaxz "$BACKUP"/* "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
     rm -rf "$BACKUP"-OLD/"$(date --date='1 year ago' +%Y)"*
     rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
