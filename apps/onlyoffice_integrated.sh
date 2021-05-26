@@ -119,24 +119,8 @@ then
     done
 fi
 
-# remove Richdocumentscode if activated
-if is_app_enabled richdocumentscode
-then
-    any_key "Richdocumentscode will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    nextcloud_occ app:remove richdocumentscode
-fi
-
-# Disable richdocuments App if activated
-if is_app_installed richdocuments
-then
-    nextcloud_occ app:remove richdocuments
-fi
-
-# Disable onlyoffice App if activated
-if is_app_installed onlyoffice
-then
-    nextcloud_occ app:remove onlyoffice
-fi
+# Remove all office apps
+remove_all_office_apps
 
 # Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
 if [ "$(apache2ctl -M | grep evasive)" != "" ]

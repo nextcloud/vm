@@ -114,24 +114,8 @@ then
     done
 fi
 
-# remove OnlyOffice-documentserver if activated
-if is_app_enabled documentserver_community
-then
-    any_key "OnlyOffice will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    nextcloud_occ app:remove documentserver_community
-fi
-
-# Disable OnlyOffice App if activated
-if is_app_installed onlyoffice
-then
-    nextcloud_occ app:remove onlyoffice
-fi
-
-# Disable RichDocuments (Collabora App) if activated
-if is_app_installed richdocuments
-then
-    nextcloud_occ app:remove richdocuments
-fi
+# Remove all office apps
+remove_all_office_apps
 
 # Nextcloud 19 is required.
 lowest_compatible_nc 19
