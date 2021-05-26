@@ -243,11 +243,16 @@ export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="
 if [ -d /etc/netdata ]
 then
     print_text_in_color "$ICyan" "Updating Netdata..."
+    install_if_not cmake # Needed for Netdata in newer versions
+    install_if_not libuv1-dev # Needed for Netdata in newer versions
     NETDATA_UPDATER_PATH="$(find /usr -name 'netdata-updater.sh')"
     if [ -n "$NETDATA_UPDATER_PATH" ]
     then
-        install_if_not cmake # Needed for Netdata in newer versions
         bash "$NETDATA_UPDATER_PATH"
+    else
+        curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer/ netdata-updater.sh "$SCRIPTS"
+        bash "$SCRIPTS"/netdata-updater.sh
+        rm -f "$SCRIPTS"/netdata-updater.sh
     fi
 fi
 
