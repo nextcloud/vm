@@ -18,6 +18,41 @@ debug_mode
 # Check if root
 root_check
 
+# TODO: remove both functions with NC21.0.3 release
+add_to_trusted_domains() {
+    local element="$1"
+    local count=0
+    print_text_in_color "$ICyan" "Adding $element to trusted domains..."
+    while [ "$count" -le 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$element" ]
+        then
+            break
+        elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
+        then
+            nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$element"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
+}
+remove_from_trusted_domains() {
+    local element="$1"
+    local count=0
+    print_text_in_color "$ICyan" "Removing $element from trusted domains..."
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$element" ]
+        then
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
+}
+
 # Nextcloud Main Domain
 NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
@@ -75,17 +110,7 @@ E.g. 'sites.yourdomain.com' or 'blog.yourdomain.com'")
             rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
         fi
         # Remove trusted domain
-        count=0
-        while [ "$count" -lt 10 ]
-        do
-            if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$SUBDOMAIN" ]
-            then
-                nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-                break
-            else
-                count=$((count+1))
-            fi
-        done
+        remove_from_trusted_domains "$SUBDOMAIN"
     fi
     sed -i "/#Pico-CMS-start/,/#Pico-CMS-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
     systemctl restart apache2
@@ -332,22 +357,8 @@ else
     exit 1
 fi
 
-# Appending the new local IP-address to trusted Domains
-print_text_in_color "$ICyan" "Appending the new subdomain to trusted Domains..."
-count=0
-while [ "$count" -le 10 ]
-do
-    if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$SUBDOMAIN" ]
-    then
-        break
-    elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
-    then
-        nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$SUBDOMAIN"
-        break
-    else
-        count=$((count+1))
-    fi
-done
+# Appending the new domain to trusted domains
+add_to_trusted_domains "$SUBDOMAIN"
 
 # Inform user
 msg_box "Pico CMS was successfully installed!

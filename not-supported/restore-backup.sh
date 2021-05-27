@@ -647,22 +647,8 @@ nextcloud_occ_no_check maintenance:data-fingerprint
 # repairing the Database, if it got corupted
 nextcloud_occ_no_check maintenance:repair 
 
-# Appending the new local IP-address to trusted Domains
-print_text_in_color "$ICyan" "Appending the new Ip-Address to trusted Domains..."
-count=0
-while [ "$count" -le 10 ]
-do
-    if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$ADDRESS" ]
-    then
-        break
-    elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
-    then
-        nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$ADDRESS"
-        break
-    else
-        count=$((count+1))
-    fi
-done
+# Appending the new ip to trusted domains
+add_to_trusted_domains "$ADDRESS"
 
 # Cleanup trashbin and files_versions because we removed them
 nextcloud_occ_no_check trashbin:cleanup --all-users -vvv
