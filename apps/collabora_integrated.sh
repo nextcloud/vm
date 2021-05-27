@@ -20,6 +20,23 @@ debug_mode
 # Check if root
 root_check
 
+# TODO: remove this with NC21.0.3 release
+remove_from_trusted_domains() {
+    local element="$1"
+    local count=0
+    print_text_in_color "$ICyan" "Removing $element from trusted domains..."
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$element" ]
+        then
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
+}
+
 # Check if Collabora is installed using the new method
 if ! is_app_installed richdocumentscode
 then
@@ -64,17 +81,7 @@ We will now remove the old docker and install the app from Nextcloud instead."
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
     # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
+    remove_from_trusted_domains "$SUBDOMAIN"
 fi
 
 # Check if Onlyoffice is installed and remove every trace of it
@@ -101,17 +108,7 @@ then
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
     # Remove trusted domain
-    count=0
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" == "$SUBDOMAIN" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
+    remove_from_trusted_domains "$SUBDOMAIN"
 fi
 
 # Remove all office apps

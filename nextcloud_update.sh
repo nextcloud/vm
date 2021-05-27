@@ -243,11 +243,16 @@ export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="
 if [ -d /etc/netdata ]
 then
     print_text_in_color "$ICyan" "Updating Netdata..."
+    install_if_not cmake # Needed for Netdata in newer versions
+    install_if_not libuv1-dev # Needed for Netdata in newer versions
     NETDATA_UPDATER_PATH="$(find /usr -name 'netdata-updater.sh')"
     if [ -n "$NETDATA_UPDATER_PATH" ]
     then
-        install_if_not cmake # Needed for Netdata in newer versions
         bash "$NETDATA_UPDATER_PATH"
+    else
+        curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer/ netdata-updater.sh "$SCRIPTS"
+        bash "$SCRIPTS"/netdata-updater.sh
+        rm -f "$SCRIPTS"/netdata-updater.sh
     fi
 fi
 
@@ -952,6 +957,14 @@ then
         sed -i '/Header always set Referrer-Policy/d' /etc/apache2/sites-available/"$(hostname -f)".conf
         restart_webserver
     fi
+fi
+
+# Fix crontab every 5 minutes instead of 15
+if crontab -u www-data -l | grep -q "\*/15  \*  \*  \*  \* php -f $NCPATH/cron.php"
+then
+    crontab -u www-data -l | grep -v "php -f $NCPATH/cron.php" | crontab -u www-data -
+    crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+    print_text_in_color "$ICyan" "Nextcloud crontab updated to run every 5 minutes."
 fi
 
 # Change owner of $BACKUP folder to root
