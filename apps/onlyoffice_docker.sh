@@ -17,7 +17,32 @@ debug_mode
 # Check if root
 root_check
 
-# TODO: remove both functions with NC21.0.3 release
+# TODO: remove all functions with NC21.0.3 release
+remove_all_office_apps() {
+    # remove OnlyOffice-documentserver if installed
+    if is_app_installed documentserver_community
+    then
+        nextcloud_occ app:remove documentserver_community
+    fi
+
+    # Disable OnlyOffice App if installed
+    if is_app_installed onlyoffice
+    then
+        nextcloud_occ app:remove onlyoffice
+    fi
+
+    # remove richdocumentscode-documentserver if installed
+    if is_app_installed richdocumentscode
+    then
+        nextcloud_occ app:remove richdocumentscode
+    fi
+
+    # Disable RichDocuments (Collabora App) if installed
+    if is_app_installed richdocuments
+    then
+        nextcloud_occ app:remove richdocuments
+    fi
+}
 add_to_trusted_domains() {
     local element="$1"
     local count=0
