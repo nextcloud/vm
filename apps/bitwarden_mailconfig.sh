@@ -166,6 +166,7 @@ fi
 
 # Stop bitwarden
 systemctl stop bitwarden
+countdown "Waiting for Bitwarden to stop..." "30"
 
 # Write to files
 # mailserver
