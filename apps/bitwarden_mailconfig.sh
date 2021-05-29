@@ -162,9 +162,6 @@ then
     exit
 fi
 
-# Stop bitwarden
-systemctl stop bitwarden
-
 # Write to files
 # mailserver
 if [ -n "$MAIL_SERVER" ]
