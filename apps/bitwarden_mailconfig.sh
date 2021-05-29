@@ -58,62 +58,71 @@ then
     echo "globalSettings__mail__smtp__startTls=false" >> "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 
-# Enter mailserver
-MAIL_SERVER=$(input_box_flow "Please enter the mailserver URL that you want to use.
-E.g. smtp.mail.de\nIf you don't want to change the mailserver, that is already \
-configured inside the global.override.env-file, just leave the box empty.")
+# Enter Mail Server
+MAIL_SERVER=$(input_box_flow "Please enter the SMTP Relay URL that you want to use.\nE.g. smtp.mail.com")
 
 # Enter if you want to use ssl
+PROTOCOL=$(whiptail --title "$TITLE" --nocancel --menu \
+"Please choose the encryption protocol for your SMTP Relay.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"SSL" "" \
+"STARTTLS" "" \
+"NO-ENCRYPTION" "" 3>&1 1>&2 2>&3)
+
+if [ -z "$PROTOCOL" ]
+then
+    exit 1
+fi
+
+case "$PROTOCOL" in
+    "SSL")
+        DEFAULT_PORT=465
+    ;;
+    "STARTTLS")
+        DEFAULT_PORT=587
+    ;;
+    "NO-ENCRYPTION")
+        DEFAULT_PORT=25
+    ;;
+    *)
+    ;;
+esac
+
+# Enter custom port or just use the default port
+SMTP_PORT=$(whiptail --title "$TITLE" --nocancel --menu \
+"Based on your selection of encryption the default port is $DEFAULT_PORT. Would you like to use that port or something else?
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Use default port" "($DEFAULT_PORT)" \
+"Enter another port" ""  3>&1 1>&2 2>&3)
+
+if [ -z "$SMTP_PORT" ]
+then
+    exit 1
+fi
+
+case "$SMTP_PORT" in
+    "Use default port")
+        SMTP_PORT="$DEFAULT_PORT"
+    ;;
+    "Enter another port")
+        SMTP_PORT="$(input_box_flow 'Please enter the port for your SMTP Relay.')"
+    ;;
+    *)
+    ;;
+esac
+
+# Enter your SMTP username
+if yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
+then
+    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com")
+
+    # Enter your mail user password
+    MAIL_PASSWORD=$(input_box_flow "Please enter the SMTP password to your email provider.")
+fi
+
 while :
 do
-    PROTOCOL=$(input_box "Please type in the encryption protocol for your mailserver.
-The available options are 'SSL', 'STARTTLS' or 'none'.\n\nIf you don't want to change the protocol \
-setting, that are already configured inside the global.override.env-file, just leave the box empty.")
-    if ! yesno_box_yes "Is this correct? $PROTOCOL"
-    then
-        msg_box "OK, please try again."
-    else
-        if [ "$PROTOCOL" = "SSL" ]
-        then
-            DEFAULT_PORT=465
-            break
-        elif [ "$PROTOCOL" = "none" ]
-        then
-            DEFAULT_PORT=25
-            break
-        elif [ "$PROTOCOL" = "STARTTLS" ]
-        then
-            DEFAULT_PORT=587
-            break
-        elif [ "$PROTOCOL" = "" ]
-        then
-            DEFAULT_PORT=""
-            break
-        else
-            msg_box "The answer wasn't correct. Please type in 'SSL', 'STARTTLS', 'none' or leave the input box empty."
-        fi
-    fi
-done
-
-# Enter Port or just use standard port (defined by usage of ssl)
-SMTP_PORT=$(input_box_flow "Please enter the port for your mailserver. The default port \
-based on your protocol setting is $DEFAULT_PORT?\nPlease type that port into the input box, \
-if you want to use it.\n\nIf you don't want to change the port, that is already configured \
-inside the global.override.env-file, just leave the box empty.")
-
-# Enter your mail username
-MAIL_USERNAME=$(input_box_flow "Please enter the username for the login to your mail provider.
-E.g. mail@example.com\nPlease note: the domain used for your mail username and the mailserver \
-domain have to match!\nIf you don't want to change the mail username that is already configured \
-inside the global.override.env-file, just leave the box empty.")
-
-# Enter your mailuser password
-MAIL_PASSWORD=$(input_box_flow "Please enter the password for your mailserver user.
-If you don't want to change the password, that is already configured inside the \
-global.override.env-file, just leave the box empty.")
-
-# Enter admin mailaddresses
-ADMIN_ACCOUNT=$(input_box_flow "Please enter mail accounts, that should have access \
+    ADMIN_ACCOUNT=$(input_box "Please enter mail accounts, that should have access \
 to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.
 They don't have to be registered Bitwarden accounts.
 To make this setting work, your Bitwarden mailserver settings have to be correct.
@@ -122,61 +131,52 @@ You can enter just one e-mail address or enter more than one like so:
 If you want to keep the admin accounts that are already configured inside the \
 global.override.env-file, just leave the box empty.")
 
-# Get results and store in a variable:
-RESULT="These are the settings that will be changed in global.override.env. \
-Please check that everything seems correct.\n\n"
-if [ -n "$MAIL_SERVER" ]
-then
-    RESULT+="Mailserver URL=$MAIL_SERVER\n"
-fi
-# SSL
-if [ -n "$PROTOCOL" ]
-then
-    RESULT+="PROTOCOL=$PROTOCOL\n"
-fi
-# SMTP-Port
-if [ -n "$SMTP_PORT" ]
-then
-    RESULT+="SMTP port=$SMTP_PORT\n"
-fi
-# Mail username
-if [ -n "$MAIL_USERNAME" ]
-then
-    RESULT+="SMTP Username=$MAIL_USERNAME\n"
-fi
-# Mail password
-if [ -n "$MAIL_PASSWORD" ]
-then
-    RESULT+="SMTP Password=$MAIL_PASSWORD\n"
-fi
-# Admin account(s)
-if [ -n "$ADMIN_ACCOUNT" ]
-then
-    RESULT+="Admin account(s)=$ADMIN_ACCOUNT"
-fi
+    if [ -n "$ADMIN_ACCOUNT" ]
+    then
+        if yesno_box_yes "Does this look correct: $ADMIN_ACCOUNT"
+        then
+            break
+        fi
+    else
+        break
+    fi
+done
 
 # Present what we gathered, if everything okay, write to files
-msg_box "$RESULT"
-if ! yesno_box_yes "Do you want to proceed?"
+msg_box "These are the settings that will be used. Please check that everything seems correct.
+
+SMTP Relay URL=$MAIL_SERVER
+Encryption=$PROTOCOL
+SMTP Port=$SMTP_PORT
+SMTP Username=$MAIL_USERNAME
+SMTP Password=$MAIL_PASSWORD
+Admin account(s)=$ADMIN_ACCOUNT"
+
+# Ask if everything is okay
+if ! yesno_box_yes "Does everything look correct?"
 then
     exit
 fi
 
+# Check if auth should be set or not
+if [ -z "$MAIL_USERNAME" ]
+then
+    MAIL_USERNAME="no-reply@nextcloudvm.com"
+fi
+
 # Stop bitwarden
 systemctl stop bitwarden
+countdown "Waiting for Bitwarden to stop..." "30"
 
 # Write to files
 # mailserver
-if [ -n "$MAIL_SERVER" ]
-then
-    check_command sed -i "s|^globalSettings__mail__smtp__host=.*|globalSettings__mail__smtp__host=$MAIL_SERVER|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
-fi
+check_command sed -i "s|^globalSettings__mail__smtp__host=.*|globalSettings__mail__smtp__host=$MAIL_SERVER|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 # SSL
 if [ "$PROTOCOL" = "SSL" ]
 then
     check_command sed -i "s|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=true|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
     check_command sed -i "s|^globalSettings__mail__smtp__startTls=.*|globalSettings__mail__smtp__startTls=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
-elif [ "$PROTOCOL" = "none" ]
+elif [ "$PROTOCOL" = "NO-ENCRYPTION" ]
 then
     check_command sed -i "s|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
     check_command sed -i "s|^globalSettings__mail__smtp__startTls=.*|globalSettings__mail__smtp__startTls=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
@@ -186,25 +186,13 @@ then
     check_command sed -i "s|^globalSettings__mail__smtp__ssl=.*|globalSettings__mail__smtp__ssl=false|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 fi
 # SMTP-Port
-if [ -n "$SMTP_PORT" ]
-then
-    check_command sed -i "s|^globalSettings__mail__smtp__port=.*|globalSettings__mail__smtp__port=$SMTP_PORT|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
-fi
+check_command sed -i "s|^globalSettings__mail__smtp__port=.*|globalSettings__mail__smtp__port=$SMTP_PORT|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 # Mail username
-if [ -n "$MAIL_USERNAME" ]
-then
-    check_command sed -i "s|^globalSettings__mail__smtp__username=.*|globalSettings__mail__smtp__username=$MAIL_USERNAME|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
-fi
+check_command sed -i "s|^globalSettings__mail__smtp__username=.*|globalSettings__mail__smtp__username=$MAIL_USERNAME|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 # Mail password
-if [ -n "$MAIL_PASSWORD" ]
-then
-    check_command sed -i "s|^globalSettings__mail__smtp__password=.*|globalSettings__mail__smtp__password=$MAIL_PASSWORD|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
-fi
+check_command sed -i "s|^globalSettings__mail__smtp__password=.*|globalSettings__mail__smtp__password=$MAIL_PASSWORD|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 # Admin account(s)
-if [ -n "$ADMIN_ACCOUNT" ]
-then
-    check_command sed -i "s|^adminSettings__admins=.*|adminSettings__admins=$ADMIN_ACCOUNT|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
-fi
+check_command sed -i "s|^adminSettings__admins=.*|adminSettings__admins=$ADMIN_ACCOUNT|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 
 # Start Bitwarden
 start_if_stopped bitwarden
