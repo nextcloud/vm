@@ -54,6 +54,7 @@ else
         rm -f /etc/apt/sources.list.d/20-pdlib.list
         apt update -q4 & spinner_loading
         apt autoremove -y
+        rm -f /etc/apt/trusted.gpg.d/facerecognititon.gpg
     fi
     crontab -u www-data -l | grep -v "face_background_job.log" | crontab -u www-data -
     crontab -u www-data -l | grep -v "face:background_job" | crontab -u www-data -
@@ -87,20 +88,12 @@ then
     exit 1
 fi
 
-
-echo "deb https://repo.delellis.com.ar focal focal" > /etc/apt/sources.list.d/20-pdlib.list
-if ! curl -fsSL https://repo.delellis.com.ar/repo.gpg.key | sudo apt-key add -
-then
-    msg_box "It seems like the gpg key for the needed PHP dependency couldn't get added.
-This is most likely just a temporary downtime of the server where the key comes from.
-Please try again later!"
-    exit
-fi
-
 # Install requirements
 # https://github.com/matiasdelellis/facerecognition/wiki/Installation#ubuntu-focal
+curl_to_dir https://repo.delellis.com.ar "repo.gpg.key" "$SCRIPTS"
+check_command apt-key --keyring /etc/apt/trusted.gpg.d/facerecognititon.gpg add "$SCRIPTS/repo.gpg.key"
+rm -f "$SCRIPTS/repo.gpg.key"
 echo "deb https://repo.delellis.com.ar focal focal" > /etc/apt/sources.list.d/20-pdlib.list
-curl_to_dir https://repo.delellis.com.ar repo.gpg.key . | sudo apt-key add -
 apt update -q4 & spinner_loading
 install_if_not php7.4-pdlib
 

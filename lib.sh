@@ -511,7 +511,7 @@ then
     mkdir -p "$3"
 fi
     rm -f "$3"/"$2"
-    retries=0
+    local retries=0
     until [ "$retries" -ge 10 ]
     do
         if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
