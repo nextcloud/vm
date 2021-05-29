@@ -513,7 +513,7 @@ fi
     rm -f "$3"/"$2"
     if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
     then
-        msg_box "It seems like the server for the download isn't reachable, or that a temporary error occured, please try again later."
+        msg_box "It seems like the server for the download isn't reachable, or that a temporary error occurred, please try again later."
         if yesno_box_yes "Do you want to exit this script?"
         then
             exit 1
