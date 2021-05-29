@@ -516,7 +516,7 @@ fi
         if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
         then
             msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred."
-            if yesno_box_yes "Do you want try again in 30 seconds?\n\nPLEASE NOTE, answering 'no' will abort the current operation!\nPlease report any iss>
+            if yesno_box_yes "Do you want try again in 30 seconds?\n\nPLEASE NOTE, answering 'no' will abort the current operation!\nPlease report any issues to $ISSUES"
             then
                 countdown "Trying again in 30 seconds..." "30"
             else
