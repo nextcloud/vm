@@ -357,10 +357,6 @@ then
     add_to_trusted_domains "$SUBDOMAIN"
     # Add prune command
     add_dockerprune
-    # Restart Docker
-    print_text_in_color "$ICyan" "Restaring Docker..."
-    systemctl restart docker.service
-    docker restart onlyoffice
     msg_box "OnlyOffice Docker is now successfully installed."
 fi
 
