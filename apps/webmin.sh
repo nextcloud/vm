@@ -32,7 +32,9 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     check_command apt-get purge webmin -y
-    rm -rf /etc/apt/sources.list.d/webmin.list
+    apt autoremove -y
+    rm -f /etc/apt/sources.list.d/webmin.list
+    rm -f /etc/apt/trusted.gpg.d/webmin.gpg
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -49,12 +51,12 @@ install_if_not apt-show-versions
 install_if_not python2
 
 # Install Webmin
-if curl -fsSL http://www.webmin.com/jcameron-key.asc | sudo apt-key add -
-then
-    echo "deb https://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list
-    apt update -q4 & spinner_loading
-    install_if_not webmin
-fi
+curl_to_dir http://www.webmin.com "jcameron-key.asc" "$SCRIPTS"
+check_command apt-key --keyring /etc/apt/trusted.gpg.d/webmin.gpg add "$SCRIPTS/jcameron-key.asc"
+rm -f "$SCRIPTS/jcameron-key.asc"
+echo "deb https://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list
+apt update -q4 & spinner_loading
+install_if_not webmin
 
 print_text_in_color "$ICyan" "Configuring Webmin..."
 # redirect access on http to https

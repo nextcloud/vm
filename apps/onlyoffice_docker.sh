@@ -17,7 +17,32 @@ debug_mode
 # Check if root
 root_check
 
-# TODO: remove both functions with NC21.0.3 release
+# TODO: remove all functions with NC21.0.3 release
+remove_all_office_apps() {
+    # remove OnlyOffice-documentserver if installed
+    if is_app_installed documentserver_community
+    then
+        nextcloud_occ app:remove documentserver_community
+    fi
+
+    # Disable OnlyOffice App if installed
+    if is_app_installed onlyoffice
+    then
+        nextcloud_occ app:remove onlyoffice
+    fi
+
+    # remove richdocumentscode-documentserver if installed
+    if is_app_installed richdocumentscode
+    then
+        nextcloud_occ app:remove richdocumentscode
+    fi
+
+    # Disable RichDocuments (Collabora App) if installed
+    if is_app_installed richdocuments
+    then
+        nextcloud_occ app:remove richdocuments
+    fi
+}
 add_to_trusted_domains() {
     local element="$1"
     local count=0
@@ -73,31 +98,8 @@ then
     remove_collabora_docker
 fi
 
-# remove OnlyOffice-documentserver if activated
-if is_app_enabled documentserver_community
-then
-    any_key "OnlyOffice will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    nextcloud_occ app:remove documentserver_community
-fi
-
-# Disable OnlyOffice App if activated
-if is_app_installed onlyoffice
-then
-    nextcloud_occ app:remove onlyoffice
-fi
-
-# Disable Collabora App if activated
-if is_app_installed richdocuments
-then
-    nextcloud_occ app:remove richdocuments
-fi
-
-# remove richdocumentscode-documentserver if activated
-if is_app_enabled richdocumentscode
-then
-    any_key "Richdocumentscode will get uninstalled. Press any key to continue. Press CTRL+C to abort"
-    nextcloud_occ app:remove richdocumentscode
-fi
+# Remove all office apps
+remove_all_office_apps
 
 # Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
 if [ "$(apache2ctl -M | grep evasive)" != "" ]

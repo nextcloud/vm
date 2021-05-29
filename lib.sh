@@ -511,7 +511,21 @@ then
     mkdir -p "$3"
 fi
     rm -f "$3"/"$2"
-    curl -sfL "$1"/"$2" -o "$3"/"$2"
+    local retries=0
+    until [ "$retries" -ge 10 ]
+    do
+        if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
+        then
+            msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred. We will now try again.
+
+Please report this issue to $ISSUES"
+            retries=$((retries+1))
+            print_text_in_color "$ICyan" "$retries of 10 retries."
+            countdown "Trying again in 30 seconds..." "30"
+        else
+            break
+        fi
+    done
 }
 
 start_if_stopped() {
@@ -1488,6 +1502,33 @@ remove_onlyoffice_docker() {
     fi
     # Remove trusted domain
     remove_from_trusted_domains "$SUBDOMAIN"
+}
+
+# Remove all office apps
+remove_all_office_apps() {
+    # remove OnlyOffice-documentserver if installed
+    if is_app_installed documentserver_community
+    then
+        nextcloud_occ app:remove documentserver_community
+    fi
+
+    # Disable OnlyOffice App if installed
+    if is_app_installed onlyoffice
+    then
+        nextcloud_occ app:remove onlyoffice
+    fi
+
+    # remove richdocumentscode-documentserver if installed
+    if is_app_installed richdocumentscode
+    then
+        nextcloud_occ app:remove richdocumentscode
+    fi
+
+    # Disable RichDocuments (Collabora App) if installed
+    if is_app_installed richdocuments
+    then
+        nextcloud_occ app:remove richdocuments
+    fi
 }
 
 # Check if docker is installed
