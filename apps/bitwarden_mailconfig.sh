@@ -120,7 +120,9 @@ then
     MAIL_PASSWORD=$(input_box_flow "Please enter the SMTP password to your email provider.")
 fi
 
-ADMIN_ACCOUNT=$(input_box_flow "Please enter mail accounts, that should have access \
+while :
+do
+    ADMIN_ACCOUNT=$(input_box "Please enter mail accounts, that should have access \
 to the Bitwarden admin-panel, reachable under https://your-bitwarden-domain/admin/.
 They don't have to be registered Bitwarden accounts.
 To make this setting work, your Bitwarden mailserver settings have to be correct.
@@ -128,6 +130,17 @@ You can enter just one e-mail address or enter more than one like so:
 'bitwarden@example.com,bitwarden2@example1.com,bitwarden3@example2.com'
 If you want to keep the admin accounts that are already configured inside the \
 global.override.env-file, just leave the box empty.")
+
+    if [ -n "$ADMIN_ACCOUNT" ]
+    then
+        if yesno_box_yes "Does this look correct: $ADMIN_ACCOUNT"
+        then
+            break
+        fi
+    else
+        break
+    fi
+done
 
 # Present what we gathered, if everything okay, write to files
 msg_box "These are the settings that will be used. Please check that everything seems correct.
