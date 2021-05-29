@@ -511,17 +511,17 @@ then
     mkdir -p "$3"
 fi
     rm -f "$3"/"$2"
-    while :
+    retries=0
+    until [ "$retries" -ge 10 ]
     do
         if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
         then
-            msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred."
-            if yesno_box_yes "Do you want try again in 30 seconds?\n\nPLEASE NOTE, answering 'no' will abort the current operation!\nPlease report any issues to $ISSUES"
-            then
-                countdown "Trying again in 30 seconds..." "30"
-            else
-                exit
-            fi
+            msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred. We will now try again.
+
+Please report this issue to $ISSUES"
+            retries=$((retries+1))
+            print_text_in_color "$ICyan" "$retries of 10 retries."
+            countdown "Trying again in 30 seconds..." "30"
         else
             break
         fi
