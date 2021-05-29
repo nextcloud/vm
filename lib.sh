@@ -515,10 +515,10 @@ fi
     do
         if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
         then
-            msg_box "It seems like the server for the download isn't reachable, or that a temporary error occurred. You will now be prompted to try again."
-            if yesno_box_yes "Do you want try again in 30 seconds?"
+            msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred."
+            if yesno_box_yes "Do you want try again in 30 seconds?\n\nPLEASE NOTE, answering 'no' will abort the current operation!\nPlease report any iss>
             then
-                countdown "Treying again in 30 seconds..." "30"
+                countdown "Trying again in 30 seconds..." "30"
             else
                 exit
             fi
