@@ -90,7 +90,13 @@ fi
 # Install requirements
 # https://github.com/matiasdelellis/facerecognition/wiki/Installation#ubuntu-focal
 echo "deb https://repo.delellis.com.ar focal focal" > /etc/apt/sources.list.d/20-pdlib.list
-curl -fsSL https://repo.delellis.com.ar/repo.gpg.key | sudo apt-key add -
+if ! curl -fsSL https://repo.delellis.com.ar/repo.gpg.key | sudo apt-key add -
+then
+    msg_box "It seems like the gpg key for the needed PHP dependency couldn't get added.
+This is most likely just a temporary downtime of the server where the key comes from.
+Please try again later!"
+    exit
+fi
 apt update -q4 & spinner_loading
 install_if_not php7.4-pdlib
 
