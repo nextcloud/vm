@@ -92,6 +92,11 @@ case "$choice" in
             check_command systemctl restart bitwarden
         fi
     ;;
+    "")
+        exit
+    ;;
     *)
     ;;
 esac
+
+msg_box "Bitwarden is now restarting. This can take a few minutes. Please wait until it is done."
