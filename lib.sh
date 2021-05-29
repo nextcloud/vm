@@ -518,7 +518,7 @@ fi
             msg_box "It seems like the server for the download isn't reachable, or that a temporary error occurred. You will now be prompted to try again."
             if yesno_box_yes "Do you want try again in 30 seconds?"
             then
-                countdown "Treying again in 30 seconds..."
+                countdown "Treying again in 30 seconds..." "30"
             else
                 exit
             fi
