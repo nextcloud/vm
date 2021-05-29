@@ -511,14 +511,21 @@ then
     mkdir -p "$3"
 fi
     rm -f "$3"/"$2"
-    if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
-    then
-        msg_box "It seems like the server for the download isn't reachable, or that a temporary error occurred, please try again later."
-        if yesno_box_yes "Do you want to exit this script?"
+    while :
+    do
+        if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
         then
-            exit 1
+            msg_box "It seems like the server for the download isn't reachable, or that a temporary error occurred. You will now be prompted to try again."
+            if yesno_box_yes "Do you want try again in 30 seconds?"
+            then
+                countdown "Treying again in 30 seconds..."
+            else
+                exit
+            fi
+        else
+            break
         fi
-    fi
+    done
 }
 
 start_if_stopped() {
