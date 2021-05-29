@@ -90,7 +90,7 @@ fi
 # Install requirements
 # https://github.com/matiasdelellis/facerecognition/wiki/Installation#ubuntu-focal
 echo "deb https://repo.delellis.com.ar focal focal" > /etc/apt/sources.list.d/20-pdlib.list
-wget -qO - https://repo.delellis.com.ar/repo.gpg.key | sudo apt-key add -
+curl -fsSL https://repo.delellis.com.ar/repo.gpg.key | sudo apt-key add -
 apt update -q4 & spinner_loading
 install_if_not php7.4-pdlib
 
