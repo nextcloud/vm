@@ -512,8 +512,17 @@ then
 fi
     rm -f "$3"/"$2"
     local retries=0
-    until [ "$retries" -ge 10 ]
+    while :
     do
+        if [ "$retries" -ge 10 ]
+        then
+            if yesno_box_yes "Tried 10 times but didn't succeed. We will now exit the script because it might break things. You can choose 'No' to continue nonetheless."
+            then
+                exit 1
+            else
+                return 1
+            fi
+        fi
         if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
         then
             msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred. We will now try again.
