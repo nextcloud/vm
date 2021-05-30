@@ -13,7 +13,7 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 DEBUG=0
 debug_mode
 
-download_script NETWORK update-config
+download_script NETWORK update-config php
 if [ -f $SCRIPTS/update-config.php ]
 then
     # Change config.php

@@ -242,11 +242,11 @@ touch "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 
 if home_sme_server
 then
-    download_script STATIC nhss_index
+    download_script STATIC nhss_index php
     mv $SCRIPTS/nhss_index.php $HTML/index.php && rm -f $HTML/html/index.html
     chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
 else
-    download_script STATIC index
+    download_script STATIC index php
     mv $SCRIPTS/index.php $HTML/index.php && rm -f $HTML/html/index.html
     chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
 fi

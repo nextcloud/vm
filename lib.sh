@@ -1265,6 +1265,10 @@ rm -f releases
 # Use it for functions like download_static_script
 download_script() {
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
+    if [ -n "$4" ]
+    then
+        curl_to_dir "${!1}" "${2}.$4" "$SCRIPTS"
+    fi
     if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
         print_text_in_color "$IRed" "Downloading ${2} failed"
