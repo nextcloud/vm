@@ -487,7 +487,7 @@ nextcloud_occ status
 sleep 3
 echo
 
-# Prepare cron.php to be run every 15 minutes
+# Prepare cron.php to be run every 5 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Run the updatenotification on a schedule
