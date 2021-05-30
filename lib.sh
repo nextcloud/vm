@@ -370,7 +370,7 @@ get_newest_dat_files() {
         then
             print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
             sleep 1
-            check_command curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
+            curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
             mkdir -p /usr/share/GeoIP
             rm -f /usr/share/GeoIP/GeoIP.dat
             check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
@@ -396,7 +396,7 @@ get_newest_dat_files() {
         then
             print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
             sleep 1
-            check_command curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
+            curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
             mkdir -p /usr/share/GeoIP
             rm -f /usr/share/GeoIP/GeoIPv6.dat
             check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
@@ -511,21 +511,34 @@ then
     mkdir -p "$3"
 fi
     rm -f "$3"/"$2"
-    local retries=0
-    until [ "$retries" -ge 10 ]
-    do
-        if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
-        then
-            msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred. We will now try again.
-
+    if [ -n "$download_script_function_in_use" ]
+    then
+        curl -sfL "$1"/"$2" -o "$3"/"$2"
+    else
+        local retries=0
+        while :
+        do
+            if [ "$retries" -ge 10 ]
+            then
+                if yesno_box_yes "Tried 10 times but didn't succeed. We will now exit the script because it might break things. You can choose 'No' to continue on your own risk."
+                then
+                    exit 1
+                else
+                    return 1
+                fi
+            fi
+            if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
+            then
+                msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred. We will now try again.
 Please report this issue to $ISSUES"
-            retries=$((retries+1))
-            print_text_in_color "$ICyan" "$retries of 10 retries."
-            countdown "Trying again in 30 seconds..." "30"
-        else
-            break
-        fi
-    done
+                retries=$((retries+1))
+                print_text_in_color "$ICyan" "$retries of 10 retries."
+                countdown "Trying again in 30 seconds..." "30"
+            else
+                break
+            fi
+        done
+    fi
 }
 
 start_if_stopped() {
@@ -1264,6 +1277,7 @@ rm -f releases
 # e.g. download_script MENU additional_apps
 # Use it for functions like download_static_script
 download_script() {
+    download_script_function_in_use=yes
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
     if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
