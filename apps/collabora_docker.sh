@@ -366,7 +366,10 @@ then
     add_to_trusted_domains "$SUBDOMAIN"
     # Add prune command
     add_dockerprune
-    msg_box "Collabora is now successfully installed."
+    print_text_in_color "$ICyan" "Restarting Docker..."
+    docker restart code
+    msg_box "Collabora Docker is now successfully installed. 
+Please be aware that the container is currently starting which can take a few minutes."
 fi
 
 # Make sure the script exits
