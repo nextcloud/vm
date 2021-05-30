@@ -164,6 +164,18 @@ then
     MAIL_USERNAME="no-reply@nextcloudvm.com"
 fi
 
+# Stop bitwarden
+systemctl stop bitwarden
+while :
+do
+    if systemctl status bitwarden | grep -q 'Active: active' > /dev/null 2>&1
+    then
+        sleep 3
+    else
+        break
+     fi
+done
+
 # Write to files
 # mailserver
 check_command sed -i "s|^globalSettings__mail__smtp__host=.*|globalSettings__mail__smtp__host=$MAIL_SERVER|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
@@ -191,8 +203,18 @@ check_command sed -i "s|^globalSettings__mail__smtp__password=.*|globalSettings_
 check_command sed -i "s|^adminSettings__admins=.*|adminSettings__admins=$ADMIN_ACCOUNT|g" "$BITWARDEN_HOME"/bwdata/env/global.override.env
 
 # Start Bitwarden
-check_command systemctl restart bitwarden
+systemctl start bitwarden
+while :
+do
+    if ! systemctl status bitwarden | grep -q 'Active: active' > /dev/null 2>&1
+    then
+        sleep 3
+    else
+        break
+     fi
+done
+
 msg_box "Your Bitwarden mailserver settings should be successfully changed by now.
-Bitwarden is now restarting. This can take a few minutes. Please wait until it is done.\n
+
 If you experience any issues, please report them to $ISSUES"
 exit
