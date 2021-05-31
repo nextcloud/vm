@@ -534,6 +534,12 @@ else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
 fi
 
+# Restart notify push if existing
+if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
+then
+    systemctl restart notify_push
+fi
+
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
@@ -999,6 +1005,11 @@ To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/app
 Thank you for using T&M Hansson IT's updater!"
     nextcloud_occ status
     nextcloud_occ maintenance:mode --off
+    # Restart notify push if existing
+    if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
+    then
+        systemctl restart notify_push
+    fi
     print_text_in_color "$ICyan" "Sending notification about the successful update to all admins..."
     notify_admin_gui \
     "Nextcloud is now updated!" \
