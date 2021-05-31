@@ -358,10 +358,10 @@ then
     # Add prune command
     add_dockerprune
     # Restart Docker
-    print_text_in_color "$ICyan" "Restaring Docker..."
-    systemctl restart docker.service
+    print_text_in_color "$ICyan" "Restarting Docker..."
     docker restart onlyoffice
-    msg_box "OnlyOffice Docker is now successfully installed."
+    msg_box "OnlyOffice Docker is now successfully installed. 
+Please be aware that the container is currently starting which can take a few minutes."
 fi
 
 exit
