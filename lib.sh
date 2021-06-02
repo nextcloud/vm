@@ -149,6 +149,8 @@ PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
 PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
+# Notify push
+NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
 # Adminer
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
