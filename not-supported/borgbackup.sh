@@ -42,6 +42,11 @@ start_services() {
         nextcloud_occ_no_check maintenance:mode --off
     fi
     start_if_stopped docker
+    # Restart notify push if existing
+    if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
+    then
+        systemctl restart notify_push
+    fi
 }
 paste_log_file() {
     cat "$LOG_FILE" >> "$BORGBACKUP_LOG"
