@@ -1427,7 +1427,7 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
 fi
 }
 
-# Check universe reposiroty
+# Check universe repository
 check_universe() {
 UNIV=$(apt-cache policy | grep http | awk '{print $3}' | grep universe | head -n 1 | cut -d "/" -f 2)
 if [ "$UNIV" != "universe" ]
@@ -1437,7 +1437,7 @@ then
 fi
 }
 
-# Check universe reposiroty
+# Check universe repository
 check_multiverse() {
 MULTIV=$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | head -n 1 | cut -d "/" -f 2)
 if [ "$MULTIV" != "multiverse" ]
