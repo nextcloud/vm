@@ -106,8 +106,8 @@ BITWARDEN_USER=bitwarden
 BITWARDEN_HOME=/home/"$BITWARDEN_USER"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
-PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 ncdb() {
     NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 }
@@ -157,7 +157,7 @@ ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
-REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 # Extra security
 SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
@@ -176,9 +176,9 @@ turn_install() {
     TURN_PORT=3478
     TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
     SHUF=$(shuf -i 25-29 -n 1)
-    TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-    JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-    NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+    TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+    JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+    NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
 }
 [ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
@@ -1427,7 +1427,7 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
 fi
 }
 
-# Check universe reposiroty
+# Check universe repository
 check_universe() {
 UNIV=$(apt-cache policy | grep http | awk '{print $3}' | grep universe | head -n 1 | cut -d "/" -f 2)
 if [ "$UNIV" != "universe" ]
@@ -1437,7 +1437,7 @@ then
 fi
 }
 
-# Check universe reposiroty
+# Check universe repository
 check_multiverse() {
 MULTIV=$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | head -n 1 | cut -d "/" -f 2)
 if [ "$MULTIV" != "multiverse" ]
