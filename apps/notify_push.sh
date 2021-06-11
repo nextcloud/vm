@@ -27,7 +27,7 @@ root_check
 lowest_compatible_nc 21
 
 # Variables
-SERVICE_PATH="/etc/systemd/system/notify_push.service"
+NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
 ARCHITECTURE=$(uname -p)
 
 # Test prequesites
@@ -69,7 +69,7 @@ then
 fi
 
 # Check if notify_push is already installed
-if ! [ -f "$SERVICE_PATH" ] && ! is_app_installed notify_push
+if ! [ -f "$NOTIFY_PUSH_SERVICE_PATH" ] && ! is_app_installed notify_push
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -85,7 +85,7 @@ else
     systemctl restart apache2
     systemctl stop notify_push &>/dev/null
     systemctl disable notify_push &>/dev/null
-    rm -f "$SERVICE_PATH"
+    rm -f "$NOTIFY_PUSH_SERVICE_PATH"
     count=0
     while [ "$count" -lt 10 ]
     do
@@ -109,7 +109,7 @@ nextcloud_occ_no_check app:disable notify_push
 chmod 770 -R "$NC_APPS_PATH/notify_push" 
 
 # Setting up the service
-cat << NOTIFY_PUSH > "$SERVICE_PATH"
+cat << NOTIFY_PUSH > "$NOTIFY_PUSH_SERVICE_PATH"
 [Unit]
 Description = Push daemon for Nextcloud clients
 
@@ -144,7 +144,7 @@ then
     msg_box "Failed to restart apache2. Will restore the old NCDOMAIN config now."
     sed -i "/#Notify-push-start/,/#Notify-push-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
     systemctl stop notify_push
-    rm "$SERVICE_PATH"
+    rm "$NOTIFY_PUSH_SERVICE_PATH"
     systemctl restart apache2
     nextcloud_occ_no_check app:remove notify_push
     exit 1

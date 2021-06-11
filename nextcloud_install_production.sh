@@ -232,6 +232,12 @@ install_if_not apt-transport-https
 # Install build-essentials to get make
 install_if_not build-essential
 
+# Make sure sudo exists (needed in adduser.sh)
+install_if_not sudo
+
+# Make sure add-apt-repository exists (needed in lib.sh)
+install_if_not software-properties-common
+
 # Set dual or single drive setup
 if [ -n "$PROVISIONING" ]
 then
