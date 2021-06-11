@@ -72,6 +72,9 @@ You can not set a value below 30 minutes (1800 seconds).")
             fi
         done
     ;;
+    "")
+        exit
+    ;;
     *)
     ;;
 esac
