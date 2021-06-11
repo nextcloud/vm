@@ -528,7 +528,7 @@ nextcloud_occ config:system:set log.condition apps 0 --value admin_audit
 # Set SMTP mail
 nextcloud_occ config:system:set mail_smtpmode --value="smtp"
 
-# Forget login/session after 30 minutes
+# Forget session after 30 minutes
 nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
 
 # Set logrotate (max 10 MB)
