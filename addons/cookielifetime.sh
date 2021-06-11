@@ -25,29 +25,29 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "1800s" "30 minutes" \
 "7200s" "2 hours" \
 "43200s" "12 hours" \
-"172800s" "2 days" \
+"259200s" "3 days" \
 "604800s" "1 week" \
 "2419200s" "4 weeks" \
 "Custom" "set up a custom time" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "1800s")
-        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
+        COOKIE_LIFETIME=1800
     ;;
     "7200s")
-        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="7200"
+        COOKIE_LIFETIME=7200
     ;;
     "43200s")
-        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="43200"
+        COOKIE_LIFETIME=43200
     ;;
-    "172800s")
-        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="172800"
+    "259200s")
+        COOKIE_LIFETIME=259200
     ;;
     "604800s")
-        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="604800"
+        COOKIE_LIFETIME=604800
     ;;
     "2419200s")
-        nextcloud_occ config:system:set remember_login_cookie_lifetime --value="2419200"
+        COOKIE_LIFETIME=2419200
     ;;
     "Custom")
         while :
@@ -68,14 +68,18 @@ You can not set a value below 30 minutes (1800 seconds).")
             then
                 msg_box "It seems like you weren't satisfied with your setting of ($COOKIE_LIFETIME) seconds. Please try again."
             else
-                if nextcloud_occ config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
-                then
-                    msg_box "Cookie Lifetime is now successfully set to $COOKIE_LIFETIME seconds."
-                fi
                 break
             fi
         done
     ;;
+    "")
+        exit
+    ;;
     *)
     ;;
 esac
+
+# Set the value
+nextcloud_occ config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
+nextcloud_occ config:system:set session_lifetime --value="$COOKIE_LIFETIME"
+msg_box "Cookie Lifetime is now successfully set to $COOKIE_LIFETIME seconds."
