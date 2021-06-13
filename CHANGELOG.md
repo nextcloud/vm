@@ -22,7 +22,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Improved spinner_loading
 - Added dates to automatic updates log
 - Added regular ZFS snapshot prune
-- Added retention for Nextclouds user activites
+- Added retention for Nextclouds user activities
 - Previewgenerator - allow to clear all previews
 - Update script - update Nextclouds mimetype list
 - Reworked office scripts
