@@ -390,7 +390,8 @@ fi
 BORG_OPTS=(--stats --compression "auto,zstd" --exclude-caches --checkpoint-interval 86400)
 
 # System backup
-EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache home/plex/transcode var/cache lost+found run var/run dev tmp)
+EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache home/plex/transcode var/cache lost+found \
+run var/run dev tmp "home/plex/config/Library/Application Support/Plex Media Server/Cache")
 # mnt, media, sys, prob don't need to be excluded because of the usage of lvm-snapshots and the --one-file-system flag
 for directory in "${EXCLUDED_DIRECTORIES[@]}"
 do
@@ -578,6 +579,12 @@ fi
 
 # Exit here if the backup doesn't shall get checked
 if [ -z "$CHECK_BACKUP" ]
+then
+    exit
+fi
+
+# Exit here if we want to skip the backup check
+if [ -n "$SKIP_DAILY_BACKUP_CHECK" ]
 then
     exit
 fi

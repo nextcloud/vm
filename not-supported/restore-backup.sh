@@ -369,9 +369,9 @@ BORG_ARCHIVE="$choice-NcVM-system-partition"
 print_text_in_color "$ICyan" "Using the borg archive $BORG_ARCHIVE..."
 
 # Test borg archive
-msg_box "We will now check if extracting of the backup works.
-This can take much time, though."
-if yesno_box_yes "Do you want to do this?"
+msg_box "We've implemented the option to test the extraction of the backup before we start the restore process.
+This can take a lot of time though and is because of that not the default."
+if yesno_box_no "Do you want to test the extraction of the backup nonetheless?"
 then
     mkdir -p /tmp/borgextract
     cd /tmp/borgextract
@@ -487,7 +487,7 @@ done
 
 # Restore files
 # Rsync include/exclude patterns: https://stackoverflow.com/a/48010623
-if ! rsync --archive --human-readable --one-file-system --progress \
+if ! rsync --archive --human-readable --one-file-system -vv --stats \
 "${EXCLUDE_DIRS[@]}" "${INCLUDE_DIRS[@]}" "${INCLUDE_FILES[@]}" --exclude='*' "$SYSTEM_DIR/" /
 then
     msg_box "An issue was reported while restoring all needed files."
