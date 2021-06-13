@@ -15,6 +15,36 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 21.0.3
+
+### Small changelog:
+- Made it possible to add subdomains to deSEC
+- Improved spinner_loading
+- Added dates to automatic updates log
+- Added regular ZFS snapshot prune
+- Added retention for Nextclouds user activites
+- Previewgenerator - allow to clear all previews
+- Update script - update Nextclouds mimetype list
+- Reworked office scripts
+- Update script - change crontab on all installations to 5 minutes
+- Fixed a bug with Netdata
+- Geoblock - updated link to csv file
+- Refactored the bitwarden_mailconfig script
+- Added more functionality to curl_to_dir
+- Docker documentserver - don't restart docker daemon upon installation
+- Restart notify push in some situations
+- Make sure sudo and software-properties-common is installed
+- Fixed password generation in edge cases
+- Reworked the cookielifetime script
+- SMB-server - added option to automatically empty recylce bins
+- SMB-server - added option to empty all recycle bins
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/21.0.2..21.0.3
+- https://nextcloud.com/changelog/#latest21
+
 ## 21.0.2
 
 ### Small changelog:
