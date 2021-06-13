@@ -437,7 +437,7 @@ lost+found run var/run tmp var/tmp etc/lvm/archive snap "home/plex/config/Librar
 if ! yesno_box_yes "Do you want to restore Nextclouds previews? This might slow down the restore process by a lot.
 If you select 'No', the preview folder will be excluded from the restore process which can lead to preview issues in Nextcloud."
 then
-    PREVIEW_EXCLUDED="--exclude=/appdata_"*/preview/
+    PREVIEW_EXCLUDED=("--exclude=/appdata_"*/preview/)
     EXCLUDED_DIRECTORIES+=("$NCDATA"/appdata_*/preview)
 fi
 
@@ -505,7 +505,7 @@ fi
 if [ -n "$NCDATA_ARCHIVE_EXISTS" ]
 then
     if ! rsync --stats --archive --human-readable --delete --one-file-system \
--vv "$PREVIEW_EXCLUDED" /tmp/borgncdata/ncdata/ /mnt/ncdata
+-vv "${PREVIEW_EXCLUDED[*]}" /tmp/borgncdata/ncdata/ /mnt/ncdata
     then
         msg_box "Something failed while restoring the ncdata partition."
         umount /tmp/borgsystem
