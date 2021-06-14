@@ -38,6 +38,8 @@ PR's are more than welcome. Happy Nextclouding!
 - Reworked the cookielifetime script
 - SMB-server - added option to automatically empty recylce bins
 - SMB-server - added option to empty all recycle bins
+- SMB-server - Create the files directory for new users directly during the user creation
+- Reworked system-restore
 - Minor bugfixes and improvements
 - And more...
 
