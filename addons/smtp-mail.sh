@@ -274,22 +274,8 @@ then
         # Fail message
         msg_box "It seems like something has failed.
 You can look at /var/log/msmtp for further logs.
-Please run this script once more if you want to make another try."
-
-        # Let the user decide if configs/packets shall get reset/uninstalled
-        if yesno_box_yes "Do you want to reset all configs and uninstall all packets \
-that were made/installed by this script so that you keep a clean system?
-This will make debugging more complicated since you will only have the log file to debug this."
-        then
-            apt-get purge msmtp -y
-            apt-get purge msmtp-mta -y
-            apt-get purge mailutils -y
-            apt autoremove -y
-            rm -f /etc/mail.rc
-            rm -f /etc/msmtprc
-            echo "" > /etc/aliases
-            msg_box "Uninstallation of MSMTP was successfully done" 
-        fi
+Please run this script once more if you want to make another try or \
+if you want to deinstall all newly installed packages."
         exit 1
     fi
 fi
