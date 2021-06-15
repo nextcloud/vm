@@ -36,6 +36,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Make sure sudo and software-properties-common is installed
 - Fixed password generation in edge cases
 - Reworked the cookielifetime script
+- Updated geoblock database - June 2021
 - SMB-server - added option to automatically empty recylce bins
 - SMB-server - added option to empty all recycle bins
 - SMB-server - Create the files directory for new users directly during the user creation
