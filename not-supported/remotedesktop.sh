@@ -109,6 +109,9 @@ You should be able to connect via an RDP client with your server \
 using the credentials of $UNIXUSER and the server ip-address $ADDRESS"
 fi
 
+# Needed to be able to access Nextcloud via localhost directly
+nextcloud_occ_no_check config:system:set trusted_proxies "11" --value="localhost"
+
 # Eye of Gnome
 if is_this_installed eog
 then

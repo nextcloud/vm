@@ -266,6 +266,16 @@ Please note that this option could be a security risk, if the chosen password wa
     check_command su -s /bin/sh "$WEB_USER" -c "php $NCPATH/occ user:add $NEWNAME --password-from-env"
     unset OC_PASS
 
+    # Create files directory for that user
+    if ! [ -d "$NCDATA" ]
+    then
+        msg_box "Something is wrong: $NCDATA does not exist." "$SUBTITLE"
+        return
+    fi
+    mkdir -p "$NCDATA/$NEWNAME/files"
+    chown -R "$WEB_USER":"$WEB_GROUP" "$NCDATA/$NEWNAME"
+    chmod -R 770 "$NCDATA/$NEWNAME"
+
     # Inform the user
     msg_box "The new Nextcloud user $NEWNAME was successfully created." "$SUBTITLE"
 

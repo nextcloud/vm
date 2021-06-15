@@ -109,8 +109,19 @@ fi
 msg_box "It is recommended to make a backup and/or snapshot of your NcVM before restoring the system."
 if ! yesno_box_no "Have you made a backup of your NcVM?"
 then
-    exit 1
+    if ! yesno_box_yes "Do you want to run the backup now?"
+    then
+        exit 1
+    fi
+    export SKIP_DAILY_BACKUP_CHECK=1
+    bash "$DAILY_BACKUP_FILE"
+    if ! yesno_box_no "Was the backup successfully? If yes, we will continue with the restore script now."
+    then
+        exit 1
+    fi
 fi
+
+print_text_in_color "$ICyan" "Checking which backup drives are connected. This can take a while..."
 
 # View backup repository menu
 args=(whiptail --title "$TITLE" --menu \
@@ -121,25 +132,25 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
 DAILY=1
 if ! [ -d "$DAILY_BACKUP_TARGET" ]
 then
-    mount "$DAILY_BACKUP_MOUNTPOINT"
+    mount "$DAILY_BACKUP_MOUNTPOINT" &>/dev/null
     if ! [ -d "$DAILY_BACKUP_TARGET" ]
     then
         DAILY=""
     fi
-    umount "$DAILY_BACKUP_MOUNTPOINT"
+    umount "$DAILY_BACKUP_MOUNTPOINT" &>/dev/null
 fi
 if [ -f "$OFFSHORE_BACKUP_FILE" ]
 then
     OFFSHORE=1
     if ! [ -d "$OFFSHORE_BACKUP_TARGET" ]
     then
-        mount "$OFFSHORE_BACKUP_MOUNTPOINT"
+        mount "$OFFSHORE_BACKUP_MOUNTPOINT" &>/dev/null
         if ! [ -d "$OFFSHORE_BACKUP_TARGET" ]
         then
             OFFSHORE=""
         fi
     fi
-    umount "$OFFSHORE_BACKUP_MOUNTPOINT"
+    umount "$OFFSHORE_BACKUP_MOUNTPOINT" &>/dev/null
 fi
 if [ -z "$DAILY" ] && [ -z "$OFFSHORE" ]
 then
@@ -333,22 +344,9 @@ else
 fi
 
 # Inform user
-msg_box "We will now check if extracting works and perform a dry-run of restoring the backup.
-(which means that no files/folders will get modified during this step).
-Checking the extracting can take a very long time, though."
-if yesno_box_yes "Do you want to check if extracting works?
-You can skip the extracting check by selecting 'No'. 
-The dry-run of restoring the backup will run always. (No files/folders will get modified.) 
-It is recommended to select 'Yes' to run the extracting check."
-then
-    EXTRACT_CHECK=1
-fi
-msg_box "Please wait until you see the next menu!
-You will have the chance to cancel the restore process afterwards.\n
-Otherwise you can cancel always by pressing '[CTRL] + [C]'"
-
-# Verify integrity of selected archives
-if [ -n "$EXTRACT_CHECK" ]
+msg_box "We've implemented the option to test the extraction of the backup before we start the restore process.
+This can take a lot of time though and is because of that not the default."
+if yesno_box_no "Do you want to test the extraction of the backup nonetheless?"
 then
     print_text_in_color "$ICyan" "Checking the system partition archive integrity. Please be patient!"
     mkdir -p /tmp/borgextract
@@ -376,7 +374,10 @@ then
             exit 1
         fi
     fi
+    msg_box "The extraction of the backup was tested successfully!"
 fi
+
+print_text_in_color "$ICyan" "Mounting all needed directories from the backup now. This can take a while..."
 
 # Mount system archive
 mkdir -p /tmp/borgsystem
@@ -430,115 +431,35 @@ done
 
 # Exclude some dirs; mnt, media, sys, prob don't need to be excluded because of the usage of --one-file-system flag
 EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache root/.config/borg var/cache \
-lost+found run var/run tmp var/tmp etc/lvm/archive snap)
+lost+found run var/run tmp var/tmp etc/lvm/archive snap "home/plex/config/Library/Application Support/Plex Media Server/Cache")
+
+# Allow to disable restoring of Previews
+if ! yesno_box_yes "Do you want to restore Nextclouds previews? This might slow down the restore process by a lot.
+If you select 'No', the preview folder will be excluded from the restore process which can lead to preview issues in Nextcloud."
+then
+    PREVIEW_EXCLUDED=("--exclude=/appdata_"*/preview/)
+    EXCLUDED_DIRECTORIES+=("$NCDATA"/appdata_*/preview)
+fi
+
 for directory in "${EXCLUDED_DIRECTORIES[@]}"
 do
+    directory="${directory#/*}"
     EXCLUDE_DIRS+=(--exclude="/$directory/")
 done
 
-# Dry run of everything
-print_text_in_color "$ICyan" "Performing a dry-run before restoring. Please be patient!"
-if ! rsync --archive --human-readable --dry-run --verbose --delete /tmp/borgboot/boot/ /boot \
-| tee /tmp/dry-run.out
+# Inform user
+if ! yesno_box_no "Are you sure that you want to restore your system to the selected state?
+If you select 'Yes', we will start the restore process!"
 then
-    msg_box "Something failed while performing the boot-partition dry-run."
     umount /tmp/borgsystem
     umount /tmp/borgboot
     umount /tmp/borgncdata &>/dev/null
     restore_original_state
     exit 1
 fi
-sed -i -r '/^[a-zA-Z0-9]+\//s/^/boot\//' /tmp/dry-run.out
-sed -i 's|^deleting |deleting boot/|' /tmp/dry-run.out
-if ! rsync --archive --verbose --human-readable \
---dry-run --delete --one-file-system --stats "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ / \
-| tee -a /tmp/dry-run.out
-then
-    msg_box "Something failed while performing the system-partition dry-run."
-    umount /tmp/borgsystem
-    umount /tmp/borgboot
-    umount /tmp/borgncdata &>/dev/null
-    restore_original_state
-    exit 1
-fi
-if [ -n "$NCDATA_ARCHIVE_EXISTS" ]
-then
-    if ! rsync --archive --verbose --human-readable \
---dry-run --delete --one-file-system --stats /tmp/borgncdata/ncdata/ /mnt/ncdata \
-| tee /tmp/ncdata-dry-run.out
-    then
-        msg_box "Something failed while performing the ncdata-partition dry-run."
-        umount /tmp/borgsystem
-        umount /tmp/borgboot
-        umount /tmp/borgncdata
-        restore_original_state
-        exit 1
-    fi
-    sed -i -r '/^[a-zA-Z0-9]+\//s/^/mnt\/ncdata\//' /tmp/ncdata-dry-run.out
-    sed -i 's|^deleting |deleting mnt/ncdata/|' /tmp/ncdata-dry-run.out
-    cat /tmp/ncdata-dry-run.out >> /tmp/dry-run.out
-    rm /tmp/ncdata-dry-run.out
-fi
-
-# Prepare output
-OUTPUT=$(cat /tmp/dry-run.out)
-OUTPUT=$(echo "$OUTPUT" | sed -r '/^[a-zA-Z0-9]+\//s/^/changing or creating /')
-DELETED_FILES=$(echo "$OUTPUT" | grep "^deleting " | grep -v "/$" | sort)
-DELETED_FOLDERS=$(echo "$OUTPUT" | grep "^deleting .*/$" | sort)
-CHANGED_FILES=$(echo "$OUTPUT" | grep "^changing or creating " | grep -v "/$" | sort)
-CHANGED_FOLDERS=$(echo "$OUTPUT" | grep "^changing or creating .*/$" | sort)
-STATS=$(echo "$OUTPUT" | grep -v "^access.log\|error.log\|\./\|^deleting \|^changing or creating ")
-
-# Show output
-msg_box "Here are the stats from the dry-run:\n$STATS\n\n" "STATS"
-while :
-do
-    choice=$(whiptail --title "$TITLE" --menu \
-"The dry-run was successful.
-You can get further information about the dry-run by selecting an option.
-If you get directly redirected to this Menu after selecting an option, \
-the list is most likely too long to be shown.\n
-$MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Continue" "(Continue with the process)" \
-"Deleted Files" "(Show files that will get deleted)" \
-"Deleted Folders" "(Show folders that will get deleted)" \
-"Changed/created Files" "(Show files that will get changed or created)" \
-"Changed/created Folders" "(Show folders that will get changed or created)" 3>&1 1>&2 2>&3)
-
-    case "$choice" in
-        "Continue")
-            break
-        ;;
-        "Deleted Files")
-            msg_box "Those files will get deleted:\n$DELETED_FILES" "Deleted Files"
-        ;;
-        "Deleted Folders")
-            msg_box "Those folders will get deleted:\n$DELETED_FOLDERS" "Deleted Folders"
-        ;;
-        "Changed/created Files")
-            msg_box "Those files will get changed/created:\n$CHANGED_FILES" "Changed/created Files" 
-        ;;
-        "Changed/created Folders")
-            msg_box "Those folders will get changed/created:\n$CHANGED_FOLDERS" "Changed/created Folders"
-        ;;
-        "")
-            break
-        ;;
-        *)
-        ;;
-    esac
-done
 
 # Inform user
-msg_box "Here are the stats from the dry-run again:\n$STATS\n\n" "STATS"
-if ! yesno_box_no "Are you sure that you want to restore your system to this state?"
-then
-    umount /tmp/borgsystem
-    umount /tmp/borgboot
-    umount /tmp/borgncdata &>/dev/null
-    restore_original_state
-    exit 1
-fi
+msg_box "We will now start the restore process. Please wait until you see the next popup! This can take a while!"
 
 # Start the restore
 print_text_in_color "$ICyan" "Starting the restore process..."
@@ -558,8 +479,8 @@ systemctl stop postgresql
 
 # Restore the system partition
 print_text_in_color "$ICyan" "Restoring the files..."
-if ! rsync --archive --human-readable --delete --one-file-system \
---progress "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ /
+if ! rsync --stats --archive --human-readable --delete --one-file-system \
+-vv "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ /
 then
     msg_box "Something failed while restoring the system partition."
     umount /tmp/borgsystem
@@ -570,7 +491,7 @@ then
 fi
 
 # Restore the boot partition
-if ! rsync --archive --human-readable --progress --delete /tmp/borgboot/boot/ /boot
+if ! rsync --stats --archive --human-readable -vv --delete /tmp/borgboot/boot/ /boot
 then
     msg_box "Something failed while restoring the boot partition."
     umount /tmp/borgsystem
@@ -583,8 +504,8 @@ fi
 # Restore the ncdata partition
 if [ -n "$NCDATA_ARCHIVE_EXISTS" ]
 then
-    if ! rsync --archive --human-readable --delete --one-file-system \
---progress /tmp/borgncdata/ncdata/ /mnt/ncdata
+    if ! rsync --stats --archive --human-readable --delete --one-file-system \
+-vv "${PREVIEW_EXCLUDED[*]}" /tmp/borgncdata/ncdata/ /mnt/ncdata
     then
         msg_box "Something failed while restoring the ncdata partition."
         umount /tmp/borgsystem
