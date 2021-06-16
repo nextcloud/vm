@@ -35,7 +35,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
 "Firewall" "(Setting up a firewall)" OFF \
 "Harden SSH" "(Harden SSH configuration)" OFF \
-"Monitor Link Shares" "(Sends a mail if new link shares were created)" OFF \
+"Monitor Link Shares" "(Monitors the creation of link shares)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
 "PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \

@@ -3,8 +3,8 @@
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 true
-SCRIPT_NAME="Monitor Link shares"
-SCRIPT_EXPLAINER="This script creates a script which monitors link shares and sends a mail if new link shares were created in Nextcloud."
+SCRIPT_NAME="Monitor Link Shares"
+SCRIPT_EXPLAINER="This script creates a script which monitors link shares and sends a mail or notification if new link shares were created in Nextcloud."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -32,13 +32,6 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Test mail
-if ! send_mail "Testmail for $SCRIPT_NAME" "Testing if mail sendings works which is needed for $SCRIPT_NAME"
-then
-    msg_box "Mail sending doesn't work. Please configure it first before running this script."
-    exit 1
-fi
-
 # Create script
 cat << MONITOR_LINK_SHARES > "$SCRIPTS/audit-link-shares.sh"
 #!/bin/bash
@@ -51,10 +44,15 @@ fi
 
 source "$SCRIPTS/fetch_lib.sh"
 LINK_SHARE="\$(prettify_json "\$LINK_SHARE")"
-send_mail "Link share was created" "The following files/folders have been shared via link:
-\$(echo "\$LINK_SHARE" | grep '"message":' | sed 's|.*"message": "||;s| with ID ".*||' | sort | uniq)\n
+FILES_FOLDERS="\$(echo "\$LINK_SHARE" | grep '"message":' | sed 's|.*"message": "||;s| with ID ".*||' | sort | uniq)"
+if ! send_mail "Link share was created" "The following files/folders have been shared via link:
+\$FILES_FOLDERS\n
 See the full log below:
 \$LINK_SHARE"
+then
+    notify_admin_gui "Link share was created" "The following files/folders have been shared via link:
+\$FILES_FOLDERS"
+fi
 MONITOR_LINK_SHARES
 
 # Adjust rights
