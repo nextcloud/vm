@@ -1645,6 +1645,14 @@ case "${1}" in
 esac
 }
 
+# Prettify Json files
+# $1 = json input
+prettify_json() {
+    local JSON_INPUT
+    JSON_INPUT="$(echo "$1" | sed 's|\\||g' | sed 's|,"|,\\n  "|g;s|":|": |g;s|{"|{\n  "|;s|"}|"\n}|')"
+    echo -e "$JSON_INPUT"
+}
+
 # Example:
 # notify_admin_gui \
 # "Subject" \

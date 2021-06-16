@@ -35,6 +35,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
 "Firewall" "(Setting up a firewall)" OFF \
 "Harden SSH" "(Harden SSH configuration)" OFF \
+"Monitor Link Shares" "(Sends a mail if new link shares were created)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
 "PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
@@ -83,6 +84,10 @@ case "$choice" in
     *"Harden SSH"*)
         print_text_in_color "$ICyan" "Downloading the Harden SSH script..."
         run_script ADDONS harden-ssh
+    ;;&
+    *"Monitor Link Shares"*)
+        print_text_in_color "$ICyan" "Monitor Link Shares..."
+        run_script NOT_SUPPORTED_FOLDER monitor-link-shares
     ;;&
     *"Off-Shore Backup Wizard"*)
         print_text_in_color "$ICyan" "Downloading the Off-Shore Backup Wizard script..."
