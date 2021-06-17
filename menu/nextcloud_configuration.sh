@@ -35,7 +35,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
 "Disable workspaces" "(Disable top notes in GUI)" OFF \
 "Disable user flows" "(Disable user settings for Nextcloud Flow)" OFF \
-"Check 0-Bye files" "(Check if files are 0-byte (empty/corrupted))" OFF \
+"Check 0-Byte files" "(Check if files are 0-byte (empty/corrupted))" OFF \
 "Enable logrotate" "(Use logrotate to keep more Nextcloud logs)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -93,7 +93,7 @@ Please upgrade by running 'sudo bash /var/scripts/update.sh'" "$SUBTITLE"
             sleep 1
         fi
     ;;&
-    *"0-byte files"*)
+    *"Check 0-Byte files"*)
         print_text_in_color "$ICyan" "Downloading the 0-Byte files script..."
         run_script ADDONS 0-byte-files
     ;;&
