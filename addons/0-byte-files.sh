@@ -23,14 +23,14 @@ done
 # TODO
 # Remove known 0-byte files
 # Everything in appdata isn't important
-# NEWARR="$(echo ${arr[@]} | sed s/'appdata'//)"
+# NEWARR="$(echo ${arr[*]} | sed s/'appdata'//)"
 
 # Notify!
-if [[ -n "${arr[@]}" ]]
+if [[ -n "${arr[*]}" ]]
 then
-    notify_admin_gui "$emSub" "${arr[@]}"
+    notify_admin_gui "$emSub" "${arr[*]}"
     msg_box "$emSub
 
 Please see files in red when you hit OK."
-    print_text_in_color "$IRed" "${arr[@]}"
+    print_text_in_color "$IRed" "${arr[*]}"
 fi
