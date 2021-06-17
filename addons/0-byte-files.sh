@@ -26,11 +26,14 @@ done
 # NEWARR="$(echo ${arr[*]} | sed s/'appdata'//)"
 
 # Notify!
-if [[ -n "${arr[*]}" ]]
+if [ -n "${arr[*]}" ]
 then
-    notify_admin_gui "$emSub" "${arr[*]}"
+    send_mail "$emSub" "${arr[*]}"
     msg_box "$emSub
 
 Please see files in red when you hit OK."
-    print_text_in_color "$IRed" "${arr[*]}"
+    for each in "${arr[@]}"
+    do
+      print_text_in_color "$IRed" "$each"
+    done
 fi
