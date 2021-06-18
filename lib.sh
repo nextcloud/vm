@@ -677,12 +677,12 @@ fi
 # Install dnsutils if not existing
 if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install dnsutils -y
+    apt-get update -q4 & spinner_loading && apt-get install dnsutils -y
 fi
 # Install net-tools if not existing
 if ! dpkg-query -W -f='${Status}' "net-tools" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install net-tools -y
+    apt-get update -q4 & spinner_loading && apt-get install net-tools -y
 fi
 # After applying Netplan settings, try a DNS lookup.
 # Restart systemd-networkd if this fails and try again.
@@ -905,7 +905,7 @@ cleanup_open_port() {
     if [ -n "$FAIL" ]
     then
         apt-get purge miniupnpc -y
-        apt autoremove -y
+        apt-get autoremove -y
     fi
 }
 
@@ -1034,7 +1034,7 @@ fi
 install_if_not() {
 if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && RUNLEVEL=1 apt install "${1}" -y
+    apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install "${1}" -y
 fi
 }
 
@@ -1509,7 +1509,7 @@ then
     is_process_running dpkg
     is_process_running apt
     print_text_in_color "$ICyan" "Installing Docker CE..."
-    apt update -q4 & spinner_loading
+    apt-get update -q4 & spinner_loading
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi

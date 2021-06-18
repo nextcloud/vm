@@ -128,7 +128,7 @@ Please report this to $ISSUES"
     fi
 
     # Remove not needed dependencies
-    apt autoremove -y
+    apt-get autoremove -y
 
     # Delete other files
     rm -f /var/www/html/index.lighttpd.orig

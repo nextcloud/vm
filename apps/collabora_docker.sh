@@ -189,7 +189,7 @@ then
 fi
     
 # Get the latest packages
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 
 # Check if Nextcloud is installed
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."

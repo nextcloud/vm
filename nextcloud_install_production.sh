@@ -22,8 +22,8 @@ if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed"
 then
     echo "curl OK"
 else
-    apt update -q4
-    apt install curl -y
+    apt-get update -q4
+    apt-get install curl -y
 fi
 
 true
@@ -90,8 +90,8 @@ if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed"
 then
     print_text_in_color "$IGreen" "lshw OK"
 else
-    apt update -q4 & spinner_loading
-    apt install lshw -y
+    apt-get update -q4 & spinner_loading
+    apt-get install lshw -y
 fi
 
 # Install net-tools if not existing
@@ -99,8 +99,8 @@ if [ "$(dpkg-query -W -f='${Status}' "net-tools" 2>/dev/null | grep -c "ok insta
 then
     print_text_in_color "$IGreen" "net-tools OK"
 else
-    apt update -q4 & spinner_loading
-    apt install net-tools -y
+    apt-get update -q4 & spinner_loading
+    apt-get install net-tools -y
 fi
 
 # Install whiptail if not existing
@@ -108,8 +108,8 @@ if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok instal
 then
     print_text_in_color "$IGreen" "whiptail OK"
 else
-    apt update -q4 & spinner_loading
-    apt install whiptail -y
+    apt-get update -q4 & spinner_loading
+    apt-get install whiptail -y
 fi
 
 true
@@ -219,7 +219,7 @@ stop_if_installed mariadb-server
 if is_this_installed unattended-upgrades
 then
     apt purge unattended-upgrades -y
-    apt autoremove -y
+    apt-get autoremove -y
     rm -rf /var/log/unattended-upgrades
 fi
 
@@ -343,8 +343,8 @@ done
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
 # curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-apt update -q4 & spinner_loading
-apt install postgresql -y
+apt-get update -q4 & spinner_loading
+apt-get install postgresql -y
 
 # Create DB
 cd /tmp
@@ -356,7 +356,7 @@ print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
 systemctl restart postgresql.service
 
 # Install Apache
-check_command apt install apache2 -y
+check_command apt-get install apache2 -y
 a2enmod rewrite \
         headers \
         proxy \
@@ -385,8 +385,8 @@ echo "ServerTokens Prod"
 fi
 
 # Install PHP "$PHPVER"
-apt update -q4 & spinner_loading
-check_command apt install -y \
+apt-get update -q4 & spinner_loading
+check_command apt-get install -y \
     php"$PHPVER"-fpm \
     php"$PHPVER"-intl \
     php"$PHPVER"-ldap \
@@ -915,8 +915,8 @@ case "$choice" in
 esac
 
 # Cleanup
-apt autoremove -y
-apt autoclean
+apt-get autoremove -y
+apt-get autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
 # Install virtual kernels for Hyper-V, (and extra for UTF8 kernel module + Collabora and OnlyOffice)
@@ -926,7 +926,7 @@ then
     if [ "$SYSVENDOR" == "Microsoft Corporation" ]
     then
         # Hyper-V
-        apt install -y --install-recommends \
+        apt-get install -y --install-recommends \
         linux-virtual \
         linux-image-virtual \
         linux-tools-virtual \

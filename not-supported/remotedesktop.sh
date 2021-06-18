@@ -43,8 +43,8 @@ If you have already installed a desktop environment, you will not need to instal
         then
             # Install gnome-session
             print_text_in_color "$ICyan" "Installing gnome-session..."
-            apt update -q4 & spinner_loading
-            apt install gnome-session --no-install-recommends -y
+            apt-get update -q4 & spinner_loading
+            apt-get install gnome-session --no-install-recommends -y
             sudo -u "$UNIXUSER" dbus-launch gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
             install_if_not gnome-shell-extension-dash-to-panel
             check_command sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable dash-to-panel@jderose9.github.com
@@ -221,7 +221,7 @@ install_remove_packet() {
         then
             apt purge gnome-themes-extra -y
         fi
-        apt autoremove -y
+        apt-get autoremove -y
         if [ "$1" = "nautilus" ]
         then
             rm -f /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
@@ -270,10 +270,10 @@ picard sound-juicer vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-ex
                     apt purge "$app" -y
                 fi
             done
-            apt autoremove -y
+            apt-get autoremove -y
             systemctl set-default multi-user
             add-apt-repository --remove ppa:heyarje/makemkv-beta -y
-            apt update -q4 & spinner_loading
+            apt-get update -q4 & spinner_loading
             rm -f /etc/polkit-1/localauthority/50-local.d/46-allow-update-repo.pkla
             rm -f /etc/polkit-1/localauthority/50-local.d/allow-update-repo.pkla
             rm -f /etc/polkit-1/localauthority/50-local.d/color.pkla
@@ -303,9 +303,9 @@ picard sound-juicer vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-ex
             print_text_in_color "$ICyan" "Uninstalling $SUBTITLE"
             apt purge makemkv-oss -y
             apt purge makemkv-bin -y
-            apt autoremove -y
+            apt-get autoremove -y
             add-apt-repository --remove ppa:heyarje/makemkv-beta -y
-            apt update -q4 & spinner_loading
+            apt-get update -q4 & spinner_loading
             print_text_in_color "$ICyan" "$SUBTITLE was successfully uninstalled."
         else
             msg_box "MakeMKV is not open source. This is their official website: makemkv.com
@@ -315,8 +315,8 @@ We will need to add a 3rd party repository to install it which can set your serv
                 print_text_in_color "$ICyan" "Installing $SUBTITLE"
                 if add-apt-repository ppa:heyarje/makemkv-beta -y
                 then
-                    apt update -q4 & spinner_loading
-                    apt install makemkv-oss makemkv-bin -y
+                    apt-get update -q4 & spinner_loading
+                    apt-get install makemkv-oss makemkv-bin -y
                     print_text_in_color "$ICyan" "$SUBTITLE was successfully installed"
                 else
                     msg_box "Something failed while trying to add the new repository" "$SUBTITLE"
@@ -334,9 +334,9 @@ We will need to add a 3rd party repository to install it which can set your serv
         then
             print_text_in_color "$ICyan" "Uninstalling $SUBTITLE"
             apt purge onlyoffice-desktopeditors -y
-            apt autoremove -y
+            apt-get autoremove -y
             rm -f /etc/apt/sources.list.d/onlyoffice-desktopeditors.list
-            apt update -q4 & spinner_loading
+            apt-get update -q4 & spinner_loading
             print_text_in_color "$ICyan" "$SUBTITLE was successfully uninstalled."
         else
             msg_box "OnlyOffice Desktop Editors are open source but not existing in the Ubuntu repositories.
@@ -349,7 +349,7 @@ This can set your server under risk, though!" "$SUBTITLE"
                 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CB2DE8E5
                 echo "deb https://download.onlyoffice.com/repo/debian squeeze main" \
 > /etc/apt/sources.list.d/onlyoffice-desktopeditors.list
-                apt update -q4 & spinner_loading
+                apt-get update -q4 & spinner_loading
                 install_if_not onlyoffice-desktopeditors
                 print_text_in_color "$ICyan" "$SUBTITLE was successfully installed"
             fi

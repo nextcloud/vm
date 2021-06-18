@@ -19,7 +19,7 @@ debug_mode
 root_check
 
 # Add modsecurity
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 install_if_not libapache2-mod-security2 
 install_if_not modsecurity-crs
 mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf

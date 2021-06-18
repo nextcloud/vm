@@ -13,7 +13,7 @@ root_check
 # Use another method if the new one doesn't work
 if [ -z "$REPO" ]
 then
-    REPO=$(apt update -q4 && apt-cache policy | grep http | tail -1 | awk '{print $2}')
+    REPO=$(apt-get update -q4 && apt-cache policy | grep http | tail -1 | awk '{print $2}')
 fi
 
 # Check where the best mirrors are and update

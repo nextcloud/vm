@@ -31,7 +31,7 @@ else
     apt-get purge msmtp -y
     apt-get purge msmtp-mta -y
     apt-get purge mailutils -y
-    apt autoremove -y
+    apt-get autoremove -y
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
     rm -f /var/log/msmtp

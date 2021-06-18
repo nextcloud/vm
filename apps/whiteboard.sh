@@ -45,7 +45,7 @@ else
     then
         apt purge ffmpeg -y
     fi
-    apt autoremove -y
+    apt-get autoremove -y
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi

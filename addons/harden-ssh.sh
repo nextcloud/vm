@@ -50,7 +50,7 @@ else
     if is_this_installed libpam-google-authenticator
     then
         apt purge libpam-google-authenticator -y
-        apt autoremove -y
+        apt-get autoremove -y
     fi
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"

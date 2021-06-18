@@ -46,7 +46,7 @@ else
 fi
 
 # Protect against DDOS
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 apt -y install libapache2-mod-evasive
 mkdir -p /var/log/apache2/evasive
 chown -R www-data:root /var/log/apache2/evasive

@@ -133,7 +133,7 @@ check_distro_version
 
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
@@ -265,7 +265,7 @@ then
     then
         print_text_in_color "$ICyan" "Reinstalling certbot (Let's Encrypt) as a snap instead..."
         apt remove certbot -y
-        apt autoremove -y
+        apt-get autoremove -y
         install_if_not snapd
         snap install core
         snap install certbot --classic
@@ -473,8 +473,8 @@ we have removed Watchtower from this server. Updates will now happen for each co
 fi
 
 # Cleanup un-used packages
-apt autoremove -y
-apt autoclean
+apt-get autoremove -y
+apt-get autoclean
 
 # Update GRUB, just in case
 update-grub

@@ -550,8 +550,8 @@ if [ -f "$SYSTEM_DIR/$SCRIPTS/veracrypt-automount.sh" ]
 then
     print_text_in_color "$ICyan" "Installing veracrypt... This can take a long time!"
     add-apt-repository ppa:unit193/encryption -y
-    apt update -q4 & spinner_loading
-    apt install veracrypt --no-install-recommends -y
+    apt-get update -q4 & spinner_loading
+    apt-get install veracrypt --no-install-recommends -y
     # No need to copy the file since it is already synced via rsync
     # Create startup service
     cat << SERVICE > /etc/systemd/system/veracrypt-automount.service
@@ -582,7 +582,7 @@ then
         adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "$user" &>/dev/null
         usermod --append --groups smb-users,www-data "$user"
     done
-    DEBIAN_FRONTEND=noninteractive apt install samba -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+    DEBIAN_FRONTEND=noninteractive apt-get install samba -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
     # No need to sync files since they are already synced via rsync
 fi
 

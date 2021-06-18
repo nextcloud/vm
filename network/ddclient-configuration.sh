@@ -35,15 +35,15 @@ else
     then
         apt purge libjson-any-perl -y
     fi
-    apt autoremove -y
+    apt-get autoremove -y
     rm -f /etc/ddclient.conf
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
 
 # install needed tool
-apt update -q4 & spinner_loading
-DEBIAN_FRONTEND=noninteractive apt install ddclient -y
+apt-get update -q4 & spinner_loading
+DEBIAN_FRONTEND=noninteractive apt-get install ddclient -y
 
 # Test if file exists
 if [ ! -f /etc/ddclient.conf ]
