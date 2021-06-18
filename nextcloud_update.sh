@@ -108,7 +108,7 @@ It should then start working again."
     start_if_stopped docker
 fi
 
-# Check if /boot is filled more than 90% and exit the script if that's 
+# Check if /boot is filled more than 90% and exit the script if that's
 # the case since we don't want to end up with a broken system
 if [ -d /boot ]
 then
@@ -127,6 +127,18 @@ fi
 rm -f /root/php-upgrade.sh
 rm -f /tmp/php-upgrade.sh
 rm -f /root/db-migration.sh
+
+# Fix fancy progress bar for apt-get
+# https://askubuntu.com/a/754653
+if [ -d /etc/apt-get/apt-get.conf.d ]
+then
+    if [ -f /etc/apt-get/apt-get.conf.d/99progressbar ]
+    then
+        echo 'Dpkg::Progress-Fancy "1";' > /etc/apt-get/apt-get.conf.d/99progressbar
+        echo 'APT::Color "1";' > /etc/apt-get/apt-get.conf.d/99progressbar
+        chmod 644 /etc/apt-get/apt-get.conf.d/99progressbar
+    fi
+fi
 
 # Ubuntu 16.04 is deprecated
 check_distro_version
