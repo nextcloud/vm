@@ -108,7 +108,7 @@ It should then start working again."
     start_if_stopped docker
 fi
 
-# Check if /boot is filled more than 90% and exit the script if that's 
+# Check if /boot is filled more than 90% and exit the script if that's
 # the case since we don't want to end up with a broken system
 if [ -d /boot ]
 then
@@ -128,12 +128,24 @@ rm -f /root/php-upgrade.sh
 rm -f /tmp/php-upgrade.sh
 rm -f /root/db-migration.sh
 
+# Fix fancy progress bar for apt-get
+# https://askubuntu.com/a/754653
+if [ -d /etc/apt/apt.conf.d ]
+then
+    if ! [ -f /etc/apt/apt.conf.d/99progressbar ]
+    then
+        echo 'Dpkg::Progress-Fancy "1";' > /etc/apt/apt.conf.d/99progressbar
+        echo 'APT::Color "1";' >> /etc/apt/apt.conf.d/99progressbar
+        chmod 644 /etc/apt/apt.conf.d/99progressbar
+    fi
+fi
+
 # Ubuntu 16.04 is deprecated
 check_distro_version
 
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
@@ -265,7 +277,7 @@ then
     then
         print_text_in_color "$ICyan" "Reinstalling certbot (Let's Encrypt) as a snap instead..."
         apt remove certbot -y
-        apt autoremove -y
+        apt-get autoremove -y
         install_if_not snapd
         snap install core
         snap install certbot --classic
@@ -473,8 +485,8 @@ we have removed Watchtower from this server. Updates will now happen for each co
 fi
 
 # Cleanup un-used packages
-apt autoremove -y
-apt autoclean
+apt-get autoremove -y
+apt-get autoclean
 
 # Update GRUB, just in case
 update-grub

@@ -122,7 +122,7 @@ FINDTIME_=1800
 # failed attempts before banning an IP
 MAXRETRY_=20
 
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 install_if_not fail2ban -y
 check_command update-rc.d fail2ban disable
 

@@ -36,7 +36,7 @@ fi
 # Install and enable firewall
 if ! is_this_installed ufw
 then
-    DEBIAN_FRONTEND=noninteractive apt install ufw -y --no-install-recommends
+    DEBIAN_FRONTEND=noninteractive apt-get install ufw -y --no-install-recommends
     systemctl enable ufw &>/dev/null
     systemctl start ufw &>/dev/null
 fi

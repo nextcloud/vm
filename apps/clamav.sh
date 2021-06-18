@@ -31,7 +31,7 @@ else
     apt purge clamav-daemon -y
     apt purge clamav-freshclam -y
     apt purge clamav -y
-    apt autoremove -y
+    apt-get autoremove -y
     rm -f /etc/systemd/system/clamav-daemon.service
     rm -f "$SCRIPTS"/clamav-fullscan.sh
     rm -f "$VMLOGS"/clamav-fullscan.log
@@ -51,8 +51,8 @@ ram_check 3 "ClamAV"
 cpu_check 2 "ClamAV"
 
 # Install needed tools
-apt update -q4 & spinner_loading
-apt install clamav clamav-freshclam clamav-daemon -y
+apt-get update -q4 & spinner_loading
+apt-get install clamav clamav-freshclam clamav-daemon -y
 
 # stop freshclam and update the database
 check_command systemctl stop clamav-freshclam

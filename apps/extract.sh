@@ -35,7 +35,7 @@ else
             apt purge "$packet" -y
         fi
     done
-    apt autoremove -y
+    apt-get autoremove -y
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi

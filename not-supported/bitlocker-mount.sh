@@ -72,7 +72,7 @@ then
 Please run this script again if you want to try again."
     msg_box "We will now remove dislocker so that you keep a clean system."
     apt purge dislocker -y
-    apt autoremove -y
+    apt-get autoremove -y
     exit
 fi
 
@@ -89,7 +89,7 @@ If you want to cancel, type 'exit' and press [ENTER].")
     then
         msg_box "We will now remove dislocker so that you keep a clean system."
         apt purge dislocker -y
-        apt autoremove -y
+        apt-get autoremove -y
         exit 1
     fi
     mkdir -p /media/bitlocker/1
@@ -120,7 +120,7 @@ If you want to cancel, type 'exit' and press [ENTER].")
         sed -i '/fuse.dislocker/d' /etc/fstab
         msg_box "We will now remove dislocker so that you keep a clean system."
         apt purge dislocker -y
-        apt autoremove -y
+        apt-get autoremove -y
         exit 1
     elif echo "$MOUNT_PATH" | grep -q " "
     then

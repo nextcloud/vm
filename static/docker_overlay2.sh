@@ -148,7 +148,7 @@ rm -Rf /var/cache/apt/archives/aufs*
 
 # Upgrade docker to latest version
 rm -Rf /var/lib/docker
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 apt upgrade docker-ce -y
 
 # Load docker images back

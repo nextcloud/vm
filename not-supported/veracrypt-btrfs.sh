@@ -35,8 +35,8 @@ we need to add a 3rd Party PPA, which theoretically could set your server under 
     fi
     msg_box "We will now install Veracrypt. This can take a long time. Please be patient!"
     add-apt-repository ppa:unit193/encryption -y
-    apt update -q4 & spinner_loading
-    apt install veracrypt --no-install-recommends -y
+    apt-get update -q4 & spinner_loading
+    apt-get install veracrypt --no-install-recommends -y
 fi
 
 # Discover drive
