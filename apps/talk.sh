@@ -57,7 +57,7 @@ else
     do
         if is_this_installed "$app"
         then
-            apt purge "$app" -y
+            apt-get purge "$app" -y
         fi
     done
     apt-get autoremove -y

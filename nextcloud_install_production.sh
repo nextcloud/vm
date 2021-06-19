@@ -218,7 +218,7 @@ stop_if_installed mariadb-server
 # We don't want automatic updates since they might fail (we use our own script)
 if is_this_installed unattended-upgrades
 then
-    apt purge unattended-upgrades -y
+    apt-get purge unattended-upgrades -y
     apt-get autoremove -y
     rm -rf /var/log/unattended-upgrades
 fi

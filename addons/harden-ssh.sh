@@ -49,7 +49,7 @@ else
     rm -f "/home/$UNIXUSER/.google_authenticator"
     if is_this_installed libpam-google-authenticator
     then
-        apt purge libpam-google-authenticator -y
+        apt-get purge libpam-google-authenticator -y
         apt-get autoremove -y
     fi
     # Show successful uninstall if applicable

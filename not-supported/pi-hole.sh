@@ -118,13 +118,13 @@ Please report this to $ISSUES"
     # Remove all initially installed applications
     for program in "${INSTALLED[@]}"
     do
-        apt purge "$program" -y
+        apt-get purge "$program" -y
     done
 
     # Remove unbound
     if is_this_installed unbound
     then
-        apt purge unbound -y
+        apt-get purge unbound -y
     fi
 
     # Remove not needed dependencies
