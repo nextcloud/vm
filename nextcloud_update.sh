@@ -249,7 +249,7 @@ then
     fi
 fi
 
-export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
 # Update Netdata
 if [ -d /etc/netdata ]
@@ -276,7 +276,7 @@ then
     if ! snap list certbot >/dev/null 2>&1
     then
         print_text_in_color "$ICyan" "Reinstalling certbot (Let's Encrypt) as a snap instead..."
-        apt remove certbot -y
+        apt-get remove certbot -y
         apt-get autoremove -y
         install_if_not snapd
         snap install core

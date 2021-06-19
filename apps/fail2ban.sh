@@ -38,7 +38,7 @@ else
     then
         print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
         fail2ban-client unban --all
-        apt purge fail2ban -y
+        apt-get purge fail2ban -y
         rm -rf /etc/fail2ban
         crontab -u root -l | grep -v "$SCRIPTS/daily_fail2ban_report.sh"  | crontab -u root -
         rm -rf "$SCRIPTS/daily_fail2ban_report.sh"

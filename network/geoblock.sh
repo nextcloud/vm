@@ -35,7 +35,7 @@ else
     if is_this_installed libapache2-mod-geoip
     then
         a2dismod geoip
-        apt purge libapache2-mod-geoip -y
+        apt-get purge libapache2-mod-geoip -y
     fi
     apt-get autoremove -y
     sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf

@@ -30,10 +30,10 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    apt purge ddclient -y
+    apt-get purge ddclient -y
     if is_this_installed libjson-any-perl
     then
-        apt purge libjson-any-perl -y
+        apt-get purge libjson-any-perl -y
     fi
     apt-get autoremove -y
     rm -f /etc/ddclient.conf

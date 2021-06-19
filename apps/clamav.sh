@@ -28,9 +28,9 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    apt purge clamav-daemon -y
-    apt purge clamav-freshclam -y
-    apt purge clamav -y
+    apt-get purge clamav-daemon -y
+    apt-get purge clamav-freshclam -y
+    apt-get purge clamav -y
     apt-get autoremove -y
     rm -f /etc/systemd/system/clamav-daemon.service
     rm -f "$SCRIPTS"/clamav-fullscan.sh

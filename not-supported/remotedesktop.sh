@@ -216,10 +216,10 @@ install_remove_packet() {
     if is_this_installed "$1"
     then
         print_text_in_color "$ICyan" "Uninstalling $2"
-        apt purge "$1" -y
+        apt-get purge "$1" -y
         if [ "$1" = "grsync" ]
         then
-            apt purge gnome-themes-extra -y
+            apt-get purge gnome-themes-extra -y
         fi
         apt-get autoremove -y
         if [ "$1" = "nautilus" ]
@@ -267,7 +267,7 @@ picard sound-juicer vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-ex
             do
                 if is_this_installed "$app"
                 then
-                    apt purge "$app" -y
+                    apt-get purge "$app" -y
                 fi
             done
             apt-get autoremove -y
@@ -301,8 +301,8 @@ picard sound-juicer vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-ex
         if is_this_installed makemkv-oss || is_this_installed makemkv-bin
         then
             print_text_in_color "$ICyan" "Uninstalling $SUBTITLE"
-            apt purge makemkv-oss -y
-            apt purge makemkv-bin -y
+            apt-get purge makemkv-oss -y
+            apt-get purge makemkv-bin -y
             apt-get autoremove -y
             add-apt-repository --remove ppa:heyarje/makemkv-beta -y
             apt-get update -q4 & spinner_loading
@@ -333,7 +333,7 @@ We will need to add a 3rd party repository to install it which can set your serv
         if is_this_installed onlyoffice-desktopeditors
         then
             print_text_in_color "$ICyan" "Uninstalling $SUBTITLE"
-            apt purge onlyoffice-desktopeditors -y
+            apt-get purge onlyoffice-desktopeditors -y
             apt-get autoremove -y
             rm -f /etc/apt/sources.list.d/onlyoffice-desktopeditors.list
             apt-get update -q4 & spinner_loading

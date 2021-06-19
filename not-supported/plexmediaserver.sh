@@ -26,7 +26,7 @@ then
 
 If you want to delete PLEX Media Server and it's data to be able \
 to start from scratch, run the following two commands:
-'sudo apt purge plexmediaserver'
+'sudo apt-get purge plexmediaserver'
 'sudo deluser plex'
 
 Attention! This will delete the user-data:
