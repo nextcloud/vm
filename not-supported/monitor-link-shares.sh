@@ -36,7 +36,7 @@ fi
 cat << MONITOR_LINK_SHARES > "$SCRIPTS/audit-link-shares.sh"
 #!/bin/bash
 
-LINK_SHARE="\$(timeout 30m tail -f "$VMLOGS/audit.log" | grep "has been shared via link")"
+LINK_SHARE="\$(timeout 30m tail -n0 -f "$VMLOGS/audit.log" | grep "has been shared via link")"
 if [ -z "\$LINK_SHARE" ]
 then
     exit
