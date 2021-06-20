@@ -57,10 +57,10 @@ else
     do
         if is_this_installed "$app"
         then
-            apt purge "$app" -y
+            apt-get purge "$app" -y
         fi
     done
-    apt autoremove -y
+    apt-get autoremove -y
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -246,7 +246,7 @@ echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf
 ## Installation
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nats-server.asc" "https://packaging.gitlab.io/nats-server/gpg.key"
 echo "deb https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 install_if_not nats-server
 chown nats:nats /etc/nats/nats.conf
 start_if_stopped nats-server
@@ -259,7 +259,7 @@ check_command systemctl enable nats-server
 source /etc/lsb-release
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-janus.asc" "https://packaging.gitlab.io/janus/gpg.key"
 echo "deb https://packaging.gitlab.io/janus/$DISTRIB_CODENAME $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-janus.list
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 install_if_not janus
 ## Configuration
 sed -i "s|#turn_rest_api_key\s*=.*|$JANUS_API_KEY|" /etc/janus/janus.jcfg
@@ -273,7 +273,7 @@ check_command systemctl enable janus
 ## Installation
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc" "https://packaging.gitlab.io/nextcloud-spreed-signaling/gpg.key"
 echo "deb https://packaging.gitlab.io/nextcloud-spreed-signaling signaling main" > /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 install_if_not nextcloud-spreed-signaling
 ## Configuration
 if [ ! -f "$SIGNALING_SERVER_CONF" ];

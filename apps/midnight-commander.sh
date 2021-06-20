@@ -30,8 +30,8 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    apt purge mc -y
-    apt autoremove -y
+    apt-get purge mc -y
+    apt-get autoremove -y
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi

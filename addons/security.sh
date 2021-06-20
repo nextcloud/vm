@@ -33,7 +33,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    apt purge libapache2-mod-evasive -y
+    apt-get purge libapache2-mod-evasive -y
     rm -rf /var/log/apache2/evasive
     rm -f "$ENVASIVE"
     a2dismod reqtimeout
@@ -46,8 +46,8 @@ else
 fi
 
 # Protect against DDOS
-apt update -q4 & spinner_loading
-apt -y install libapache2-mod-evasive
+apt-get update -q4 & spinner_loading
+install_if_not libapache2-mod-evasive
 mkdir -p /var/log/apache2/evasive
 chown -R www-data:root /var/log/apache2/evasive
 if [ ! -f "$ENVASIVE" ]
@@ -65,7 +65,7 @@ ENVASIVE
 fi
 
 # Protect against Slowloris
-#apt -y install libapache2-mod-qos
+#install_if_not libapache2-mod-qos
 a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 
 cat << SPAMHAUS_ENABLE > "$SCRIPTS/spamhaus_cronjob.sh"

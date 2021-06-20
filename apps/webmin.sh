@@ -32,7 +32,7 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     check_command apt-get purge webmin -y
-    apt autoremove -y
+    apt-get autoremove -y
     rm -f /etc/apt/sources.list.d/webmin.list
     rm -f /etc/apt/trusted.gpg.d/webmin.gpg
     # Show successful uninstall if applicable
@@ -55,7 +55,7 @@ curl_to_dir http://www.webmin.com "jcameron-key.asc" "$SCRIPTS"
 check_command apt-key --keyring /etc/apt/trusted.gpg.d/webmin.gpg add "$SCRIPTS/jcameron-key.asc"
 rm -f "$SCRIPTS/jcameron-key.asc"
 echo "deb https://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 install_if_not webmin
 
 print_text_in_color "$ICyan" "Configuring Webmin..."

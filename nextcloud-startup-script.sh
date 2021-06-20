@@ -537,15 +537,15 @@ print_text_in_color "$ICyan" "System will now upgrade..."
 bash $SCRIPTS/update.sh minor
 
 # Cleanup 2
-apt autoremove -y
-apt autoclean
+apt-get autoremove -y
+apt-get autoclean
 
 # Set trusted domain in config.php
 run_script NETWORK trusted
 
 # Remove preference for IPv4
 rm -f /etc/apt/apt.conf.d/99force-ipv4 
-apt update
+apt-get update
 
 # Success!
 msg_box "The installation process is *almost* done.

@@ -38,14 +38,14 @@ else
     do
         if is_this_installed "$packet"
         then
-            apt purge "$packet" -y
+            apt-get purge "$packet" -y
         fi
     done
     if is_this_installed ffmpeg && ! nextcloud_occ config:system:get enabledPreviewProviders | grep -q "Movie"
     then
-        apt purge ffmpeg -y
+        apt-get purge ffmpeg -y
     fi
-    apt autoremove -y
+    apt-get autoremove -y
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi

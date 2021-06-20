@@ -106,8 +106,8 @@ redis-cli SHUTDOWN
 chown redis:root /etc/redis/redis.conf
 chmod 600 /etc/redis/redis.conf
 
-apt update -q4 & spinner_loading
-apt autoremove -y
-apt autoclean
+apt-get update -q4 & spinner_loading
+apt-get autoremove -y
+apt-get autoclean
 
 exit

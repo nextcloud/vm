@@ -29,8 +29,8 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     rm -f "$SCRIPTS/smart-notification.sh"
-    check_command apt purge smartmontools -y
-    apt autoremove -y
+    check_command apt-get purge smartmontools -y
+    apt-get autoremove -y
     rm -f /etc/smartd.conf
     # reset the cronjob
     crontab -u root -l | grep -v 'smartctl.sh'  | crontab -u root -
@@ -99,8 +99,8 @@ then
     msg_box "It seems like not even one drive supports smart monitoring.
 This is completely normal if you run this script in a VM since virtual drives don't support smart monitoring.
 We will uninstall smart monitoring now since you won't get any helpful notification out of this going forward."
-    apt purge smartmontools -y
-    apt autoremove -y
+    apt-get purge smartmontools -y
+    apt-get autoremove -y
     exit 1
 fi
 
