@@ -108,77 +108,24 @@ SCRIPT_PATH="$SCRIPTS/nextcloud-av-notification.sh"
 cat << AV_NOTIFICATION >> "$SCRIPT_PATH"
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
-# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
-# Copyright © Georgiy Sitnikov
-# Inspired by/based on https://github.com/GAS85/nextcloud_scripts/blob/master/nextcloud-av-notification.sh
-
-SCRIPT_NAME="Nextcloud Antivirus Notification"
-SCRIPT_EXPLAINER="This script sends notifications about infected files."
-
-# Variables
-lastMinutes=30
-LOGFILE="/var/log/nextcloud/nextcloud.log"
-tempfile="/tmp/nextcloud_av_notofications-\$(date +"%M-%N").tmp"
-getCurrentTimeZone=\$(date +"%:::z")
-getCurrentTimeZone="\${getCurrentTimeZone:1}"
-timeShiftTo=\$((60 * \$getCurrentTimeZone))
-timeShiftFrom=\$((60 * \$getCurrentTimeZone + \$lastMinutes))
-dateFrom=\$(date --date="-\$timeShiftFrom min" "+%Y-%m-%dT%H:%M:00+00:00")
-dateTo=\$(date --date="-\$timeShiftTo min" "+%Y-%m-%dT%H:%M:00+00:00")
-
-# Check if nextcloud.log exist
-if ! [ -f "\$LOGFILE" ]
+INFECTED_FILES_LOG="\$(timeout 30m tail -n0 -f "$VMLOGS/nextcloud.log" | grep "Infected file" | grep '"level":4,')"
+if [ -z "\$INFECTED_FILES_LOG" ]
 then
     exit
 fi
 
-# Extract logs for a last defined minutes
-awk -v d1="\$dateFrom" -v d2="\$dateTo" -F'["]' '\$10 > d1 && \$10 < d2 || \$10 ~ d2' "\$LOGFILE" \
-| grep "Infected file" | awk -F'["]' '{print \$34}' > "\$tempfile"
+source "$SCRIPTS/fetch_lib.sh"
+INFECTED_FILES_LOG="\$(prettify_json "\$INFECTED_FILES_LOG")"
+INFECTED_FILES="\$(echo "\$INFECTED_FILES_LOG" | grep '"message":' | sed 's|.*"message": "||;s| File: .*||' | sort | uniq)"
 
-# Extract logs for a last defined minutes, from a ROTATED log if present
-if test "\$(find "\$LOGFILE.1" -mmin -"\$lastMinutes")"
+if ! send_mail "Virus was found" "The following action was executed by the antivirus app:
+\$INFECTED_FILES\n
+See the full log below:
+\$INFECTED_FILES_LOG"
 then
-    awk -v d1="\$dateFrom" -v d2="\$dateTo" -F'["]' '\$10 > d1 && \$10 < d2 || \$10 ~ d2' "\$LOGFILE.1" \
-| grep "Infected file" | awk -F'["]' '{print \$34}' >> "\$tempfile"
+    notify_admin_gui "Virus was found" "The following action was executed by the antivirus app:
+\$INFECTED_FILES"
 fi
-
-# Exit if no results found
-if ! [ -s "\$tempfile" ]
-then
-    rm "\$tempfile"
-    exit
-fi
-
-# Load the library if an infected file was found
-# shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-
-# Check if root
-root_check
-
-# Send notification
-WORDS=(found deleted)
-for toFind in "\${WORDS[@]}"
-do
-    if grep -q "\$toFind" "\$tempfile"
-    then
-        # Prepare output
-        grep "\$toFind" "\$tempfile" | awk '{\$1=""; \$2 = ""; \$3 = "";\$4 = ""; \$5 = ""; \$6 = ""; print \$0}' \
-| sed -r -e 's|appdata_.{12}||' | sed 's|   ||g' > "\$tempfile.output"
-
-        # Send notification
-        notify_admin_gui \
-        "Nextcloud Antivirus - Infected File(s) \$toFind!" \
-        "\$(cat "\$tempfile.output" | cut -c -4000)"
-    fi
-done
-
-rm "\$tempfile"
-rm "\$tempfile.output"
-
-exit
 AV_NOTIFICATION
 
 chown root:root "$SCRIPT_PATH"
@@ -186,7 +133,7 @@ chmod 700 "$SCRIPT_PATH"
 
 # Create the cronjob
 crontab -u root -l | grep -v "$SCRIPT_PATH" | crontab -u root -
-crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPT_PATH > /dev/null 2>&1"; } | crontab -u root -
+crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPT_PATH >/dev/null"; } | crontab -u root -
 
 # Inform the user
 msg_box "ClamAV was successfully installed.
@@ -264,6 +211,12 @@ then
     exit
 fi
 
+# Send mail that backup was started
+if ! send_mail "Weekly ClamAV scan started." "You will be notified again when the scan is finished!"
+then
+    notify_admin_gui "Weekly ClamAV scan started." "You will be notified again when the scan is finished!"
+fi
+
 # Only scan for changed files in the last week if initial full-scan is done
 if [ -n "\$FULLSCAN_DONE" ]
 then
@@ -289,11 +242,16 @@ then
     sed -i "s|^FULLSCAN_DONE.*|FULLSCAN_DONE=1|"  "$SCRIPTS"/clamav-fullscan.sh
 fi
 
+INFECTED_FILES_LOG="\$(sed -n '/----------- SCAN SUMMARY -----------/,\$p' $VMLOGS/clamav-fullscan.log)"
+INFECTED_FILES="\$(grep 'FOUND$' $VMLOGS/clamav-fullscan.log)"
+
 # Send notification
-notify_admin_gui \
-"Your weekly full-scan ClamAV report" \
-"\$(sed -n '/----------- SCAN SUMMARY -----------/,\$p' $VMLOGS/clamav-fullscan.log)\n
-\$(grep -i infected $VMLOGS/clamav-fullscan.log | grep -v "Infected files:")"
+if ! send_mail "Your weekly full-scan ClamAV report" "\$INFECTED_FILES_LOG\n
+\$INFECTED_FILES"
+then
+    notify_admin_gui "Your weekly full-scan ClamAV report" "\$INFECTED_FILES_LOG\n
+\$INFECTED_FILES"
+fi
 CLAMAV_REPORT
 
 # Make the script executable

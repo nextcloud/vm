@@ -224,10 +224,12 @@ fi
 
 # Report if something was found
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-notify_admin_gui \
-"Your daily Fail2Ban report" \
-"These IP's got banned today:
+if ! send_mail "Your daily Fail2Ban report" "These IP's got banned today:
 \$BANNED_IPS"
+then
+    notify_admin_gui "Your daily Fail2Ban report" "These IP's got banned today:
+\$BANNED_IPS"
+fi
 FAIL2BAN_REPORT
 
 # Add crontab entry
