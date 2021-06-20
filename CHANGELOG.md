@@ -37,6 +37,8 @@ PR's are more than welcome. Happy Nextclouding!
 - Fixed password generation in edge cases
 - Reworked the cookielifetime script
 - Updated geoblock database - June 2021
+- Added option to check for 0-byte files
+- Changed from apt to apt-get
 - Harden-SSH script - allow to set up 2FA authentication
 - SMB-server - added option to automatically empty recylce bins
 - SMB-server - added option to empty all recycle bins
