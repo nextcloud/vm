@@ -133,7 +133,7 @@ chmod 700 "$SCRIPT_PATH"
 
 # Create the cronjob
 crontab -u root -l | grep -v "$SCRIPT_PATH" | crontab -u root -
-crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPT_PATH >/dev/null"; } | crontab -u root -
+crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPT_PATH > /dev/null 2>&1"; } | crontab -u root -
 
 # Inform the user
 msg_box "ClamAV was successfully installed.
