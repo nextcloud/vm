@@ -127,6 +127,7 @@ fi
 rm -f /root/php-upgrade.sh
 rm -f /tmp/php-upgrade.sh
 rm -f /root/db-migration.sh
+rm -f /root/major.sh
 
 # Fix fancy progress bar for apt-get
 # https://askubuntu.com/a/754653
