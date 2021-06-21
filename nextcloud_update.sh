@@ -540,7 +540,7 @@ if [ -n "$UPDATED_APPS" ]
 then
     print_text_in_color "$IGreen" "$UPDATED_APPS"
     notify_admin_gui \
-    "You've got app updates!" \
+    "Nextcloud apps just got updated!" \
     "$UPDATED_APPS"
 else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
