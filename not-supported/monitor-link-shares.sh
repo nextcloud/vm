@@ -63,5 +63,8 @@ chmod 700 "$SCRIPTS/audit-link-shares.sh"
 crontab -u root -l | grep -v "$SCRIPTS/audit-link-shares.sh"  | crontab -u root -
 crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPTS/audit-link-shares.sh >/dev/null" ; } | crontab -u root -
 
+# enable admin_audit app
+install_and_enable_app admin_audit
+
 msg_box "$SCRIPT_NAME was successfully configured!
 You will get a mail if new link shares were created."
