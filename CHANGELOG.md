@@ -25,6 +25,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Added retention for Nextclouds user activities
 - Previewgenerator - allow to clear all previews
 - Update script - update Nextclouds mimetype list
+- Moved mimteype update to nextcloud_configuration menu
 - Reworked office scripts
 - Update script - change crontab on all installations to 5 minutes
 - Fixed a bug with Netdata
@@ -39,6 +40,7 @@ PR's are more than welcome. Happy Nextclouding!
 - Updated geoblock database - June 2021
 - Added option to check for 0-byte files
 - Changed from apt to apt-get
+- Simplified ClamAV notifications and small fix to fail2ban notification
 - Harden-SSH script - allow to set up 2FA authentication
 - SMB-server - added option to automatically empty recylce bins
 - SMB-server - added option to empty all recycle bins
