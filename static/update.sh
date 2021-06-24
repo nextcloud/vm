@@ -27,9 +27,6 @@ then
 elif [[ "${1}" == *"RC"* ]]
 then
     echo "${1}" > /tmp/prerelease.version
-elif [[ "${1}" == *"nextmajor"* ]]
-then
-    echo "$((${CURRENTVERSION%%.*}-2))" > /tmp/nextmajor.version
 fi
 
 # Delete, download, run

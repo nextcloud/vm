@@ -36,7 +36,7 @@ fi
 cat << MONITOR_LINK_SHARES > "$SCRIPTS/audit-link-shares.sh"
 #!/bin/bash
 
-LINK_SHARE="\$(timeout 30m tail -f "$VMLOGS/audit.log" | grep "has been shared via link")"
+LINK_SHARE="\$(timeout 30m tail -n0 -f "$VMLOGS/audit.log" | grep "has been shared via link")"
 if [ -z "\$LINK_SHARE" ]
 then
     exit
@@ -62,6 +62,9 @@ chmod 700 "$SCRIPTS/audit-link-shares.sh"
 # Create cronjob
 crontab -u root -l | grep -v "$SCRIPTS/audit-link-shares.sh"  | crontab -u root -
 crontab -u root -l | { cat; echo "*/30 * * * * $SCRIPTS/audit-link-shares.sh >/dev/null" ; } | crontab -u root -
+
+# enable admin_audit app
+install_and_enable_app admin_audit
 
 msg_box "$SCRIPT_NAME was successfully configured!
 You will get a mail if new link shares were created."

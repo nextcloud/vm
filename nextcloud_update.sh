@@ -540,7 +540,7 @@ if [ -n "$UPDATED_APPS" ]
 then
     print_text_in_color "$IGreen" "$UPDATED_APPS"
     notify_admin_gui \
-    "You've got app updates!" \
+    "Nextcloud apps just got updated!" \
     "$UPDATED_APPS"
 else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
@@ -842,8 +842,6 @@ then
     nextcloud_occ upgrade
     # Optimize
     print_text_in_color "$ICyan" "Optimizing Nextcloud..."
-    #nextcloud_occ maintenance:mimetype:update-js
-    #nextcloud_occ maintenance:mimetype:update-db
     yes | nextcloud_occ db:convert-filecache-bigint
     nextcloud_occ db:add-missing-indices
     CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')

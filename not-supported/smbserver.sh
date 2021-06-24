@@ -1388,13 +1388,13 @@ AUTOMATIC_CLEANUP
     msg_box "Automatic recycle bin cleanup was successfully configured!" "$SUBTITLE"
 
     # Allow to adjust Nextcloud to do the same
-    if yesno_box_yes "Do you want Nextcloud to delete files in its trashbin that were deleted more than 2 days ago \
-and file versions that were created more than 2 days ago, too?" "$SUBTITLE"
+    if yesno_box_yes "Do you want Nextcloud to delete files in its trashbin that were deleted more than 4 days ago \
+and file versions that were created more than 4 days ago, too?" "$SUBTITLE"
     then
-        nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 2"
-        nextcloud_occ config:system:set versions_retention_obligation --value="auto, 2"
-        msg_box "Nextcloud was successfully configured to delete files in its trashbin that were deleted more than 2 days ago \
-and file versions that were created more than 2 days ago!" "$SUBTITLE"
+        nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 4"
+        nextcloud_occ config:system:set versions_retention_obligation --value="auto, 4"
+        msg_box "Nextcloud was successfully configured to delete files in its trashbin that were deleted more than 4 days ago \
+and file versions that were created more than 4 days ago!" "$SUBTITLE"
     fi
 }
 
