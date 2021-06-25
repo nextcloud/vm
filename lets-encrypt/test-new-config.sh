@@ -64,7 +64,7 @@ CRONTAB
 chmod +x $SCRIPTS/letsencryptrenew.sh
 # Add cronjob
 crontab -u root -l | grep -v "$SCRIPTS/letsencryptrenew.sh" | crontab -u root -
-crontab -u root -l | { cat; echo "3 */12 * * * $SCRIPTS/letsencryptrenew.sh"; } | crontab -u root -
+crontab -u root -l | { cat; echo "3 */12 * * * $SCRIPTS/letsencryptrenew.sh >/dev/null"; } | crontab -u root -
 
 # Cleanup
 rm -f $SCRIPTS/test-new-config.sh
