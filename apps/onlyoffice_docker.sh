@@ -134,11 +134,6 @@ install_docker
 docker pull onlyoffice/documentserver:latest
 docker run -i -t -d -p 127.0.0.3:9090:80 --restart always --name onlyoffice onlyoffice/documentserver
 
-# Licensed version
-# https://helpcenter.onlyoffice.com/server/integration-edition/docker/docker-installation.aspx
-# docker run -i -t -d -p 127.0.0.3:9090:80 --restart=always --name onlyoffice \
-# -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data  onlyoffice/documentserver-ie
-
 # Install apache2
 install_if_not apache2
 
