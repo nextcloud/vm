@@ -24,7 +24,6 @@ Server installation. Simplified. :cloud:
 - PostgreSQL 12
 - PHP-FPM 7.4
 - Redis Memcache (latest stable version from PECL)
-- APCu local cache (latest stable version from PECL)
 - PHP-igbinary (latest stable version from PECL
 - PHP-smbclient (latest stable version from PECL)
 - Nextcloud Server Latest

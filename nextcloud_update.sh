@@ -55,6 +55,19 @@ If you are sure that no update or backup is currently running, you can fix this 
     exit 1
 fi
 
+# Change from APCu to Redis for local cache
+# https://github.com/nextcloud/vm/pull/2040
+if pecl list | grep apcu >/dev/null 2>&1
+then
+    sed -i "/memcache.local/d" "$NCPATH"/config/config.php
+    if pecl list | grep redis >/dev/null 2>&1
+    then
+        nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
+    else
+       nextcloud_occ config:system:delete memcache.local
+    fi
+fi
+
 # Create a snapshot before doing anything else
 check_free_space
 if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
@@ -324,13 +337,33 @@ then
     check_command phpenmod -v ALL redis
 fi
 
-# Upgrade APCu and igbinary
-#if [ "${CURRENTVERSION%%.*}" -ge "17" ]
-if [ "${CURRENTVERSION%%.*}" -ge "23" ]
+# Remove APCu https://github.com/nextcloud/vm/issues/2039
+if is_this_installed "php$PHPVER"-dev
+then
+    # Delete PECL APCu
+    if pecl list | grep -q apcu
+    then
+        if ! yes no | pecl uninstall apcu
+        then
+            msg_box "APCu PHP module removal failed! Please report this to $ISSUES"
+        else
+            print_text_in_color "$IGreen" "APCu PHP module removal OK!"
+        fi
+    # Delete everything else
+    check_command phpdismod -v ALL apcu
+    rm -f $PHP_MODS_DIR/apcu.ini
+    sed -i "/extension=apcu.so/d" "$PHP_INI"
+    sed -i "/APCu/d" "$PHP_INI"
+    sed -i "/apc./d" "$PHP_INI"
+    fi
+fi
+
+# Upgrade other PECL dependencies
+if [ "${CURRENTVERSION%%.*}" -ge "17" ]
 then
     if [ -f "$PHP_INI" ]
     then
-        print_text_in_color "$ICyan" "Trying to upgrade igbinary, smbclient, and APCu..."
+        print_text_in_color "$ICyan" "Trying to upgrade igbinary, and smbclient..."
         if pecl list | grep igbinary >/dev/null 2>&1
         then
             yes no | pecl upgrade igbinary
@@ -373,35 +406,8 @@ then
                 sed -i "/extension=smbclient.so/d" "$PHP_INI"
             fi
         fi
-        if pecl list | grep -q apcu
-        then
-            yes no | pecl upgrade apcu
-            # Remove old igbinary
-            if grep -qFx extension=apcu.so "$PHP_INI"
-            then
-                sed -i "/extension=apcu.so/d" "$PHP_INI"
-            fi
-            # Check if apcu is enabled and create the file if not
-            if [ ! -f $PHP_MODS_DIR/apcu.ini ]
-            then
-                touch $PHP_MODS_DIR/apcu.ini
-            fi
-            # Enable new apcu
-            if ! grep -qFx extension=apcu.so $PHP_MODS_DIR/apcu.ini
-            then
-                echo "# PECL apcu" > $PHP_MODS_DIR/apcu.ini
-                echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
-                check_command phpenmod -v ALL apcu
-            fi
-            # Fix https://help.nextcloud.com/t/nc-21-manual-update-issues/108693/4?$
-            if ! grep -qFx apc.enable_cli=1 $PHP_MODS_DIR/apcu.ini
-            then
-                echo "apc.enable_cli=1" >> $PHP_MODS_DIR/apcu.ini
-                check_command phpenmod -v ALL apcu
-            fi
-        fi
         if pecl list | grep -q inotify
-        then 
+        then
             # Remove old inotify
             if grep -qFx extension=inotify.so "$PHP_INI"
             then
