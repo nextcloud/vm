@@ -55,6 +55,16 @@ If you are sure that no update or backup is currently running, you can fix this 
     exit 1
 fi
 
+# Change from APCu to Redis for local cache
+# https://github.com/nextcloud/vm/pull/2040
+if pecl list | grep redis >/dev/null 2>&1
+then
+    sed -i "/memcache.local/d" "$NCPATH"/config/config.php
+    nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
+else
+   nextcloud_occ config:system:delete memcache.local
+fi
+
 # Create a snapshot before doing anything else
 check_free_space
 if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
@@ -324,21 +334,13 @@ then
     check_command phpenmod -v ALL redis
 fi
 
-# Change from APCu to Redis for local cache
-if pecl list | grep redis >/dev/null 2>&1
-then
-    nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
-else
-   nextcloud_occ config:system:delete memcache.local
-fi
-
 # Remove APCu https://github.com/nextcloud/vm/issues/2039
 if is_this_installed "php$PHPVER"-dev
 then
     # Delete PECL APCu
     if pecl list | grep -q apcu
     then
-        if ! yes no | pecl uninstall -Z apcu
+        if ! yes no | pecl uninstall apcu
         then
             msg_box "APCu PHP module removal failed! Please report this to $ISSUES"
         else
