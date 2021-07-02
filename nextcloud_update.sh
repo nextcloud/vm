@@ -325,7 +325,8 @@ then
 fi
 
 # Upgrade APCu and igbinary
-if [ "${CURRENTVERSION%%.*}" -ge "17" ]
+#if [ "${CURRENTVERSION%%.*}" -ge "17" ]
+if [ "${CURRENTVERSION%%.*}" -ge "23" ]
 then
     if [ -f "$PHP_INI" ]
     then
