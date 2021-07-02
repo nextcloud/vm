@@ -57,12 +57,15 @@ fi
 
 # Change from APCu to Redis for local cache
 # https://github.com/nextcloud/vm/pull/2040
-if pecl list | grep redis >/dev/null 2>&1
+if pecl list | grep apcu >/dev/null 2>&1
 then
     sed -i "/memcache.local/d" "$NCPATH"/config/config.php
-    nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
-else
-   nextcloud_occ config:system:delete memcache.local
+    if pecl list | grep redis >/dev/null 2>&1
+    then
+        nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
+    else
+       nextcloud_occ config:system:delete memcache.local
+    fi
 fi
 
 # Create a snapshot before doing anything else
