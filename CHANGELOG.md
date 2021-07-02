@@ -18,6 +18,7 @@ PR's are more than welcome. Happy Nextclouding!
 ## 21.0.3
 
 ### Small changelog:
+- Remove APCu and replace with Redis instead
 - Made it possible to add subdomains to deSEC
 - Improved spinner_loading
 - Added dates to automatic updates log
