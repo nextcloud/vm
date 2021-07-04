@@ -549,6 +549,8 @@ then
     notify_admin_gui \
     "Nextcloud apps just got updated!" \
     "$UPDATED_APPS"
+    # Just make sure everything is updated (sometimes app requires occ upgrade to be run)
+    nextcloud_occ upgrade
 else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
 fi
