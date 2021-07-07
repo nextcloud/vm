@@ -50,6 +50,7 @@ choice=$(whiptail --title "$TITLE" --nocancel --menu \
 "Please choose the mail provider that you want to use.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "mail.de" "(German mail provider)" \
+"SMTP2GO" "(https://www.smtp2go.com)" \
 "Manual" "(Complete manual setup)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -58,6 +59,12 @@ case "$choice" in
         MAIL_SERVER="smtp.mail.de"
         PROTOCOL="SSL"
         SMTP_PORT="465"
+    ;;
+    "SMTP2GO")
+        NEEDS_CREDENTIALS=1
+        MAIL_SERVER="mail-eu.smtp2go.com"
+        PROTOCOL="SSL"
+        SMTP_PORT="465"	
     ;;
     # Manual setup will be handled a few lines below
     "")
@@ -131,7 +138,7 @@ fi
 # Enter your SMTP username
 if [ -n "$NEEDS_CREDENTIALS" ] || yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
 then
-    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com")
+    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com, or just the actual 'username'")
 
     # Enter your mail user password
     MAIL_PASSWORD=$(input_box_flow "Please enter the SMTP password to your email provider.")
@@ -199,6 +206,35 @@ account default : $MAIL_USERNAME
 ### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
 # recipient=$RECIPIENT
 MSMTP_CONF
+elif [ -n SMTP2GO ]
+then
+# With AUTH (Username and Password)
+cat << MSMTP_CONF > /etc/msmtprc
+# Set default values for all following accounts.
+defaults
+auth            on
+aliases         /etc/aliases
+$MSMTP_ENCRYPTION1
+$MSMTP_ENCRYPTION2
+
+tls_trust_file  /etc/ssl/certs/ca-certificates.crt
+logfile         /var/log/msmtp
+
+# Account to send emails
+account         $MAIL_USERNAME
+host            $MAIL_SERVER
+port            $SMTP_PORT
+from            no-reply@nextcloudvm.com
+user            $MAIL_USERNAME
+password        $MAIL_PASSWORD
+
+account default : $MAIL_USERNAME
+
+### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
+# recipient=$RECIPIENT
+
+MSMTP_CONF
+    MAIL_USERNAME=no-reply@nextcloudvm.com
 else
 # With AUTH (Username and Password)
 cat << MSMTP_CONF > /etc/msmtprc
@@ -265,18 +301,25 @@ echo 'set sendmail="/usr/bin/msmtp -t"' > /etc/mail.rc
 # Test mail
 if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
 then
-    # Test another version
-    echo 'set sendmail="/usr/bin/msmtp"' > /etc/mail.rc
-
+    # Set from email address
+    sed -i "s|from .*|from            no-reply@nextcloudvm.com|g" /etc/msmtprc
+    MAIL_USERNAME=no-reply@nextcloudvm.com
     # Second try
     if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
     then
-        # Fail message
-        msg_box "It seems like something has failed.
+        # Test another version
+        echo 'set sendmail="/usr/bin/msmtp"' > /etc/mail.rc
+
+        # Third try
+        if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
+        then
+            # Fail message
+            msg_box "It seems like something has failed.
 You can look at /var/log/msmtp for further logs.
 Please run this script once more if you want to make another try or \
 if you want to deinstall all newly installed packages."
-        exit 1
+            exit 1
+        fi
     fi
 fi
 
