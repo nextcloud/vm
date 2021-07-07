@@ -62,6 +62,7 @@ case "$choice" in
     ;;
     "SMTP2GO")
         NEEDS_CREDENTIALS=1
+        SMTP2GO=1
         MAIL_SERVER="mail-eu.smtp2go.com"
         PROTOCOL="SSL"
         SMTP_PORT="465"	
@@ -206,7 +207,7 @@ account default : $MAIL_USERNAME
 ### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
 # recipient=$RECIPIENT
 MSMTP_CONF
-elif [ -n SMTP2GO ]
+elif [ -n "$SMTP2GO" ]
 then
 # With AUTH (Username and Password)
 cat << MSMTP_CONF > /etc/msmtprc
@@ -328,7 +329,7 @@ msg_box "Congratulations, the test email was successfully sent!
 Please check the inbox for $RECIPIENT. The test email should arrive soon."
 
 # Only offer to use the same settings in Nextcloud if a password was chosen
-if [ "$MAIL_USERNAME" = "no-reply@nextcloudvm.com" ]
+if [ "$MAIL_USERNAME" = "no-reply@nextcloudvm.com" ] && ! [ -n "$SMTP2GO" ]
 then
     exit
 fi
