@@ -139,7 +139,7 @@ fi
 # Enter your SMTP username
 if [ -n "$NEEDS_CREDENTIALS" ] || yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
 then
-    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com, or just the actual 'username'")
+    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com, or just the actual 'username'.")
 
     # Enter your mail user password
     MAIL_PASSWORD=$(input_box_flow "Please enter the SMTP password to your email provider.")
@@ -235,7 +235,6 @@ account default : $MAIL_USERNAME
 # recipient=$RECIPIENT
 
 MSMTP_CONF
-    MAIL_USERNAME=no-reply@nextcloudvm.com
 else
 # With AUTH (Username and Password)
 cat << MSMTP_CONF > /etc/msmtprc
@@ -329,7 +328,7 @@ msg_box "Congratulations, the test email was successfully sent!
 Please check the inbox for $RECIPIENT. The test email should arrive soon."
 
 # Only offer to use the same settings in Nextcloud if a password was chosen
-if [ "$MAIL_USERNAME" = "no-reply@nextcloudvm.com" ] && ! [ -n "$SMTP2GO" ]
+if [ "$MAIL_USERNAME" = "no-reply@nextcloudvm.com" ] && [ -z "$SMTP2GO" ]
 then
     exit
 fi
@@ -360,8 +359,18 @@ fi
 # Authentification
 nextcloud_occ config:system:set mail_smtpauthtype --value="LOGIN"
 nextcloud_occ config:system:set mail_smtpauth --type=integer --value=1
-nextcloud_occ config:system:set mail_from_address --value="${MAIL_USERNAME%%@*}"
-nextcloud_occ config:system:set mail_domain --value="${MAIL_USERNAME##*@}"
+if [ -n "$SMTP2GO" ]
+then
+    nextcloud_occ config:system:set mail_from_address --value="no-reply"
+else
+    nextcloud_occ config:system:set mail_from_address --value="${MAIL_USERNAME%%@*}"
+fi
+if [ -n "$SMTP2GO" ]
+then
+    nextcloud_occ config:system:set mail_domain --value="nextcloudvm.com"
+else
+    nextcloud_occ config:system:set mail_domain --value="${MAIL_USERNAME##*@}"
+fi
 nextcloud_occ config:system:set mail_smtphost --value="$MAIL_SERVER"
 nextcloud_occ config:system:set mail_smtpport --value="$SMTP_PORT"
 nextcloud_occ config:system:set mail_smtpname --value="$MAIL_USERNAME"
