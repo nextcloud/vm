@@ -15,9 +15,10 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
-## 21.0.3
+## 22.0.0
 
 ### Small changelog:
+- Add SMTP2GO to SMTP-Relay
 - Remove APCu and replace with Redis instead
 - Made it possible to add subdomains to deSEC
 - Improved spinner_loading
