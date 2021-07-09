@@ -161,22 +161,18 @@ nc_update
 DEBUG=0
 debug_mode
 
-# Nextcloud 20 is required until 21.0.3 is out. Then NC 21 will be required.
-lowest_compatible_nc 20
+# Nextcloud 21 is required
+lowest_compatible_nc 21
 
 # Import if missing and export again to import it with UUID
 zpool_import_if_missing
 
-# Set phone region
-if [ "${CURRENTVERSION%%.*}" -ge "21" ]
+# Set phone region (needs the latest KEYBOARD_LAYOUT from lib)
+# shellcheck source=lib.sh
+source /var/scripts/fetch_lib.sh
+if [ -n "$KEYBOARD_LAYOUT" ]
 then
-    # Set phone region (needs the latest KEYBOARD_LAYOUT from lib)
-    # shellcheck source=lib.sh
-    source /var/scripts/fetch_lib.sh
-    if [ -n "$KEYBOARD_LAYOUT" ]
-    then
-        nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
-    fi
+    nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
 fi
 
 # Is this run as a pure root user?

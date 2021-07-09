@@ -15,6 +15,46 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 22.0.0
+
+### Small changelog:
+- Add SMTP2GO to SMTP-Relay
+- Remove APCu and replace with Redis instead
+- Made it possible to add subdomains to deSEC
+- Improved spinner_loading
+- Added dates to automatic updates log
+- Added regular ZFS snapshot prune
+- Added retention for Nextclouds user activities
+- Previewgenerator - allow to clear all previews
+- Update script - update Nextclouds mimetype list
+- Moved mimteype update to nextcloud_configuration menu
+- Reworked office scripts
+- Update script - change crontab on all installations to 5 minutes
+- Fixed a bug with Netdata
+- Geoblock - updated link to csv file
+- Refactored the bitwarden_mailconfig script
+- Added more functionality to curl_to_dir
+- Docker documentserver - don't restart docker daemon upon installation
+- Restart notify push in some situations
+- Make sure sudo and software-properties-common is installed
+- Fixed password generation in edge cases
+- Reworked the cookielifetime script
+- Updated geoblock database - June 2021
+- Added option to check for 0-byte files
+- Changed from apt to apt-get
+- Simplified ClamAV notifications and small fix to fail2ban notification
+- Harden-SSH script - allow to set up 2FA authentication
+- SMB-server - added option to automatically empty recylce bins
+- SMB-server - added option to empty all recycle bins
+- SMB-server - Create the files directory for new users directly during the user creation
+- Reworked system-restore
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/21.0.2..21.0.3
+- https://nextcloud.com/changelog/#latest21
+
 ## 21.0.2
 
 ### Small changelog:

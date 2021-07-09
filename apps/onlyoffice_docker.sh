@@ -17,66 +17,6 @@ debug_mode
 # Check if root
 root_check
 
-# TODO: remove all functions with NC21.0.3 release
-remove_all_office_apps() {
-    # remove OnlyOffice-documentserver if installed
-    if is_app_installed documentserver_community
-    then
-        nextcloud_occ app:remove documentserver_community
-    fi
-
-    # Disable OnlyOffice App if installed
-    if is_app_installed onlyoffice
-    then
-        nextcloud_occ app:remove onlyoffice
-    fi
-
-    # remove richdocumentscode-documentserver if installed
-    if is_app_installed richdocumentscode
-    then
-        nextcloud_occ app:remove richdocumentscode
-    fi
-
-    # Disable RichDocuments (Collabora App) if installed
-    if is_app_installed richdocuments
-    then
-        nextcloud_occ app:remove richdocuments
-    fi
-}
-add_to_trusted_domains() {
-    local element="$1"
-    local count=0
-    print_text_in_color "$ICyan" "Adding $element to trusted domains..."
-    while [ "$count" -le 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$element" ]
-        then
-            break
-        elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
-        then
-            nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$element"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
-}
-remove_from_trusted_domains() {
-    local element="$1"
-    local count=0
-    print_text_in_color "$ICyan" "Removing $element from trusted domains..."
-    while [ "$count" -lt 10 ]
-    do
-        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$element" ]
-        then
-            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
-            break
-        else
-            count=$((count+1))
-        fi
-    done
-}
-
 # Check if collabora is already installed
 if ! does_this_docker_exist 'onlyoffice/documentserver'
 then
@@ -86,28 +26,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    # Check if Collabora is previously installed
-    # If yes, then stop and prune the docker container
-    docker_prune_this 'onlyoffice/documentserver'
-    # Revoke LE
-    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
-    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
-    then
-        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-        for remove in $REMOVE_OLD
-            do rm -rf "$remove"
-        done
-    fi
-    # Remove Apache2 config
-    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
-    then
-        a2dissite "$SUBDOMAIN".conf
-        restart_webserver
-        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
-    fi
-    # Remove trusted domain
-    remove_from_trusted_domains "$SUBDOMAIN"
+    remove_onlyoffice_docker
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -115,28 +34,8 @@ fi
 # Check if collabora is installed and remove every trace of it
 if does_this_docker_exist 'collabora/code'
 then
-    msg_box "You can't run both Collabora and OnlyOffice on the same VM. We will now remove Collabora from the server."
-    # Remove docker image
-    docker_prune_this 'collabora/code'
-    # Revoke LE
-    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
-    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
-    then
-        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-        for remove in $REMOVE_OLD
-            do rm -rf "$remove"
-        done
-    fi
-    # Remove Apache2 config
-    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
-    then
-        a2dissite "$SUBDOMAIN".conf
-        restart_webserver
-        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
-    fi
-    # Remove trusted domain
-    remove_from_trusted_domains "$SUBDOMAIN"
+    # Removal
+    remove_collabora_docker
 fi
 
 # Remove all office apps
