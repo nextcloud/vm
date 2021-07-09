@@ -32,10 +32,10 @@ else
     do
         if is_this_installed "$packet"
         then
-            apt purge "$packet" -y
+            apt-get purge "$packet" -y
         fi
     done
-    apt autoremove -y
+    apt-get autoremove -y
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi

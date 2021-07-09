@@ -31,7 +31,7 @@ else
     apt-get purge msmtp -y
     apt-get purge msmtp-mta -y
     apt-get purge mailutils -y
-    apt autoremove -y
+    apt-get autoremove -y
     rm -f /etc/mail.rc
     rm -f /etc/msmtprc
     rm -f /var/log/msmtp
@@ -50,6 +50,7 @@ choice=$(whiptail --title "$TITLE" --nocancel --menu \
 "Please choose the mail provider that you want to use.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "mail.de" "(German mail provider)" \
+"SMTP2GO" "(https://www.smtp2go.com)" \
 "Manual" "(Complete manual setup)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -58,6 +59,13 @@ case "$choice" in
         MAIL_SERVER="smtp.mail.de"
         PROTOCOL="SSL"
         SMTP_PORT="465"
+    ;;
+    "SMTP2GO")
+        NEEDS_CREDENTIALS=1
+        SMTP2GO=1
+        MAIL_SERVER="mail-eu.smtp2go.com"
+        PROTOCOL="SSL"
+        SMTP_PORT="465"	
     ;;
     # Manual setup will be handled a few lines below
     "")
@@ -131,7 +139,7 @@ fi
 # Enter your SMTP username
 if [ -n "$NEEDS_CREDENTIALS" ] || yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
 then
-    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com")
+    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com, or just the actual 'username'.")
 
     # Enter your mail user password
     MAIL_PASSWORD=$(input_box_flow "Please enter the SMTP password to your email provider.")
@@ -199,6 +207,34 @@ account default : $MAIL_USERNAME
 ### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
 # recipient=$RECIPIENT
 MSMTP_CONF
+elif [ -n "$SMTP2GO" ]
+then
+# With AUTH (Username and Password)
+cat << MSMTP_CONF > /etc/msmtprc
+# Set default values for all following accounts.
+defaults
+auth            on
+aliases         /etc/aliases
+$MSMTP_ENCRYPTION1
+$MSMTP_ENCRYPTION2
+
+tls_trust_file  /etc/ssl/certs/ca-certificates.crt
+logfile         /var/log/msmtp
+
+# Account to send emails
+account         $MAIL_USERNAME
+host            $MAIL_SERVER
+port            $SMTP_PORT
+from            no-reply@nextcloudvm.com
+user            $MAIL_USERNAME
+password        $MAIL_PASSWORD
+
+account default : $MAIL_USERNAME
+
+### DO NOT REMOVE THIS LINE (it's used in one of the functions in on the Nextcloud Server)
+# recipient=$RECIPIENT
+
+MSMTP_CONF
 else
 # With AUTH (Username and Password)
 cat << MSMTP_CONF > /etc/msmtprc
@@ -265,32 +301,25 @@ echo 'set sendmail="/usr/bin/msmtp -t"' > /etc/mail.rc
 # Test mail
 if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
 then
-    # Test another version
-    echo 'set sendmail="/usr/bin/msmtp"' > /etc/mail.rc
-
+    # Set from email address
+    sed -i "s|from .*|from            no-reply@nextcloudvm.com|g" /etc/msmtprc
+    MAIL_USERNAME=no-reply@nextcloudvm.com
     # Second try
     if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
     then
-        # Fail message
-        msg_box "It seems like something has failed.
-You can look at /var/log/msmtp for further logs.
-Please run this script once more if you want to make another try."
+        # Test another version
+        echo 'set sendmail="/usr/bin/msmtp"' > /etc/mail.rc
 
-        # Let the user decide if configs/packets shall get reset/uninstalled
-        if yesno_box_yes "Do you want to reset all configs and uninstall all packets \
-that were made/installed by this script so that you keep a clean system?
-This will make debugging more complicated since you will only have the log file to debug this."
+        # Third try
+        if ! echo -e "$TEST_MAIL" | mail -s "Test email from your NcVM" "$RECIPIENT" >> /var/log/msmtp 2>&1
         then
-            apt-get purge msmtp -y
-            apt-get purge msmtp-mta -y
-            apt-get purge mailutils -y
-            apt autoremove -y
-            rm -f /etc/mail.rc
-            rm -f /etc/msmtprc
-            echo "" > /etc/aliases
-            msg_box "Uninstallation of MSMTP was successfully done" 
+            # Fail message
+            msg_box "It seems like something has failed.
+You can look at /var/log/msmtp for further logs.
+Please run this script once more if you want to make another try or \
+if you want to deinstall all newly installed packages."
+            exit 1
         fi
-        exit 1
     fi
 fi
 
@@ -299,7 +328,7 @@ msg_box "Congratulations, the test email was successfully sent!
 Please check the inbox for $RECIPIENT. The test email should arrive soon."
 
 # Only offer to use the same settings in Nextcloud if a password was chosen
-if [ "$MAIL_USERNAME" = "no-reply@nextcloudvm.com" ]
+if [ "$MAIL_USERNAME" = "no-reply@nextcloudvm.com" ] && [ -z "$SMTP2GO" ]
 then
     exit
 fi
@@ -330,8 +359,18 @@ fi
 # Authentification
 nextcloud_occ config:system:set mail_smtpauthtype --value="LOGIN"
 nextcloud_occ config:system:set mail_smtpauth --type=integer --value=1
-nextcloud_occ config:system:set mail_from_address --value="${MAIL_USERNAME%%@*}"
-nextcloud_occ config:system:set mail_domain --value="${MAIL_USERNAME##*@}"
+if [ -n "$SMTP2GO" ]
+then
+    nextcloud_occ config:system:set mail_from_address --value="no-reply"
+else
+    nextcloud_occ config:system:set mail_from_address --value="${MAIL_USERNAME%%@*}"
+fi
+if [ -n "$SMTP2GO" ]
+then
+    nextcloud_occ config:system:set mail_domain --value="nextcloudvm.com"
+else
+    nextcloud_occ config:system:set mail_domain --value="${MAIL_USERNAME##*@}"
+fi
 nextcloud_occ config:system:set mail_smtphost --value="$MAIL_SERVER"
 nextcloud_occ config:system:set mail_smtpport --value="$SMTP_PORT"
 nextcloud_occ config:system:set mail_smtpname --value="$MAIL_USERNAME"

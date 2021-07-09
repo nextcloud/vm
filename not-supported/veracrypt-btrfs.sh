@@ -35,8 +35,8 @@ we need to add a 3rd Party PPA, which theoretically could set your server under 
     fi
     msg_box "We will now install Veracrypt. This can take a long time. Please be patient!"
     add-apt-repository ppa:unit193/encryption -y
-    apt update -q4 & spinner_loading
-    apt install veracrypt --no-install-recommends -y
+    apt-get update -q4 & spinner_loading
+    apt-get install veracrypt --no-install-recommends -y
 fi
 
 # Discover drive
@@ -376,12 +376,14 @@ SNAPSHOT
     cat << SNAPSHOT >> "$SCRIPTS/scrub-btrfs-weekly.sh"
 
 # $MOUNT_PATH
+notify_admin_gui "Starting weekly BTRFS check of $MOUNT_PATH" "Starting BTRFS-scrub of $MOUNT_PATH.
+You will be notified again when the scrub is done"
 if ! btrfs scrub start -B "$MOUNT_PATH"
 then
-    notify_admin_gui "Error while performing weekly BTRFS scrub!" \
+    notify_admin_gui "Error while performing weekly BTRFS scrub of $MOUNT_PATH!" \
     "Error on $MOUNT_PATH\nPlease look at $VMLOGS/weekly-btrfs-scrub.log for further info!"
 else
-    notify_admin_gui "Weekly BTRFS scrub successful!" \
+    notify_admin_gui "Weekly BTRFS scrub successful of $MOUNT_PATH!" \
     "$MOUNT_PATH was successfully tested!\nPlease look at $VMLOGS/weekly-btrfs-scrub.log for further info!"
 fi
 SNAPSHOT

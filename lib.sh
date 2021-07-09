@@ -677,12 +677,12 @@ fi
 # Install dnsutils if not existing
 if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install dnsutils -y
+    apt-get update -q4 & spinner_loading && apt-get install dnsutils -y
 fi
 # Install net-tools if not existing
 if ! dpkg-query -W -f='${Status}' "net-tools" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install net-tools -y
+    apt-get update -q4 & spinner_loading && apt-get install net-tools -y
 fi
 # After applying Netplan settings, try a DNS lookup.
 # Restart systemd-networkd if this fails and try again.
@@ -905,7 +905,7 @@ cleanup_open_port() {
     if [ -n "$FAIL" ]
     then
         apt-get purge miniupnpc -y
-        apt autoremove -y
+        apt-get autoremove -y
     fi
 }
 
@@ -1034,7 +1034,7 @@ fi
 install_if_not() {
 if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && RUNLEVEL=1 apt install "${1}" -y
+    apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install "${1}" -y
 fi
 }
 
@@ -1509,7 +1509,7 @@ then
     is_process_running dpkg
     is_process_running apt
     print_text_in_color "$ICyan" "Installing Docker CE..."
-    apt update -q4 & spinner_loading
+    apt-get update -q4 & spinner_loading
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi
@@ -1619,7 +1619,7 @@ home_sme_server() {
 # OLD MEMORY: BLS16G4 (Balistix Sport) || 18ASF2G72HZ (ECC)
 if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH"
 then
-    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1\|9905744\|HMA82GS6JJR8N"
+    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1\|9905744\|HMA82GS6JJR8N\|HMA82GS6CJR8N"
     then
         if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B"
         then
@@ -1643,6 +1643,14 @@ case "${1}" in
     ''|*[!0-9]*) return 1 ;;
     *) return 0 ;;
 esac
+}
+
+# Prettify Json files
+# $1 = json input
+prettify_json() {
+    local JSON_INPUT
+    JSON_INPUT="$(echo "$1" | sed 's|\\||g' | sed 's|,"|,\\n  "|g;s|":|": |g;s|{"|{\n  "|;s|"}|"\n}|')"
+    echo -e "$JSON_INPUT"
 }
 
 # Example:

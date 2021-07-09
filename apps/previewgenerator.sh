@@ -53,14 +53,14 @@ else
     do
         if is_this_installed "$app"
         then
-            apt purge "$app" -y
+            apt-get purge "$app" -y
         fi
     done
     if is_this_installed ffmpeg && ! is_app_installed integration_whiteboard
     then
-        apt purge ffmpeg -y
+        apt-get purge ffmpeg -y
     fi
-    apt autoremove -y
+    apt-get autoremove -y
     if yesno_box_no "Do you want to remove all previews that were generated until now?
 This will most likely clear a lot of space but your server will need to re-generate the previews \
 if you should opt to re-enable previews again."

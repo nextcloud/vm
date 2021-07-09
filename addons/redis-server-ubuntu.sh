@@ -61,7 +61,7 @@ sed -i "s|);||g" $NCPATH/config/config.php
 
 # Add the needed config to Nextclouds config.php
 cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
-  'memcache.local' => '\\OC\\Memcache\\APCu',
+  'memcache.local' => '\\OC\\Memcache\\Redis',
   'filelocking.enabled' => true,
   'memcache.distributed' => '\\OC\\Memcache\\Redis',
   'memcache.locking' => '\\OC\\Memcache\\Redis',
@@ -106,8 +106,8 @@ redis-cli SHUTDOWN
 chown redis:root /etc/redis/redis.conf
 chmod 600 /etc/redis/redis.conf
 
-apt update -q4 & spinner_loading
-apt autoremove -y
-apt autoclean
+apt-get update -q4 & spinner_loading
+apt-get autoremove -y
+apt-get autoclean
 
 exit

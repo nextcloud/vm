@@ -221,7 +221,7 @@ then
 fi
 
 # Get the latest packages
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."

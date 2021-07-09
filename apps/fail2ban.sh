@@ -38,7 +38,7 @@ else
     then
         print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
         fail2ban-client unban --all
-        apt purge fail2ban -y
+        apt-get purge fail2ban -y
         rm -rf /etc/fail2ban
         crontab -u root -l | grep -v "$SCRIPTS/daily_fail2ban_report.sh"  | crontab -u root -
         rm -rf "$SCRIPTS/daily_fail2ban_report.sh"
@@ -122,7 +122,7 @@ FINDTIME_=1800
 # failed attempts before banning an IP
 MAXRETRY_=20
 
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 install_if_not fail2ban -y
 check_command update-rc.d fail2ban disable
 
@@ -224,10 +224,12 @@ fi
 
 # Report if something was found
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-notify_admin_gui \
-"Your daily Fail2Ban report" \
-"These IP's got banned today:
+if ! send_mail "Your daily Fail2Ban report" "These IP's got banned today:
 \$BANNED_IPS"
+then
+    notify_admin_gui "Your daily Fail2Ban report" "These IP's got banned today:
+\$BANNED_IPS"
+fi
 FAIL2BAN_REPORT
 
 # Add crontab entry

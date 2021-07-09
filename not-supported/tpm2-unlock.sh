@@ -72,7 +72,7 @@ then
 fi
 
 # Install needed tools
-apt install clevis-tpm2 clevis-luks clevis-initramfs -y
+apt-get install clevis-tpm2 clevis-luks clevis-initramfs -y
 
 # Execute the script
 print_text_in_color "$ICyan" "Setting up automatic unlocking via TPM2..."
@@ -80,8 +80,8 @@ if ! echo "$PASSWORD" | clevis luks bind -k - -d "/dev/${ENCRYPTED_DEVICE[*]}" t
 then
     msg_box "Something has failed while trying to configure clevis luks.
 We will now uninstall all needed packets again, so that you are able to start over."
-    apt purge clevis-tpm2 clevis-luks clevis-initramfs -y
-    apt autoremove -y
+    apt-get purge clevis-tpm2 clevis-luks clevis-initramfs -y
+    apt-get autoremove -y
     msg_box "All installed packets were successfully removed."
     exit 1
 fi

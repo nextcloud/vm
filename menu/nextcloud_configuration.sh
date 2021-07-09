@@ -35,6 +35,8 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
 "Disable workspaces" "(Disable top notes in GUI)" OFF \
 "Disable user flows" "(Disable user settings for Nextcloud Flow)" OFF \
+"Check 0-Byte files" "(Check if files are 0-byte (empty/corrupted))" OFF \
+"Update mimetype list" "(Update Nextclouds internal mimetype database)" OFF \
 "Enable logrotate" "(Use logrotate to keep more Nextcloud logs)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -90,6 +92,19 @@ It will disable the user flow settings. Admin flows will continue to work." "$SU
             msg_box "'Disable user flows' is only available on Nextcloud 18.0.4 and above.
 Please upgrade by running 'sudo bash /var/scripts/update.sh'" "$SUBTITLE"
             sleep 1
+        fi
+    ;;&
+    *"Check 0-Byte files"*)
+        print_text_in_color "$ICyan" "Downloading the 0-Byte files script..."
+        run_script ADDONS 0-byte-files
+    ;;&
+    *"Update mimetype list"*)
+        if yesno_box_yes "Do you want to update Nextclouds internal mimetype database?
+This option is recommended to be run after every major Nextcloud update." "Update mimetypes"
+        then
+            print_text_in_color "$ICyan" "Updating Nextclouds internal mimetype database..."
+            nextcloud_occ maintenance:mimetype:update-js
+            nextcloud_occ maintenance:mimetype:update-db
         fi
     ;;&
     *"Enable logrotate"*)

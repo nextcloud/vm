@@ -55,6 +55,19 @@ If you are sure that no update or backup is currently running, you can fix this 
     exit 1
 fi
 
+# Change from APCu to Redis for local cache
+# https://github.com/nextcloud/vm/pull/2040
+if pecl list | grep apcu >/dev/null 2>&1
+then
+    sed -i "/memcache.local/d" "$NCPATH"/config/config.php
+    if pecl list | grep redis >/dev/null 2>&1
+    then
+        nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
+    else
+       nextcloud_occ config:system:delete memcache.local
+    fi
+fi
+
 # Create a snapshot before doing anything else
 check_free_space
 if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
@@ -108,7 +121,7 @@ It should then start working again."
     start_if_stopped docker
 fi
 
-# Check if /boot is filled more than 90% and exit the script if that's 
+# Check if /boot is filled more than 90% and exit the script if that's
 # the case since we don't want to end up with a broken system
 if [ -d /boot ]
 then
@@ -128,12 +141,24 @@ rm -f /root/php-upgrade.sh
 rm -f /tmp/php-upgrade.sh
 rm -f /root/db-migration.sh
 
+# Fix fancy progress bar for apt-get
+# https://askubuntu.com/a/754653
+if [ -d /etc/apt/apt.conf.d ]
+then
+    if ! [ -f /etc/apt/apt.conf.d/99progressbar ]
+    then
+        echo 'Dpkg::Progress-Fancy "1";' > /etc/apt/apt.conf.d/99progressbar
+        echo 'APT::Color "1";' >> /etc/apt/apt.conf.d/99progressbar
+        chmod 644 /etc/apt/apt.conf.d/99progressbar
+    fi
+fi
+
 # Ubuntu 16.04 is deprecated
 check_distro_version
 
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
@@ -237,7 +262,7 @@ then
     fi
 fi
 
-export DEBIAN_FRONTEND=noninteractive ; apt dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
 # Update Netdata
 if [ -d /etc/netdata ]
@@ -264,8 +289,8 @@ then
     if ! snap list certbot >/dev/null 2>&1
     then
         print_text_in_color "$ICyan" "Reinstalling certbot (Let's Encrypt) as a snap instead..."
-        apt remove certbot -y
-        apt autoremove -y
+        apt-get remove certbot -y
+        apt-get autoremove -y
         install_if_not snapd
         snap install core
         snap install certbot --classic
@@ -312,12 +337,33 @@ then
     check_command phpenmod -v ALL redis
 fi
 
-# Upgrade APCu and igbinary
+# Remove APCu https://github.com/nextcloud/vm/issues/2039
+if is_this_installed "php$PHPVER"-dev
+then
+    # Delete PECL APCu
+    if pecl list | grep -q apcu
+    then
+        if ! yes no | pecl uninstall apcu
+        then
+            msg_box "APCu PHP module removal failed! Please report this to $ISSUES"
+        else
+            print_text_in_color "$IGreen" "APCu PHP module removal OK!"
+        fi
+    # Delete everything else
+    check_command phpdismod -v ALL apcu
+    rm -f $PHP_MODS_DIR/apcu.ini
+    sed -i "/extension=apcu.so/d" "$PHP_INI"
+    sed -i "/APCu/d" "$PHP_INI"
+    sed -i "/apc./d" "$PHP_INI"
+    fi
+fi
+
+# Upgrade other PECL dependencies
 if [ "${CURRENTVERSION%%.*}" -ge "17" ]
 then
     if [ -f "$PHP_INI" ]
     then
-        print_text_in_color "$ICyan" "Trying to upgrade igbinary, smbclient, and APCu..."
+        print_text_in_color "$ICyan" "Trying to upgrade igbinary, and smbclient..."
         if pecl list | grep igbinary >/dev/null 2>&1
         then
             yes no | pecl upgrade igbinary
@@ -360,35 +406,8 @@ then
                 sed -i "/extension=smbclient.so/d" "$PHP_INI"
             fi
         fi
-        if pecl list | grep -q apcu
-        then
-            yes no | pecl upgrade apcu
-            # Remove old igbinary
-            if grep -qFx extension=apcu.so "$PHP_INI"
-            then
-                sed -i "/extension=apcu.so/d" "$PHP_INI"
-            fi
-            # Check if apcu is enabled and create the file if not
-            if [ ! -f $PHP_MODS_DIR/apcu.ini ]
-            then
-                touch $PHP_MODS_DIR/apcu.ini
-            fi
-            # Enable new apcu
-            if ! grep -qFx extension=apcu.so $PHP_MODS_DIR/apcu.ini
-            then
-                echo "# PECL apcu" > $PHP_MODS_DIR/apcu.ini
-                echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
-                check_command phpenmod -v ALL apcu
-            fi
-            # Fix https://help.nextcloud.com/t/nc-21-manual-update-issues/108693/4?$
-            if ! grep -qFx apc.enable_cli=1 $PHP_MODS_DIR/apcu.ini
-            then
-                echo "apc.enable_cli=1" >> $PHP_MODS_DIR/apcu.ini
-                check_command phpenmod -v ALL apcu
-            fi
-        fi
         if pecl list | grep -q inotify
-        then 
+        then
             # Remove old inotify
             if grep -qFx extension=inotify.so "$PHP_INI"
             then
@@ -473,8 +492,8 @@ we have removed Watchtower from this server. Updates will now happen for each co
 fi
 
 # Cleanup un-used packages
-apt autoremove -y
-apt autoclean
+apt-get autoremove -y
+apt-get autoclean
 
 # Update GRUB, just in case
 update-grub
@@ -528,8 +547,10 @@ if [ -n "$UPDATED_APPS" ]
 then
     print_text_in_color "$IGreen" "$UPDATED_APPS"
     notify_admin_gui \
-    "You've got app updates!" \
+    "Nextcloud apps just got updated!" \
     "$UPDATED_APPS"
+    # Just make sure everything is updated (sometimes app requires occ upgrade to be run)
+    nextcloud_occ upgrade
 else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
 fi
@@ -830,8 +851,6 @@ then
     nextcloud_occ upgrade
     # Optimize
     print_text_in_color "$ICyan" "Optimizing Nextcloud..."
-    nextcloud_occ maintenance:mimetype:update-js
-    nextcloud_occ maintenance:mimetype:update-db
     yes | nextcloud_occ db:convert-filecache-bigint
     nextcloud_occ db:add-missing-indices
     CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')

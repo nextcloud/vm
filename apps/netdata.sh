@@ -67,7 +67,7 @@ fi
 # Install
 is_process_running dpkg
 is_process_running apt
-apt update -q4 & spinner_loading
+apt-get update -q4 & spinner_loading
 curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
 sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh all --dont-wait --no-updates --stable-channel
 rm -f $SCRIPTS/kickstart.sh

@@ -5,13 +5,25 @@
 # Prefer IPv4 for apt
 echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
 
+# Fix fancy progress bar for apt-get
+# https://askubuntu.com/a/754653
+if [ -d /etc/apt/apt.conf.d ]
+then
+    if ! [ -f /etc/apt/apt.conf.d/99progressbar ]
+    then
+        echo 'Dpkg::Progress-Fancy "1";' > /etc/apt/apt.conf.d/99progressbar
+        echo 'APT::Color "1";' >> /etc/apt/apt.conf.d/99progressbar
+        chmod 644 /etc/apt/apt.conf.d/99progressbar
+    fi
+fi
+
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
     echo "curl OK"
 else
-    apt update -q4
-    apt install curl -y
+    apt-get update -q4
+    apt-get install curl -y
 fi
 
 true
@@ -78,8 +90,8 @@ if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed"
 then
     print_text_in_color "$IGreen" "lshw OK"
 else
-    apt update -q4 & spinner_loading
-    apt install lshw -y
+    apt-get update -q4 & spinner_loading
+    apt-get install lshw -y
 fi
 
 # Install net-tools if not existing
@@ -87,8 +99,8 @@ if [ "$(dpkg-query -W -f='${Status}' "net-tools" 2>/dev/null | grep -c "ok insta
 then
     print_text_in_color "$IGreen" "net-tools OK"
 else
-    apt update -q4 & spinner_loading
-    apt install net-tools -y
+    apt-get update -q4 & spinner_loading
+    apt-get install net-tools -y
 fi
 
 # Install whiptail if not existing
@@ -96,8 +108,8 @@ if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok instal
 then
     print_text_in_color "$IGreen" "whiptail OK"
 else
-    apt update -q4 & spinner_loading
-    apt install whiptail -y
+    apt-get update -q4 & spinner_loading
+    apt-get install whiptail -y
 fi
 
 true
@@ -206,8 +218,8 @@ stop_if_installed mariadb-server
 # We don't want automatic updates since they might fail (we use our own script)
 if is_this_installed unattended-upgrades
 then
-    apt purge unattended-upgrades -y
-    apt autoremove -y
+    apt-get purge unattended-upgrades -y
+    apt-get autoremove -y
     rm -rf /var/log/unattended-upgrades
 fi
 
@@ -331,8 +343,8 @@ done
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
 # curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-apt update -q4 & spinner_loading
-apt install postgresql -y
+apt-get update -q4 & spinner_loading
+apt-get install postgresql -y
 
 # Create DB
 cd /tmp
@@ -344,7 +356,7 @@ print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
 systemctl restart postgresql.service
 
 # Install Apache
-check_command apt install apache2 -y
+check_command apt-get install apache2 -y
 a2enmod rewrite \
         headers \
         proxy \
@@ -373,8 +385,8 @@ echo "ServerTokens Prod"
 fi
 
 # Install PHP "$PHPVER"
-apt update -q4 & spinner_loading
-check_command apt install -y \
+apt-get update -q4 & spinner_loading
+check_command apt-get install -y \
     php"$PHPVER"-fpm \
     php"$PHPVER"-intl \
     php"$PHPVER"-ldap \
@@ -632,46 +644,6 @@ echo "igbinary.compact_strings=On"
 restart_webserver
 fi
 
-# APCu (local cache)
-if is_this_installed "php$PHPVER"-dev
-then
-    if ! yes no | pecl install -Z apcu
-    then
-        msg_box "APCu PHP module installation failed"
-        exit
-    else
-        print_text_in_color "$IGreen" "APCu PHP module installation OK!"
-    fi
-{
-echo "# APCu settings for Nextcloud"
-echo "apc.enabled=1"
-echo "apc.max_file_size=5M"
-echo "apc.shm_segments=1"
-echo "apc.shm_size=128M"
-echo "apc.entries_hint=4096"
-echo "apc.ttl=3600"
-echo "apc.gc_ttl=7200"
-echo "apc.mmap_file_mask=NULL"
-echo "apc.slam_defense=1"
-echo "apc.enable_cli=1"
-echo "apc.use_request_time=1"
-echo "apc.serializer=igbinary"
-echo "apc.coredump_unmap=0"
-echo "apc.preload_path"
-} >> "$PHP_INI"
-if [ ! -f $PHP_MODS_DIR/apcu.ini ]
-then
-    touch $PHP_MODS_DIR/apcu.ini
-fi
-if ! grep -qFx extension=apcu.so $PHP_MODS_DIR/apcu.ini
-then
-    echo "# PECL apcu" > $PHP_MODS_DIR/apcu.ini
-    echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
-    check_command phpenmod -v ALL apcu
-fi
-restart_webserver
-fi
-
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
 yes | nextcloud_occ db:convert-filecache-bigint
@@ -903,8 +875,8 @@ case "$choice" in
 esac
 
 # Cleanup
-apt autoremove -y
-apt autoclean
+apt-get autoremove -y
+apt-get autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
 # Install virtual kernels for Hyper-V, (and extra for UTF8 kernel module + Collabora and OnlyOffice)
@@ -914,7 +886,7 @@ then
     if [ "$SYSVENDOR" == "Microsoft Corporation" ]
     then
         # Hyper-V
-        apt install -y --install-recommends \
+        apt-get install -y --install-recommends \
         linux-virtual \
         linux-image-virtual \
         linux-tools-virtual \
