@@ -644,46 +644,6 @@ echo "igbinary.compact_strings=On"
 restart_webserver
 fi
 
-# APCu (local cache)
-if is_this_installed "php$PHPVER"-dev
-then
-    if ! yes no | pecl install -Z apcu
-    then
-        msg_box "APCu PHP module installation failed"
-        exit
-    else
-        print_text_in_color "$IGreen" "APCu PHP module installation OK!"
-    fi
-{
-echo "# APCu settings for Nextcloud"
-echo "apc.enabled=1"
-echo "apc.max_file_size=5M"
-echo "apc.shm_segments=1"
-echo "apc.shm_size=128M"
-echo "apc.entries_hint=4096"
-echo "apc.ttl=3600"
-echo "apc.gc_ttl=7200"
-echo "apc.mmap_file_mask=NULL"
-echo "apc.slam_defense=1"
-echo "apc.enable_cli=1"
-echo "apc.use_request_time=1"
-echo "apc.serializer=igbinary"
-echo "apc.coredump_unmap=0"
-echo "apc.preload_path"
-} >> "$PHP_INI"
-if [ ! -f $PHP_MODS_DIR/apcu.ini ]
-then
-    touch $PHP_MODS_DIR/apcu.ini
-fi
-if ! grep -qFx extension=apcu.so $PHP_MODS_DIR/apcu.ini
-then
-    echo "# PECL apcu" > $PHP_MODS_DIR/apcu.ini
-    echo "extension=apcu.so" >> $PHP_MODS_DIR/apcu.ini
-    check_command phpenmod -v ALL apcu
-fi
-restart_webserver
-fi
-
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
 yes | nextcloud_occ db:convert-filecache-bigint
