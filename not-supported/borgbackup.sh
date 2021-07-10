@@ -647,6 +647,17 @@ then
     send_error_mail "Some errors were reported during the backup integrity check!" "Backup integrity check"
 fi
 
+# Adjust permissions and scrub volume
+if [ -n "$IS_BTRFS_PART" ] && [ "$BTRFS_SCRUB_BACKUP_DRIVE" = "yes" ]
+then
+    inform_user "$ICyan" "Scrubbing BTRFS partition..."
+    if ! btrfs scrub start -B "$BACKUP_MOUNTPOINT"
+    then
+        re_rename_snapshot
+        send_error_mail "Some errors were reported while scrubbing the BTRFS partition."
+    fi
+fi
+
 # Rename the snapshot back to normal
 if ! re_rename_snapshot
 then
@@ -656,19 +667,9 @@ fi
 # Print usage of drives into log
 show_drive_usage
 
-# Adjust permissions and scrub volume
-if [ -n "$IS_BTRFS_PART" ] && [ "$BTRFS_SCRUB_BACKUP_DRIVE" = "yes" ]
-then
-    inform_user "$ICyan" "Scrubbing BTRFS partition..."
-    if ! btrfs scrub start -B "$BACKUP_MOUNTPOINT"
-    then
-        send_error_mail "Some errors were reported while scrubbing the BTRFS partition."
-    fi
-fi
-
 # Unmount the backup drive
 inform_user "$ICyan" "Unmounting the backup drive..."
-if ! umount "$BACKUP_MOUNTPOINT"
+if mountpoint -q "$BACKUP_MOUNTPOINT" && ! umount "$BACKUP_MOUNTPOINT"
 then
     send_error_mail "Could not unmount the backup drive!" "Backup integrity check"
 fi
