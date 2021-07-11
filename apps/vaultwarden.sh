@@ -300,7 +300,7 @@ BWA_CONF
 
 # Vaultwarden-admin jail
 cat << BWA_JAIL_CONF > /etc/fail2ban/jail.d/vaultwarden-admin.local
-[bitwarden_rs-admin]
+[vaultwarden-admin]
 enabled = true
 port = 80,443
 filter = vaultwarden-admin
