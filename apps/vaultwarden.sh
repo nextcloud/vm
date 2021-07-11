@@ -222,7 +222,7 @@ fi
 # Install docker
 install_docker
 
-# Create dir for Bitwarden RS
+# Create dir for Vaultwarden
 mkdir -p /home/vaultwarden
 chown nobody -R /home/vaultwarden
 chmod -R 0770 /home/vaultwarden
