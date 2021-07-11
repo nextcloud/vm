@@ -3,7 +3,7 @@
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 true
-SCRIPT_NAME="Bitwarden RS"
+SCRIPT_NAME="Vaultwarden"
 SCRIPT_EXPLAINER="Vaultwarden is an unofficial Bitwarden server API implementation in Rust.
 It has less hardware requirements and therefore runs on nearly any hardware. It was formerly known as Bitwarden_RS."
 # shellcheck source=lib.sh
