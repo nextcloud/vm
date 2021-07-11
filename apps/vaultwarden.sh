@@ -242,9 +242,9 @@ docker run -d --name vaultwarden \
   -e ROCKET_PORT=1024 \
   -e WEBSOCKET_ENABLED=true \
   -p 127.0.0.1:3012:3012 \
-  -e LOG_FILE=/data/bitwarden.log \
+  -e LOG_FILE=/data/vaultwarden.log \
   -e LOG_LEVEL=warn \
-  -v /home/bitwarden_rs/:/data/ \
+  -v /home/vaultwarden/:/data/ \
   -v /etc/timezone:/etc/timezone:ro \
   -v /etc/localtime:/etc/localtime:ro \
   --restart always \
