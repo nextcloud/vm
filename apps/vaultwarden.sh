@@ -248,7 +248,7 @@ docker run -d --name vaultwarden \
   -v /etc/timezone:/etc/timezone:ro \
   -v /etc/localtime:/etc/localtime:ro \
   --restart always \
-  bitwardenrs/server:latest
+  vaultwarden/server:latest
 
 # Add prune command
 add_dockerprune
