@@ -4,8 +4,8 @@
 
 true
 SCRIPT_NAME="Bitwarden RS"
-SCRIPT_EXPLAINER="Bitwarden RS is an unofficial Bitwarden server API implementation in Rust.
-It has less hardware requirements and therefore runs on nearly any hardware."
+SCRIPT_EXPLAINER="Vaultwarden is an unofficial Bitwarden server API implementation in Rust.
+It has less hardware requirements and therefore runs on nearly any hardware. It was formerly known as Bitwarden_RS."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -28,7 +28,26 @@ If you want to reinstall Bitwarden RS, you can execute the following commands:
 'sudo docker rm bitwarden_rs'
 
 This command will delete all private data:
-'sudo rm -r /home/bitwarden_rs'"
+'sudo rm -r /home/bitwarden_rs'
+
+If you want to upgrade to the new Vaultwarden image you can execute the following commands:
+'sudo cp -a /home/bitwarden_rs /home/bitwarden_rs-backup'
+'sudo docker stop bitwarden_rs'
+'sudo docker rm bitwarden_rs'"
+    exit 1
+fi
+
+# Check if vaultwarden is already installed
+if docker ps -a --format '{{.Names}}' | grep -Eq "vaultwarden";
+then
+    msg_box "It seems like you have already installed Vaultwarden.
+
+If you want to reinstall Vaultwarden, you can execute the following commands:
+'sudo docker stop vaultwarden'
+'sudo docker rm vaultwarden'
+
+This command will delete all private data:
+'sudo rm -r /home/vaultwarden'"
     exit 1
 fi
 
@@ -37,15 +56,15 @@ install_popup "$SCRIPT_NAME"
 
 # Second info box
 msg_box "Since it's unofficial, you need to really trust the maintainer of the project to install it:
-https://github.com/dani-garcia/bitwarden_rs
+https://github.com/dani-garcia/vaultwarden
 You never know what could hide in an unofficial release.
 
 It's always is recommended to install the official Bitwarden by running:
 sudo bash /var/scripts/menu.sh --> Additional Apps --> Bitwarden --> Bitwarden
 
-Please only report issues to https://github.com/dani-garcia/bitwarden_rs"
+Please only report issues to https://github.com/dani-garcia/vaultwarden"
 
-# Show a second waring
+# Show a second warning
 msg_box "Are you really sure?
 
 It's always is recommended to install the official Bitwarden by running:
@@ -60,7 +79,7 @@ then
 fi
 
 # Ask for domain
-SUBDOMAIN=$(input_box_flow "Please enter the Domain that you want to use for Bitwarden RS.")
+SUBDOMAIN=$(input_box_flow "Please enter the Domain that you want to use for Vaultwarden.")
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
@@ -204,16 +223,16 @@ fi
 install_docker
 
 # Create dir for Bitwarden RS
-mkdir -p /home/bitwarden_rs
-chown nobody -R /home/bitwarden_rs
-chmod -R 0770 /home/bitwarden_rs
+mkdir -p /home/vaultwarden
+chown nobody -R /home/vaultwarden
+chmod -R 0770 /home/vaultwarden
 
 # Generate admin password
 ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
 
 # Install docker-container
-docker pull bitwardenrs/server:latest
-docker run -d --name bitwarden_rs \
+docker pull vaultwarden/server:latest
+docker run -d --name vaultwarden \
   --user nobody \
   -e ADMIN_TOKEN="$ADMIN_PASS" \
   -e SIGNUPS_VERIFY=true \
@@ -237,16 +256,16 @@ add_dockerprune
 # Inform about fail2ban
 msg_box "We will now set up fail2ban for you.
 You can unban ip addresses by executing the following command:
-sudo fail2ban-client set bitwarden_rs unbanip XX.XX.XX.XX
-sudo fail2ban-client set bitwarden_rs-admin unbanip XX.XX.XX.XX"
+sudo fail2ban-client set vaultwarden unbanip XX.XX.XX.XX
+sudo fail2ban-client set vaultwarden-admin unbanip XX.XX.XX.XX"
 
 # Install fail2ban
 install_if_not fail2ban
 systemctl stop fail2ban
 
 # Create all needed files
-# Bitwarden RS conf
-cat << BW_CONF > /etc/fail2ban/filter.d/bitwarden_rs.local
+# Vaultwarden conf
+cat << BW_CONF > /etc/fail2ban/filter.d/vaultwarden.local
 [INCLUDES]
 before = common.conf
 
@@ -255,22 +274,22 @@ failregex = ^.*Username or password is incorrect\. Try again\. IP: <ADDR>\. User
 ignoreregex =
 BW_CONF
 
-# Bitwarden RS jail
-cat << BW_JAIL_CONF > /etc/fail2ban/jail.d/bitwarden_rs.local
-[bitwarden_rs]
+# Vaultwarden jail
+cat << BW_JAIL_CONF > /etc/fail2ban/jail.d/vaultwarden.local
+[vaultwarden]
 enabled = true
 port = 80,443,8081
-filter = bitwarden_rs
-action = iptables-allports[name=bitwarden_rs]
-logpath = /home/bitwarden_rs/bitwarden.log
+filter = vaultwarden
+action = iptables-allports[name=vaultwarden]
+logpath = /home/vaultwarden/vaultwarden.log
 maxretry = 20
 bantime = 1209600
 findtime = 1800
 ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 BW_JAIL_CONF
 
-# bitwarden_rs-admin conf
-cat << BWA_CONF > /etc/fail2ban/filter.d/bitwarden_rs-admin.local
+# Vaultwarden-admin conf
+cat << BWA_CONF > /etc/fail2ban/filter.d/vaultwarden-admin.local
 [INCLUDES]
 before = common.conf
 
@@ -279,14 +298,14 @@ failregex = ^.*Invalid admin token\. IP: <ADDR>.*$
 ignoreregex =
 BWA_CONF
 
-# bitwarden_rs-admin jail
-cat << BWA_JAIL_CONF > /etc/fail2ban/jail.d/bitwarden_rs-admin.local
+# Vaultwarden-admin jail
+cat << BWA_JAIL_CONF > /etc/fail2ban/jail.d/vaultwarden-admin.local
 [bitwarden_rs-admin]
 enabled = true
 port = 80,443
-filter = bitwarden_rs-admin
-action = iptables-allports[name=bitwarden_rs]
-logpath = /home/bitwarden_rs/bitwarden.log
+filter = vaultwarden-admin
+action = iptables-allports[name=vaultwarden]
+logpath = /home/vaultwarden/vaultwarden.log
 maxretry = 5
 bantime = 1209600
 findtime = 1800
@@ -300,17 +319,17 @@ check_command fail2ban-client reload
 while :
 do
     # Inform the user
-    msg_box "Bitwarden_rs with fail2ban have been successfully installed! 
+    msg_box "Vaultwarden with fail2ban have been successfully installed! 
 Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
 Attention! Please note the password for the admin panel: $ADMIN_PASS
-Otherwise you will not have access to your Bitwarden_rs installation and have to reinstall it completely!
+Otherwise you will not have access to your Vaultwarden installation and have to reinstall it completely!
 
 It is highly recommended to configure and test the smtp settings for mails first.
 Then, if it works, you can easily invite all your user with an e-mail address from this admin-panel.
 (You have to click on users in the top-panel)
 
-Please remember to report issues only to https://github.com/dani-garcia/bitwarden_rs"
+Please remember to report issues only to https://github.com/dani-garcia/vaultwarden"
 
     # Ask for password
     if yesno_box_no "Do you have the admin password now and know how to access the admin-panel?"
