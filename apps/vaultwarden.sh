@@ -31,7 +31,8 @@ This command will delete all private data:
 'sudo rm -r /home/bitwarden_rs'
 
 If you want to upgrade to the new Vaultwarden image you can execute the following commands:
-'sudo cp -a /home/bitwarden_rs /home/bitwarden_rs-backup'
+'sudo cp -R /home/bitwarden_rs /home/bitwarden_rs-backup'
+'sudo cp -R /home/bitwarden_rs-backup /home/vaultwarden'
 'sudo docker stop bitwarden_rs'
 'sudo docker rm bitwarden_rs'"
     exit 1
