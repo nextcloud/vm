@@ -30,8 +30,8 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitwarden  " "(External password manager [4GB RAM] - subdomain required)" OFF \
 "Bitwarden Registration" "(Enable or disable public user registration for Bitwarden)" OFF \
 "Bitwarden Mail-Configuration" "(Configure the mailserver settings for Bitwarden)" OFF \
-"Bitwarden-RS  " "(Unofficial Bitwarden password manager - subdomain required)" OFF \
-"Bitwarden-RS Admin-panel" "(Enable or disable the admin-panel for Bitwarden-RS)" OFF 3>&1 1>&2 2>&3)
+"Vaultwarden  " "(Unofficial Bitwarden password manager - subdomain required)" OFF \
+"Vaultwarden Admin-panel" "(Enable or disable the admin-panel for Vaultwarden)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Bitwarden  "*)
@@ -46,13 +46,13 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Bitwarden Mailconfig script..."
         run_script APP bitwarden_mailconfig
     ;;&
-    *"Bitwarden-RS  "*)
-        print_text_in_color "$ICyan" "Downloading the Bitwarden-RS script..."
-        run_script APP bitwarden-rs
+    *"Vaultwarden  "*)
+        print_text_in_color "$ICyan" "Downloading the Vaultwarden script..."
+        run_script APP vaultwarden
     ;;&
-    *"Bitwarden-RS Admin-panel"*)
-        print_text_in_color "$ICyan" "Downloading the Bitwarden-RS Admin-panel script..."
-        run_script APP bitwarden-rs_admin-panel
+    *"Vaultwarden Admin-panel"*)
+        print_text_in_color "$ICyan" "Downloading the Vaultwarden Admin-panel script..."
+        run_script APP vaultwarden_admin-panel
     ;;&
     *)
     ;;
