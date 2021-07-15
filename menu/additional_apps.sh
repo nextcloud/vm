@@ -41,18 +41,18 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Documentserver" "(OnlyOffice or Collabora - Docker or Integrated)" OFF \
 "Bitwarden" "(External password manager)" OFF \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
+"PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
+"Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
-"FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
-"Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
-"PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
+"FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
-"Pico CMS" "(Leightweight CMS integration in Nextcloud)" OFF \
+"Pico CMS" "(Lightweight CMS integration in Nextcloud)" OFF \
 "Whiteboard" "(Whiteboard for Nextcloud)" OFF \
 "Extract" "(Archive extraction for Nextcloud)" OFF \
 "Face Recognition" "(Scan your photos for faces in Nextcloud)" OFF \
