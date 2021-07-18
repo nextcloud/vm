@@ -898,6 +898,14 @@ then
     fi
 fi
 
+# Fix https://github.com/nextcloud/vm/issues/2018
+if [[ "$SYSVENDOR" == "QEMU" || "$SYSVENDOR" == "Red Hat" ]];
+then
+    # KVM
+    apt-get install -y --install-recommends \
+    linux-image-kvm
+fi
+
 # Add aliases
 if [ -f /root/.bash_aliases ]
 then
