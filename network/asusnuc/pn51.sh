@@ -18,16 +18,23 @@ debug_mode
 # Check if root
 root_check
 
+# Only intended for our NUCs
+if ! home_sme_server
+then
+    exit
+fi
+
+# Install dependencies
 install_if_not build-essentials
 
-# DOwnload and extract
-curl_to_dir https://github.com/nextcloud/vm/blob/pn51/network r8125-9.005.06.tar.bz2 /tmp
-cd /tmp || exit
-tar-xf r8125-9.005.06.tar.bz2
+# Download and extract
+curl_to_dir https://github.com/nextcloud/vm/blob/pn51/network r8125-9.005.06.tar.bz2 "$SCRIPTS"
+check_command cd "$SCRIPTS"
+check_command tar-xf r8125-9.005.06.tar.bz2
 
 # Install
-cd r8125-9.005.06
-bash /tmp/autorun
+check_command cd "$SCRIPTS"/r8125-9.005.06
+bash autorun
 
 # Add new interface in netplan
 cat <<-IPCONFIG > "$INTERFACES"
@@ -41,3 +48,4 @@ IPCONFIG
 
 # Apply config
 netplan apply
+dhclient
