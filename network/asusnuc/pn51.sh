@@ -57,7 +57,6 @@ AUTOINSTALL="YES"
 REMAKE_INITRD="YES"
 CLEAN="rm src/@PKGNAME@.ko src/*.o || true"
 DKMSCONFIG
-
     check_command cp -R "$INSTALLDIR"/src /usr/src/r8125-"$RVERSION"
     check_command dkms add -m r8125 -v "$RVERSION"
     check_command dkms build -m r8125 -v "$RVERSION"
