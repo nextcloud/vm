@@ -23,17 +23,37 @@ then
     exit
 fi
 
+INSTALLDIR="$SCRIPTS/PN51"
+
+mkdir -p $INSTALLDIR
+
 # Install dependencies
 install_if_not build-essential
 
 # Download and extract
-curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-9.005.06.tar.bz2 "$SCRIPTS"
-check_command cd "$SCRIPTS"
-check_command tar -xf r8125-9.005.06.tar.bz2
+if [ ! -f $INSTALLDIR/r8125-9.005.06.tar.bz2 ]
+then
+    curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-9.005.06.tar.bz2 "$INSTALLDIR"
+fi
+
+if [ ! -d "$INSTALLDIR/r8125-9.005.06" ]
+then
+    check_command cd "$INSTALLDIR"
+    check_command tar -xf r8125-9.005.06.tar.bz2
+fi
 
 # Install
-check_command cd "$SCRIPTS"/r8125-9.005.06
-bash autorun.sh
+if [ -d "$INSTALLDIR/r8125-9.005.06" ]
+then
+    check_command cd "$INSTALLDIR/r8125-9.005.06"
+    bash autorun.sh
+else
+    msg_box "$INSTALLDIR/r8125-9.005.06 doesn't seem to exist, is the tar-package extracted?"
+    exit 1
+fi
+
+# Remove the folder, keep the tar
+rm -rf "$INSTALLDIR/r8125-9.005.06"
 
 # Add new interface in netplan
 cat <<-IPCONFIG > "$INTERFACES"
