@@ -533,9 +533,13 @@ mesg n
 
 ROOTNEWPROFILE
 
-# Upgrade system
-print_text_in_color "$ICyan" "System will now upgrade..."
-bash $SCRIPTS/update.sh minor
+# Avoid kernel updates due to the network driver
+if ! home_sme_server
+then
+    # Upgrade system
+    print_text_in_color "$ICyan" "System will now upgrade..."
+    bash $SCRIPTS/update.sh minor
+fi
 
 # Cleanup 2
 apt-get autoremove -y
