@@ -49,10 +49,12 @@ fi
 if [ -d "$INSTALLDIR"/r8125-"$RVERSION" ]
 then
     cat <<-DKMSCONFIG > "$INSTALLDIR"/src/dkms.conf
-PACKAGE_NAME="r8125"
+PACKAGE_NAME="realtek-r8125"
 PACKAGE_VERSION="$RVERSION"
-BUILT_MODULE_NAME[0]="$PACKAGE_NAME"
-DEST_MODULE_LOCATION[0]="/updates/dkms"
+BUILT_MODULE_NAME[0]="r8125"
+DEST_MODULE_LOCATION[0]="/updates"
+BUILT_MODULE_LOCATION[0]="src"
+MAKE="'make' KVER=${kernelver} BSRC=/lib/modules/${kernelver} all"
 AUTOINSTALL="YES"
 REMAKE_INITRD="YES"
 CLEAN="rm src/@PKGNAME@.ko src/*.o || true"
