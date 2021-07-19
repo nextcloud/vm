@@ -48,7 +48,7 @@ fi
 # Install
 if [ -d "$INSTALLDIR"/r8125-"RVERSION" ]
 then
-    cat <<-DKMSCONFIG > "$INSTALLDIR"/src"
+    cat <<-DKMSCONFIG > "$INSTALLDIR"/src/dkms.conf"
 PACKAGE_NAME="r8125"
 PACKAGE_VERSION="$RVERSION"
 BUILT_MODULE_NAME[0]="$PACKAGE_NAME"
