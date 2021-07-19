@@ -32,6 +32,7 @@ mkdir -p "$INSTALLDIR"
 
 # Install dependencies
 install_if_not build-essential
+install_if_not dkms
 
 # Download and extract
 if [ ! -f $INSTALLDIR"/r8125-$RVERSION".tar.bz2 ]
@@ -48,7 +49,7 @@ fi
 # Install
 if [ -d "$INSTALLDIR"/r8125-"$RVERSION" ]
 then
-    cat <<-DKMSCONFIG > "$INSTALLDIR"/src/dkms.conf
+    cat <<-DKMSCONFIG > "$INSTALLDIR"/r8125-"$RVERSION"/src/dkms.conf
 PACKAGE_NAME="r8125"
 PACKAGE_VERSION="$RVERSION"
 BUILT_MODULE_NAME[0]="$PACKAGE_NAME"
@@ -57,7 +58,7 @@ AUTOINSTALL="YES"
 REMAKE_INITRD="YES"
 CLEAN="rm src/@PKGNAME@.ko src/*.o || true"
 DKMSCONFIG
-    check_command cp -R "$INSTALLDIR"/src /usr/src/r8125-"$RVERSION"
+    check_command cp -R "$INSTALLDIR"/r8125-"$RVERSION"/src /usr/src/r8125-"$RVERSION"
     check_command dkms add -m r8125 -v "$RVERSION"
     check_command dkms build -m r8125 -v "$RVERSION"
     check_command dkms install -m r8125 -v "$RVERSION"
