@@ -17,8 +17,8 @@ debug_mode
 # Check if root
 root_check
 
-# Only intended for our NUCs
-if ! home_sme_server
+# Only intended for the ASUS PN51 NUC
+if ! asuspn51
 then
     exit
 fi
