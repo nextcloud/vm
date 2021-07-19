@@ -1696,6 +1696,15 @@ else
 fi
 }
 
+asuspn51() {
+if lshw -c system | grep -q "PN51"
+then
+    return 0
+else
+    return 1
+fi
+}
+
 # Check if the value is a number
 # EXAMPLE: https://github.com/nextcloud/vm/pull/1012
 check_if_number() {

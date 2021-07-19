@@ -534,7 +534,7 @@ mesg n
 ROOTNEWPROFILE
 
 # Avoid kernel updates due to the network driver
-if ! home_sme_server
+if ! asuspn51
 then
     # Upgrade system
     print_text_in_color "$ICyan" "System will now upgrade..."
