@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
-# Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
 SCRIPT_NAME="PN51 Network Drivers"
@@ -25,16 +24,16 @@ then
 fi
 
 # Install dependencies
-install_if_not build-essentials
+install_if_not build-essential
 
 # Download and extract
-curl_to_dir https://github.com/nextcloud/vm/blob/pn51/network r8125-9.005.06.tar.bz2 "$SCRIPTS"
+curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-9.005.06.tar.bz2 "$SCRIPTS"
 check_command cd "$SCRIPTS"
-check_command tar-xf r8125-9.005.06.tar.bz2
+check_command tar -xf r8125-9.005.06.tar.bz2
 
 # Install
 check_command cd "$SCRIPTS"/r8125-9.005.06
-bash autorun
+bash autorun.sh
 
 # Add new interface in netplan
 cat <<-IPCONFIG > "$INTERFACES"
