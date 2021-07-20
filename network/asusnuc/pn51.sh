@@ -62,6 +62,13 @@ then
 fi
 }
 
+# Update to new version or stay at current
+# Before upgrading to bew version, fix all variables and download the newest version to the VM repo here: 
+# https://github.com/nextcloud/vm/tree/master/network/asusnuc
+#
+#new_version
+stay_at_current
+
 # Make sure the installation directory exist
 mkdir -p "$INSTALLDIR"
 
@@ -75,13 +82,6 @@ Please report this to $ISSUES including this link: https://www.realtek.com/en/co
 
 Thanks!"
 fi
-
-# Update to new version or stay at current
-# Before upgrading to bew version, fix all variables and download the newest version to the VM repo here: 
-# https://github.com/nextcloud/vm/tree/master/network/asusnuc
-#
-#new_version
-stay_at_current
 
 # Install dependencies
 install_if_not build-essential
