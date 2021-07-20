@@ -110,6 +110,7 @@ Since the Home/SME server is equipped with a Wi-Fi module, you will now be asked
 Please note: It's not recommended to run a server on Wi-Fi; using an ethernet cable is always the best."
     if yesno_box_yes "Do you want to enable Wi-Fi on this server?"
     then
+        install_if_not network-manager
         nmtui
     fi
         if network_ok

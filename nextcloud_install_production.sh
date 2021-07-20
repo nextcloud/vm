@@ -207,11 +207,13 @@ stop_if_installed apache2
 stop_if_installed nginx
 stop_if_installed php
 stop_if_installed php-fpm
+stop_if_installed php-common
 stop_if_installed php"$PHPVER"-fpm
 stop_if_installed php7.0-fpm
 stop_if_installed php7.1-fpm
 stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
+stop_if_installed php8.0-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
@@ -929,6 +931,23 @@ then
     echo "\4" >> /etc/issue
 fi
 
+# Update if it's the Home/SME Server
+if home_sme_server
+then
+    # Upgrade system
+    print_text_in_color "$ICyan" "System will now upgrade..."
+    run_script STATIC update
+fi
+
+# Fix Realtek on PN51
+if asuspn51
+then
+    # Upgrade Realtek drivers
+    print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
+    curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+    bash "$SCRIPTS"/pn51.sh
+fi
+
 # Force MOTD to show correct number of updates
 if is_this_installed update-notifier-common
 then
@@ -939,7 +958,6 @@ fi
 # Download scripts
 # chmod +x
 # Set permissions for ncadmin in the change scripts
-
 
 print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
 

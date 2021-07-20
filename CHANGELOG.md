@@ -52,7 +52,7 @@ PR's are more than welcome. Happy Nextclouding!
 - And more...
 
 ### Full changelog:
-- https://github.com/nextcloud/vm/compare/21.0.2..21.0.3
+- https://github.com/nextcloud/vm/compare/21.0.2..22.0.0
 - https://nextcloud.com/changelog/#latest21
 
 ## 21.0.2
