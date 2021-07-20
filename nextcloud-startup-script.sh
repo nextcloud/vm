@@ -533,13 +533,9 @@ mesg n
 
 ROOTNEWPROFILE
 
-# Avoid kernel updates due to the network driver
-if ! asuspn51
-then
-    # Upgrade system
-    print_text_in_color "$ICyan" "System will now upgrade..."
-    bash $SCRIPTS/update.sh minor
-fi
+# Upgrade system
+print_text_in_color "$ICyan" "System will now upgrade..."
+bash $SCRIPTS/update.sh minor
 
 # Cleanup 2
 apt-get autoremove -y
