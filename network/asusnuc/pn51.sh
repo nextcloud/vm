@@ -22,7 +22,7 @@ debug_mode
 # Check if root
 root_check
 
-# Only intended for the ASUS PN51 NUC, also check if it's already installed.
+# Only intended for the ASUS PN51 NUC
 if ! asuspn51
 then
     exit
