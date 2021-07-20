@@ -4,6 +4,9 @@
 
 # Implements this way of doing it: https://askubuntu.com/a/1281319
 
+# Force upgrade dkms:
+# ls /var/lib/initramfs-tools | sudo xargs -n1 /usr/lib/dkms/dkms_autoinstaller start
+
 true
 SCRIPT_NAME="PN51 Network Drivers"
 SCRIPT_EXPLAINER="This installs the correct drivers for the 2.5GB LAN card in the PN51 ASUS"
@@ -19,16 +22,34 @@ debug_mode
 # Check if root
 root_check
 
-# Only intended for the ASUS PN51 NUC
+# Only intended for the ASUS PN51 NUC, also check if it's already installed.
 if ! asuspn51
 then
     exit
+elif asuspn51
+then
+    if dkms status > /tmp/dkms-status && grep "r8125" /tmp/dkms-status && rm /tmp/dkms-status
+    then
+        print_text_in_color "$ICyan" "The Realtek d2.5G driver is already installed"
+        exit
+    fi
 fi
 
 INSTALLDIR="$SCRIPTS/PN51"
 RVERSION="9.005.06"
 
 mkdir -p "$INSTALLDIR"
+
+# Check for new version based on current version
+print_text_in_color "$ICyan" "Checking for newer version of firmware..."
+if ! curl -k -s https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software | grep "$RVERSION" >/dev/null
+then
+    msg_box "It seems like there's a newer version of the Realtek Driver for the LAN network card.
+
+Please report this to $ISSUES including this link: https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
+
+Thanks!"
+fi
 
 # Install dependencies
 install_if_not build-essential
