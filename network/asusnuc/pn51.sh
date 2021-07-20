@@ -26,18 +26,39 @@ root_check
 if ! asuspn51
 then
     exit
-elif asuspn51
-then
-    if dkms status > /tmp/dkms-status && grep "r8125" /tmp/dkms-status && rm /tmp/dkms-status
-    then
-        print_text_in_color "$ICyan" "The Realtek d2.5G driver is already installed"
-        exit
-    fi
 fi
 
 INSTALLDIR="$SCRIPTS/PN51"
+OLDRVERSION="9.005.06"
 RVERSION="9.005.06"
 
+new_version() {
+# Ask to update to a newer version
+if [ -n "$(check_command dkms status)" ]
+then
+    if ! yesno_box_no "The Realtek 2.5G driver is already installed, would you like to update to the latest version?"
+    then
+        exit
+    else
+        dkms remove r8125/"$OLDRVERSION" --all
+        rm -rf /usr/src/r8125"$OLDRVERSION"/
+        if [ -z "$(check_command dkms status)" ]
+        then
+            print_text_in_color "$ICyan" "Firmware version $OLDRVERSION successfully purged!"
+        fi
+    fi
+fi
+}
+
+stay_at_current() {
+if [ -n "$(check_command dkms status)" ]
+then
+    print_text_in_color "$ICyan" "The Realtek 2.5G driver (version $RVERSION) is already installed."
+    exit
+fi
+}
+
+# Make sure the installation directory exist
 mkdir -p "$INSTALLDIR"
 
 # Check for new version based on current version
@@ -51,14 +72,21 @@ Please report this to $ISSUES including this link: https://www.realtek.com/en/co
 Thanks!"
 fi
 
+# Update to new version or stay at current
+# Before upgrading to bew version, fix all variables and download the newest version to the VM repo here: 
+# https://github.com/nextcloud/vm/tree/master/network/asusnuc
+#
+#new_version
+stay_at_current
+
 # Install dependencies
 install_if_not build-essential
 install_if_not dkms
 
 # Download and extract
-if [ ! -f $INSTALLDIR"/r8125-$RVERSION".tar.bz2 ]
+if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
 then
-    curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-9.005.06.tar.bz2 "$INSTALLDIR"
+    curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
 fi
 
 if [ ! -d "$INSTALLDIR"/r8125-"$RVERSION" ]
@@ -90,6 +118,14 @@ fi
 
 # Remove the folder, keep the tar
 rm -rf "$INSTALLDIR"/r8125-"$RVERSION"
+
+# Check if it was successful
+if [ -n "$(check_command dkms status)" ]
+then
+    msg_box "The Realtek 2.5G driver (version $RVERSION) was successfully installed."
+else
+    msg_box "Something went wrong, please report this to $ISSUES"
+fi
 
 # Add new interface in netplan
 cat <<-IPCONFIG > "$INTERFACES"
