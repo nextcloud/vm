@@ -125,6 +125,7 @@ then
     msg_box "The Realtek 2.5G driver (version $RVERSION) was successfully installed."
 else
     msg_box "Something went wrong, please report this to $ISSUES"
+    exit 1
 fi
 
 # Add new interface in netplan
