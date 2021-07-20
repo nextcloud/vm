@@ -262,11 +262,16 @@ then
     fi
 fi
 
-# Don't upgrade if PN51 as it might break Realtek kernels (2021-07-20) 
-# TODO, remove this when a stable fix is in place
-if ! asuspn51
+# Upgrade OS dependencies
+export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+
+# Fix Realtek on PN51
+if asuspn51
 then
-    export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+    # Upgrade Realtek drivers
+    print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
+    curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+    bash "$SCRIPTS"/pn51.sh
 fi
 
 # Update Netdata
