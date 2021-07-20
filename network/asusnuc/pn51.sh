@@ -40,7 +40,7 @@ then
     then
         exit
     else
-        dkms remove r8125/"$OLDRVERSION" --all
+        check_command dkms remove r8125/"$OLDRVERSION" --all
         rm -rf /usr/src/r8125"$OLDRVERSION"/
         if [ -z "$(check_command dkms status)" ]
         then
@@ -51,10 +51,14 @@ fi
 }
 
 stay_at_current() {
-if [ -n "$(check_command dkms status)" ]
+STATUS="$(check_command dkms status)"
+if [ -n "$STATUS" ]
 then
-    print_text_in_color "$ICyan" "The Realtek 2.5G driver (version $RVERSION) is already installed."
-    exit
+    if echo "$STATUS" | grep "$RVERSION" &> /dev/null
+    then
+        print_text_in_color "$ICyan" "The Realtek 2.5G driver (version $RVERSION) is already installed."
+        exit
+    fi
 fi
 }
 
@@ -120,9 +124,13 @@ fi
 rm -rf "$INSTALLDIR"/r8125-"$RVERSION"
 
 # Check if it was successful
-if [ -n "$(check_command dkms status)" ]
+STATUS="$(check_command dkms status)"
+if [ -n "$STATUS" ]
 then
-    msg_box "The Realtek 2.5G driver (version $RVERSION) was successfully installed."
+    if echo "$STATUS" | grep "$RVERSION" &> /dev/null
+    then
+        msg_box "The Realtek 2.5G driver (version $RVERSION) was successfully installed."
+    fi
 else
     msg_box "Something went wrong, please report this to $ISSUES"
     exit 1
