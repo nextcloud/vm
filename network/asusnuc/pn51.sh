@@ -36,6 +36,12 @@ INSTALLDIR="$SCRIPTS/PN51"
 OLDRVERSION="9.005.06"
 RVERSION="9.005.06"
 
+# Download the driver before it's removed (no internet when it's removed)
+if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
+then
+    curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
+fi
+
 new_version() {
 # Ask to update to a newer version
 if [ -n "$(check_command dkms status)" ]
@@ -87,12 +93,7 @@ Please report this to $ISSUES including this link: https://www.realtek.com/en/co
 Thanks!"
 fi
 
-# Download and extract
-if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
-then
-    curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
-fi
-
+# Extract the driver
 if [ ! -d "$INSTALLDIR"/r8125-"$RVERSION" ]
 then
     check_command cd "$INSTALLDIR"
