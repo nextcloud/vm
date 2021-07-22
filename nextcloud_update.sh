@@ -262,12 +262,8 @@ then
     fi
 fi
 
-# Don't upgrade if PN51 as it might break Realtek kernels (2021-07-20) 
-# TODO, remove this when a stable fix is in place
-if ! asuspn51
-then
-    export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-fi
+# Upgrade OS dependencies
+export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
 # Update Netdata
 if [ -d /etc/netdata ]
