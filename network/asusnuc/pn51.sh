@@ -131,7 +131,7 @@ fi
 if [ -f "$INTERFACES" ]
 then
     if ! grep -q "enp2s0" "$INTERFACES"
-then
+    then
     cat <<-IPCONFIG > "$INTERFACES"
 network:
    version: 2
