@@ -28,6 +28,10 @@ then
     exit
 fi
 
+# Install dependencies
+install_if_not build-essential
+install_if_not dkms
+
 INSTALLDIR="$SCRIPTS/PN51"
 OLDRVERSION="9.005.06"
 RVERSION="9.005.06"
@@ -82,10 +86,6 @@ Please report this to $ISSUES including this link: https://www.realtek.com/en/co
 
 Thanks!"
 fi
-
-# Install dependencies
-install_if_not build-essential
-install_if_not dkms
 
 # Download and extract
 if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
