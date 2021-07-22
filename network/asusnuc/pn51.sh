@@ -127,9 +127,22 @@ else
 fi
 
 # Add new interface in netplan
-if ! grep "enp2s0" "$INTERFACES"
+# Also make sure not to overwrite a modified version
+if [ -f "$INTERFACES" ]
 then
-cat <<-IPCONFIG > "$INTERFACES"
+    if ! grep -q "enp2s0" "$INTERFACES"
+then
+    cat <<-IPCONFIG > "$INTERFACES"
+network:
+   version: 2
+   ethernets:
+       enp2s0:
+         dhcp4: true
+         dhcp6: true
+IPCONFIG
+    fi
+else
+    cat <<-IPCONFIG > "$INTERFACES"
 network:
    version: 2
    ethernets:
