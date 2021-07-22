@@ -36,6 +36,9 @@ INSTALLDIR="$SCRIPTS/PN51"
 OLDRVERSION="9.005.06"
 RVERSION="9.005.06"
 
+# Make sure the installation directory exist
+mkdir -p "$INSTALLDIR"
+
 # Download the driver before it's removed (no internet when it's removed)
 if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
 then
@@ -78,9 +81,6 @@ fi
 #
 #new_version
 stay_at_current
-
-# Make sure the installation directory exist
-mkdir -p "$INSTALLDIR"
 
 # Check for new version based on current version
 print_text_in_color "$ICyan" "Checking for newer version of firmware..."
