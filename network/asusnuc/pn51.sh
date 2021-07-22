@@ -82,17 +82,6 @@ fi
 #new_version
 stay_at_current
 
-# Check for new version based on current version
-print_text_in_color "$ICyan" "Checking for newer version of firmware..."
-if ! curl -k -s https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software | grep "$RVERSION" >/dev/null
-then
-    msg_box "It seems like there's a newer version of the Realtek Driver for the LAN network card.
-
-Please report this to $ISSUES including this link: https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
-
-Thanks!"
-fi
-
 # Extract the driver
 if [ ! -d "$INSTALLDIR"/r8125-"$RVERSION" ]
 then
@@ -138,6 +127,8 @@ else
 fi
 
 # Add new interface in netplan
+if ! grep "enp2s0" "$INTERFACES"
+then
 cat <<-IPCONFIG > "$INTERFACES"
 network:
    version: 2
@@ -146,7 +137,19 @@ network:
          dhcp4: true
          dhcp6: true
 IPCONFIG
+fi
 
 # Apply config
 netplan apply
 dhclient
+
+# Check for new version based on current version (needs to happen after the new one is installed)
+print_text_in_color "$ICyan" "Checking for newer version of firmware..."
+if ! curl -k -s https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software | grep "$RVERSION" >/dev/null
+then
+    msg_box "It seems like there's a newer version of the Realtek Driver for the LAN network card.
+
+Please report this to $ISSUES including this link: https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
+
+Thanks!"
+fi
