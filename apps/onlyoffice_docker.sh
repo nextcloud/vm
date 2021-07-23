@@ -27,7 +27,7 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     remove_onlyoffice_docker
-    # Remove config.php value set when install was sucessfull
+    # Remove config.php value set when install was successful
     nextcloud_occ config:system:delete allow_local_remote_servers
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
