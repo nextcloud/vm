@@ -39,6 +39,19 @@ RVERSION="9.005.06"
 # Make sure the installation directory exist
 mkdir -p "$INSTALLDIR"
 
+# Check for new version based on current version
+# Since this runs in the update script, it's needs to be done before anything else is touched
+print_text_in_color "$ICyan" "Checking for newer version of firmware..."
+if ! curl -k -s https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software | grep "$RVERSION" >/dev/null
+then
+    msg_box "It seems like there's a newer version of the Realtek Driver for the LAN network card.
+
+Please report this to $ISSUES including this link:
+https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
+
+Thanks!"
+fi
+
 # Download the driver before it's removed (no internet when it's removed)
 if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
 then
@@ -155,14 +168,3 @@ fi
 # Apply config
 netplan apply
 dhclient
-
-# Check for new version based on current version (needs to happen after the new one is installed)
-print_text_in_color "$ICyan" "Checking for newer version of firmware..."
-if ! curl -k -s https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software | grep "$RVERSION" >/dev/null
-then
-    msg_box "It seems like there's a newer version of the Realtek Driver for the LAN network card.
-
-Please report this to $ISSUES including this link: https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
-
-Thanks!"
-fi
