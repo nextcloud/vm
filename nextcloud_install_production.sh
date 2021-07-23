@@ -557,9 +557,6 @@ nextcloud_occ config:system:set versions_retention_obligation --value="auto, 180
 # Set activity retention obligation (save activity feed for 120 days, defaults to 365 days otherwise)
 nextcloud_occ config:system:set activity_expire_days --value="120"
 
-# Allow remote servers with local addresses e.g. in federated shares, webcal services and more
-nextcloud_occ config:system:set allow_local_remote_servers --value="true"
-
 # Remove simple signup
 nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
 

@@ -27,6 +27,8 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     remove_onlyoffice_docker
+    # Remove config.php value set when install was sucessfull
+    nextcloud_occ config:system:delete allow_local_remote_servers
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -203,7 +205,7 @@ then
     ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.3:9090/$1$2"
     ProxyPass / "http://127.0.0.3:9090/"
     ProxyPassReverse / "http://127.0.0.3:9090/"
-        
+
     <Location />
         ProxyPassReverse /
     </Location>
@@ -249,6 +251,8 @@ then
     chown -R www-data:www-data "$NC_APPS_PATH"
     # Appending the new domain to trusted domains
     add_to_trusted_domains "$SUBDOMAIN"
+    # Allow remote servers with local addresses e.g. in federated shares, webcal services and more
+    nextcloud_occ config:system:set allow_local_remote_servers --value="true"
     # Add prune command
     add_dockerprune
     # Restart Docker
