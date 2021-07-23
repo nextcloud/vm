@@ -28,9 +28,22 @@ then
     exit
 fi
 
+# Install dependencies
+install_if_not build-essential
+install_if_not dkms
+
 INSTALLDIR="$SCRIPTS/PN51"
 OLDRVERSION="9.005.06"
 RVERSION="9.005.06"
+
+# Make sure the installation directory exist
+mkdir -p "$INSTALLDIR"
+
+# Download the driver before it's removed (no internet when it's removed)
+if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
+then
+    curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
+fi
 
 new_version() {
 # Ask to update to a newer version
@@ -69,30 +82,7 @@ fi
 #new_version
 stay_at_current
 
-# Make sure the installation directory exist
-mkdir -p "$INSTALLDIR"
-
-# Check for new version based on current version
-print_text_in_color "$ICyan" "Checking for newer version of firmware..."
-if ! curl -k -s https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software | grep "$RVERSION" >/dev/null
-then
-    msg_box "It seems like there's a newer version of the Realtek Driver for the LAN network card.
-
-Please report this to $ISSUES including this link: https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
-
-Thanks!"
-fi
-
-# Install dependencies
-install_if_not build-essential
-install_if_not dkms
-
-# Download and extract
-if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
-then
-    curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
-fi
-
+# Extract the driver
 if [ ! -d "$INSTALLDIR"/r8125-"$RVERSION" ]
 then
     check_command cd "$INSTALLDIR"
@@ -137,7 +127,12 @@ else
 fi
 
 # Add new interface in netplan
-cat <<-IPCONFIG > "$INTERFACES"
+# Also make sure not to overwrite a modified version
+if [ -f "$INTERFACES" ]
+then
+    if ! grep -q "enp2s0" "$INTERFACES"
+    then
+    cat <<-IPCONFIG > "$INTERFACES"
 network:
    version: 2
    ethernets:
@@ -145,7 +140,29 @@ network:
          dhcp4: true
          dhcp6: true
 IPCONFIG
+    fi
+else
+    cat <<-IPCONFIG > "$INTERFACES"
+network:
+   version: 2
+   ethernets:
+       enp2s0:
+         dhcp4: true
+         dhcp6: true
+IPCONFIG
+fi
 
 # Apply config
 netplan apply
 dhclient
+
+# Check for new version based on current version (needs to happen after the new one is installed)
+print_text_in_color "$ICyan" "Checking for newer version of firmware..."
+if ! curl -k -s https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software | grep "$RVERSION" >/dev/null
+then
+    msg_box "It seems like there's a newer version of the Realtek Driver for the LAN network card.
+
+Please report this to $ISSUES including this link: https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
+
+Thanks!"
+fi

@@ -931,14 +931,6 @@ then
     echo "\4" >> /etc/issue
 fi
 
-# Update if it's the Home/SME Server
-if home_sme_server
-then
-    # Upgrade system
-    print_text_in_color "$ICyan" "System will now upgrade..."
-    run_script STATIC update
-fi
-
 # Fix Realtek on PN51
 if asuspn51
 then
@@ -946,6 +938,14 @@ then
     print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
     curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
     bash "$SCRIPTS"/pn51.sh
+fi
+
+# Update if it's the Home/SME Server
+if home_sme_server
+then
+    # Upgrade system
+    print_text_in_color "$ICyan" "System will now upgrade..."
+    run_script STATIC update
 fi
 
 # Force MOTD to show correct number of updates
