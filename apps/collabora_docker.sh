@@ -28,6 +28,8 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     remove_collabora_docker
+    # Remove config.php value set when install was successful
+    nextcloud_occ config:system:delete allow_local_remote_servers
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -83,7 +85,7 @@ then
     open_port 443 TCP
     cleanup_open_port
 fi
-    
+
 # Get the latest packages
 apt-get update -q4 & spinner_loading
 
@@ -260,6 +262,8 @@ then
     chown -R www-data:www-data "$NC_APPS_PATH"
     # Appending the new domain to trusted domains
     add_to_trusted_domains "$SUBDOMAIN"
+    # Allow remote servers with local addresses e.g. in federated shares, webcal services and more
+    nextcloud_occ config:system:set allow_local_remote_servers --value="true"
     # Add prune command
     add_dockerprune
     print_text_in_color "$ICyan" "Restarting Docker..."
