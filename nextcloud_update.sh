@@ -359,13 +359,26 @@ then
         else
             print_text_in_color "$IGreen" "APCu PHP module removal OK!"
         fi
-    # Delete everything else
-    check_command phpdismod -v ALL apcu
-    rm -f $PHP_MODS_DIR/apcu.ini
-    sed -i "/extension=apcu.so/d" "$PHP_INI"
-    sed -i "/APCu/d" "$PHP_INI"
-    sed -i "/apc./d" "$PHP_INI"
+        # Delete everything else
+        check_command phpdismod -v ALL apcu
+        rm -f "$PHP_MODS_DIR"/apcu.ini
+        rm -f "$PHP_MODS_DIR"/apcu_bc.ini
+        sed -i "/extension=apcu.so/d" "$PHP_INI"
+        sed -i "/APCu/d" "$PHP_INI"
+        sed -i "/apc./d" "$PHP_INI"
     fi
+fi
+
+# Also remove php-acpu if installed
+if is_this_installed php-acpu
+then
+    apt-get purge php-apcu
+    apt-get autoremove -y
+fi
+if is_this_installed php"$PHPVER"-apcu
+then
+    apt-get purge php"$PHPVER"-apcu
+    apt-get autoremove -y
 fi
 
 # Upgrade other PECL dependencies
