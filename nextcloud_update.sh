@@ -373,9 +373,12 @@ fi
 if is_this_installed php-acpu
 then
     apt-get purge php-apcu
-elif is_this_installed php"$PHPVER"-apcu
+    apt-get autoremove -y
+fi
+if is_this_installed php"$PHPVER"-apcu
 then
     apt-get purge php"$PHPVER"-apcu
+    apt-get autoremove -y
 fi
 
 # Upgrade other PECL dependencies
