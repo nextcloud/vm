@@ -234,13 +234,6 @@ then
     rm -f $SCRIPTS/lib.sh
 fi
 
-# Update updatenotification.sh
-if [ -f $SCRIPTS/updatenotification.sh ]
-then
-    download_script STATIC updatenotification
-    chmod +x $SCRIPTS/updatenotification.sh
-fi
-
 # Make sure everyone gets access to menu.sh
 download_script MENU menu
 
@@ -669,6 +662,13 @@ then
         print_text_in_color "$IGreen" "You already run the latest version! ($CURRENTVERSION)"
         exit 0
     fi
+fi
+
+# Update updatenotification.sh
+if [ -f $SCRIPTS/updatenotification.sh ]
+then
+    download_script STATIC updatenotification
+    chmod +x $SCRIPTS/updatenotification.sh
 fi
 
 ############# Don't upgrade to specific version
