@@ -804,11 +804,11 @@ then
         DEDYN_TOKEN=$(grep DEDYN_TOKEN "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
         DEDYN_NAME=$(grep DEDYN_NAME "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
         return 0
-    else
+    fi
+else
         msg_box "It seems like deSEC isn't configured on this server.
 Please run 'sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC' to configure it."
         return 1
-    fi
 fi
 }
 
