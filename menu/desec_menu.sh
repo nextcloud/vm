@@ -33,7 +33,7 @@ case "$choice" in
         run_script ADDONS desec_subdomain
     ;;
     "Remove deSEC")
-        #print_text_in_color "$ICyan" "Downloading the OnlyOffice (Integrated) script..."
+        #print_text_in_color "$ICyan" "Downloading the remove deSEC script..."
         #run_script ADDONS remove_desec
         msg_box "This option is not yet active. Please try again another day."
     ;;
