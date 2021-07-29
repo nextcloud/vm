@@ -19,9 +19,9 @@ root_check
 choice=$(whiptail --title "$TITLE" --menu \
 "Please choose one of the deSEC options below.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Install deSEC" "Setup deSEC fully automated: yourdomain.dedyn.io" \
-"deSEC Subdomain" "Add another subdomain to an existing account" \
-"Remove deSEC" "Remove your deSEC account (not yet active)" 3>&1 1>&2 2>&3)
+"Install deSEC" "(Setup deSEC fully automated: yourdomain.dedyn.io)" \
+"deSEC Subdomain" "(Add another subdomain to an existing account)" \
+"Remove deSEC" "(Remove your deSEC account - not yet active)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Install deSEC")
