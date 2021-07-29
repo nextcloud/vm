@@ -39,15 +39,15 @@ fi
 msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to use"
 while :
 do
-    SUBDEDYN=$(input_box_flow "Please enter the subdomain (*example*.dedyn.io) that you want to use \
-The only allowed characters for the username are:
+    SUBDEDYN=$(input_box_flow "Please enter the subdomain (*example*.dedyn.io) that you want to remove \
+The only allowed characters for the domain are:
 'a-z', 'A-Z', and '0-9'")
     if [[ "$SUBDEDYN" == *" "* ]]
     then
         msg_box "Please don't use spaces."
     elif [ "${SUBDEDYN//[A-Za-z0-9]}" ]
     then
-        msg_box "Allowed characters for the username are:\na-z', 'A-Z', and '0-9'\n\nPlease try again."
+        msg_box "Allowed characters for the domain are:\na-z', 'A-Z', and '0-9'\n\nPlease try again."
     else
         DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
         break
@@ -58,12 +58,20 @@ done
 while :
 do
     if ! curl -sfX GET https://desec.io/api/v1/domains/?owns_qname=$DEDYNDOMAIN --header "Authorization: Token $DEDYN_TOKEN"
-    msg_box "It doesn't seem that $DEDYNDOMAIN is connected to your account. Please try again."
-    countdown "Please press CTRL+C to stop trying..." "5"
+    then
+       msg_box "It doesn't seem that $DEDYNDOMAIN is connected to your account. Please try again."
+       countdown "Please press CTRL+C to stop trying..." "5"
+    else
+        break
+    fi
 done
 
 # Remove domain
-curl -sfX DELETE https://desec.io/api/v1/domains/"$DEDYNDOMAIN"/
+curl -X DELETE https://desec.io/api/v1/domains/ \
+    --header "Authorization: Token $DEDYN_TOKEN" \
+    --header "Content-Type: application/json" --data @- <<< \
+    '{"name": "$DEDYNDOMAIN"}'
+
 
 # Ask for email and password
 VALIDEMAIL=$(input_box_flow "Please enter the email address (from the previous screen) for your deSEC account.")
