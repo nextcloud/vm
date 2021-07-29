@@ -35,34 +35,9 @@ else
 Please copy the email address."
 fi
 
-# Only works if there's only one domain:
-DEDYNDOMAIN="$(curl -sfX GET https://desec.io/api/v1/domains/ --header "Authorization: Token $DEDYN_TOKEN" | sed -e 's/.*name":"\(.*\)","minimum.*/\1/')"
-
-# Check if domain exists (needs to be remove before we can delete the account)
-if ! echo "$DEDYNDOMAIN" | grep -q "dedyn.io"
-then
-    # Enter the subdomain
-    msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to remove"
-    while :
-    do
-        SUBDEDYN=$(input_box_flow "Please enter the subdomain (*example*.dedyn.io) that you want to remove \
-The only allowed characters for the domain are:
-'a-z', 'A-Z', and '0-9'")
-        if [[ "$SUBDEDYN" == *" "* ]]
-        then
-            msg_box "Please don't use spaces."
-        elif [ "${SUBDEDYN//[A-Za-z0-9]}" ]
-        then
-            msg_box "Allowed characters for the domain are:\na-z', 'A-Z', and '0-9'\n\nPlease try again."
-        else
-            DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
-            break
-        fi
-    done
-fi
-
 # Remove domain
-curl -X DELETE https://desec.io/api/v1/domains/"$DEDYNDOMAIN"/ \
+print_text_in_color "$ICyan" "Removing $DEDYN_NAME..."
+curl -X DELETE https://desec.io/api/v1/domains/"$DEDYN_NAME"/ \
     --header "Authorization: Token $DEDYN_TOKEN"
 
 # Ask for email and password
@@ -70,19 +45,27 @@ VALIDEMAIL=$(input_box_flow "Please enter the email address (from the previous s
 VALIDPASSWD=$(input_box_flow "Please enter the password for your deSEC account.")
 
 # Just some info
-msg_box "If the correct password has been provided, the server will send you an email with a link of the form https://desec.io/api/v1/v/delete-account/<code>/. To finish the deletion, click on that link (which will direct you to deSEC frontend).
+msg_box "If the correct password has been provided, the server will send you an email with a link of the form https://desec.io/api/v1/v/delete-account/<code>/. To finish the deletion, click on that link (which wi>
 
 The link expires after 12 hours. It is also invalidated by certain other account-related activities, such as changing your email address or password."
 
 # Do the actual removal
 while :
 do
-    if ! curl -sfX POST https://desec.io/api/v1/auth/account/delete/ --header "Content-Type: application/json" --data @- <<< '{"email": "$VALIDEMAIL", "password": "$VALIDPASSWD"}'
+    if ! curl -fX POST https://desec.io/api/v1/auth/account/delete/ --header "Content-Type: application/json" --data @- <<DELETEACC
+    {
+      "email": "$VALIDEMAIL",
+      "password": "$VALIDPASSWD"
+    }
+DELETEACC
     then
-        msg_box "It seems like the password is wrong. You will now be able to try again."
+        msg_box "It seems like the credentials you entered is wrong. You will now be able to try again."
         countdown "Please press CTRL+C to stop trying..." "5"
         # Ask for email and password
         VALIDEMAIL=$(input_box_flow "Please enter the email address (from the previous screen) for your deSEC account.")
         VALIDPASSWD=$(input_box_flow "Please enter the password for your deSEC account.")
+    else
+        rm -Rf $"SCRIPTS"/deSEC
+        break
     fi
 done
