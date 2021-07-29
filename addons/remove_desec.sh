@@ -51,7 +51,7 @@ exit
 # Do the actual removal
 while :
 do
-    if ! curl -X POST https://desec.io/api/v1/auth/account/delete/ --header "Content-Type: application/json" --data @- <<< '{"email": "$VALIDEMAIL", "password": "$VALID_PASSWD"}'
+    if ! curl -X POST https://desec.io/api/v1/auth/account/delete/ --header "Content-Type: application/json" --data @- <<< '{"email": "$VALIDEMAIL", "password": "$VALIDPASSWD"}'
     then
         msg_box "It seems like the password is wrong. You will now be able to try again."
         countdown "Please press CTRL+C to stop trying..." "5"
