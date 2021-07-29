@@ -62,13 +62,8 @@ The only allowed characters for the domain are:
 fi
 
 # Remove domain
-if ! curl -fX DELETE https://desec.io/api/v1/domains/delete \
-    --header "Authorization: Token $DEDYN_TOKEN" \
-    --header "Content-Type: application/json" --data @- <<< \
-    '{"name": "$DEDYNDOMAIN"}'
-then
-    echo "$?"
-fi
+curl -X DELETE https://desec.io/api/v1/domains/"$DEDYNDOMAIN"/ \
+    --header "Authorization: Token $DEDYN_TOKEN"
 
 # Ask for email and password
 VALIDEMAIL=$(input_box_flow "Please enter the email address (from the previous screen) for your deSEC account.")
@@ -77,9 +72,7 @@ VALIDPASSWD=$(input_box_flow "Please enter the password for your deSEC account."
 # Just some info
 msg_box "If the correct password has been provided, the server will send you an email with a link of the form https://desec.io/api/v1/v/delete-account/<code>/. To finish the deletion, click on that link (which will direct you to deSEC frontend).
 
-The link expires after 12 hours. It is also invalidated by certain other account-related activities, such as changing your email address or password.
-
-If your account still contains domains, the server will respond with 409 Conflict and not delete your account."
+The link expires after 12 hours. It is also invalidated by certain other account-related activities, such as changing your email address or password."
 
 # Do the actual removal
 while :
