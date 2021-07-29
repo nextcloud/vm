@@ -78,7 +78,7 @@ DELETEACC
         msg_box "It seems like the credentials you entered is wrong. You will now be able to try again."
         countdown "Please press CTRL+C to stop trying..." "5"
         # Ask for email and password
-        VALIDEMAIL=$(input_box_flow "Please enter the email address (from the previous screen) for your deSEC account.")
+        VALIDEMAIL=$(input_box_flow "Please enter the email address for your deSEC account.")
         VALIDPASSWD=$(input_box_flow "Please enter the password for your deSEC account.")
     else
         rm -Rf "$SCRIPTS"/deSEC
@@ -95,3 +95,7 @@ If you used a certain port during installation, you can remove that as well in:
         break
     fi
 done
+
+# Do you want to install it again?
+msg_box "Remember, you can always install deSEC again by running:
+sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC"
