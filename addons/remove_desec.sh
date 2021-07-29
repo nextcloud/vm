@@ -35,6 +35,36 @@ else
 Please copy the email address."
 fi
 
+# Enter the subdomain
+msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to use"
+while :
+do
+    SUBDEDYN=$(input_box_flow "Please enter the subdomain (*example*.dedyn.io) that you want to use \
+The only allowed characters for the username are:
+'a-z', 'A-Z', and '0-9'")
+    if [[ "$SUBDEDYN" == *" "* ]]
+    then
+        msg_box "Please don't use spaces."
+    elif [ "${SUBDEDYN//[A-Za-z0-9]}" ]
+    then
+        msg_box "Allowed characters for the username are:\na-z', 'A-Z', and '0-9'\n\nPlease try again."
+    else
+        DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
+        break
+    fi
+done
+
+# Check if domain exists (needs to be remove before we can delete the account)
+while :
+do
+    if ! curl -sfX GET https://desec.io/api/v1/domains/?owns_qname=$DEDYNDOMAIN --header "Authorization: Token $DEDYN_TOKEN"
+    msg_box "It doesn't seem that $DEDYNDOMAIN is connected to your account. Please try again."
+    countdown "Please press CTRL+C to stop trying..." "5"
+done
+
+# Remove domain
+curl -sfX DELETE https://desec.io/api/v1/domains/"$DEDYNDOMAIN"/
+
 # Ask for email and password
 VALIDEMAIL=$(input_box_flow "Please enter the email address (from the previous screen) for your deSEC account.")
 VALIDPASSWD=$(input_box_flow "Please enter the password for your deSEC account.")
@@ -46,12 +76,10 @@ The link expires after 12 hours. It is also invalidated by certain other account
 
 If your account still contains domains, the server will respond with 409 Conflict and not delete your account."
 
-exit
-
 # Do the actual removal
 while :
 do
-    if ! curl -X POST https://desec.io/api/v1/auth/account/delete/ --header "Content-Type: application/json" --data @- <<< '{"email": "$VALIDEMAIL", "password": "$VALIDPASSWD"}'
+    if ! curl -sfX POST https://desec.io/api/v1/auth/account/delete/ --header "Content-Type: application/json" --data @- <<< '{"email": "$VALIDEMAIL", "password": "$VALIDPASSWD"}'
     then
         msg_box "It seems like the password is wrong. You will now be able to try again."
         countdown "Please press CTRL+C to stop trying..." "5"
