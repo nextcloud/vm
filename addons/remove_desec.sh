@@ -57,7 +57,7 @@ done
 # Check if domain exists (needs to be remove before we can delete the account)
 while :
 do
-    if ! curl -sfX GET https://desec.io/api/v1/domains/?owns_qname=$DEDYNDOMAIN --header "Authorization: Token $DEDYN_TOKEN"
+    if ! curl -sfX GET https://desec.io/api/v1/domains/?owns_qname="$DEDYNDOMAIN" --header "Authorization: Token $DEDYN_TOKEN"
     then
        msg_box "It doesn't seem that $DEDYNDOMAIN is connected to your account. Please try again."
        countdown "Please press CTRL+C to stop trying..." "5"
