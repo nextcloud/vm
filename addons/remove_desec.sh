@@ -82,6 +82,16 @@ DELETEACC
         VALIDPASSWD=$(input_box_flow "Please enter the password for your deSEC account.")
     else
         rm -Rf "$SCRIPTS"/deSEC
+        if [ -f "$SITES_AVAILABLE"/"$DEDYN_NAME".conf ]
+        then
+            a2dissite "$DEDYN_NAME".conf
+            service apache2 reload
+            rm -f "$SITES_AVAILABLE"/"$DEDYN_NAME".conf
+        fi
+        msg_box "$DEDYN_NAME, the deSEC account, and the Apache2 config was successfully removed.
+
+If you used a certain port during installation, you can remove that as well in:
+/etc/apache2/ports.conf"
         break
     fi
 done
