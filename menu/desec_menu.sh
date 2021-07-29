@@ -21,7 +21,7 @@ choice=$(whiptail --title "$TITLE" --menu \
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Install deSEC" "(Setup deSEC fully automated: yourdomain.dedyn.io)" \
 "deSEC Subdomain" "(Add another subdomain to an existing account)" \
-"Remove deSEC" "(Remove your deSEC account - not yet active)" 3>&1 1>&2 2>&3)
+"Remove deSEC" "(Remove your deSEC account" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Install deSEC")
@@ -33,9 +33,8 @@ case "$choice" in
         run_script ADDONS desec_subdomain
     ;;
     "Remove deSEC")
-        #print_text_in_color "$ICyan" "Downloading the remove deSEC script..."
-        #run_script ADDONS remove_desec
-        msg_box "This option is not yet active. Please try again another day."
+        print_text_in_color "$ICyan" "Downloading the remove deSEC script..."
+        run_script ADDONS remove_desec
     ;;
     *)
     ;;
