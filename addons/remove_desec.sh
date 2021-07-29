@@ -58,11 +58,14 @@ VALIDEMAIL=$(input_box_flow "Please enter the email address (from the previous s
 VALIDPASSWD=$(input_box_flow "Please enter the password for your deSEC account.")
 
 # Just some info
-msg_box "If the correct password has been provided, the server will send you an email with a link of the form https://desec.io/api/v1/v/delete-account/<code>/. To finish the deletion, click on that link (which wi>
+msg_box "If the correct credentials has been provided, the server will send you an email with a link of the form:
+https://desec.io/api/v1/v/delete-account/<code>/. 
+
+To finish the deletion, click on that link, which then will take you to the deSEC frontend.
 
 The link expires after 12 hours. It is also invalidated by certain other account-related activities, such as changing your email address or password."
 
-# Do the actual removal
+# Do the actual removal of the account
 while :
 do
     if ! curl -fX POST https://desec.io/api/v1/auth/account/delete/ --header "Content-Type: application/json" --data @- <<DELETEACC
