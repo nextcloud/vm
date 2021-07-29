@@ -35,6 +35,19 @@ else
 Please copy the email address."
 fi
 
+# Final warning before destruction!
+msg_box "WARNING!
+
+We will now delete your deSEC account and all the domains that are registered with it. This action is irreversible!
+
+You will now be given the chance to opt out if you wish."
+
+if ! yesno_box_no "Would you like to delete your deSEC account together with $DEDYN_NAME?"
+then
+    print_text_in_color "$ICyan" "*Peeew* Everything is still intact! :)"
+    exit
+fi
+
 # Remove domain
 print_text_in_color "$ICyan" "Removing $DEDYN_NAME..."
 curl -X DELETE https://desec.io/api/v1/domains/"$DEDYN_NAME"/ \
@@ -65,7 +78,7 @@ DELETEACC
         VALIDEMAIL=$(input_box_flow "Please enter the email address (from the previous screen) for your deSEC account.")
         VALIDPASSWD=$(input_box_flow "Please enter the password for your deSEC account.")
     else
-        rm -Rf $"SCRIPTS"/deSEC
+        rm -Rf "$SCRIPTS"/deSEC
         break
     fi
 done
