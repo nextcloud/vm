@@ -36,7 +36,7 @@ Please copy the email address."
 fi
 
 # Enter the subdomain
-msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to use"
+msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to remove"
 while :
 do
     SUBDEDYN=$(input_box_flow "Please enter the subdomain (*example*.dedyn.io) that you want to remove \
