@@ -824,7 +824,7 @@ fi
 
 print_text_in_color "$ICyan" "Generating new TLS cert with DNS and deSEC, please don't abort the hook, it may take a while..."
 # Renew with DNS by default
-if certbot certonly --manual --text --rsa-key-size 4096 --renew-by-default --server https://acme-v02.api.letsencrypt.org/directory --no-eff-email --agree-tos --preferred-challenges dns --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh -d "$1"
+if certbot certonly --manual --text --key-type ecdsa --renew-by-default --server https://acme-v02.api.letsencrypt.org/directory --no-eff-email --agree-tos --preferred-challenges dns --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh -d "$1"
 then
     # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_TLS" ]
