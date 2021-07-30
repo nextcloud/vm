@@ -21,7 +21,7 @@ choice=$(whiptail --title "$TITLE" --menu \
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Install deSEC" "(Setup deSEC fully automated: yourdomain.dedyn.io)" \
 "deSEC Subdomain" "(Add or delete subdomains to an existing deSEC domain)" \
-"Remove deSEC" "(Remove your deSEC daccount completely" 3>&1 1>&2 2>&3)
+"Remove deSEC" "(Remove your deSEC account completely" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Install deSEC")
