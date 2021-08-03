@@ -47,12 +47,16 @@ then
         "New minor Nextcloud Update!" \
         "Nextcloud $NCMIN just became available. Since you are running Automatic \
 Updates on Saturdays at $AUT_UPDATES_TIME:00, you don't need to bother about updating \
-the server to minor Nextcloud versions manually, as that's already taken care of."
+the server to minor Nextcloud versions manually, as that's already taken care of.
+
+Hostname: $(hostname -f)"
     else
         notify_admin_gui \
         "New minor Nextcloud Update!" \
         "Nextcloud $NCMIN just became available. Please run 'sudo bash \
-/var/scripts/update.sh minor' from your CLI to update your server to Nextcloud $NCMIN."
+/var/scripts/update.sh minor' from your CLI to update your server to Nextcloud $NCMIN.
+
+Hostname: $(hostname -f)""
     fi
     exit
 fi
@@ -66,12 +70,16 @@ then
         "New minor Nextcloud Update!" \
         "Nextcloud $NCMIN just became available. Since you are running Automatic \
 Updates on Saturdays at $AUT_UPDATES_TIME:00, you don't need to bother about updating \
-the server to minor Nextcloud versions manually, as that's already taken care of."
+the server to minor Nextcloud versions manually, as that's already taken care of.
+
+Hostname: $(hostname -f)""
     else
         notify_admin_gui \
         "New minor Nextcloud Update!" \
         "Nextcloud $NCMIN just became available. Please run 'sudo bash \
-/var/scripts/update.sh minor' from your CLI to update your server to Nextcloud $NCMIN."
+/var/scripts/update.sh minor' from your CLI to update your server to Nextcloud $NCMIN.
+
+Hostname: $(hostname -f)""
     fi
 fi
 
@@ -84,5 +92,7 @@ then
 /var/scripts/update.sh' from your CLI to update your server to Nextcloud $NCVERSION. \
 Before updating though, you should visit https://your-nc-domain/settings/admin/overview \
 and make sure that all apps are compatible with the new version. And please never forget to \
-create a backup and/or snapshot before updating!"
+create a backup and/or snapshot before updating!
+
+Hostname: $(hostname -f)""
 fi
