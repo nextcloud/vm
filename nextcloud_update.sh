@@ -563,7 +563,7 @@ if [ -n "$UPDATED_APPS" ]
 then
     print_text_in_color "$IGreen" "$UPDATED_APPS"
     notify_admin_gui \
-    "Nextcloud apps just got updated!" \
+    "$(hostname -f) apps updated!" \
     "$UPDATED_APPS"
     # Just make sure everything is updated (sometimes app requires occ upgrade to be run)
     nextcloud_occ upgrade
