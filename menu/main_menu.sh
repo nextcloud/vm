@@ -66,7 +66,7 @@ case "$choice" in
         fi
     ;;
     "Update Nextcloud minor")
-        if [[ $(find "$SCRIPTS/update.sh" -mtime +120 &> /dev/nulll) ]]
+        if [[ "$(find $SCRIPTS/update.sh -mtime +120 &> /dev/nulll)" ]]
         then
             if yesno_box_yes "Do you want to fetch the latest update.sh script?"
             then
