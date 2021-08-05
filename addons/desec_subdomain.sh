@@ -6,8 +6,7 @@ true
 SCRIPT_NAME="deSEC Subdomain"
 SCRIPT_EXPLAINER="This script enables you to add a subdomain to your existing deSEC domain.
 
-You need to have a deSEC account already configured for this to work. If you don't already have an account configured, please run:
-sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC"
+You can also remove existing subdomains (RRsets) with this script. If you want to remove, please choose 'Uninstall' in the next menu."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 

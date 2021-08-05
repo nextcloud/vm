@@ -234,13 +234,6 @@ then
     rm -f $SCRIPTS/lib.sh
 fi
 
-# Update updatenotification.sh
-if [ -f $SCRIPTS/updatenotification.sh ]
-then
-    download_script STATIC updatenotification
-    chmod +x $SCRIPTS/updatenotification.sh
-fi
-
 # Make sure everyone gets access to menu.sh
 download_script MENU menu
 
@@ -262,11 +255,16 @@ then
     fi
 fi
 
-# Don't upgrade if PN51 as it might break Realtek kernels (2021-07-20) 
-# TODO, remove this when a stable fix is in place
-if ! asuspn51
+# Upgrade OS dependencies
+export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+
+# Fix Realtek on PN51
+if asuspn51
 then
-    export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+    # Upgrade Realtek drivers
+    print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
+    curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+    bash "$SCRIPTS"/pn51.sh
 fi
 
 # Update Netdata
@@ -354,13 +352,26 @@ then
         else
             print_text_in_color "$IGreen" "APCu PHP module removal OK!"
         fi
-    # Delete everything else
-    check_command phpdismod -v ALL apcu
-    rm -f $PHP_MODS_DIR/apcu.ini
-    sed -i "/extension=apcu.so/d" "$PHP_INI"
-    sed -i "/APCu/d" "$PHP_INI"
-    sed -i "/apc./d" "$PHP_INI"
+        # Delete everything else
+        check_command phpdismod -v ALL apcu
+        rm -f "$PHP_MODS_DIR"/apcu.ini
+        rm -f "$PHP_MODS_DIR"/apcu_bc.ini
+        sed -i "/extension=apcu.so/d" "$PHP_INI"
+        sed -i "/APCu/d" "$PHP_INI"
+        sed -i "/apc./d" "$PHP_INI"
     fi
+fi
+
+# Also remove php-acpu if installed
+if is_this_installed php-acpu
+then
+    apt-get purge php-apcu
+    apt-get autoremove -y
+fi
+if is_this_installed php"$PHPVER"-apcu
+then
+    apt-get purge php"$PHPVER"-apcu
+    apt-get autoremove -y
 fi
 
 # Upgrade other PECL dependencies
@@ -672,6 +683,13 @@ then
         print_text_in_color "$IGreen" "You already run the latest version! ($CURRENTVERSION)"
         exit 0
     fi
+fi
+
+# Update updatenotification.sh
+if [ -f $SCRIPTS/updatenotification.sh ]
+then
+    download_script STATIC updatenotification
+    chmod +x $SCRIPTS/updatenotification.sh
 fi
 
 ############# Don't upgrade to specific version

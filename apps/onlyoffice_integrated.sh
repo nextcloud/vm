@@ -93,7 +93,7 @@ then
     msg_box "OnlyOffice was successfully installed."
 else
     msg_box "The documentserver_community app failed to install. Please try again later.
-    
+
 If the error persists, please report the issue to https://github.com/nextcloud/documentserver_community
 
 'sudo -u www-data php ./occ app:install documentserver_community failed!'"

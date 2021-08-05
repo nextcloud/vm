@@ -931,14 +931,6 @@ then
     echo "\4" >> /etc/issue
 fi
 
-# Update if it's the Home/SME Server
-if home_sme_server
-then
-    # Upgrade system
-    print_text_in_color "$ICyan" "System will now upgrade..."
-    run_script STATIC update
-fi
-
 # Fix Realtek on PN51
 if asuspn51
 then
@@ -946,6 +938,14 @@ then
     print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
     curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
     bash "$SCRIPTS"/pn51.sh
+fi
+
+# Update if it's the Home/SME Server
+if home_sme_server
+then
+    # Upgrade system
+    print_text_in_color "$ICyan" "System will now upgrade..."
+    run_script STATIC update
 fi
 
 # Force MOTD to show correct number of updates
@@ -968,7 +968,6 @@ download_script STATIC history
 download_script NETWORK static_ip
 # Moved from the startup script 2021-01-04
 download_script LETS_ENC activate-tls
-download_script ADDONS desec
 download_script STATIC temporary-fix
 download_script STATIC update
 download_script STATIC setup_secure_permissions_nextcloud
@@ -978,6 +977,7 @@ download_script MENU menu
 download_script MENU server_configuration
 download_script MENU nextcloud_configuration
 download_script MENU additional_apps
+download_script MENU desec_menu
 
 # Make $SCRIPTS excutable
 chmod +x -R "$SCRIPTS"

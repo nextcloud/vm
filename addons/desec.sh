@@ -13,14 +13,14 @@ msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to use"
 while :
 do
     SUBDEDYN=$(input_box_flow "Please enter the subdomain (*example*.dedyn.io) that you want to use \
-The only allowed characters for the username are:
+The only allowed characters for the subdomain are:
 'a-z', 'A-Z', and '0-9'")
     if [[ "$SUBDEDYN" == *" "* ]]
     then
         msg_box "Please don't use spaces."
     elif [ "${SUBDEDYN//[A-Za-z0-9]}" ]
     then
-        msg_box "Allowed characters for the username are:\na-z', 'A-Z', and '0-9'\n\nPlease try again."
+        msg_box "Allowed characters for the subdomain are:\na-z', 'A-Z', and '0-9'\n\nPlease try again."
     else
         DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
         # Check for SOA record
