@@ -47,8 +47,8 @@ case "$choice" in
     "Update Nextcloud major")
         if [ -f "$SCRIPTS"/update.sh ]
         then
-            # Check if it's older than 60 days (5 184 000 seconds)
-            if [ `stat --format=%Y "$SCRIPTS"/update.sh` -le $(( `date +%s` - 5184000 )) ]
+            # Check if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
+            if [ $(stat --format=%Y "$SCRIPTS"/update.sh) -le $(( `date +%s` - ((60*60*24*60)) )) ]
             then
                 if yesno_box_yes "Do you want to fetch the latest update.sh script?"
                 then
@@ -70,8 +70,8 @@ case "$choice" in
     "Update Nextcloud minor")
         if [ -f "$SCRIPTS"/update.sh ]
         then
-            # Check if it's older than 60 days (5 184 000 seconds)
-            if [ `stat --format=%Y "$SCRIPTS"/update.sh` -le $(( `date +%s` - 5184000 )) ]
+            # Check if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
+            if [ $(stat --format=%Y "$SCRIPTS"/update.sh) -le $(( `date +%s` - ((60*60*24*60)) )) ]
             then
                 if yesno_box_yes "Do you want to fetch the latest update.sh script?"
                 then
