@@ -66,11 +66,11 @@ case "$choice" in
         fi
     ;;
     "Update Nextcloud minor")
-        if [ -f "$SCRIPTS"/update.sh ]
+        if [[ "$(find $SCRIPTS/update.sh -mtime +120 &> /dev/nulll)" ]]
         then
             if yesno_box_yes "Do you want to fetch the latest update.sh script?"
             then
-                print_text_in_color "$ICyan" "Removing the old script..." 
+                print_text_in_color "$ICyan" "Removing the old script..."
                 rm -f "$SCRIPTS"/update.sh
                 print_text_in_color "$ICyan" "Downloading the Update script..."
                 download_script STATIC update
