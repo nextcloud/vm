@@ -1756,7 +1756,7 @@ fi
 for admin in "${NC_ADMIN_USER[@]}"
 do
     print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-    nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$1"
+    nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$(hostname -f): $1"
 done
 }
 
@@ -1771,7 +1771,7 @@ send_mail() {
         if [ -n "$RECIPIENT" ]
         then
             print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
-            if echo -e "$2" | mail -s "NcVM - $1" "$RECIPIENT"
+            if echo -e "$2" | mail -s "NcVM: $(hostname -f) - $1" "$RECIPIENT"
             then
                 return 0
             fi
