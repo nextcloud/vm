@@ -73,7 +73,7 @@ print_text_in_color "$ICyan" "Waiting for ClamAV daemon to start up. This can ta
 counter=0
 while ! [ -a "/var/run/clamav/clamd.ctl" ] && [ "$counter" -lt 12 ]
 do
-    sleep 5 & spinner_loading
+    countdown "Waiting for ClamAV to start..." "10"
     ((counter++))
 done
 
