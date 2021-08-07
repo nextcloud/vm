@@ -126,6 +126,13 @@ fi
 print_text_in_color "$ICyan" "Updating grub..."
 update-grub
 
+# Don't allow to update shim, otherwise the automatic unlocking might break
+if ! apt-mark hold shim
+then
+    msg_box "Could not hold shim.
+Please report this to $ISSUES"
+fi
+
 # Inform user
 msg_box "TPM2 Unlock and securing your GRUB (bootloader) was set up successfully.
 We will reboot after you hit okay.\n
