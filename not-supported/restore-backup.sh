@@ -436,7 +436,7 @@ rm -rf "$NCDATA"
 
 # Important folders
 # manually include 
-IMPORTANT_FOLDERS=(home/plex home/bitwarden_rs home/bitwarden "$SCRIPTS" mnt media "$NCPATH" root/.smbcredentials)
+IMPORTANT_FOLDERS=(home/plex home/bitwarden_rs home/bitwarden home/vaultwarden "$SCRIPTS" mnt media "$NCPATH" root/.smbcredentials)
 for directory in "${IMPORTANT_FOLDERS[@]}"
 do
     directory="${directory#/*}"
@@ -686,8 +686,8 @@ msg_box "Restore completed!\n
 You can now simply reinstall all apps and addons that were installed on your server before!\n
 Those need to get installed (if they were installed on the old server before):
 Geoblocking, Disk Monitoring, Fail2Ban, ClamAV, SMTP Mail, DDclient, Activate TLS, OnlyOffice, Push Notifications for Nextcloud, \
-High-Performance backend for Nextcloud Talk, Whiteboard for Nextcloud, Extract for Nextcloud, Bitwarden RS, Pi-hole, PiVPN, \
+High-Performance backend for Nextcloud Talk, Whiteboard for Nextcloud, Extract for Nextcloud, Vaultwarden, Pi-hole, PiVPN, \
 Plex Media Server, Previewgenerator, Remotedesktop and Midnight Commander.\n
 Note:
-Bitwarden RS and Plex Media Server files were restored (if they were installed before) but the containers need to get \
+Vaultwarden and Plex Media Server files were restored (if they were installed before) but the containers need to get \
 installed again to make them run with the restored files."

@@ -1620,7 +1620,7 @@ fi
 
 
 # Update specific Docker image
-# docker_update_specific 'bitwarden_rs' 'Bitwarden RS' (docker conainter name = $1, the name in text = $2)
+# docker_update_specific 'vaultwarden' 'Vaultwarden' (docker conainter name = $1, the name in text = $2)
 docker_update_specific() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then

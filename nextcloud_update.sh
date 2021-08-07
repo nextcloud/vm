@@ -495,8 +495,33 @@ we have removed Watchtower from this server. Updates will now happen for each co
         fi
     fi
     # Update selected images
+    # Vaultwarden
+    docker_update_specific 'vaultwarden' "Vaultwarden"
     # Bitwarden RS
-    docker_update_specific 'bitwarden_rs' "Bitwarden RS"
+    if is_docker_running && docker ps -a --format '{{.Image}}' | grep -Eq "bitwardenrs/server:latest";
+    then
+        print_text_in_color "$ICyan" "Updating Bitwarden RS. This can take a while..."
+        docker pull assaflavie/runlike &>/dev/null
+        echo '#/bin/bash' > /tmp/bitwarden-conf
+        chmod 700 /tmp/bitwarden-conf
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p bitwarden_rs >> /tmp/bitwarden-conf
+        sed -i 's|bitwardenrs/server:latest|vaultwarden/server:latest|' /tmp/bitwarden-conf
+        docker stop bitwarden_rs
+        docker rm bitwarden_rs
+        if ! bash /tmp/bitwarden-conf
+        then
+            mv /tmp/bitwarden-conf "$SCRIPTS"
+            print_text_in_color "$IRed" "Could not update Bitwarden RS. Please recreate the docker container yourself.
+You can find its config here: $SCRIPTS/bitwarden-conf"
+            msg_box "Could not update Bitwarden RS. Please recreate the docker container yourself.
+You can find its config here: $SCRIPTS/bitwarden-conf"
+        else
+            docker image prune -a -f
+        fi
+        rm -f /tmp/bitwarden-conf
+    else
+        docker_update_specific 'bitwarden_rs' "Bitwarden RS"
+    fi
     # Collabora CODE
     docker_update_specific 'code' 'Collabora'
     # OnlyOffice
