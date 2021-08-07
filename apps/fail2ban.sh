@@ -34,7 +34,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    if ! does_this_docker_exist bitwarden_rs
+    if ! does_this_docker_exist vaultwarden && ! does_this_docker_exist bitwarden_rs
     then
         print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
         fail2ban-client unban --all

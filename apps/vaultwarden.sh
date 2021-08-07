@@ -3,9 +3,9 @@
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 true
-SCRIPT_NAME="Vaultwarden"
-SCRIPT_EXPLAINER="Vaultwarden is an unofficial Bitwarden server API implementation in Rust.
-It has less hardware requirements and therefore runs on nearly any hardware. It was formerly known as Bitwarden_RS."
+SCRIPT_NAME="Vaultwarden (formerly Bitwarden RS)"
+SCRIPT_EXPLAINER="Vaultwarden, formerly known as Bitwarden RS, is an unofficial Bitwarden server API implementation in Rust.
+It has less hardware requirements and therefore runs on nearly any hardware."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -18,7 +18,7 @@ debug_mode
 # Check if root
 root_check
 
-# Check if bitwarden_rs is already installed
+# Check if Bitwarden RS is already installed
 if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden_rs";
 then
     msg_box "It seems like you have already installed Bitwarden RS.
@@ -28,13 +28,7 @@ If you want to reinstall Bitwarden RS, you can execute the following commands:
 'sudo docker rm bitwarden_rs'
 
 This command will delete all private data:
-'sudo rm -r /home/bitwarden_rs'
-
-If you want to upgrade to the new Vaultwarden image you can execute the following commands:
-'sudo cp -R /home/bitwarden_rs /home/bitwarden_rs-backup'
-'sudo cp -R /home/bitwarden_rs-backup /home/vaultwarden'
-'sudo docker stop bitwarden_rs'
-'sudo docker rm bitwarden_rs'"
+'sudo rm -r /home/bitwarden_rs'"
     exit 1
 fi
 
@@ -184,7 +178,8 @@ then
     Header set X-XSS-Protection "1; mode=block"
     Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     Header set X-Content-Type-Options nosniff
-    Header set Content-Security-Policy "frame-ancestors 'self'"
+    # Vaultwarden sets its own CSP
+    # Header set Content-Security-Policy "frame-ancestors 'self'"
 </VirtualHost>
 HTTPS_CREATE
 
@@ -223,10 +218,18 @@ fi
 # Install docker
 install_docker
 
+# Move data into correct place
+if [ -d /home/bitwarden_rs ] && ! [ -d /home/vaultwarden ]
+then
+    mkdir /home/vaultwarden
+    check_command mv /home/bitwarden_rs/* /home/vaultwarden
+    rm -r /home/bitwarden_rs
+fi
+
 # Create dir for Vaultwarden
 mkdir -p /home/vaultwarden
 chown nobody -R /home/vaultwarden
-chmod -R 0770 /home/vaultwarden
+chmod -R 770 /home/vaultwarden
 
 # Generate admin password
 ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
@@ -266,6 +269,7 @@ systemctl stop fail2ban
 
 # Create all needed files
 # Vaultwarden conf
+rm -f /etc/fail2ban/filter.d/bitwarden_rs.local
 cat << BW_CONF > /etc/fail2ban/filter.d/vaultwarden.local
 [INCLUDES]
 before = common.conf
@@ -276,6 +280,7 @@ ignoreregex =
 BW_CONF
 
 # Vaultwarden jail
+rm -f /etc/fail2ban/jail.d/bitwarden_rs.local
 cat << BW_JAIL_CONF > /etc/fail2ban/jail.d/vaultwarden.local
 [vaultwarden]
 enabled = true
@@ -290,6 +295,7 @@ ignoreip = 127.0.0.1/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8
 BW_JAIL_CONF
 
 # Vaultwarden-admin conf
+rm -f /etc/fail2ban/filter.d/bitwarden_rs-admin.local
 cat << BWA_CONF > /etc/fail2ban/filter.d/vaultwarden-admin.local
 [INCLUDES]
 before = common.conf
@@ -300,6 +306,7 @@ ignoreregex =
 BWA_CONF
 
 # Vaultwarden-admin jail
+rm -f /etc/fail2ban/jail.d/bitwarden_rs-admin.local
 cat << BWA_JAIL_CONF > /etc/fail2ban/jail.d/vaultwarden-admin.local
 [vaultwarden-admin]
 enabled = true
@@ -317,11 +324,14 @@ start_if_stopped fail2ban
 countdown "Waiting for fail2ban to start... " 5
 check_command fail2ban-client reload
 
-while :
-do
-    # Inform the user
-    msg_box "Vaultwarden with fail2ban have been successfully installed! 
-Please visit https://$SUBDOMAIN/admin to manage all your settings.
+# Inform the user
+msg_box "Vaultwarden and fail2ban have been successfully installed and configured!" 
+if ! [ -f /home/vaultwarden/config.json ]
+then
+    while :
+    do
+        # Inform the user
+        msg_box "Please visit https://$SUBDOMAIN/admin to manage all your settings.
 
 Attention! Please note the password for the admin panel: $ADMIN_PASS
 Otherwise you will not have access to your Vaultwarden installation and have to reinstall it completely!
@@ -332,11 +342,12 @@ Then, if it works, you can easily invite all your user with an e-mail address fr
 
 Please remember to report issues only to https://github.com/dani-garcia/vaultwarden"
 
-    # Ask for password
-    if yesno_box_no "Do you have the admin password now and know how to access the admin-panel?"
-    then
-        break
-    fi
-done
+        # Ask for password
+        if yesno_box_no "Do you have the admin password now and know how to access the admin-panel?"
+        then
+            break
+        fi
+    done
+fi
 
 exit

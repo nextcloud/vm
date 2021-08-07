@@ -3,7 +3,7 @@
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 true
-SCRIPT_NAME="Vaultwarden Admin"
+SCRIPT_NAME="Vaultwarden (formerly Bitwarden RS) Admin Panel"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
@@ -16,14 +16,23 @@ debug_mode
 # Check if root
 root_check
 
-if [ ! -d /home/vaultwarden ]
+if [ ! -d /home/bitwarden_rs ] && [ ! -d /home/vaultwarden ]
 then
     msg_box "Please install Vaultwarden before changing this option."
     exit 1
-elif [ ! -f /home/vaultwarden/config.json ]
+elif [ ! -f /home/bitwarden_rs/config.json ] && [ ! -f /home/vaultwarden/config.json ]
 then
     msg_box "Please configure your smtp settings before changing this option."
     exit 1
+fi
+
+if [ -f /home/vaultwarden/config.json ]
+then
+    CONFIG_PATH="/home/vaultwarden/config.json"
+    DOCKER_NAME=vaultwarden
+else
+    CONFIG_PATH="/home/bitwarden_rs/config.json"
+    DOCKER_NAME=bitwarden_rs
 fi
 
 # Yes or No?
@@ -35,30 +44,30 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
 case "$choice" in
     "Yes")
-        print_text_in_color "$ICyan" "Stopping vaultwarden..."
-        docker stop vaultwarden
-        if grep -q '"admin_token":' /home/vaultwarden/config.json
+        print_text_in_color "$ICyan" "Stopping Vaultwarden..."
+        docker stop "$DOCKER_NAME"
+        if grep -q '"admin_token":' "$CONFIG_PATH"
         then
-            sed -i 's|"admin_token":.*|"admin_token": "",|g' /home/vaultwarden/config.json
+            sed -i 's|"admin_token":.*|"admin_token": "",|g' "$CONFIG_PATH"
         else
-            sed -i '0,/{/a \ \ "admin_token": "",' /home/vaultwarden/config.json
+            sed -i '0,/{/a \ \ "admin_token": "",' "$CONFIG_PATH"
         fi
-        print_text_in_color "$ICyan" "Starting vaultwarden..."
-        docker start vaultwarden
+        print_text_in_color "$ICyan" "Starting Vaultwarden..."
+        docker start "$DOCKER_NAME"
         msg_box "The admin-panel for Vaultwarden is now disabled."
     ;;
     "No")
-        print_text_in_color "$ICyan" "Stopping vaultwarden..."
-        docker stop vaultwarden
+        print_text_in_color "$ICyan" "Stopping Vaultwarden..."
+        docker stop "$DOCKER_NAME"
         ADMIN_PASS=$(gen_passwd "$SHUF" "A-Za-z0-9")
-        if grep -q '"admin_token":' /home/vaultwarden/config.json
+        if grep -q '"admin_token":' "$CONFIG_PATH"
         then
-            sed -i "s|\"admin_token\":.*|\"admin_token\": \"$ADMIN_PASS\",|g" /home/vaultwarden/config.json
+            sed -i "s|\"admin_token\":.*|\"admin_token\": \"$ADMIN_PASS\",|g" "$CONFIG_PATH"
         else
-            sed -i "0,/{/a \ \ \"admin_token\": \"$ADMIN_PASS\"," /home/vaultwarden/config.json
+            sed -i "0,/{/a \ \ \"admin_token\": \"$ADMIN_PASS\"," "$CONFIG_PATH"
         fi
-        print_text_in_color "$ICyan" "Starting vaultwarden..."
-        docker start vaultwarden
+        print_text_in_color "$ICyan" "Starting Vaultwarden..."
+        docker start "$DOCKER_NAME"
         msg_box "The admin-panel for Vaultwarden is now enabled.\n
 Please note the new admin-panel password: $ADMIN_PASS\n
 Otherwise you will be unable to login to the admin-panel.\n
