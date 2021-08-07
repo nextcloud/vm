@@ -1756,7 +1756,7 @@ fi
 for admin in "${NC_ADMIN_USER[@]}"
 do
     print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-    nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$1 | Hostname: $(hostname -f)"
+    nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$(hostname -f): $1"
 done
 }
 
