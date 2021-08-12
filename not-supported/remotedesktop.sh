@@ -110,7 +110,7 @@ using the credentials of $UNIXUSER and the server ip-address $ADDRESS"
 fi
 
 # Needed to be able to access Nextcloud via localhost directly
-nextcloud_occ_no_check config:system:set trusted_proxies "11" --value="localhost"
+nextcloud_occ_no_check config:system:delete trusted_proxies "11"
 
 # Eye of Gnome
 if is_this_installed eog
