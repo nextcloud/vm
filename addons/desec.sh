@@ -47,8 +47,8 @@ Another option is to use another email address in this setup, and then email the
 In other words, the email address used in this script has to be uniqe, and can not be registred with deSEC since before."
 }
 
-prompt_email_adress(){
-VALIDEMAIL=$(input_box_flow "Please enter the email adress for this dedyn subdomain.")
+prompt_email_address(){
+VALIDEMAIL=$(input_box_flow "Please enter the email address for this dedyn subdomain.")
 }
 
 new_domain_email_info_2(){
@@ -75,7 +75,7 @@ Please wait up to 5 minutes for the email to arrive."
 
 }
 
-recieved_registration_email_check(){
+received_registration_email_check(){
 # Did the user get the email?
 if ! yesno_box_yes "Did you receive the email?"
 then
@@ -171,10 +171,10 @@ do
 	else
 		#User wants to claim free domain
 		new_domain_email_info_1
-		prompt_email_adress
+		prompt_email_address
 		new_domain_email_info_2
 		register_the_domain
-		recieved_registration_email_check
+		received_registration_email_check
 		break
 	fi
 done
