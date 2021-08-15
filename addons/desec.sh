@@ -8,6 +8,8 @@ SCRIPT_EXPLAINER="This script will automatically register a domain of your likin
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
+
+prompt_dedyn_subdomain(){
 # Enter the subdomain
 msg_box "Please enter the subdomain (*example*.dedyn.io) that you want to use"
 while :
@@ -23,19 +25,15 @@ The only allowed characters for the subdomain are:
         msg_box "Allowed characters for the subdomain are:\na-z', 'A-Z', and '0-9'\n\nPlease try again."
     else
         DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
-        # Check for SOA record
-        if host -t SOA "$DEDYNDOMAIN" >/dev/null 2>&1
-        then
-            if ! yesno_box_yes "Sorry, but it seems like $DEDYNDOMAIN is taken. Do you want to try again?"
-            then
-               exit
-            fi
-        else
-            break
-        fi
+		break
     fi
 done
+}
 
+
+
+
+new_domain_email_info_1(){
 ### TODO, is it possible to check if the email address already exists with deSEC? In that case we could skip this whole info and replace it with a function instead.
 # Email address
 msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter it a 100% valid one! deSEC will verify your email address by sending you a verification link.
@@ -47,14 +45,19 @@ msg_box "Please note: If you already created an account with deSEC you can't use
 Another option is to use another email address in this setup, and then email the deSEC support that you want to merge your two accounts together, or delete the first one.
 
 In other words, the email address used in this script has to be uniqe, and can not be registred with deSEC since before."
+}
 
-VALIDEMAIL=$(input_box_flow "Please enter a valid email address. NOT a fake or a temporary one.")
+prompt_email_adress(){
+VALIDEMAIL=$(input_box_flow "Please enter the email adress for this dedyn subdomain.")
+}
 
+new_domain_email_info_2(){
 msg_box "If you later want to log into your deSEC account, you need to set a login password here: https://desec.io/reset-password
 
 You don't need to do this now."
+}
 
-# Register the domain
+register_the_domain(){
 curl -X POST https://desec.io/api/v1/auth/ \
     --header "Content-Type: application/json" --data @- <<EOF
     {
@@ -69,22 +72,26 @@ msg_box "If the registration was successful you should have got an email with a 
 
 Please wait up to 5 minutes for the email to arrive."
 
+
+}
+
+recieved_registration_email_check(){
 # Did the user get the email?
 if ! yesno_box_yes "Did you receive the email?"
 then
-    msg_box "OK, please try again later by executing the deSEC script like this:
-
-sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC
+    msg_box "OK, please try again later.
 
 Please also email support@desec.io for further support, maybe the subdomain is already in use?"
-    exit 1
+    aborted_exit_message
 else
     if ! yesno_box_yes "Great! Did you copy the token you received?"
     then
         msg_box "OK, please copy the token and enter it in the next box after you hit 'OK'"
     fi
 fi
+}
 
+prompt_security_token(){
 # Check if DEDYNAUTH is valid
 while :
 do
@@ -93,14 +100,16 @@ do
     then
         if ! yesno_box_yes "Sorry, but it seems like the auth token (update password) is incorrect. Do you want to try again?"
         then
-           exit
+           aborted_exit_message
         fi
     else
        msg_box "$DEDYNDOMAIN was successfully set up with deSEC! Now please continue with the DDNS and TLS setup for the domain."
        break
     fi
 done
+}
 
+prompt_dyndns(){
 # Ask user if DynDNS should be added to the domain
 if yesno_box_yes "Do you want to add automatic updates of your WAN IP using ddclient?
 Please note: this will reset any configuration that might be already in place with ddclient."
@@ -109,7 +118,9 @@ then
     export DEDYNAUTHTOKEN
     run_script NETWORK ddclient-configuration
 fi
+}
 
+prompt_tls(){
 # Ask if the user wants to add TLS (use script)
 if yesno_box_yes "Do you want to set this domain as your Nextcoud domain \
 and activate TLS for your Nextcloud using Let's Encrypt?"
@@ -129,6 +140,49 @@ You can read more about it here: https://github.com/desec-io/desec-certbot-hook"
     # Run the TLS script
     run_script LETS_ENC activate-tls
 fi
+
+}
+
+aborted_exit_message(){
+    msg_box "You can run this script again at a later time by using:
+
+sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC"
+    exit 1
+}
+
+
+
+while :
+do
+	prompt_dedyn_subdomain
+	# Check for SOA record
+	if host -t SOA "$DEDYNDOMAIN" >/dev/null 2>&1
+	then
+		if yesno_box_yes "It seems like $DEDYNDOMAIN is taken. Was it taken by you and do you have the security token?"
+		then
+			#User already has a domain and security token
+			break
+		else
+			if ! yesno_box_yes "Would you like to try another subdomain? (No will skip deSEC/DYNDNS setup script)"
+			then
+				aborted_exit_message
+			fi
+		fi
+	else
+		#User wants to claim free domain
+		new_domain_email_info_1
+		prompt_email_adress
+		new_domain_email_info_2
+		register_the_domain
+		recieved_registration_email_check
+		break
+	fi
+done
+
+prompt_security_token
+prompt_dyndns
+prompt_tls
+
 
 # Make sure they are gone
 unset DEDYNDOMAIN
