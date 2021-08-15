@@ -25,7 +25,7 @@ The only allowed characters for the subdomain are:
         msg_box "Allowed characters for the subdomain are:\na-z', 'A-Z', and '0-9'\n\nPlease try again."
     else
         DEDYNDOMAIN="$SUBDEDYN.dedyn.io"
-		break
+        break
     fi
 done
 }
@@ -92,7 +92,7 @@ fi
 }
 
 prompt_security_token(){
-# Check if DEDYNAUTH is valid
+# Check if DEDYNAUTH is valid    
 while :
 do
     DEDYNAUTHTOKEN=$(input_box_flow "Please enter your auth token (update password) for deSEC, exactly as it was displayed (use correct casing, no extra spaces).")
@@ -154,29 +154,29 @@ sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC"
 
 while :
 do
-	prompt_dedyn_subdomain
-	# Check for SOA record
-	if host -t SOA "$DEDYNDOMAIN" >/dev/null 2>&1
-	then
-		if yesno_box_yes "It seems like $DEDYNDOMAIN is taken. Was it taken by you and do you have the security token?"
-		then
-			#User already has a domain and security token
-			break
-		else
-			if ! yesno_box_yes "Would you like to try another subdomain? (No will skip deSEC/DYNDNS setup script)"
-			then
-				aborted_exit_message
-			fi
-		fi
-	else
-		#User wants to claim free domain
-		new_domain_email_info_1
-		prompt_email_address
-		new_domain_email_info_2
-		register_the_domain
-		received_registration_email_check
-		break
-	fi
+    prompt_dedyn_subdomain
+    # Check for SOA record
+    if host -t SOA "$DEDYNDOMAIN" >/dev/null 2>&1
+    then
+        if yesno_box_yes "It seems like $DEDYNDOMAIN is taken. Was it taken by you and do you have the security token?"
+        then
+            #User already has a domain and security token
+            break
+        else
+            if ! yesno_box_yes "Would you like to try another subdomain? (No will skip deSEC/DYNDNS setup script)"
+            then
+                aborted_exit_message
+            fi
+        fi
+    else
+        #User wants to claim free domain
+        new_domain_email_info_1
+        prompt_email_address
+        new_domain_email_info_2
+        register_the_domain
+        received_registration_email_check
+        break
+    fi
 done
 
 prompt_security_token
