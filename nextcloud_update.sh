@@ -508,13 +508,18 @@ we have removed Watchtower from this server. Updates will now happen for each co
         sed -i 's|bitwardenrs/server:latest|vaultwarden/server:latest|' /tmp/bitwarden-conf
         docker stop bitwarden_rs
         docker rm bitwarden_rs
-        if ! bash /tmp/bitwarden-conf
+        if ! DOCKER_RUN_OUTPUT=$(bash /tmp/bitwarden-conf 2>&1)
         then
-            mv /tmp/bitwarden-conf "$SCRIPTS"
-            print_text_in_color "$IRed" "Could not update Bitwarden RS. Please recreate the docker container yourself.
-You can find its config here: $SCRIPTS/bitwarden-conf"
+            check_command cp /tmp/bitwarden-conf "$SCRIPTS"
+            chmod 700 "$SCRIPTS/bitwarden-conf"
+            notify_admin_gui "Could not update Bitwarden RS." "Please recreate the docker container yourself.
+You can find its config here: $SCRIPTS/bitwarden-conf
+See the debug log below:
+$DOCKER_RUN_OUTPUT"
             msg_box "Could not update Bitwarden RS. Please recreate the docker container yourself.
-You can find its config here: $SCRIPTS/bitwarden-conf"
+You can find its config here: $SCRIPTS/bitwarden-conf
+See the debug log below:
+$DOCKER_RUN_OUTPUT"
         else
             docker image prune -a -f
         fi
