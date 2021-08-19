@@ -44,10 +44,10 @@ PLEASE NOTE: The email address you enter here, can not already be registered as 
 existing_account() {
 if yesno_box_no "Do you already have an account with deSEC and are able to login?"
 then
-    return 0
     msg_box "OK, please login to your account and add a new auth token here: https://desec.io/tokens (https://imgur.com/a/anOpe5t).
 
 When done, please copy that token and add it in the next screen after you hit 'OK'."
+    return 0
 else
     return 1
 fi
