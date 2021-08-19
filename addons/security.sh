@@ -70,8 +70,8 @@ fi
 #install_if_not libapache2-mod-qos
 a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 
-# Download the spamhaud script
-curl_to_dir https://raw.githubusercontent.com/wallyhall/spamhaus-drop/master/ spamhaus-drop "$SCRIPTS"
+# Download the spamhaus script
+download_script STATIC spamhaus-drop
 
 # Make the file executable
 chmod +x "$SCRIPTS"/spamhaus-drop
