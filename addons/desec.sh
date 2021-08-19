@@ -44,14 +44,14 @@ PLEASE NOTE: The email address you enter here, can not already be registered as 
 existing_account() {
 if yesno_box_no "Do you already have an account with deSEC and are able to login?"
 then
-    msg_box "OK, please login to your account and add a new auth token here; https://desec.io/tokens like this; https://desec.io/tokens
+    msg_box "OK, please login to your account and add a new auth token here: https://desec.io/tokens (https://imgur.com/a/anOpe5t).
 
-When done, please copy that token and add it in the next screen after you hit OK"
+When done, please copy that token and add it in the next screen after you hit 'OK'."
 fi
 }
 
 prompt_email_address(){
-VALIDEMAIL=$(input_box_flow "Please enter the email address that you would like to use for this dedyn subdomain.")
+VALIDEMAIL=$(input_box_flow "Please enter the email address that you would like to use for your deSEC account.")
 }
 
 new_domain_email_info_2(){
@@ -82,7 +82,7 @@ if ! yesno_box_yes "Did you receive the email?"
 then
     msg_box "OK, please try again later.
 
-Please also email support@desec.io for further support, maybe the subdomain is already in use?"
+Please also email support@desec.io for further support. You can refer to the use of this script."
     aborted_exit_message
 else
     if ! yesno_box_yes "Great! Did you copy the token you received?"
@@ -167,7 +167,7 @@ do
             break
         else
             # Don't have an existing acount
-            if ! yesno_box_yes "Would you like to try another subdomain? Answering 'No' will exit the deSEC/DYNDNS setup.)"
+            if ! yesno_box_yes "Would you like to try another subdomain? Answering 'No' will exit the deSEC/DynDNS/TLS setup."
             then
                 aborted_exit_message
             fi
