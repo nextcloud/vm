@@ -71,7 +71,7 @@ fi
 a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 
 # Download the spamhaus script
-download_script STATIC spamhaus-drop.sh
+download_script STATIC spamhaus-drop
 
 # Make the file executable
 chmod +x "$SCRIPTS"/spamhaus-drop.sh
