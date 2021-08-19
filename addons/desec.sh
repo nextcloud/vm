@@ -30,7 +30,6 @@ The only allowed characters for the subdomain are:
 done
 }
 
-
 new_domain_email_info_1(){
 ### TODO, is it possible to check if the email address already exists with deSEC? In that case we could skip this whole info and replace it with a function instead.
 # Email address
@@ -47,7 +46,6 @@ then
     msg_box "OK, please login to your account and add a new auth token here: https://desec.io/tokens (https://imgur.com/a/anOpe5t).
 
 When done, please copy that token and add it in the next screen after you hit 'OK'."
-    return 0
 else
     return 1
 fi
@@ -154,22 +152,21 @@ sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC"
     exit 1
 }
 
-
 # The magic starts here:
-
 while :
 do
     prompt_dedyn_subdomain
     # Check for SOA record
     if host -t SOA "$DEDYNDOMAIN" >/dev/null 2>&1
     then
+        # Domain is taken
         msg_box "Sorry, but it seems like $DEDYNDOMAIN is taken."
         if existing_account
         then
-            # Register with existing account
+            # Register the domain in the existing account --> prompt_for_security_token
             break
         else
-            # Don't have an existing acount
+            # The user doesn't have an existing account, ask to try another domain
             if ! yesno_box_yes "Would you like to try another subdomain? Answering 'No' will exit the deSEC/DynDNS/TLS setup."
             then
                 aborted_exit_message
@@ -179,11 +176,15 @@ do
         # Domain is free and available to register
         if ! existing_account
         then
+            # Ask for new account details
             new_domain_email_info_1
             prompt_email_address
             new_domain_email_info_2
             register_the_domain
             received_registration_email_check
+            break
+        else
+            # Register the domain in the existing account --> prompt_for_security_token
             break
         fi
     fi
