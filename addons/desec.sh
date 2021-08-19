@@ -139,7 +139,7 @@ then
 The hook files will end up in $SCRIPTS/deSEC, please don't touch that folder unless you know what you're doing. \
 You can read more about it here: https://github.com/desec-io/desec-certbot-hook
 
-Please remember that you still need to open the port you choose to make your server publicy available.
+Please remember that you still need to open the port you choose to make your server publicly available.
 You can read more about that here: https://goo.gl/iUGE2U"
 
     # Run the TLS script
