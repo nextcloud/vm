@@ -75,7 +75,7 @@ delete_chain() {
 }
 
 download_rules() {
-	TMP_FILE="$(tempfile)"
+	TMP_FILE="$(mktemp)"
 	
 	for URL in $URLS; do
 		# get a copy of the spam list
