@@ -31,24 +31,27 @@ done
 }
 
 
-
-
 new_domain_email_info_1(){
 ### TODO, is it possible to check if the email address already exists with deSEC? In that case we could skip this whole info and replace it with a function instead.
 # Email address
 msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter it a 100% valid one! deSEC will verify your email address by sending you a verification link.
 
-Every 6 months you will get an email asking you to confirm your domain. If you don't react within a few weeks, your domain will be destroyed!"
+Every 6 months you will get an email asking you to confirm your domain. If you don't react within a few weeks, your domain will be destroyed!
 
-msg_box "Please note: If you already created an account with deSEC you can't use the same email address in this script as you won't get an email with a captcha. In that case, please use your already existing account to set up your domain at the deSEC website.
+PLEASE NOTE: The email address you enter here, can not already be registered as a valid account with deSEC."
+}
 
-Another option is to use another email address in this setup, and then email the deSEC support that you want to merge your two accounts together, or delete the first one.
+existing_account() {
+if yesno_box_no "Do you already have an account with deSEC and are able to login?"
+then
+    msg_box "OK, please login to your account and add a new auth token here; https://desec.io/tokens like this; https://desec.io/tokens
 
-In other words, the email address used in this script has to be uniqe, and can not be registred with deSEC since before."
+When done, please copy that token and add it in the next screen after you hit OK"
+fi
 }
 
 prompt_email_address(){
-VALIDEMAIL=$(input_box_flow "Please enter the email address for this dedyn subdomain.")
+VALIDEMAIL=$(input_box_flow "Please enter the email address that you would like to use for this dedyn subdomain.")
 }
 
 new_domain_email_info_2(){
@@ -71,8 +74,6 @@ EOF
 msg_box "If the registration was successful you should have got an email with a link to configure your auth token.
 
 Please wait up to 5 minutes for the email to arrive."
-
-
 }
 
 received_registration_email_check(){
@@ -92,7 +93,7 @@ fi
 }
 
 prompt_security_token(){
-# Check if DEDYNAUTH is valid    
+# Check if DEDYNAUTH is valid
 while :
 do
     DEDYNAUTHTOKEN=$(input_box_flow "Please enter your auth token (update password) for deSEC, exactly as it was displayed (use correct casing, no extra spaces).")
@@ -151,6 +152,7 @@ sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC"
 }
 
 
+# The magic starts here:
 
 while :
 do
@@ -158,31 +160,38 @@ do
     # Check for SOA record
     if host -t SOA "$DEDYNDOMAIN" >/dev/null 2>&1
     then
-        if yesno_box_yes "It seems like $DEDYNDOMAIN is taken. Was it taken by you and do you have the security token?"
+        msg_box "Sorry, but it seems like $DEDYNDOMAIN is taken."
+        if existing_account
         then
-            #User already has a domain and security token
+            # Register with existing account
             break
         else
-            if ! yesno_box_yes "Would you like to try another subdomain? (No will skip deSEC/DYNDNS setup script)"
+            # Don't have an existing acount
+            if ! yesno_box_yes "Would you like to try another subdomain? Answering 'No' will exit the deSEC/DYNDNS setup.)"
             then
                 aborted_exit_message
             fi
         fi
     else
-        #User wants to claim free domain
-        new_domain_email_info_1
-        prompt_email_address
-        new_domain_email_info_2
-        register_the_domain
-        received_registration_email_check
-        break
+        # Domain is free and available to register
+        if ! existing_account
+        then
+            # Register with existing account
+            break
+        else
+            new_domain_email_info_1
+            prompt_email_address
+            new_domain_email_info_2
+            register_the_domain
+            received_registration_email_check
+            break
+        fi
     fi
 done
 
 prompt_security_token
 prompt_dyndns
 prompt_tls
-
 
 # Make sure they are gone
 unset DEDYNDOMAIN
