@@ -130,6 +130,7 @@ update_iptables() {
 		echo "'$CHAIN' chain not detected. Creating new chain and adding Spamhaus list...."
 	fi;
 
+	# iterate through all known spamming hosts
 	LASSORAW=$(cut -d ' ' -f1 $CACHE_FILE)
 	LASSOCLEAN="${LASSORAW//;}"
 	for IP in $LASSOCLEAN; do
