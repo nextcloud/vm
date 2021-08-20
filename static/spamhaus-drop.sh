@@ -1,6 +1,14 @@
 #!/bin/bash
 
-## Copy of https://raw.githubusercontent.com/wallyhall/spamhaus-drop/master/spamhaus-drop
+## Intially forked from cowgill, extended and improved for our mailserver needs.
+## Credit: https://github.com/cowgill/spamhaus/blob/master/spamhaus.sh
+
+# based off the following two scripts
+# http://www.theunsupported.com/2012/07/block-malicious-ip-addresses/
+# http://www.cyberciti.biz/tips/block-spamming-scanning-with-iptables.html
+
+# Thanks to Daniel Hansson for providing a PR motivating bringing v2 of this script.
+# https://github.com/enoch85
 
 # path to iptables
 IPTABLES="/sbin/iptables"
@@ -32,7 +40,7 @@ die() {
 }
 
 usage() {
-	echo "Basic usage: $(basename $0) <-u>
+	echo "Basic usage: $(basename "$0") <-u>
 
 Additional options and arguments:
   -u                   Download blocklists and update iptables
@@ -46,7 +54,7 @@ Additional options and arguments:
   -t                   Disable logging of blocklist hits in iptables
   -h                   Display this help message
 "
-	exit $EXIT_CODE
+	exit "$EXIT_CODE"
 }
 
 set_mode() {
@@ -81,7 +89,7 @@ download_rules() {
 		# get a copy of the spam list
 		echo "Fetching '$URL' ..."
 		curl -Ss "$URL" | grep -e "" | tee -a "$TMP_FILE" > /dev/null
-		if [ ${PIPESTATUS[0]} -ne 0 ]; then
+		if [ "${PIPESTATUS[0]}" -ne 0 ]; then
 			if [ $SKIP_FAILED_DOWNLOADS -eq 1 ]; then
 				echo "Failed to download '$URL' while skipping is enabled - so continuing."
 			else
@@ -122,8 +130,6 @@ update_iptables() {
 		echo "'$CHAIN' chain not detected. Creating new chain and adding Spamhaus list...."
 	fi;
 
-
-	# iterate through all known spamming hosts
 	LASSORAW=$(cut -d ' ' -f1 $CACHE_FILE)
 	LASSOCLEAN="${LASSORAW//;}"
 	for IP in $LASSOCLEAN; do
@@ -204,7 +210,7 @@ while getopts "c:l:f:usodtzh" option; do
 	esac
 done
 
-if [ ! -n "$MODE" ]; then
+if [ -z "$MODE" ]; then
 	usage 1
 fi
 $MODE
