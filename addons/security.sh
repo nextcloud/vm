@@ -37,9 +37,9 @@ else
     rm -rf /var/log/apache2/evasive
     rm -f "$ENVASIVE"
     a2dismod reqtimeout
-    bash "$SCRIPTS"/spamhaus-drop -d
-    rm -f "$SCRIPTS"/spamhaus-drop
-    crontab -u root -l | grep -v "$SCRIPTS/spamhaus-drop" | crontab -u root -
+    bash "$SCRIPTS"/spamhaus-drop.sh -d
+    rm -f "$SCRIPTS"/spamhaus-drop.sh
+    crontab -u root -l | grep -v "$SCRIPTS/spamhaus-drop.sh" | crontab -u root -
     rm -f "$SCRIPTS"/spamhaus_crontab.sh
     crontab -u root -l | grep -v "$SCRIPTS/spamhaus_crontab.sh" | crontab -u root -
     restart_webserver
@@ -74,21 +74,21 @@ a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 download_script STATIC spamhaus-drop
 
 # Make the file executable
-chmod +x "$SCRIPTS"/spamhaus-drop
+chmod +x "$SCRIPTS"/spamhaus-drop.sh
 
 # Add it to crontab
-crontab -u root -l | grep -v "$SCRIPTS/spamhaus-drop" | crontab -u root -
-crontab -u root -l | { cat; echo "10 2 * * * $SCRIPTS/spamhaus-drop -u 2>&1"; } | crontab -u root -
+crontab -u root -l | grep -v "$SCRIPTS/spamhaus-drop.sh" | crontab -u root -
+crontab -u root -l | { cat; echo "10 2 * * * $SCRIPTS/spamhaus-drop.sh -u 2>&1"; } | crontab -u root -
 
 # Run it for the first time
 msg_box "We will now add a number of bad IP-addresses to your IPtables block list, meaning that all IPs on that list will be blocked as they are known for doing bad stuff.
 
-The script will be run on a schelude to update the IP-addresses, and can be found in $SCRIPTS/spamhaus-drop.
+The script will be run on a schelude to update the IP-addresses, and can be found here: $SCRIPTS/spamhaus-drop.sh.
 
 To disable it, please remove the crontab by executing 'crontab -e' and remove this:
-10 2 * * * $SCRIPTS/spamhaus-drop -u 2>&1"
+10 2 * * * $SCRIPTS/spamhaus-drop.sh -u 2>&1"
 
-if check_command bash "$SCRIPTS"/spamhaus-drop -u
+if check_command bash "$SCRIPTS"/spamhaus-drop.sh -u
 then
     print_text_in_color "$IGreen" "Security added!"
     restart_webserver
