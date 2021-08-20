@@ -122,8 +122,11 @@ update_iptables() {
 		echo "'$CHAIN' chain not detected. Creating new chain and adding Spamhaus list...."
 	fi;
 
+
 	# iterate through all known spamming hosts
-	for IP in $( cat "$CACHE_FILE" | grep -e "^\([0-9]\{1,3\}\.\)\{3\}[0-9]\{1,3\}\/[0-9]\{1,2\} " | cut -d' ' -f1 ); do
+	LASSORAW=$(cut -d ' ' -f1 $CACHE_FILE)
+	LASSOCLEAN="${LASSORAW//;}"
+	for IP in $LASSOCLEAN; do
 		if [ $LOG_BLOCKLIST_HITS -eq 1 ]; then
 			# add the ip address log rule to the chain
 			$IPTABLES -A "$CHAIN" -p 0 -s "$IP" -j LOG --log-prefix "[SPAMHAUS BLOCK]" -m limit --limit 3/min --limit-burst 10
