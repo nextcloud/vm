@@ -131,9 +131,8 @@ update_iptables() {
 	fi;
 
 	# iterate through all known spamming hosts
-	LASSORAW=$(cut -d ' ' -f1 $CACHE_FILE)
-	LASSOCLEAN="${LASSORAW//;}"
-	for IP in $LASSOCLEAN; do
+	LASSOIP="$(cut -d ' ' -f1 $CACHE_FILE | tr -d ';' | awk 'NF > 0')"
+	for IP in $LASSOIP; do
 		if [ $LOG_BLOCKLIST_HITS -eq 1 ]; then
 			# add the ip address log rule to the chain
 			$IPTABLES -A "$CHAIN" -p 0 -s "$IP" -j LOG --log-prefix "[SPAMHAUS BLOCK]" -m limit --limit 3/min --limit-burst 10
