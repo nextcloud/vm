@@ -901,6 +901,9 @@ then
     rsync -Aaxz $BACKUP/config "$NCPATH"/
     bash $SECURE & spinner_loading
     nextcloud_occ maintenance:mode --off
+    # Don't execute the update before all cronjobs are finished
+    check_running_cronjobs
+    # Execute the update
     nextcloud_occ upgrade
     # Optimize
     print_text_in_color "$ICyan" "Optimizing Nextcloud..."
@@ -1014,6 +1017,9 @@ then
                     rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
                     bash "$SECURE"
                     nextcloud_occ_no_check app:disable "$app"
+                    # Don't execute the update before all cronjobs are finished
+                    check_running_cronjobs
+                    # Execute the update
                     nextcloud_occ upgrade
                 fi
             fi

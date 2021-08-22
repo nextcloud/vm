@@ -431,6 +431,15 @@ do
 done
 }
 
+# Fix issues like https://github.com/nextcloud/spreed/issues/5518
+check_running_cronjobs() {
+    while [ -n "$(pgrep -f nextcloud/cron.php)" ]
+    do
+        print_text_in_color "$ICyan" "Waiting for the Nextclouds cronjob to finish..."
+        sleep 5
+    done
+}
+
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
 print_text_in_color "$ICyan" "Checking connection..."
