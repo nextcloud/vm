@@ -1,7 +1,6 @@
 on:
-  push:
+  pull_request:
     branches-ignore:
-      # Do not push events to branches matching autocommit
       - 'autocommit'
 
 name: 'check-code-with-shellcheck'
