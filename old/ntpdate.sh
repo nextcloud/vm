@@ -20,4 +20,3 @@ then
         ntpdate -s 1.se.pool.ntp.org
     fi
 fi
-exit
