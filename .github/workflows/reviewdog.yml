@@ -1,8 +1,8 @@
 on:
-  push:
   pull_request:
-    branches:    
-      - '!autocommit'   # excludes autocommit
+  push:
+    branches-ignore:
+      - 'autocommit'
 
 name: 'reviewdog'
 
