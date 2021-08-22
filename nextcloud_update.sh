@@ -899,7 +899,7 @@ then
     echo 
     print_text_in_color "$IGreen" "All files are backed up."
     send_mail \
-    "Nextclouds software update started!" \
+    "Nextcloud VM update started!" \
     "Please don't shutdown or reboot your server during the update! $(date +%T)"
     nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
