@@ -219,12 +219,20 @@ cat << PIHOLE_UPDATE > "$SCRIPTS/pihole-update.sh"
 #!/bin/bash
 . <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+notify_admin_gui "Starting the Pi-hole update." "You will be notified when it is done."
+# Create backup first
+if [ -f "\$SCRIPTS/daily-borg-backup.sh" ]
+then
+    export SKIP_DAILY_BACKUP_CHECK=1
+    bash "\$SCRIPTS/daily-borg-backup.sh"
+fi
 check_command pihole -up
 systemctl stop lighttpd
 check_command sed -i 's|^server\.port.*|server\.port = 8093|' /etc/lighttpd/lighttpd.conf
 sleep 10 # Wait for lighttpd
 check_command systemctl start lighttpd
 # Please don't remove or change this line! Pi-hole installed programs=${INSTALLED[@]}
+notify_admin_gui "Pi-hole update successful!" ""
 PIHOLE_UPDATE
 
 # Secure the file
