@@ -1,5 +1,7 @@
 on:
   push:
+    branches:    
+      - '!autocommit'   # excludes autocommit
 
 name: 'check-code-with-shellcheck'
 
