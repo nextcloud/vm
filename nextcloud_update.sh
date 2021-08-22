@@ -68,6 +68,13 @@ then
     fi
 fi
 
+# Inform about started update
+notify_admin_gui \
+"Update script started!" \
+"The update script in the Nextcloud VM has been executed.
+You will be notified when the update is done.
+Please don't shutdown or restart your server until then."
+
 # Create a snapshot before doing anything else
 check_free_space
 if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
@@ -690,6 +697,9 @@ then
         print_text_in_color "$IGreen" "New version available, upgrade continues!"
     else
         print_text_in_color "$IGreen" "You already run the latest version! ($CURRENTVERSION)"
+        notify_admin_gui \
+        "Update successful!" \
+        "The update script finished successfully! No new Nextcloud update was found."
         exit 0
     fi
 fi
@@ -889,7 +899,7 @@ then
     echo 
     print_text_in_color "$IGreen" "All files are backed up."
     send_mail \
-    "Nextcloud update started!" \
+    "Nextcloud VM update started!" \
     "Please don't shutdown or reboot your server during the update! $(date +%T)"
     nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
