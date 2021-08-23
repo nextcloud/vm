@@ -80,6 +80,12 @@ check_free_space
 if ! [ -f "$SCRIPTS/nextcloud-startup-script.sh" ] && (does_snapshot_exist "NcVM-startup" \
 || does_snapshot_exist "NcVM-snapshot" || [ "$FREE_SPACE" -ge 50 ] )
 then
+    # Create backup first
+    if [ -f "$SCRIPTS/daily-borg-backup.sh" ] && does_snapshot_exist "NcVM-snapshot"
+    then
+        export SKIP_DAILY_BACKUP_CHECK=1
+        bash "$SCRIPTS/daily-borg-backup.sh"
+    fi
     # Add automatical unlock upon reboot
     crontab -u root -l | grep -v "lvrename /dev/ubuntu-vg/NcVM-snapshot-pending"  | crontab -u root -
     crontab -u root -l | { cat; echo "@reboot /usr/sbin/lvrename /dev/ubuntu-vg/NcVM-snapshot-pending \
