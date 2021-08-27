@@ -15,6 +15,24 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 22.1.1
+
+### Small changelog:
+- Improved deSEC and added support for existing accounts
+- Improved SPAMHAUS rules and script
+- Show the hostname when notifying - better if you run multiple servers
+- Only update update script if it's older than 120 days
+- Changed to EDCSA for certbot (TLS)
+- Add script for removal or deSEC + subdomain
+- Make deSEC a menu instead
+- Crucial fixes for the new PN51 network drivers
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/22.0.0..22.1.1
+- https://nextcloud.com/changelog/#latest22
+
 ## 22.0.0
 
 ### Small changelog:
@@ -53,7 +71,7 @@ PR's are more than welcome. Happy Nextclouding!
 
 ### Full changelog:
 - https://github.com/nextcloud/vm/compare/21.0.2..22.0.0
-- https://nextcloud.com/changelog/#latest21
+- https://nextcloud.com/changelog/#latest22
 
 ## 21.0.2
 
