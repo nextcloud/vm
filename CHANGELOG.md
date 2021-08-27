@@ -18,6 +18,7 @@ PR's are more than welcome. Happy Nextclouding!
 ## 22.1.1
 
 ### Small changelog:
+- Remove Group Folders in the standard installation
 - Improved deSEC and added support for existing accounts
 - Improved SPAMHAUS rules and script
 - Show the hostname when notifying - better if you run multiple servers
