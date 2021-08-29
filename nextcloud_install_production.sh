@@ -849,9 +849,7 @@ case "$choice" in
     *"IssueTemplate"*)
         # install_and_enable_app issuetemplate
         rm -rf "$NCPATH"apps/issuetemplate
-        curl_to_dir https://github.com/nextcloud/issuetemplate/releases/download/v0.7.0 issuetemplate.tar.gz /tmp
-        tar -xvf /tmp/issuetemplate.tar.gz -C "$NCPATH"/apps
-        bash "$SECURE"
+        nextcloud_occ app:install issuetemplate --force
         sed -i "s|20|${CURRENTVERSION%%.*}|g" "$NCPATH"/apps/issuetemplate/appinfo/info.xml
         nextcloud_occ_no_check app:enable issuetemplate
     ;;&
