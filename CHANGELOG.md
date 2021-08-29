@@ -27,6 +27,11 @@ PR's are more than welcome. Happy Nextclouding!
 - Add script for removal or deSEC + subdomain
 - Make deSEC a menu instead
 - Crucial fixes for the new PN51 network drivers
+- Update script - only update the updatenotification script if a new Nextcloud update is available
+- Updated and renamed Bitwarden RS to Vaultwarden
+- Updated geoblock database - August 2021
+- Update script - don't execute the update before all cronjobs are finished
+- Always create a backup before updating
 - Minor bugfixes and improvements
 - And more...
 
