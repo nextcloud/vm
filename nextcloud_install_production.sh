@@ -847,7 +847,13 @@ case "$choice" in
         install_and_enable_app contacts
     ;;&
     *"IssueTemplate"*)
-        install_and_enable_app issuetemplate
+        # install_and_enable_app issuetemplate
+        rm -rf "$NCPATH"apps/issuetemplate
+        curl_to_dir https://github.com/nextcloud/issuetemplate/releases/download/v0.7.0 issuetemplate.tar.gz /tmp
+        tar -xvf /tmp/issuetemplate.tar.gz -C "$NCPATH"/apps
+        bash "$SECURE"
+        sed -i "s|20|${CURRENTVERSION%%.*}|g" "$NCPATH"/apps/issuetemplate/appinfo/info.xml
+        nextcloud_occ_no_check app:enable issuetemplate
     ;;&
     *"PDFViewer"*)
         install_and_enable_app files_pdfviewer
