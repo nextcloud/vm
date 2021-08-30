@@ -836,7 +836,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Text" "" ON \
 "Mail" "" ON \
 "Deck" "" ON \
-"Group-Folders" "" ON 3>&1 1>&2 2>&3)
+"Group-Folders" "" OFF 3>&1 1>&2 2>&3)
 fi
 
 case "$choice" in
