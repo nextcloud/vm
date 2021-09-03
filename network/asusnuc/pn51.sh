@@ -92,8 +92,8 @@ fi
 # Before upgrading to new version, fix all variables and download the newest version to the VM repo here: 
 # https://github.com/nextcloud/vm/tree/master/network/asusnuc
 #
-#new_version
-stay_at_current
+new_version
+# stay_at_current
 
 # Extract the driver
 if [ ! -d "$INSTALLDIR"/r8125-"$RVERSION" ]
