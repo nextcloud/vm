@@ -58,25 +58,7 @@ then
     curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
 fi
 
-new_version() {
-# Ask to update to a newer version
-if [ -n "$(check_command dkms status)" ]
-then
-    if ! yesno_box_no "The Realtek 2.5G driver is already installed, would you like to update to the latest version?"
-    then
-        exit
-    else
-        check_command dkms remove r8125/"$OLDRVERSION" --all
-        rm -rf /usr/src/r8125"$OLDRVERSION"/
-        if [ -z "$(check_command dkms status)" ]
-        then
-            print_text_in_color "$ICyan" "Firmware version $OLDRVERSION successfully purged!"
-        fi
-    fi
-fi
-}
-
-stay_at_current() {
+# Install latest driver
 STATUS="$(check_command dkms status)"
 if [ -n "$STATUS" ]
 then
@@ -84,16 +66,20 @@ then
     then
         print_text_in_color "$ICyan" "The Realtek 2.5G driver (version $RVERSION) is already installed."
         exit
+    else
+        if ! yesno_box_no "The Realtek 2.5G driver is already installed, would you like to update to the latest version?"
+        then
+            exit
+        else
+            check_command dkms remove r8125/"$OLDRVERSION" --all
+            rm -rf /usr/src/r8125"$OLDRVERSION"/
+            if [ -z "$(check_command dkms status)" ]
+            then
+            print_text_in_color "$ICyan" "Firmware version $OLDRVERSION successfully purged!"
+            fi
+        fi
     fi
 fi
-}
-
-# Update to new version or stay at current
-# Before upgrading to new version, fix all variables and download the newest version to the VM repo here: 
-# https://github.com/nextcloud/vm/tree/master/network/asusnuc
-#
-new_version
-# stay_at_current
 
 # Extract the driver
 if [ ! -d "$INSTALLDIR"/r8125-"$RVERSION" ]
