@@ -34,7 +34,7 @@ install_if_not dkms
 
 INSTALLDIR="$SCRIPTS/PN51"
 OLDRVERSION="9.005.06"
-RVERSION="9.005.06"
+RVERSION="9.006.04"
 
 # Make sure the installation directory exist
 mkdir -p "$INSTALLDIR"
