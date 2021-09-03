@@ -35,6 +35,7 @@ install_if_not dkms
 INSTALLDIR="$SCRIPTS/PN51"
 OLDRVERSION="9.005.06"
 RVERSION="9.006.04"
+# Before changing the RVERSION here, please download it to the repo first.
 
 # Make sure the installation directory exist
 mkdir -p "$INSTALLDIR"
@@ -71,11 +72,17 @@ then
         then
             exit
         else
-            check_command dkms remove r8125/"$OLDRVERSION" --all
-            rm -rf /usr/src/r8125"$OLDRVERSION"/
-            if [ -z "$(check_command dkms status)" ]
+            if echo "$STATUS" | grep "$OLDRVERSION" &> /dev/null
             then
-            print_text_in_color "$ICyan" "Firmware version $OLDRVERSION successfully purged!"
+                check_command dkms remove r8125/"$OLDRVERSION" --all
+                rm -rf /usr/src/r8125"$OLDRVERSION"/
+                if [ -z "$(check_command dkms status)" ]
+                then
+                    print_text_in_color "$ICyan" "Firmware version $OLDRVERSION successfully purged!"
+                fi
+            else
+                print_text_in_color "$ICyan" "Firmware version $OLDRVERSION could not be found! Please report this to $ISSUES"
+                exit 1
             fi
         fi
     fi
