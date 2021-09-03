@@ -89,7 +89,7 @@ fi
 }
 
 # Update to new version or stay at current
-# Before upgrading to bew version, fix all variables and download the newest version to the VM repo here: 
+# Before upgrading to new version, fix all variables and download the newest version to the VM repo here: 
 # https://github.com/nextcloud/vm/tree/master/network/asusnuc
 #
 #new_version
