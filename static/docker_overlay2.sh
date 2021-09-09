@@ -126,13 +126,15 @@ It may take a while so please be patient."
 check_command save_images
 
 # Set overlay2
-print_text_in_color "$ICyan" "Setting overlay2 in /etc/docker/daemon.json"
-
-cat << OVERLAY2 > /etc/docker/daemon.json
+if ! [ -f /etc/docker/daemon.json ] || ! grep -q '"storage-driver": "overlay2"' /etc/docker/daemon.json
+then
+    cat << OVERLAY2 > /etc/docker/daemon.json
 {
   "storage-driver": "overlay2"
 }
 OVERLAY2
+fi
+
 rm -f /etc/systemd/system/docker.service
 systemctl restart docker.service
 print_text_in_color "$ICyan" "Reloading daemon"
