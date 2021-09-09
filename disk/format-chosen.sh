@@ -70,6 +70,10 @@ elif partprobe /dev/sdb &>/dev/null;
 then
     SYSNAME="machines"
     DEVTYPE=sdb
+elif partprobe /dev/nvme0n1  &>/dev/null;
+then
+    SYSNAME="NVMe"
+    DEVTYPE=nvme0n1
 else
     msg_box "It seems like you didn't add a second disk. 
 To be able to put the DATA on a second drive formatted as ZFS you need to add a second disk to this server.
