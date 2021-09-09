@@ -1582,12 +1582,17 @@ then
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi
+
 # Set overlay2
-cat << OVERLAY2 > /etc/docker/daemon.json
+if ! [ -f /etc/docker/daemon.json ] || ! grep -q '"storage-driver": "overlay2"' /etc/docker/daemon.json
+then
+    cat << OVERLAY2 > /etc/docker/daemon.json
 {
   "storage-driver": "overlay2"
 }
 OVERLAY2
+fi
+
 systemctl daemon-reload
 systemctl restart docker.service
 }
