@@ -1276,7 +1276,7 @@ install_if_not gnupg
 mkdir -p "$GPGDIR"
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
 chmod -R 600 "$GPGDIR"
-gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys "$OpenPGP_fingerprint"
 gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
 rm -r "$SHA256_DIR"
 rm -r "$GPGDIR"
