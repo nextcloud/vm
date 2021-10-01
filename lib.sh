@@ -435,7 +435,7 @@ done
 check_running_cronjobs() {
     while [ -n "$(pgrep -f nextcloud/cron.php)" ]
     do
-        countdown "Waiting for the Nextclouds cronjob to finish..." "30"
+        countdown "Waiting for the Nextcloud cronjob to finish..." "30"
     done
 }
 
