@@ -1212,7 +1212,7 @@ then
     print_text_in_color "$ICyan" "Installing $1..."
     # nextcloud_occ not possible here because it uses check_command and will exit if nextcloud_occ fails
     installcmd="$(nextcloud_occ_no_check app:install "$1")"
-    if grep 'not compatible' <<< "$installcmd"
+    if grep 'dependencies are not fulfilled' <<< "$installcmd"
     then
     msg_box "The $1 app could not be installed.
 It's probably not compatible with $(nextcloud_occ -V).
