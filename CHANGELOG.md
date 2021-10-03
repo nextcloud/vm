@@ -15,6 +15,20 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 22.2.0
+
+### Small changelog:
+- Upgrade Home/SME server NIC firmware
+- Add NVMe to format disk
+- Change keyserver
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/22.1.1..22.2.0
+- https://nextcloud.com/changelog/#latest22
+
+
 ## 22.1.1
 
 ### Small changelog:
