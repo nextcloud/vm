@@ -42,7 +42,7 @@ check_external_ip
 # Check distribution and version
 check_distro_version
 
-# Install Apache2 
+# Install Apache2
 install_if_not apache2
 a2enmod headers
 a2enmod rewrite
@@ -60,6 +60,9 @@ if version 20.04 "$DISTRO" 20.04.10
 then
     TLS13="+TLSv1.3"
 fi
+
+# Get PHP version for the conf file
+check_php
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
  <VirtualHost *:80>
@@ -95,7 +98,7 @@ Listen 9443
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
-        SetHandler "proxy:unix:/run/php/php7.4-fpm.nextcloud.sock|fcgi://localhost"
+        SetHandler "proxy:unix:/run/php/$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
     DocumentRoot $ADMINERDIR

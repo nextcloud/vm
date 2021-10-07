@@ -164,7 +164,7 @@ then
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
     AllowOverride None
-    ### include all .htaccess 
+    ### include all .htaccess
     Include $NCPATH/.htaccess
     Include $NCPATH/config/.htaccess
     Include $NCDATA/.htaccess
