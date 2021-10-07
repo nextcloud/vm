@@ -165,9 +165,9 @@ then
     Options Indexes FollowSymLinks
     AllowOverride None
     ### include all .htaccess 
-    Include /var/www/nextcloud/.htaccess
-    Include /var/www/nextcloud/config/.htaccess
-    Include /data/nextcloud_data/.htaccess
+    Include $NCPATH/.htaccess
+    Include $NCPATH/config/.htaccess
+    Include $NCDATA/.htaccess
     ###
     Require all granted
     Satisfy Any
