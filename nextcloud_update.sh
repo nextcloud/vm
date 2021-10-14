@@ -154,6 +154,30 @@ rm -f /root/php-upgrade.sh
 rm -f /tmp/php-upgrade.sh
 rm -f /root/db-migration.sh
 
+# Fix bug in nextcloud.sh
+CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
+if [ -f $SCRIPTS/techandme.sh ]
+then
+   rm -f "$SCRIPTS/techandme.sh"
+   download_script STATIC nextcloud
+   chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
+   chmod +x "$SCRIPTS/nextcloud.sh"
+   if [ -f /home/"$CURRUSR"/.bash_profile ]
+   then
+       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.bash_profile
+   elif [ -f /home/"$CURRUSR"/.profile ]
+   then
+       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.profile
+   fi
+else
+    # Only update if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
+    if [ "$(stat --format=%Y "$SCRIPTS"/nextcloud.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
+    then
+        download_script STATIC nextcloud
+        chown "$CURRUSR":"$CURRUSR" "$SCRIPTS"/nextcloud.sh
+    fi
+fi
+
 # Fix fancy progress bar for apt-get
 # https://askubuntu.com/a/754653
 if [ -d /etc/apt/apt.conf.d ]
@@ -568,10 +592,6 @@ then
         run_script DISK prune_zfs_snaphots
     fi
 fi
-
-# Fix bug in nextcloud.sh
-curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/static/ nextcloud.sh "$SCRIPTS"
-chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS"/nextcloud.sh
 
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
