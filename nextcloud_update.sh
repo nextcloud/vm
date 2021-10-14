@@ -570,27 +570,7 @@ then
 fi
 
 # Fix bug in nextcloud.sh
-CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
-if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh &>/dev/null
-then
-   rm -f "$SCRIPTS/nextcloud.sh"
-   download_script STATIC nextcloud
-   chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
-   chmod +x "$SCRIPTS/nextcloud.sh"
-elif [ -f $SCRIPTS/techandme.sh ]
-then
-   rm -f "$SCRIPTS/techandme.sh"
-   download_script STATIC nextcloud
-   chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
-   chmod +x "$SCRIPTS/nextcloud.sh"
-   if [ -f /home/"$CURRUSR"/.bash_profile ]
-   then
-       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.bash_profile
-   elif [ -f /home/"$CURRUSR"/.profile ]
-   then
-       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.profile
-   fi
-fi
+curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/static/ nextcloud.sh $SCRIPTS
 
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
