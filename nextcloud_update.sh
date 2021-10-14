@@ -571,6 +571,7 @@ fi
 
 # Fix bug in nextcloud.sh
 curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/static/ nextcloud.sh $SCRIPTS
+chown $UNIXUSER:UNIXUSER $SCRIPTS/nextcloud.sh
 
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
