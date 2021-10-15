@@ -504,6 +504,11 @@ fi
 # If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
 # If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates 
 # individually depending on which docker containers that exist.
+
+# Don't update until https://github.com/bitwarden/server/issues/1638 is fixed.
+if [ 1 -eq 2 ]
+then
+
 if is_docker_running
 then
     # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower 
@@ -572,6 +577,9 @@ $DOCKER_RUN_OUTPUT"
     docker_update_specific 'fts_esror' 'Full Text Search'
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
+fi
+
+### end of Bitwarden update
 fi
 
 # Cleanup un-used packages
