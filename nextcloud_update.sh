@@ -506,7 +506,7 @@ fi
 # individually depending on which docker containers that exist.
 
 # Don't update until https://github.com/bitwarden/server/issues/1638 is fixed.
-if [ 1 -eq 2 ]
+if [[ 1 -eq 2 ]]
 then
 
 if is_docker_running
