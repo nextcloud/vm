@@ -18,7 +18,7 @@ fi
 true
 SCRIPT_NAME="Nextcloud Install Script"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
 
 # Check if dpkg or apt is running
 is_process_running apt
@@ -54,7 +54,7 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
 
 # Get all needed variables from the library
 first_iface
@@ -574,7 +574,7 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
 
 # Get needed scripts for first bootup
 download_script GITHUB_REPO nextcloud-startup-script
@@ -585,20 +585,19 @@ download_script STATIC history
 download_script STATIC welcome
 download_script ADDONS locales
 download_script ADDONS locate_mirror
-chown $UNIXUSER:$UNIXUSER $SCRIPTS/welcome.sh
+chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS"/welcome.sh
 download_script NETWORK trusted
 download_script MENU startup_configuration
 
 # Make $SCRIPTS excutable
 chmod +x -R "$SCRIPTS"
+chown root:root -R "$SCRIPTS"
 
 # Prepare first bootup
 check_command run_script STATIC change-ncadmin-profile
 check_command run_script STATIC change-root-profile
 
 # Reboot
-msg_box "Installation almost done, system will reboot when you hit OK.
-
-Please log in again once rebooted to run the setup script."
+msg_box "Installation almost done, system will reboot when you hit OK. 
+After reboot, please login to run the setup script."
 reboot
-
