@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # Prefer IPv4
 sed -i "s|#precedence ::ffff:0:0/96  100|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
@@ -18,7 +18,7 @@ fi
 true
 SCRIPT_NAME="Nextcloud Install Script"
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
 
 # Check if dpkg or apt is running
 is_process_running apt
@@ -54,7 +54,7 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
 
 # Get all needed variables from the library
 first_iface
@@ -109,13 +109,14 @@ You can check out the original full-version VM here: https://github.com/nextclou
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
+    if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want to make all free space available to your root partition?"
+    then
     # Resize LVM (live installer is &%¤%/!
     # VM
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-    lvextend -l 100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+    lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 
     # Run it again manually just to be sure it's done
-    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
     while :
     do
         lvdisplay | grep "Size" | awk '{print $3}'
@@ -134,6 +135,7 @@ then
             fi
         fi
     done
+    fi
 fi
 
 # Check if it's a clean server
@@ -142,11 +144,13 @@ stop_if_installed apache2
 stop_if_installed nginx
 stop_if_installed php
 stop_if_installed php-fpm
+stop_if_installed php-common
 stop_if_installed php"$PHPVER"-fpm
 stop_if_installed php7.0-fpm
 stop_if_installed php7.1-fpm
 stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
+stop_if_installed php8.0-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
@@ -159,8 +163,17 @@ fi
 # Install needed network
 install_if_not netplan.io
 
+# APT over HTTPS
+install_if_not apt-transport-https
+
 # Install build-essentials to get make
 install_if_not build-essential
+
+# Make sure sudo exists (needed in adduser.sh)
+install_if_not sudo
+
+# Make sure add-apt-repository exists (needed in lib.sh)
+install_if_not software-properties-common
 
 # Install PostgreSQL
 # sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
@@ -178,7 +191,7 @@ print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
 systemctl restart postgresql.service
 
 # Install Apache
-check_command apt install apache2 -y
+check_command apt-get install apache2 -y
 a2enmod rewrite \
         headers \
         proxy \
@@ -207,8 +220,8 @@ echo "ServerTokens Prod"
 fi
 
 # Install PHP "$PHPVER"
-apt update -q4 & spinner_loading
-check_command apt install -y \
+apt-get update -q4 & spinner_loading
+check_command apt-get install -y \
     php"$PHPVER"-fpm \
     php"$PHPVER"-intl \
     php"$PHPVER"-ldap \
@@ -236,7 +249,6 @@ print_text_in_color "$ICyan" "Enabling HTTP/2 server wide..."
 cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
     Protocols h2 http/1.1
-    H2Direct on
 </IfModule>
 HTTP2_ENABLE
 print_text_in_color "$IGreen" "$HTTP2_CONF was successfully created"
@@ -264,7 +276,6 @@ env[TMPDIR] = /tmp
 env[TEMP] = /tmp
 security.limit_extensions = .php
 php_admin_value [cgi.fix_pathinfo] = 1
-
 ; Optional
 ; pm.max_requests = 2000
 POOL_CONF
@@ -300,7 +311,7 @@ run_script STATIC setup_secure_permissions_nextcloud
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
-occ_command maintenance:install \
+nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
@@ -310,11 +321,11 @@ occ_command maintenance:install \
 --admin-pass="$NCPASS"
 echo
 print_text_in_color "$ICyan" "Nextcloud version:"
-occ_command status
+nextcloud_occ status
 sleep 3
 echo
 
-# Prepare cron.php to be run every 15 minutes
+# Prepare cron.php to be run every 5 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
 # Change values in php.ini (increase max file size)
@@ -329,17 +340,17 @@ sed -i "s|post_max_size =.*|post_max_size = 1100M|g" "$PHP_INI"
 # upload_max
 sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" "$PHP_INI"
 
-# Set loggging
-occ_command config:system:set log_type --value=file
-occ_command config:system:set logfile --value="$VMLOGS/nextcloud.log"
+# Set logging
+nextcloud_occ config:system:set log_type --value=file
+nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
 rm -f "$NCDATA/nextcloud.log"
-occ_command config:system:set loglevel --value=2
+nextcloud_occ config:system:set loglevel --value=2
 install_and_enable_app admin_audit
-occ_command config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
-occ_command config:system:set log.condition apps 0 --value admin_audit
+nextcloud_occ config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
+nextcloud_occ config:system:set log.condition apps 0 --value admin_audit
 
 # Set SMTP mail
-occ_command config:system:set mail_smtpmode --value="smtp"
+nextcloud_occ config:system:set mail_smtpmode --value="smtp"
 
 # Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
@@ -374,18 +385,21 @@ echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
-
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
-yes | occ_command db:convert-filecache-bigint
-occ_command db:add-missing-indices
+yes | nextcloud_occ db:convert-filecache-bigint
+nextcloud_occ db:add-missing-indices
 while [ -z "$CURRENTVERSION" ]
 do
     CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
 done
 if [ "${CURRENTVERSION%%.*}" -ge "19" ]
 then
-    occ_command db:add-missing-columns
+    nextcloud_occ db:add-missing-columns
+fi
+if [ "${CURRENTVERSION%%.*}" -ge "20" ]
+then
+    nextcloud_occ db:add-missing-primary-keys
 fi
 
 # Install Figlet
@@ -400,57 +414,50 @@ then
     touch "$SITES_AVAILABLE/$HTTP_CONF"
     cat << HTTP_CREATE > "$SITES_AVAILABLE/$HTTP_CONF"
 <VirtualHost *:80>
-
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
 #    ServerName example.com
 #    ServerAlias subdomain.example.com
-
 ### SETTINGS ###
     <FilesMatch "\.php$">
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
-
     DocumentRoot $NCPATH
-
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
-    AllowOverride All
+    AllowOverride None
+    ### include all .htaccess 
+    Include $NCPATH/.htaccess
+    Include $NCPATH/config/.htaccess
+    Include $NCDATA/.htaccess
+    ###
     Require all granted
     Satisfy Any
     </Directory>
-
     <IfModule mod_dav.c>
     Dav off
     </IfModule>
-
     <Directory "$NCDATA">
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
-
     # The following lines prevent .htaccess and .htpasswd files from being
     # viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
-
     # Disable HTTP TRACE method.
     TraceEnable off
-
     # Disable HTTP TRACK method.
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} ^TRACK
     RewriteRule .* - [R=405,L]
-
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-
 </VirtualHost>
 HTTP_CREATE
     print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
@@ -461,64 +468,67 @@ if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
     touch "$SITES_AVAILABLE/$TLS_CONF"
     cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
- <VirtualHost *:80>
-     RewriteEngine On
-     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
- </VirtualHost>
-
+# <VirtualHost *:80>
+#     RewriteEngine On
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+# </VirtualHost>
 <VirtualHost *:443>
-    Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-    SSLEngine on
-
+    Header add Strict-Transport-Security: "max-age=15552000;includeSubdomains"
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
 #    ServerName cloud.example.com
-
 ### SETTINGS ###
     <FilesMatch "\.php$">
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
-
+    # Intermediate configuration
+    SSLEngine               on
+    SSLCompression          off
+    SSLProtocol             -all +TLSv1.2 +TLSv1.3
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
+    ServerSignature         off
+    # Logs
+    LogLevel warn
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/error.log
     DocumentRoot $NCPATH
-
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
-    AllowOverride All
+    AllowOverride None
+    ### include all .htaccess 
+    Include $NCPATH/.htaccess
+    Include $NCPATH/config/.htaccess
+    Include $NCDATA/.htaccess
+    ###
     Require all granted
     Satisfy Any
     </Directory>
-
     <IfModule mod_dav.c>
     Dav off
     </IfModule>
-
     <Directory "$NCDATA">
     # just in case if .htaccess gets disabled
     Require all denied
     </Directory>
-
     # The following lines prevent .htaccess and .htpasswd files from being
     # viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
-
     # Disable HTTP TRACE method.
     TraceEnable off
-
     # Disable HTTP TRACK method.
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} ^TRACK
     RewriteRule .* - [R=405,L]
-
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
@@ -529,8 +539,8 @@ fi
 
 # Enable new config
 a2ensite "$TLS_CONF"
+a2ensite "$HTTP_CONF"
 a2dissite default-ssl
-a2dissite 000-default
 restart_webserver
 
 # Cleanup
@@ -564,7 +574,7 @@ fi
 # shellcheck disable=2034,2059
 true
 # shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm/lib.sh)
 
 # Get needed scripts for first bootup
 download_script GITHUB_REPO nextcloud-startup-script
@@ -575,20 +585,19 @@ download_script STATIC history
 download_script STATIC welcome
 download_script ADDONS locales
 download_script ADDONS locate_mirror
-chown $UNIXUSER:$UNIXUSER $SCRIPTS/welcome.sh
+chown "$UNIXUSER":"$UNIXUSER" "$SCRIPTS"/welcome.sh
 download_script NETWORK trusted
 download_script MENU startup_configuration
 
 # Make $SCRIPTS excutable
 chmod +x -R "$SCRIPTS"
+chown root:root -R "$SCRIPTS"
 
 # Prepare first bootup
 check_command run_script STATIC change-ncadmin-profile
 check_command run_script STATIC change-root-profile
 
 # Reboot
-msg_box "Installation almost done, system will reboot when you hit OK.
-
-Please log in again once rebooted to run the setup script."
+msg_box "Installation almost done, system will reboot when you hit OK. 
+After reboot, please login to run the setup script."
 reboot
-

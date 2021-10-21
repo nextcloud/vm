@@ -601,7 +601,7 @@ fi
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https() {
-    if ! occ_command_no_check config:system:get overwrite.cli.url | grep -q "https"
+    if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
     then
 msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
 You easily activate TLS (HTTPS) by running the Let's Encrypt script.
@@ -838,7 +838,7 @@ if ! "$@";
 then
     print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
     print_text_in_color "$IRed" "$* failed"
-    if occ_command_no_check -V > /dev/null
+    if nextcloud_occ_no_check -V > /dev/null
     then
         notify_admin_gui \
         "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!" \
@@ -848,13 +848,13 @@ then
 fi
 }
 
-# Example: occ_command 'maintenance:mode --on'
-occ_command() {
+# Example: nextcloud_occ 'maintenance:mode --on'
+nextcloud_occ() {
 check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
-# Example: occ_command_no_check 'maintenance:mode --on'
-occ_command_no_check() {
+# Example: nextcloud_occ_no_check 'maintenance:mode --on'
+nextcloud_occ_no_check() {
 sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
@@ -912,7 +912,7 @@ calc_wt_size() {
 
 # example: is_app_enabled documentserver_community
 is_app_enabled() {
-if occ_command app:list | sed '/Disabled/,$d' | awk '{print$2}' | tr -d ':' | sed '/^$/d' | grep -q "^$1$"
+if nextcloud_occ app:list | sed '/Disabled/,$d' | awk '{print$2}' | tr -d ':' | sed '/^$/d' | grep -q "^$1$"
 then
     return 0
 else
@@ -935,12 +935,12 @@ install_and_enable_app() {
 if ! is_app_installed "$1"
 then
     print_text_in_color "$ICyan" "Installing $1..."
-    # occ_command not possible here because it uses check_command and will exit if occ_command fails
-    installcmd="$(occ_command_no_check app:install "$1")"
+    # nextcloud_occ not possible here because it uses check_command and will exit if nextcloud_occ fails
+    installcmd="$(nextcloud_occ_no_check app:install "$1")"
     if grep 'not compatible' <<< "$installcmd"
     then
 msg_box "The $1 app could not be installed.
-It's probably not compatible with $(occ_command -V).
+It's probably not compatible with $(nextcloud_occ -V).
 
 You can try to install the app manually after the script has finished,
 or when a new version of the app is released with the following command:
@@ -951,13 +951,13 @@ or when a new version of the app is released with the following command:
         # Enable $1
         if is_app_installed "$1"
         then
-            occ_command app:enable "$1"
+            nextcloud_occ app:enable "$1"
             chown -R www-data:www-data "$NC_APPS_PATH"
         fi
     fi
 else
     print_text_in_color "$ICyan" "It seems like $1 is installed already, trying to enable it..."
-    occ_command_no_check app:enable "$1"
+    nextcloud_occ_no_check app:enable "$1"
 fi
 }
 
@@ -1147,7 +1147,7 @@ or experience other issues then please report this to $ISSUES"
     chown -R www-data:www-data "$NCPATH"
     rm -rf "$NCPATH"/assets
     yes no | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
-    occ_command maintenance:mode --off
+    nextcloud_occ maintenance:mode --off
 fi
 
 # Check new version
@@ -1164,7 +1164,7 @@ msg_box "Your current version are still not compatible with the version required
 
 To upgrade between major versions, please check this out:
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
-    occ_command -V
+    nextcloud_occ -V
     exit
 fi
 }
@@ -1353,7 +1353,7 @@ esac
 # "Subject" \
 # "Message"
 #
-# occ_command_no_check notification:generate -l "$2" "$admin" "$1"
+# nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
 if ! is_app_enabled notifications
 then
@@ -1362,12 +1362,12 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-occ_command_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r admin
+nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r admin
 do
-    if occ_command_no_check user:info "$admin" | cut -d "-" -f2 | grep -x -q " admin"
+    if nextcloud_occ_no_check user:info "$admin" | cut -d "-" -f2 | grep -x -q " admin"
     then
         print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-        occ_command_no_check notification:generate -l "$2" "$admin" "$1"
+        nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$1"
     fi
 done
 }

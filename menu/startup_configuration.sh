@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # shellcheck disable=2034,2059
 true
@@ -90,7 +90,7 @@ case "$choice" in
                     sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 
                     # Change timezone for logging
-                    occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+                    nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
                     clear
                     msg_box "The timezone was changed successfully." "$SUBTITLE"
                 fi
