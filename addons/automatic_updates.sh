@@ -22,7 +22,7 @@ debug_mode
 root_check
 
 # Check if automatic updates are already installed
-if ! crontab -u root -l | grep -q "$SCRIPTS/update.sh"
+if ! crontab -u root -l | grep -q "$SCRIPTS/update.sh" && ! grep -r shutdown "$SCRIPTS/update.sh"
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -46,6 +46,6 @@ then
     echo "exit" >> "$SCRIPTS"/update.sh
 fi
 
-msg_box "Please remember to keep backups in case something goes wrong, as you never know."
+msg_box "Please remember to keep backups in case something would go wrong!"
 
 exit

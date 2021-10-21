@@ -24,6 +24,14 @@ root_check
 # Show explainer
 msg_box "$SCRIPT_EXPLAINER"
 
+############# 
+msg_box "The current version of Bitwarden upstream has a bug which makes it impossible to install.
+When that bug is fixed, we'll let the script continue here, but until then we won't even try to install Bitwarden.
+
+The issue is posted here: https://github.com/bitwarden/server/issues/1638"
+exit
+############# 
+
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
 if is_docker_running
@@ -93,8 +101,9 @@ and to be able to generate a valid TLS certificate automatically with our own (t
 Basically:
 1. Enter the domain for Bitwarden
 2. Answer 'no' to the question if you want Let's Encrypt
-3. Enter your installation id and keys
-4. Continue to answer 'no' to everything related to SSL/TLS.
+3. Enter the name for your Database (could be anything)
+4. Enter your installation id and keys
+5. Continue to answer 'no' to everything related to SSL/TLS.
 
 Please have a look at how the questions are answered here if you are uncertain:
 https://imgur.com/a/3ytwvp6"
@@ -155,7 +164,7 @@ check_command systemctl enable bitwarden
 # Install Bitwarden
 install_if_not curl
 check_command cd "$BITWARDEN_HOME"
-curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
 chmod +x "$BITWARDEN_HOME"/bitwarden.sh
 chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
