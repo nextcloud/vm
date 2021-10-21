@@ -1,0 +1,33 @@
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - 'autocommit'
+
+name: 'reviewdog'
+
+jobs:
+  shellcheck:
+    name: Shellcheck testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: shellcheck
+        uses: reviewdog/action-shellcheck@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review
+          path: "." # Optional.
+          pattern: "*.sh" # Optional.
+          exclude: "./.git/*" # Optional.
+  misspell:
+    name: Check spelling
+    runs-on: ubuntu-latest
+    steps:
+      - name: spelling or typos
+        uses: actions/checkout@v1
+      - name: misspell
+        uses: reviewdog/action-misspell@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          locale: "US"
