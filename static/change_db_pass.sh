@@ -8,7 +8,7 @@ source /var/scripts/lib.sh
 # Get all needed variables from the library
 ncdbpass
 
-# T&M Hansson IT AB © - 2020, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
