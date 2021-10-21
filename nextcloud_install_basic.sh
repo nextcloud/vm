@@ -311,7 +311,7 @@ run_script STATIC setup_secure_permissions_nextcloud
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
-occ_command maintenance:install \
+nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
@@ -321,7 +321,7 @@ occ_command maintenance:install \
 --admin-pass="$NCPASS"
 echo
 print_text_in_color "$ICyan" "Nextcloud version:"
-occ_command status
+nextcloud_occ status
 sleep 3
 echo
 

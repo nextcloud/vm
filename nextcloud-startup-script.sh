@@ -134,7 +134,7 @@ chown root:root -R $SCRIPTS
 sed -i "s|;date.timezone.*|date.timezone = $(cat /etc/timezone)|g" "$PHP_INI"
 
 # Change timezone for logging
-occ_command config:system:set logtimezone --value="$(cat /etc/timezone)"
+nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
 
 # Generate new SSH Keys
 printf "\nGenerating new SSH keys for the server...\n"
@@ -171,7 +171,7 @@ unset UNIX_PASSWORD
 clear
 
 # NEXTCLOUD USER
-NCADMIN=$(occ_command user:list | awk '{print $3}')
+NCADMIN=$(nextcloud_occ user:list | awk '{print $3}')
 msg_box "We will now change the username and password for the Web Admin in Nextcloud."
 while :
 do
@@ -213,7 +213,7 @@ done
 if [[ "$NCADMIN" ]]
 then
     print_text_in_color "$ICyan" "Deleting $NCADMIN..."
-    occ_command user:delete "$NCADMIN"
+    nextcloud_occ user:delete "$NCADMIN"
     sleep 2
 fi
 clear
@@ -227,7 +227,7 @@ then
     chown -R www-data:www-data "$NCPATH"
     rm -rf "$NCPATH"/assets
     yes no | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
-    occ_command maintenance:mode --off
+    nextcloud_occ maintenance:mode --off
 fi
 
 # Cleanup 1
@@ -288,7 +288,7 @@ truncate -s 0 \
 # Cleanup 2
 apt autoremove -y
 apt autoclean
-occ_command maintenance:repair
+nextcloud_occ maintenance:repair
 rm -f "$NCDATA/nextcloud.log"
 rm -f $SCRIPTS/startup_configuration.sh
 rm -f $SCRIPTS/trusted.sh
