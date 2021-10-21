@@ -7,7 +7,7 @@ body:
       value: |
         Thanks for taking the time to fill out this bug report!
         
-        Please do not submit feature requests. The [Community Forums](https://community.bitwarden.com) has a section for submitting, voting for, and discussing product feature requests.
+        Please do not submit feature requests. The [Community Forums](https://help.nextcloud.com/c/apps/26) has a section for submitting, voting for, and discussing product feature requests.
   - type: textarea
     id: reproduce
     attributes:
@@ -48,18 +48,18 @@ body:
     id: version
     attributes:
       label: Build Version
-      description: What version of our software are you running?
+      description: What version of Nextcloud are you running?
     validations:
       required: true
   - type: dropdown
     id: environment
     attributes:
       label: Environment
-      description: Which environment (Cloud / Self-Hosted) are you using?
+      description: How did you install the server?
       multiple: true
       options:
-        - Cloud (bitwarden.com)
-        - Self-Hosted
+        - By using the scripts
+        - By downloading the VM
     validations:
       required: true
   - type: textarea
@@ -68,6 +68,6 @@ body:
       label: Environment Details
       description: If Self-Hosted please provide some additional environment details.
       placeholder: |
-        - Operating system: [e.g. Windows 10, Mac OS Catalina]
-        - Environment: [e.g. Docker, EKS, ECS, K8S]
+        - Operating system: [e.g. Ubuntu]
+        - Environment: [e.g. PHP, Database]
         - Hardware: [e.g. Intel 6-core, 8GB RAM]
