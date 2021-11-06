@@ -71,9 +71,9 @@ fi
 # Set product name
 if home_sme_server
 then
-    PRODUCTNAME="Nextcloud Home/SME Server"
+    PRODUCTNAME="Nextcloud HanssonIT Server"
 else
-    PRODUCTNAME="Nextcloud Home/SME VM"
+    PRODUCTNAME="Nextcloud HanssonIT VM"
 fi
 if is_app_installed theming
 then
