@@ -623,6 +623,20 @@ then
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     UPDATED_APPS="$(nextcloud_occ_no_check app:update --all)"
+    # Update pdfannotate
+    if [ -d "$NC_APPS_PATH/pdfannotate" ]
+    then
+        INFO_XML="$(curl -s https://gitlab.com/nextcloud-other/nextcloud-annotate/-/raw/master/appinfo/info.xml)"
+        if [ "$(echo "$INFO_XML" | grep -oP 'min-version="[0-9]+"' | grep -oP '[0-9]+')" -le "${CURRENTVERSION%%.*}" ] \
+&& [ "$(echo "$INFO_XML" | grep -oP 'max-version="[0-9]+"' | grep -oP '[0-9]+')" -ge "${CURRENTVERSION%%.*}" ]
+        then
+            print_text_in_color "$ICyan" "Updating the pdfannotate app..."
+            cd "$NC_APPS_PATH/pdfannotate"
+            git pull
+            chown -R www-data:www-data ./
+            chmod -R 770 ./
+        fi
+    fi
 fi
 
 # Check which apps got updated
