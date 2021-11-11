@@ -171,7 +171,7 @@ cat << DDCLIENT_CONF > "/etc/ddclient.conf"
 
 # Default system settings
 use=if, if=$IFACE
-use=web, web=$WANIP4
+use=web, web=https://api.ipify.org
 
 # DDNS-service specific setting
 # Provider=$PROVIDER
