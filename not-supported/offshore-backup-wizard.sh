@@ -77,7 +77,7 @@ fi
 # Get backup mountpoint from daily-borg-backup.sh
 DAILY_BACKUP_MOUNTPOINT="$(grep "BACKUP_MOUNTPOINT=" "$DAILY_BACKUP_FILE" | sed 's|.*BACKUP_MOUNTPOINT="||;s|"$||')"
 DAILY_BACKUP_TARGET="$(grep "BACKUP_TARGET_DIRECTORY=" "$DAILY_BACKUP_FILE" | sed 's|.*BACKUP_TARGET_DIRECTORY="||;s|"$||')"
-DAILY_BACKUP_DIFFERENCE="${DAILY_BACKUP_TARGET##$DAILY_BACKUP_MOUNTPOINT}"
+DAILY_BACKUP_DIFFERENCE="${DAILY_BACKUP_TARGET##"$DAILY_BACKUP_MOUNTPOINT"}"
 if [ -z "$DAILY_BACKUP_MOUNTPOINT" ] || [ -z "$DAILY_BACKUP_TARGET" ] || [ -z "$DAILY_BACKUP_DIFFERENCE" ]
 then
     msg_box "One needed variable from daily-borg-backup.sh is empty.
