@@ -783,7 +783,7 @@ local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default
 local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
 local  methods=(standalone dns)
 
-for f in "${methods[*]}"
+for f in ${methods[*]}
 do
     print_text_in_color "${ICyan}" "Trying to generate certs and validate them with $f method."
     current_method=""
