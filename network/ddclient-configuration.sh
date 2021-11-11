@@ -171,7 +171,7 @@ cat << DDCLIENT_CONF > "/etc/ddclient.conf"
 
 # Default system settings
 use=if, if=$IFACE
-use=web, web=https://ipv4bot.whatismyipaddress.com
+use=web, web=$WANIP4
 
 # DDNS-service specific setting
 # Provider=$PROVIDER
