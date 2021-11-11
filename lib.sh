@@ -42,7 +42,7 @@ IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
 REPO=$(grep "^deb " /etc/apt/sources.list | grep http | awk '{print $2}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 # WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
-WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
+WANIP4=$(curl -s -k -m 5 -4 icanhazip.com)
 INTERFACES="/etc/netplan/nextcloud.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 # Internet DNS required when a check needs to be made to a server outside the home/SME
@@ -783,7 +783,7 @@ local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default
 local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
 local  methods=(standalone dns)
 
-for f in ${methods[*]}
+for f in "${methods[*]}"
 do
     print_text_in_color "${ICyan}" "Trying to generate certs and validate them with $f method."
     current_method=""
