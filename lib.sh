@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=2034,2059
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
@@ -13,7 +12,7 @@ POOLNAME=ncdata
 NCDATA=/mnt/"$POOLNAME"
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
-SHA256_DIR=/tmp/shas56
+SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
 NC_APPS_PATH=$NCPATH/apps
@@ -38,22 +37,19 @@ KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ') TODO
 SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
-first_iface() {
-    IFACE=$(lshw -c network | grep "logical name" | awk '{print $3; exit}')
-}
-[ -n "$FIRST_IFACE" ] && first_iface # TODO: remove this line someday
+IFACE=$(ip r | grep "default via" | awk '{print $5}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
-REPO=$(grep deb-src /etc/apt/sources.list | grep http | awk '{print $3}' | head -1)
+REPO=$(grep "^deb " /etc/apt/sources.list | grep http | awk '{print $2}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-# WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com) # as an alternative
-WANIP4=$(curl -s -k -m 5 https://ipv4bot.whatismyipaddress.com)
-INTERFACES="/etc/netplan/01-netcfg.yaml"
+WANIP4=$(dig +short myip.opendns.com @resolver1.opendns.com)
+INTERFACES="/etc/netplan/nextcloud.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 # Internet DNS required when a check needs to be made to a server outside the home/SME
 INTERNET_DNS="9.9.9.9"
 # Default Quad9 DNS servers, overwritten by the systemd global DNS defined servers, if set
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
+NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443)
 use_global_systemd_dns() {
 if [ -f "/etc/systemd/resolved.conf" ]
 then
@@ -79,10 +75,12 @@ use_global_systemd_dns
 # Whiptails
 TITLE="Nextcloud VM - $(date +%Y)"
 [ -n "$SCRIPT_NAME" ] && TITLE+=" - $SCRIPT_NAME"
-CHECKLIST_GUIDE="Navigate with the [ARROW] keys and (de)select with the [SPACE] key. Confirm by pressing [ENTER]"
-MENU_GUIDE="You can view this menu later by running 'sudo bash $SCRIPTS/menu.sh'"
+CHECKLIST_GUIDE="Navigate with the [ARROW] keys and (de)select with the [SPACE] key. \
+Confirm by pressing [ENTER]. Cancel by pressing [ESC]."
+MENU_GUIDE="Navigate with the [ARROW] keys and confirm by pressing [ENTER]. Cancel by pressing [ESC]."
+RUN_LATER_GUIDE="You can view this script later by running 'sudo bash $SCRIPTS/menu.sh'."
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/official-basic-vm"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
 STATIC="$GITHUB_REPO/static"
 LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
@@ -92,6 +90,8 @@ MENU="$GITHUB_REPO/menu"
 DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
+NOT_SUPPORTED_FOLDER="$GITHUB_REPO/not-supported"
+GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
@@ -105,8 +105,8 @@ BITWARDEN_USER=bitwarden
 BITWARDEN_HOME=/home/"$BITWARDEN_USER"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
-PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 ncdb() {
     NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 }
@@ -124,6 +124,7 @@ nc_update() {
     STABLEVERSION="nextcloud-$NCVERSION"
     NCMAJOR="${NCVERSION%%.*}"
     NCBAD=$((NCMAJOR-2))
+    NCNEXT="$((${CURRENTVERSION%%.*}+1))"
 }
 [ -n "$NC_UPDATE" ] && nc_update # TODO: remove this line someday
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
@@ -147,14 +148,15 @@ PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
 PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
+# Notify push
+NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
 # Adminer
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
-RSHUF=$(shuf -i 30-35 -n 1)
-REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 # Extra security
 SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
@@ -173,11 +175,10 @@ turn_install() {
     TURN_PORT=3478
     TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
     SHUF=$(shuf -i 25-29 -n 1)
-    TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-    JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
-    NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*=")
+    TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+    JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+    NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
-    NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7983 8983 10000 8081 8443 9443)
 }
 [ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
 
@@ -207,9 +208,9 @@ is_root() {
 root_check() {
 if ! is_root
 then
-msg_box "Sorry, you are not root. You now have two options:
+    msg_box "Sorry, you are not root. You now have two options:
 
-1. With SUDO directly:
+1. Use SUDO directly:
    a) :~$ sudo bash $SCRIPTS/name-of-script.sh
 
 2. Become ROOT and then type your command:
@@ -231,33 +232,9 @@ then
 fi
 }
 
-# TODO: delete in a few releases (e.g. NC20) since not needed anymore
-ask_yes_or_no() {
-    read -r -p "$1 ([y]es or [N]o): "
-    case ${REPLY,,} in
-        y|yes)
-            echo "yes"
-        ;;
-        *)
-            echo "no"
-        ;;
-    esac
-}
-
 msg_box() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
     whiptail --title "$TITLE$SUBTITLE" --msgbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3
-}
-
-# TODO: delete in a few releases (e.g. NC20) since not needed anymore
-yesno_box() {
-    [ -n "$2" ] && local SUBTITLE=" - $2"
-    if (whiptail --title "$TITLE$SUBTITLE" --yesno "$1" "$WT_HEIGHT" "$WT_WIDTH")
-    then
-        return 0
-    else
-        return 1
-    fi
 }
 
 yesno_box_yes() {
@@ -282,7 +259,7 @@ yesno_box_no() {
 
 input_box() {
     [ -n "$2" ] && local SUBTITLE=" - $2"
-    local RESULT && RESULT=$(whiptail --title "$TITLE$SUBTITLE" --inputbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
+    local RESULT && RESULT=$(whiptail --title "$TITLE$SUBTITLE" --nocancel --inputbox "$1" "$WT_HEIGHT" "$WT_WIDTH" 3>&1 1>&2 2>&3)
     echo "$RESULT"
 }
 
@@ -304,31 +281,135 @@ input_box_flow() {
     echo "$RESULT"
 }
 
-explainer_popup() {
+install_popup() {
     msg_box "$SCRIPT_EXPLAINER"
-    if ! yesno_box_yes "Do you want to proceed with this script?"
+    if yesno_box_yes "Do you want to install $1?"
     then
-        exit 1
+        print_text_in_color "$ICyan" "Installing $1..."
+    else
+        if [ -z "$2" ] || [ "$2" = "exit" ]
+        then
+            exit 1
+        elif [ "$2" = "sleep" ]
+        then
+            sleep 1
+        elif [ "$2" = "return" ]
+        then
+            return 1
+        else
+            exit 1
+        fi
     fi
 }
 
 reinstall_remove_menu() {
-    choice=$(whiptail --title "$TITLE" --menu "It seems like $SCRIPT_NAME is already installed.\nChoose what you want to do." "$WT_HEIGHT" "$WT_WIDTH" 4 \
-    "Reinstall $SCRIPT_NAME" "" \
-    "Uninstall $SCRIPT_NAME" "" 3>&1 1>&2 2>&3)
-    if [ -z "$choice" ]
+    REINSTALL_REMOVE=$(whiptail --title "$TITLE" --menu \
+"It seems like $1 is already installed.\nChoose what you want to do.
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"Reinstall" " $1" \
+"Uninstall" " $1" 3>&1 1>&2 2>&3)
+    if [ "$REINSTALL_REMOVE" = "Reinstall" ]
     then
-        exit 1
+        print_text_in_color "$ICyan" "Reinstalling $1..."
+    elif [ "$REINSTALL_REMOVE" = "Uninstall" ]
+    then
+        print_text_in_color "$ICyan" "Uninstalling $1..."
+    elif [ -z "$REINSTALL_REMOVE" ]
+    then
+        if [ -z "$2" ] || [ "$2" = "exit" ]
+        then
+            exit 1
+        elif [ "$2" = "sleep" ]
+        then
+            sleep 1
+        elif [ "$2" = "return" ]
+        then
+            return 1
+        else
+            exit 1
+        fi
     fi
 }
 
 removal_popup() {
-    if [ "$choice" = "Uninstall $SCRIPT_NAME" ]
+    if [ "$REINSTALL_REMOVE" = "Uninstall" ]
     then
-        msg_box "$SCRIPT_NAME was successfully uninstalled."
-        exit
+        msg_box "$1 was successfully uninstalled."
+        if [ -z "$2" ] || [ "$2" = "exit" ]
+        then
+            exit 1
+        elif [ "$2" = "sleep" ]
+        then
+            sleep 1
+        elif [ "$2" = "return" ]
+        then
+            return 1
+        else
+            exit 1
+        fi
+    elif [ "$REINSTALL_REMOVE" = "Reinstall" ]
+    then
+        print_text_in_color "$ICyan" "Reinstalling $1..."
     else
-        print_text_in_color "$ICyan" "Reinstalling $SCRIPT_NAME..."
+        msg_box "It seems like neither Uninstall nor Reinstall was selected, \
+something is wrong here. Please report this to $ISSUES"
+        exit 1
+    fi
+}
+
+# Used in geoblock.sh
+get_newest_dat_files() {
+    # IPv4
+    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
+    if [ -z "$IPV4_NAME" ]
+    then
+        print_text_in_color "$IRed" "Could not get the latest IPv4 name. Not updating the .dat file"
+        sleep 1
+    else
+        if ! [ -f "$SCRIPTS/$IPV4_NAME" ]
+        then
+            print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
+            sleep 1
+            curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
+            mkdir -p /usr/share/GeoIP
+            rm -f /usr/share/GeoIP/GeoIP.dat
+            check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
+            check_command mv "/usr/share/GeoIP/$IPV4_NAME" /usr/share/GeoIP/GeoIP.dat
+            chown root:root /usr/share/GeoIP/GeoIP.dat
+            chmod 644 /usr/share/GeoIP/GeoIP.dat
+            find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -not -name "$IPV4_NAME" -delete
+        else
+            print_text_in_color "$ICyan" "The latest IPv4 dat file is already downloaded."
+            sleep 1
+        fi
+    fi
+    # IPv6
+    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
+    if [ -z "$IPV6_NAME" ]
+    then
+        print_text_in_color "$IRed" "Could not get the latest IPv6 name. Not updating the .dat file"
+        sleep 1
+    else
+        if ! [ -f "$SCRIPTS/$IPV6_NAME" ]
+        then
+            print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
+            sleep 1
+            curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
+            mkdir -p /usr/share/GeoIP
+            rm -f /usr/share/GeoIP/GeoIPv6.dat
+            check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
+            check_command mv "/usr/share/GeoIP/$IPV6_NAME" /usr/share/GeoIP/GeoIPv6.dat
+            chown root:root /usr/share/GeoIP/GeoIPv6.dat
+            chmod 644 /usr/share/GeoIP/GeoIPv6.dat
+            find /var/scripts -type f -regex \
+"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -not -name "$IPV6_NAME" -delete
+        else
+            print_text_in_color "$ICyan" "The latest IPv6 dat file is already downloaded."
+            sleep 1
+        fi
     fi
 }
 
@@ -343,10 +424,18 @@ do
     if [ "${RESULT:-null}" = null ]; then
             break
     else
-            print_text_in_color "$ICyan" "${PROCESS} is running, waiting for it to stop..."
-            sleep 10
+            print_text_in_color "$ICyan" "${PROCESS} is running, waiting for it to stop. Please be patient..."
+            sleep 30
     fi
 done
+}
+
+# Fix issues like https://github.com/nextcloud/spreed/issues/5518
+check_running_cronjobs() {
+    while [ -n "$(pgrep -f nextcloud/cron.php)" ]
+    do
+        countdown "Waiting for the Nextcloud cronjob to finish..." "30"
+    done
 }
 
 # Checks if site is reachable with a HTTP 200 status
@@ -357,7 +446,7 @@ print_text_in_color "$ICyan" "Checking connection..."
         then
             return 0
         else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is the site reachable?"
+            print_text_in_color "$IRed" "curl didn't produce a 200 status, is ${1} reachable?"
             return 1
         fi
 }
@@ -368,15 +457,17 @@ domain_check_200() {
     install_if_not dnsutils
 
     # Try to resolve the domain with nslookup using $DNS as resolver
-    if nslookup "${1}" "$INTERNET_DNS" >/dev/null 2>&1
+    if nslookup "${1}" "$INTERNET_DNS"
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with nslookup!"
     else
-        print_text_in_color "$IRed" "DNS lookup failed with nslookup."
-        print_text_in_color "$IRed" "Please check your DNS settings! Maybe the domain isn't propagated?"
-        print_text_in_color "$ICyan" "Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
-        nslookup "${1}" "$INTERNET_DNS"
-        return 1
+        msg_box "DNS lookup failed with nslookup. \
+Please check your DNS settings! Maybe the domain isn't propagated?
+You can use this site to check if the IP seems correct: https://www.whatsmydns.net/#A/${1}"
+        if ! yesno_box_no "Are you 100% sure the domain is correct?"
+        then
+            exit
+        fi
     fi
 
     # Is the DNS record same as the external IP address of the server?
@@ -384,16 +475,20 @@ domain_check_200() {
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
     else
-msg_box "DNS lookup failed with dig. The external IP ($WANIP4) address of this server is not the same as the A-record ($DIG).
-Please check your DNS settings! Maybe the domain isn't propagated?
+    msg_box "DNS lookup failed with dig. The external IP ($WANIP4) \
+address of this server is not the same as the A-record ($DIG).
+Please check your DNS settings! Maybe the domain hasn't propagated?
 Please check https://www.whatsmydns.net/#A/${1} if the IP seems correct."
 
-msg_box "As you noticed your WAN IP and DNS record doesn't match. This can happen when using DDNS for example, or in some edge cases.
-If you feel brave, or are sure that everything is setup correctly, then you can choose to skip this test in the next step.
+    msg_box "As you noticed your WAN IP and DNS record doesn't match. \
+This can happen when using DDNS for example, or in other edge cases.
+If you feel brave, or are sure that everything is set up correctly, \
+then you can choose to skip this test in the next step.
 
-You can always contact us for further support if you wish: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+If needed, you can always contact us for further support: \
+https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
         if ! yesno_box_no "Do you feel brave and want to continue?"
-            then
+        then
             exit
         fi
     fi
@@ -425,21 +520,48 @@ then
     mkdir -p "$3"
 fi
     rm -f "$3"/"$2"
-    curl -sfL "$1"/"$2" -o "$3"/"$2"
+    if [ -n "$download_script_function_in_use" ]
+    then
+        curl -sfL "$1"/"$2" -o "$3"/"$2"
+    else
+        local retries=0
+        while :
+        do
+            if [ "$retries" -ge 10 ]
+            then
+                if yesno_box_yes "Tried 10 times but didn't succeed. We will now exit the script because it might break things. You can choose 'No' to continue on your own risk."
+                then
+                    exit 1
+                else
+                    return 1
+                fi
+            fi
+            if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
+            then
+                msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred. We will now try again.
+Please report this issue to $ISSUES"
+                retries=$((retries+1))
+                print_text_in_color "$ICyan" "$retries of 10 retries."
+                countdown "Trying again in 30 seconds..." "30"
+            else
+                break
+            fi
+        done
+    fi
 }
 
 start_if_stopped() {
 if ! pgrep "$1"
 then
     print_text_in_color "$ICyan" "Starting $1..."
-    check_command systemctl start "$1".service
+    systemctl start "$1".service
 fi
 }
 
 # Warn user that HTTP/2 will be disabled if installing app that use Apache2 PHP instead of PHP-FPM
 # E.g: http2_warn Modsecurity
 http2_warn() {
-msg_box "This VM has HTTP/2 enabled by default.
+    msg_box "This VM has HTTP/2 enabled by default.
 
 If you continue with installing $1, HTTP/2 will be disabled since it's not compatible with the mpm module used by $1.
 
@@ -482,14 +604,15 @@ PHP_FPM_MAX_CHILDREN=$((available_memory/average_php_memory_requirement))
 print_text_in_color "$ICyan" "Automatically configures pm.max_children for php-fpm..."
 if [ $PHP_FPM_MAX_CHILDREN -lt $min_max_children ]
 then
-msg_box "The current max_children value available to set is $PHP_FPM_MAX_CHILDREN, and with that value PHP-FPM won't function properly.
-The minimum value is 8, and the value is calculated depening on how much RAM you have left to use in the system.
+    msg_box "The current max_children value available to set is \
+$PHP_FPM_MAX_CHILDREN, and PHP-FPM won't function properly with that value.
+The minimum value is 8, and the value is calculated depening on how much available RAM you have left.
 
-The absolute minimum amount of RAM required to run the VM is 2 GB, but we recomend 4 GB.
+The absolute minimum amount of RAM required to run the VM is 2 GB, but we recommend 4 GB.
 
 You now have two choices:
-1. Import this VM again, raise the amount of RAM with at least 1 GB, and then run this script again,
-   installing it in the same way as you did before.
+1. Import this VM again, raise the amount of RAM with at least 1 GB, and run this script
+   in the same way as you just have.
 2. Import this VM again without raising the RAM, but don't install any of the following apps:
    1) Collabora
    2) OnlyOffice
@@ -548,10 +671,11 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 18.04 "$DISTRO" 20.04.6
+if ! version 18.04 "$DISTRO" 20.04.10
 then
-    print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
-    print_text_in_color "$ICyan" "Please contact us to get support for upgrading your server:"
+    print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
+18.04 - 20.04.10 to run this script."
+    print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
     sleep 300
@@ -560,12 +684,12 @@ fi
 # Install dnsutils if not existing
 if ! dpkg-query -W -f='${Status}' "dnsutils" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install dnsutils -y
+    apt-get update -q4 & spinner_loading && apt-get install dnsutils -y
 fi
 # Install net-tools if not existing
 if ! dpkg-query -W -f='${Status}' "net-tools" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && apt install net-tools -y
+    apt-get update -q4 & spinner_loading && apt-get install net-tools -y
 fi
 # After applying Netplan settings, try a DNS lookup.
 # Restart systemd-networkd if this fails and try again.
@@ -579,7 +703,7 @@ then
     check_command systemctl restart systemd-networkd && sleep 2
     if ! nslookup github.com
     then
-        msg_box "Network NOT OK. You must have a working network connection to run this script.
+        msg_box "Network is NOT OK. You must have a working network connection to run this script.
 If you think that this is a bug, please report it to https://github.com/nextcloud/vm/issues."
         return 1
     fi
@@ -593,7 +717,8 @@ return 0
 check_external_ip() {
 if [ -z "$WANIP4" ]
 then
-    print_text_in_color "$IRed" "WANIP4 is an emtpy value, Apache will fail on reboot due to this. Please check your network and try again."
+    print_text_in_color "$IRed" "WANIP4 is an empty value, Apache will fail on reboot due to this. \
+Please check your network and try again."
     sleep 3
     exit 1
 fi
@@ -603,8 +728,8 @@ fi
 check_nextcloud_https() {
     if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
     then
-msg_box "Sorry, but Nextcloud needs to be run on HTTPS which doesn't seem to be the case here.
-You easily activate TLS (HTTPS) by running the Let's Encrypt script.
+        msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
+You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
 More info here: https://bit.ly/37wRCin
 
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
@@ -648,7 +773,7 @@ then
 fi
 a2dissite 000-default.conf
 systemctl reload apache2.service
-default_le="--rsa-key-size 4096 --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
+default_le="--cert-name $1 --key-type ecdsa --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 #http-01
 local  standalone="certbot certonly --standalone --pre-hook \"systemctl stop apache2.service\" --post-hook \"systemctl start apache2.service\" $default_le"
 #tls-alpn-01
@@ -657,7 +782,7 @@ local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default
 local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
 local  methods=(standalone dns)
 
-for f in ${methods[*]}
+for f in "${methods[@]}"
 do
     print_text_in_color "${ICyan}" "Trying to generate certs and validate them with $f method."
     current_method=""
@@ -667,17 +792,87 @@ do
         return 0
     elif [ "$f" != "${methods[$((${#methods[*]} - 1))]}" ]
     then
-        msg_box "It seems like no certs were generated when trying to validate them with the $f method. We will do more tries."
+        msg_box "It seems like no certs were generated when trying \
+to validate them with the $f method. We will retry."
     else
-        msg_box "It seems like no certs were generated when trying to validate them with the $f method. We have tried all the methods. Please check your DNS and try again."
+        msg_box "It seems like no certs were generated when trying \
+to validate them with the $f method. We have exhausted all the methods. Please check your DNS and try again."
         return 1;
     fi
 done
 }
 
+is_desec_installed() {
+# Check if deSEC is installed and add the needed variables if yes
+if [ -f "$SCRIPTS"/deSEC/.dedynauth ]
+then
+    if [ -f /etc/ddclient.conf ]
+    then
+        DEDYN_TOKEN=$(grep DEDYN_TOKEN "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
+        DEDYN_NAME=$(grep DEDYN_NAME "$SCRIPTS"/deSEC/.dedynauth | cut -d '=' -f2)
+        return 0
+    fi
+else
+        msg_box "It seems like deSEC isn't configured on this server.
+Please run 'sudo bash $SCRIPTS/menu.sh --> Server Configuration --> deSEC' to configure it."
+        return 1
+fi
+}
+
+generate_desec_cert() {
+# Check if the hook is in place
+if [ ! -f "$SCRIPTS"/deSEC/hook.sh ]
+then
+    msg_box "Sorry, but it seems like the needed hook for this to work is missing.
+
+No TLS will be generated. Please report this to $ISSUES."
+    exit 1
+fi
+
+print_text_in_color "$ICyan" "Generating new TLS cert with DNS and deSEC, please don't abort the hook, it may take a while..."
+# Renew with DNS by default
+if certbot certonly --manual --text --key-type ecdsa --renew-by-default --server https://acme-v02.api.letsencrypt.org/directory --no-eff-email --agree-tos --preferred-challenges dns --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh -d "$1"
+then
+    # Generate DHparams cipher
+    if [ ! -f "$DHPARAMS_TLS" ]
+    then
+        openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
+    fi
+    # Choose which port for public access
+    msg_box "You will now be able to choose which port you want to put your Nextcloud on for public access.\n
+The default port is 443 for HTTPS and if you don't change port, that's the port we will use.\n
+Please keep in mind NOT to use the following ports as they are likely in use already:
+${NONO_PORTS[*]}"
+    if yesno_box_no "Do you want to change the default HTTPS port (443) to something else?"
+    then
+        # Ask for port
+        while :
+        do
+            DEDYNPORT=$(input_box_flow "Please choose which port you want between 1024 - 49151.\n\nPlease remember to open this port in your firewall.")
+            if (("$DEDYNPORT" >= 1024 && "$DEDYNPORT" <= 49151))
+            then
+                if check_nono_ports "$DEDYNPORT"
+                then
+                    print_text_in_color "$ICyan" "Changing to port $DEDYNPORT for public access..."
+                    # Main port
+                    if ! grep -q "Listen $DEDYNPORT" /etc/apache2/ports.conf
+                    then
+                        echo "Listen $DEDYNPORT" >> /etc/apache2/ports.conf
+                        restart_webserver
+                    fi
+                    break
+                fi
+            else
+                msg_box "The port number needs to be between 1024 - 49151, please try again."
+            fi
+        done
+    fi
+fi
+}
+
 # Last message depending on with script that is being run when using the generate_cert() function
 last_fail_tls() {
-msg_box "All methods failed. :/
+    msg_box "All methods failed. :/
 
 You can run the script again by executing: sudo bash $SCRIPTS/menu.sh
 Please try to run it again some other time with other settings.
@@ -701,11 +896,31 @@ fi
 restart_webserver
 }
 
+# Use like this: open_port 443 TCP
+# or e.g. open_port 3478 UDP
+open_port() {
+    install_if_not miniupnpc
+    print_text_in_color "$ICyan" "Trying to open port $1 automatically..."
+    if ! upnpc -a "$ADDRESS" "$1" "$1" "$2" &>/dev/null
+    then
+        msg_box "Failed to open port $1 $2 automatically. You have to do this manually."
+        FAIL=1
+    fi
+}
+
+cleanup_open_port() {
+    if [ -n "$FAIL" ]
+    then
+        apt-get purge miniupnpc -y
+        apt-get autoremove -y
+    fi
+}
+
 # Check if port is open # check_open_port 443 domain.example.com
 check_open_port() {
 print_text_in_color "$ICyan" "Checking if port ${1} is open with https://www.networkappers.com/tools/open-port-checker..."
 install_if_not curl
-# WAN Adress
+# WAN Address
 if check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://networkappers.com/api/port.php?ip=${WANIP4}&port=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
@@ -714,20 +929,59 @@ elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
-msg_box "It seems like the port ${1} is closed. This could happend when your
-ISP has blocked the port, or that the port isn't open.
+    msg_box "It seems like the port ${1} is closed. This could happened when your
+ISP has blocked the port, or the port isn't open.
 
-If you are 100% sure the port ${1} is open you can now choose to
-continue. There are no guarantees that it will work anyway though,
-since the service depend on that the port ${1} is open and
+If you are 100% sure the port ${1} is open, you can choose to
+continue. There are no guarantees that it will work though,
+since the service depends on port ${1} being open and
 accessible from outside your network."
     if ! yesno_box_no "Are you 100% sure the port ${1} is open?"
     then
-        msg_box "Port $1 is not open on either ${WANIP4} or ${2}.\n\nPlease follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
+        msg_box "Port $1 is not open on either ${WANIP4} or ${2}.
+        
+Please follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
         any_key "Press any key to exit..."
         exit 1
     fi
 fi
+}
+
+# $1=domain/ip-address
+add_to_trusted_domains() {
+    local element="$1"
+    local count=0
+    print_text_in_color "$ICyan" "Adding $element to trusted domains..."
+    while [ "$count" -le 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$element" ]
+        then
+            break
+        elif [ -z "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" ]
+        then
+            nextcloud_occ_no_check config:system:set trusted_domains "$count" --value="$element"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
+}
+
+# $1=domain/ip-address
+remove_from_trusted_domains() {
+    local element="$1"
+    local count=0
+    print_text_in_color "$ICyan" "Removing $element from trusted domains..."
+    while [ "$count" -lt 10 ]
+    do
+        if [ "$(nextcloud_occ_no_check config:system:get trusted_domains "$count")" = "$element" ]
+        then
+            nextcloud_occ_no_check config:system:delete trusted_domains "$count"
+            break
+        else
+            count=$((count+1))
+        fi
+    done
 }
 
 check_distro_version() {
@@ -748,16 +1002,16 @@ fi
 
 if [ "$OS" != 1 ]
 then
-msg_box "Ubuntu Server is required to run this script.
+    msg_box "Ubuntu Server is required to run this script.
 Please install that distro and try again.
 
 You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 18.04 "$DISTRO" 20.04.4; then
-msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.4 to run this script."
-msg_box "Please contact us to get support for upgrading your server:
+if ! version 18.04 "$DISTRO" 20.04.10; then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.10 to run this script."
+    msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
     exit 1
@@ -787,7 +1041,7 @@ fi
 install_if_not() {
 if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
-    apt update -q4 & spinner_loading && RUNLEVEL=1 apt install "${1}" -y
+    apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install "${1}" -y
 fi
 }
 
@@ -797,7 +1051,7 @@ fi
 ram_check() {
 install_if_not bc
 mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
-mem_available_gb="$(printf '%0.2f\n' "$(echo "scale=3; $mem_available/(1024*1024)" | bc)")"
+mem_available_gb="$(LC_NUMERIC="en_US.UTF-8" printf '%0.2f\n' "$(echo "scale=3; $mem_available/(1024*1024)" | bc)")"
 mem_required="$((${1}*(924*1024)))" # 100MiB/GiB margin and allow 90% to be able to run on physical machines
 if [ "${mem_available}" -lt "${mem_required}" ]
 then
@@ -810,7 +1064,7 @@ To bypass this check, comment out (add # before the line) 'ram_check X' in the s
 
 In nextcloud_install_production.sh you can find the check somewhere around line #98.
 
-Please note that things may be very slow and not work as expected. YOU HAVE BEEN WARNED!"
+Please note this may affect performance. USE AT YOUR OWN RISK!"
     exit 1
 else
     print_text_in_color "$IGreen" "RAM for ${2} OK! ($mem_available_gb GB)"
@@ -836,12 +1090,14 @@ fi
 check_command() {
 if ! "$@";
 then
-    print_text_in_color "$ICyan" "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!"
+    print_text_in_color "$ICyan" "Sorry but something went wrong. Please report \
+this issue to $ISSUES and include the output of the error message. Thank you!"
     print_text_in_color "$IRed" "$* failed"
     if nextcloud_occ_no_check -V > /dev/null
     then
         notify_admin_gui \
-        "Sorry but something went wrong. Please report this issue to $ISSUES and include the output of the error message. Thank you!" \
+        "Sorry but something went wrong. Please report this issue to \
+$ISSUES and include the output of the error message. Thank you!" \
         "$* failed"
     fi
     exit 1
@@ -858,6 +1114,15 @@ nextcloud_occ_no_check() {
 sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
+# Backwards compatibility (2020-10-08)
+occ_command() {
+nextcloud_occ "$@";
+}
+
+occ_command_no_check() {
+nextcloud_occ_no_check "$@";
+}
+
 network_ok() {
 version(){
     local h t v
@@ -870,9 +1135,13 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 18.04 "$DISTRO" 20.04.6
+if version 18.04 "$DISTRO" 20.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
+    if site_200 github.com
+    then
+        return
+    fi
     if ! netplan apply
     then
         systemctl restart systemd-networkd > /dev/null
@@ -881,17 +1150,22 @@ then
     countdown 'Waiting for network to restart...' 3
     if ! site_200 github.com
     then
-        # sleep 40 seconds so that some slow networks have time to restart
+        # sleep 10 seconds so that some slow networks have time to restart
         countdown 'Not online yet, waiting a bit more...' 10
-        site_200 github.com
+        if ! site_200 github.com
+        then
+            # sleep 30 seconds so that some REALLY slow networks have time to restart
+            countdown 'Not online yet, waiting a bit more (final attempt)...' 30
+            site_200 github.com
+        fi
     fi
 else
-msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.6 to run this script."
-msg_box "Please contact us to get support for upgrading your server:
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.10 to run this script."
+    msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
-msg_box "We will now pause for 60 seconds. Please press CTRL+C when prompted to do so."
-countdown "Please press CTRL+C to abort..." 60
+    msg_box "We will now pause for 60 seconds. Please press CTRL+C when prompted to do so."
+    countdown "Please press CTRL+C to abort..." 60
 fi
 }
 
@@ -922,7 +1196,7 @@ fi
 
 #example: is_app_installed documentserver_community
 is_app_installed() {
-if [ -d "$NC_APPS_PATH/$1" ]
+if nextcloud_occ app:list | grep -wq "$1"
 then
     return 0
 else
@@ -937,9 +1211,9 @@ then
     print_text_in_color "$ICyan" "Installing $1..."
     # nextcloud_occ not possible here because it uses check_command and will exit if nextcloud_occ fails
     installcmd="$(nextcloud_occ_no_check app:install "$1")"
-    if grep 'not compatible' <<< "$installcmd"
+    if grep 'dependencies are not fulfilled' <<< "$installcmd"
     then
-msg_box "The $1 app could not be installed.
+    msg_box "The $1 app could not be installed.
 It's probably not compatible with $(nextcloud_occ -V).
 
 You can try to install the app manually after the script has finished,
@@ -948,11 +1222,14 @@ or when a new version of the app is released with the following command:
 'sudo -u www-data php ${NCPATH}/occ app:install $1'"
     rm -Rf "$NCPATH/apps/$1"
     else
-        # Enable $1
+        # Enable $1 if it's installed but not enabled
         if is_app_installed "$1"
         then
-            nextcloud_occ app:enable "$1"
-            chown -R www-data:www-data "$NC_APPS_PATH"
+            if ! is_app_enabled "$1"
+            then
+                nextcloud_occ_no_check app:enable "$1"
+                chown -R www-data:www-data "$NC_APPS_PATH"
+            fi
         fi
     fi
 else
@@ -979,7 +1256,7 @@ if network_ok
 then
     curl -fSLO --retry 3 "$NCREPO"/"$STABLEVERSION".tar.bz2
 else
-    msg_box "There seems to be an issue with your network, please try again later.\nThis script will exit."
+    msg_box "There seems to be an issue with your network, please try again later.\nThis script will now exit."
     exit 1
 fi
 # Checksum of the downloaded file
@@ -998,7 +1275,7 @@ install_if_not gnupg
 mkdir -p "$GPGDIR"
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
 chmod -R 600 "$GPGDIR"
-gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys "$OpenPGP_fingerprint"
 gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
 rm -r "$SHA256_DIR"
 rm -r "$GPGDIR"
@@ -1009,12 +1286,16 @@ rm -f releases
 # e.g. download_script MENU additional_apps
 # Use it for functions like download_static_script
 download_script() {
+    download_script_function_in_use=yes
     rm -f "${SCRIPTS}/${2}.sh" "${SCRIPTS}/${2}.php" "${SCRIPTS}/${2}.py"
     if ! { curl_to_dir "${!1}" "${2}.sh" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.php" "$SCRIPTS" || curl_to_dir "${!1}" "${2}.py" "$SCRIPTS"; }
     then
-        print_text_in_color "$IRed" "{$2} failed to download. Please run: 'sudo curl -sLO ${!1}/${2}.sh|.php|.py' again."
-        print_text_in_color "$ICyan" "If you get this error when running the nextcloud-startup-script then just re-run it with:"
-        print_text_in_color "$ICyan" "'sudo bash $SCRIPTS/nextcloud-startup-script.sh' and all the scripts will be downloaded again"
+        print_text_in_color "$IRed" "Downloading ${2} failed"
+        sleep 2
+        msg_box "Script failed to download. Please run: \
+'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again.
+
+If it still fails, please report this issue to: $ISSUES."
         exit 1
     fi
 }
@@ -1042,21 +1323,13 @@ run_script() {
         fi
     else
         print_text_in_color "$IRed" "Running ${2} failed"
-        print_text_in_color "$ICyan" "Script failed to execute. Please run: 'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again."
+        sleep 2
+        msg_box "Script failed to execute. Please run: \
+'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again.
+
+If it still fails, please report this issue to: $ISSUES."
         exit 1
     fi
-}
-
-# Initial download of script in ../static
-# call like: download_static_script name_of_script
-download_static_script() {
-download_script STATIC "${1}"
-}
-
-# Initial download of script in ../lets-encrypt
-# call like: download_le_script name_of_script
-download_le_script() {
-download_script LETS_ENC "${1}"
 }
 
 # Run any script in ../master
@@ -1065,16 +1338,9 @@ run_main_script() {
 run_script GITHUB_REPO "${1}"
 }
 
-# Run any script in ../static
-# call like: run_static_script name_of_script
+# Backwards compatibility (2020-10-25) Needed for update.sh to run in all VMs, even those several years old
 run_static_script() {
 run_script STATIC "${1}"
-}
-
-# Run any script in ../apps
-# call like: run_app_script collabora|nextant|passman|spreedme|contacts|calendar|webmin|previewgenerator
-run_app_script() {
-run_script APP "${1}"
 }
 
 version(){
@@ -1099,15 +1365,12 @@ version_gt() {
 }
 
 spinner_loading() {
-    pid=$!
-    spin='-\|/'
-    i=0
-    while kill -0 $pid 2>/dev/null
-    do
-        i=$(( (i+1) %4 ))
-        printf "\r[${spin:$i:1}] " # Add text here, something like "Please be paitent..." maybe?
-        sleep .1
+    printf '['
+    while ps "$!" > /dev/null; do
+        echo -n '⣾⣽⣻'
+        sleep '.7'
     done
+    echo ']'
 }
 
 any_key() {
@@ -1122,9 +1385,9 @@ then
 fi
 if [ "${CURRENTVERSION%%.*}" -lt "$1" ]
 then
-msg_box "This script is developed to work with Nextcloud $1 and later.
+    msg_box "This script is developed to work with Nextcloud $1 and later.
 This means we can't use our own script for now. But don't worry,
-we automated the update process and we will now use Nextclouds updater instead.
+we automated the update process and we will now use Nextcloud's updater instead.
 
 Press [OK] to continue the update, or press [CTRL+C] to abort.
 
@@ -1146,7 +1409,9 @@ or experience other issues then please report this to $ISSUES"
     # Do the upgrade
     chown -R www-data:www-data "$NCPATH"
     rm -rf "$NCPATH"/assets
-    yes no | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
+    yes | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
+    download_script STATIC setup_secure_permissions_nextcloud -P $SCRIPTS
+    bash $SECURE
     nextcloud_occ maintenance:mode --off
 fi
 
@@ -1160,7 +1425,7 @@ if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
 else
-msg_box "Your current version are still not compatible with the version required to run this script.
+    msg_box "Your current version is still not compatible with the version required to run this script.
 
 To upgrade between major versions, please check this out:
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
@@ -1169,7 +1434,7 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
 fi
 }
 
-# Check universe reposiroty
+# Check universe repository
 check_universe() {
 UNIV=$(apt-cache policy | grep http | awk '{print $3}' | grep universe | head -n 1 | cut -d "/" -f 2)
 if [ "$UNIV" != "universe" ]
@@ -1179,7 +1444,7 @@ then
 fi
 }
 
-# Check universe reposiroty
+# Check universe repository
 check_multiverse() {
 MULTIV=$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | head -n 1 | cut -d "/" -f 2)
 if [ "$MULTIV" != "multiverse" ]
@@ -1200,6 +1465,93 @@ else
         echo "vm.max_map_count=262144"
     } >> /etc/sysctl.conf
 fi
+}
+
+remove_collabora_docker() {
+    # Check if Collabora is previously installed
+    # If yes, then stop and prune the docker container
+    docker_prune_this 'collabora/code'
+    # Revoke LE
+    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Collabora, e.g: office.yourdomain.com")
+    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+    then
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf "$remove"
+        done
+    fi
+    # Remove Apache2 config
+    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+    then
+        a2dissite "$SUBDOMAIN".conf
+        restart_webserver
+        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+    fi
+    # Disable RichDocuments (Collabora App) if activated
+    if is_app_installed richdocuments
+    then
+        nextcloud_occ app:remove richdocuments
+    fi
+    # Remove trusted domain
+    remove_from_trusted_domains "$SUBDOMAIN"
+}
+
+remove_onlyoffice_docker() {
+    # Check if Onlyoffice is previously installed
+    # If yes, then stop and prune the docker container
+    docker_prune_this 'onlyoffice/documentserver'
+    # Revoke LE
+    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
+    if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+    then
+        yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+        REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+        for remove in $REMOVE_OLD
+            do rm -rf "$remove"
+        done
+    fi
+    # Remove Apache2 config
+    if [ -f "$SITES_AVAILABLE/$SUBDOMAIN.conf" ]
+    then
+        a2dissite "$SUBDOMAIN".conf
+        restart_webserver
+        rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
+    fi
+    # Disable onlyoffice if activated
+    if is_app_installed onlyoffice
+    then
+        nextcloud_occ app:remove onlyoffice
+    fi
+    # Remove trusted domain
+    remove_from_trusted_domains "$SUBDOMAIN"
+}
+
+# Remove all office apps
+remove_all_office_apps() {
+    # remove OnlyOffice-documentserver if installed
+    if is_app_installed documentserver_community
+    then
+        nextcloud_occ app:remove documentserver_community
+    fi
+
+    # Disable OnlyOffice App if installed
+    if is_app_installed onlyoffice
+    then
+        nextcloud_occ app:remove onlyoffice
+    fi
+
+    # remove richdocumentscode-documentserver if installed
+    if is_app_installed richdocumentscode
+    then
+        nextcloud_occ app:remove richdocumentscode
+    fi
+
+    # Disable RichDocuments (Collabora App) if installed
+    if is_app_installed richdocuments
+    then
+        nextcloud_occ app:remove richdocuments
+    fi
 }
 
 # Check if docker is installed
@@ -1224,16 +1576,21 @@ then
     is_process_running dpkg
     is_process_running apt
     print_text_in_color "$ICyan" "Installing Docker CE..."
-    apt update -q4 & spinner_loading
+    apt-get update -q4 & spinner_loading
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi
+
 # Set overlay2
-cat << OVERLAY2 > /etc/docker/daemon.json
+if ! [ -f /etc/docker/daemon.json ] || ! grep -q '"storage-driver": "overlay2"' /etc/docker/daemon.json
+then
+    cat << OVERLAY2 > /etc/docker/daemon.json
 {
   "storage-driver": "overlay2"
 }
 OVERLAY2
+fi
+
 systemctl daemon-reload
 systemctl restart docker.service
 }
@@ -1245,7 +1602,7 @@ print_text_in_color "$ICyan" "Checking if there are any old images and removing 
 DOCKERPS=$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')
 if [ "$DOCKERPS" != "" ]
 then
-msg_box "Removing old Docker instance(s)... ($DOCKERPS)
+    msg_box "Removing old Docker instance(s)... ($DOCKERPS)
 
 Please note that we will not remove $1 ($2).
 
@@ -1263,13 +1620,25 @@ fi
 docker_prune_this() {
 if does_this_docker_exist "$1"
 then
-msg_box "Removing old Docker image: $1
+    msg_box "Removing old Docker image: $1
 You will be given the option to abort when you hit OK."
     any_key "Press any key to continue. Press CTRL+C to abort"
     docker stop "$(docker container ls | grep "$1" | awk '{print $1}' | tail -1)"
     docker container prune -f
     docker image prune -a -f
     docker volume prune -f
+fi
+}
+
+
+# Update specific Docker image
+# docker_update_specific 'vaultwarden' 'Vaultwarden' (docker conainter name = $1, the name in text = $2)
+docker_update_specific() {
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
+then
+    docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
+    print_text_in_color "$IGreen" "$2 docker image just got updated!"
+    echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
 fi
 }
 
@@ -1320,9 +1689,9 @@ fi
 home_sme_server() {
 # OLD DISKS: "Samsung SSD 860" || ST5000LM000-2AN1  || ST5000LM015-2E81
 # OLD MEMORY: BLS16G4 (Balistix Sport) || 18ASF2G72HZ (ECC)
-if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH"
+if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH\|PN50\|PN51"
 then
-    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266"
+    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1\|9905744\|HMA82GS6JJR8N\|HMA82GS6CJR8N"
     then
         if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B"
         then
@@ -1339,6 +1708,15 @@ else
 fi
 }
 
+asuspn51() {
+if lshw -c system | grep -q "PN51"
+then
+    return 0
+else
+    return 1
+fi
+}
+
 # Check if the value is a number
 # EXAMPLE: https://github.com/nextcloud/vm/pull/1012
 check_if_number() {
@@ -1348,6 +1726,14 @@ case "${1}" in
 esac
 }
 
+# Prettify Json files
+# $1 = json input
+prettify_json() {
+    local JSON_INPUT
+    JSON_INPUT="$(echo "$1" | sed 's|\\||g' | sed 's|,"|,\\n  "|g;s|":|": |g;s|{"|{\n  "|;s|"}|"\n}|')"
+    echo -e "$JSON_INPUT"
+}
+
 # Example:
 # notify_admin_gui \
 # "Subject" \
@@ -1355,6 +1741,9 @@ esac
 #
 # nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$1"
 notify_admin_gui() {
+local NC_USERS
+local user
+local admin
 if ! is_app_enabled notifications
 then
     print_text_in_color "$IRed" "The notifications app isn't enabled - unable to send notifications"
@@ -1362,14 +1751,45 @@ then
 fi
 
 print_text_in_color "$ICyan" "Posting notification to users that are admins, this might take a while..."
-nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||' | while read -r admin
+send_mail "$1" "$2"
+if [ -z "${NC_ADMIN_USER[*]}" ]
+then
+    NC_USERS=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+    mapfile -t NC_USERS <<< "$NC_USERS"
+    for user in "${NC_USERS[@]}"
+    do
+        if nextcloud_occ_no_check user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
+        then
+            NC_ADMIN_USER+=("$user")
+        fi
+    done
+fi
+
+for admin in "${NC_ADMIN_USER[@]}"
 do
-    if nextcloud_occ_no_check user:info "$admin" | cut -d "-" -f2 | grep -x -q " admin"
-    then
-        print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-        nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$1"
-    fi
+    print_text_in_color "$IGreen" "Posting '$1' to: $admin"
+    nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$(hostname -f): $1"
 done
+}
+
+# Use this to send system mails
+# e.g.: send_mail "subject" "text"
+send_mail() {
+    local RECIPIENT
+    if [ -f /etc/msmtprc ]
+    then
+        RECIPIENT=$(grep "recipient=" /etc/msmtprc)
+        RECIPIENT="${RECIPIENT##*recipient=}"
+        if [ -n "$RECIPIENT" ]
+        then
+            print_text_in_color "$ICyan" "Sending '$1' to $RECIPIENT"
+            if echo -e "$2" | mail -s "NcVM: $(hostname -f) - $1" "$RECIPIENT"
+            then
+                return 0
+            fi
+        fi
+    fi
+    return 1
 }
 
 zpool_import_if_missing() {
@@ -1380,7 +1800,7 @@ then
     return 1
 elif [ -z "$POOLNAME" ]
 then
-    print_text_in_color "$IRed" "It seems like the POOLNAME variable is empty, we can't continue without it."
+    print_text_in_color "$IRed" "Please define the POOLNAME variable, as we can't continue without it."
     return 1
 fi
 # Import zpool in case missing
@@ -1401,6 +1821,41 @@ then
     check_command zpool export "$POOLNAME"
     check_command zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
 fi
+}
+
+# Check for free space on the ubuntu-vg
+check_free_space() {
+    if vgs &>/dev/null
+    then
+        FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+\.[0-9]" | sed 's|\.||')
+    fi
+    if [ -z "$FREE_SPACE" ]
+    then
+        FREE_SPACE=0
+    fi
+}
+
+# Check if snapshotname already exists
+does_snapshot_exist() {
+    local SNAPSHOTS
+    local snapshot
+    if lvs &>/dev/null
+    then
+        SNAPSHOTS="$(lvs | grep ubuntu-vg | awk '{print $1}' | grep -v ubuntu-lv)"
+    fi
+    if [ -z "$SNAPSHOTS" ]
+    then
+        return 1
+    fi
+    mapfile -t SNAPSHOTS <<< "$SNAPSHOTS"
+    for snapshot in "${SNAPSHOTS[@]}"
+    do
+        if [ "$snapshot" = "$1" ]
+        then
+            return 0
+        fi
+    done
+    return 1
 }
 
 check_php() {
@@ -1428,25 +1883,49 @@ then
 elif grep 7.4 <<< "$GETPHP" >/dev/null 2>&1
 then
    export PHPVER=7.4
+elif grep 8.0 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.0
 fi
 
-export PHP_INI=/etc/php/"$PHPVER"/fpm/php.ini
-export PHP_POOL_DIR=/etc/php/"$PHPVER"/fpm/pool.d
+# Export other PHP variables based on PHPVER
+export PHP_FPM_DIR=/etc/php/$PHPVER/fpm
+export PHP_INI=$PHP_FPM_DIR/php.ini
+export PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
+export PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 
+# Show version
 print_text_in_color "$IGreen" PHPVER="$PHPVER"
 }
 
 add_dockerprune() {
-print_text_in_color "$ICyan" "Adding cronjob for Docker weekly prune..."
 if ! crontab -u root -l | grep -q 'dockerprune.sh'
 then
+    print_text_in_color "$ICyan" "Adding cronjob for Docker weekly prune..."
     mkdir -p "$SCRIPTS"
-    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "@weekly $SCRIPTS/dockerprune.sh > /dev/null"; } | crontab -u root -
     check_command echo "#!/bin/bash" > "$SCRIPTS/dockerprune.sh"
     check_command echo "docker system prune -a --force" >> "$SCRIPTS/dockerprune.sh"
     check_command echo "exit" >> "$SCRIPTS/dockerprune.sh"
     chmod a+x "$SCRIPTS"/dockerprune.sh
     print_text_in_color "$IGreen" "Docker automatic prune job added."
+fi
+}
+
+test_nono_ports() {
+  local e match="$1"
+  shift
+  for e; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+check_nono_ports() {
+if test_nono_ports "${1}" "${NONO_PORTS[@]}"
+then
+    msg_box "You have to choose another port than $1. Please start over.\n
+Please keep in mind NOT to use the following ports as they are likely in use already:
+${NONO_PORTS[*]}"
+    return 1
 fi
 }
 

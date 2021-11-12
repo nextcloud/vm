@@ -53,7 +53,6 @@ To download the full version, please visit:
 https://www.hanssonit.se/nextcloud-vm/"
 
 # Get all needed variables from the library
-first_iface
 ncdb
 
 # Check if root

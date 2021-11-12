@@ -22,8 +22,8 @@ The full-version includes;
 
 Please press [ENTER] to start using your Nextcloud VM appliance."
 
-WANIP6=$(curl -s -k -m 5 -6 icanhazip.com)
-WANIP4=$(curl -s -k -m 5 -4 icanhazip.com)
+WANIP6=$(curl -s -k -m 5 -6 https://api.ipify.org)
+WANIP4=$(curl -s -k -m 5 -4 https://api.ipify.org)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 clear
