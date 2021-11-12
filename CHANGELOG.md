@@ -19,7 +19,9 @@ PR's are more than welcome. Happy Nextclouding!
 
 ### Small changelog:
 - Change to AllowOverride None for Apache and include .htaccess instead (speeds up I/O)
-- 
+- Change IPv4 check (WANIP4)
+- Set productname
+- Don't allow to install or update Bitwarden (since a bug in their core)
 - Minor bugfixes and improvements
 - And more...
 
