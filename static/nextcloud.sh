@@ -2,8 +2,8 @@
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
-WANIP6=$(curl -s -k -m 5 -6 icanhazip.com)
-WANIP4=$(curl -s -k -m 5 -4 icanhazip.com)
+WANIP6=$(curl -s -k -m 5 -6 https://api64.ipify.org)
+WANIP4=$(curl -s -k -m 5 -4 https://api64.ipify.org)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 
 clear
