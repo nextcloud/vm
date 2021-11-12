@@ -68,6 +68,21 @@ then
     fi
 fi
 
+# Set product name
+if home_sme_server
+then
+    PRODUCTNAME="Nextcloud HanssonIT Server"
+else
+    PRODUCTNAME="Nextcloud HanssonIT VM"
+fi
+if is_app_installed theming
+then
+    if [ "$(nextcloud_occ config:app:get theming productName)" != "$PRODUCTNAME" ]
+    then
+        nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
+    fi
+fi
+
 # Inform about started update
 notify_admin_gui \
 "Update script started!" \
@@ -153,6 +168,30 @@ fi
 rm -f /root/php-upgrade.sh
 rm -f /tmp/php-upgrade.sh
 rm -f /root/db-migration.sh
+
+# Fix bug in nextcloud.sh
+CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
+if [ -f $SCRIPTS/techandme.sh ]
+then
+   rm -f "$SCRIPTS/techandme.sh"
+   download_script STATIC nextcloud
+   chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
+   chmod +x "$SCRIPTS/nextcloud.sh"
+   if [ -f /home/"$CURRUSR"/.bash_profile ]
+   then
+       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.bash_profile
+   elif [ -f /home/"$CURRUSR"/.profile ]
+   then
+       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.profile
+   fi
+else
+    # Only update if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
+    if [ "$(stat --format=%Y "$SCRIPTS"/nextcloud.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
+    then
+        download_script STATIC nextcloud
+        chown "$CURRUSR":"$CURRUSR" "$SCRIPTS"/nextcloud.sh
+    fi
+fi
 
 # Fix fancy progress bar for apt-get
 # https://askubuntu.com/a/754653
@@ -480,6 +519,11 @@ fi
 # If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
 # If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates 
 # individually depending on which docker containers that exist.
+
+# Don't update until https://github.com/bitwarden/server/issues/1638 is fixed.
+if [[ 1 -eq 2 ]]
+then
+
 if is_docker_running
 then
     # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower 
@@ -550,6 +594,9 @@ $DOCKER_RUN_OUTPUT"
     docker_update_specific 'plex' "Plex Media Server"
 fi
 
+### end of Bitwarden update
+fi
+
 # Cleanup un-used packages
 apt-get autoremove -y
 apt-get autoclean
@@ -569,29 +616,6 @@ then
     fi
 fi
 
-# Fix bug in nextcloud.sh
-CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
-if grep -q "6.ifcfg.me" $SCRIPTS/nextcloud.sh &>/dev/null
-then
-   rm -f "$SCRIPTS/nextcloud.sh"
-   download_script STATIC nextcloud
-   chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
-   chmod +x "$SCRIPTS/nextcloud.sh"
-elif [ -f $SCRIPTS/techandme.sh ]
-then
-   rm -f "$SCRIPTS/techandme.sh"
-   download_script STATIC nextcloud
-   chown "$CURRUSR":"$CURRUSR" "$SCRIPTS/nextcloud.sh"
-   chmod +x "$SCRIPTS/nextcloud.sh"
-   if [ -f /home/"$CURRUSR"/.bash_profile ]
-   then
-       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.bash_profile
-   elif [ -f /home/"$CURRUSR"/.profile ]
-   then
-       sed -i "s|techandme|nextcloud|g" /home/"$CURRUSR"/.profile
-   fi
-fi
-
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
@@ -599,6 +623,20 @@ then
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     UPDATED_APPS="$(nextcloud_occ_no_check app:update --all)"
+    # Update pdfannotate
+    if [ -d "$NC_APPS_PATH/pdfannotate" ]
+    then
+        INFO_XML="$(curl -s https://gitlab.com/nextcloud-other/nextcloud-annotate/-/raw/master/appinfo/info.xml)"
+        if [ "$(echo "$INFO_XML" | grep -oP 'min-version="[0-9]+"' | grep -oP '[0-9]+')" -le "${CURRENTVERSION%%.*}" ] \
+&& [ "$(echo "$INFO_XML" | grep -oP 'max-version="[0-9]+"' | grep -oP '[0-9]+')" -ge "${CURRENTVERSION%%.*}" ]
+        then
+            print_text_in_color "$ICyan" "Updating the pdfannotate app..."
+            cd "$NC_APPS_PATH/pdfannotate"
+            git pull
+            chown -R www-data:www-data ./
+            chmod -R 770 ./
+        fi
+    fi
 fi
 
 # Check which apps got updated
