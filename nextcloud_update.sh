@@ -68,6 +68,21 @@ then
     fi
 fi
 
+# Set product name
+if home_sme_server
+then
+    PRODUCTNAME="Nextcloud HanssonIT Server"
+else
+    PRODUCTNAME="Nextcloud HanssonIT VM"
+fi
+if is_app_installed theming
+then
+    if [ "$(nextcloud_occ config:app:get theming productName)" != "$PRODUCTNAME" ]
+    then
+        nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
+    fi
+fi
+
 # Inform about started update
 notify_admin_gui \
 "Update script started!" \
@@ -600,6 +615,20 @@ then
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     UPDATED_APPS="$(nextcloud_occ_no_check app:update --all)"
+    # Update pdfannotate
+    if [ -d "$NC_APPS_PATH/pdfannotate" ]
+    then
+        INFO_XML="$(curl -s https://gitlab.com/nextcloud-other/nextcloud-annotate/-/raw/master/appinfo/info.xml)"
+        if [ "$(echo "$INFO_XML" | grep -oP 'min-version="[0-9]+"' | grep -oP '[0-9]+')" -le "${CURRENTVERSION%%.*}" ] \
+&& [ "$(echo "$INFO_XML" | grep -oP 'max-version="[0-9]+"' | grep -oP '[0-9]+')" -ge "${CURRENTVERSION%%.*}" ]
+        then
+            print_text_in_color "$ICyan" "Updating the pdfannotate app..."
+            cd "$NC_APPS_PATH/pdfannotate"
+            git pull
+            chown -R www-data:www-data ./
+            chmod -R 770 ./
+        fi
+    fi
 fi
 
 # Check which apps got updated
@@ -719,7 +748,7 @@ then
 fi
 
 ############# Don't upgrade to specific version
-DONOTUPDATETO='20.0.6'
+DONOTUPDATETO='22.2.1'
 if [[ "$NCVERSION" == "$DONOTUPDATETO" ]]
 then
     msg_box "Due to serious bugs with Nextcloud $DONOTUPDATETO we won't upgrade to that version."
