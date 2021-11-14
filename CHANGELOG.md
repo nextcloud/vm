@@ -25,7 +25,7 @@ PR's are more than welcome. Happy Nextclouding!
 - And more...
 
 ### Full changelog:
-- https://github.com/nextcloud/vm/compare/22.2.0..22.2.1
+- https://github.com/nextcloud/vm/compare/22.2.0..22.2.2
 - https://nextcloud.com/changelog/#latest22
 
 ## 22.2.0
