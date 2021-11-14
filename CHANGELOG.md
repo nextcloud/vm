@@ -15,6 +15,19 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 22.2.2
+
+### Small changelog:
+- Change to AllowOverride None for Apache and include .htaccess instead (speeds up I/O)
+- Change IPv4 check (WANIP4)
+- Set productname
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/22.2.0..22.2.2
+- https://nextcloud.com/changelog/#latest22
+
 ## 22.2.0
 
 ### Small changelog:
