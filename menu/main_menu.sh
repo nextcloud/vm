@@ -48,7 +48,7 @@ case "$choice" in
         if [ -f "$SCRIPTS"/update.sh ]
         then
 	    # Check if automated updates are set
-            REBOOT_SET=$(grep -rc "shutdown -r" "$SCRIPTS"/update.sh)
+            REBOOT_SET=$(grep -r "shutdown -r" "$SCRIPTS"/update.sh)
             # Check if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
             if [ "$(stat --format=%Y "$SCRIPTS"/update.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
             then
@@ -79,7 +79,7 @@ case "$choice" in
         if [ -f "$SCRIPTS"/update.sh ]
         then
 	    # Check if automated updates are set
-            REBOOT_SET=$(grep -rc "shutdown -r" "$SCRIPTS"/update.sh)
+            REBOOT_SET=$(grep -r "shutdown -r" "$SCRIPTS"/update.sh)
             # Check if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
             if [ "$(stat --format=%Y "$SCRIPTS"/update.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
             then

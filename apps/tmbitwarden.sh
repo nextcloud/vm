@@ -24,14 +24,6 @@ root_check
 # Show explainer
 msg_box "$SCRIPT_EXPLAINER"
 
-############# 
-msg_box "The current version of Bitwarden upstream has a bug which makes it impossible to install.
-When that bug is fixed, we'll let the script continue here, but until then we won't even try to install Bitwarden.
-
-The issue is posted here: https://github.com/bitwarden/server/issues/1638"
-exit
-############# 
-
 # Check if Bitwarden is already installed
 print_text_in_color "$ICyan" "Checking if Bitwarden is already installed..."
 if is_docker_running
