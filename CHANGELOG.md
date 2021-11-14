@@ -15,13 +15,12 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
-## 22.2.1
+## 22.2.2
 
 ### Small changelog:
 - Change to AllowOverride None for Apache and include .htaccess instead (speeds up I/O)
 - Change IPv4 check (WANIP4)
 - Set productname
-- Don't allow to install or update Bitwarden (since a bug in their core)
 - Minor bugfixes and improvements
 - And more...
 
