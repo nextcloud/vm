@@ -31,6 +31,8 @@ if ! yesno_box_no "Have you made a backup of your NcVM? If yes, we will start wi
 then
     if ! [ -f "$DAILY_BACKUP_FILE" ]
     then
+        msg_box "If you are looking for a backup solution for your NcVM, you can set one up by running the 'Daily Backup Wizard' script.
+You can find it here: run 'sudo bash $SCRIPTS/menu.sh' -> choose 'Server Configuration' -> choose 'Daily Backup Wizard'"
         exit 1
     fi
     if ! yesno_box_yes "Do you want to run the backup now?"
