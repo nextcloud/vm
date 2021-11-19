@@ -47,6 +47,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "GeoBlock" "(Only allow certain countries to access your server)" OFF \
 "Disk Monitoring" "(Check for S.M.A.R.T errors on your disks)" OFF \
 "Extra Security" "(Add extra security to prevent attacks)" OFF \
+"Database Shrinking" "(Shrink the database if it got too big)" OFF \
 "Daily Backup Wizard" "([BETA] Create a Daily Backup script)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -121,6 +122,10 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
     *"Daily Backup Wizard"*)
         print_text_in_color "$ICyan" "Downloading the Daily Backup Wizard script..."
         run_script NOT_SUPPORTED_FOLDER daily-backup-wizard
+    ;;&
+    *"Database Shrinking"*)
+        print_text_in_color "$ICyan" "Downloading the Database Shrinking script..."
+        run_script ADDONS database_shrinking
     ;;&
     *)
     ;;
