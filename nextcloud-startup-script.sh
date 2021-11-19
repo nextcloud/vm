@@ -227,6 +227,9 @@ then
     rm -rf "$NCPATH"/assets
     yes no | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
     nextcloud_occ maintenance:mode --off
+    apt-get update
+    apt-get upgrade -y
+    apt-get autoremove -y
 fi
 
 # Cleanup 1
