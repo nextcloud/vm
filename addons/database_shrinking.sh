@@ -45,7 +45,7 @@ then
     fi
 fi
 
-# Remove the app to make sure
+# Remove the app
 nextcloud_occ_no_check app:remove root_cache_cleaner
 
 # Install the app
@@ -63,7 +63,7 @@ fi
 print_text_in_color "$ICyan" "Starting the database shrinking. This can take a while..."
 yes | nextcloud_occ_no_check root_cache_cleaner:clean
 
-# Make sure to remove the app again
+# Remove the app
 nextcloud_occ_no_check app:remove root_cache_cleaner
 
 # Inform the user
