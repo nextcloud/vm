@@ -76,6 +76,14 @@ cpu_check 1 Nextcloud
 mkdir -p "$SCRIPTS"
 download_script GITHUB_REPO lib
 
+# We don't want automatic updates since they might fail (we use our own script)
+if is_this_installed unattended-upgrades
+then
+    apt-get purge unattended-upgrades -y
+    apt-get autoremove -y
+    rm -rf /var/log/unattended-upgrades
+fi
+
 # Check distribution and version
 if ! version 20.04 "$DISTRO" 20.04.6
 then
