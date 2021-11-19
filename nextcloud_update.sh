@@ -890,7 +890,7 @@ then
     msg_box "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
 else
-    printf "${IGreen}\nBackup OK!${Color_Off}\n"
+    print_text_in_color "$IGreen" "Backup OK!"
 fi
 
 # Download and validate Nextcloud package
