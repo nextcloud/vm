@@ -812,22 +812,6 @@ then
     check_command lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
 fi
 
-# Backup app status
-# Fixing https://github.com/nextcloud/server/issues/4538
-print_text_in_color "$ICyan" "Getting and backing up the status of apps for later, this might take a while..."
-NC_APPS="$(nextcloud_occ app:list | awk '{print$2}' | tr -d ':' | sed '/^$/d')"
-if [ -z "$NC_APPS" ]
-then
-    print_text_in_color "$IRed" "No apps detected, aborting export of app status... Please report this issue to $ISSUES"
-    APPSTORAGE="no-export-done"
-else
-    declare -Ag APPSTORAGE
-    for app in $NC_APPS
-    do
-        APPSTORAGE[$app]=$(nextcloud_occ_no_check config:app:get "$app" enabled)
-    done
-fi
-
 # Stop Apache2
 check_command systemctl stop apache2.service
 
@@ -906,7 +890,7 @@ then
     msg_box "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
 else
-    printf "${IGreen}\nBackup OK!${Color_Off}\n"
+    print_text_in_color "$IGreen" "Backup OK!"
 fi
 
 # Download and validate Nextcloud package
@@ -1028,56 +1012,27 @@ then
     fi
 fi
 
-# Restore app status
-# Fixing https://github.com/nextcloud/server/issues/4538
-if [ "${APPSTORAGE[0]}" != "no-export-done" ]
-then
-    print_text_in_color "$ICyan" "Restoring the status of apps. This can take a while..."
-    for app in "${!APPSTORAGE[@]}"
-    do
-        if [ -n "${APPSTORAGE[$app]}" ]
+# If the app isn't installed (maybe because it's incompatible), then at least restore from backup and make sure it's disabled
+BACKUP_APPS="$(find "$BACKUP/apps" -maxdepth 1 -mindepth 1 -type d)"
+mapfile -t BACKUP_APPS <<< "$BACKUP_APPS"
+for app in "${BACKUP_APPS[@]}"
+do
+    app="${app##"$BACKUP/apps/"}"
+    if ! [ -d "$NC_APPS_PATH/$app" ] && [ -d "$BACKUP/apps/$app" ]
+    then
+        if yesno_box_no "$app couln't be installed. Do you want to restore it from backup?\n\nWARNING: It may result in failed integrity checks."
         then
-            # Check if the app is in Nextclouds app storage
-            if ! [ -d "$NC_APPS_PATH/$app" ]
-            then
-                # If the app is missing from the apps folder and was installed and enabled before the upgrade was done,
-                # then reinstall it
-                if [ "${APPSTORAGE[$app]}" = "yes" ]
-                then
-                    install_and_enable_app "$app"
-                # If the app is missing from the apps folder and was installed but not enabled before the upgrade was done, 
-                # then reinstall it but keep it disabled
-                elif [ "${APPSTORAGE[$app]}" = "no" ]
-                then
-                    install_and_enable_app "$app"
-                    nextcloud_occ_no_check app:disable "$app"
-                fi
-            fi
-            # If the app still isn't enabled (maybe because it's incompatible), then at least restore from backup,
-            # and make sure it's disabled
-            if ! [ -d "$NC_APPS_PATH/$app" ] && [ -d "$BACKUP/apps/$app" ]
-            then
-                if yesno_box_no "$app couln't be enabled. Do you want to restore it from backup?\n\nWARNING: It may result in failed integrity checks."
-                then
-                    print_text_in_color "$ICyan" "Restoring $app from $BACKUP/apps..."
-                    rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
-                    bash "$SECURE"
-                    nextcloud_occ_no_check app:disable "$app"
-                    # Don't execute the update before all cronjobs are finished
-                    check_running_cronjobs
-                    # Execute the update
-                    nextcloud_occ upgrade
-                fi
-            fi
-            # Cover the case where the app is enabled for certain groups
-            if [ "${APPSTORAGE[$app]}" != "yes" ] && [ "${APPSTORAGE[$app]}" != "no" ] && is_app_enabled "$app"
-            then
-                # Only restore the group settings, if the app was enabled (and is thus compatible with the new NC version)
-                nextcloud_occ_no_check config:app:set "$app" enabled --value="${APPSTORAGE[$app]}"
-            fi
+            print_text_in_color "$ICyan" "Restoring $app from $BACKUP/apps..."
+            rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
+            bash "$SECURE"
+            nextcloud_occ_no_check app:disable "$app"
+            # Don't execute the update before all cronjobs are finished
+            check_running_cronjobs
+            # Execute the update
+            nextcloud_occ upgrade
         fi
-    done
-fi
+    fi
+done
 
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
