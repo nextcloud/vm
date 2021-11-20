@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# GNU General Public License v3.0
+# https://github.com/nextcloud/vm/blob/master/LICENSE
 
 # Prefer IPv4 for apt
 echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
@@ -299,7 +301,7 @@ case "$choice" in
 esac
 
 # Set DNS resolver
-# https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f    
+# https://unix.stackexchange.com/questions/442598/how-to-configure-systemd-resolved-and-systemd-networkd-to-use-local-dns-server-f
 while :
 do
     if [ -n "$PROVISIONING" ]
@@ -462,7 +464,7 @@ install_if_not open-vm-tools
 
 # Get not-latest Nextcloud version
 if [ -n "$NOT_LATEST" ]
-then  
+then
     while [ -z "$NCVERSION" ]
     do
         print_text_in_color "$ICyan" "Fetching the not-latest Nextcloud version..."
@@ -691,7 +693,7 @@ then
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
     AllowOverride None
-    ### include all .htaccess 
+    ### include all .htaccess
     Include $NCPATH/.htaccess
     Include $NCPATH/config/.htaccess
     Include $NCDATA/.htaccess
@@ -762,7 +764,7 @@ then
     SSLEngine               on
     SSLCompression          off
     SSLProtocol             -all +TLSv1.2 +TLSv1.3
-    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
     SSLHonorCipherOrder     off
     SSLSessionTickets       off
     ServerSignature         off
@@ -777,7 +779,7 @@ then
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
     AllowOverride None
-    ### include all .htaccess 
+    ### include all .htaccess
     Include $NCPATH/.htaccess
     Include $NCPATH/config/.htaccess
     Include $NCDATA/.htaccess
@@ -1008,7 +1010,7 @@ systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 # Reboot
 if [ -z "$PROVISIONING" ]
 then
-    msg_box "Installation almost done, system will reboot when you hit OK. 
+    msg_box "Installation almost done, system will reboot when you hit OK.
 
 After reboot, please login to run the setup script."
 fi
