@@ -5,7 +5,8 @@
 #################################################################################################################
 
 # T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
-# SPDX-License-Identifier: GPL-3.0-only
+# GNU General Public License v3.0
+# https://github.com/nextcloud/vm/blob/master/LICENSE
 
 true
 SCRIPT_NAME="Nextcloud Update Script"
