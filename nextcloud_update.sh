@@ -134,7 +134,7 @@ This should work again after a reboot of your server."
         notify_admin_gui "Update failed!" \
 "Could not create NcVM-snapshot - Please reboot your server! $(date +%T)"
         msg_box "The creation of a snapshot failed.
-If you just merged and old one, please reboot your server again. 
+If you just merged and old one, please reboot your server again.
 It should then start working again."
         exit 1
     fi
@@ -517,11 +517,11 @@ fi
 
 # Update docker containers and remove Watchtower if Bitwarden is present due to compatibility issue
 # If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
-# If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates 
+# If Watchtower is installed together with Bitwarden, then remove Watchtower and run updates
 # individually depending on which docker containers that exist.
 if is_docker_running
 then
-    # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower 
+    # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower
     # to avoid updating Bitwarden again, and only update the specified docker images above
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
     then
@@ -712,8 +712,8 @@ Current version: $CURRENTVERSION
 Latest release: $NCVERSION
 
 It is best to keep your Nextcloud server upgraded regularly, and to install all point releases
-and major releases, as skipping releases increases the risk of errors. Major releases are 
-16, 17, 18 and 19. Point releases are intermediate releases for each major release. 
+and major releases, as skipping releases increases the risk of errors. Major releases are
+16, 17, 18 and 19. Point releases are intermediate releases for each major release.
 For example, 18.0.5 and 19.0.2 are point releases.
 
 You can read more about Nextcloud releases here: https://github.com/nextcloud/server/wiki/Maintenance-and-Release-Schedule
@@ -872,8 +872,8 @@ then
         sed -i "s|date --utc|date|g" /usr/sbin/zfs-auto-snapshot
         check_command zfs-auto-snapshot -r ncdata
     fi
-fi  
-   
+fi
+
 # Backup data
 for folders in config apps
 do
@@ -916,7 +916,7 @@ fi
 if [ -d $BACKUP/apps/ ]
 then
     print_text_in_color "$ICyan" "$BACKUP/apps/ exists"
-    echo 
+    echo
     print_text_in_color "$IGreen" "All files are backed up."
     send_mail \
     "Nextcloud VM update started!" \

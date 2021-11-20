@@ -939,7 +939,7 @@ accessible from outside your network."
     if ! yesno_box_no "Are you 100% sure the port ${1} is open?"
     then
         msg_box "Port $1 is not open on either ${WANIP4} or ${2}.
-        
+
 Please follow this guide to open ports in your router or firewall:\nhttps://www.techandme.se/open-port-80-443/"
         any_key "Press any key to exit..."
         exit 1

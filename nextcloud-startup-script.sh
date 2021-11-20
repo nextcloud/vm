@@ -58,7 +58,7 @@ then
     if ! lvcreate --size 5G --snapshot --name "NcVM-startup" /dev/ubuntu-vg/ubuntu-lv
     then
         msg_box "The creation of a snapshot failed.
-If you just merged and old one, please reboot your server once more. 
+If you just merged and old one, please reboot your server once more.
 It should work afterwards again."
         exit 1
     fi
@@ -150,7 +150,7 @@ run_script MENU startup_configuration
 true
 SCRIPT_NAME="Nextcloud Startup Script"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh 
+source /var/scripts/fetch_lib.sh
 
 # Get all needed variables from the library
 ncdb
@@ -355,7 +355,7 @@ done
 if check_command echo "$UNIXUSER:$UNIX_PASSWORD" | sudo chpasswd
 then
     msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD
-    
+
 This is used when you login to the Ubuntu CLI."
 fi
 unset UNIX_PASSWORD
@@ -396,7 +396,7 @@ do
     if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWUSER --password-from-env -g admin"
     then
         msg_box "The new Web Admin in Nextcloud is now: $NEWUSER\nThe password is set to: $OC_PASS
-        
+
 This is used when you login to Nextcloud itself, i.e. on the web."
         unset OC_PASS
         break
@@ -545,7 +545,7 @@ apt-get autoclean
 run_script NETWORK trusted
 
 # Remove preference for IPv4
-rm -f /etc/apt/apt.conf.d/99force-ipv4 
+rm -f /etc/apt/apt.conf.d/99force-ipv4
 apt-get update
 
 # Success!
