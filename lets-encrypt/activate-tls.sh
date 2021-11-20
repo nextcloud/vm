@@ -298,7 +298,7 @@ else
 the automatic renewal of your cert. If port 80 is closed the cert will expire in 3 months!
 
 We follow best practice standards and redirect all traffic from port 80 to 443. We also configured the TLS settings itself to be very secure.
-You can read more about what Let's Encrypt recomend here: https://letsencrypt.org/docs/allow-port-80/
+You can read more about what Let's Encrypt recommend here: https://letsencrypt.org/docs/allow-port-80/
 
 It's A+ grade security, see for yourself: https://www.ssllabs.com/ssltest/"
 
