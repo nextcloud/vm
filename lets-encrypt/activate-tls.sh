@@ -294,18 +294,22 @@ else
             fi
             # Activate new config
             check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
-            msg_box "This cert will expire in 90 days if you don't renew it.
-There are several ways of renewing this cert and here are some tips and tricks:
-https://goo.gl/c1JHR0
-To do your job a little bit easier we have added a auto renew script as a cronjob.
-If you need to edit the crontab please type: crontab -u root -e
-If you need to edit the script itself, please check: $SCRIPTS/letsencryptrenew.sh
-Feel free to contribute to this project: https://goo.gl/3fQD65"
+            msg_box "Please remember to keep port 80 (and 443) open so that Let's Encrypt can do
+the automatic renewal of your cert. If port 80 is closed the cert will expire in 3 months!
 
-            msg_box "Please remember to keep port 80 (and 443) open so that Let's Encrypt can do \
-the automatic renewal of the cert. If port 80 is closed the cert will expire in 3 months.
-You don't need to worry about security as port 80 is directly forwarded to 443, so \
-no traffic will actually be on port 80, except for the forwarding to 443 (HTTPS)."
+We follow best practice standards and redirect all traffic from port 80 to 443. We also configured the TLS settings itself to be very secure.
+You can read more about what Let's Encrypt recommend here: https://letsencrypt.org/docs/allow-port-80/
+
+It's A+ grade security, see for yourself: https://www.ssllabs.com/ssltest/"
+
+msg_box "Let's Encrypt is 100% free. You can read more about it here:
+https://letsencrypt.org/about/
+
+Please consider showing them your gratitude:
+https://letsencrypt.org/become-a-sponsor/
+
+If you want to contribute to these scripts, have a look here:
+https://github.com/nextcloud/vm/tree/master/lets-encrypt"
             exit 0
         fi
     else
