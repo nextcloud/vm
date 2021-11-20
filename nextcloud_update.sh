@@ -4,6 +4,9 @@
 # DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
 #################################################################################################################
 
+# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# SPDX-License-Identifier: GPL-3.0-only
+
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
@@ -12,8 +15,6 @@ source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 # Get all needed variables from the library
 ncdb
 nc_update
-
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

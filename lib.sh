@@ -2,6 +2,8 @@
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
+# SPDX-License-Identifier: GPL-3.0-only
+
 ## VARIABLES
 
 # Dirs
