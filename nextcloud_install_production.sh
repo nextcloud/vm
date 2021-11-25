@@ -35,6 +35,28 @@ It's the first of two parts that are necessary to finish your customized Nextclo
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
+# Check if root
+root_check
+
+# Test RAM size (2GB min) + CPUs (min 1)
+ram_check 2 Nextcloud
+cpu_check 1 Nextcloud
+
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
+
+# Install needed dependenices
+install_if_not lshw
+install_if_not net-tools
+install_if_not whiptail
+
 # Check for flags
 if [ "$1" = "" ]
 then
@@ -61,10 +83,6 @@ then
     msg_box "$SCRIPT_EXPLAINER"
 fi
 
-# Check if dpkg or apt is running
-is_process_running apt
-is_process_running dpkg
-
 # Create a placeholder volume before modifying anything
 if [ -z "$PROVISIONING" ]
 then
@@ -86,50 +104,6 @@ Be aware that you will not be able to use the built-in backup solution if you ch
         fi
     fi
 fi
-
-# Install lshw if not existing
-if [ "$(dpkg-query -W -f='${Status}' "lshw" 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    print_text_in_color "$IGreen" "lshw OK"
-else
-    apt-get update -q4 & spinner_loading
-    apt-get install lshw -y
-fi
-
-# Install net-tools if not existing
-if [ "$(dpkg-query -W -f='${Status}' "net-tools" 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    print_text_in_color "$IGreen" "net-tools OK"
-else
-    apt-get update -q4 & spinner_loading
-    apt-get install net-tools -y
-fi
-
-# Install whiptail if not existing
-if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    print_text_in_color "$IGreen" "whiptail OK"
-else
-    apt-get update -q4 & spinner_loading
-    apt-get install whiptail -y
-fi
-
-true
-# shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-
-# Check for errors + debug code and abort if something isn't right
-# 1 = ON
-# 0 = OFF
-DEBUG=0
-debug_mode
-
-# Check if root
-root_check
-
-# Test RAM size (2GB min) + CPUs (min 1)
-ram_check 2 Nextcloud
-cpu_check 1 Nextcloud
 
 # Download needed libraries before execution of the first script
 mkdir -p "$SCRIPTS"
