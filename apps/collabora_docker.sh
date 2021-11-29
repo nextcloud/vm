@@ -198,10 +198,10 @@ then
   # keep the host
   ProxyPreserveHost On
 
-  # static html, js, images, etc. served from loolwsd
-  # loleaflet is the client part of LibreOffice Online
-  ProxyPass           /loleaflet https://127.0.0.1:9980/loleaflet retry=0
-  ProxyPassReverse    /loleaflet https://127.0.0.1:9980/loleaflet
+  # static html, js, images, etc. served from coolwsd
+  # browser is the client part of LibreOffice Online
+  ProxyPass           /browser https://127.0.0.1:9980/browser retry=0
+  ProxyPassReverse    /browser https://127.0.0.1:9980/browser
 
   # WOPI discovery URL
   ProxyPass           /hosting/discovery https://127.0.0.1:9980/hosting/discovery retry=0
@@ -212,14 +212,14 @@ then
   ProxyPassReverse    /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities
 
   # Main websocket
-  ProxyPassMatch "/lool/(.*)/ws$" wss://127.0.0.1:9980/lool/\$1/ws nocanon
+  ProxyPassMatch "/cool/(.*)/ws$" wss://127.0.0.1:9980/cool/\$1/ws nocanon
 
   # Admin Console websocket
-  ProxyPass   /lool/adminws wss://127.0.0.1:9980/lool/adminws
+  ProxyPass   /cool/adminws wss://127.0.0.1:9980/cool/adminws
 
   # Download as, Fullscreen presentation and Image upload operations
-  ProxyPass           /lool https://127.0.0.1:9980/lool
-  ProxyPassReverse    /lool https://127.0.0.1:9980/lool
+  ProxyPass           /cool https://127.0.0.1:9980/cool
+  ProxyPassReverse    /cool https://127.0.0.1:9980/cool
 </VirtualHost>
 HTTPS_CREATE
 
