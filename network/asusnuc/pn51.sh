@@ -64,7 +64,7 @@ fi
 STATUS="$(check_command dkms status)"
 if [ -n "$STATUS" ]
 then
-    if echo "$STATUS" | grep "$RVERSION" &> /dev/null
+    if echo "$STATUS" | grep "$RVERSION" 2>&1 /dev/null
     then
         print_text_in_color "$ICyan" "The Realtek 2.5G driver (version $RVERSION) is already installed."
         exit
@@ -76,7 +76,7 @@ then
             # Check which of the old versions that are installed
             for version in "${OLDRVERSION[@]}"
             do
-                if echo "$STATUS" | grep "$version" &> /dev/null
+                if echo "$STATUS" | grep "$version" 2>&1 /dev/null
                 then
                     # Remove installed $OLDRVERSION
                     check_command dkms remove r8125/"$version" --all
@@ -85,9 +85,10 @@ then
                     if [ -z "$(check_command dkms status)" ]
                     then
                         print_text_in_color "$IGreen" "Firmware version $version successfully purged!"
-                else
-                    print_text_in_color "$IRed" "Firmware version $version could not be found! Please report this to $ISSUES"
-                    exit 1
+                    else
+                        print_text_in_color "$IRed" "Firmware version $version could not be found! Please report this to $ISSUES"
+                        exit 1
+                    fi
                 fi
             done
         fi
