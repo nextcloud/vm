@@ -78,20 +78,18 @@ then
             do
                 if echo "$STATUS" | grep "$version" &> /dev/null
                 then
-                    OLDRVERSION="$version"
+                    # Remove installed $OLDRVERSION
+                    check_command dkms remove r8125/"$version" --all
+                    rm -rf /usr/src/r8125"$version"/
+                    # Check if it's removed
+                    if [ -z "$(check_command dkms status)" ]
+                    then
+                        print_text_in_color "$IGreen" "Firmware version $version successfully purged!"
+                else
+                    print_text_in_color "$IRed" "Firmware version $version could not be found! Please report this to $ISSUES"
+                    exit 1
                 fi
             done
-            # Remove OLDRVERSION
-            check_command dkms remove r8125/"$OLDRVERSION" --all
-            rm -rf /usr/src/r8125"$OLDRVERSION"/
-            # Check if it's removed
-            if [ -z "$(check_command dkms status)" ]
-            then
-                print_text_in_color "$ICyan" "Firmware version $OLDRVERSION successfully purged!"
-            else
-                 print_text_in_color "$ICyan" "Firmware version $OLDRVERSION could not be found! Please report this to $ISSUES"
-                 exit 1
-            fi
         fi
     fi
 fi
