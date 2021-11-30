@@ -596,6 +596,7 @@ if grep -r loolwsd "$SITES_AVAILABLE"/*.conf
 then
     print_text_in_color "$ICyan" "Updating Collabora Engine..."
     LOOLWSDCONF=($(grep -r loolwsd "$SITES_AVAILABLE"/*.conf | awk '{print $1}' | cut -d ":" -f1))
+    mapfile -t LOOLWSDCONF <<< "$LOOLWSDCONF" 
     for apacheconf in "${LOOLWSDCONF[@]}"
     do
         sed -i "s|/loleaflet|/browser|g" "${apacheconf}"
