@@ -591,6 +591,18 @@ $DOCKER_RUN_OUTPUT"
     docker_update_specific 'plex' "Plex Media Server"
 fi
 
+# Fix Collabora change too coolwsd
+print_text_in_color "$ICyan" "Updating Collabora Engine"
+if grep -r loolwsd $SITES_AVAILABLE/*
+then
+    LOOLWSDCONF=$(grep -r loolwsd /etc/apache2/sites-available/*.conf | awk '{print $1}' | cut -d ":" -f1)
+    sed -i "s|/loleaflet|/browser|g" "$LOOLWSDCONF"
+    sed -i "s|loleaflet is the|broswer is the|g" "$LOOLWSDCONF"
+    sed -i "s|loolwsd|coolwsd|g" "$LOOLWSDCONF"
+    sed -i "s|/lool|/cool|g" "$LOOLWSDCONF"
+    check_command restart_webserver
+fi
+
 # Cleanup un-used packages
 apt-get autoremove -y
 apt-get autoclean
