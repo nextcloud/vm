@@ -592,14 +592,17 @@ $DOCKER_RUN_OUTPUT"
 fi
 
 # Fix Collabora change too coolwsd
-if grep -r loolwsd $SITES_AVAILABLE/*
+if grep -r loolwsd "$SITES_AVAILABLE"/*.conf
 then
     print_text_in_color "$ICyan" "Updating Collabora Engine..."
-    LOOLWSDCONF=$(grep -r loolwsd /etc/apache2/sites-available/*.conf | awk '{print $1}' | cut -d ":" -f1)
-    sed -i "s|/loleaflet|/browser|g" "$LOOLWSDCONF"
-    sed -i "s|loleaflet is the|broswer is the|g" "$LOOLWSDCONF"
-    sed -i "s|loolwsd|coolwsd|g" "$LOOLWSDCONF"
-    sed -i "s|/lool|/cool|g" "$LOOLWSDCONF"
+    LOOLWSDCONF=($(grep -r loolwsd "$SITES_AVAILABLE"/*.conf | awk '{print $1}' | cut -d ":" -f1))
+    for apacheconf in "${LOOLWSDCONF[@]}"
+    do
+        sed -i "s|/loleaflet|/browser|g" "${apacheconf}"
+        sed -i "s|loleaflet is the|broswer is the|g" "${apacheconf}"
+        sed -i "s|loolwsd|coolwsd|g" "${apacheconf}"
+        sed -i "s|/lool|/cool|g" "${apacheconf}"
+    done
     check_command restart_webserver
 fi
 
