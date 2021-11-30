@@ -76,7 +76,7 @@ then
             # Check which of the old versions that are installed
             for version in "${OLDRVERSION[@]}"
             do
-                if echo "$STATUS" | grep "$OLDRVERSION" &> /dev/null
+                if echo "$STATUS" | grep "$version" &> /dev/null
                 then
                     OLDRVERSION="$version"
                 fi
