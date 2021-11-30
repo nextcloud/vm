@@ -33,9 +33,10 @@ install_if_not build-essential
 install_if_not dkms
 
 INSTALLDIR="$SCRIPTS/PN51"
-OLDRVERSION="9.005.06"
-RVERSION="9.006.04"
+OLDRVERSION=( 9.005.06 9.006.04 )
+RVERSION="9.007.01"
 # Before changing the RVERSION here, please download it to the repo first.
+# Add old versions with spaces inside the variable above
 
 # Make sure the installation directory exist
 mkdir -p "$INSTALLDIR"
@@ -72,17 +73,24 @@ then
         then
             exit
         else
-            if echo "$STATUS" | grep "$OLDRVERSION" &> /dev/null
-            then
-                check_command dkms remove r8125/"$OLDRVERSION" --all
-                rm -rf /usr/src/r8125"$OLDRVERSION"/
-                if [ -z "$(check_command dkms status)" ]
+            # Check which of the old versions that are installed
+            for version in "${OLDRVERSION[@]}"
+            do
+                if echo "$STATUS" | grep "$OLDRVERSION" &> /dev/null
                 then
-                    print_text_in_color "$ICyan" "Firmware version $OLDRVERSION successfully purged!"
+                    OLDRVERSION="$version"
                 fi
+            done
+            # Remove OLDRVERSION
+            check_command dkms remove r8125/"$OLDRVERSION" --all
+            rm -rf /usr/src/r8125"$OLDRVERSION"/
+            # Check if it's removed
+            if [ -z "$(check_command dkms status)" ]
+            then
+                print_text_in_color "$ICyan" "Firmware version $OLDRVERSION successfully purged!"
             else
-                print_text_in_color "$ICyan" "Firmware version $OLDRVERSION could not be found! Please report this to $ISSUES"
-                exit 1
+                 print_text_in_color "$ICyan" "Firmware version $OLDRVERSION could not be found! Please report this to $ISSUES"
+                 exit 1
             fi
         fi
     fi
