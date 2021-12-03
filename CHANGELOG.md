@@ -15,6 +15,18 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 23.0.0
+
+### Small changelog:
+- Change from lool to cool for Collabora
+- Make it possible to ugrade NIC-firmware from all old releases ([Home/SME server](https://shop.hanssonit.se/product-category/nextcloud/home-sme-server/))
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/22.2.2..23.0.0
+- https://nextcloud.com/changelog/#latest23
+
 ## 22.2.2
 
 ### Small changelog:
