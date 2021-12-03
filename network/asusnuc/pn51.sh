@@ -33,8 +33,9 @@ install_if_not build-essential
 install_if_not dkms
 
 INSTALLDIR="$SCRIPTS/PN51"
-OLDRVERSION="9.005.06"
-RVERSION="9.006.04"
+OLDRVERSION=( 9.005.06 9.006.04 )
+# Add old versions with a single space inside the variable above.
+RVERSION="9.007.01"
 # Before changing the RVERSION here, please download it to the repo first.
 
 # Make sure the installation directory exist
@@ -63,7 +64,7 @@ fi
 STATUS="$(check_command dkms status)"
 if [ -n "$STATUS" ]
 then
-    if echo "$STATUS" | grep "$RVERSION" &> /dev/null
+    if echo "$STATUS" | grep "$RVERSION" 2>&1 /dev/null
     then
         print_text_in_color "$ICyan" "The Realtek 2.5G driver (version $RVERSION) is already installed."
         exit
@@ -72,18 +73,24 @@ then
         then
             exit
         else
-            if echo "$STATUS" | grep "$OLDRVERSION" &> /dev/null
-            then
-                check_command dkms remove r8125/"$OLDRVERSION" --all
-                rm -rf /usr/src/r8125"$OLDRVERSION"/
-                if [ -z "$(check_command dkms status)" ]
+            # Check which of the old versions that are installed
+            for version in "${OLDRVERSION[@]}"
+            do
+                if echo "$STATUS" | grep "$version" 2>&1 /dev/null
                 then
-                    print_text_in_color "$ICyan" "Firmware version $OLDRVERSION successfully purged!"
+                    # Remove installed $OLDRVERSION
+                    check_command dkms remove r8125/"$version" --all
+                    rm -rf /usr/src/r8125"$version"/
+                    # Check if it's removed
+                    if [ -z "$(check_command dkms status)" ]
+                    then
+                        print_text_in_color "$IGreen" "Firmware version $version successfully purged!"
+                    else
+                        print_text_in_color "$IRed" "Firmware version $version could not be found! Please report this to $ISSUES"
+                        exit 1
+                    fi
                 fi
-            else
-                print_text_in_color "$ICyan" "Firmware version $OLDRVERSION could not be found! Please report this to $ISSUES"
-                exit 1
-            fi
+            done
         fi
     fi
 fi
