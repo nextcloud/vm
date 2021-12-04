@@ -167,6 +167,10 @@ debug_mode
 # Nextcloud 21 is required
 lowest_compatible_nc 21
 
+# Add temporary fix if needed
+bash "$SCRIPTS"/temporary-fix-begining.sh
+rm "$SCRIPTS"/temporary-fix-begining.sh
+
 # Import if missing and export again to import it with UUID
 zpool_import_if_missing
 
@@ -476,8 +480,8 @@ else
 fi
 
 # Add temporary fix if needed
-bash "$SCRIPTS"/temporary-fix.sh
-rm "$SCRIPTS"/temporary-fix.sh
+bash "$SCRIPTS"/temporary-fix-end.sh
+rm "$SCRIPTS"/temporary-fix-end.sh
 
 # Cleanup 1
 nextcloud_occ maintenance:repair
