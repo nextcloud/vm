@@ -167,6 +167,12 @@ debug_mode
 # Nextcloud 21 is required
 lowest_compatible_nc 21
 
+# Add temporary fix if needed
+if network_ok
+then
+    run_script STATIC temporary-fix-begining
+fi
+
 # Import if missing and export again to import it with UUID
 zpool_import_if_missing
 
@@ -476,8 +482,10 @@ else
 fi
 
 # Add temporary fix if needed
-bash "$SCRIPTS"/temporary-fix.sh
-rm "$SCRIPTS"/temporary-fix.sh
+if network_ok
+then
+    run_script STATIC temporary-fix-end
+fi
 
 # Cleanup 1
 nextcloud_occ maintenance:repair
