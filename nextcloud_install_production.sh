@@ -958,7 +958,6 @@ download_script STATIC history
 download_script NETWORK static_ip
 # Moved from the startup script 2021-01-04
 download_script LETS_ENC activate-tls
-download_script STATIC temporary-fix
 download_script STATIC update
 download_script STATIC setup_secure_permissions_nextcloud
 download_script STATIC change_db_pass
