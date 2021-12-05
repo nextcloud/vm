@@ -1,10 +1,7 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Feature Requests
-    url: https://help.nextcloud.com/tag/vm
-    about: Request new features using the Community Forums. Please search existing feature requests before making a new one.
   - name: Nextcloud Community Forums
-    url: https://help.nextcloud.com/
+    url: https://help.nextcloud.com/vm
     about: Please visit the community forums for general community discussion, support and the development roadmap.
   - name: Customer Support
     url: https://www.hanssonit.se/#contact
