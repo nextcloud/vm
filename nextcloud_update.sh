@@ -815,6 +815,21 @@ If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-
     fi
 fi
 
+# Check if PHP version is compatible with $NCVERSION
+# https://github.com/nextcloud/server/issues/29258
+PHP_VER=74
+NC_VER=24
+if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
+then
+    if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
+    then
+msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+
+If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+        exit
+    fi
+fi
+
 # Upgrade Nextcloud
 if ! site_200 $NCREPO
 then
