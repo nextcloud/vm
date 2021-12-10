@@ -574,7 +574,7 @@ Please ask for help in the forums, visit our shop to buy support,
 or buy a yearly subscription from Nextcloud:
 - SUPPORT: https://shop.hanssonit.se/product/premium-support-per-30-minutes/
 - FORUM: https://help.nextcloud.com/
-- SUBSCRIPTION: https://shop.hanssonit.se/product/nextcloud-enterprise-license-50-users/
+- SUBSCRIPTION: https://shop.hanssonit.se/product/nextcloud-enterprise-license-100-users/
 
 BUGS:
 Please report any bugs here: https://github.com/nextcloud/vm/issues"
