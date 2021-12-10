@@ -980,6 +980,21 @@ check_command run_script STATIC change-root-profile
 print_text_in_color "$ICyan" "Disable hibernation..."
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
+# Set product name
+if home_sme_server
+then
+    PRODUCTNAME="Nextcloud HanssonIT Server"
+else
+    PRODUCTNAME="Nextcloud HanssonIT VM"
+fi
+if is_app_installed theming
+then
+    if [ "$(nextcloud_occ config:app:get theming productName)" != "$PRODUCTNAME" ]
+    then
+        nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
+    fi
+fi
+
 # Reboot
 if [ -z "$PROVISIONING" ]
 then
