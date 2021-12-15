@@ -120,7 +120,7 @@ docker run -d --restart always \
 -v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
 -e "discovery.type=single-node" \
 -e "bootstrap.memory_lock=true" \
--e ES_JAVA_OPTS="-Xms1024M -Xmx1024M" \
+-e ES_JAVA_OPTS="-Xms1024M -Xmx1024M -Dlog4j2.formatMsgNoLookups=true" \
 -i -t $nc_fts
 
 # Wait for bootstrapping
