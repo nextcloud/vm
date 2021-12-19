@@ -510,7 +510,7 @@ dnss=$( systemd-resolve --status | perl -0777 -ne "if ((\$v) = (/$pattern/)) {\$
 if [ -n "$dnss" ]
 then
     sed -i "s/^#\?DNS=.*$/DNS=${dnss}/" /etc/systemd/resolved.conf
-    systemctl restart systemd-resolved &>/dev/null
+    service systemd-resolved restart  &>/dev/null
     sleep 1
 fi
 }
@@ -559,7 +559,7 @@ start_if_stopped() {
 if ! pgrep "$1"
 then
     print_text_in_color "$ICyan" "Starting $1..."
-    systemctl start "$1".service
+    service "$1" start
 fi
 }
 
@@ -705,7 +705,7 @@ sleep 2
 if ! nslookup github.com
 then
     print_text_in_color "$ICyan" "Trying to restart netplan service..."
-    check_command systemctl restart systemd-networkd && sleep 2
+    check_command service systemd-networkd restart && sleep 2
     if ! nslookup github.com
     then
         msg_box "Network is NOT OK. You must have a working network connection to run this script.
@@ -744,10 +744,10 @@ Additional Apps --> Documentserver --> $1."
 }
 
 restart_webserver() {
-check_command systemctl restart apache2.service
+check_command service apache2 restart
 if is_this_installed php"$PHPVER"-fpm
 then
-    check_command systemctl restart php"$PHPVER"-fpm.service
+    check_command service php"$PHPVER"-fpm restart
 fi
 
 }
@@ -777,10 +777,10 @@ then
     uir_hsts="--uir --hsts"
 fi
 a2dissite 000-default.conf
-systemctl reload apache2.service
+service apache2 reload
 default_le="--cert-name $1 --key-type ecdsa --renew-by-default --no-eff-email --agree-tos $uir_hsts --server https://acme-v02.api.letsencrypt.org/directory -d $1"
 #http-01
-local  standalone="certbot certonly --standalone --pre-hook \"systemctl stop apache2.service\" --post-hook \"systemctl start apache2.service\" $default_le"
+local  standalone="certbot certonly --standalone --pre-hook \"service apache2 stop\" --post-hook \"service apache2 start\" $default_le"
 #tls-alpn-01
 local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default_le"
 #dns
@@ -1149,7 +1149,7 @@ then
     fi
     if ! netplan apply
     then
-        systemctl restart systemd-networkd > /dev/null
+        service systemd-networkd restart > /dev/null
     fi
     # Check the connention
     countdown 'Waiting for network to restart...' 3
@@ -1597,7 +1597,7 @@ OVERLAY2
 fi
 
 systemctl daemon-reload
-systemctl restart docker.service
+service docker restart
 }
 
 # Remove all dockers excluding one
