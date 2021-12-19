@@ -33,7 +33,7 @@ SCRIPT_NAME="Nextcloud Install Script"
 SCRIPT_EXPLAINER="This script is installing all requirements that are needed for Nextcloud to run.
 It's the first of two parts that are necessary to finish your customized Nextcloud installation."
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sSL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -442,7 +442,7 @@ then
     while [ -z "$NCVERSION" ]
     do
         print_text_in_color "$ICyan" "Fetching the not-latest Nextcloud version..."
-        NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' \
+        NCVERSION=$(curl -sS -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' \
 | sort --version-sort | grep -v "\.0$\|\.1$\|\.2$" | tail -1)
         STABLEVERSION="nextcloud-$NCVERSION"
         print_text_in_color "$IGreen" "$NCVERSION"

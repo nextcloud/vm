@@ -46,7 +46,7 @@ IFACE=$(ip r | grep "default via" | awk '{print $5}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
 REPO=$(grep "^deb " /etc/apt/sources.list | grep http | awk '{print $2}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
-WANIP4=$(curl -s -k -m 5 -4 https://api64.ipify.org)
+WANIP4=$(curl -sS -k -m 5 -4 https://api64.ipify.org)
 INTERFACES="/etc/netplan/nextcloud.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 # Internet DNS required when a check needs to be made to a server outside the home/SME
@@ -125,7 +125,7 @@ SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Nextcloud version
 nc_update() {
     CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
-    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+    NCVERSION=$(curl -sS -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
     STABLEVERSION="nextcloud-$NCVERSION"
     NCMAJOR="${NCVERSION%%.*}"
     NCBAD=$((NCMAJOR-2))
@@ -365,7 +365,7 @@ something is wrong here. Please report this to $ISSUES"
 # Used in geoblock.sh
 get_newest_dat_files() {
     # IPv4
-    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    IPV4_NAME=$(curl -sS https://github.com/nextcloud/vm/tree/master/geoblockdat \
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
     if [ -z "$IPV4_NAME" ]
     then
@@ -391,7 +391,7 @@ get_newest_dat_files() {
         fi
     fi
     # IPv6
-    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    IPV6_NAME=$(curl -sS https://github.com/nextcloud/vm/tree/master/geoblockdat \
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
     if [ -z "$IPV6_NAME" ]
     then
@@ -527,7 +527,7 @@ fi
     rm -f "$3"/"$2"
     if [ -n "$download_script_function_in_use" ]
     then
-        curl -sfL "$1"/"$2" -o "$3"/"$2"
+        curl -sSfL "$1"/"$2" -o "$3"/"$2"
     else
         local retries=0
         while :
@@ -541,7 +541,7 @@ fi
                     return 1
                 fi
             fi
-            if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
+            if ! curl -sSfL "$1"/"$2" -o "$3"/"$2"
             then
                 msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred. We will now try again.
 Please report this issue to $ISSUES"
@@ -926,11 +926,11 @@ check_open_port() {
 print_text_in_color "$ICyan" "Checking if port ${1} is open with https://www.networkappers.com/tools/open-port-checker..."
 install_if_not curl
 # WAN Address
-if check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://networkappers.com/api/port.php?ip=${WANIP4}&port=${1}" | grep -q "open"
+if check_command curl -sS -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://networkappers.com/api/port.php?ip=${WANIP4}&port=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
 # Domain name
-elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://www.networkappers.com/api/port.php?ip=${2}&port=${1}" | grep -q "open"
+elif check_command curl -sS -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://www.networkappers.com/api/port.php?ip=${2}&port=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
@@ -1248,7 +1248,7 @@ download_verify_nextcloud_stable() {
 while [ -z "$NCVERSION" ]
 do
     print_text_in_color "$ICyan" "Fetching the latest Nextcloud version..."
-    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+    NCVERSION=$(curl -sS -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
     STABLEVERSION="nextcloud-$NCVERSION"
     print_text_in_color "$IGreen" "$NCVERSION"
 done
@@ -1298,7 +1298,7 @@ download_script() {
         print_text_in_color "$IRed" "Downloading ${2} failed"
         sleep 2
         msg_box "Script failed to download. Please run: \
-'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again.
+'sudo curl -sSLO ${!1}/${2}.sh|php|py' and try again.
 
 If it still fails, please report this issue to: $ISSUES."
         exit 1
@@ -1330,7 +1330,7 @@ run_script() {
         print_text_in_color "$IRed" "Running ${2} failed"
         sleep 2
         msg_box "Script failed to execute. Please run: \
-'sudo curl -sLO ${!1}/${2}.sh|php|py' and try again.
+'sudo curl -sSLO ${!1}/${2}.sh|php|py' and try again.
 
 If it still fails, please report this issue to: $ISSUES."
         exit 1

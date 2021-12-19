@@ -11,7 +11,7 @@
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sSL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 ncdb
@@ -636,7 +636,7 @@ then
     # Update pdfannotate
     if [ -d "$NC_APPS_PATH/pdfannotate" ]
     then
-        INFO_XML="$(curl -s https://gitlab.com/nextcloud-other/nextcloud-annotate/-/raw/master/appinfo/info.xml)"
+        INFO_XML="$(curl -sS https://gitlab.com/nextcloud-other/nextcloud-annotate/-/raw/master/appinfo/info.xml)"
         if [ "$(echo "$INFO_XML" | grep -oP 'min-version="[0-9]+"' | grep -oP '[0-9]+')" -le "${CURRENTVERSION%%.*}" ] \
 && [ "$(echo "$INFO_XML" | grep -oP 'max-version="[0-9]+"' | grep -oP '[0-9]+')" -ge "${CURRENTVERSION%%.*}" ]
         then
@@ -674,14 +674,14 @@ lowest_compatible_nc 13
 if [ -f /tmp/minor.version ]
 then
     NCBAD=$(cat /tmp/minor.version)
-    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
+    NCVERSION=$(curl -sS -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
     export NCVERSION
     export STABLEVERSION="nextcloud-$NCVERSION"
     rm -f /tmp/minor.version
 elif [ -f /tmp/nextmajor.version ]
 then
     NCBAD=$(cat /tmp/nextmajor.version)
-    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep $NCNEXT | tail -1)
+    NCVERSION=$(curl -sS -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep $NCNEXT | tail -1)
     if [ -z "$NCVERSION" ]
     then
         msg_box "The version that you are trying to upgrade to doesn't exist."
@@ -703,7 +703,7 @@ as it's not currently possible to downgrade.\n\nPlease only continue if you have
         if grep -q beta /tmp/prerelease.version
         then
             NCREPO="https://download.nextcloud.com/server/prereleases"
-            NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
+            NCVERSION=$(curl -sS -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
             STABLEVERSION="nextcloud-$NCVERSION"
             rm -f /tmp/prerelease.version
         elif grep -q RC /tmp/prerelease.version
