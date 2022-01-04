@@ -412,7 +412,7 @@ fi
 
 # Check Snapshot size
 inform_user "$ICyan" "Testing how full the snapshot is..."
-SNAPSHOT_USED=$(lvs -o name,data_percent | grep "NcVM-snapshot-pending" | awk '{print $2}' | sed 's|\..*||')
+SNAPSHOT_USED=$(lvs -o name,data_percent | grep "NcVM-snapshot-pending" | awk '{print $2}' | sed 's|\..*||' | sed 's|,.*||')
 if [ "$SNAPSHOT_USED" -lt 100 ]
 then
     inform_user "$IGreen" "Backup ok: Snapshot is not full ($SNAPSHOT_USED%)"
