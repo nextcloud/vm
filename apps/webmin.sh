@@ -35,6 +35,7 @@ else
     apt-get autoremove -y
     rm -f /etc/apt/sources.list.d/webmin.list
     rm -f /etc/apt/trusted.gpg.d/webmin.gpg
+    sed -i '/webmin/d' /etc/apt/sources.list
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -49,6 +50,9 @@ install_if_not libpam-runtime
 install_if_not libio-pty-perl
 install_if_not apt-show-versions
 install_if_not python2
+install_if_not python
+install_if_not unzip
+install_if_not zip
 
 # Install Webmin
 curl_to_dir http://www.webmin.com "jcameron-key.asc" "$SCRIPTS"
