@@ -54,6 +54,10 @@ install_if_not python
 install_if_not unzip
 install_if_not zip
 
+# https://github.com/webmin/webmin/issues/1169
+apt-get clean all
+apt-get update -q4 & spinner_loading
+
 # Install Webmin
 curl_to_dir http://www.webmin.com "jcameron-key.asc" "$SCRIPTS"
 check_command apt-key --keyring /etc/apt/trusted.gpg.d/webmin.gpg add "$SCRIPTS/jcameron-key.asc"
