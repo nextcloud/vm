@@ -62,6 +62,12 @@ echo "deb https://download.webmin.com/download/repository sarge contrib" > /etc/
 apt-get update -q4 & spinner_loading
 install_if_not webmin
 
+if ! dpkg-query -W -f='${Status}' "webmin" | grep -q "ok installed"
+then
+    wget http://prdownloads.sourceforge.net/webadmin/webmin_1.984_all.deb
+    dpkg --install webmin_1.984_all.deb
+fi
+
 print_text_in_color "$ICyan" "Configuring Webmin..."
 # redirect access on http to https
 check_command systemctl stop webmin
