@@ -212,14 +212,13 @@ check_distro_version
 
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
+apt-get clean all
 apt-get update -q4 & spinner_loading
 if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
 Holding PHP to avoid upgrading to a newer version without migration..."
     apt-mark hold php*
-    #check_php
-    #apt-mark unhold php"$PHPVER"*
 fi
 
 # Don't allow MySQL/MariaDB
