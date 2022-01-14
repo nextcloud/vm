@@ -120,6 +120,7 @@ This option is recommended to be run after every major Nextcloud update." "Updat
 $VMLOGS/nextcloud.log {
 daily
 rotate 10
+copytruncate
 }
 NEXTCLOUD_CONF
 
