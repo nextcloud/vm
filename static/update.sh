@@ -18,13 +18,19 @@ root_check
 
 mkdir -p "$SCRIPTS"
 
+if [[ "${1}" =~ ([[:upper:]]) ]]
+then
+    msg_box "Please use lower case letters for the beta/rc/minor."
+    exit
+fi
+
 if [ "${1}" = "minor" ]
 then
     echo "$((NCMAJOR-1))" > /tmp/minor.version
 elif [ "${1}" = "beta" ]
 then
     echo "beta" > /tmp/prerelease.version
-elif [[ "${1}" == *"RC"* ]]
+elif [[ "${1}" == *"rc"* ]]
 then
     echo "${1}" > /tmp/prerelease.version
 fi
