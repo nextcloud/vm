@@ -704,11 +704,13 @@ as it's not currently possible to downgrade.\n\nPlease only continue if you have
             NCREPO="https://download.nextcloud.com/server/prereleases"
             NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
             STABLEVERSION="nextcloud-$NCVERSION"
+            rm -f /tmp/prerelease.version
         elif grep -q RC /tmp/prerelease.version
         then
             NCREPO="https://download.nextcloud.com/server/prereleases"
             NCVERSION=$(cat /tmp/prerelease.version)
             STABLEVERSION="nextcloud-$NCVERSION"
+            rm -f /tmp/prerelease.version
         fi
     fi
 fi

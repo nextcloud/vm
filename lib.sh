@@ -1264,32 +1264,27 @@ else
     msg_box "There seems to be an issue with your network, please try again later.\nThis script will now exit."
     exit 1
 fi
-
-if ! [ -f /tmp/prerelease.version ]
+# Checksum of the downloaded file
+print_text_in_color "$ICyan" "Checking SHA256 checksum..."
+mkdir -p "$SHA256_DIR"
+curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.sha256" "$SHA256_DIR"
+SHA256SUM="$(tail "$SHA256_DIR"/"$STABLEVERSION".tar.bz2.sha256 | awk '{print$1}')"
+if ! echo "$SHA256SUM" "$STABLEVERSION.tar.bz2" | sha256sum -c
 then
-    # Checksum of the downloaded file
-    print_text_in_color "$ICyan" "Checking SHA256 checksum..."
-    mkdir -p "$SHA256_DIR"
-    curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.sha256" "$SHA256_DIR"
-    SHA256SUM="$(tail "$SHA256_DIR"/"$STABLEVERSION".tar.bz2.sha256 | awk '{print$1}')"
-    if ! echo "$SHA256SUM" "$STABLEVERSION.tar.bz2" | sha256sum -c
-    then
-        msg_box "The SHA256 checksums of $STABLEVERSION.tar.bz2 didn't match, please try again."
-        exit 1
-    fi
-    # integrity of the downloaded file
-    print_text_in_color "$ICyan" "Checking GPG integrity..."
-    install_if_not gnupg
-    mkdir -p "$GPGDIR"
-    curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
-    chmod -R 600 "$GPGDIR"
-    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys "$OpenPGP_fingerprint"
-    gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
-    rm -r "$SHA256_DIR"
-    rm -r "$GPGDIR"
-    rm -f releases
-    rm -f /tmp/prerelease.version
+    msg_box "The SHA256 checksums of $STABLEVERSION.tar.bz2 didn't match, please try again."
+    exit 1
 fi
+# integrity of the downloaded file
+print_text_in_color "$ICyan" "Checking GPG integrity..."
+install_if_not gnupg
+mkdir -p "$GPGDIR"
+curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.asc" "$GPGDIR"
+chmod -R 600 "$GPGDIR"
+gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys "$OpenPGP_fingerprint"
+gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
+rm -r "$SHA256_DIR"
+rm -r "$GPGDIR"
+rm -f releases
 }
 
 # call like: download_script folder_variable name_of_script
