@@ -626,7 +626,7 @@ then
 fi
 
 # Update updatenotification.sh (gets updated after each nextcloud update as well; see down below the script)
-if [ -f $SCRIPTS/updatenotification.sh ] && ! grep -q "Check for supported Nextcloud 21" "$SCRIPTS/updatenotification.sh"
+if [ -f $SCRIPTS/updatenotification.sh ] && ! grep -q "Check for supported Nextcloud version" "$SCRIPTS/updatenotification.sh"
 then
     download_script STATIC updatenotification
     chmod +x $SCRIPTS/updatenotification.sh

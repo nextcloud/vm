@@ -25,11 +25,11 @@ NCMIN=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).z
 REPORTEDMAJ="$CURRENTVERSION"
 REPORTEDMIN="$CURRENTVERSION"
 
-# Check for supported Nextcloud 21
-if [ "${CURRENTVERSION%%.*}" -lt 21 ]
+# Check for supported Nextcloud version
+if [ "${CURRENTVERSION%%.*}" -lt "$NCBAD" ]
 then
     notify_admin_gui \
-        "Your Nextcloud version is End of life! Please upgrade as soon as possible!" \
+        "Your Nextcloud version is End of Life! Please upgrade as soon as possible!" \
         "Nextcloud ${CURRENTVERSION%%.*} doesn't get security updates anymore. \
 You should because of that update to a supported Nextcloud version as soon as possible. \
 You can check your Nextcloud with the security scanner: 'https://scan.nextcloud.com/'"
