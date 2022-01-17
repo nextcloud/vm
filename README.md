@@ -57,7 +57,7 @@ If you want to try the latest version yourself, there are two variables that you
 
 1. For latest **beta** or **RC** version: `sudo bash /var/scripts/update.sh beta`
 
-2. For specific **RC** version: `sudo bash /var/scripts/update.sh 19.0.0RC1`
+2. For specific **RC** version: `sudo bash /var/scripts/update.sh 23.0.1rc2`
 
 Please keep in mind that this is only intended for testing and might crash your Nextcloud. Please keep backups!
 
