@@ -212,14 +212,13 @@ check_distro_version
 
 # Hold PHP if Ondrejs PPA is used
 print_text_in_color "$ICyan" "Fetching latest packages with apt..."
+apt-get clean all
 apt-get update -q4 & spinner_loading
 if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
 Holding PHP to avoid upgrading to a newer version without migration..."
     apt-mark hold php*
-    #check_php
-    #apt-mark unhold php"$PHPVER"*
 fi
 
 # Don't allow MySQL/MariaDB
@@ -626,6 +625,13 @@ then
     fi
 fi
 
+# Update updatenotification.sh (gets updated after each nextcloud update as well; see down below the script)
+if [ -f $SCRIPTS/updatenotification.sh ] && ! grep -q "Check for supported Nextcloud version" "$SCRIPTS/updatenotification.sh"
+then
+    download_script STATIC updatenotification
+    chmod +x $SCRIPTS/updatenotification.sh
+fi
+
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
@@ -706,7 +712,7 @@ as it's not currently possible to downgrade.\n\nPlease only continue if you have
             NCVERSION=$(curl -sS -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
             STABLEVERSION="nextcloud-$NCVERSION"
             rm -f /tmp/prerelease.version
-        elif grep -q RC /tmp/prerelease.version
+        elif grep -q "rc" /tmp/prerelease.version
         then
             NCREPO="https://download.nextcloud.com/server/prereleases"
             NCVERSION=$(cat /tmp/prerelease.version)
@@ -769,7 +775,7 @@ fi
 DONOTUPDATETO='23.0.0'
 if [[ "$NCVERSION" == "$DONOTUPDATETO" ]]
 then
-    msg_box "Due to serious bugs with Nextcloud $DONOTUPDATETO we won't upgrade to that version."
+    msg_box "Due to major bugs with Nextcloud $DONOTUPDATETO we won't upgrade to that version since it's a risk it will break your server. Please try to upgrade again when the next maintenance release is out."
     exit
 fi
 

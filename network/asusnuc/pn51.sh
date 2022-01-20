@@ -64,7 +64,7 @@ fi
 STATUS="$(check_command dkms status)"
 if [ -n "$STATUS" ]
 then
-    if echo "$STATUS" | grep "$RVERSION" 2>&1 /dev/null
+    if echo "$STATUS" | grep "$RVERSION"
     then
         print_text_in_color "$ICyan" "The Realtek 2.5G driver (version $RVERSION) is already installed."
         exit
