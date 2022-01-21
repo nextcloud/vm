@@ -51,6 +51,7 @@ fi
 install_popup "$SCRIPT_NAME"
 
 # Test Hardware transcoding
+DRI_DEVICE="--device=/dev/dri:/dev/dri"
 if lspci -v -s "$(lspci | grep VGA | cut -d" " -f 1)" | grep -q "Kernel driver in use: i915"
 then
     msg_box "Hardware transcoding is available. It is recommended to activate this in Plex later \
@@ -61,6 +62,7 @@ else
     then
         exit 1
     fi
+    unset DRI_DEVICE
 fi
 
 # Find mounts
@@ -121,7 +123,7 @@ docker run -d \
 -v /home/plex/config:/config \
 -v /home/plex/transcode:/transcode \
 "${MOUNTS[@]}" \
---device=/dev/dri:/dev/dri \
+"$DRI_DEVICE" \
 plexinc/pms-docker
 
 # Add prune command
