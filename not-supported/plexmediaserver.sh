@@ -51,7 +51,7 @@ fi
 install_popup "$SCRIPT_NAME"
 
 # Test Hardware transcoding
-DRI_DEVICE="--device=/dev/dri:/dev/dri"
+DRI_DEVICE=(--device=/dev/dri:/dev/dri -d)
 if lspci -v -s "$(lspci | grep VGA | cut -d" " -f 1)" | grep -q "Kernel driver in use: i915"
 then
     msg_box "Hardware transcoding is available. It is recommended to activate this in Plex later \
@@ -62,7 +62,8 @@ else
     then
         exit 1
     fi
-    unset DRI_DEVICE
+    # -d is here since the docker run command would fail if DRI_DEVICE is empty
+    DRI_DEVICE=(-d)
 fi
 
 # Find mounts
@@ -112,7 +113,7 @@ docker pull plexinc/pms-docker
 # Create Plex
 # Plex needs ports: 32400/tcp 3005/tcp 8324/tcp 32469/tcp 1900/udp 32410/udp 32412/udp 32413/udp 32414/udp
 print_text_in_color "$ICyan" "Installing Plex Media Server..."
-docker run -d \
+docker run \
 --name plex \
 --restart always \
 --network=host \
@@ -123,7 +124,7 @@ docker run -d \
 -v /home/plex/config:/config \
 -v /home/plex/transcode:/transcode \
 "${MOUNTS[@]}" \
-"$DRI_DEVICE" \
+"${DRI_DEVICE[@]}" \
 plexinc/pms-docker
 
 # Add prune command
