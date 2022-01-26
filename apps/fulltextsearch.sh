@@ -12,7 +12,7 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 # Get all needed variables from the library
 ncdb
 nc_update
-es_install
+opensearch_install
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -27,10 +27,11 @@ root_check
 lowest_compatible_nc 18
 
 # Check if Full Text Search is already installed
-if ! does_this_docker_exist "$nc_fts" || ! is_app_installed fulltextsearch
+if ! does_this_docker_exist "$opens_fts" || ! is_app_installed fulltextsearch
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
+    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
@@ -47,13 +48,13 @@ else
         fi
     done
     # Removal Docker image
-    docker_prune_this "$nc_fts"
+    docker_prune_this "$opens_fts"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 3 FullTextSearch
+# Test RAM size (4GB min) + CPUs (min 2)
+ram_check 4 FullTextSearch
 cpu_check 2 FullTextSearch
 
 # Make sure there is an Nextcloud installation
@@ -87,51 +88,97 @@ fi
 
 # Check & install docker
 install_docker
+install_docker_compose
 set_max_count
-mkdir -p "$RORDIR"
-docker pull "$nc_fts"
+mkdir -p "$OPNSDIR"
+docker pull "$opens_fts"
+BCRYPT_HASH=`docker run -it $opens_fts \
+       bash -c "plugins/opensearch-security/tools/hash.sh -p $OPNSREST"`
 
-# Create configuration YML
-cat << YML_CREATE > /opt/es/readonlyrest.yml
-readonlyrest:
-  access_control_rules:
-  - name: Accept requests from cloud1 on $INDEX_USER-index
-    groups: ["cloud1"]
-    indices: ["$INDEX_USER-index"]
+# Create configurations YML
+# opensearch.yml
+cat << YML_OPENSEARCH > $OPNSDIR/opensearch.yml
+cluster.name: docker-cluster
+# Avoid Docker assigning IP.
+network.host: 0.0.0.0
 
-  users:
-  - username: $INDEX_USER
-    auth_key: $INDEX_USER:$ROREST
-    groups: ["cloud1"]
-YML_CREATE
+# Declaring single node cluster.
+discovery.type: single-node
+
+######## Start Security Configuration ########
+plugins.security.ssl.transport.pemcert_filepath: node.pem
+plugins.security.ssl.transport.pemkey_filepath: node-key.pem
+plugins.security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
+plugins.security.ssl.transport.enforce_hostname_verification: false
+
+#Disable ssl at REST as Fulltextsearch can't accept self-signed CA certs.
+plugins.security.ssl.http.enabled: false
+#plugins.security.ssl.http.pemcert_filepath: node.pem
+#plugins.security.ssl.http.pemkey_filepath: node-key.pem
+#plugins.security.ssl.http.pemtrustedcas_filepath: root-ca.pem
+plugins.security.allow_unsafe_democertificates: false
+plugins.security.allow_default_init_securityindex: true
+plugins.security.authcz.admin_dn:
+  - 'CN=ADMIN,OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
+plugins.security.nodes_dn:
+  - 'CN=${NCDOMAIN},OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
+
+plugins.security.audit.type: internal_opensearch
+plugins.security.enable_snapshot_restore_privilege: true
+plugins.security.check_snapshot_restore_write_privileges: true
+plugins.security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+plugins.security.system_indices.enabled: true
+plugins.security.system_indices.indices: [".opendistro-alerting-config", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opendistro-notifications-*", ".opendistro-notebooks", ".opensearch-observability", ".opendistro-asynchronous-search-response*", ".replication-metadata-store"]
+node.max_local_storage_nodes: 1
+######## End Security Configuration ########
+YML_OPENSEARCH
+
+cat << YML_INTERNAL_USERS > $OPNSDIR/internal_users.yml.yml
+_meta:
+  type: "internalusers"
+  config_version: 2
+  
+${INDEX_USER}:
+  hash: "${BCRYPT_HASH}"
+  reserved: true
+  backend_roles:
+  - "admin"
+  description: "admin user for fts at opensearch."
+YML_INTERNAL_USERS
+
+cat << YML_ROLES_MAPPING > $OPNSDIR/roles_mapping.yml
+_meta:
+  type: "rolesmapping"
+  config_version: 2
+
+# Roles mapping
+all_access:
+  reserved: false
+  backend_roles:
+  - "admin"
+  description: "Maps admin to all_access"
+YML_ROLES_MAPPING
+
+# Prepare certs
+create_certs opensearch_certs.sh
 
 # Set permissions
-chown 1000:1000 -R  $RORDIR
-chmod ug+rwx -R  $RORDIR
+chown 1000:1000 -R  $OPNSDIR
+chmod ug+rwx -R  $OPNSDIR
 
-# Run Elastic Search Docker
-docker run -d --restart always \
---name $fts_es_name \
---ulimit memlock=-1:-1 \
---ulimit nofile=65536:65536 \
--p 127.0.0.1:9200:9200 \
--p 127.0.0.1:9300:9300 \
--v esdata:/usr/share/elasticsearch/data \
--v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
--e "discovery.type=single-node" \
--e "bootstrap.memory_lock=true" \
--e ES_JAVA_OPTS="-Xms1024M -Xmx1024M -Dlog4j2.formatMsgNoLookups=true" \
--i -t $nc_fts
+# Launch docker-compose
+cd $OPNSDIR
+docker-compose up -d
 
 # Wait for bootstrapping
-docker restart $fts_es_name
+docker restart $fts_node
 if [ "$(nproc)" -gt 2 ]
 then
     countdown "Waiting for Docker bootstrapping..." "30"
 else
     countdown "Waiting for Docker bootstrapping..." "120"
 fi
-docker logs $fts_es_name
+docker logs $fts_node
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
@@ -141,7 +188,7 @@ chown -R www-data:www-data $NC_APPS_PATH
 
 # Final setup
 nextcloud_occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${ROREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
+nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${OPNSREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
 nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 # Wait further for cache for index to work
 countdown "Waiting for a few seconds before indexing starts..." "10"

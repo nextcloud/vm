@@ -19,7 +19,7 @@ SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
-RORDIR=/opt/es/
+OPNSDIR=/opt/opensearch/
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 
@@ -167,13 +167,19 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-es_install() {
+opensearch_install() {
     INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
-    ROREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
-    nc_fts="ark74/nc_fts"
-    fts_es_name="fts_esror"
+    OPNSREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
+    opens_fts="opensearchproject/opensearch"
+    fts_node="fts_os-node"
 }
-[ -n "$ES_INSTALL" ] && es_install # TODO: remove this line someday
+create_certs(){
+    curl -s $STATIC/$1 > $OPNSDIR/$1
+    sed -i 's|__NCDOMAIN__|$NCDOMAIN|' $OPNSDIR/$1
+    cd $OPNSDIR
+    bash $1
+}
+[ -n "$opensearch_install" ] && opensearch_install # TODO: remove this line someday
 # Talk
 turn_install() {
     TURN_CONF="/etc/turnserver.conf"
@@ -1460,14 +1466,14 @@ fi
 }
 
 set_max_count() {
-if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
+if grep -F 'vm.max_map_count=512000' /etc/sysctl.conf ; then
     print_text_in_color "$ICyan" "Max map count already set, skipping..."
 else
-    sysctl -w vm.max_map_count=262144
+    sysctl -w vm.max_map_count=512000
     {
         echo "###################################################################"
         echo "# Docker ES max virtual memory"
-        echo "vm.max_map_count=262144"
+        echo "vm.max_map_count=512000"
     } >> /etc/sysctl.conf
 fi
 }
@@ -1599,7 +1605,9 @@ fi
 systemctl daemon-reload
 systemctl restart docker.service
 }
-
+install_docker_compose() {
+    install_if_not docker-compose
+}
 # Remove all dockers excluding one
 # docker_prune_except_this fts_esror 'Full Text Search'
 docker_prune_except_this() {
