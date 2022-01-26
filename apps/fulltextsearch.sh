@@ -111,7 +111,7 @@ plugins.security.ssl.transport.pemkey_filepath: node-key.pem
 plugins.security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
 plugins.security.ssl.transport.enforce_hostname_verification: false
 
-#Disable ssl at REST as Fulltextsearch can't accept self-signed CA certs.
+# Disable ssl at REST as Fulltextsearch can't accept self-signed CA certs.
 plugins.security.ssl.http.enabled: false
 #plugins.security.ssl.http.pemcert_filepath: node.pem
 #plugins.security.ssl.http.pemkey_filepath: node-key.pem
@@ -133,7 +133,8 @@ node.max_local_storage_nodes: 1
 ######## End Security Configuration ########
 YML_OPENSEARCH
 
-cat << YML_INTERNAL_USERS > $OPNSDIR/internal_users.yml.yml
+# internal_users.yml
+cat << YML_INTERNAL_USERS > $OPNSDIR/internal_users.yml
 _meta:
   type: "internalusers"
   config_version: 2
@@ -146,6 +147,7 @@ ${INDEX_USER}:
   description: "admin user for fts at opensearch."
 YML_INTERNAL_USERS
 
+# roles_mapping.yml
 cat << YML_ROLES_MAPPING > $OPNSDIR/roles_mapping.yml
 _meta:
   type: "rolesmapping"
