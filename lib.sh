@@ -19,7 +19,7 @@ SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
-OPNSDIR=/opt/opensearch/
+OPNSDIR=/opt/opensearch
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 

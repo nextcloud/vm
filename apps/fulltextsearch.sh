@@ -5,14 +5,16 @@
 
 true
 SCRIPT_NAME="Full Text Search"
-SCRIPT_EXPLAINER="Full Text Search provides Elasticsearch for Nextcloud, which makes it possible to search for text inside files."
+SCRIPT_EXPLAINER="Full Text Search provides OpenSearch for Nextcloud, which makes it possible to search for text inside files."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+#source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/Ark74/vm/add_opensearch_fts_engine/lib.sh)
 
 # Get all needed variables from the library
 ncdb
 nc_update
 opensearch_install
+NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -31,7 +33,6 @@ if ! does_this_docker_exist "$opens_fts" || ! is_app_installed fulltextsearch
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
-    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
@@ -119,7 +120,7 @@ plugins.security.ssl.http.enabled: false
 plugins.security.allow_unsafe_democertificates: false
 plugins.security.allow_default_init_securityindex: true
 plugins.security.authcz.admin_dn:
-  - 'CN=ADMIN,OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
+  - 'OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
 plugins.security.nodes_dn:
   - 'CN=${NCDOMAIN},OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
 
@@ -161,8 +162,63 @@ all_access:
   description: "Maps admin to all_access"
 YML_ROLES_MAPPING
 
+# docker-compose.yml
+cat << YML_DOCKER_COMPOSE > $OPNSDIR/docker-compose.yml
+version: '3'
+services:
+  fts_os-node:
+    image: opensearchproject/opensearch
+    container_name: fts_os-node
+    command:
+      - sh
+      - -c
+      - "/usr/share/opensearch/bin/opensearch-plugin list | grep -q ingest-attachment \
+         || /usr/share/opensearch/bin/opensearch-plugin install --batch ingest-attachment ;
+         ./opensearch-docker-entrypoint.sh"
+    environment:
+      - cluster.name=fts_os-cluster
+      - node.name=fts_os-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1024M -Xmx1024M"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - fts_os-data:/usr/share/opensearch/data
+      - $OPNSDIR/root-ca.pem:/usr/share/opensearch/config/root-ca.pem
+      - $OPNSDIR/node.pem:/usr/share/opensearch/config/node.pem
+      - $OPNSDIR/node-key.pem:/usr/share/opensearch/config/node-key.pem
+      - $OPNSDIR/admin.pem:/usr/share/opensearch/config/admin.pem
+      - $OPNSDIR/admin-key.pem:/usr/share/opensearch/config/admin-key.pem
+      - $OPNSDIR/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+      - $OPNSDIR/internal_users.yml:/usr/share/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml
+      - $OPNSDIR/roles_mapping.yml:/usr/share/opensearch/plugins/opensearch-security/securityconfig/roles_mapping.yml
+    ports:
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9600:9600 # Performance Analyzer [1]
+    networks:
+      - fts_os-net
+
+volumes:
+  fts_os-data:
+
+networks:
+  fts_os-net:
+
+#[1] https://github.com/opensearch-project/performance-analyzer
+YML_DOCKER_COMPOSE
+
 # Prepare certs
-create_certs opensearch_certs.sh
+#create_certs opensearch_certs.sh
+rm "$OPNSDIR"/opensearch_certs.sh
+wget https://raw.githubusercontent.com/Ark74/vm/add_opensearch_fts_engine/static/opensearch_certs.sh -P "$OPNSDIR"
+sed -i 's|__NCDOMAIN__|$NCDOMAIN|' "$OPNSDIR"/opensearch_certs.sh
+cd "$OPNSDIR"
+bash opensearch_certs.sh
 
 # Set permissions
 chown 1000:1000 -R  $OPNSDIR
