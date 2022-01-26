@@ -92,8 +92,8 @@ install_docker_compose
 set_max_count
 mkdir -p "$OPNSDIR"
 docker pull "$opens_fts"
-BCRYPT_HASH=`docker run -it $opens_fts \
-       bash -c "plugins/opensearch-security/tools/hash.sh -p $OPNSREST"`
+BCRYPT_HASH="$(docker run -it $opens_fts \
+       bash -c "plugins/opensearch-security/tools/hash.sh -p $OPNSREST")"
 
 # Create configurations YML
 # opensearch.yml
