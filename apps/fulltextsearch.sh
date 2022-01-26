@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
-# SwITNet Ltd © - 2021, https://switnet.net/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
+# SwITNet Ltd © - 2022, https://switnet.net/
 
 true
 SCRIPT_NAME="Full Text Search"
@@ -94,7 +94,11 @@ set_max_count
 mkdir -p "$OPNSDIR"
 docker pull "$opens_fts"
 BCRYPT_HASH="$(docker run -it $opens_fts \
-       bash -c "plugins/opensearch-security/tools/hash.sh -p $OPNSREST")"
+               bash -c "plugins/opensearch-security/tools/hash.sh -p $OPNSREST")"
+
+echo "$OPNSREST"
+echo "$BCRYPT_HASH"
+read -p "Probando las variables anteriores"
 
 # Create configurations YML
 # opensearch.yml
