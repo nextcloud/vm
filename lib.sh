@@ -174,13 +174,12 @@ opensearch_install() {
     fts_node="fts_os-node"
 }
 create_certs(){
-    rm "$OPNSDIR"/"$1"
-    curl -s "$STATIC"/"$1" > "$OPNSDIR"/"$1"
-    sed -i "s|__NCDOMAIN__|$NCDOMAIN|" "$OPNSDIR"/"$1"
+    rm "$OPNSDIR"/opensearch_certs.sh
+    curl -s "$STATIC"/opensearch_certs.sh > "$OPNSDIR"/opensearch_certs.sh
+    sed -i "s|__NCDOMAIN__|$1|" "$OPNSDIR"/opensearch_certs.sh
     cd "$OPNSDIR"
-    bash "$1"
+    bash opensearch_certs.sh
 }
-[ -n "$opensearch_install" ] && opensearch_install # TODO: remove this line someday
 # Talk
 turn_install() {
     TURN_CONF="/etc/turnserver.conf"
