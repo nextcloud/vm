@@ -1,5 +1,5 @@
 #!/bin/sh
-# Create TLS self-signed CA certificates for 5 years required to comply 
+# Create TLS self-signed CA certificates for 5 years required to comply
 # with transport security layer requirement.
 # Source:
 # https://opensearch.org/docs/latest/security-plugin/configuration/generate-certificates/#sample-script

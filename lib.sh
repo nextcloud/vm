@@ -174,10 +174,11 @@ opensearch_install() {
     fts_node="fts_os-node"
 }
 create_certs(){
-    curl -s $STATIC/$1 > $OPNSDIR/$1
-    sed -i 's|__NCDOMAIN__|$NCDOMAIN|' $OPNSDIR/$1
-    cd $OPNSDIR
-    bash $1
+    rm "$OPNSDIR"/"$1"
+    curl -s "$STATIC"/"$1" > "$OPNSDIR"/"$1"
+    sed -i "s|__NCDOMAIN__|$NCDOMAIN|" "$OPNSDIR"/"$1"
+    cd "$OPNSDIR"
+    bash "$1"
 }
 [ -n "$opensearch_install" ] && opensearch_install # TODO: remove this line someday
 # Talk
