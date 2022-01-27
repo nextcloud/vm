@@ -141,14 +141,12 @@ _meta:
   config_version: 2
 
 ${INDEX_USER}:
-  hash: "__BCRYPT_HASH__"
+  hash: "${BCRYPT_HASH}"
   reserved: true
   backend_roles:
   - "admin"
   description: "admin user for fts at opensearch."
 YML_INTERNAL_USERS
-
-sed -i "s|__BCRYPT_HASH__|${BCRYPT_HASH}|" $OPNSDIR/internal_users.yml
 
 # roles_mapping.yml
 cat << YML_ROLES_MAPPING > $OPNSDIR/roles_mapping.yml
@@ -223,8 +221,7 @@ cd "$OPNSDIR"
 bash opensearch_certs.sh
 
 # Set permissions
-chown 1000:1000 -R  $OPNSDIR
-chmod ug+rwx -R  $OPNSDIR
+chmod 744 -R  $OPNSDIR
 
 # Launch docker-compose
 cd $OPNSDIR
@@ -238,6 +235,20 @@ then
 else
     countdown "Waiting for Docker bootstrapping..." "120"
 fi
+
+# Make sure password setup is enforced.
+docker-compose exec fts_os-node \
+    bash -c "cd \
+             plugins/opensearch-security/tools/ && \
+             bash securityadmin.sh -f \
+             ../securityconfig/internal_users.yml \
+             -t internalusers \
+             -icl \
+             -nhnv \
+             -cacert ../../../config/root-ca.pem \
+             -cert ../../../config/admin.pem \
+             -key ../../../config/admin-key.pem"
+
 docker logs $fts_node
 
 # Get Full Text Search app for nextcloud
