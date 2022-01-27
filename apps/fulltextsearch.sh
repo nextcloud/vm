@@ -120,7 +120,7 @@ plugins.security.ssl.http.enabled: false
 plugins.security.allow_unsafe_democertificates: false
 plugins.security.allow_default_init_securityindex: true
 plugins.security.authcz.admin_dn:
-  - 'OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
+  - 'CN=admin,OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
 plugins.security.nodes_dn:
   - 'CN=${NCDOMAIN},OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
 
@@ -141,12 +141,14 @@ _meta:
   config_version: 2
 
 ${INDEX_USER}:
-  hash: "${BCRYPT_HASH}"
+  hash: "__BCRYPT_HASH__"
   reserved: true
   backend_roles:
   - "admin"
   description: "admin user for fts at opensearch."
 YML_INTERNAL_USERS
+
+sed -i "s|__BCRYPT_HASH__|${BCRYPT_HASH}|" $OPNSDIR/internal_users.yml
 
 # roles_mapping.yml
 cat << YML_ROLES_MAPPING > $OPNSDIR/roles_mapping.yml
@@ -216,7 +218,7 @@ YML_DOCKER_COMPOSE
 #create_certs opensearch_certs.sh
 rm "$OPNSDIR"/opensearch_certs.sh
 wget https://raw.githubusercontent.com/Ark74/vm/add_opensearch_fts_engine/static/opensearch_certs.sh -P "$OPNSDIR"
-sed -i 's|__NCDOMAIN__|$NCDOMAIN|' "$OPNSDIR"/opensearch_certs.sh
+sed -i "s|__NCDOMAIN__|$NCDOMAIN|" "$OPNSDIR"/opensearch_certs.sh
 cd "$OPNSDIR"
 bash opensearch_certs.sh
 

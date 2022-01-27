@@ -35,9 +35,7 @@ rm admin-key-temp.pem \
    client.csr
 
 # Store
-mv admin.pem \
-   admin-key.pem \
-   client.pem \
+mv client.pem \
    client-key.pem \
    root-ca.srl \
    root-ca-key.pem -t tls_store
