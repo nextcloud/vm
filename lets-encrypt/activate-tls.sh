@@ -209,6 +209,10 @@ then
 ### EXTRAS ###
     SSLUseStapling On
     SSLStaplingCache "shmcb:logs/ssl_stapling(32768)"
+
+    # Fix zero file sizes 
+    # See https://github.com/nextcloud/server/issues/3056#issuecomment-954209565
+    SetEnv proxy-sendcl 1
 TLS_CREATE
 fi
 
