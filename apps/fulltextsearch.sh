@@ -96,10 +96,6 @@ docker pull "$opens_fts"
 BCRYPT_HASH="$(docker run -it opensearchproject/opensearch \
                bash -c "plugins/opensearch-security/tools/hash.sh -p $OPNSREST | tr -d ':\n' ")"
 
-echo "$OPNSREST"
-echo "$BCRYPT_HASH"
-read -p "Probando las variables anteriores"
-
 # Create configurations YML
 # opensearch.yml
 cat << YML_OPENSEARCH > $OPNSDIR/opensearch.yml
@@ -143,7 +139,7 @@ cat << YML_INTERNAL_USERS > $OPNSDIR/internal_users.yml
 _meta:
   type: "internalusers"
   config_version: 2
-  
+
 ${INDEX_USER}:
   hash: "${BCRYPT_HASH}"
   reserved: true
