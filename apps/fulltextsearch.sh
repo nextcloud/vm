@@ -29,7 +29,7 @@ root_check
 lowest_compatible_nc 18
 
 # Check if Full Text Search is already installed
-if ! does_this_docker_exist "$opens_fts" || ! is_app_installed fulltextsearch
+if ! does_this_docker_exist "$nc_fts" || ! does_this_docker_exist "$opens_fts" || ! is_app_installed fulltextsearch
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
