@@ -213,12 +213,7 @@ networks:
 YML_DOCKER_COMPOSE
 
 # Prepare certs
-#create_certs "$NCDOMAIN"
-rm "$OPNSDIR"/opensearch_certs.sh
-curl -s https://raw.githubusercontent.com/Ark74/vm/add_opensearch_fts_engine/static/opensearch_certs.sh > "$OPNSDIR"/opensearch_certs.sh
-sed -i "s|__NCDOMAIN__|$NCDOMAIN|" "$OPNSDIR"/opensearch_certs.sh
-cd "$OPNSDIR"
-bash opensearch_certs.sh
+create_certs "$NCDOMAIN"
 
 # Set permissions
 chmod 744 -R  $OPNSDIR
