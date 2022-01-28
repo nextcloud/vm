@@ -779,6 +779,10 @@ then
     exit
 fi
 
+# Fix remaining bug in NC 23.0.1
+git_apply_patch 30890 server 23.0.0
+git_apply_patch 30890 server 23.0.1
+
 # Check if PHP version is compatible with $NCVERSION
 PHP_VER=71
 NC_VER=16
