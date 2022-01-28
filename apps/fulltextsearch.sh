@@ -49,7 +49,10 @@ else
         fi
     done
     # Removal Docker image
+    docker_prune_this "$nc_fts"
     docker_prune_this "$opens_fts"
+    docker_prune_this "esdata"
+    docker_prune_this "fts_os-data"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
