@@ -213,7 +213,7 @@ networks:
 YML_DOCKER_COMPOSE
 
 # Prepare certs
-#create_certs opensearch_certs.sh
+#create_certs "$NCDOMAIN"
 rm "$OPNSDIR"/opensearch_certs.sh
 curl -s https://raw.githubusercontent.com/Ark74/vm/add_opensearch_fts_engine/static/opensearch_certs.sh > "$OPNSDIR"/opensearch_certs.sh
 sed -i "s|__NCDOMAIN__|$NCDOMAIN|" "$OPNSDIR"/opensearch_certs.sh
@@ -228,7 +228,6 @@ cd $OPNSDIR
 docker-compose up -d
 
 # Wait for bootstrapping
-docker restart $fts_node
 if [ "$(nproc)" -gt 2 ]
 then
     countdown "Waiting for Docker bootstrapping..." "30"
