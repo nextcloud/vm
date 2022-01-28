@@ -16,7 +16,4 @@ debug_mode
 # Must be root
 root_check
 
-# Fix calendar being broken (cannot delete user)
-nextcloud_occ app:update --all
-
 exit
