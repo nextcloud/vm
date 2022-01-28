@@ -209,9 +209,16 @@ then
 ### EXTRAS ###
     SSLUseStapling On
     SSLStaplingCache "shmcb:logs/ssl_stapling(32768)"
+TLS_CREATE
+fi
 
+# Fix zero file sizes
+# See https://github.com/nextcloud/server/issues/3056#issuecomment-954209565
+if [ "$(lsb_release -cs)" = "jammy" ]
+then
+    cat << TLS_CREATE >> "$tls_conf"
+    
     # Fix zero file sizes 
-    # See https://github.com/nextcloud/server/issues/3056#issuecomment-954209565
     SetEnv proxy-sendcl 1
 TLS_CREATE
 fi
