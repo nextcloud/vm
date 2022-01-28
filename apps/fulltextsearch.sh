@@ -53,6 +53,9 @@ else
     docker_prune_this "$opens_fts"
     docker_prune_this "esdata"
     docker_prune_this "fts_os-data"
+    # Remove configuration files
+    rm -rf "$RORDIR"
+    rm -rf "$OPNSDIR"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi

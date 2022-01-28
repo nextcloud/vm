@@ -19,6 +19,7 @@ SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
+RORDIR=/opt/es/
 OPNSDIR=/opt/opensearch
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
@@ -170,6 +171,7 @@ APACHE2=/etc/apache2/apache2.conf
 opensearch_install() {
     INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
     OPNSREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
+    nc_fts="ark74/nc_fts"
     opens_fts="opensearchproject/opensearch"
     fts_node="fts_os-node"
 }
