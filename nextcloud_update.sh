@@ -747,6 +747,10 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
     exit 1
 fi
 
+# Fix remaining bug in NC 23.0.1
+git_apply_patch 30890 server 23.0.0
+git_apply_patch 30890 server 23.0.1
+
 # Check if new version is larger than current version installed. Skip version check if you want to upgrade to a prerelease.
 if [ -z "$PRERELEASE_VERSION" ]
 then
@@ -778,10 +782,6 @@ then
     msg_box "Due to major bugs with Nextcloud $DONOTUPDATETO we won't upgrade to that version since it's a risk it will break your server. Please try to upgrade again when the next maintenance release is out."
     exit
 fi
-
-# Fix remaining bug in NC 23.0.1
-git_apply_patch 30890 server 23.0.0
-git_apply_patch 30890 server 23.0.1
 
 # Check if PHP version is compatible with $NCVERSION
 PHP_VER=71
