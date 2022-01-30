@@ -121,6 +121,13 @@ then
     TLS13="+TLSv1.3"
 fi
 
+# Fix zero file sizes
+# See https://github.com/nextcloud/server/issues/3056
+if version 22.04 "$DISTRO" 26.04.10
+then
+    SETENVPROXY="SetEnv proxy-sendcl 1"
+fi
+
 # Generate nextcloud_tls_domain.conf
 if [ ! -f "$tls_conf" ]
 then
@@ -209,17 +216,7 @@ then
 ### EXTRAS ###
     SSLUseStapling On
     SSLStaplingCache "shmcb:logs/ssl_stapling(32768)"
-TLS_CREATE
-fi
-
-# Fix zero file sizes
-# See https://github.com/nextcloud/server/issues/3056
-if version 22.04 "$DISTRO" 26.04.10
-then
-    cat << TLS_CREATE >> "$tls_conf"
-    
-    # Fix zero file sizes 
-    SetEnv proxy-sendcl 1
+    $SETENVPROXY
 TLS_CREATE
 fi
 
