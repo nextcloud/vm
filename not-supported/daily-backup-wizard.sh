@@ -93,7 +93,16 @@ check_free_space
 if ! does_snapshot_exist "NcVM-snapshot" && ! [ "$FREE_SPACE" -ge 50 ]
 then
     msg_box "Unfortunately you have not enough free space on your vgs to \
-create a LVM-snapshot which is a requirement to create a backup script."
+create a LVM-snapshot which is a requirement to create a backup script.
+
+If you are running the script in a VM and not on barebones, you can increase your root partition manually by following these steps:
+1. Shut down the VM and create a snapshot/copy of it (in order to be able to restore the current state)
+2. Now increase the size of the virtual disk1 in your hypervisor by at least 5 GB (e.g. in VMWare Virtualplayer)
+3. Power the VM back on
+4. Log in via SSH and run the following command: 
+'sudo pvresize \$(sudo pvs | grep ubuntu-vg | grep -oP \"/dev/sda[0-9]\")'
+5. Now you can run this script again:
+'sudo bash $SCRIPTS/menu.sh' -> 'Server Configuration' -> 'Daily Backup Wizard'"
     exit 1
 fi
 

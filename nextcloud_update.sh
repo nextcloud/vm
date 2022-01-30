@@ -747,6 +747,10 @@ https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versi
     exit 1
 fi
 
+# Fix remaining bug in NC 23.0.1
+git_apply_patch 30890 server 23.0.0
+git_apply_patch 30890 server 23.0.1
+
 # Check if new version is larger than current version installed. Skip version check if you want to upgrade to a prerelease.
 if [ -z "$PRERELEASE_VERSION" ]
 then
@@ -952,6 +956,13 @@ Please check in $BACKUP if config/ folder exist."
     exit 1
 fi
 
+# Disable LDAP for now since it bugs out on NC 23.0.1
+## TODO; remove in NC 23.0.2
+if is_app_installed user_ldap
+then
+    nextcloud_occ app:disable user_ldap
+fi
+
 if [ -d $BACKUP/apps/ ]
 then
     print_text_in_color "$ICyan" "$BACKUP/apps/ exists"
@@ -1001,6 +1012,13 @@ else
     msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if the folders exist."
     exit 1
+fi
+
+# Enable LDAP again
+## TODO; remove in NC 23.0.2
+if is_app_installed user_ldap
+then
+    nextcloud_occ app:enable user_ldap
 fi
 
 # Update Bitwarden

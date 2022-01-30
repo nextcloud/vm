@@ -995,6 +995,10 @@ then
     fi
 fi
 
+# Fix bug in NC 23:
+git_apply_patch 30890 server 23.0.0
+git_apply_patch 30890 server 23.0.1
+
 # Reboot
 if [ -z "$PROVISIONING" ]
 then
