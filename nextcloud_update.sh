@@ -960,7 +960,11 @@ fi
 ## TODO; remove in NC 23.0.2
 if is_app_installed user_ldap
 then
-    nextcloud_occ app:disable user_ldap
+    if is_app_enabled user_ldap
+    then
+        nextcloud_occ app:disable user_ldap
+        LDAP_ENABLED=yes-it-enabled
+    fi
 fi
 
 if [ -d $BACKUP/apps/ ]
@@ -1016,7 +1020,7 @@ fi
 
 # Enable LDAP again
 ## TODO; remove in NC 23.0.2
-if is_app_installed user_ldap
+if [ "$LDAP_ENABLED" = yes-it-enabled ]
 then
     nextcloud_occ app:enable user_ldap
 fi
