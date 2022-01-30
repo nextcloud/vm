@@ -963,7 +963,7 @@ then
     if is_app_enabled user_ldap
     then
         nextcloud_occ app:disable user_ldap
-        touch /tmp/ldap_enabled
+        LDAP_ENABLED=yes-it-enabled
     fi
 fi
 
@@ -1020,7 +1020,7 @@ fi
 
 # Enable LDAP again
 ## TODO; remove in NC 23.0.2
-if [ -f /tmp/ldap_enabled ]
+if [ "$LDAP_ENABLED" = yes-it-enabled ]
 then
     nextcloud_occ app:enable user_ldap
 fi
