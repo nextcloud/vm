@@ -213,8 +213,8 @@ TLS_CREATE
 fi
 
 # Fix zero file sizes
-# See https://github.com/nextcloud/server/issues/3056#issuecomment-954209565
-if [ "$(lsb_release -cs)" = "jammy" ]
+# See https://github.com/nextcloud/server/issues/3056
+if version 22.04 "$DISTRO" 26.04.10
 then
     cat << TLS_CREATE >> "$tls_conf"
     
