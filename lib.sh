@@ -4,6 +4,7 @@
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
+# shellcheck disable=SC2034
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
@@ -106,8 +107,6 @@ NCUSER=ncadmin
 UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
-# Name in trusted_config
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 # User for Bitwarden
 BITWARDEN_USER=bitwarden
 BITWARDEN_HOME=/home/"$BITWARDEN_USER"
@@ -178,10 +177,14 @@ opensearch_install() {
     fts_node="fts_os-node"
 }
 create_certs(){
-    download_script APPS opensearch_certs
+    download_script APP opensearch_certs
     check_command sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
     check_command bash "$SCRIPTS"/opensearch_certs.sh
     rm -f "$SCRIPTS"/opensearch_certs.sh
+}
+# Name in trusted_config
+ncdomain() {
+    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 }
 # Talk
 turn_install() {

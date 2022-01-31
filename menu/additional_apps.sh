@@ -48,7 +48,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
 "Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
-"FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])" OFF \
+"FullTextSearch" "(Search for text inside documents [4GB RAM])" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
