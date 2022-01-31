@@ -94,7 +94,7 @@ fi
 
 # Check & install docker
 install_docker
-install_docker_compose
+install_if_not docker-compose
 set_max_count
 mkdir -p "$OPNSDIR"
 docker pull "$opens_fts"
