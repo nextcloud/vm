@@ -13,6 +13,7 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 ncdb
 nc_update
 opensearch_install
+ncdomain
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
