@@ -179,8 +179,10 @@ opensearch_install() {
 create_certs(){
     download_script APP opensearch_certs
     check_command sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
-    check_command bash "$SCRIPTS"/opensearch_certs.sh
-    rm -f "$SCRIPTS"/opensearch_certs.sh
+    check_command mv "$SCRIPTS"/opensearch_certs.sh "$OPNSDIR"
+    check_command cd "$OPNSDIR"
+    check_command bash opensearch_certs.sh
+    rm -f "$OPNSDIR"/opensearch_certs.sh
 }
 # Name in trusted_config
 ncdomain() {
