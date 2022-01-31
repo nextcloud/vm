@@ -178,7 +178,7 @@ opensearch_install() {
     fts_node="fts_os-node"
 }
 create_certs(){
-    download_script APPS opensearch_certs
+    download_script APP opensearch_certs
     check_command sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
     check_command bash "$SCRIPTS"/opensearch_certs.sh
     rm -f "$SCRIPTS"/opensearch_certs.sh
