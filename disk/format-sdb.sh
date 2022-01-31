@@ -90,6 +90,7 @@ then
 This script requires that you mount a second drive to hold the data.
 
 Please shutdown the server and mount a second drive, then start this script again.
+You could also try to run this script again, but choose to manually select the disk instead.
 
 If you want help you can buy support in our shop:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
