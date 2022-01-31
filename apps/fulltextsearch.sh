@@ -25,7 +25,7 @@ debug_mode
 root_check
 
 # Nextcloud 18 is required.
-lowest_compatible_nc 18
+lowest_compatible_nc 21
 
 # Check if Full Text Search is already installed
 if ! does_this_docker_exist "$nc_fts" && ! does_this_docker_exist "$opens_fts" && ! is_app_installed fulltextsearch
@@ -232,7 +232,7 @@ if [ "$(nproc)" -gt 2 ]
 then
     countdown "Waiting for Docker bootstrapping..." "30"
 else
-    countdown "Waiting for Docker bootstrapping..." "120"
+    countdown "Waiting for Docker bootstrapping..." "60"
 fi
 
 # Make sure password setup is enforced.
