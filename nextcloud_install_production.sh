@@ -712,6 +712,13 @@ HTTP_CREATE
     print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
 fi
 
+# Fix zero file sizes
+# See https://github.com/nextcloud/server/issues/3056
+if version 22.04 "$DISTRO" 26.04.10
+then
+    SETENVPROXY="SetEnv proxy-sendcl 1"
+fi
+
 # Generate $TLS_CONF
 if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
@@ -792,6 +799,9 @@ then
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
+    
+    # Avoid zero byte files (only works in Ubuntu 22.04 -->>)
+    $SETENVPROXY
 
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
