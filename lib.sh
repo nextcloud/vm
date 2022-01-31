@@ -177,11 +177,11 @@ opensearch_install() {
 }
 create_certs(){
     rm "$OPNSDIR"/opensearch_certs.sh
-    curl -s https://raw.githubusercontent.com/Ark74/vm/add_opensearch_fts_engine/static/opensearch_certs.sh > "$OPNSDIR"/opensearch_certs.sh
-    #curl -s "$STATIC"/opensearch_certs.sh > "$OPNSDIR"/opensearch_certs.sh
-    sed -i "s|__NCDOMAIN__|$1|" "$OPNSDIR"/opensearch_certs.sh
-    cd "$OPNSDIR"
-    bash opensearch_certs.sh
+    curl -s https://raw.githubusercontent.com/Ark74/vm/add_opensearch_fts_engine/static/opensearch_certs.sh > "$SCRIPTS"/opensearch_certs.sh
+    #download_script APPS opensearch_certs
+    sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
+    bash "$SCRIPTS"/opensearch_certs.sh
+    rm "$SCRIPTS"/opensearch_certs.sh
 }
 # Talk
 turn_install() {
