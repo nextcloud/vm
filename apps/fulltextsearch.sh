@@ -13,7 +13,6 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 ncdb
 nc_update
 opensearch_install
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
