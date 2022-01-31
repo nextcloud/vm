@@ -106,8 +106,6 @@ NCUSER=ncadmin
 UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
-# Name in trusted_config
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 # User for Bitwarden
 BITWARDEN_USER=bitwarden
 BITWARDEN_HOME=/home/"$BITWARDEN_USER"
@@ -182,6 +180,10 @@ create_certs(){
     check_command sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
     check_command bash "$SCRIPTS"/opensearch_certs.sh
     rm -f "$SCRIPTS"/opensearch_certs.sh
+}
+# Name in trusted_config
+ncdomain() {
+    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 }
 # Talk
 turn_install() {
