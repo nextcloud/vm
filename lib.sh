@@ -20,6 +20,7 @@ GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
+OPNSDIR=/opt/opensearch
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 
@@ -105,6 +106,8 @@ NCUSER=ncadmin
 UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
+# Name in trusted_config
+NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 # User for Bitwarden
 BITWARDEN_USER=bitwarden
 BITWARDEN_HOME=/home/"$BITWARDEN_USER"
@@ -167,13 +170,19 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-es_install() {
+opensearch_install() {
     INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
-    ROREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
+    OPNSREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
     nc_fts="ark74/nc_fts"
-    fts_es_name="fts_esror"
+    opens_fts="opensearchproject/opensearch"
+    fts_node="fts_os-node"
 }
-[ -n "$ES_INSTALL" ] && es_install # TODO: remove this line someday
+create_certs(){
+    download_script APPS opensearch_certs
+    check_command sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
+    check_command bash "$SCRIPTS"/opensearch_certs.sh
+    rm -f "$SCRIPTS"/opensearch_certs.sh
+}
 # Talk
 turn_install() {
     TURN_CONF="/etc/turnserver.conf"
@@ -1460,14 +1469,14 @@ fi
 }
 
 set_max_count() {
-if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
+if grep -F 'vm.max_map_count=512000' /etc/sysctl.conf ; then
     print_text_in_color "$ICyan" "Max map count already set, skipping..."
 else
-    sysctl -w vm.max_map_count=262144
+    sysctl -w vm.max_map_count=512000
     {
         echo "###################################################################"
         echo "# Docker ES max virtual memory"
-        echo "vm.max_map_count=262144"
+        echo "vm.max_map_count=512000"
     } >> /etc/sysctl.conf
 fi
 }
