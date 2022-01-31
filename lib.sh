@@ -1606,9 +1606,7 @@ fi
 systemctl daemon-reload
 systemctl restart docker.service
 }
-install_docker_compose() {
-    install_if_not docker-compose
-}
+
 # Remove all dockers excluding one
 # docker_prune_except_this fts_esror 'Full Text Search'
 docker_prune_except_this() {
