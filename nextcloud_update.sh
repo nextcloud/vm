@@ -586,7 +586,7 @@ $DOCKER_RUN_OUTPUT"
     docker_update_specific 'onlyoffice' 'OnlyOffice'
     # Full Text Search
     docker_update_specific 'fts_esror' 'Full Text Search'
-    docker_update_specific 'fts_os-node' 'Full Text Search'
+    docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
 fi
