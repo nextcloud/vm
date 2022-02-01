@@ -174,6 +174,7 @@ services:
   fts_os-node:
     image: opensearchproject/opensearch
     container_name: fts_os-node
+    restart: always
     command:
       - sh
       - -c
