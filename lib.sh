@@ -1661,11 +1661,11 @@ then
 fi
 }
 # docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
-# (docker conainter name = $1, the name in text = $2 , docker-compose directoy = $3)
+# (docker conainter name = $1, the name in text = $2 , docker-compose directory = $3)
 docker-compose_update() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
-    cd $3
+    cd "$3"
     docker-compose pull
     docker-compose up -d --remove-orphans
     docker image prune -a -f
