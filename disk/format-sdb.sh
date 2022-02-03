@@ -51,9 +51,9 @@ elif [ "$SYSVENDOR" == "DigitalOcean" ];
 then
     SYSNAME="DigitalOcean"
     DEVTYPE=sda
-elif [ "$SYSVENDOR" == "Intel(R) Client Systems" ];
+elif home_sme_server
 then
-    SYSNAME="Intel-NUC"
+    SYSNAME="Nextcloud Home/SME Server"
     DEVTYPE=sda
 elif [ "$SYSVENDOR" == "UpCloud" ];
 then
