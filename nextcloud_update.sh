@@ -1013,6 +1013,14 @@ then
             nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
         fi
     fi
+    if [ "${CURRENTVERSION%%.*}" -ge "23" ]
+    then
+        # Raise OPCache
+        if grep -q "opcache.interned_strings_buffer=8" "$PHP_INI"
+        then
+            sed -i "s|opcache.interned_strings_buffer.*|opcache.interned_strings_buffer=16|g" "$PHP_INI"
+        fi
+    fi
 else
     msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if the folders exist."
