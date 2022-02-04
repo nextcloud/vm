@@ -60,7 +60,6 @@ case "$choice" in
                 fi
                 chmod +x "$SCRIPTS"/update.sh
                 bash "$SCRIPTS"/update.sh
-                fi
             else
                 bash "$SCRIPTS"/update.sh
             fi
@@ -87,7 +86,6 @@ case "$choice" in
                 fi
                 chmod +x "$SCRIPTS"/update.sh
                 bash "$SCRIPTS"/update.sh minor
-                fi
             else
                 bash "$SCRIPTS"/update.sh minor
             fi
