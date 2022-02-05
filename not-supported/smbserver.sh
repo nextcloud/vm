@@ -1370,6 +1370,7 @@ do
         if [ -d "\$SMB_PATH" ] && [ -d "\$SMB_PATH/.recycle/" ]
         then
             find "\$SMB_PATH/.recycle/" -type f -atime +2 -delete
+            find "\$SMB_PATH/.recycle/" -empty -delete
         fi
     fi
     count=\$((count+1))
