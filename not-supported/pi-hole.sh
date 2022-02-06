@@ -225,6 +225,12 @@ if [ -f "\$SCRIPTS/daily-borg-backup.sh" ]
 then
     export SKIP_DAILY_BACKUP_CHECK=1
     bash "\$SCRIPTS/daily-borg-backup.sh"
+    if [ -z "\$DAILY_BACKUP_CREATION_SUCCESSFUL" ]
+        then
+            notify_admin_gui "Pi-hole update failed because backup could not be created!" \
+            "Could not create a backup! \$(date +%T)"
+            exit 1
+        fi
 fi
 check_command pihole -up
 systemctl stop lighttpd
