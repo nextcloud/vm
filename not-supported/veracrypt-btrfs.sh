@@ -215,7 +215,7 @@ fi
 
 # Write to file
 cat << AUTOMOUNT >> "$SCRIPTS/veracrypt-automount.sh"
-if ! echo "$PASSWORD" | veracrypt -t -k "" --pim=0 --protect-hidden=no --fs-options=defaults \
+if ! echo '$PASSWORD' | veracrypt -t -k "" --pim=0 --protect-hidden=no --fs-options=defaults \
 "/dev/disk/by-partuuid/$PARTUUID" "$MOUNT_PATH"
 then
     sed -i "/'maintenance'/s/false/true/" "$NCPATH/config/config.php"
