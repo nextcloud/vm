@@ -258,7 +258,7 @@ check_command systemctl enable nats-server
 # shellcheck disable=SC1091
 source /etc/lsb-release
 curl -sL -o "/etc/apt/trusted.gpg.d/morph027-janus.asc" "https://packaging.gitlab.io/janus/gpg.key"
-echo "deb https://packaging.gitlab.io/janus $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-janus.list
+echo "deb https://packaging.gitlab.io/janus/$DISTRIB_CODENAME $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-janus.list
 apt-get update -q4 & spinner_loading
 install_if_not janus
 ## Configuration
