@@ -39,11 +39,15 @@ You can find it here: run 'sudo bash $SCRIPTS/menu.sh' -> choose 'Server Configu
     then
         exit 1
     fi
+    rm -f /tmp/DAILY_BACKUP_CREATION_SUCCESSFUL
     export SKIP_DAILY_BACKUP_CHECK=1
     bash "$DAILY_BACKUP_FILE"
-    if ! yesno_box_no "Was the backup successfully? If yes, we will start with the database shrinking now."
+    if ! [ -f "/tmp/DAILY_BACKUP_CREATION_SUCCESSFUL" ]
     then
-        exit 1
+        if ! yesno_box_no "It seems like the backup was not successful. Do you want to continue nonetheless? (Not recommended!)"
+        then
+            exit 1
+        fi
     fi
 fi
 

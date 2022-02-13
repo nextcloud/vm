@@ -584,8 +584,9 @@ Please don't restart or shutdown your server until then!"
         remove_log_file
     fi
 
-    # Export a variable that can be checked for
-    export DAILY_BACKUP_CREATION_SUCCESSFUL=1
+    # Create a file that can be checked for
+    rm -f /tmp/DAILY_BACKUP_CREATION_SUCCESSFUL
+    touch /tmp/DAILY_BACKUP_CREATION_SUCCESSFUL
 
     # Exit here if the backup doesn't shall get checked
     if [ -z "$CHECK_BACKUP" ]
@@ -705,7 +706,8 @@ else
     remove_log_file
 fi
 
-# Export a variable that can be checked for
-export DAILY_BACKUP_CHECK_SUCCESSFUL=1
+# Create a file that can be checked for
+rm -f /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
+touch /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
 
 exit
