@@ -16,6 +16,10 @@ debug_mode
 # Must be root
 root_check
 
+msg_box "deSEC made some major changes which broke our implementation of it. We are working with them to fix it, but unitl then the scripts are not active.
+Thank you for understanding."
+exit
+
 choice=$(whiptail --title "$TITLE" --menu \
 "Please choose one of the deSEC options below.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
