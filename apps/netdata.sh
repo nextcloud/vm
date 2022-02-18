@@ -41,25 +41,28 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
+    touch /etc/netdata/.environment
     if [ -f /usr/src/netdata.git/netdata-uninstaller.sh ]
     then
-        if ! yes no | bash /usr/src/netdata.git/netdata-uninstaller.sh --force
+        if ! yes no | bash /usr/src/netdata.git/netdata-uninstaller.sh -y -f
         then
             rm -Rf /usr/src/netdata.git
         fi
     elif [ -f /usr/libexec/netdata-uninstaller.sh ]
     then
-        yes no | bash /usr/libexec/netdata-uninstaller.sh --yes
+        yes no | bash /usr/libexec/netdata-uninstaller.sh -y -f
     elif [ -f /usr/libexec/netdata/netdata-uninstaller.sh ]
     then
-        bash /usr/libexec/netdata/netdata-uninstaller.sh --force --yes
+        bash /usr/libexec/netdata/netdata-uninstaller.sh -y -f
     else
         curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
-        check_command bash $SCRIPTS/netdata-uninstaller.sh --force --yes
+        check_command bash $SCRIPTS/netdata-uninstaller.sh -y -f
         rm $SCRIPTS/netdata-uninstaller.sh
         rm -rf /var/lib/netdata
     fi
     rm -rf /etc/netdata
+    apt-get purge netdata -y
+    apt-get autoremove -y
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -69,7 +72,7 @@ is_process_running dpkg
 is_process_running apt
 apt-get update -q4 & spinner_loading
 curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
-sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh all --dont-wait --no-updates --stable-channel
+sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --reinstall-even-if-unsafe --non-interactive --no-updates --stable-channel --disable-cloud
 rm -f $SCRIPTS/kickstart.sh
 
 # Check Netdata instructions after script is done
