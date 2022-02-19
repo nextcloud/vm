@@ -16,4 +16,7 @@ debug_mode
 # Must be root
 root_check
 
+download_script DESEC desec
+download_script MENU desec_menu
+
 exit
