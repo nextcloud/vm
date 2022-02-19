@@ -12,7 +12,7 @@ shopt -s extglob
 DEDYNAUTH=$(pwd)/.dedynauth
 
 if [ ! -f "$DEDYNAUTH" ]; then
-    DEDYNAUTH=$(dirname $0)/.dedynauth
+    DEDYNAUTH=$(dirname "$0")/.dedynauth
 fi
 
 if [ ! -f "$DEDYNAUTH" ]; then
@@ -60,7 +60,7 @@ domain="_acme-challenge.${CERTBOT_DOMAIN#\*.}"
 if [ "${domain}" = "${DEDYN_NAME}" ]; then
     subname=""
 else
-    subname="${domain%.$DEDYN_NAME}"
+    subname="${domain%."$DEDYN_NAME"}"
 fi
 
 args=( \
