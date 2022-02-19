@@ -120,13 +120,14 @@ then
     export DEDYNAUTHTOKEN
     if run_script NETWORK ddclient-configuration
     then
-        while true
+        while :
         do
             if ! domain_check_200 "$DEDYNDOMAIN"
             then
                 countdown "30" "Waiting for domain to propagate correctly..."
             else
                 break
+            fi
         done
     fi
 fi
