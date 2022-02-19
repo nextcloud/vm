@@ -122,6 +122,16 @@ then
 fi
 }
 
+register_domain_existing_account(){
+curl -X POST https://desec.io/api/v1/domains/ \
+    --header "Authorization: Token $DEDYNAUTHTOKEN" \
+    --header "Content-Type: application/json" --data @- <<EOF
+    {
+      "name": "$DEDYNDOMAIN"
+    }
+EOF
+}
+
 prompt_tls(){
 # Ask if the user wants to add TLS (use script)
 if yesno_box_yes "Do you want to set this domain as your Nextcoud domain \
@@ -185,15 +195,18 @@ do
             new_domain_email_info_2
             register_the_domain
             received_registration_email_check
+            prompt_security_token
             break
         else
             # Register the domain in the existing account --> prompt_for_security_token
+            prompt_security_token
+            register_domain_existing_account
             break
         fi
     fi
 done
 
-prompt_security_token
+# Always ask for DynDNS and TLS
 prompt_dyndns
 prompt_tls
 
