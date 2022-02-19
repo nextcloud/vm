@@ -5,7 +5,7 @@
 
 true
 # shellcheck source=lib.sh
-disable=SC2295
+# shellcheck disable=1091,2295
 
 (
 
@@ -24,7 +24,6 @@ if [ ! -f "$DEDYNAUTH" ]; then
     exit 1
 fi
 
-# shellcheck source="$(pwd)/.dedynauth"
 source "$DEDYNAUTH"
 
 if [ -z "$DEDYN_TOKEN" ]; then
