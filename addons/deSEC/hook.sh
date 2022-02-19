@@ -3,11 +3,15 @@
 # This script does not need to be changed for certbots DNS challenge.
 # Please see the .dedynauth file for authentication information.
 
+true
+# shellcheck source=lib.sh
+disable=SC2295
+
 (
 
 shopt -s extglob
 
-[[ ! $CERTBOT_AUTH_OUTPUT =~ "$CERTBOT_VALIDATION" ]] && CERTBOT_AUTH_OUTPUT=''
+[[ ! $CERTBOT_AUTH_OUTPUT =~ $CERTBOT_VALIDATION ]] && CERTBOT_AUTH_OUTPUT=''
 
 DEDYNAUTH=$(pwd)/.dedynauth
 
@@ -20,6 +24,7 @@ if [ ! -f "$DEDYNAUTH" ]; then
     exit 1
 fi
 
+# shellcheck source="$(pwd)/.dedynauth"
 source "$DEDYNAUTH"
 
 if [ -z "$DEDYN_TOKEN" ]; then
@@ -92,7 +97,7 @@ else
     # challenge is already in the rrset, we re-publish the current rrset as-is.
     if [ -z "$acme_records" ]; then
 	acme_records='"\"'"$CERTBOT_VALIDATION"'\""'
-    elif [[ ! $acme_records =~ "$CERTBOT_VALIDATION" ]]; then
+    elif [[ ! $acme_records =~ $CERTBOT_VALIDATION ]]; then
 	acme_records+=',"\"'"$CERTBOT_VALIDATION"'\""'
     fi
 fi
