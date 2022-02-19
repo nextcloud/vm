@@ -16,10 +16,6 @@ debug_mode
 # Must be root
 root_check
 
-msg_box "deSEC made some major changes which broke our implementation of it. We are working with them to fix it, but unitl then the scripts are not active.
-Thank you for understanding."
-exit
-
 choice=$(whiptail --title "$TITLE" --menu \
 "Please choose one of the deSEC options below.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
@@ -30,15 +26,15 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 case "$choice" in
     "Install deSEC")
         print_text_in_color "$ICyan" "Downloading the deSEC install script..."
-        run_script ADDONS desec
+        run_script DESEC desec
     ;;
     "deSEC Subdomain")
         print_text_in_color "$ICyan" "Downloading the deSEC subdomain script..."
-        run_script ADDONS desec_subdomain
+        run_script DESEC desec_subdomain
     ;;
     "Remove deSEC")
         print_text_in_color "$ICyan" "Downloading the remove deSEC script..."
-        run_script ADDONS remove_desec
+        run_script DESEC remove_desec
     ;;
     *)
     ;;
