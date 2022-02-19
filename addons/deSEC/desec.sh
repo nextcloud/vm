@@ -118,18 +118,7 @@ Please note: this will reset any configuration that might be already in place wi
 then
     export DEDYNDOMAIN
     export DEDYNAUTHTOKEN
-    if run_script NETWORK ddclient-configuration
-    then
-        while :
-        do
-            if ! domain_check_200 "$DEDYNDOMAIN"
-            then
-                countdown "30" "Waiting for domain to propagate correctly..."
-            else
-                break
-            fi
-        done
-    fi
+    run_script NETWORK ddclient-configuration
 fi
 }
 
