@@ -16,7 +16,7 @@ debug_mode
 # Must be root
 root_check
 
-download_script DESEC desec
-download_script MENU desec_menu
+curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" "desec.sh" "$SCRIPTS"
+curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/menu" "desec_menu.sh" "$SCRIPTS"
 
 exit
