@@ -16,7 +16,6 @@ debug_mode
 # Must be root
 root_check
 
-curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" "desec.sh" "$SCRIPTS"
 curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/menu" "desec_menu.sh" "$SCRIPTS"
 
 exit
