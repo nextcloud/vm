@@ -26,10 +26,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 case "$choice" in
     "Install deSEC")
         print_text_in_color "$ICyan" "Downloading the deSEC install script..."
-        # run_script DESEC desec
-        # TODO fix for 23.0.2
-        curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" "desec.sh" "$SCRIPTS"
-        bash "$SCRIPTS"/desec.sh
+        run_script DESEC desec
     ;;
     "deSEC Subdomain")
         print_text_in_color "$ICyan" "Downloading the deSEC subdomain script..."
