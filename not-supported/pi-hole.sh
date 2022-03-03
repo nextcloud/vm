@@ -183,10 +183,10 @@ Please report this to $ISSUES"
 fi
 
 # Continue with the process
-sed -i 's|displayFinalMessage "${pw}"|echo pw|' "$SCRIPTS"/pihole-install.sh # We don't want to display the final message
-sed -i "s|setAdminFlag$|# setAdminFlag|" "$SCRIPTS"/pihole-install.sh # We want to install the web-interface and lighttpd
-sed -i "s|chooseInterface$|# chooseInterface|" "$SCRIPTS"/pihole-install.sh # We don't want the user choose the interface
-sed -i "s|getStaticIPv4Settings$|# getStaticIPv4Settings|" "$SCRIPTS"/pihole-install.sh # We don't want to set a static ip4
+sed -i 's|displayFinalMessage "${pw}"|echo displayFinalMessage|' "$SCRIPTS"/pihole-install.sh # We don't want to display the final message
+sed -i "s|setAdminFlag$|echo setAdminFlag|" "$SCRIPTS"/pihole-install.sh # We want to install the web-interface and lighttpd
+sed -i "s|chooseInterface$|echo chooseInterface|" "$SCRIPTS"/pihole-install.sh # We don't want the user choose the interface
+sed -i "s|getStaticIPv4Settings$|echo getStaticIPv4Settings|" "$SCRIPTS"/pihole-install.sh # We don't want to set a static ip4
 
 # Export default values
 PIHOLE_INTERFACE="$IFACE"
