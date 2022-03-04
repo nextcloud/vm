@@ -156,7 +156,7 @@ check_command systemctl enable bitwarden
 # Install Bitwarden
 install_if_not curl
 check_command cd "$BITWARDEN_HOME"
-curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/self-host/master" "bitwarden.sh" "$BITWARDEN_HOME"
 chmod +x "$BITWARDEN_HOME"/bitwarden.sh
 chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
