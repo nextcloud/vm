@@ -195,10 +195,13 @@ then
    fi
 else
     # Only update if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
-    if [ "$(stat --format=%Y "$SCRIPTS"/nextcloud.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
+    if [ -f "$SCRIPTS"/nextcloud.sh ]
     then
-        download_script STATIC nextcloud
-        chown "$CURRUSR":"$CURRUSR" "$SCRIPTS"/nextcloud.sh
+        if [ "$(stat --format=%Y "$SCRIPTS"/nextcloud.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
+        then
+            download_script STATIC nextcloud
+            chown "$CURRUSR":"$CURRUSR" "$SCRIPTS"/nextcloud.sh
+        fi
     fi
 fi
 
