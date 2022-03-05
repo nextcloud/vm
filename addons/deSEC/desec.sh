@@ -176,7 +176,8 @@ do
         msg_box "Sorry, but it seems like $DEDYNDOMAIN is taken."
         if existing_account
         then
-            # Register the domain in the existing account --> prompt_for_security_token
+            # Register the domain in the existing account
+            prompt_security_token
             break
         else
             # The user doesn't have an existing account, ask to try another domain
