@@ -52,19 +52,14 @@ case "$choice" in
             # Check if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
             if [ "$(stat --format=%Y "$SCRIPTS"/update.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
             then
-                if yesno_box_yes "Do you want to fetch the latest update.sh script?"
+	        print_text_in_color "$ICyan" "Downloading the latest update script..."
+                download_script STATIC update
+                if [ -n "$REBOOT_SET" ]
                 then
-                    print_text_in_color "$ICyan" "Downloading the latest update script..."
-                    download_script STATIC update
-                    if [ -n "$REBOOT_SET" ]
-                    then
-                        sed -i "s|exit|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
-                    fi
-                    chmod +x "$SCRIPTS"/update.sh
-                    bash "$SCRIPTS"/update.sh
-                else
-                    bash "$SCRIPTS"/update.sh
+                    sed -i "s|exit|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
                 fi
+                chmod +x "$SCRIPTS"/update.sh
+                bash "$SCRIPTS"/update.sh
             else
                 bash "$SCRIPTS"/update.sh
             fi
@@ -83,19 +78,14 @@ case "$choice" in
             # Check if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
             if [ "$(stat --format=%Y "$SCRIPTS"/update.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
             then
-                if yesno_box_yes "Do you want to fetch the latest update.sh script?"
+	        print_text_in_color "$ICyan" "Downloading the latest update script..."
+                download_script STATIC update
+                if [ -n "$REBOOT_SET" ]
                 then
-                    print_text_in_color "$ICyan" "Downloading the latest update script..."
-                    download_script STATIC update
-                    if [ -n "$REBOOT_SET" ]
-                    then
-                        sed -i "s|exit|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
-                    fi
-                    chmod +x "$SCRIPTS"/update.sh
-                    bash "$SCRIPTS"/update.sh minor
-                else
-                    bash "$SCRIPTS"/update.sh minor
+                    sed -i "s|exit|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
                 fi
+                chmod +x "$SCRIPTS"/update.sh
+                bash "$SCRIPTS"/update.sh minor
             else
                 bash "$SCRIPTS"/update.sh minor
             fi

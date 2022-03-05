@@ -546,7 +546,7 @@ phpenmod opcache
 echo "# OPcache settings for Nextcloud"
 echo "opcache.enable=1"
 echo "opcache.enable_cli=1"
-echo "opcache.interned_strings_buffer=8"
+echo "opcache.interned_strings_buffer=16"
 echo "opcache.max_accelerated_files=10000"
 echo "opcache.memory_consumption=256"
 echo "opcache.save_comments=1"
@@ -712,6 +712,13 @@ HTTP_CREATE
     print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
 fi
 
+# Fix zero file sizes
+# See https://github.com/nextcloud/server/issues/3056
+if version 22.04 "$DISTRO" 26.04.10
+then
+    SETENVPROXY="SetEnv proxy-sendcl 1"
+fi
+
 # Generate $TLS_CONF
 if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
 then
@@ -792,6 +799,9 @@ then
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
+    
+    # Avoid zero byte files (only works in Ubuntu 22.04 -->>)
+    $SETENVPROXY
 
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
@@ -994,6 +1004,10 @@ then
         nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
     fi
 fi
+
+# Fix bug in NC 23:
+git_apply_patch 30890 server 23.0.0
+git_apply_patch 30890 server 23.0.1
 
 # Reboot
 if [ -z "$PROVISIONING" ]

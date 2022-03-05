@@ -59,7 +59,10 @@ apt-get clean all
 apt-get update -q4 & spinner_loading
 
 # Install Webmin
-curl_to_dir http://www.webmin.com "jcameron-key.asc" "$SCRIPTS"
+if ! curl_to_dir http://www.webmin.com "jcameron-key.asc" "$SCRIPTS"
+then
+    curl_to_dir https://gist.githubusercontent.com/enoch85/092c8f4c4f5127b99d40/raw/186333393163b7e0d50c8d3b25cae4d63ac78b22 "jcameron-key.asc" "$SCRIPTS"
+fi
 check_command apt-key --keyring /etc/apt/trusted.gpg.d/webmin.gpg add "$SCRIPTS/jcameron-key.asc"
 rm -f "$SCRIPTS/jcameron-key.asc"
 echo "deb https://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list

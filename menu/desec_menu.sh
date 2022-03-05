@@ -26,15 +26,15 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 case "$choice" in
     "Install deSEC")
         print_text_in_color "$ICyan" "Downloading the deSEC install script..."
-        run_script ADDONS desec
+        run_script DESEC desec
     ;;
     "deSEC Subdomain")
         print_text_in_color "$ICyan" "Downloading the deSEC subdomain script..."
-        run_script ADDONS desec_subdomain
+        run_script DESEC desec_subdomain
     ;;
     "Remove deSEC")
         print_text_in_color "$ICyan" "Downloading the remove deSEC script..."
-        run_script ADDONS remove_desec
+        run_script DESEC remove_desec
     ;;
     *)
     ;;

@@ -4,6 +4,7 @@
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
+# shellcheck disable=SC2034
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
@@ -20,6 +21,7 @@ GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
 RORDIR=/opt/es/
+OPNSDIR=/opt/opensearch
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 
@@ -91,6 +93,7 @@ LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
 OLD="$GITHUB_REPO/old"
 ADDONS="$GITHUB_REPO/addons"
+DESEC="$GITHUB_REPO/addons/deSEC"
 MENU="$GITHUB_REPO/menu"
 DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
@@ -167,13 +170,25 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-es_install() {
+opensearch_install() {
     INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
-    ROREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
+    OPNSREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
     nc_fts="ark74/nc_fts"
-    fts_es_name="fts_esror"
+    opens_fts="opensearchproject/opensearch"
+    fts_node="fts_os-node"
 }
-[ -n "$ES_INSTALL" ] && es_install # TODO: remove this line someday
+create_certs(){
+    download_script APP opensearch_certs
+    check_command sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
+    check_command mv "$SCRIPTS"/opensearch_certs.sh "$OPNSDIR"
+    check_command cd "$OPNSDIR"
+    check_command bash opensearch_certs.sh
+    rm -f "$OPNSDIR"/opensearch_certs.sh
+}
+# Name in trusted_config
+ncdomain() {
+    NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+}
 # Talk
 turn_install() {
     TURN_CONF="/etc/turnserver.conf"
@@ -1460,14 +1475,14 @@ fi
 }
 
 set_max_count() {
-if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
+if grep -F 'vm.max_map_count=512000' /etc/sysctl.conf ; then
     print_text_in_color "$ICyan" "Max map count already set, skipping..."
 else
-    sysctl -w vm.max_map_count=262144
+    sysctl -w vm.max_map_count=512000
     {
         echo "###################################################################"
         echo "# Docker ES max virtual memory"
-        echo "vm.max_map_count=262144"
+        echo "vm.max_map_count=512000"
     } >> /etc/sysctl.conf
 fi
 }
@@ -1642,6 +1657,19 @@ docker_update_specific() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
     docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
+    print_text_in_color "$IGreen" "$2 docker image just got updated!"
+    echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
+fi
+}
+# docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
+# (docker conainter name = $1, the name in text = $2 , docker-compose directory = $3)
+docker-compose_update() {
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
+then
+    cd "$3"
+    docker-compose pull
+    docker-compose up -d --remove-orphans
+    docker image prune -a -f
     print_text_in_color "$IGreen" "$2 docker image just got updated!"
     echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
 fi

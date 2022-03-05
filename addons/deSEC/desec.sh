@@ -122,6 +122,16 @@ then
 fi
 }
 
+register_domain_existing_account(){
+curl -X POST https://desec.io/api/v1/domains/ \
+    --header "Authorization: Token $DEDYNAUTHTOKEN" \
+    --header "Content-Type: application/json" --data @- <<EOF
+    {
+      "name": "$DEDYNDOMAIN"
+    }
+EOF
+}
+
 prompt_tls(){
 # Ask if the user wants to add TLS (use script)
 if yesno_box_yes "Do you want to set this domain as your Nextcoud domain \
@@ -130,9 +140,9 @@ then
     # Add DNS renewals with the deSEC hoock script
     print_text_in_color "$ICyan" "Preparing for DNS-renewals..."
     mkdir -p "$SCRIPTS"/deSEC
-    curl_to_dir "https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master" "hook.sh" "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" "hook.sh" "$SCRIPTS"/deSEC
     chmod +x "$SCRIPTS"/deSEC/hook.sh
-    curl_to_dir "https://raw.githubusercontent.com/desec-io/desec-certbot-hook/master" ".dedynauth" "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" ".dedynauth" "$SCRIPTS"/deSEC
     check_command sed -i "s|DEDYN_TOKEN=.*|DEDYN_TOKEN=$DEDYNAUTHTOKEN|g" "$SCRIPTS"/deSEC/.dedynauth
     check_command sed -i "s|DEDYN_NAME=.*|DEDYN_NAME=$DEDYNDOMAIN|g" "$SCRIPTS"/deSEC/.dedynauth
     msg_box "DNS updates for deSEC are now set. This means you don't have to open any ports (80|443) for the renewal process since deSEC TLS renewals will be run with a built in hook. \
@@ -166,7 +176,8 @@ do
         msg_box "Sorry, but it seems like $DEDYNDOMAIN is taken."
         if existing_account
         then
-            # Register the domain in the existing account --> prompt_for_security_token
+            # Register the domain in the existing account
+            prompt_security_token
             break
         else
             # The user doesn't have an existing account, ask to try another domain
@@ -185,15 +196,18 @@ do
             new_domain_email_info_2
             register_the_domain
             received_registration_email_check
+            prompt_security_token
             break
         else
             # Register the domain in the existing account --> prompt_for_security_token
+            prompt_security_token
+            register_domain_existing_account
             break
         fi
     fi
 done
 
-prompt_security_token
+# Always ask for DynDNS and TLS
 prompt_dyndns
 prompt_tls
 

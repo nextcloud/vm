@@ -100,8 +100,15 @@ then
     # Create backup first
     if [ -f "$SCRIPTS/daily-borg-backup.sh" ] && does_snapshot_exist "NcVM-snapshot"
     then
+        rm -f /tmp/DAILY_BACKUP_CREATION_SUCCESSFUL
         export SKIP_DAILY_BACKUP_CHECK=1
         bash "$SCRIPTS/daily-borg-backup.sh"
+        if ! [ -f "/tmp/DAILY_BACKUP_CREATION_SUCCESSFUL" ]
+        then
+            notify_admin_gui "Update failed because backup could not be created!" \
+            "Could not create a backup! $(date +%T)"
+            exit 1
+        fi
     fi
     # Add automatical unlock upon reboot
     crontab -u root -l | grep -v "lvrename /dev/ubuntu-vg/NcVM-snapshot-pending"  | crontab -u root -
@@ -188,10 +195,13 @@ then
    fi
 else
     # Only update if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
-    if [ "$(stat --format=%Y "$SCRIPTS"/nextcloud.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
+    if [ -f "$SCRIPTS"/nextcloud.sh ]
     then
-        download_script STATIC nextcloud
-        chown "$CURRUSR":"$CURRUSR" "$SCRIPTS"/nextcloud.sh
+        if [ "$(stat --format=%Y "$SCRIPTS"/nextcloud.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
+        then
+            download_script STATIC nextcloud
+            chown "$CURRUSR":"$CURRUSR" "$SCRIPTS"/nextcloud.sh
+        fi
     fi
 fi
 
@@ -586,6 +596,7 @@ $DOCKER_RUN_OUTPUT"
     docker_update_specific 'onlyoffice' 'OnlyOffice'
     # Full Text Search
     docker_update_specific 'fts_esror' 'Full Text Search'
+    docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
 fi
@@ -995,6 +1006,14 @@ then
         if [ -n "$KEYBOARD_LAYOUT" ]
         then
             nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
+        fi
+    fi
+    if [ "${CURRENTVERSION%%.*}" -ge "23" ]
+    then
+        # Raise OPCache
+        if grep -q "opcache.interned_strings_buffer=8" "$PHP_INI"
+        then
+            sed -i "s|opcache.interned_strings_buffer.*|opcache.interned_strings_buffer=16|g" "$PHP_INI"
         fi
     fi
 else

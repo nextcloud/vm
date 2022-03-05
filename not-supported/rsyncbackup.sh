@@ -133,6 +133,16 @@ then
     send_error_mail "Not even one daily backup was successfully created. Please wait for that first."
 fi
 
+# Check daily backup
+rm -f /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
+export SKIP_DAILY_BACKUP_CREATION=1
+bash "$SCRIPTS/daily-borg-backup.sh"
+if ! [ -f "/tmp/DAILY_BACKUP_CHECK_SUCCESSFUL" ]
+then
+    send_error_mail "Daily backup check failed!" \
+    "Backup check was unsuccessful! $(date +%T)"
+fi
+
 # Prepare backup repository
 inform_user "$ICyan" "Mounting the daily backup drive..."
 if ! [ -d "$BACKUP_SOURCE_DIRECTORY" ]

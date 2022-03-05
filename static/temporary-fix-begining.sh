@@ -16,12 +16,4 @@ debug_mode
 # Must be root
 root_check
 
-# Fix calendar being broken (cannot delete user)
-# git_apply_patch 3795 calendar 23.0.0
-
-# cd $NC_APPS_PATH/calendar
-# git apply /tmp/3795.patch
-
-nextcloud_occ app:update --all
-
 exit

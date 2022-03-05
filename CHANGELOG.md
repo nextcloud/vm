@@ -15,6 +15,29 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 PR's are more than welcome. Happy Nextclouding!
 
+## 23.0.2
+
+### Small changelog:
+- Change to another Full Text Search implementation
+- Improve deSEC functions
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/23.0.1..23.0.2
+- https://nextcloud.com/changelog/#latest23
+
+## 23.0.1
+
+### Small changelog:
+- Fixed all the bugs with the old release (23.0.0)
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/23.0.0..23.0.1
+- https://nextcloud.com/changelog/#latest23
+
 ## 23.0.0
 
 ### Small changelog:

@@ -216,7 +216,7 @@ fi
 
 # Write to file
 cat << AUTOMOUNT >> "$SCRIPTS/veracrypt-automount.sh"
-if ! echo "$PASSWORD" | veracrypt -t -k "" --pim=0 --protect-hidden=no \
+if ! echo '$PASSWORD' | veracrypt -t -k "" --pim=0 --protect-hidden=no \
 --fs-options=windows_names,uid=www-data,gid=www-data,umask=007 \
 "/dev/disk/by-partuuid/$PARTUUID" "$MOUNT_PATH"
 then

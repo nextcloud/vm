@@ -1,18 +1,19 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
-# SwITNet Ltd © - 2021, https://switnet.net/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
+# SwITNet Ltd © - 2022, https://switnet.net/
 
 true
 SCRIPT_NAME="Full Text Search"
-SCRIPT_EXPLAINER="Full Text Search provides Elasticsearch for Nextcloud, which makes it possible to search for text inside files."
+SCRIPT_EXPLAINER="Full Text Search provides OpenSearch for Nextcloud, which makes it possible to search for text inside files."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 ncdb
 nc_update
-es_install
+opensearch_install
+ncdomain
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -24,10 +25,10 @@ debug_mode
 root_check
 
 # Nextcloud 18 is required.
-lowest_compatible_nc 18
+lowest_compatible_nc 21
 
 # Check if Full Text Search is already installed
-if ! does_this_docker_exist "$nc_fts" || ! is_app_installed fulltextsearch
+if ! does_this_docker_exist "$nc_fts" && ! does_this_docker_exist "$opens_fts" && ! is_app_installed fulltextsearch
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -48,12 +49,18 @@ else
     done
     # Removal Docker image
     docker_prune_this "$nc_fts"
+    docker_prune_this "$opens_fts"
+    docker_prune_this "esdata"
+    docker_prune_this "fts_os-data"
+    # Remove configuration files
+    rm -rf "$RORDIR"
+    rm -rf "$OPNSDIR"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 3 FullTextSearch
+# Test RAM size (4GB min) + CPUs (min 2)
+ram_check 4 FullTextSearch
 cpu_check 2 FullTextSearch
 
 # Make sure there is an Nextcloud installation
@@ -87,51 +94,162 @@ fi
 
 # Check & install docker
 install_docker
+install_if_not docker-compose
 set_max_count
-mkdir -p "$RORDIR"
-docker pull "$nc_fts"
+mkdir -p "$OPNSDIR"
+docker pull "$opens_fts"
+BCRYPT_HASH="$(docker run -it $opens_fts \
+               bash -c "plugins/opensearch-security/tools/hash.sh -p $OPNSREST | tr -d ':\n' ")"
 
-# Create configuration YML
-cat << YML_CREATE > /opt/es/readonlyrest.yml
-readonlyrest:
-  access_control_rules:
-  - name: Accept requests from cloud1 on $INDEX_USER-index
-    groups: ["cloud1"]
-    indices: ["$INDEX_USER-index"]
+# Create configurations YML
+# opensearch.yml
+cat << YML_OPENSEARCH > $OPNSDIR/opensearch.yml
+cluster.name: docker-cluster
+# Avoid Docker assigning IP.
+network.host: 0.0.0.0
 
-  users:
-  - username: $INDEX_USER
-    auth_key: $INDEX_USER:$ROREST
-    groups: ["cloud1"]
-YML_CREATE
+# Declaring single node cluster.
+discovery.type: single-node
+
+######## Start Security Configuration ########
+plugins.security.ssl.transport.pemcert_filepath: node.pem
+plugins.security.ssl.transport.pemkey_filepath: node-key.pem
+plugins.security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
+plugins.security.ssl.transport.enforce_hostname_verification: false
+
+# Disable ssl at REST as Fulltextsearch can't accept self-signed CA certs.
+plugins.security.ssl.http.enabled: false
+#plugins.security.ssl.http.pemcert_filepath: node.pem
+#plugins.security.ssl.http.pemkey_filepath: node-key.pem
+#plugins.security.ssl.http.pemtrustedcas_filepath: root-ca.pem
+plugins.security.allow_unsafe_democertificates: false
+plugins.security.allow_default_init_securityindex: true
+plugins.security.authcz.admin_dn:
+  - 'CN=admin,OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
+plugins.security.nodes_dn:
+  - 'CN=${NCDOMAIN},OU=FTS,O=OPENSEARCH,L=VM,ST=NEXTCLOUD,C=CA'
+
+plugins.security.audit.type: internal_opensearch
+plugins.security.enable_snapshot_restore_privilege: true
+plugins.security.check_snapshot_restore_write_privileges: true
+plugins.security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+plugins.security.system_indices.enabled: true
+plugins.security.system_indices.indices: [".opendistro-alerting-config", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opendistro-notifications-*", ".opendistro-notebooks", ".opensearch-observability", ".opendistro-asynchronous-search-response*", ".replication-metadata-store"]
+node.max_local_storage_nodes: 1
+######## End Security Configuration ########
+YML_OPENSEARCH
+
+# internal_users.yml
+cat << YML_INTERNAL_USERS > $OPNSDIR/internal_users.yml
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+${INDEX_USER}:
+  hash: "${BCRYPT_HASH}"
+  reserved: true
+  backend_roles:
+  - "admin"
+  description: "admin user for fts at opensearch."
+YML_INTERNAL_USERS
+
+# roles_mapping.yml
+cat << YML_ROLES_MAPPING > $OPNSDIR/roles_mapping.yml
+_meta:
+  type: "rolesmapping"
+  config_version: 2
+
+# Roles mapping
+all_access:
+  reserved: false
+  backend_roles:
+  - "admin"
+  description: "Maps admin to all_access"
+YML_ROLES_MAPPING
+
+# docker-compose.yml
+cat << YML_DOCKER_COMPOSE > $OPNSDIR/docker-compose.yml
+version: '3'
+services:
+  fts_os-node:
+    image: opensearchproject/opensearch
+    container_name: fts_os-node
+    restart: always
+    command:
+      - sh
+      - -c
+      - "/usr/share/opensearch/bin/opensearch-plugin list | grep -q ingest-attachment \
+         || /usr/share/opensearch/bin/opensearch-plugin install --batch ingest-attachment ;
+         ./opensearch-docker-entrypoint.sh"
+    environment:
+      - cluster.name=fts_os-cluster
+      - node.name=fts_os-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1024M -Xmx1024M"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - fts_os-data:/usr/share/opensearch/data
+      - $OPNSDIR/root-ca.pem:/usr/share/opensearch/config/root-ca.pem
+      - $OPNSDIR/node.pem:/usr/share/opensearch/config/node.pem
+      - $OPNSDIR/node-key.pem:/usr/share/opensearch/config/node-key.pem
+      - $OPNSDIR/admin.pem:/usr/share/opensearch/config/admin.pem
+      - $OPNSDIR/admin-key.pem:/usr/share/opensearch/config/admin-key.pem
+      - $OPNSDIR/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+      - $OPNSDIR/internal_users.yml:/usr/share/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml
+      - $OPNSDIR/roles_mapping.yml:/usr/share/opensearch/plugins/opensearch-security/securityconfig/roles_mapping.yml
+    ports:
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9600:9600 # Performance Analyzer [1]
+    networks:
+      - fts_os-net
+
+volumes:
+  fts_os-data:
+
+networks:
+  fts_os-net:
+
+#[1] https://github.com/opensearch-project/performance-analyzer
+YML_DOCKER_COMPOSE
+
+# Prepare certs
+create_certs "$NCDOMAIN"
 
 # Set permissions
-chown 1000:1000 -R  $RORDIR
-chmod ug+rwx -R  $RORDIR
+chmod 744 -R  $OPNSDIR
 
-# Run Elastic Search Docker
-docker run -d --restart always \
---name $fts_es_name \
---ulimit memlock=-1:-1 \
---ulimit nofile=65536:65536 \
--p 127.0.0.1:9200:9200 \
--p 127.0.0.1:9300:9300 \
--v esdata:/usr/share/elasticsearch/data \
--v /opt/es/readonlyrest.yml:/usr/share/elasticsearch/config/readonlyrest.yml \
--e "discovery.type=single-node" \
--e "bootstrap.memory_lock=true" \
--e ES_JAVA_OPTS="-Xms1024M -Xmx1024M -Dlog4j2.formatMsgNoLookups=true" \
--i -t $nc_fts
+# Launch docker-compose
+cd $OPNSDIR
+docker-compose up -d
 
 # Wait for bootstrapping
-docker restart $fts_es_name
 if [ "$(nproc)" -gt 2 ]
 then
     countdown "Waiting for Docker bootstrapping..." "30"
 else
-    countdown "Waiting for Docker bootstrapping..." "120"
+    countdown "Waiting for Docker bootstrapping..." "60"
 fi
-docker logs $fts_es_name
+
+# Make sure password setup is enforced.
+docker-compose exec fts_os-node \
+    bash -c "cd \
+             plugins/opensearch-security/tools/ && \
+             bash securityadmin.sh -f \
+             ../securityconfig/internal_users.yml \
+             -t internalusers \
+             -icl \
+             -nhnv \
+             -cacert ../../../config/root-ca.pem \
+             -cert ../../../config/admin.pem \
+             -key ../../../config/admin-key.pem"
+
+docker logs $fts_node
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
@@ -141,7 +259,7 @@ chown -R www-data:www-data $NC_APPS_PATH
 
 # Final setup
 nextcloud_occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${ROREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
+nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${OPNSREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
 nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 # Wait further for cache for index to work
 countdown "Waiting for a few seconds before indexing starts..." "10"
