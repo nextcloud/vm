@@ -775,7 +775,7 @@ then
     # https://askubuntu.com/a/1271565
     if dpkg -l | grep certbot >/dev/null 2>&1
     then
-        # certbot will be removed, but still listed, so we need to check if the snap is installed as well so that this doesn>
+        # certbot will be removed, but still listed, so we need to check if the snap is installed as well so that this doesn't run every time
         if ! snap list certbot >/dev/null 2>&1
         then
             print_text_in_color "$ICyan" "Reinstalling certbot (Let's Encrypt) as a snap instead..."
