@@ -539,6 +539,21 @@ nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
 # Set chunk_size for files app to 100MB (defaults to 10MB)
 nextcloud_occ config:app:set files max_chunk_size --value="104857600"
 
+# Set product name
+if home_sme_server
+then
+    PRODUCTNAME="Nextcloud HanssonIT Server"
+else
+    PRODUCTNAME="Nextcloud HanssonIT VM"
+fi
+if is_app_installed theming
+then
+    if [ "$(nextcloud_occ config:app:get theming productName)" != "$PRODUCTNAME" ]
+    then
+        nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
+    fi
+fi
+
 # Enable OPCache for PHP
 # https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
 phpenmod opcache
@@ -989,25 +1004,6 @@ check_command run_script STATIC change-root-profile
 # Disable hibernation
 print_text_in_color "$ICyan" "Disable hibernation..."
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
-
-# Set product name
-if home_sme_server
-then
-    PRODUCTNAME="Nextcloud HanssonIT Server"
-else
-    PRODUCTNAME="Nextcloud HanssonIT VM"
-fi
-if is_app_installed theming
-then
-    if [ "$(nextcloud_occ config:app:get theming productName)" != "$PRODUCTNAME" ]
-    then
-        nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
-    fi
-fi
-
-# Fix bug in NC 23:
-git_apply_patch 30890 server 23.0.0
-git_apply_patch 30890 server 23.0.1
 
 # Reboot
 if [ -z "$PROVISIONING" ]
