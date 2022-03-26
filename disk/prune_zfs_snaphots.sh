@@ -57,8 +57,15 @@ The script will also delete everything in trashbin for all users to free up some
                 then
                     mkdir -p "$VMLOGS"
                 fi
+                # Prune snapshots
                 touch $VMLOGS/zfs_prune.log
                 ./zfs-prune-snapshots.sh 2d ncdata >> $VMLOGS/zfs_prune.log
+                # Create daily prune to avoid disk being full again
+                if [ ! -f "$SCRIPTS/daily-zfs-prune.sh" ]
+                then
+                    run_script DISK create-daily-zfs-prune
+                fi
+                # Empty trashbin
                 nextcloud_occ trashbin:cleanup --all-users >> $VMLOGS/zfs_prune.log
             fi
         fi
