@@ -197,6 +197,11 @@ then
     done
 fi
 
+# Export default values
+export BORG_PASSPHRASE="$ENCRYPTION_KEY"
+export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
+export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
 # Skip daily backup creation if needed
 if [ -z "$SKIP_DAILY_BACKUP_CREATION" ]
 then
@@ -371,11 +376,6 @@ Please don't restart or shutdown your server until then!"
     # https://borgbackup.readthedocs.io/en/stable/deployment/automated-local.html?highlight=files%20cache#configuring-the-system
     # https://iwalton.com/wiki/#[[Backup%20Script]]
     # https://decatec.de/linux/backup-strategie-fuer-linux-server-mit-borg-backup/
-
-    # Export default values
-    export BORG_PASSPHRASE="$ENCRYPTION_KEY"
-    export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
     # Log Borg version
     borg --version
