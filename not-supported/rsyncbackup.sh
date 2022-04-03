@@ -94,6 +94,14 @@ get_expiration_time() {
 exec > >(tee -i "$LOG_FILE")
 exec 2>&1
 
+# Send mail that backup was started
+if ! send_mail "Off-shore backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+then
+    notify_admin_gui "Off-shore backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+fi
+
 # Start backup
 inform_user "$IGreen" "Off-shore backup started! $CURRENT_DATE_READABLE"
 
@@ -133,16 +141,6 @@ then
     send_error_mail "Not even one daily backup was successfully created. Please wait for that first."
 fi
 
-# Check daily backup
-rm -f /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
-export SKIP_DAILY_BACKUP_CREATION=1
-bash "$SCRIPTS/daily-borg-backup.sh"
-if ! [ -f "/tmp/DAILY_BACKUP_CHECK_SUCCESSFUL" ]
-then
-    send_error_mail "Daily backup check failed!" \
-    "Backup check was unsuccessful! $(date +%T)"
-fi
-
 # Prepare backup repository
 inform_user "$ICyan" "Mounting the daily backup drive..."
 if ! [ -d "$BACKUP_SOURCE_DIRECTORY" ]
@@ -165,6 +163,16 @@ then
     fi
 fi
 
+# Check daily backup
+rm -f /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
+export SKIP_DAILY_BACKUP_CREATION=1
+bash "$SCRIPTS/daily-borg-backup.sh"
+if ! [ -f "/tmp/DAILY_BACKUP_CHECK_SUCCESSFUL" ]
+then
+    send_error_mail "Daily backup check failed!" \
+    "Backup check was unsuccessful! $(date +%T)"
+fi
+
 # Test if btrfs volume
 if grep " $BACKUP_MOUNTPOINT " /etc/mtab | grep -q btrfs
 then
@@ -176,14 +184,6 @@ then
         DELETE_SNAP="$(find "$BACKUP_MOUNTPOINT/.snapshots/" -maxdepth 1 -mindepth 1 -type d -name '@*_*' | sort | head -1)"
         btrfs subvolume delete "$DELETE_SNAP"
     done
-fi
-
-# Send mail that backup was started
-if ! send_mail "Off-shore backup started!" "You will be notified again when the backup is finished!
-Please don't restart or shutdown your server until then!"
-then
-    notify_admin_gui "Off-shore backup started!" "You will be notified again when the backup is finished!
-Please don't restart or shutdown your server until then!"
 fi
 
 # Check if pending snapshot is existing and cancel the backup in this case.
