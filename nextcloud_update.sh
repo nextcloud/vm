@@ -318,6 +318,13 @@ then
     fi
 fi
 
+if is_this_installed veracrypt
+then
+    # Hold veracrypt if installed since unmounting all drives, updating and mounting them again is not feasible
+    # If you desperately need the update, you can do so manually
+    apt-mark hold veracrypt
+fi
+
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 

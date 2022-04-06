@@ -53,8 +53,11 @@ send_error_mail() {
     fi
     if [ -d "$BACKUP_SOURCE_DIRECTORY" ]
     then
-        inform_user "$ICyan" "Unmounting the daily backup drive..."
-        umount "$BACKUP_SOURCE_MOUNTPOINT"
+        if [ -z "$DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE" ]
+        then
+            inform_user "$ICyan" "Unmounting the backup drive..."
+            umount "$BACKUP_SOURCE_MOUNTPOINT"
+        fi
     fi
     get_expiration_time
     inform_user "$IRed" "Off-shore backup sent error on $END_DATE_READABLE ($DURATION_READABLE)"
@@ -94,6 +97,14 @@ get_expiration_time() {
 exec > >(tee -i "$LOG_FILE")
 exec 2>&1
 
+# Send mail that backup was started
+if ! send_mail "Off-shore backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+then
+    notify_admin_gui "Off-shore backup started!" "You will be notified again when the backup is finished!
+Please don't restart or shutdown your server until then!"
+fi
+
 # Start backup
 inform_user "$IGreen" "Off-shore backup started! $CURRENT_DATE_READABLE"
 
@@ -113,6 +124,7 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
+    DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE=1
     msg_box "The snapshot pending does exist. Can currently not proceed.
 Please try again later.\n
 If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
@@ -131,16 +143,6 @@ BORGBACKUP_LOG="$(grep "^export BORGBACKUP_LOG" "$SCRIPTS/daily-borg-backup.sh" 
 if [ -z "$BORGBACKUP_LOG" ] || ! [ -f "$BORGBACKUP_LOG" ] || ! grep -q "Backup finished on" "$BORGBACKUP_LOG"
 then
     send_error_mail "Not even one daily backup was successfully created. Please wait for that first."
-fi
-
-# Check daily backup
-rm -f /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
-export SKIP_DAILY_BACKUP_CREATION=1
-bash "$SCRIPTS/daily-borg-backup.sh"
-if ! [ -f "/tmp/DAILY_BACKUP_CHECK_SUCCESSFUL" ]
-then
-    send_error_mail "Daily backup check failed!" \
-    "Backup check was unsuccessful! $(date +%T)"
 fi
 
 # Prepare backup repository
@@ -165,6 +167,16 @@ then
     fi
 fi
 
+# Check daily backup
+rm -f /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
+export SKIP_DAILY_BACKUP_CREATION=1
+bash "$SCRIPTS/daily-borg-backup.sh"
+if ! [ -f "/tmp/DAILY_BACKUP_CHECK_SUCCESSFUL" ]
+then
+    send_error_mail "Daily backup check failed!" \
+    "Backup check was unsuccessful! $(date +%T)"
+fi
+
 # Test if btrfs volume
 if grep " $BACKUP_MOUNTPOINT " /etc/mtab | grep -q btrfs
 then
@@ -178,17 +190,10 @@ then
     done
 fi
 
-# Send mail that backup was started
-if ! send_mail "Off-shore backup started!" "You will be notified again when the backup is finished!
-Please don't restart or shutdown your server until then!"
-then
-    notify_admin_gui "Off-shore backup started!" "You will be notified again when the backup is finished!
-Please don't restart or shutdown your server until then!"
-fi
-
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
+    DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE=1
     msg_box "The snapshot pending does exist. Can currently not proceed.
 Please try again later.\n
 If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
