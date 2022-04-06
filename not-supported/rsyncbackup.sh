@@ -53,8 +53,11 @@ send_error_mail() {
     fi
     if [ -d "$BACKUP_SOURCE_DIRECTORY" ]
     then
-        inform_user "$ICyan" "Unmounting the daily backup drive..."
-        umount "$BACKUP_SOURCE_MOUNTPOINT"
+        if [ -z "$DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE" ]
+        then
+            inform_user "$ICyan" "Unmounting the backup drive..."
+            umount "$BACKUP_SOURCE_MOUNTPOINT"
+        fi
     fi
     get_expiration_time
     inform_user "$IRed" "Off-shore backup sent error on $END_DATE_READABLE ($DURATION_READABLE)"
@@ -121,6 +124,7 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
+    DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE=1
     msg_box "The snapshot pending does exist. Can currently not proceed.
 Please try again later.\n
 If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
@@ -189,6 +193,7 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
+    DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE=1
     msg_box "The snapshot pending does exist. Can currently not proceed.
 Please try again later.\n
 If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
