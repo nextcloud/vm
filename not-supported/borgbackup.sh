@@ -680,10 +680,13 @@ fi
 show_drive_usage
 
 # Unmount the backup drive
-inform_user "$ICyan" "Unmounting the backup drive..."
-if mountpoint -q "$BACKUP_MOUNTPOINT" && ! umount "$BACKUP_MOUNTPOINT"
+if [ -z "$SKIP_DAILY_BACKUP_CREATION" ]
 then
-    send_error_mail "Could not unmount the backup drive!" "Backup integrity check"
+    inform_user "$ICyan" "Unmounting the backup drive..."
+    if mountpoint -q "$BACKUP_MOUNTPOINT" && ! umount "$BACKUP_MOUNTPOINT"
+    then
+        send_error_mail "Could not unmount the backup drive!" "Backup integrity check"
+    fi
 fi
 
 # Resetting the integrity Check
