@@ -71,8 +71,11 @@ send_error_mail() {
     fi
     if [ -d "$BACKUP_TARGET_DIRECTORY" ]
     then
-        inform_user "$ICyan" "Unmounting the backup drive..."
-        umount "$BACKUP_MOUNTPOINT"
+        if [ -z "$DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE" ]
+        then
+            inform_user "$ICyan" "Unmounting the backup drive..."
+            umount "$BACKUP_MOUNTPOINT"
+        fi
     fi
     get_expiration_time
     MAIL_TITLE="$2"
@@ -119,6 +122,7 @@ get_expiration_time() {
 check_snapshot_pending() {
     if does_snapshot_exist "NcVM-snapshot-pending"
     then
+        DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE=1
         msg_box "The snapshot pending does exist. Can currently not proceed.
 Please try again later.\n
 If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
@@ -293,11 +297,7 @@ Please don't restart or shutdown your server until then!"
     systemctl stop postgresql
 
     # Check if pending snapshot is existing and cancel the backup in this case.
-    if does_snapshot_exist "NcVM-snapshot-pending"
-    then
-        start_services
-        send_error_mail "NcVM-snapshot-pending exists. Please try again later!"
-    fi
+    check_snapshot_pending
 
     # Create LVM snapshot & Co.
     inform_user "$ICyan" "Creating LVM snapshot..."
