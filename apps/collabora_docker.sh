@@ -54,9 +54,6 @@ They can however be hosted on the same server, but would require separate DNS en
 # Nextcloud Main Domain
 NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
-# Nextcloud Main Domain dot-escaped
-NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
-
 # Curl the library another time to get the correct https_conf
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
@@ -125,7 +122,7 @@ install_docker
 
 # Install Collabora docker
 docker pull collabora/code:latest
-docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN_ESCAPED" --restart always --name code --cap-add MKNOD collabora/code
+docker run -t -d -p 127.0.0.1:9980:9980 -e "aliasgroup1=https://$NCDOMAIN:443" --restart always --name code --cap-add MKNOD collabora/code
 
 # Install Apache2
 install_if_not apache2
