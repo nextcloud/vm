@@ -370,54 +370,59 @@ unset UNIX_PASSWORD
 
 # NEXTCLOUD USER
 NCADMIN=$(nextcloud_occ user:list | awk '{print $3}')
-msg_box "We will now change the username and password for the Web Admin in Nextcloud."
-while :
-do
-    NEWUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
+if ! echo "$NCADMIN" | grep ncadmin
+then
+   msg_box "Not changing password for the user 'ncadmin' since it doesn't exist on the system."
+else
+    msg_box "We will now change the username and password for the Web Admin in Nextcloud."
+    while :
+    do
+        NEWUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
 It must differ from the current one: $NCADMIN.\n\nThe only allowed characters for the username are:
 
 'a-z', 'A-Z', '0-9', and '_.@-'")
-    if [[ "$NEWUSER" == *" "* ]]
-    then
-        msg_box "Please don't use spaces."
-    elif [ "$NEWUSER" = "$NCADMIN" ]
-    then
-        msg_box "This username ($NCADMIN) is already in use. Please choose a different one."
-    # - has to be escaped otherwise it won't work.
-    # Inspired by: https://unix.stackexchange.com/a/498731/433213
-    elif [ "${NEWUSER//[A-Za-z0-9_.\-@]}" ]
-    then
-        msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
-    else
-        break
-    fi
-done
-while :
-do
-    OC_PASS=$(input_box_flow "Please type in the new password for the new Web Admin ($NEWUSER) in Nextcloud.")
-    if [[ "$OC_PASS" == *" "* ]]
-    then
-        msg_box "Please don't use spaces."
-    fi
-    # Create new user
-    export OC_PASS
-    if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWUSER --password-from-env -g admin"
-    then
-        msg_box "The new Web Admin in Nextcloud is now: $NEWUSER\nThe password is set to: $OC_PASS
+        if [[ "$NEWUSER" == *" "* ]]
+        then
+            msg_box "Please don't use spaces."
+        elif [ "$NEWUSER" = "$NCADMIN" ]
+        then
+            msg_box "This username ($NCADMIN) is already in use. Please choose a different one."
+        # - has to be escaped otherwise it won't work.
+        # Inspired by: https://unix.stackexchange.com/a/498731/433213
+        elif [ "${NEWUSER//[A-Za-z0-9_.\-@]}" ]
+        then
+            msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+        else
+            break
+        fi
+    done
+    while :
+    do
+        OC_PASS=$(input_box_flow "Please type in the new password for the new Web Admin ($NEWUSER) in Nextcloud.")
+        if [[ "$OC_PASS" == *" "* ]]
+        then
+            msg_box "Please don't use spaces."
+        fi
+        # Create new user
+        export OC_PASS
+        if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWUSER --password-from-env -g admin"
+        then
+            msg_box "The new Web Admin in Nextcloud is now: $NEWUSER\nThe password is set to: $OC_PASS
 
 This is used when you login to Nextcloud itself, i.e. on the web."
-        unset OC_PASS
-        break
-    else
-        any_key "Press any key to choose a different password."
+            unset OC_PASS
+            break
+        else
+            any_key "Press any key to choose a different password."
+        fi
+    done
+    # Delete old user
+    if [[ "$NCADMIN" ]]
+    then
+        print_text_in_color "$ICyan" "Deleting $NCADMIN..."
+        nextcloud_occ user:delete "$NCADMIN"
+        sleep 2
     fi
-done
-# Delete old user
-if [[ "$NCADMIN" ]]
-then
-    print_text_in_color "$ICyan" "Deleting $NCADMIN..."
-    nextcloud_occ user:delete "$NCADMIN"
-    sleep 2
 fi
 
 # We need to unset the cached admin-user since we have changed its name
