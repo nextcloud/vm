@@ -50,9 +50,12 @@ case "$choice" in
 do_the_update() {
     chmod +x "$SCRIPTS"/update.sh
     bash "$SCRIPTS"/update.sh minor
-    if yesno_box_yes "We will now run the update script a second time to update to the latest major version ($NCVERSION). Do you want to continue?"
+    if version_gt "$NCVERSION" "$CURRENTVERSION"
     then
-        bash "$SCRIPTS"/update.sh
+        if yesno_box_yes "We will now run the update script a second time to update to the latest major version ($NCVERSION). Do you want to continue?"
+        then
+            bash "$SCRIPTS"/update.sh
+        fi
     fi
 }
     if [ -f "$SCRIPTS"/update.sh ]
