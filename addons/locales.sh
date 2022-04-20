@@ -27,9 +27,6 @@ then
 elif [ "$KEYBOARD_LAYOUT" = "de" ]
 then
     sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
-elif [ "$KEYBOARD_LAYOUT" = "us" ]
-then
-    sudo locale-gen "en_US.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 elif [ "$KEYBOARD_LAYOUT" = "fr" ]
 then
     sudo locale-gen "fr_FR.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
