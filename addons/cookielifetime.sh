@@ -82,4 +82,5 @@ esac
 # Set the value
 nextcloud_occ config:system:set remember_login_cookie_lifetime --value="$COOKIE_LIFETIME"
 nextcloud_occ config:system:set session_lifetime --value="$COOKIE_LIFETIME"
+nextcloud_occ config:system:set session_keepalive --value="false"
 msg_box "Cookie Lifetime is now successfully set to $COOKIE_LIFETIME seconds."
