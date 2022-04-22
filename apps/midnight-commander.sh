@@ -10,7 +10,7 @@ that provides a flexible, powerful, and convenient set of file and directory ope
 It is capable of running in either a console or an xterm under X11.
 Its basic operation is easily mastered by the novice while providing a rich feature set and extensive customization."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

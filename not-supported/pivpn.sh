@@ -9,7 +9,7 @@ SCRIPT_EXPLAINER="PiVPN is one of the fastest and most user friendly ways to get
 This script will set up a Wireguard VPN server to connect devices to your home net from everywhere.
 Wireguard is a relatively new VPN protocol, that is much faster and better then e.g. OpenVPN."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

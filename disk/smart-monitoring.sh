@@ -8,7 +8,7 @@ SCRIPT_NAME="S.M.A.R.T Monitoring"
 SCRIPT_EXPLAINER="This script configures S.M.A.R.T Monitoring for all your drives \
 and sends a notification if an error was found."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -122,7 +122,7 @@ SCRIPT_NAME="S.M.A.R.T Notification"
 SCRIPT_EXPLAINER="This script sends a notification if something is wrong with your drives."
 
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check if root
 root_check
@@ -169,7 +169,7 @@ SCRIPT_NAME="S.M.A.R.T Notification"
 SCRIPT_EXPLAINER="This script sends a notification if something is wrong with your drives."
 
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check if root
 root_check

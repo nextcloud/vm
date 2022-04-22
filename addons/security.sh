@@ -13,7 +13,7 @@ As it's kind of intrusive, it could lead to things stop working. But on the othe
 Please run it own your own risk!"
 
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

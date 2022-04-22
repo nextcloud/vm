@@ -7,7 +7,7 @@ SCRIPT_NAME="Preview Generator"
 SCRIPT_EXPLAINER="This script will install the Preview Generator. 
 It can speedup the loading of previews in Nextcloud a lot."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

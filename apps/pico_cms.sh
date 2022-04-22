@@ -7,7 +7,7 @@ true
 SCRIPT_NAME="Pico CMS"
 SCRIPT_EXPLAINER="This script allows to easily install Pico CMS, a leightweight CMS integration in Nextcloud."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -158,7 +158,7 @@ They can however be hosted on the same server, but would require separate DNS en
 
 true
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Get all needed variables from the library
 nc_update

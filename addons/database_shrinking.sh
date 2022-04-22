@@ -6,7 +6,7 @@
 true
 SCRIPT_NAME="Database Shrinking"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 SCRIPT_EXPLAINER="This script allows to shrink your database if it has grown too much due to the usage of external storage.
 If you don't use external storage, you should NOT run this script!"
 

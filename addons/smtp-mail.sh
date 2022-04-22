@@ -8,7 +8,7 @@ SCRIPT_NAME="SMTP Relay with msmtp"
 SCRIPT_EXPLAINER="This script will setup an SMTP Relay (Mail Server) in your Nextcloud Server \
 that will be used to send emails about failed cronjob's and such."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

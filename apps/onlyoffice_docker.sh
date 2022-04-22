@@ -6,7 +6,7 @@ true
 SCRIPT_NAME="OnlyOffice (Docker)"
 SCRIPT_EXPLAINER="This script will install the OnlyOffice Document Server bundled with Docker"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -69,7 +69,7 @@ NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|h
 
 true
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Get all needed variables from the library
 nc_update

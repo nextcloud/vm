@@ -8,7 +8,7 @@ SCRIPT_NAME="Remotedesktop"
 SCRIPT_EXPLAINER="This script simplifies the installation of XRDP which allows you to connect via RDP from other devices \
 and offers some additional applications that you can choose to install."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

@@ -9,7 +9,7 @@ So, please report back! 🚀
 
 ## How to run this inside my NcVM?
 We have prepared a menu for you to choose from available options. You can download the menu with the following command:<br>
-`sudo wget https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/not-supported/not-supported.sh -P /var/scripts`<br>
+`sudo wget https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/not-supported/not-supported.sh -P /var/scripts`<br>
 After downloading the menu, you just run it with the following command:<br>
 `sudo bash /var/scripts/not-supported.sh`<br>
 Running the not-supported script will show the menu with the latest options to choose from.

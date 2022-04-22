@@ -2,7 +2,7 @@
 true
 SCRIPT_NAME="Test Connection (old)"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # This is needed since we removed this from the startup script, or changed name so it can't be downloaded anymore
 msg_box "You are running an outdated release.

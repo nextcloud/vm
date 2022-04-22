@@ -8,7 +8,7 @@ SCRIPT_EXPLAINER="This script installs the open-source antivirus-software ClamAV
 and configures Nextcloud to detect infected files already during the upload.
 At the end of the script, you will be able to choose to set up a weekly full scan of all files."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -199,7 +199,7 @@ cat << CLAMAV_REPORT > "$SCRIPTS"/clamav-fullscan.sh
 
 # T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Variables/arrays
 FULLSCAN_DONE=""

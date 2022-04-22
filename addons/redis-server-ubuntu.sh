@@ -2,7 +2,7 @@
 true
 SCRIPT_NAME="Redis Server Ubuntu"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 

@@ -5,7 +5,7 @@
 true
 SCRIPT_NAME="Set Cookie Lifetime"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 print_text_in_color "$ICyan" "Configuring Cookie Lifetime timeout..."
 
