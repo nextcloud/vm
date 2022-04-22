@@ -66,7 +66,7 @@ else
 fi
 
 # Must be 22.04
-if ! version 22.04 "$DISTRO" 22.04.10
+if ! version 20.04 "$DISTRO" 22.04.10
 then
     msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.10 to install Talk"
     msg_box "Please contact us to get support for upgrading your server:
@@ -333,7 +333,7 @@ echo "Hi there! :) If you see this page, the Apache2 proxy for $SCRIPT_NAME is u
 chown -R www-data:www-data /var/www/html/error
 
 # Only add TLS 1.3 on Ubuntu later than 20.04
-if version 22.04 "$DISTRO" 22.04.10
+if version 20.04 "$DISTRO" 22.04.10
 then
     TLS13="+TLSv1.3"
 fi

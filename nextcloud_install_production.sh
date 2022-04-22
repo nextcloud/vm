@@ -119,7 +119,7 @@ bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
 rm -f $SCRIPTS/adduser.sh
 
 # Check distribution and version
-if ! version 22.04 "$DISTRO" 22.04.10
+if ! version 20.04 "$DISTRO" 22.04.10
 then
     msg_box "This script can only be run on Ubuntu 20.04 (server)."
     exit 1

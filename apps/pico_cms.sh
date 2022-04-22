@@ -215,7 +215,7 @@ a2enmod ssl
 a2enmod headers
 
 # Only add TLS 1.3 on Ubuntu later than 20.04
-if version 22.04 "$DISTRO" 22.04.10
+if version 20.04 "$DISTRO" 22.04.10
 then
     TLS13="+TLSv1.3"
 fi
