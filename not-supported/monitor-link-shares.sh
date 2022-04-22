@@ -6,7 +6,7 @@ true
 SCRIPT_NAME="Monitor Link Shares"
 SCRIPT_EXPLAINER="This script creates a script which monitors link shares and sends a mail or notification if new link shares were created in Nextcloud."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

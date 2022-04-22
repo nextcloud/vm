@@ -5,7 +5,7 @@
 true
 SCRIPT_NAME="Main Menu"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Needed for Update option
 nc_update

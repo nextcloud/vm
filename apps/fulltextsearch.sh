@@ -7,7 +7,7 @@ true
 SCRIPT_NAME="Full Text Search"
 SCRIPT_EXPLAINER="Full Text Search provides OpenSearch for Nextcloud, which makes it possible to search for text inside files."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Get all needed variables from the library
 ncdb

@@ -10,7 +10,7 @@ It integrates Spacedeck whiteboard server and lets Nextcloud users create .white
 can then be opened in the Files app and in Talk. Those files can be shared to other users or via \
 public links. Everyone having access with write permissions to such a file can edit it collaboratively."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

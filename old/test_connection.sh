@@ -2,7 +2,7 @@
 true
 SCRIPT_NAME="Test connection"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 

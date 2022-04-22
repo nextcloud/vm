@@ -8,7 +8,7 @@ SCRIPT_NAME="PDF Annotations"
 SCRIPT_EXPLAINER="This script allows to easily install PDF Annotations, \
 a tool to annotate any PDF document inside Nextcloud."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

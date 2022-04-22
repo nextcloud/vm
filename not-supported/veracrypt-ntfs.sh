@@ -7,7 +7,7 @@ true
 SCRIPT_NAME="Veracrypt"
 SCRIPT_EXPLAINER="This script automates formatting, encrypting and mounting drives with Veracrypt."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

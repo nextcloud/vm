@@ -5,7 +5,7 @@
 true
 SCRIPT_NAME="Set up Secure Permissions for Nextcloud"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -28,7 +28,7 @@ then
     if [ -z "${NCDATA}" ]
     then
         # shellcheck source=lib.sh
-        source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+        source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
     fi
 fi
 

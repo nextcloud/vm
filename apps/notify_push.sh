@@ -12,7 +12,7 @@ By providing a way for the server to send update notifications to the clients, \
 the need for the clients to make these checks can be greatly reduced, \
 which reduces the load on the servern and delivers notifications to the clients in some cases faster."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

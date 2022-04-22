@@ -3,7 +3,7 @@
 true
 SCRIPT_NAME="Install NcVM with Vagrant"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 check_command git clone https://github.com/nextcloud/vm.git
 

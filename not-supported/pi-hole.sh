@@ -10,7 +10,7 @@ SCRIPT_EXPLAINER="The Pi-hole® is a DNS sinkhole that protects your devices fro
 without installing any client-side software.
 This is their official website: https://pi-hole.net"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -217,7 +217,7 @@ mkdir -p "$SCRIPTS"
 # Insert the new lines into pihole-update.sh
 cat << PIHOLE_UPDATE > "$SCRIPTS/pihole-update.sh"
 #!/bin/bash
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 notify_admin_gui "Starting the Pi-hole update." "You will be notified when it is done."
 # Create backup first

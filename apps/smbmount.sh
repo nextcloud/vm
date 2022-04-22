@@ -8,7 +8,7 @@ SCRIPT_NAME="SMB Mount"
 SCRIPT_EXPLAINER="This script automates mounting SMB-shares locally in your \
 system and adds them automatically as external storage to your Nextcloud."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -77,7 +77,7 @@ then
     msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.
 If you really want to mount more, you can simply download the smb-mount script \
 directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:
-'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh' # Download the script
+'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/apps/smbmount.sh' # Download the script
 'nano smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file
 'sudo bash smbmount.sh' # Execute the script." "$SUBTITLE"
     return

@@ -6,7 +6,7 @@ true
 SCRIPT_NAME="OnlyOffice (Integrated)"
 SCRIPT_EXPLAINER="This script will install the integrated OnlyOffice Documentserver Community."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/ubuntu2204/lib.sh)
 
 # Get all needed variables from the library
 nc_update
