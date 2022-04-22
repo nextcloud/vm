@@ -321,7 +321,7 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 done
 
 # Install PostgreSQL
-# sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
+# sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main"
 # curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt-get update -q4 & spinner_loading
 apt-get install postgresql -y

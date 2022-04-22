@@ -17,12 +17,12 @@ Server installation. Simplified. :cloud:
 --------------------
 
 ## Dependencies:
-(Ubuntu Server 20.04 LTS 64-bit)
+(Ubuntu Server 22.04 LTS 64-bit)
 <br>
-(Linux Kernel: 5.4)
+(Linux Kernel: 5.15)
 - Apache 2.4
-- PostgreSQL 12
-- PHP-FPM 7.4
+- PostgreSQL 14
+- PHP-FPM 8.1
 - Redis Memcache (latest stable version from PECL)
 - PHP-igbinary (latest stable version from PECL
 - PHP-smbclient (latest stable version from PECL)
