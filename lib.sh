@@ -691,10 +691,10 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 18.04 "$DISTRO" 20.04.10
+if ! version 20.04 "$DISTRO" 22.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-18.04 - 20.04.10 to run this script."
+20.04 - 22.04.10 to run this script."
     print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -1044,7 +1044,7 @@ You can find the download link here: https://www.ubuntu.com/download/server"
 fi
 
 if ! version 20.04.10 "$DISTRO" 22.04.10; then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.10 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -1169,7 +1169,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 18.04 "$DISTRO" 20.04.10
+if version 20.04 "$DISTRO" 22.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if site_200 github.com
@@ -1194,7 +1194,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.10 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
