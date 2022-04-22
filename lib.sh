@@ -1096,7 +1096,7 @@ then
 
 To bypass this check, comment out (add # before the line) 'ram_check X' in the script that you are trying to run.
 
-In nextcloud_install_production.sh you can find the check somewhere around line #98.
+In nextcloud_install_production.sh you can find the check somewhere around line #48.
 
 Please note this may affect performance. USE AT YOUR OWN RISK!"
     exit 1
