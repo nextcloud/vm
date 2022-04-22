@@ -190,6 +190,8 @@ stop_if_installed php7.1-fpm
 stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
 stop_if_installed php8.0-fpm
+stop_if_installed php8.1-fpm
+stop_if_installed php8.2-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
@@ -376,7 +378,6 @@ check_command apt-get install -y \
     php"$PHPVER"-zip \
     php"$PHPVER"-mbstring \
     php"$PHPVER"-soap \
-    php"$PHPVER"-json \
     php"$PHPVER"-gmp \
     php"$PHPVER"-bz2 \
     php"$PHPVER"-bcmath \
@@ -434,7 +435,10 @@ restart_webserver
 calculate_php_fpm
 
 # Install VM-tools
-install_if_not open-vm-tools
+if [ "$SYSVENDOR" == "VMware, Inc." ];
+then
+    install_if_not open-vm-tools
+fi
 
 # Get not-latest Nextcloud version
 if [ -n "$NOT_LATEST" ]
