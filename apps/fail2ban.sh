@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 # Inspired by https://github.com/nextcloud/nextcloudpi/blob/master/etc/nextcloudpi-config.d/fail2ban.sh
 
 true
@@ -210,7 +210,7 @@ fi
 # Create Fail2ban report script
 cat << FAIL2BAN_REPORT > "$SCRIPTS/daily_fail2ban_report.sh"
 #!/bin/bash
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
 # Look for ip addresses
 BANNED_IPS=\$(grep "Ban " /var/log/fail2ban.log | grep "\$(date +%Y-%m-%d)" \
