@@ -370,9 +370,12 @@ unset UNIX_PASSWORD
 
 # NEXTCLOUD USER
 NCADMIN=$(nextcloud_occ user:list | awk '{print $3}')
-if ! echo "$NCADMIN" | grep ncadmin
+if [[ "$NCADMIN" != "ncadmin" ]]
 then
-   msg_box "Not changing password for the user 'ncadmin' since it doesn't exist on the system."
+   print_text_in_color "$ICyan" "No need to change password for $NCADMIN since it's not the default user."
+else
+    msg_box "We will now change the username and password for the Web Admin in Nextcloud."
+
 else
     msg_box "We will now change the username and password for the Web Admin in Nextcloud."
     while :

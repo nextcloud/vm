@@ -470,6 +470,28 @@ rm "$HTML/$STABLEVERSION.tar.bz2"
 download_script STATIC setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
+# Ask to set a custom username
+if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$NCUSER' to something else?"
+then
+    while :
+    do
+        NCUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
+\nThe only allowed characters for the username are:
+'a-z', 'A-Z', '0-9', and '_.@-'")
+        if [[ "$NCUSER" == *" "* ]]
+        then
+            msg_box "Please don't use spaces."
+        # - has to be escaped otherwise it won't work.
+        # Inspired by: https://unix.stackexchange.com/a/498731/433213
+        elif [ "${NEWUSER//[A-Za-z0-9_.\-@]}" ]
+        then
+            msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+        else
+            break
+        fi
+    done
+fi
+
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
