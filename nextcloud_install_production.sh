@@ -481,15 +481,15 @@ if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the 
 then
     while :
     do
-        NCUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
+        GUIUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
 \nThe only allowed characters for the username are:
 'a-z', 'A-Z', '0-9', and '_.@-'")
-        if [[ "$NCUSER" == *" "* ]]
+        if [[ "$GUIUSER" == *" "* ]]
         then
             msg_box "Please don't use spaces."
         # - has to be escaped otherwise it won't work.
         # Inspired by: https://unix.stackexchange.com/a/498731/433213
-        elif [ "${NEWUSER//[A-Za-z0-9_.\-@]}" ]
+        elif [ "${GUIUSER//[A-Za-z0-9_.\-@]}" ]
         then
             msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
         else
@@ -507,7 +507,7 @@ nextcloud_occ maintenance:install \
 --database-name=nextcloud_db \
 --database-user="$NCUSER" \
 --database-pass="$PGDB_PASS" \
---admin-user="$NCUSER" \
+--admin-user="$GUIUSER" \
 --admin-pass="$NCPASS"
 echo
 print_text_in_color "$ICyan" "Nextcloud version:"
