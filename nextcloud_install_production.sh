@@ -224,6 +224,9 @@ install_if_not apt-transport-https
 # Install build-essentials to get make
 install_if_not build-essential
 
+# Install a decent text editor
+install_if_not nano
+
 # Make sure sudo exists (needed in adduser.sh)
 install_if_not sudo
 
