@@ -498,17 +498,18 @@ then
     done
     while :
     do
-        OC_PASS=$(input_box_flow "Please type in the new password for the new Web Admin ($GUIUSER) in Nextcloud.")
-        if [[ "$OC_PASS" == *" "* ]]
+        GUIPASS=$(input_box_flow "Please type in the new password for the new Web Admin ($GUIUSER) in Nextcloud.")
+        if [[ "$GUIPASS" == *" "* ]]
         then
             msg_box "Please don't use spaces."
         fi
-            msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $OC_PASS
-This is used when you login to Nextcloud itself, i.e. on the web."
-            unset OC_PASS
-            break
+        if [ "${GUIPASS//[A-Za-z0-9_.\-@]}" ]
+        then
+            msg_box "Allowed characters for the password are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
         else
-            any_key "Press any key to choose a different password."
+        msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $GUIPASS
+This is used when you login to Nextcloud itself, i.e. on the web."
+            break
         fi
     done
 
@@ -518,7 +519,7 @@ fi
 if [ -n "$GUIUSER" ]
 then
     NCUSER="$GUIUSER"
-    NCPASS="$OC_PASS"
+    NCPASS="$GUIPASS"
 fi
 
 # Install Nextcloud
