@@ -227,6 +227,9 @@ install_if_not build-essential
 # Install a decent text editor
 install_if_not nano
 
+# Install package for crontab
+install_if_not cron
+
 # Make sure sudo exists (needed in adduser.sh)
 install_if_not sudo
 
