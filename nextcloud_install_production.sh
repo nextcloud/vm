@@ -335,8 +335,8 @@ apt-get install postgresql -y
 # Create DB
 cd /tmp
 sudo -u postgres psql <<END
-CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
-CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
+CREATE USER $PGDB_USER WITH PASSWORD '$PGDB_PASS';
+CREATE DATABASE nextcloud_db WITH OWNER $PGDB_USER TEMPLATE template0 ENCODING 'UTF8';
 END
 print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
 systemctl restart postgresql.service
@@ -477,7 +477,7 @@ download_script STATIC setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
 # Ask to set a custom username
-if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$NCUSER' to something else?"
+if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$GUIUSER' to something else?"
 then
     while :
     do
@@ -515,13 +515,6 @@ This is used when you login to Nextcloud itself, i.e. on the web."
 
 fi
 
-# Check is GUIUSER is set and change variables accordingly
-if [ -n "$GUIUSER" ]
-then
-    NCUSER="$GUIUSER"
-    NCPASS="$GUIPASS"
-fi
-
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
@@ -529,10 +522,10 @@ nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
---database-user="$NCUSER" \
+--database-user="$PGDB_USER" \
 --database-pass="$PGDB_PASS" \
---admin-user="$NCUSER" \
---admin-pass="$NCPASS"
+--admin-user="$GUIUSER" \
+--admin-pass="$GUIPASS"
 echo
 print_text_in_color "$ICyan" "Nextcloud version:"
 nextcloud_occ status

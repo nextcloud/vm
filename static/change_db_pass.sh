@@ -19,7 +19,7 @@ debug_mode
 cd /tmp
 sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
 
-if [ "$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)" == "ALTER ROLE" ]
+if [ "$(sudo -u postgres psql -c "ALTER USER $PGDB_USER WITH PASSWORD '$NEWPGPASS'";)" == "ALTER ROLE" ]
 then
     sleep 1
 else

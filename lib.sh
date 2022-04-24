@@ -103,8 +103,8 @@ GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
-NCPASS=nextcloud
-NCUSER=ncadmin
+GUIUSER=ncadmin
+GUIPASS=nextcloud
 UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
@@ -113,6 +113,7 @@ BITWARDEN_USER=bitwarden
 BITWARDEN_HOME=/home/"$BITWARDEN_USER"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
+PGDB_USER=nextcloud_db_user
 PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 ncdb() {
