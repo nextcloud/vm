@@ -375,9 +375,6 @@ then
    print_text_in_color "$ICyan" "No need to change password for $NCADMIN since it's not the default user."
 else
     msg_box "We will now change the username and password for the Web Admin in Nextcloud."
-
-else
-    msg_box "We will now change the username and password for the Web Admin in Nextcloud."
     while :
     do
         NEWUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
