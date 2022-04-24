@@ -496,6 +496,26 @@ then
             break
         fi
     done
+    while :
+    do
+        OC_PASS=$(input_box_flow "Please type in the new password for the new Web Admin ($GUIUSER) in Nextcloud.")
+        if [[ "$OC_PASS" == *" "* ]]
+        then
+            msg_box "Please don't use spaces."
+        fi
+        # Create new user
+        export OC_PASS
+        if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $GUIUSER --password-from-env -g admin"
+        then
+            msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $OC_PASS
+This is used when you login to Nextcloud itself, i.e. on the web."
+            unset OC_PASS
+            break
+        else
+            any_key "Press any key to choose a different password."
+        fi
+    done
+
 fi
 
 # Install Nextcloud
