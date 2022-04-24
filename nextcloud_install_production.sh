@@ -503,10 +503,6 @@ then
         then
             msg_box "Please don't use spaces."
         fi
-        # Create new user
-        export OC_PASS
-        if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $GUIUSER --password-from-env -g admin"
-        then
             msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $OC_PASS
 This is used when you login to Nextcloud itself, i.e. on the web."
             unset OC_PASS
@@ -518,6 +514,13 @@ This is used when you login to Nextcloud itself, i.e. on the web."
 
 fi
 
+# Check is GUIUSER is set and change variables accordingly
+if [ -n "$GUIUSER" ]
+then
+    NCUSER="$GUIUSER"
+    NCPASS="$OC_PASS"
+fi
+
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
@@ -527,7 +530,7 @@ nextcloud_occ maintenance:install \
 --database-name=nextcloud_db \
 --database-user="$NCUSER" \
 --database-pass="$PGDB_PASS" \
---admin-user="$GUIUSER" \
+--admin-user="$NCUSER" \
 --admin-pass="$NCPASS"
 echo
 print_text_in_color "$ICyan" "Nextcloud version:"
