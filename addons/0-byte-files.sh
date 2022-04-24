@@ -48,4 +48,6 @@ Please see files in red when you hit OK."
     do
       print_text_in_color "$IRed" "$each"
     done
+else
+    msg_box "No 0-byte files found. *peew*"
 fi
