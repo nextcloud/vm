@@ -349,9 +349,9 @@ bash $SCRIPTS/additional_apps.sh
 ### Change passwords
 # CLI USER
 UNIXUSER="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
-if [[ "$NCADMIN" != "ncadmin" ]]
+if [[ "$UNIXUSER" != "ncadmin" ]]
 then
-   print_text_in_color "$ICyan" "No need to change password for CLI user '$NCADMIN' since it's not the default user."
+   print_text_in_color "$ICyan" "No need to change password for CLI user '$UNIXUSER' since it's not the default user."
 else
     msg_box "For better security, we will now change the password for the CLI user in Ubuntu."
     while :
