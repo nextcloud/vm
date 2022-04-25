@@ -117,12 +117,10 @@ PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 ncdb() {
     NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCCONFIGDBUSER=$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDBTYPE=$(grep "dbtype" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDBHOST=$(grep "dbhost" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 }
-[ -n "$NCDB" ] && ncdb # TODO: remove this line someday
-ncdbpass() {
-    NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-}
-[ -n "$NCDBPASS" ] && ncdbpass # TODO: remove this line someday
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Nextcloud version
@@ -134,7 +132,6 @@ nc_update() {
     NCBAD=$((NCMAJOR-2))
     NCNEXT="$((${CURRENTVERSION%%.*}+1))"
 }
-[ -n "$NC_UPDATE" ] && nc_update # TODO: remove this line someday
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
 # Keys
@@ -200,7 +197,6 @@ turn_install() {
     NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
 }
-[ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
 
 ## FUNCTIONS
 
