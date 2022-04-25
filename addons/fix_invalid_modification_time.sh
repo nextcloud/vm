@@ -10,6 +10,20 @@ source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercont
 # Check if root
 root_check
 
+msg_box "This is an attempt to automate a fix for the nasty bug from the Desktop Client:
+https://github.com/nextcloud/desktop/wiki/How-to-fix-the-error-invalid-or-negative-modification-date#-how-to-fix-it
+
+Please only run this if you made a backup."
+
+if ! yesno_box_no "Have you made a backup?"
+then
+    exit 1
+fi
+
+msg_box "OK, let's go! 
+
+Please note, this script might take several hours to run, depening on the size of your datadir. Don't abort it!"
+
 # Download the script
 curl_to_dir https://raw.githubusercontent.com/nextcloud-gmbh/mtime_fixer_tool_kit/master solvable_files.sh $NCPATH
 
@@ -23,7 +37,7 @@ then
 fi
 
 # Run the script
-./$NCPATH/solvable_files.sh $NCDATA "$NCDBTYPE" "$DBHOST" "$NCCONFIGDBUSER" "$NCCONFIGDBPASS" "$NCCONFIGDB" fix use_birthday verbose
+./$NCPATH/solvable_files.sh $NCDATA "$NCDBTYPE" "$NCDBHOST" "$NCCONFIGDBUSER" "$NCCONFIGDBPASS" "$NCCONFIGDB" fix use_birthday verbose
 
 # Scan all files
 nextcloud_occ files:scan --all
