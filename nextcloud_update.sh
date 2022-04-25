@@ -232,7 +232,7 @@ Holding PHP to avoid upgrading to a newer version without migration..."
 fi
 
 # Don't allow MySQL/MariaDB
-if ! grep -q pgsql /var/www/nextcloud/config/config.php || dpkg -l | grep -q mariadb-common
+if [[ $NCDBTYPE = mysql ]]
 then
     msg_box "MySQL/MariaDB is not supported in this script anymore. Please contact us to get support \
 for upgrading your server: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
