@@ -5,7 +5,7 @@ SCRIPT_NAME="Change Database Password"
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
 
 # Get all needed variables from the library
-ncdbpass
+ncdb
 
 # T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
