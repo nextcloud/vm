@@ -117,9 +117,9 @@ PGDB_USER=nextcloud_db_user
 PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 ncdb() {
-    NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-    NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-    NCCONFIGDBUSER=$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDBUSER=$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
     NCDBTYPE=$(grep "dbtype" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")
     NCDBHOST=$(grep "dbhost" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 }

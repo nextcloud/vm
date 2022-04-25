@@ -38,7 +38,7 @@ fi
 
 # Run the script and remove it
 print_text_in_color "$ICyan" "Running the scan and fixing broken files..."
-bash "$NCPATH"/solvable_files.sh "$NCDATA" "$NCDBTYPE" "$NCDBHOST" "$NCCONFIGDBUSER" "$NCCONFIGDBPASS" "$NCCONFIGDB" fix use_birthday verbose
+bash "$NCPATH"/solvable_files.sh "$NCDATA" "$NCDBTYPE" "$NCDBHOST" "$NCDBUSER" "$NCDBPASS" "$NCDB" fix use_birthday verbose
 rm "$NCPATH"/solvable_files.sh
 
 # Scan all files

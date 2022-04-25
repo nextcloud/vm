@@ -24,7 +24,7 @@ then
     sleep 1
 else
     print_text_in_color "$IRed" "Changing PostgreSQL Nextcloud password failed."
-    sed -i "s|  'dbpassword' =>.*|  'dbpassword' => '$NCCONFIGDBPASS',|g" /var/www/nextcloud/config/config.php
-    print_text_in_color "$IRed" "Nothing is changed. Your old password is: $NCCONFIGDBPASS"
+    sed -i "s|  'dbpassword' =>.*|  'dbpassword' => '$NCDBPASS',|g" /var/www/nextcloud/config/config.php
+    print_text_in_color "$IRed" "Nothing is changed. Your old password is: $NCDBPASS"
     exit 1
 fi
