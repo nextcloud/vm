@@ -37,7 +37,7 @@ then
 fi
 
 # Run the script
-./$NCPATH/solvable_files.sh $NCDATA "$NCDBTYPE" "$NCDBHOST" "$NCCONFIGDBUSER" "$NCCONFIGDBPASS" "$NCCONFIGDB" fix use_birthday verbose
+./"$NCPATH"/solvable_files.sh "$NCDATA" "$NCDBTYPE" "$NCDBHOST" "$NCCONFIGDBUSER" "$NCCONFIGDBPASS" "$NCCONFIGDB" fix use_birthday verbose
 
 # Scan all files
 nextcloud_occ files:scan --all
