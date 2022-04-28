@@ -87,6 +87,7 @@ then
     print_text_in_color "$IGreen" "Online!"
 else
     print_text_in_color "$IGreen" "Still offline, but no worries we can continue anyway!"
+    donotupgrade="1"
 fi
 
 # shellcheck disable=2034,2059,1091
@@ -217,19 +218,22 @@ then
 fi
 clear
 
-# Check if user got internet once more, and then do the Nextcloud upgrade
-msg_box "We will no try to upgrade Nextcloud to the latest version.
-Please press OK to continue."
-if network_ok
+# Upgrade Nextcloud based on if the user got internet or not
+if [ -z $donotupgrade ]
 then
-    # Do the upgrade
-    chown -R www-data:www-data "$NCPATH"
-    rm -rf "$NCPATH"/assets
-    yes no | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
-    nextcloud_occ maintenance:mode --off
-    apt-get update
-    apt-get upgrade -y
-    apt-get autoremove -y
+    msg_box "We will no try to upgrade Nextcloud to the latest version.
+    Please press OK to continue."
+    if network_ok
+    then
+        # Do the upgrade
+        chown -R www-data:www-data "$NCPATH"
+        rm -rf "$NCPATH"/assets
+        yes no | sudo -u www-data php /var/www/nextcloud/updater/updater.phar
+        nextcloud_occ maintenance:mode --off
+        apt-get update
+        apt-get upgrade -y
+        apt-get autoremove -y
+    fi
 fi
 
 # Cleanup 1
