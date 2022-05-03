@@ -8,7 +8,7 @@ SCRIPT_NAME="TPM2 Unlock"
 SCRIPT_EXPLAINER="This script helps automatically unlocking the root partition during boot \
 and securing your GRUB (bootloader)."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

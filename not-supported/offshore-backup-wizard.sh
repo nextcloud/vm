@@ -7,7 +7,7 @@ true
 SCRIPT_NAME="Off-Shore Backup Wizard"
 SCRIPT_EXPLAINER="This script helps creating an off-shore backup script for your server."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -270,7 +270,7 @@ true
 SCRIPT_NAME="Off-Shore Rsync Backup"
 SCRIPT_EXPLAINER="This script executes the off-shore rsync backup."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

@@ -7,7 +7,7 @@ true
 SCRIPT_NAME="System Restore"
 SCRIPT_EXPLAINER="This script let's you restore your system- and boot-partition to a previous state."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

@@ -10,7 +10,7 @@ The Bitwarden platform offers a variety of client applications including a \
 web interface, desktop applications, browser extensions, mobile apps, and a CLI. 
 Bitwarden offers a cloud-hosted service as well as the ability to deploy the solution on-premises."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -220,7 +220,7 @@ fi
 
 # Curl the lib another time to get the correct HTTPS_CONF
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
