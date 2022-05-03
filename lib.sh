@@ -1050,7 +1050,7 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 20.04.10 "$DISTRO" 22.04.10; then
+if ! version 20.04 "$DISTRO" 22.04.10; then
     msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
