@@ -17,7 +17,7 @@ Server installation. Simplified. :cloud:
 --------------------
 
 ## Dependencies:
-(Ubuntu Server 22.04 LTS 64-bit)
+(Ubuntu Server 22.04 LTS *minimal* 64-bit)
 <br>
 (Linux Kernel: 5.15)
 - Apache 2.4
