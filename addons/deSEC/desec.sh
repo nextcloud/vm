@@ -6,7 +6,7 @@ true
 SCRIPT_NAME="deSEC Registration"
 SCRIPT_EXPLAINER="This script will automatically register a domain of your liking, secure it with TLS, and set it to automatically update your external IP address with DDNS."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 
 prompt_dedyn_subdomain(){
@@ -140,9 +140,9 @@ then
     # Add DNS renewals with the deSEC hoock script
     print_text_in_color "$ICyan" "Preparing for DNS-renewals..."
     mkdir -p "$SCRIPTS"/deSEC
-    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/addons/deSEC" "hook.sh" "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" "hook.sh" "$SCRIPTS"/deSEC
     chmod +x "$SCRIPTS"/deSEC/hook.sh
-    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/addons/deSEC" ".dedynauth" "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" ".dedynauth" "$SCRIPTS"/deSEC
     check_command sed -i "s|DEDYN_TOKEN=.*|DEDYN_TOKEN=$DEDYNAUTHTOKEN|g" "$SCRIPTS"/deSEC/.dedynauth
     check_command sed -i "s|DEDYN_NAME=.*|DEDYN_NAME=$DEDYNDOMAIN|g" "$SCRIPTS"/deSEC/.dedynauth
     msg_box "DNS updates for deSEC are now set. This means you don't have to open any ports (80|443) for the renewal process since deSEC TLS renewals will be run with a built in hook. \

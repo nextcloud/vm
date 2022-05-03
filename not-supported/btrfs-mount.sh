@@ -7,7 +7,7 @@ true
 SCRIPT_NAME="BTRFS Mount"
 SCRIPT_EXPLAINER="This script automates mounting BTRFS drives locally in your system."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -254,7 +254,7 @@ chown root:root "$SCRIPTS/scrub-btrfs-monthly.sh"
 chmod 700 "$SCRIPTS/scrub-btrfs-monthly.sh"
 
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 SNAPSHOT
     fi
     cat << SNAPSHOT >> "$SCRIPTS/scrub-btrfs-monthly.sh"

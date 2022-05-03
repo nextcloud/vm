@@ -6,7 +6,7 @@ true
 SCRIPT_NAME="Collabora (Docker)"
 SCRIPT_EXPLAINER="This script will install the Collabora Office Server bundled with Docker"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -56,7 +56,7 @@ NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|h
 
 # Curl the library another time to get the correct https_conf
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 nc_update

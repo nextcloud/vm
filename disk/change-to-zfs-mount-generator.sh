@@ -13,7 +13,7 @@
 true
 SCRIPT_NAME="Change to ZFS Mount Generator"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check if root
 root_check

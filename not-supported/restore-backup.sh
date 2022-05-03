@@ -9,7 +9,7 @@ SCRIPT_NAME="Restore Backup"
 SCRIPT_EXPLAINER="This script allows to restore Nextcloud and other important data that are \
 stored on the system partition on different installations than the borg-backup was initially made."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

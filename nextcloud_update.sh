@@ -11,7 +11,7 @@
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 ncdb
@@ -333,7 +333,7 @@ if asuspn51
 then
     # Upgrade Realtek drivers
     print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
-    curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/network/asusnuc pn51.sh "$SCRIPTS"
+    curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
     bash "$SCRIPTS"/pn51.sh
 fi
 

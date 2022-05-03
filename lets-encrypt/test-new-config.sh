@@ -2,7 +2,7 @@
 true
 SCRIPT_NAME="Test New Configuration"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
@@ -55,7 +55,7 @@ then
     if ! pgrep apache2 > /dev/null
     then
         # shellcheck source=lib.sh
-        source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+        source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
         notify_admin_gui "Could not start Apache!" "Please report this to $ISSUES!"
     fi
 fi

@@ -5,7 +5,7 @@
 true
 SCRIPT_NAME="Modsecurity"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 print_text_in_color "$ICyan" "Installing ModSecurity..."
 

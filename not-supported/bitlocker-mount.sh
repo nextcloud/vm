@@ -9,7 +9,7 @@ SCRIPT_EXPLAINER="This script automates mounting Bitlocker encrypted drives loca
 Currently supported are only Bitlocker encrypted NTFS (Windows) drives.
 You need a password to mount the drive. Recovery keys are not supported."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

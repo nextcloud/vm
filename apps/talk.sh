@@ -8,7 +8,7 @@ SCRIPT_EXPLAINER="This script installs Nextcloud Talk and also offers the possib
 to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
 It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
 nc_update
@@ -207,7 +207,7 @@ They can however be hosted on the same server, but would require separate DNS en
 
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Notification
 msg_box "Before continuing, please make sure that you have you have \

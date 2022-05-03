@@ -7,7 +7,7 @@ true
 SCRIPT_NAME="Veracrypt"
 SCRIPT_EXPLAINER="This script automates formatting, encrypting and mounting drives with Veracrypt."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -370,7 +370,7 @@ chown root:root "$SCRIPTS/scrub-btrfs-weekly.sh"
 chmod 700 "$SCRIPTS/scrub-btrfs-weekly.sh"
 
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/UBUNTU-22.04/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 SNAPSHOT
     fi
     cat << SNAPSHOT >> "$SCRIPTS/scrub-btrfs-weekly.sh"
