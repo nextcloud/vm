@@ -10,6 +10,7 @@ true
 
 ##### LEGACY #####
 ## Remove 2022-09-01
+NCPATH=/var/www/nextcloud
 NCPASS=nextcloud
 NCUSER=ncadmin
 PGDB_USER=nextcloud_db_user
