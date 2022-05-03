@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -215,7 +215,7 @@ a2enmod ssl
 a2enmod headers
 
 # Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 20.04.10
+if version 20.04 "$DISTRO" 22.04.10
 then
     TLS13="+TLSv1.3"
 fi

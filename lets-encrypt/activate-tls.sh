@@ -4,7 +4,7 @@ SCRIPT_NAME="Activate TLS"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -116,7 +116,7 @@ fi
 check_php
 
 # Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 20.04.10
+if version 20.04 "$DISTRO" 22.04.10
 then
     TLS13="+TLSv1.3"
 fi

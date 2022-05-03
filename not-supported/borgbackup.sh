@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=2024
@@ -279,13 +279,13 @@ Please don't restart or shutdown your server until then!"
     nextcloud_occ_no_check maintenance:mode --on
     # Database export
     # Not really necessary since the root partition gets backed up but easier to restore on new systems
-    ncdb # get NCCONFIGDB
+    ncdb # get NCDB
     rm -f "$SCRIPTS"/nextclouddb.sql
     rm -f "$SCRIPTS"/alldatabases.sql
-    if sudo -Hiu postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCCONFIGDB'" | grep -q "1 row"
+    if sudo -Hiu postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCDB'" | grep -q "1 row"
     then
-        inform_user "$ICyan" "Doing pgdump of $NCCONFIGDB..."
-        sudo -Hiu postgres pg_dump "$NCCONFIGDB"  > "$SCRIPTS"/nextclouddb.sql
+        inform_user "$ICyan" "Doing pgdump of $NCDB..."
+        sudo -Hiu postgres pg_dump "$NCDB"  > "$SCRIPTS"/nextclouddb.sql
         chown root:root "$SCRIPTS"/nextclouddb.sql
         chmod 600 "$SCRIPTS"/nextclouddb.sql
     else
@@ -680,10 +680,13 @@ fi
 show_drive_usage
 
 # Unmount the backup drive
-inform_user "$ICyan" "Unmounting the backup drive..."
-if mountpoint -q "$BACKUP_MOUNTPOINT" && ! umount "$BACKUP_MOUNTPOINT"
+if [ -z "$SKIP_DAILY_BACKUP_CREATION" ]
 then
-    send_error_mail "Could not unmount the backup drive!" "Backup integrity check"
+    inform_user "$ICyan" "Unmounting the backup drive..."
+    if mountpoint -q "$BACKUP_MOUNTPOINT" && ! umount "$BACKUP_MOUNTPOINT"
+    then
+        send_error_mail "Could not unmount the backup drive!" "Backup integrity check"
+    fi
 fi
 
 # Resetting the integrity Check

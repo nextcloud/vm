@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
@@ -119,7 +119,7 @@ bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
 rm -f $SCRIPTS/adduser.sh
 
 # Check distribution and version
-if ! version 20.04 "$DISTRO" 20.04.6
+if ! version 20.04 "$DISTRO" 22.04.10
 then
     msg_box "This script can only be run on Ubuntu 20.04 (server)."
     exit 1
@@ -190,6 +190,8 @@ stop_if_installed php7.1-fpm
 stop_if_installed php7.2-fpm
 stop_if_installed php7.3-fpm
 stop_if_installed php8.0-fpm
+stop_if_installed php8.1-fpm
+stop_if_installed php8.2-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
@@ -221,6 +223,12 @@ install_if_not apt-transport-https
 
 # Install build-essentials to get make
 install_if_not build-essential
+
+# Install a decent text editor
+install_if_not nano
+
+# Install package for crontab
+install_if_not cron
 
 # Make sure sudo exists (needed in adduser.sh)
 install_if_not sudo
@@ -319,7 +327,7 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 done
 
 # Install PostgreSQL
-# sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
+# sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main"
 # curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt-get update -q4 & spinner_loading
 apt-get install postgresql -y
@@ -327,8 +335,8 @@ apt-get install postgresql -y
 # Create DB
 cd /tmp
 sudo -u postgres psql <<END
-CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
-CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';
+CREATE USER $PGDB_USER WITH PASSWORD '$PGDB_PASS';
+CREATE DATABASE nextcloud_db WITH OWNER $PGDB_USER TEMPLATE template0 ENCODING 'UTF8';
 END
 print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
 service postgresql restart
@@ -376,7 +384,6 @@ check_command apt-get install -y \
     php"$PHPVER"-zip \
     php"$PHPVER"-mbstring \
     php"$PHPVER"-soap \
-    php"$PHPVER"-json \
     php"$PHPVER"-gmp \
     php"$PHPVER"-bz2 \
     php"$PHPVER"-bcmath \
@@ -434,7 +441,10 @@ restart_webserver
 calculate_php_fpm
 
 # Install VM-tools
-install_if_not open-vm-tools
+if [ "$SYSVENDOR" == "VMware, Inc." ];
+then
+    install_if_not open-vm-tools
+fi
 
 # Get not-latest Nextcloud version
 if [ -n "$NOT_LATEST" ]
@@ -466,6 +476,45 @@ rm "$HTML/$STABLEVERSION.tar.bz2"
 download_script STATIC setup_secure_permissions_nextcloud
 bash $SECURE & spinner_loading
 
+# Ask to set a custom username
+if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$GUIUSER' to something else?"
+then
+    while :
+    do
+        GUIUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
+\nThe only allowed characters for the username are:
+'a-z', 'A-Z', '0-9', and '_.@-'")
+        if [[ "$GUIUSER" == *" "* ]]
+        then
+            msg_box "Please don't use spaces."
+        # - has to be escaped otherwise it won't work.
+        # Inspired by: https://unix.stackexchange.com/a/498731/433213
+        elif [ "${GUIUSER//[A-Za-z0-9_.\-@]}" ]
+        then
+            msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+        else
+            break
+        fi
+    done
+    while :
+    do
+        GUIPASS=$(input_box_flow "Please type in the new password for the new Web Admin ($GUIUSER) in Nextcloud.")
+        if [[ "$GUIPASS" == *" "* ]]
+        then
+            msg_box "Please don't use spaces."
+        fi
+        if [ "${GUIPASS//[A-Za-z0-9_.\-@]}" ]
+        then
+            msg_box "Allowed characters for the password are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+        else
+        msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $GUIPASS
+This is used when you login to Nextcloud itself, i.e. on the web."
+            break
+        fi
+    done
+
+fi
+
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud..."
 cd "$NCPATH"
@@ -473,10 +522,10 @@ nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
---database-user="$NCUSER" \
+--database-user="$PGDB_USER" \
 --database-pass="$PGDB_PASS" \
---admin-user="$NCUSER" \
---admin-pass="$NCPASS"
+--admin-user="$GUIUSER" \
+--admin-pass="$GUIPASS"
 echo
 print_text_in_color "$ICyan" "Nextcloud version:"
 nextcloud_occ status

@@ -4,7 +4,7 @@ SCRIPT_NAME="Redis Server Ubuntu"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -16,9 +16,9 @@ debug_mode
 root_check
 
 # Check Ubuntu version
-if ! version 16.04 "$DISTRO" 20.04.6
+if ! version 18.04 "$DISTRO" 22.04.10
 then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 16.04 - 20.04.6 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 22.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"

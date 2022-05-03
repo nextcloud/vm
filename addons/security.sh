@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Extra Security"
@@ -72,6 +72,9 @@ a2enmod reqtimeout # http://httpd.apache.org/docs/2.4/mod/mod_reqtimeout.html
 
 # Download the spamhaus script
 download_script STATIC spamhaus-drop
+
+# Install iptables
+install_if_not iptables
 
 # Make the file executable
 chmod +x "$SCRIPTS"/spamhaus-drop.sh

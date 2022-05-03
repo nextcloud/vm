@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 true
 SCRIPT_NAME="Check for 0-Byte files"
 # shellcheck source=lib.sh
@@ -48,4 +48,6 @@ Please see files in red when you hit OK."
     do
       print_text_in_color "$IRed" "$each"
     done
+else
+    msg_box "No 0-byte files found. *peew*"
 fi

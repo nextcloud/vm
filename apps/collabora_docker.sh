@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Collabora (Docker)"
@@ -53,9 +53,6 @@ They can however be hosted on the same server, but would require separate DNS en
 
 # Nextcloud Main Domain
 NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
-
-# Nextcloud Main Domain dot-escaped
-NCDOMAIN_ESCAPED=${NCDOMAIN//[.]/\\\\.}
 
 # Curl the library another time to get the correct https_conf
 # shellcheck source=lib.sh
@@ -125,7 +122,7 @@ install_docker
 
 # Install Collabora docker
 docker pull collabora/code:latest
-docker run -t -d -p 127.0.0.1:9980:9980 -e "domain=$NCDOMAIN_ESCAPED" --restart always --name code --cap-add MKNOD collabora/code
+docker run -t -d -p 127.0.0.1:9980:9980 -e "aliasgroup1=https://$NCDOMAIN:443" --restart always --name code --cap-add MKNOD collabora/code
 
 # Install Apache2
 install_if_not apache2
@@ -138,7 +135,7 @@ a2enmod ssl
 a2enmod headers
 
 # Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 20.04.10
+if version 20.04 "$DISTRO" 22.04.10
 then
     TLS13="+TLSv1.3"
 fi

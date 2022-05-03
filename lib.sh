@@ -1,12 +1,21 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
 # shellcheck disable=SC2034
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
+
+##### LEGACY #####
+## Remove 2022-09-01
+NCPASS=nextcloud
+NCUSER=ncadmin
+PGDB_USER=nextcloud_db_user
+NCCONFIGDBPASS=$(grep 'dbpassword "$NCPATH"/config/config.php | awk '{print $3}' | sed "s/[',]//g")"
+NCCONFIGDB=$(grep 'dbname' "$NCPATH"/config/config.php | awk '{print $3}' | sed "s/[',]//g")"
+
 
 ## VARIABLES
 
@@ -41,7 +50,7 @@ gen_passwd() {
 DISTRO=$(lsb_release -sr)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Hypervisor
-# HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ') TODO
+###  TODO ### HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ')
 SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
 IFACE=$(ip r | grep "default via" | awk '{print $5}')
@@ -103,8 +112,8 @@ GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
-NCPASS=nextcloud
-NCUSER=ncadmin
+GUIUSER=ncadmin
+GUIPASS=nextcloud
 UNIXUSER=$SUDO_USER
 UNIXUSER_PROFILE="/home/$UNIXUSER/.bash_profile"
 ROOT_PROFILE="/root/.bash_profile"
@@ -113,16 +122,16 @@ BITWARDEN_USER=bitwarden
 BITWARDEN_HOME=/home/"$BITWARDEN_USER"
 # Database
 SHUF=$(shuf -i 25-29 -n 1)
+PGDB_USER=nextcloud_db_user
 PGDB_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 NEWPGPASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 ncdb() {
-    NCCONFIGDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDB=$(grep "dbname" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDBUSER=$(grep "dbuser" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDBTYPE=$(grep "dbtype" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")
+    NCDBHOST=$(grep "dbhost" /var/www/nextcloud/config/config.php | awk '{print $3}' | sed "s/[',]//g")
 }
-[ -n "$NCDB" ] && ncdb # TODO: remove this line someday
-ncdbpass() {
-    NCCONFIGDBPASS=$(grep "dbpassword" $NCPATH/config/config.php | awk '{print $3}' | sed "s/[',]//g")
-}
-[ -n "$NCDBPASS" ] && ncdbpass # TODO: remove this line someday
 # Path to specific files
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Nextcloud version
@@ -134,7 +143,6 @@ nc_update() {
     NCBAD=$((NCMAJOR-2))
     NCNEXT="$((${CURRENTVERSION%%.*}+1))"
 }
-[ -n "$NC_UPDATE" ] && nc_update # TODO: remove this line someday
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
 # Keys
@@ -151,7 +159,7 @@ HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # PHP-FPM
-PHPVER=7.4
+PHPVER=8.1
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
@@ -200,7 +208,6 @@ turn_install() {
     NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
 }
-[ -n "$TURN_INSTALL" ] && turn_install # TODO: remove this line someday
 
 ## FUNCTIONS
 
@@ -691,10 +698,10 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 18.04 "$DISTRO" 20.04.10
+if ! version 20.04 "$DISTRO" 22.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-18.04 - 20.04.10 to run this script."
+20.04 - 22.04.10 to run this script."
     print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -1020,13 +1027,13 @@ remove_from_trusted_domains() {
 
 check_distro_version() {
 # Check Ubuntu version
-if lsb_release -sc | grep -ic "bionic" &> /dev/null || lsb_release -sc | grep -ic "focal" &> /dev/null
+if lsb_release -sc | grep -ic "jammy" &> /dev/null || lsb_release -sc | grep -ic "bionic" &> /dev/null
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
 then
     OS=1
-elif uname -a | grep -ic "bionic" &> /dev/null || uname -a | grep -ic "focal" &> /dev/null
+elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "bionic" &> /dev/null
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu" &> /dev/null
@@ -1043,8 +1050,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 18.04 "$DISTRO" 20.04.10; then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.10 to run this script."
+if ! version 20.04.10 "$DISTRO" 22.04.10; then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -1096,7 +1103,7 @@ then
 
 To bypass this check, comment out (add # before the line) 'ram_check X' in the script that you are trying to run.
 
-In nextcloud_install_production.sh you can find the check somewhere around line #98.
+In nextcloud_install_production.sh you can find the check somewhere around line #48.
 
 Please note this may affect performance. USE AT YOUR OWN RISK!"
     exit 1
@@ -1169,7 +1176,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 18.04 "$DISTRO" 20.04.10
+if version 20.04 "$DISTRO" 22.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if site_200 github.com
@@ -1194,7 +1201,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 20.04.10 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2021, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Webmin"
@@ -50,7 +50,6 @@ install_if_not libpam-runtime
 install_if_not libio-pty-perl
 install_if_not apt-show-versions
 install_if_not python2
-install_if_not python
 install_if_not unzip
 install_if_not zip
 
@@ -71,8 +70,8 @@ install_if_not webmin
 
 if ! dpkg-query -W -f='${Status}' "webmin" | grep -q "ok installed"
 then
-    wget http://prdownloads.sourceforge.net/webadmin/webmin_1.984_all.deb
-    dpkg --install webmin_1.984_all.deb
+    wget http://prdownloads.sourceforge.net/webadmin/webmin_1.991_all.deb
+    dpkg --install webmin_1.991_all.deb
 fi
 
 print_text_in_color "$ICyan" "Configuring Webmin..."
