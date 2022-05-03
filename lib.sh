@@ -1940,6 +1940,12 @@ then
 elif grep 8.0 <<< "$GETPHP" >/dev/null 2>&1
 then
    export PHPVER=8.0
+elif grep 8.1 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.1
+elif grep 8.2 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.2
 fi
 
 # Export other PHP variables based on PHPVER
