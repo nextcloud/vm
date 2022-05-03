@@ -41,7 +41,7 @@ gen_passwd() {
 DISTRO=$(lsb_release -sr)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Hypervisor
-# HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ') TODO
+###  TODO ### HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ')
 SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
 IFACE=$(ip r | grep "default via" | awk '{print $5}')
@@ -1275,12 +1275,8 @@ download_verify_nextcloud_stable() {
 while [ -z "$NCVERSION" ]
 do
     print_text_in_color "$ICyan" "Fetching the latest Nextcloud version..."
-### TODO: Remove for production
-    NCREPO="https://download.nextcloud.com/server/prereleases"
     NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
     STABLEVERSION="nextcloud-$NCVERSION"
-#    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
-#    STABLEVERSION="nextcloud-$NCVERSION"
     print_text_in_color "$IGreen" "$NCVERSION"
 done
 
