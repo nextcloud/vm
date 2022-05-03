@@ -79,7 +79,7 @@ then
     exit 1
 fi
 # Check if dbuser is ncadmin
-if [ "$(nextcloud_occ config:system:get dbuser)" != "$NCUSER" ]
+if [ "$(nextcloud_occ config:system:get dbuser)" != "$PGDB_USER" ]
 then
     msg_box "It seems like the default dbuser is not ncadmin.\nThis is not supported."
     exit 1

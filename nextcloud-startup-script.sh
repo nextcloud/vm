@@ -348,31 +348,36 @@ bash $SCRIPTS/additional_apps.sh
 
 ### Change passwords
 # CLI USER
-msg_box "For better security, we will now change the password for the CLI user in Ubuntu."
 UNIXUSER="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
-while :
-do
-    UNIX_PASSWORD=$(input_box_flow "Please type in the new password for the current CLI user in Ubuntu: $UNIXUSER.")
-    if [[ "$UNIX_PASSWORD" == *" "* ]]
-    then
-        msg_box "Please don't use spaces."
-    else
-        break
-    fi
-done
-if check_command echo "$UNIXUSER:$UNIX_PASSWORD" | sudo chpasswd
+if [[ "$UNIXUSER" != "ncadmin" ]]
 then
-    msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD
+   print_text_in_color "$ICyan" "No need to change password for CLI user '$UNIXUSER' since it's not the default user."
+else
+    msg_box "For better security, we will now change the password for the CLI user in Ubuntu."
+    while :
+    do
+        UNIX_PASSWORD=$(input_box_flow "Please type in the new password for the current CLI user in Ubuntu: $UNIXUSER.")
+        if [[ "$UNIX_PASSWORD" == *" "* ]]
+        then
+            msg_box "Please don't use spaces."
+        else
+            break
+        fi
+    done
+    if check_command echo "$UNIXUSER:$UNIX_PASSWORD" | sudo chpasswd
+    then
+        msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD
 
-This is used when you login to the Ubuntu CLI."
+    This is used when you login to the Ubuntu CLI."
+    fi
 fi
 unset UNIX_PASSWORD
 
 # NEXTCLOUD USER
 NCADMIN=$(nextcloud_occ user:list | awk '{print $3}')
-if ! echo "$NCADMIN" | grep ncadmin
+if [[ "$NCADMIN" != "ncadmin" ]]
 then
-   msg_box "Not changing password for the user 'ncadmin' since it doesn't exist on the system."
+   print_text_in_color "$ICyan" "No need to change password for GUI user '$NCADMIN' since it's not the default user."
 else
     msg_box "We will now change the username and password for the Web Admin in Nextcloud."
     while :

@@ -112,6 +112,9 @@ do
     fi
 done
 
+# Install iptables
+install_if_not iptables
+
 # remove ncdata, else it will be used
 rm -f $NCDATA/nextcloud.log
 

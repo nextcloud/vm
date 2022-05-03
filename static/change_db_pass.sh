@@ -5,7 +5,7 @@ SCRIPT_NAME="Change Database Password"
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Get all needed variables from the library
-ncdbpass
+ncdb
 
 # T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
@@ -19,12 +19,12 @@ debug_mode
 cd /tmp
 sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
 
-if [ "$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)" == "ALTER ROLE" ]
+if [ "$(sudo -u postgres psql -c "ALTER USER $PGDB_USER WITH PASSWORD '$NEWPGPASS'";)" == "ALTER ROLE" ]
 then
     sleep 1
 else
     print_text_in_color "$IRed" "Changing PostgreSQL Nextcloud password failed."
-    sed -i "s|  'dbpassword' =>.*|  'dbpassword' => '$NCCONFIGDBPASS',|g" /var/www/nextcloud/config/config.php
-    print_text_in_color "$IRed" "Nothing is changed. Your old password is: $NCCONFIGDBPASS"
+    sed -i "s|  'dbpassword' =>.*|  'dbpassword' => '$NCDBPASS',|g" /var/www/nextcloud/config/config.php
+    print_text_in_color "$IRed" "Nothing is changed. Your old password is: $NCDBPASS"
     exit 1
 fi
