@@ -68,7 +68,7 @@ fi
 # Must be 22.04
 if ! version 20.04 "$DISTRO" 22.04.10
 then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 20.04.10 to install Talk"
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to install Talk"
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
