@@ -4,7 +4,7 @@
 true
 SCRIPT_NAME="Check for 0-Byte files"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 filesystems[0]="$NCDATA"
 cd "$NCDATA"

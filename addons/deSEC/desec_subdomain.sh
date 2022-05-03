@@ -8,7 +8,7 @@ SCRIPT_EXPLAINER="This script enables you to add a subdomain to your existing de
 
 You can also remove existing subdomains (RRsets) with this script. If you want to remove, please choose 'Uninstall' in the next menu."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

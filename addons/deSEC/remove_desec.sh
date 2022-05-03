@@ -6,7 +6,7 @@ true
 SCRIPT_NAME="deSEC Removal"
 SCRIPT_EXPLAINER="This script lets you remove your deSEC account.\n\nMaybe you want to re-add it again with another domain? In that case this is what you need to run first, since the install script only can handle one email address at the time."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

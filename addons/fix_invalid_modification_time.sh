@@ -5,7 +5,7 @@
 true
 SCRIPT_NAME="Fix 'Could not update metadata due to invalid modified time'."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check if root
 root_check

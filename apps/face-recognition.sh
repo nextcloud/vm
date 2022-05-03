@@ -7,7 +7,7 @@ true
 SCRIPT_NAME="Face Recognition"
 SCRIPT_EXPLAINER="The $SCRIPT_NAME app allows to automatically scan for faces inside your Nextcloud."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
