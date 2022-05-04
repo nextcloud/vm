@@ -50,8 +50,8 @@ else
     # Removal Docker image
     docker_prune_this "$nc_fts"
     docker_prune_this "$opens_fts"
-    docker_prune_this "esdata"
-    docker_prune_this "fts_os-data"
+    docker_prune_volume "esdata"
+    docker_prune_volume "fts_os-data"
     # Remove configuration files
     rm -rf "$RORDIR"
     rm -rf "$OPNSDIR"
