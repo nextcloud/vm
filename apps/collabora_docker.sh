@@ -261,6 +261,7 @@ then
     add_to_trusted_domains "$SUBDOMAIN"
     # Allow remote servers with local addresses e.g. in federated shares, webcal services and more
     nextcloud_occ config:system:set allow_local_remote_servers --value="true"
+    nextcloud_occ richdocuments:activate-config
     # Add prune command
     add_dockerprune
     print_text_in_color "$ICyan" "Restarting Docker..."
