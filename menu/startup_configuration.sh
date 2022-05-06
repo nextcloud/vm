@@ -112,15 +112,8 @@ the server will be rebooted. After the reboot, please login as usual and run thi
     ;;&
     *"Locate Mirror"*)
         SUBTITLE="apt-mirror"
-        msg_box "Current apt-mirror is $REPO" "$SUBTITLE"
-        if ! yesno_box_yes "Do you want to change the apt-mirror?" "$SUBTITLE"
-        then
-            print_text_in_color "$ICyan" "Not changing the apt-mirror..."
-            sleep 1
-        else
-           print_text_in_color "$ICyan" "Downloading the Locate Mirror script..."
-           run_script ADDONS locate_mirror
-        fi
+        print_text_in_color "$ICyan" "Downloading the Locate Mirror script..."
+        run_script ADDONS locate_mirror
     ;;&
     *)
     ;;
