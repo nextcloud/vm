@@ -171,6 +171,7 @@ Please shutdown the server and mount a second drive, then start this script agai
 
 If you want help you can buy support in our shop:
 https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+    countdown "Please press 'CTRL+C' to abort this script and shutdown the server with 'sudo poweroff'" "120"
     exit 1
 fi
 }
