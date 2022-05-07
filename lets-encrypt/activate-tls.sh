@@ -210,7 +210,7 @@ then
     SSLCertificateChainFile $CERTFILES/$TLSDOMAIN/chain.pem
     SSLCertificateFile $CERTFILES/$TLSDOMAIN/cert.pem
     SSLCertificateKeyFile $CERTFILES/$TLSDOMAIN/privkey.pem
-    SSLOpenSSLConfCmd DHParameters $DHPARAMS_TLS
+    # SSLOpenSSLConfCmd DHParameters $DHPARAMS_TLS
 </VirtualHost>
 
 ### EXTRAS ###
