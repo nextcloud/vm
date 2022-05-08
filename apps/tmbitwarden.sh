@@ -321,7 +321,7 @@ then
     # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
-        openssl dhparam -out "$DHPARAMS_TLS" 2048
+        openssl dhparam -out "$DHPARAMS_SUB" 2048
     fi
     print_text_in_color "$IGreen" "Certs are generated!"
     a2ensite "$SUBDOMAIN.conf"
