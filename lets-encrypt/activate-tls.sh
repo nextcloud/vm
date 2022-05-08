@@ -238,7 +238,7 @@ then
         # Generate DHparams cipher
         if [ ! -f "$DHPARAMS_TLS" ]
         then
-            openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
+            openssl dhparam -out "$DHPARAMS_TLS" 2048
         fi
         # Choose which port for public access
         msg_box "You will now be able to choose which port you want to put your Nextcloud on for public access.\n
@@ -298,7 +298,7 @@ else
             # Generate DHparams cipher
             if [ ! -f "$DHPARAMS_TLS" ]
             then
-                openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
+                openssl dhparam -out "$DHPARAMS_TLS" 2048
             fi
             # Activate new config
             check_command bash "$SCRIPTS/test-new-config.sh" "$TLSDOMAIN.conf"
