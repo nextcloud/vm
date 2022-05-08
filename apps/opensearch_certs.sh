@@ -40,6 +40,6 @@ mv client.pem \
    root-ca-key.pem -t tls_store
 
 # openssl 3.0 workaround
-if [ $(lsb_release -sr) = 20.04 ]; then
+if [ "$(lsb_release -sr)" = "20.04" ]; then
    mv root-ca.srl tls_store
 fi
