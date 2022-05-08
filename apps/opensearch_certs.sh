@@ -37,5 +37,9 @@ rm admin-key-temp.pem \
 # Store
 mv client.pem \
    client-key.pem \
-   root-ca.srl \
    root-ca-key.pem -t tls_store
+
+# openssl 3.0 workaround
+if [ $(lsb_release -sr) = 20.04 ]; then
+   mv root-ca.srl tls_store
+fi
