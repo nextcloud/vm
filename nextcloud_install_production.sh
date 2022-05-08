@@ -445,6 +445,11 @@ calculate_php_fpm
 if [ "$SYSVENDOR" == "VMware, Inc." ];
 then
     install_if_not open-vm-tools
+elif [[ "$SYSVENDOR" == "QEMU" || "$SYSVENDOR" == "Red Hat" ]];
+then
+    install_if_not qemu-guest-agent
+    systemctl enable qemu-guest-agent
+    systemctl start qemu-guest-agent
 fi
 
 # Get not-latest Nextcloud version
