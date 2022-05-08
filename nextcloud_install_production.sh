@@ -58,6 +58,9 @@ install_if_not net-tools
 install_if_not whiptail
 install_if_not apt-utils
 
+# Nice to have dependencies
+install_if_not bash-completion
+
 # Check for flags
 if [ "$1" = "" ]
 then
