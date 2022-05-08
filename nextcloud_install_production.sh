@@ -56,6 +56,7 @@ is_process_running dpkg
 install_if_not lshw
 install_if_not net-tools
 install_if_not whiptail
+install_if_not apt-utils
 
 # Check for flags
 if [ "$1" = "" ]
