@@ -45,9 +45,11 @@ else
         /etc/apt/trusted.gpg.d/morph027-janus.asc \
         /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
         /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
+        /etc/apt/trusted.gpg.d/morph027-coturn.asc \
         /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
         /etc/apt/sources.list.d/morph027-janus.list \
         /etc/apt/sources.list.d/morph027-nats-server.list \
+        /etc/apt/sources.list.d/morph027-coturn.list \
         $VMLOGS/talk_apache_error.log \
         $VMLOGS/talk_apache_access.log \
         $VMLOGS/turnserver.log \
@@ -106,6 +108,13 @@ do
 done
 
 # Install TURN
+# shellcheck disable=SC1091
+. /etc/lsb-release
+if [ "${DISTRIB_CODENAME}" == "jammy" ]; then
+  curl -sL -o /etc/apt/trusted.gpg.d/morph027-coturn.asc https://packaging.gitlab.io/coturn/gpg.key
+  echo "deb https://packaging.gitlab.io/coturn/$DISTRIB_CODENAME $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-coturn.list
+  apt-get update -q4 & spinner_loading
+fi
 check_command install_if_not coturn
 check_command sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn
 
