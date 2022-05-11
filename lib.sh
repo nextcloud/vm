@@ -1030,7 +1030,7 @@ check_distro_version() {
 # Subṕport Ubuntu 22.0.4 jammy, and Ubuntu 20.04 focal.
 
 # Check Ubuntu version
-if [ "$CODENAME" == jammy ] || [ "$CODENAME" == focal ]
+if [ "${CODENAME}" == "jammy" ] || [ "${CODENAME}" == "focal" ]
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
