@@ -2003,6 +2003,16 @@ ${NONO_PORTS[*]}"
 fi
 }
 
+add_trusted_key() {
+# $1 = whatever.asc
+# $2 = Repository e.g. https://packaging.gitlab.io/coturn
+# $3 gpg.key
+# $4 debpackage-name.list
+    curl -sL -o /etc/apt/trusted.gpg.d/$1 $2/$3
+    echo "deb $2/$CODENAME $CODENAME main" > $4
+    apt-get update -q4 & spinner_loading
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
