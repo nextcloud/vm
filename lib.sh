@@ -48,6 +48,7 @@ gen_passwd() {
 
 # Ubuntu OS
 DISTRO=$(lsb_release -sr)
+CODENAME=$(lsb_release -sc)
 KEYBOARD_LAYOUT=$(localectl status | grep "Layout" | awk '{print $3}')
 # Hypervisor
 ###  TODO ### HYPERVISOR=$(dmesg --notime | grep -i hypervisor | cut -d ':' -f2 | head -1 | tr -d ' ')
@@ -1026,14 +1027,16 @@ remove_from_trusted_domains() {
 }
 
 check_distro_version() {
+# Subṕport Ubuntu 22.0.4 jammy, and Ubuntu 20.04 focal.
+
 # Check Ubuntu version
-if lsb_release -sc | grep -ic "jammy" &> /dev/null || lsb_release -sc | grep -ic "bionic" &> /dev/null
+if [ "$CODENAME" == jammy ] || [ "$CODENAME" == focal ]
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
 then
     OS=1
-elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "bionic" &> /dev/null
+elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "focal" &> /dev/null
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu" &> /dev/null
