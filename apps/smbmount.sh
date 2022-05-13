@@ -347,6 +347,9 @@ We please you to do the math yourself if the number is high enough for your setu
                 yes no | pecl install inotify
                 local INOTIFY_INSTALL=1
             fi
+            # Get installed php version
+            check_php
+            # Enable Inotify
             if [ ! -f $PHP_MODS_DIR/inotify.ini ]
             then
                 touch $PHP_MODS_DIR/inotify.ini
