@@ -58,7 +58,14 @@ else
         rm -f /etc/apt/sources.list.d/20-pdlib.list
         apt-get update -q4 & spinner_loading
         apt-get autoremove -y
-        rm -f /etc/apt/trusted.gpg.d/facerecognititon.gpg
+        rm -f /etc/apt/trusted.gpg.d/facerecognition.gpg
+    elif is_this_installed php8.1-pdlib
+    then
+        apt-get purge php8.1-pdlib -y
+        rm -f /etc/apt/sources.list.d/facerecognition-pdlib.list
+        apt-get update -q4 & spinner_loading
+        apt-get autoremove -y
+        rm -f /etc/apt/keyrings/repo.gpg.key
     fi
     crontab -u www-data -l | grep -v "face_background_job.log" | crontab -u www-data -
     crontab -u www-data -l | grep -v "face:background_job" | crontab -u www-data -
