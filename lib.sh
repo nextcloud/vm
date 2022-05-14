@@ -2035,7 +2035,6 @@ add_trusted_key_and_repo() {
         echo "deb $3 $4" > "/etc/apt/sources.list.d/$5"
         apt-get update -q4 & spinner_loading
     fi
-
 }
 
 ## bash colors
