@@ -18,18 +18,22 @@ debug_mode
 # Check if root
 root_check
 
-# Currently only compatible with focal
-if [ "$(lsb_release -cs)" != "focal" ] || ! php --version | grep -q 'PHP 7.4.'
+# Check compatibility
+check_distro_version
+check_php
+if [[ "$PHPVER" != "8.1" ]] && [[ "$PHPVER" != "7.4" ]]
 then
-    msg_box "Currently only Ubuntu 20.04 LTS with PHP 7.4 is supported by this script."
+    msg_box "Currently only PHP 7.4 and PHP 8.1 is supported by this script."
     exit 1
 fi
+
 # Encryption may not be enabled
 if is_app_enabled encryption || is_app_enabled end_to_end_encryption
 then
     msg_box "It seems like you have encryption enabled which is unsupported by the $SCRIPT_NAME app!"
     exit 1
 fi
+
 # Compatible with NC21 and above
 lowest_compatible_nc 21
 
