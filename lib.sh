@@ -2024,7 +2024,7 @@ add_trusted_key_and_repo() {
     then
         # New recommended way not using apt-key
         print_text_in_color "$ICyan" "Adding trusted key in /etc/apt/keyrings/$1..."
-        curl -sL "$2"/"$1" | tee /etc/apt/keyrings/"$1"
+        curl -sL "$2"/"$1" | tee -a /etc/apt/keyrings/"$1"
         echo "deb [signed-by=/etc/apt/keyrings/$1] $3 $4" > "/etc/apt/sources.list.d/$5"
         apt-get update -q4 & spinner_loading
     elif version 20.04 "$DISTRO" 20.04.10
