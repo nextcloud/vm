@@ -59,7 +59,7 @@ then
     exit 1
 fi
 
-# Install needed dependenices
+# Install needed dependencies
 install_if_not lshw
 install_if_not net-tools
 install_if_not whiptail

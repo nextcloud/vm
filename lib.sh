@@ -2022,7 +2022,7 @@ add_trusted_key_and_repo() {
     # Do the magic
     if version 22.04 "$DISTRO" 22.04.10
     then
-        # New recomended way not using apt-key
+        # New recommended way not using apt-key
         print_text_in_color "$ICyan" "Adding trusted key in /etc/apt/keyrings/$1..."
         curl -sL "$2"/"$1" | tee /etc/apt/keyrings/"$1"
         echo "deb [signed-by=/etc/apt/keyrings/$1] $3 $4" > "/etc/apt/sources.list.d/$5"
