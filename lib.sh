@@ -2003,6 +2003,40 @@ ${NONO_PORTS[*]}"
 fi
 }
 
+add_trusted_key_and_repo() {
+    # EXAMPLE: add_trusted_key_and_repo "jcameron-key.asc" \
+    # "https://download.webmin.com" \
+    # "https://download.webmin.com/download/repository" \
+    # "sarge contrib" \
+    # "webmin-test.list"
+
+    # $1 = whatever.asc
+    # $2 = Key URL e.g. https://download.webmin.com
+    # $3 = Deb URL e.g. https://download.webmin.com/download/repository
+    # $4 = "$CODENAME $CODENAME main" (e.g. jammy jammy main)
+    # $5 = debpackage-name.list
+
+    # This function is only supported in the currently supported release
+    check_distro_version
+
+    # Do the magic
+    if version 22.04 "$DISTRO" 22.04.10
+    then
+        # New recommended way not using apt-key
+        print_text_in_color "$ICyan" "Adding trusted key in /etc/apt/keyrings/$1..."
+        curl -sL "$2"/"$1" | tee -a /etc/apt/keyrings/"$1"
+        echo "deb [signed-by=/etc/apt/keyrings/$1] $3 $4" > "/etc/apt/sources.list.d/$5"
+        apt-get update -q4 & spinner_loading
+    elif version 20.04 "$DISTRO" 20.04.10
+    then
+        # Legacy way with apt-key
+        print_text_in_color "$ICyan" "Adding trusted key with apt-key..."
+        curl -sL "$2"/"$1" | apt-key add -
+        echo "deb $3 $4" > "/etc/apt/sources.list.d/$5"
+        apt-get update -q4 & spinner_loading
+    fi
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset

@@ -170,7 +170,7 @@ lowest_compatible_nc 21
 # Add temporary fix if needed
 if network_ok
 then
-    run_script STATIC temporary-fix-begining
+    run_script STATIC temporary-fix-beginning
 fi
 
 # Import if missing and export again to import it with UUID

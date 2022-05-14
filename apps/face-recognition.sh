@@ -18,18 +18,22 @@ debug_mode
 # Check if root
 root_check
 
-# Currently only compatible with focal
-if [ "$(lsb_release -cs)" != "focal" ] || ! php --version | grep -q 'PHP 7.4.'
+# Check compatibility
+check_distro_version
+check_php
+if [[ "$PHPVER" != "8.1" ]] && [[ "$PHPVER" != "7.4" ]]
 then
-    msg_box "Currently only Ubuntu 20.04 LTS with PHP 7.4 is supported by this script."
+    msg_box "Currently only PHP 7.4 and PHP 8.1 is supported by this script."
     exit 1
 fi
+
 # Encryption may not be enabled
 if is_app_enabled encryption || is_app_enabled end_to_end_encryption
 then
     msg_box "It seems like you have encryption enabled which is unsupported by the $SCRIPT_NAME app!"
     exit 1
 fi
+
 # Compatible with NC21 and above
 lowest_compatible_nc 21
 
@@ -40,7 +44,7 @@ ram_check 2
 cpu_check 2
 
 # Check if facerecognition is already installed
-if ! is_app_installed facerecognition && ! is_this_installed php7.4-pdlib
+if ! is_app_installed facerecognition && ! is_this_installed php7.4-pdlib && ! is_this_installed php8.1-pdli
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -54,7 +58,14 @@ else
         rm -f /etc/apt/sources.list.d/20-pdlib.list
         apt-get update -q4 & spinner_loading
         apt-get autoremove -y
-        rm -f /etc/apt/trusted.gpg.d/facerecognititon.gpg
+        rm -f /etc/apt/trusted.gpg.d/facerecognition.gpg
+    elif is_this_installed php8.1-pdlib
+    then
+        apt-get purge php8.1-pdlib -y
+        rm -f /etc/apt/sources.list.d/facerecognition-pdlib.list
+        apt-get update -q4 & spinner_loading
+        apt-get autoremove -y
+        rm -f /etc/apt/keyrings/repo.gpg.key
     fi
     crontab -u www-data -l | grep -v "face_background_job.log" | crontab -u www-data -
     crontab -u www-data -l | grep -v "face:background_job" | crontab -u www-data -
@@ -89,13 +100,25 @@ then
 fi
 
 # Install requirements
-# https://github.com/matiasdelellis/facerecognition/wiki/Installation#ubuntu-focal
-curl_to_dir https://repo.delellis.com.ar "repo.gpg.key" "$SCRIPTS"
-check_command apt-key --keyring /etc/apt/trusted.gpg.d/facerecognititon.gpg add "$SCRIPTS/repo.gpg.key"
-rm -f "$SCRIPTS/repo.gpg.key"
-echo "deb https://repo.delellis.com.ar focal focal" > /etc/apt/sources.list.d/20-pdlib.list
-apt-get update -q4 & spinner_loading
-install_if_not php7.4-pdlib
+if version 20.04 "$DISTRO" 20.04.10
+then
+    # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-focal
+    add_trusted_key_and_repo "repo.gpg.key" \
+    "https://repo.delellis.com.ar" \
+    "https://repo.delellis.com.ar" \
+    "focal focal" \
+    "facerecognition-pdlib.list"
+    install_if_not php7.4-pdlib
+elif version 22.04 "$DISTRO" 22.04.10
+then
+    # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-jammy
+    add_trusted_key_and_repo "repo.gpg.key" \
+    "https://repo.delellis.com.ar" \
+    "https://repo.delellis.com.ar" \
+    "$CODENAME $CODENAME" \
+    "facerecognition-pdlib.list"
+    install_if_not php8.1-pdlib
+fi
 
 # Install the app
 install_and_enable_app facerecognition

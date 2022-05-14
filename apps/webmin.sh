@@ -35,6 +35,7 @@ else
     apt-get autoremove -y
     rm -f /etc/apt/sources.list.d/webmin.list
     rm -f /etc/apt/trusted.gpg.d/webmin.gpg
+    rm -f /etc/apt/keyrings/jcameron-key.asc
     sed -i '/webmin/d' /etc/apt/sources.list
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
@@ -58,14 +59,22 @@ apt-get clean all
 apt-get update -q4 & spinner_loading
 
 # Install Webmin
-if ! curl_to_dir http://www.webmin.com "jcameron-key.asc" "$SCRIPTS"
+if curl_to_dir http://www.webmin.com "jcameron-key.asc" /tmp
 then
-    curl_to_dir https://gist.githubusercontent.com/enoch85/092c8f4c4f5127b99d40/raw/186333393163b7e0d50c8d3b25cae4d63ac78b22 "jcameron-key.asc" "$SCRIPTS"
+    # Use the original key URL
+    add_trusted_key_and_repo "jcameron-key.asc" \
+    "https://download.webmin.com" \
+    "https://download.webmin.com/download/repository" \
+    "sarge contrib" \
+    "webmin.list"
+else
+    # Use backup key URL
+    add_trusted_key_and_repo "jcameron-key.asc" \
+    "https://gist.githubusercontent.com/enoch85/092c8f4c4f5127b99d40/raw/186333393163b7e0d50c8d3b25cae4d63ac78b22" \
+    "https://download.webmin.com/download/repository" \
+    "sarge contrib" \
+    "webmin.list"
 fi
-check_command apt-key --keyring /etc/apt/trusted.gpg.d/webmin.gpg add "$SCRIPTS/jcameron-key.asc"
-rm -f "$SCRIPTS/jcameron-key.asc"
-echo "deb https://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list
-apt-get update -q4 & spinner_loading
 install_if_not webmin
 
 if ! dpkg-query -W -f='${Status}' "webmin" | grep -q "ok installed"

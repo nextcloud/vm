@@ -46,6 +46,7 @@ else
         /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
         /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
         /etc/apt/trusted.gpg.d/morph027-coturn.asc \
+        /etc/apt/keyrings/morph027-coturn.asc
         /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
         /etc/apt/sources.list.d/morph027-janus.list \
         /etc/apt/sources.list.d/morph027-nats-server.list \
@@ -110,9 +111,11 @@ done
 # Install TURN
 if [ "${CODENAME}" == "jammy" ]
 then
-    curl -sL -o /etc/apt/trusted.gpg.d/morph027-coturn.asc https://packaging.gitlab.io/coturn/gpg.key
-    echo "deb https://packaging.gitlab.io/coturn/$CODENAME $CODENAME main" > /etc/apt/sources.list.d/morph027-coturn.list
-    apt-get update -q4 & spinner_loading
+    add_trusted_key_and_repo "gpg.key" \
+    "https://packaging.gitlab.io/coturn" \
+    "https://packaging.gitlab.io/coturn/$CODENAME" \
+    "$CODENAME main" \
+    "morph027-coturn.list"
 fi
 check_command install_if_not coturn
 check_command sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn

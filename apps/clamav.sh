@@ -51,8 +51,9 @@ ram_check 3 "ClamAV"
 cpu_check 2 "ClamAV"
 
 # Install needed tools
-apt-get update -q4 & spinner_loading
-apt-get install clamav clamav-freshclam clamav-daemon -y
+install_if_not clamav
+install_if_not clamav-freshclam
+install_if_not clamav-daemon
 
 # stop freshclam and update the database
 check_command systemctl stop clamav-freshclam
