@@ -46,6 +46,7 @@ else
         /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
         /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
         /etc/apt/trusted.gpg.d/morph027-coturn.asc \
+        /etc/apt/keyrings/morph027-coturn.asc
         /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
         /etc/apt/sources.list.d/morph027-janus.list \
         /etc/apt/sources.list.d/morph027-nats-server.list \
@@ -112,8 +113,8 @@ if [ "${CODENAME}" == "jammy" ]
 then
     add_trusted_key_and_repo "gpg.key" \
     "https://packaging.gitlab.io/coturn" \
-    "https://packaging.gitlab.io/coturn" \
-    "$CODENAME $CODENAME main" \
+    "https://packaging.gitlab.io/coturn/$CODENAME" \
+    "$CODENAME main" \
     "morph027-coturn.list"
 fi
 check_command install_if_not coturn
