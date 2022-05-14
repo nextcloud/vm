@@ -98,7 +98,7 @@ then
     "focal focal" \
     "facerecognition-pdlib.list"
     install_if_not php7.4-pdlib
-elif version 22.04 $DISTRO 22.04.10
+elif version 22.04 "$DISTRO" 22.04.10
 then
     # https://github.com/matiasdelellis/facerecognition/issues/570#issuecomment-1123822993
     add_trusted_key_and_repo "repo.gpg.key" \
