@@ -1098,8 +1098,19 @@ fi
 # Example: ram_check 2 Nextcloud
 ram_check() {
 install_if_not bc
-mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
-mem_available_gb="$(LC_NUMERIC="en_US.UTF-8" printf '%0.2f\n' "$(echo "scale=3; $mem_available/(1024*1024)" | bc)")"
+# First, we need to check locales, since the functino depends on it.
+# When we know the locale, we can then calculate mem available without any errors.
+if locale | grep -c "C.UTF-8"
+then
+    mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
+    mem_available_gb="$(LC_NUMERIC="C.UTF-8" printf '%0.2f\n' "$(echo "scale=3; $mem_available/(1024*1024)" | bc)")"
+elif locale | grep -c "en_US.UTF-8"
+then
+    mem_available="$(awk '/MemTotal/{print $2}' /proc/meminfo)"
+    mem_available_gb="$(LC_NUMERIC="en_US.UTF-8" printf '%0.2f\n' "$(echo "scale=3; $mem_available/(1024*1024)" | bc)")"
+fi
+
+# Now check required mem
 mem_required="$((${1}*(924*1024)))" # 100MiB/GiB margin and allow 90% to be able to run on physical machines
 if [ "${mem_available}" -lt "${mem_required}" ]
 then
@@ -1109,9 +1120,6 @@ then
     msg_box "** Error: insufficient memory. ${mem_available_gb}GB RAM installed, ${1}GB required.
 
 To bypass this check, comment out (add # before the line) 'ram_check X' in the script that you are trying to run.
-
-In nextcloud_install_production.sh you can find the check somewhere around line #48.
-
 Please note this may affect performance. USE AT YOUR OWN RISK!"
     exit 1
 else
