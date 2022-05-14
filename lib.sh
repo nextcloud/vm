@@ -14,8 +14,12 @@ NCPATH=/var/www/nextcloud
 NCPASS=nextcloud
 NCUSER=ncadmin
 PGDB_USER=nextcloud_db_user
-NCCONFIGDBPASS="$(grep 'dbpassword' "$NCPATH"/config/config.php | awk '{print $3}' | sed "s/[',]//g")"
-NCCONFIGDB="$(grep 'dbname' "$NCPATH"/config/config.php | awk '{print $3}' | sed "s/[',]//g")"
+if [ -f "$NCPATH"/config/config.php ]
+then
+    NCCONFIGDBPASS="$(grep 'dbpassword' "$NCPATH"/config/config.php | awk '{print $3}' | sed "s/[',]//g")"
+    NCCONFIGDB="$(grep 'dbname' "$NCPATH"/config/config.php | awk '{print $3}' | sed "s/[',]//g")"
+fi
+
 
 ## VARIABLES
 
