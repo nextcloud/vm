@@ -2005,10 +2005,10 @@ fi
 
 add_trusted_asc_and_repo() {
 # EXAMPLE: add_trusted_asc_and_repo "jcameron-key.asc" \
-"https://download.webmin.com" \
-"https://download.webmin.com/download/repository" \
-"sarge contrib" \
-"webmin-test.list"
+# "https://download.webmin.com" \
+# "https://download.webmin.com/download/repository" \
+# "sarge contrib" \
+# "webmin-test.list"
 
 # $1 = whatever.asc
 # $2 = Key URL e.g. https://download.webmin.com
