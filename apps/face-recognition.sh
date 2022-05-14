@@ -44,7 +44,7 @@ ram_check 2
 cpu_check 2
 
 # Check if facerecognition is already installed
-if ! is_app_installed facerecognition && ! is_this_installed php7.4-pdlib
+if ! is_app_installed facerecognition && ! is_this_installed php7.4-pdlib && ! is_this_installed php8.1-pdli
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
