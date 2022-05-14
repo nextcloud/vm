@@ -35,6 +35,7 @@ else
     apt-get autoremove -y
     rm -f /etc/apt/sources.list.d/webmin.list
     rm -f /etc/apt/trusted.gpg.d/webmin.gpg
+    rm -f /etc/apt/keyrings/jcameron-key.asc
     sed -i '/webmin/d' /etc/apt/sources.list
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
@@ -58,7 +59,7 @@ apt-get clean all
 apt-get update -q4 & spinner_loading
 
 # Install Webmin
-if curl_to_dir http://www.webmin.com "jcameron-key.asc" /tmp/
+if curl_to_dir http://www.webmin.com "jcameron-key.asc" /tmp
 then
     # Use the original key URL
     add_trusted_key_and_repo "jcameron-key.asc" \
