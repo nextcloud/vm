@@ -2003,22 +2003,21 @@ ${NONO_PORTS[*]}"
 fi
 }
 
-add_trusted_asc_and_repo() {
-# EXAMPLE: add_trusted_asc_and_repo "jcameron-key.asc" \
-# "https://download.webmin.com" \
-# "https://download.webmin.com/download/repository" \
-# "sarge contrib" \
-# "webmin-test.list"
+add_trusted_key_and_repo() {
+    # EXAMPLE: add_trusted_key_and_repo "jcameron-key.asc" \
+    # "https://download.webmin.com" \
+    # "https://download.webmin.com/download/repository" \
+    # "sarge contrib" \
+    # "webmin-test.list"
 
-# $1 = whatever.asc
-# $2 = Key URL e.g. https://download.webmin.com
-# $3 = Deb URL e.g. https://download.webmin.com/download/repository
-# $4 = "$CODENAME $CODENAME main" (e.g. jammy jammy main)
-# $5 = debpackage-name.list
+    # $1 = whatever.asc
+    # $2 = Key URL e.g. https://download.webmin.com
+    # $3 = Deb URL e.g. https://download.webmin.com/download/repository
+    # $4 = "$CODENAME $CODENAME main" (e.g. jammy jammy main)
+    # $5 = debpackage-name.list
 
     curl -sL "$2"/"$1" | tee /etc/apt/keyrings/"$1"
-#    echo "deb [signed-by=/etc/apt/keyrings/$1]" > "/etc/apt/sources.list.d/$5"
-    echo "deb $3 $4" > "/etc/apt/sources.list.d/$5"
+    echo "deb [arch=amd64] $3 $4" > "/etc/apt/sources.list.d/$5"
     apt-get update -q4 & spinner_loading
 }
 

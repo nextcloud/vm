@@ -89,13 +89,25 @@ then
 fi
 
 # Install requirements
-# https://github.com/matiasdelellis/facerecognition/wiki/Installation#ubuntu-focal
-curl_to_dir https://repo.delellis.com.ar "repo.gpg.key" "$SCRIPTS"
-check_command apt-key --keyring /etc/apt/trusted.gpg.d/facerecognititon.gpg add "$SCRIPTS/repo.gpg.key"
-rm -f "$SCRIPTS/repo.gpg.key"
-echo "deb https://repo.delellis.com.ar focal focal" > /etc/apt/sources.list.d/20-pdlib.list
-apt-get update -q4 & spinner_loading
-install_if_not php7.4-pdlib
+if version 20.04 "$DISTRO" 20.04.10
+then
+    # https://github.com/matiasdelellis/facerecognition/wiki/Installation#ubuntu-focal
+    add_trusted_key_and_repo "repo.gpg.key" \
+    "https://repo.delellis.com.ar" \
+    "https://repo.delellis.com.ar" \
+    "focal focal" \
+    "facerecognition-pdlib.list"
+    install_if_not php7.4-pdlib
+elif version 22.04 $DISTRO 22.04.10
+then
+    # https://github.com/matiasdelellis/facerecognition/issues/570#issuecomment-1123822993
+    add_trusted_key_and_repo "repo.gpg.key" \
+    "https://repo.delellis.com.ar" \
+    "https://repo.delellis.com.ar" \
+    "$CODENAME $CODENAME" \
+    "facerecognition-pdlib.list"
+    install_if_not php8.1-pdlib
+fi
 
 # Install the app
 install_and_enable_app facerecognition

@@ -110,9 +110,11 @@ done
 # Install TURN
 if [ "${CODENAME}" == "jammy" ]
 then
-    curl -sL -o /etc/apt/trusted.gpg.d/morph027-coturn.asc https://packaging.gitlab.io/coturn/gpg.key
-    echo "deb https://packaging.gitlab.io/coturn/$CODENAME $CODENAME main" > /etc/apt/sources.list.d/morph027-coturn.list
-    apt-get update -q4 & spinner_loading
+    add_trusted_key_and_repo "gpg.key" \
+    "https://packaging.gitlab.io/coturn" \
+    "https://packaging.gitlab.io/coturn" \
+    "$CODENAME $CODENAME main" \
+    "morph027-coturn.list"
 fi
 check_command install_if_not coturn
 check_command sed -i '/TURNSERVER_ENABLED/c\TURNSERVER_ENABLED=1' /etc/default/coturn

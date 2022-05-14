@@ -67,6 +67,8 @@ install_if_not apt-utils
 
 # Nice to have dependencies
 install_if_not bash-completion
+install_if_not htop
+install_if_not iputils-ping
 
 # Check for flags
 if [ "$1" = "" ]
@@ -330,10 +332,8 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 done
 
 # Install PostgreSQL
-# sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main"
-# curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt-get update -q4 & spinner_loading
-apt-get install postgresql -y
+install_if_not postgresql
 
 # Create DB
 cd /tmp
@@ -345,7 +345,7 @@ print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
 systemctl restart postgresql.service
 
 # Install Apache
-check_command apt-get install apache2 -y
+check_command install_if_not apache2
 a2enmod rewrite \
         headers \
         proxy \
@@ -374,25 +374,21 @@ echo "ServerTokens Prod"
 fi
 
 # Install PHP "$PHPVER"
-apt-get update -q4 & spinner_loading
-check_command apt-get install -y \
-    php"$PHPVER"-fpm \
-    php"$PHPVER"-intl \
-    php"$PHPVER"-ldap \
-    php"$PHPVER"-imap \
-    php"$PHPVER"-gd \
-    php"$PHPVER"-pgsql \
-    php"$PHPVER"-curl \
-    php"$PHPVER"-xml \
-    php"$PHPVER"-zip \
-    php"$PHPVER"-mbstring \
-    php"$PHPVER"-soap \
-    php"$PHPVER"-gmp \
-    php"$PHPVER"-bz2 \
-    php"$PHPVER"-bcmath \
-    php-pear
-    # php"$PHPVER"-imagick \
-    # libmagickcore-6.q16-3-extra
+install_if_not php"$PHPVER"-fpm
+install_if_not php"$PHPVER"-intl
+install_if_not php"$PHPVER"-ldap
+install_if_not php"$PHPVER"-imap
+install_if_not php"$PHPVER"-gd
+install_if_not php"$PHPVER"-pgsql
+install_if_not php"$PHPVER"-curl
+install_if_not php"$PHPVER"-xml
+install_if_not php"$PHPVER"-zip
+install_if_not php"$PHPVER"-mbstring
+install_if_not php"$PHPVER"-soap
+install_if_not php"$PHPVER"-gmp
+install_if_not php"$PHPVER"-bz2
+install_if_not php"$PHPVER"-bcmath
+install_if_not php-pear
 
 # Enable php-fpm
 a2enconf php"$PHPVER"-fpm
@@ -960,12 +956,11 @@ then
     if [ "$SYSVENDOR" == "Microsoft Corporation" ]
     then
         # Hyper-V
-        apt-get install -y --install-recommends \
-        linux-virtual \
-        linux-image-virtual \
-        linux-tools-virtual \
-        linux-cloud-tools-virtual \
-        linux-azure
+        install_if_not linux-virtual
+        install_if_not linux-image-virtual
+        install_if_not linux-tools-virtual
+        install_if_not linux-cloud-tools-virtual
+        install_if_not linux-azure
         # linux-image-extra-virtual only needed for AUFS driver with Docker
     fi
 fi
