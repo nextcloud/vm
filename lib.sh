@@ -2003,13 +2003,25 @@ ${NONO_PORTS[*]}"
 fi
 }
 
-add_trusted_key() {
+add_trusted_asc_and_repo() {
 # $1 = whatever.asc
 # $2 = Repository e.g. https://packaging.gitlab.io/coturn
-# $3 gpg.key
-# $4 debpackage-name.list
-    curl -sL -o /etc/apt/trusted.gpg.d/"$1" "$2"/"$3"
-    echo "deb $2/$CODENAME $CODENAME main" > "$4"
+# $3 = "$CODENAME $CODENAME main" (e.g. jammy jammy main)
+# $4 = debpackage-name.list
+    curl -sL -o /etc/apt/keyrings/"$1" "$2"/"$1"
+    echo "deb $2/$4" > /etc/apt/sources.list.d/"$3"
+    apt-get update -q4 & spinner_loading
+}
+
+add_trusted_key_and_debrepo() {
+# $1 = whatever.asc
+# $2 = Key URL e.g. https://download.webmin.com
+# $3 = Deb URL e.g. https://download.webmin.com/download/repository
+# $4 = "$CODENAME $CODENAME main" (e.g. jammy jammy main)
+# $5 = debpackage-name.list
+    curl -sL "$2"/"$1" | tee /etc/apt/keyrings/"$1"
+#    echo "deb [signed-by=/etc/apt/keyrings/$1]" > "/etc/apt/sources.list.d/$5"
+    echo "deb $3 $4" > "/etc/apt/sources.list.d/$5"
     apt-get update -q4 & spinner_loading
 }
 
