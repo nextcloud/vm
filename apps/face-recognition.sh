@@ -91,7 +91,7 @@ fi
 # Install requirements
 if version 20.04 "$DISTRO" 20.04.10
 then
-    # https://github.com/matiasdelellis/facerecognition/wiki/Installation#ubuntu-focal
+    # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-focal
     add_trusted_key_and_repo "repo.gpg.key" \
     "https://repo.delellis.com.ar" \
     "https://repo.delellis.com.ar" \
@@ -100,7 +100,7 @@ then
     install_if_not php7.4-pdlib
 elif version 22.04 "$DISTRO" 22.04.10
 then
-    # https://github.com/matiasdelellis/facerecognition/issues/570#issuecomment-1123822993
+    # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-jammy
     add_trusted_key_and_repo "repo.gpg.key" \
     "https://repo.delellis.com.ar" \
     "https://repo.delellis.com.ar" \
