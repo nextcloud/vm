@@ -51,6 +51,7 @@ else
     docker_prune_this "$nc_fts"
     docker_prune_this "$opens_fts"
     docker_prune_volume "esdata"
+    docker_prune_volume "opensearch_fts_os-data"
     docker_prune_volume "fts_os-data"
     # Remove configuration files
     rm -rf "$RORDIR"
@@ -211,6 +212,7 @@ services:
 
 volumes:
   fts_os-data:
+    name: fts_os-data
 
 networks:
   fts_os-net:
