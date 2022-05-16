@@ -4,8 +4,7 @@
 # Source:
 # https://opensearch.org/docs/latest/security-plugin/configuration/generate-certificates/#sample-script
 
-rm -rf tls_store
-mkdir tls_store
+mkdir -p tls_store
 TLS_DN="/C=CA/ST=NEXTCLOUD/L=VM/O=OPENSEARCH/OU=FTS"
 
 # Root CA
