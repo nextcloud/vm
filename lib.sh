@@ -1679,8 +1679,8 @@ then
     msg_box "Removing old Docker image: $1
 You will be given the option to abort when you hit OK."
     any_key "Press any key to continue. Press CTRL+C to abort"
-    docker stop "$(docker container ls | grep "$1" | awk '{print $1}' | tail -1)"
-    docker rm "$(docker container ls | grep "$1" | awk '{print $1}' | tail -1)" --volumes
+    docker stop "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
+    docker rm "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)" --volumes
     docker image prune -a -f
 fi
 }
@@ -1688,7 +1688,7 @@ fi
 # Remove selected Docker volume
 # docker_prune_volume ''
 docker_prune_volume() {
-if docker volume ls | grep -q "^$1$"
+if docker volume ls | grep -q "$1$"
 then
     msg_box "Removing old Docker volume: $1
 You will be given the option to abort when you hit OK."
