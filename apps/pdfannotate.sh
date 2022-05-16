@@ -51,6 +51,7 @@ pip3 install svglib
 # Get the app
 check_command cd "$NC_APPS_PATH"
 rm -rf pdfannotate
+install_if_not git
 check_command git clone https://gitlab.com/nextcloud-other/nextcloud-annotate pdfannotate
 chown -R www-data:www-data pdfannotate
 chmod -R 770 pdfannotate
