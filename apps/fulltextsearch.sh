@@ -9,7 +9,7 @@ SCRIPT_EXPLAINER="Full Text Search provides OpenSearch for Nextcloud, which make
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# Get all needed variables from the library
+# Get all needed functions from the library
 ncdb
 nc_update
 opensearch_install
@@ -24,7 +24,7 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 18 is required.
+# Nextcloud 21 is required.
 lowest_compatible_nc 21
 
 # Check if Full Text Search is already installed
@@ -49,9 +49,8 @@ else
     done
     # Removal Docker image
     docker_prune_this "$nc_fts"
-    docker_prune_this "$opens_fts"
     docker_prune_volume "esdata"
-    docker_prune_volume "fts_os-data"
+    docker-compose_down "$OPNSDIR/docker-compose.yml"
     # Remove configuration files
     rm -rf "$RORDIR"
     rm -rf "$OPNSDIR"
