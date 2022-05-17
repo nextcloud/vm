@@ -9,7 +9,7 @@ SCRIPT_EXPLAINER="Full Text Search provides OpenSearch for Nextcloud, which make
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# Get all needed functions from the library
+# Get all needed variables from the library
 ncdb
 nc_update
 opensearch_install
