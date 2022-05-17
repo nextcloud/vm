@@ -1697,6 +1697,19 @@ You will be given the option to abort when you hit OK."
 fi
 }
 
+# Stop and remove selected docker-compose items (containers, networks, volumes) by up.
+# docker-compose_down "$OPNSDIR/docker-compose.yml" (absolute path to docker-compose.yml)
+docker-compose_down() {
+if [ -f "$1" ]
+then
+    msg_box "Stoping and removing docker-compose items at: $1
+You will be given the option to abort when you hit OK."
+    any_key "Press any key to continue. Press CTRL+C to abort"
+    cd "$(dirname "$1")"
+    docker-compose down  --volume --rmi all
+fi
+}
+
 
 # Update specific Docker image
 # docker_update_specific 'vaultwarden' 'Vaultwarden' (docker conainter name = $1, the name in text = $2)
