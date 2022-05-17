@@ -1704,6 +1704,8 @@ if [ -f "$1" ]
 then
     cd "$(dirname "$1")"
     docker-compose down  --volume --rmi all
+else
+    echo "Non-existing docker-compose file path, skipping..."
 fi
 }
 
