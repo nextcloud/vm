@@ -1706,7 +1706,7 @@ then
 You will be given the option to abort when you hit OK."
     any_key "Press any key to continue. Press CTRL+C to abort"
     cd "$(dirname "$1")"
-    docker-compose down  --volume --rmi all
+    docker-compose down  --volume --remove-orphans --rmi all
 fi
 }
 
