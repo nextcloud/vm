@@ -1702,11 +1702,9 @@ fi
 docker-compose_down() {
 if [ -f "$1" ]
 then
-    msg_box "Stoping and removing docker-compose items at: $1
-You will be given the option to abort when you hit OK."
-    any_key "Press any key to continue. Press CTRL+C to abort"
+    msg_box "Stoping and removing docker-compose items at: $1"
     cd "$(dirname "$1")"
-    docker-compose down  --volume --remove-orphans --rmi all
+    docker-compose down  --volume --rmi all
 fi
 }
 
