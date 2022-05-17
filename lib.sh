@@ -1702,7 +1702,6 @@ fi
 docker-compose_down() {
 if [ -f "$1" ]
 then
-    msg_box "Stoping and removing docker-compose items at: $1"
     cd "$(dirname "$1")"
     docker-compose down  --volume --rmi all
 fi
