@@ -4,16 +4,20 @@ Check the latest commits here: https://github.com/nextcloud/vm/commits/master
 
 Documentation can be found here: https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration
 
-### Good to know
-- If you plan to install apps that use docker containers such as Collabora or Full Text Search, you need to raise the amount of RAM to at least 4 GB. If you don't, the startup script will fail to set enough max_children to the PHP-FPM configuration as we calculate on available RAM, and not the total.
-
-    Collabora requires 2 GB additional RAM
-    Full Text Search requires 2 GB additional RAM
-
+### Different versions
 If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M Hansson IT's shop](https://shop.hanssonit.se/product-category/virtual-machine/nextcloud/). 
 **Please note that BOTH disks need to be imported when using the Hyper-V image. The disk ending with _OS for OS, and the disk ending with _DATA for DATA.**
 
 PR's are more than welcome. Happy Nextclouding!
+
+## 24.0.0.1
+
+### This is a pre-release. Ovailable as a VM, but only the free 40 GB version.
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/24.0.0..24.0.0.1
+- https://nextcloud.com/changelog/#latest24
+
 
 ## 24.0.0
 
