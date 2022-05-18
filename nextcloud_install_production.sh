@@ -61,7 +61,7 @@ fi
 
 # Automatically restart services
 # Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
-sed -i "s|#\$nrconf{restart} = .*|\$nrconf{restart} = 'a'|g" /etc/needrestart/needrestart.conf
+sed -i "s|#\$nrconf{restart} = .*|\$nrconf{restart} = 'a';|g" /etc/needrestart/needrestart.conf
 
 # Install needed dependenices
 install_if_not lshw
