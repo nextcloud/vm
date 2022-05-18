@@ -304,7 +304,8 @@ do
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Quad9" "(https://www.quad9.net/)" \
 "Cloudflare" "(https://www.cloudflare.com/dns/)" \
-"Local" "($GATEWAY) - DNS on gateway" 3>&1 1>&2 2>&3)
+"Local" "($GATEWAY) - DNS on gateway" \
+"Expert" "If you really know what you're doing!" 3>&1 1>&2 2>&3)
     fi
 
     case "$choice" in
@@ -316,6 +317,19 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
         ;;
         "Local")
             sed -i "s|^#\?DNS=.*$|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
+            systemctl restart systemd-resolved.service
+            if network_ok
+            then
+                break
+            else
+                msg_box "Could not validate the local DNS server. Pick an Internet DNS server and try again."
+                continue
+            fi
+        ;;
+        "Expert")
+            OWNDNS=$(input_box_flow "Please choose your own DNS server(s) with a space in between, e.g: 192.168.87.40 192.168.87.60 (NS1 NS2)")
+            sed -i "s|^#\?DNS=.*$|DNS=$OWNDNS|g" /etc/systemd/resolved.conf
+            systemctl restart systemd-resolved.service
             if network_ok
             then
                 break
