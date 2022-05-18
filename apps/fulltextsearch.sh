@@ -210,7 +210,6 @@ services:
 
 volumes:
   fts_os-data:
-    name: fts_os-data
 
 networks:
   fts_os-net:
