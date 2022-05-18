@@ -24,7 +24,7 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 18 is required.
+# Nextcloud 21 is required.
 lowest_compatible_nc 21
 
 # Check if Full Text Search is already installed
@@ -49,9 +49,8 @@ else
     done
     # Removal Docker image
     docker_prune_this "$nc_fts"
-    docker_prune_this "$opens_fts"
     docker_prune_volume "esdata"
-    docker_prune_volume "fts_os-data"
+    docker-compose_down "$OPNSDIR/docker-compose.yml"
     # Remove configuration files
     rm -rf "$RORDIR"
     rm -rf "$OPNSDIR"
@@ -98,7 +97,7 @@ install_if_not docker-compose
 set_max_count
 mkdir -p "$OPNSDIR"
 docker pull "$opens_fts"
-BCRYPT_HASH="$(docker run -it $opens_fts \
+BCRYPT_HASH="$(docker run --rm -it $opens_fts \
                bash -c "plugins/opensearch-security/tools/hash.sh -p $OPNSREST | tr -d ':\n' ")"
 
 # Create configurations YML

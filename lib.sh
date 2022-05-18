@@ -1697,6 +1697,18 @@ You will be given the option to abort when you hit OK."
 fi
 }
 
+# Stop and remove selected docker-compose items (containers, networks, volumes) by up.
+# docker-compose_down "$OPNSDIR/docker-compose.yml" (absolute path to docker-compose.yml)
+docker-compose_down() {
+if [ -f "$1" ]
+then
+    cd "$(dirname "$1")"
+    docker-compose down  --volume --rmi all
+else
+    echo "Non-existing docker-compose file path, skipping..."
+fi
+}
+
 
 # Update specific Docker image
 # docker_update_specific 'vaultwarden' 'Vaultwarden' (docker conainter name = $1, the name in text = $2)
