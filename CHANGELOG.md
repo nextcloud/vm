@@ -33,6 +33,8 @@ This release is quite huge, including Ubuntu 22.04 (minimal), PHP-FPM 8.1, and P
 - Change DH-param instead of DSA-param
 - Make Talk a bit safer
 - Minor bugfixes and improvements
+- Updated geoblock database
+- Fixed a few backup related details
 - And more...
 
 ### Full changelog:
