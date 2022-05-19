@@ -12,7 +12,7 @@ PR's are more than welcome. Happy Nextclouding!
 
 ## 24.0.0.1
 
-### This is a pre-release. Ovailable as a VM, but only the free 40 GB version.
+### This is a pre-release. Available as a VM, but only the free 40 GB version.
 
 ### Full changelog:
 - https://github.com/nextcloud/vm/compare/24.0.0..24.0.0.1
