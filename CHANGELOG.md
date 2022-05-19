@@ -6,9 +6,38 @@ Documentation can be found here: https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/vi
 
 ### Different versions
 If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M Hansson IT's shop](https://shop.hanssonit.se/product-category/virtual-machine/nextcloud/). 
-**Please note that BOTH disks need to be imported when using the Hyper-V image. The disk ending with _OS for OS, and the disk ending with _DATA for DATA.**
+**Please note that BOTH disks need to be imported. The disk ending with _OS for OS, and the disk ending with _DATA for DATA.**
 
 PR's are more than welcome. Happy Nextclouding!
+
+## 24.0.1
+
+This release is quite huge, including Ubuntu 22.04 (minimal), PHP-FPM 8.1, and PosgreSQL 14.
+
+### Small changelog:
+- Prefer use of local lib file
+- Add `addons/fix_invalid_modification_time.sh`
+- Use minimal OS, instead of full blown. Install only needed dependecies.
+- Deprecate Ubuntu 18.04
+- Upgrade to Ubuntu 22.04
+- Upgrade to PHP 8.1
+- Upgrade to PostgreSQL 14
+- Upgrade Documentserver scripts to work with the new Docker images
+- Deprectae `apt-key` and introduce a new and better way for adding keys
+- Make the menu update option default. It first upgrades minor, then asks for major if applicable
+- Only clean disk if it's 70% full and/or less than 100 GB left
+- Remove legacy code
+- Make it possible to add your own DNS servers during installation (not setup)
+- Do not ask for password change if it differs from default, since that means you probably already set your own password
+- Make it possible to add your own GUI user during installation
+- Change DH-param instead of DSA-param
+- Make Talk a bit safer
+- Minor bugfixes and improvements
+- And more...
+
+### Full changelog:
+- https://github.com/nextcloud/vm/compare/23.0.2..24.0.1
+- https://nextcloud.com/changelog/#latest24
 
 ## 24.0.0.1
 
