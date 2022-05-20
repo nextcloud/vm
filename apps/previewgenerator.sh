@@ -115,8 +115,9 @@ You can check this issue to understand why: https://github.com/nextcloud/vm/issu
 Please note: If you choose not to install imagick, it will get removed now."
 if yesno_box_no "Do you want to install imagick?"
 then
+    check_php
     # Install imagick
-    install_if_not php-imagick
+    install_if_not php"$PHPVER"-imagick
     install_if_not libmagickcore-6.q16-3-extra
 
     # Choose file formats fo the case when imagick is installed.
@@ -178,6 +179,9 @@ else
     if is_this_installed php-imagick
     then
         apt-get purge php-imagick -y
+    elif is_this_installed php"$PHPVER"-imagick
+    then
+        apt-get purge php"$PHPVER"-imagick -y
     fi
     # check if libmagickcore is installed and remove it
     if is_this_installed libmagickcore-6.q16-3-extra
