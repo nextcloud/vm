@@ -2061,6 +2061,24 @@ add_trusted_key_and_repo() {
     fi
 }
 
+major_versions_unsupported() {
+# Major versions unsupported
+if [[ "${CURRENTVERSION%%.*}" -le "$NCBAD" ]]
+then
+    msg_box "Please note that updates between multiple major versions are unsupported! Your situation is:
+Current version: $CURRENTVERSION
+Latest release: $NCVERSION
+It is best to keep your Nextcloud server upgraded regularly, and to install all point releases
+and major releases, as skipping releases increases the risk of errors. Major releases are
+16, 17, 18 and 19. Point releases are intermediate releases for each major release.
+For example, 18.0.5 and 19.0.2 are point releases.
+You can read more about Nextcloud releases here: https://github.com/nextcloud/server/wiki/Maintenance-and-Release-Schedule
+Please contact T&M Hansson IT AB to help you with upgrading between major versions.
+https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
+    exit 1
+fi
+}
+
 ## bash colors
 # Reset
 Color_Off='\e[0m'       # Text Reset
