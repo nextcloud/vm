@@ -47,6 +47,7 @@ case "$choice" in
 do_the_update() {
     chmod +x "$SCRIPTS"/update.sh
     bash "$SCRIPTS"/update.sh minor
+    # shellcheck source=lib.sh
     source /var/scripts/fetch_lib.sh
     nc_update
     if version_gt "$NCVERSION" "$CURRENTVERSION"
