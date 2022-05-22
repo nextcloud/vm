@@ -7,9 +7,6 @@ SCRIPT_NAME="Main Menu"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# Needed for Update option
-nc_update
-
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -50,6 +47,8 @@ case "$choice" in
 do_the_update() {
     chmod +x "$SCRIPTS"/update.sh
     bash "$SCRIPTS"/update.sh minor
+    source /var/scripts/fetch_lib.sh
+    nc_update
     if version_gt "$NCVERSION" "$CURRENTVERSION"
     then
         if [ -n "$REBOOT_SET" ]
@@ -57,11 +56,11 @@ do_the_update() {
             msg_box "Since you have automated updates enabled with the reboot option set, we won't run update script a second time to the latest version automatically.
 To upgrade to the latest version, please run: 'sudo bash $SCRIPTS/update.sh' from your CLI."
         else
-            # Check if it's a major version (will exit if it is)
-            major_versions_unsupported
-            # Do the upgrade if it's not
             if yesno_box_yes "We will now run the update script a second time to update to the latest major version ($NCVERSION). Do you want to continue?"
             then
+                # Check if it's an unsupported major version (will exit if it is)
+                major_versions_unsupported
+                # Do the upgrade if it's not
                 bash "$SCRIPTS"/update.sh
             fi
         fi
