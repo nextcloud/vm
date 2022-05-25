@@ -635,7 +635,7 @@ update-grub
 rm /var/lib/apt/lists/* -r
 
 # Free some space (ZFS snapshots)
-if is_this_installed libzfs2linux
+if is_this_installed libzfs4linux
 then
     if grep -rq ncdata /etc/mtab
     then

@@ -195,7 +195,7 @@ fi
 format
 
 # Do a backup of the ZFS mount
-if is_this_installed libzfs2linux
+if is_this_installed libzfs4linux
 then
     if grep -r $POOLNAME /etc/mtab
     then
