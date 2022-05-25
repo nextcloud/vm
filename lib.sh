@@ -970,14 +970,14 @@ install_if_not curl
 if check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://networkappers.com/api/port.php?ip=${WANIP4}&port=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
-elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://please-do-not-be-so-greedy-with-recources.now' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${WANIP4}&portNu>
+elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://please-do-not-be-so-greedy-with-recources.now' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${WANIP4}&portNumber=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${WANIP4}!"
 # Domain name
 elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://www.networkappers.com/tools/open-port-checker' "https://www.networkappers.com/api/port.php?ip=${2}&port=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
-elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://please-do-not-be-so-greedy-with-recources.now' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${2}&portNumber=>
+elif check_command curl -s -H 'Cache-Control: no-cache' -H 'Referer: https://please-do-not-be-so-greedy-with-recources.now' 'https://ports.yougetsignal.com/check-port.php' --data "remoteAddress=${2}&portNumber=${1}" | grep -q "open"
 then
     print_text_in_color "$IGreen" "Port ${1} is open on ${2}!"
 else
