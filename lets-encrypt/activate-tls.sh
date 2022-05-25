@@ -23,7 +23,7 @@ else
     msg_box "Before we begin the installation of your TLS certificate you need to:
 
 1. Have a domain like: cloud.example.com
-If you want to get a domain at a fair price, please check this out: https://store.binero.se/?lang=en-US
+If you want to get a domain at a fair price, please check this out: https://www.websupport.se/en/
 
 2. Open port 80 and 443 against this servers IP address: $ADDRESS.
 Here is a guide: https://www.techandme.se/open-port-80-443
