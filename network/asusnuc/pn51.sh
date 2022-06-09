@@ -33,9 +33,9 @@ install_if_not build-essential
 install_if_not dkms
 
 INSTALLDIR="$SCRIPTS/PN51"
-OLDRVERSION=( 9.005.06 9.006.04 9.007.01 9.008.00)
+OLDRVERSION=( 9.005.06 9.006.04 9.007.01 9.008.00 9.009.00)
 # Add old versions with a single space inside the variable above.
-RVERSION="9.009.00"
+RVERSION="9.009.01"
 # Before changing the RVERSION here, please download it to the repo first.
 
 # Make sure the installation directory exist
