@@ -187,7 +187,7 @@ opensearch_install() {
     INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
     OPNSREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
     nc_fts="ark74/nc_fts"
-    opens_fts="opensearchproject/opensearch"
+    opens_fts="opensearchproject/opensearch:1"
     fts_node="fts_os-node"
 }
 create_certs(){
