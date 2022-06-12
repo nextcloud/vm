@@ -171,7 +171,7 @@ cat << YML_DOCKER_COMPOSE > $OPNSDIR/docker-compose.yml
 version: '3'
 services:
   fts_os-node:
-    image: opensearchproject/opensearch
+    image: opensearchproject/opensearch:1
     container_name: fts_os-node
     restart: always
     command:
