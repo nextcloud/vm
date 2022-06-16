@@ -1441,6 +1441,14 @@ any_key() {
 }
 
 lowest_compatible_nc() {
+if ! [ -f $NCDATA/.ocdata ]
+then
+    msg_box "Your .ocdata are missing in the Nextcloud data folder. This probably means that you failed to mount the second drive, or that it failed to import during boot of the system.
+We can't continue without it, so please shutdown the machine and double check that the second disk is correctly mounted in your hypervisor/server then try again.
+ 
+If you need support, feel free to contact us here: https://www.hanssonit.se/#contact"
+    exit 1
+else
 if [ -z "$NCVERSION" ]
 then
     nc_update
