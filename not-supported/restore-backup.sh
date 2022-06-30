@@ -416,7 +416,7 @@ then
     exit 1
 fi
 
-if ! [ -f "$SYSTEM_DIR/$SCRIPTS/nextclouddb.sql" ]
+if ! [ -f "$SYSTEM_DIR/$SCRIPTS/nextclouddb.sql" ] && ! [ -f "$SYSTEM_DIR/$SCRIPTS/nextclouddb.dump" ]
 then
     msg_box "Could not find database dump. this is not supported."
     umount "$BORG_MOUNT"
@@ -502,12 +502,26 @@ DB_PASSWORD=$(grep "dbpassword" "$SYSTEM_DIR/$NCPATH/config/config.php" | awk '{
 sudo -Hiu postgres psql nextcloud_db -c "ALTER USER ncadmin WITH PASSWORD '$DB_PASSWORD'"
 sudo -Hiu postgres psql -c "DROP DATABASE nextcloud_db;"
 sudo -Hiu postgres psql -c "CREATE DATABASE nextcloud_db WITH OWNER ncadmin TEMPLATE template0 ENCODING \"UTF8\";"
-if ! sudo -Hiu postgres psql nextcloud_db < "$SCRIPTS/nextclouddb.sql"
+if [ -f "$SCRIPTS/nextclouddb.sql" ]
 then
-    msg_box "An issue was reported while restoring the database."
-    umount "$BORG_MOUNT"
-    umount "$DRIVE_MOUNT"
-    exit 1
+    if ! sudo -Hiu postgres psql nextcloud_db < "$SCRIPTS/nextclouddb.sql"
+    then
+        msg_box "An issue was reported while restoring the database."
+        umount "$BORG_MOUNT"
+        umount "$DRIVE_MOUNT"
+        exit 1
+    fi
+fi
+
+if [ -f "$SCRIPTS/nextclouddb.dump" ]
+then
+    if ! sudo -Hiu postgres psql nextcloud_db < "$SCRIPTS/nextclouddb.dump"
+    then
+        msg_box "An issue was reported while restoring the database."
+        umount "$BORG_MOUNT"
+        umount "$DRIVE_MOUNT"
+        exit 1
+    fi
 fi
 
 # NTFS

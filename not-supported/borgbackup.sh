@@ -280,19 +280,19 @@ Please don't restart or shutdown your server until then!"
     # Database export
     # Not really necessary since the root partition gets backed up but easier to restore on new systems
     ncdb # get NCDB
-    rm -f "$SCRIPTS"/nextclouddb.sql
-    rm -f "$SCRIPTS"/alldatabases.sql
+    rm -f "$SCRIPTS"/nextclouddb.sql "$SCRIPTS"/nextclouddb.dump
+    rm -f "$SCRIPTS"/alldatabases.sql "$SCRIPTS"/alldatabases.dump
     if sudo -Hiu postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCDB'" | grep -q "1 row"
     then
         inform_user "$ICyan" "Doing pgdump of $NCDB..."
-        sudo -Hiu postgres pg_dump "$NCDB"  > "$SCRIPTS"/nextclouddb.sql
-        chown root:root "$SCRIPTS"/nextclouddb.sql
-        chmod 600 "$SCRIPTS"/nextclouddb.sql
+        sudo -Hiu postgres pg_dump "$NCDB"  > "$SCRIPTS"/nextclouddb.dump
+        chown root:root "$SCRIPTS"/nextclouddb.dump
+        chmod 600 "$SCRIPTS"/nextclouddb.dump
     else
         inform_user "$ICyan" "Doing pgdump of all databases..."
-        sudo -Hiu postgres pg_dumpall > "$SCRIPTS"/alldatabases.sql
-        chown root:root "$SCRIPTS"/alldatabases.sql
-        chmod 600 "$SCRIPTS"/alldatabases.sql
+        sudo -Hiu postgres pg_dumpall > "$SCRIPTS"/alldatabases.dump
+        chown root:root "$SCRIPTS"/alldatabases.dump
+        chmod 600 "$SCRIPTS"/alldatabases.dump
     fi
     systemctl stop postgresql
 
