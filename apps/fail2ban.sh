@@ -133,11 +133,13 @@ check_command update-rc.d fail2ban disable
 nextcloud_occ config:system:set logtimezone --value="$(cat /etc/timezone)"
 
 # Create nextcloud.conf file
-# Test: failregex = Login failed.*Remote IP.*<HOST>
+# Using https://docs.nextcloud.com/server/stable/admin_manual/installation/harden_server.html#setup-a-filter-and-a-jail-for-nextcloud
 cat << NCONF > /etc/fail2ban/filter.d/nextcloud.conf
 [Definition]
-failregex = Login failed.*Remote IP.*<HOST>
-ignoreregex =
+_groupsre = (?:(?:,?\s*"\w+":(?:"[^"]+"|\w+))*)
+failregex = ^\{%(_groupsre)s,?\s*"remoteAddr":"<HOST>"%(_groupsre)s,?\s*"message":"Login failed:
+            ^\{%(_groupsre)s,?\s*"remoteAddr":"<HOST>"%(_groupsre)s,?\s*"message":"Trusted domain error.
+datepattern = ,?\s*"time"\s*:\s*"%%Y-%%m-%%d[T ]%%H:%%M:%%S(%%z)?"
 NCONF
 
 # Create jail.local file
