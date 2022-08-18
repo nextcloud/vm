@@ -1071,8 +1071,6 @@ do
     app="${app##"$BACKUP/apps/"}"
     if ! [ -d "$NC_APPS_PATH/$app" ] && [ -d "$BACKUP/apps/$app" ]
     then
-        if yesno_box_no "$app couln't be installed. Do you want to restore it from backup?\n\nWARNING: It may result in failed integrity checks."
-        then
             print_text_in_color "$ICyan" "Restoring $app from $BACKUP/apps..."
             rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
             bash "$SECURE"
@@ -1081,7 +1079,6 @@ do
             check_running_cronjobs
             # Execute the update
             nextcloud_occ upgrade
-        fi
     fi
 done
 
