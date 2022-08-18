@@ -59,6 +59,7 @@ else
     rm -rf "$OPNSDIR"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
+    apt-get purge docker-compose -y
 fi
 
 # Test RAM size (4GB min) + CPUs (min 2)
@@ -235,7 +236,7 @@ if [ "$(nproc)" -gt 2 ]
 then
     countdown "Waiting for Docker bootstrapping..." "60"
 else
-    countdown "Waiting for Docker bootstrapping..." 120"
+    countdown "Waiting for Docker bootstrapping..." "120"
 fi
 
 # Make sure password setup is enforced.
@@ -249,7 +250,8 @@ docker-compose exec fts_os-node \
              -nhnv \
              -cacert ../../../config/root-ca.pem \
              -cert ../../../config/admin.pem \
-             -key ../../../config/admin-key.pem"
+             -key ../../../config/admin-key.pem && \
+             chmod 0600 ../../../config/root-ca.pem ../../../config/admin.pem ../../../config/admin-key.pem"
 
 docker logs $fts_node
 
@@ -263,6 +265,7 @@ chown -R www-data:www-data $NC_APPS_PATH
 nextcloud_occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
 nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${OPNSREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
 nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
+
 # Wait further for cache for index to work
 countdown "Waiting for a few seconds before indexing starts..." "10"
 if nextcloud_occ fulltextsearch:test
@@ -272,7 +275,7 @@ then
         msg_box "Full Text Search was successfully installed!"
     fi
 else
-    msg_box "There seems to be an issue with the FTS test. Please report this to $ISSUES"
+    msg_box "There seems to be an issue with the Full Text Search test. Please report this to $ISSUES."
 fi
 
 # Make sure the script exists
