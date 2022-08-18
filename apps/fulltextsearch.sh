@@ -233,9 +233,9 @@ docker-compose up -d
 # Wait for bootstrapping
 if [ "$(nproc)" -gt 2 ]
 then
-    countdown "Waiting for Docker bootstrapping..." "30"
-else
     countdown "Waiting for Docker bootstrapping..." "60"
+else
+    countdown "Waiting for Docker bootstrapping..." 120"
 fi
 
 # Make sure password setup is enforced.
@@ -265,9 +265,14 @@ nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http:/
 nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 # Wait further for cache for index to work
 countdown "Waiting for a few seconds before indexing starts..." "10"
-if nextcloud_occ fulltextsearch:index < /dev/null
+if nextcloud_occ fulltextsearch:test
 then
-    msg_box "Full Text Search was successfully installed!"
+    if nextcloud_occ fulltextsearch:index < /dev/null
+    then
+        msg_box "Full Text Search was successfully installed!"
+    fi
+else
+    msg_box "There seems to be an issue with the FTS test. Please report this to $ISSUES"
 fi
 
 # Make sure the script exists
