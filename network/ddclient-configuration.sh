@@ -63,6 +63,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Cloudflare" "(cloudflare.com)" \
 "deSEC" "(desec.io)" \
 "Duck DNS" "(duckdns.org)" \
+"Google Domains" "(domains.google)" \
 "No-IP" "(noip.com)" \
 "Strato" "(strato.de)" 3>&1 1>&2 2>&3)
 fi
@@ -90,6 +91,14 @@ case "$choice" in
         GUIDE="https://www.duckdns.org/faqs.jsp"
         PROTOCOL="duckdns"
         SERVER="www.duckdns.org"
+        USE_SSL="yes"
+    ;;
+    "Google Domains")
+        PROVIDER="Google Domains"
+        INSTRUCTIONS="activate DynDNS for your Domain"
+        GUIDE="https://support.google.com/domains/answer/6147083"
+        PROTOCOL="dyndns2"
+        SERVER="domains.google.com"
         USE_SSL="yes"
     ;;
     "No-IP")
