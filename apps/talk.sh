@@ -281,12 +281,18 @@ check_command systemctl enable nats-server
 
 # Janus WebRTC Server
 ## Installation
-## TODO Fix shellcheck check, and remove the disable command
-# shellcheck disable=SC1091
-source /etc/lsb-release
-curl -sL -o "/etc/apt/trusted.gpg.d/morph027-janus.asc" "https://packaging.gitlab.io/janus/gpg.key"
-echo "deb https://packaging.gitlab.io/janus/$DISTRIB_CODENAME $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/morph027-janus.list
-apt-get update -q4 & spinner_loading
+case "${CODENAME}" in
+    "bionic"|"focal")
+        add_trusted_key_and_repo "gpg.key" \
+        "https://packaging.gitlab.io/janus" \
+        "https://packaging.gitlab.io/janus/$CODENAME" \
+        "$CODENAME main" \
+        "morph027-janus.list"
+        ;;
+    *)
+        :
+        ;;
+esac
 install_if_not janus
 ## Configuration
 sed -i "s|#turn_rest_api_key.*|turn_rest_api_key = $JANUS_API_KEY|" /etc/janus/janus.jcfg
@@ -298,9 +304,11 @@ check_command systemctl enable janus
 
 # HPB
 ## Installation
-curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc" "https://packaging.gitlab.io/nextcloud-spreed-signaling/gpg.key"
-echo "deb https://packaging.gitlab.io/nextcloud-spreed-signaling signaling main" > /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list
-apt-get update -q4 & spinner_loading
+add_trusted_key_and_repo "gpg.key" \
+"https://packaging.gitlab.io/nextcloud-spreed-signaling" \
+"https://packaging.gitlab.io/nextcloud-spreed-signaling" \
+"signaling main" \
+"morph027-nextcloud-spreed-signaling.list"
 install_if_not nextcloud-spreed-signaling
 ## Configuration
 if [ ! -f "$SIGNALING_SERVER_CONF" ];
