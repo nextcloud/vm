@@ -1442,14 +1442,34 @@ any_key() {
 
 lowest_compatible_nc() {
 # .ocdata needs to exist to be able to check version, occ relies on everytihgn working
-if ! [ -f "$NCDATA"/.ocdata ]
-then
-    msg_box "Your .ocdata are missing in the Nextcloud data folder. This probably means that you failed to mount the second drive, or that it failed to import during boot of the system.
+while :
+do
+    if ! [ -f "$NCDATA"/.ocdata ]
+    then
+        # SUPPORT LEGACY: If it's not in the standard path, check for existing datadir in config.php
+        if [ -f "$NCPATH"/config/config.php ]
+        then
+            NCDATA="$(grep 'datadir' "${NCPATH}"/config/config.php | awk '{print $3}' | cut -d "'" -f2)"
+            # Check if ncdata is set, else fetch value from lib again (maybe happens during installation)
+            if [ -z "${NCDATA}" ]
+            then
+                msg_box "You are not using the default path for your datadir, and we can't find it in your config.php, so you can't run this script.
+If you think this is a bug, please report it to $ISSUES"
+            else
+                # Check again when NCDATA is set and not -z
+                if [ -f "$NCDATA"/.ocdata ]
+                then
+                    break
+                fi
+            fi
+        fi
+        msg_box "Your .ocdata are missing in the Nextcloud data folder. This probably means that you failed to mount the second drive, or that it failed to import during boot of the system.
 We can't continue without it, so please shutdown the machine and double check that the second disk is correctly mounted in your hypervisor/server then try again.
- 
+
 If you need support, feel free to contact us here: https://www.hanssonit.se/#contact"
-    exit 1
-fi
+        exit 1
+    fi
+done
 
 # Check version
 if [ -z "$NCVERSION" ]
