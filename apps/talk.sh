@@ -33,8 +33,8 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    sed '/# Talk Signaling Server/d' /etc/hosts >/dev/null 2>&1
-    sed '/127.0.1.1             $SUBDOMAIN/d' /etc/hosts >/dev/null 2>&1
+    sed "/# Talk Signaling Server/d" /etc/hosts >/dev/null 2>&1
+    sed "/127.0.1.1             $SUBDOMAIN/d" /etc/hosts >/dev/null 2>&1
     nextcloud_occ_no_check config:app:delete spreed stun_servers
     nextcloud_occ_no_check config:app:delete spreed turn_servers
     nextcloud_occ_no_check config:app:delete spreed signaling_servers
