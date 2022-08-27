@@ -771,6 +771,8 @@ Additional Apps --> Documentserver --> $1."
 }
 
 restart_webserver() {
+# https://github.com/nextcloud/vm/issues/2358
+sleep 2
 check_command systemctl restart apache2.service
 if is_this_installed php"$PHPVER"-fpm
 then
