@@ -162,8 +162,10 @@ then
 fi
 
 # Check the port
-msg_box "After you hit okay, we will check if port 51820 UDP is open."
-check_open_port 51820 "$NCDOMAIN"
+if ! yesno_box_yes "Unfortunately we are not able to check automatically if port 51820 UDP is open. So please make sure to open it correctly!\nDo you still want to continue?"
+then
+    exit 1
+fi
 
 # Inform the user about PIVPN
 msg_box "Just so that you don't wonder:
@@ -183,8 +185,7 @@ check_command curl -sfL https://install.pivpn.io -o "$SCRIPTS"/pivpn-install.sh
 if ! grep -q "maybeOSSupport$" "$SCRIPTS"/pivpn-install.sh || ! grep -q "askWhichVPN$" "$SCRIPTS"/pivpn-install.sh \
 || ! grep -q "askPublicIPOrDNS$" "$SCRIPTS"/pivpn-install.sh || ! grep -q "askCustomPort$" "$SCRIPTS"/pivpn-install.sh \
 || ! grep -q "askUnattendedUpgrades$" "$SCRIPTS"/pivpn-install.sh || ! grep -q "displayFinalMessage$" "$SCRIPTS"/pivpn-install.sh \
-|| ! grep -q "chooseUser$" "$SCRIPTS"/pivpn-install.sh || ! grep -q "welcomeDialogs$" "$SCRIPTS"/pivpn-install.sh \
-|| ! grep -q "avoidStaticIPv4Ubuntu$" "$SCRIPTS"/pivpn-install.sh
+|| ! grep -q "chooseUser$" "$SCRIPTS"/pivpn-install.sh || ! grep -q "welcomeDialogs$" "$SCRIPTS"/pivpn-install.sh
 then
     msg_box "It seems like some functions in pivpn-install.sh have changed.
 Please report this to $ISSUES"
@@ -200,7 +201,6 @@ sed -i 's|askUnattendedUpgrades$|# askUnattendedUpgrades|' "$SCRIPTS"/pivpn-inst
 sed -i 's|displayFinalMessage$|# displayFinalMessage|' "$SCRIPTS"/pivpn-install.sh # We don't want to show the final message
 sed -i 's|chooseUser$|# chooseUser|' "$SCRIPTS"/pivpn-install.sh # We want to use the UNIXUSER
 sed -i 's|welcomeDialogs$|# welcomeDialogs|' "$SCRIPTS"/pivpn-install.sh # We don't want to display the welcoem dialog
-sed -i 's|avoidStaticIPv4Ubuntu$|echo ""|' "$SCRIPTS"/pivpn-install.sh # We don't want to display any static ip
 
 # Set and export defaults
 pivpnPORT=51820 && export pivpnPORT
