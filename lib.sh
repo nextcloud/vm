@@ -1442,7 +1442,7 @@ any_key() {
 
 lowest_compatible_nc() {
 # .ocdata needs to exist to be able to check version, occ relies on everytihgn working
-while :
+until [ -f "$NCDATA"/.ocdata ]
 do
     if ! [ -f "$NCDATA"/.ocdata ]
     then
