@@ -1444,8 +1444,6 @@ lowest_compatible_nc() {
 # .ocdata needs to exist to be able to check version, occ relies on everytihgn working
 until [ -f "$NCDATA"/.ocdata ]
 do
-    if ! [ -f "$NCDATA"/.ocdata ]
-    then
         # SUPPORT LEGACY: If it's not in the standard path, check for existing datadir in config.php
         if [ -f "$NCPATH"/config/config.php ]
         then
@@ -1456,7 +1454,7 @@ do
                 msg_box "You are not using the default path for your datadir, and we can't find it in your config.php, so you can't run this script.
 If you think this is a bug, please report it to $ISSUES"
             else
-                # Check again when NCDATA is set and not -z
+                # Check again an break if found
                 if [ -f "$NCDATA"/.ocdata ]
                 then
                     break
@@ -1468,7 +1466,6 @@ We can't continue without it, so please shutdown the machine and double check th
 
 If you need support, feel free to contact us here: https://www.hanssonit.se/#contact"
         exit 1
-    fi
 done
 
 # Check version
