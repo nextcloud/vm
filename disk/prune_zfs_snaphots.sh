@@ -16,12 +16,12 @@ debug_mode
 # Must be root
 root_check
 
-if [ -d $NCDATA ]
+if [ -d "$NCDATA" ]
 then
     if is_this_installed zfs-auto-snapshot
     then
         # Check if /mnt/ncdata is more than 70% full
-        if [ "$(df -h $NCDATA | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 70 ]
+        if [ "$(df -h "$NCDATA" | awk '{print $5}' | tail -1 | cut -d "%" -f1)" -gt 70 ]
         then
             # If it is, then check if there's more than 100 GB left. Large disks may have plenty of space left,
             # and still being set for cleaning if this is not checked
