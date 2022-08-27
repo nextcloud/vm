@@ -116,7 +116,7 @@ done
 install_if_not iptables
 
 # remove ncdata, else it will be used
-rm -f $NCDATA/nextcloud.log
+rm -f "$NCDATA"/nextcloud.log
 
 # time to ban an IP that exceeded attempts
 BANTIME_=1209600
