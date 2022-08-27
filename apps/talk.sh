@@ -33,6 +33,8 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
+    sed '/# Talk Signaling Server/d' /etc/hosts >/dev/null 2>&1
+    sed '/127.0.1.1             $SUBDOMAIN/d' /etc/hosts >/dev/null 2>&1
     nextcloud_occ_no_check config:app:delete spreed stun_servers
     nextcloud_occ_no_check config:app:delete spreed turn_servers
     nextcloud_occ_no_check config:app:delete spreed signaling_servers
@@ -463,19 +465,21 @@ else
     exit 1
 fi
 
-## TODO
-# Add to /etc/hosts
-# Based on https://help.nextcloud.com/t/nextcloud-talk-signaling-server-now-automated-installation/90567/17?u=enoch85
-# echo "127.0.1.1    $SUBDOMAIN" >> /etc/hosts
-
 # Set signaling server strings
 SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
 nextcloud_occ config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
 
+# Add to /etc/hosts
+if ! grep "$SUBDOMAIN" /etc/hosts
+then
+    echo "# Talk Signaling Server" >> /etc/hosts
+    echo "127.0.1.1             $SUBDOMAIN" >> /etc/hosts
+fi
+
 # Check that everything is working
 if ! curl -L https://"$SUBDOMAIN"/api/v1/welcome
 then
-    msg_box "Installation failed. :/\n\nPlease run this script again to uninstall if you want to clean the system, or choose to reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
+    msg_box "Installation failed. :/\n\nPlease run this script again to uninstall if you want to clean the system, or choose to reinstall if you want to try again.\n\nLogging can be found by typing: journalctl >
     exit 1
 else
     msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
