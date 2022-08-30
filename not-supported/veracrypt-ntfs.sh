@@ -210,6 +210,9 @@ then
 chown root:root "$SCRIPTS/veracrypt-automount.sh"
 chmod 700 "$SCRIPTS/veracrypt-automount.sh"
 
+# Reset maintenance mode to disabled upon restart
+sed -i "/'maintenance'/s/true/false/" "$NCPATH/config/config.php"
+
 # Veracrypt entries
 AUTOMOUNT
 fi
@@ -225,7 +228,7 @@ then
     nextcloud_occ_no_check maintenance:mode --on
     send_mail "$MOUNT_PATH could not get mounted!" "Please connect the drive and reboot your server! \
 The maintenance mode was activated to prevent any issue with Nextcloud. \
-You can disable it after the drive is successfully mounted again!"
+A reboot should fix the issue if the drive is successfully connected again."
 fi
 AUTOMOUNT
 
@@ -275,9 +278,7 @@ nohup bash "$SCRIPTS/is-drive-connected.sh" "$PARTUUID" &>/dev/null &
 # Delete crontab
 crontab -u root -l | grep -v 'veracrypt-automount.sh'  | crontab -u root -
 # Create service instead
-if ! [ -f /etc/systemd/system/veracrypt-automount.service ]
-then
-    cat << SERVICE > /etc/systemd/system/veracrypt-automount.service
+cat << SERVICE > /etc/systemd/system/veracrypt-automount.service
 [Unit]
 Description=Mount Veracrypt Devices
 After=boot.mount
@@ -285,15 +286,14 @@ Before=network.target
 
 [Service]
 Type=forking
-ExecStart=/bin/bash $SCRIPTS/veracrypt-automount.sh
+ExecStart=-/bin/bash $SCRIPTS/veracrypt-automount.sh
 TimeoutStopSec=1
 
 [Install]
 WantedBy=multi-user.target
 SERVICE
-    systemctl enable veracrypt-automount
-fi
-
+systemctl disable veracrypt-automount &>/dev/null
+systemctl enable veracrypt-automount
 
 # Inform the user
 msg_box "Congratulations! The mount was successful.

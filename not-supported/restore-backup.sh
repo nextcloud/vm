@@ -576,7 +576,7 @@ Before=network.target
 
 [Service]
 Type=forking
-ExecStart=/bin/bash $SCRIPTS/veracrypt-automount.sh
+ExecStart=-/bin/bash $SCRIPTS/veracrypt-automount.sh
 TimeoutStopSec=1
 
 [Install]
