@@ -415,7 +415,7 @@ files_inotify app and set up the cronjob for this external storage."
 
             # Add crontab
             print_text_in_color "$ICyan" "Generating crontab..."
-            crontab -u root -l | { cat; echo "@reboot $SCRIPTS/notify-crontab.sh $MOUNT_ID; } | crontab -u root
+            crontab -u root -l | { cat; echo "@reboot $SCRIPTS/notify-crontab.sh $MOUNT_ID"; } | crontab -u root
 
             # Run the command in a subshell and don't exit if the smbmount script exits
             nohup sudo -u www-data php "$NCPATH"/occ files_external:notify -v "$MOUNT_ID" >> $VMLOGS/files_inotify.log &
