@@ -133,7 +133,7 @@ fingerprint
 use-auth-secret
 static-auth-secret=$TURN_SECRET
 realm=$TURN_DOMAIN
-total-quota=100
+total-quota=0
 bps-capacity=0
 stale-nonce
 no-loopback-peers
