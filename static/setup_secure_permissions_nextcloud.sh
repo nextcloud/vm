@@ -82,6 +82,8 @@ then
     then
         chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
     fi
+    # Also always chown files_external (https://github.com/nextcloud/vm/issues/2398)
+    chown -R "${htuser}":"${htgroup}" "${NCDATA}"/files_external
 fi
 
 chmod +x "${NCPATH}"/occ
