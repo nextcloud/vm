@@ -29,6 +29,7 @@ else
     remove_onlyoffice_docker
     # Remove config.php value set when install was successful
     nextcloud_occ config:system:delete allow_local_remote_servers
+    nextcloud_occ config:system:delete onlyoffice
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -132,9 +133,11 @@ check_nextcloud_https "OnlyOffice (Docker)"
 # Install Docker
 install_docker
 
+ONLYOFFICE_SECRET="$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")"
+
 # Install Onlyoffice docker
 docker pull onlyoffice/documentserver:latest
-docker run -i -t -d -p 127.0.0.3:9090:80 --restart always --name onlyoffice onlyoffice/documentserver
+docker run -i -t -d -p 127.0.0.3:9090:80 -e JWT_ENABLED=true -e JWT_HEADER=AuthorizationJwt -e JWT_SECRET="$ONLYOFFICE_SECRET" --restart always --name onlyoffice onlyoffice/documentserver
 
 # Install apache2
 install_if_not apache2
@@ -253,6 +256,8 @@ then
     add_to_trusted_domains "$SUBDOMAIN"
     # Allow remote servers with local addresses e.g. in federated shares, webcal services and more
     nextcloud_occ config:system:set allow_local_remote_servers --value="true"
+    nextcloud_occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
+    nextcloud_occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
     # Add prune command
     add_dockerprune
     # Restart Docker
