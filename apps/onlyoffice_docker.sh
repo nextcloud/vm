@@ -133,7 +133,7 @@ check_nextcloud_https "OnlyOffice (Docker)"
 # Install Docker
 install_docker
 
-ONLYOFFICE_SECRET="$(gen_passwd "$SHUF" "a-zA-Z0-9)"
+ONLYOFFICE_SECRET="$(gen_passwd "$SHUF" "a-zA-Z0-9")"
 
 # Install Onlyoffice docker
 docker pull onlyoffice/documentserver:latest
