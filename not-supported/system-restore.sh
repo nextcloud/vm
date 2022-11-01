@@ -483,10 +483,20 @@ systemctl stop postgresql
 
 # Restore the system partition
 print_text_in_color "$ICyan" "Restoring the files..."
-if ! rsync --stats --archive --human-readable --delete --one-file-system \
+if ! rsync --archive --human-readable --delete --one-file-system \
 -vv "${EXCLUDE_DIRS[@]}" /tmp/borgsystem/system/ /
 then
-    msg_box "Something failed while restoring the system partition."
+    SYSTEM_RESTORE_FAILED=1
+fi
+
+# Restore the boot partition
+if ! rsync --archive --human-readable -vv --delete /tmp/borgboot/boot/ /boot
+then
+    if [ "$SYSTEM_RESTORE_FAILED" = 1 ]
+    then
+        msg_box "Something failed while restoring the system partition."
+    fi
+    msg_box "Something failed while restoring the boot partition."
     umount /tmp/borgsystem
     umount /tmp/borgboot
     umount /tmp/borgncdata &>/dev/null
@@ -494,10 +504,9 @@ then
     exit 1
 fi
 
-# Restore the boot partition
-if ! rsync --stats --archive --human-readable -vv --delete /tmp/borgboot/boot/ /boot
+if [ "$SYSTEM_RESTORE_FAILED" = 1 ]
 then
-    msg_box "Something failed while restoring the boot partition."
+    msg_box "Something failed while restoring the system partition."
     umount /tmp/borgsystem
     umount /tmp/borgboot
     umount /tmp/borgncdata &>/dev/null
@@ -508,7 +517,7 @@ fi
 # Restore the ncdata partition
 if [ -n "$NCDATA_ARCHIVE_EXISTS" ]
 then
-    if ! rsync --stats --archive --human-readable --delete --one-file-system \
+    if ! rsync --archive --human-readable --delete --one-file-system \
 -vv "${PREVIEW_EXCLUDED[*]}" /tmp/borgncdata/ncdata/ /mnt/ncdata
     then
         msg_box "Something failed while restoring the ncdata partition."

@@ -488,7 +488,7 @@ done
 
 # Restore files
 # Rsync include/exclude patterns: https://stackoverflow.com/a/48010623
-if ! rsync --archive --delete --human-readable --one-file-system -vv --stats \
+if ! rsync --archive --delete --human-readable --one-file-system -vv \
 "${EXCLUDE_DIRS[@]}" "${INCLUDE_DIRS[@]}" "${INCLUDE_FILES[@]}" --exclude='*' "$SYSTEM_DIR/" /
 then
     msg_box "An issue was reported while restoring all needed files."
