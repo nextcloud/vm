@@ -569,22 +569,6 @@ Please don't restart or shutdown your server until then!"
     get_expiration_time
     inform_user "$IGreen" "Backup finished on $END_DATE_READABLE ($DURATION_READABLE)"
 
-    # Modify some things to the better
-    if [ -f "$SCRIPTS/veracrypt-automount.sh" ]
-    then
-        sed -i "s|You can disable it after the drive is successfully mounted again!|A reboot should fix the issue if the drive is successfully connected again.|" "$SCRIPTS/veracrypt-automount.sh"
-        if ! grep -q "Reset maintenance mode to disabled upon restart" "$SCRIPTS/veracrypt-automount.sh"
-        then
-            sed -i "s|^# Veracrypt entries$|sed -i \"/'maintenance'/s/true/false/\" \"$NCPATH/config/config.php\"|" "$SCRIPTS/veracrypt-automount.sh"
-        fi
-        if ! grep -q "ExecStart=-/bin/bash $SCRIPTS/veracrypt-automount.sh" /etc/systemd/system/veracrypt-automount.service
-        then
-            sed -i "s|ExecStart=/bin/bash $SCRIPTS/veracrypt-automount.sh|ExecStart=-/bin/bash $SCRIPTS/veracrypt-automount.sh|" /etc/systemd/system/veracrypt-automount.service
-            systemctl disable veracrypt-automount &>/dev/null
-            systemctl enable veracrypt-automount
-        fi
-    fi
-
     # Send mail about successful backup
     if ! send_mail "Daily backup successful!" "$(cat "$LOG_FILE")"
     then
