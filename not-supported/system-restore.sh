@@ -453,6 +453,7 @@ done
 
 # Inform user
 if ! yesno_box_no "Are you sure that you want to restore your system to the selected state?
+Please note that this will also restore the Bitwarden RS/Vaultwarden/Bitwarden database so newly created passwords that were created in the meantime since this backup will get deleted.
 If you select 'Yes', we will start the restore process!"
 then
     umount /tmp/borgsystem
