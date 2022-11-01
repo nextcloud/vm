@@ -28,7 +28,7 @@ print_text_in_color "$ICyan" "Checking prerequisites..."
 # Check if daily-borg-backup exists
 if ! nextcloud_occ_no_check -V || [ -f "$SCRIPTS/daily-borg-backup.sh" ]
 then
-    SNAPSHOT_USED=$(lvs -o name,data_percent | grep "NcVM-reserved" | awk '{print $2}' | sed 's|\..*||')
+    SNAPSHOT_USED=$(lvs -o name,data_percent | grep "NcVM-reserved" | awk '{print $2}' | sed 's|\..*||' | sed 's|,.*||')
     if [ -n "$SNAPSHOT_USED" ] && [ "$SNAPSHOT_USED" -lt 100 ]
     then
         if yesno_box_no "A usable snapshot was found! \
@@ -81,7 +81,7 @@ fi
 # Check if dbuser is ncadmin
 if [ "$(nextcloud_occ config:system:get dbuser)" != "$PGDB_USER" ]
 then
-    msg_box "It seems like the default dbuser is not ncadmin.\nThis is not supported."
+    msg_box "It seems like the default dbuser is not $PGDB_USER.\nThis is not supported."
     exit 1
 fi
 # Check if apache2 is installed
@@ -113,7 +113,8 @@ then
     check_free_space
     if [ "$FREE_SPACE" -lt 30 ]
     then
-        msg_box "Unfortunately NcVM-reserved doesn't exist, hence you are not able to restore the system."
+        msg_box "Unfortunately NcVM-reserved doesn't exist, hence you are not able to restore the system.
+If you just restored and merged the snapshot, you might need to reboot the system another time with 'sudo reboot'."
         exit 1
     else
         if ! lvcreate --size 30G --name "NcVM-reserved" ubuntu-vg
@@ -478,7 +479,7 @@ do
 done
 
 # Exclude some dirs
-EXCLUDE_DIRECTORIES=("home/plex/config/Library/Application Support/Plex Media Server/Cache" "$NCDATA"/appdata_*/preview "$NCDATA"/*/files_trashbin "$NCDATA"/*/files_versions)
+EXCLUDE_DIRECTORIES=("home/plex/config/Library/Application Support/Plex Media Server/Cache" "$NCDATA"/appdata_*/preview "$NCDATA"/*/files_trashbin "$NCDATA"/*/files_versions mnt/NCBACKUP mnt/NCBACKUP-OLD "$NCDATA"/*/uploads)
 for directory in "${EXCLUDE_DIRECTORIES[@]}"
 do
     directory="${directory#/*}"
@@ -487,7 +488,7 @@ done
 
 # Restore files
 # Rsync include/exclude patterns: https://stackoverflow.com/a/48010623
-if ! rsync --archive --human-readable --one-file-system -vv --stats \
+if ! rsync --archive --delete --human-readable --one-file-system -vv --stats \
 "${EXCLUDE_DIRS[@]}" "${INCLUDE_DIRS[@]}" "${INCLUDE_FILES[@]}" --exclude='*' "$SYSTEM_DIR/" /
 then
     msg_box "An issue was reported while restoring all needed files."
@@ -499,19 +500,16 @@ fi
 # Database
 print_text_in_color "$ICyan" "Restoring the database..."
 DB_PASSWORD=$(grep "dbpassword" "$SYSTEM_DIR/$NCPATH/config/config.php" | awk '{print $3}' | sed "s/[',]//g")
-sudo -Hiu postgres psql nextcloud_db -c "ALTER USER ncadmin WITH PASSWORD '$DB_PASSWORD'"
+OLD_DB_USER=$(grep "dbuser" "$SYSTEM_DIR/$NCPATH/config/config.php" | awk '{print $3}' | sed "s/[',]//g")
+set -e
+sudo -Hiu postgres psql -c "ALTER USER $PGDB_USER WITH PASSWORD '$DB_PASSWORD'"
 sudo -Hiu postgres psql -c "DROP DATABASE nextcloud_db;"
-sudo -Hiu postgres psql -c "CREATE DATABASE nextcloud_db WITH OWNER ncadmin TEMPLATE template0 ENCODING \"UTF8\";"
-if [ -f "$SCRIPTS/nextclouddb.sql" ]
+sudo -Hiu postgres psql -c "CREATE DATABASE nextcloud_db WITH OWNER $PGDB_USER TEMPLATE template0 ENCODING \"UTF8\";"
+if [ "$OLD_DB_USER" != "$PGDB_USER" ]
 then
-    if ! sudo -Hiu postgres psql nextcloud_db < "$SCRIPTS/nextclouddb.sql"
-    then
-        msg_box "An issue was reported while restoring the database."
-        umount "$BORG_MOUNT"
-        umount "$DRIVE_MOUNT"
-        exit 1
-    fi
+    sudo -Hiu postgres psql -c "CREATE USER $OLD_DB_USER WITH PASSWORD '$PGDB_PASS'";
 fi
+set +e
 
 if [ -f "$SCRIPTS/nextclouddb.dump" ]
 then
@@ -522,7 +520,24 @@ then
         umount "$DRIVE_MOUNT"
         exit 1
     fi
+else
+    msg_box "Did not find database dump. Cannot continue."
+    umount "$BORG_MOUNT"
+    umount "$DRIVE_MOUNT"
+    exit 1
 fi
+
+set -e
+if [ "$OLD_DB_USER" != "$PGDB_USER" ]
+then
+    sudo -Hiu postgres psql -c "ALTER DATABASE nextcloud_db OWNER TO \"$PGDB_USER\"";
+    sudo -Hiu postgres psql nextcloud_db -c "REASSIGN OWNED BY \"$OLD_DB_USER\" TO \"$PGDB_USER\"";
+    sudo -Hiu postgres psql -c "DROP USER \"$OLD_DB_USER\"";
+fi
+set +e
+
+# Change dbuser to new one
+sed -i "s|'dbuser' =>.*,|'dbuser' => '$PGDB_USER',|" "$NCPATH/config/config.php"
 
 # NTFS
 if grep -q " ntfs-3g " "$SYSTEM_DIR/etc/fstab"
