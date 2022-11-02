@@ -187,10 +187,12 @@ network:
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
          addresses: 
-         - $LANIP # client IP address
-         gateway4: $GATEWAYIP # gateway address
+         - $LANIP
+         routes:
+          - to: default
+            via: $GATEWAYIP
          nameservers:
-           addresses: [$DNSs] #name servers
+           addresses: [$DNSs]
 IPCONFIG
 
         msg_box "These are your settings, please make sure they are correct:
@@ -207,10 +209,12 @@ network:
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
          addresses: 
-         - $LANIP # client IP address
-         gateway4: $GATEWAYIP # gateway address
+         - $LANIP
+         routes:
+          - to: default
+            via: $GATEWAYIP
          nameservers:
-           addresses: [$DNSs] #name servers
+           addresses: [$DNSs]
 IPCONFIGnonvmware
 
         msg_box "These are your settings, please make sure they are correct:
