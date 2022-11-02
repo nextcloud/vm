@@ -209,6 +209,9 @@ then
 chown root:root "$SCRIPTS/veracrypt-automount.sh"
 chmod 700 "$SCRIPTS/veracrypt-automount.sh"
 
+# Reset maintenance mode to disabled upon restart
+sed -i "/'maintenance'/s/true/false/" "$NCPATH/config/config.php"
+
 # Veracrypt entries
 AUTOMOUNT
 fi
@@ -259,7 +262,7 @@ else
 fi
 send_mail "One veracrypt drive is not connected anymore!" "Please connect the drive and reboot your server!
 The maintenance mode was activated to prevent any issue with Nextcloud. 
-You can disable it after the drive is successfully mounted again!"
+A reboot should fix the issue if the drive is successfully connected again."
 CONNECTED
 
 # Secure the file
@@ -297,9 +300,7 @@ crontab -u root -l | { cat; echo "@reboot $SCRIPTS/adjust-startup-permissions.sh
 # Delete crontab
 crontab -u root -l | grep -v 'veracrypt-automount.sh'  | crontab -u root -
 # Create service instead
-if ! [ -f /etc/systemd/system/veracrypt-automount.service ]
-then
-    cat << SERVICE > /etc/systemd/system/veracrypt-automount.service
+cat << SERVICE > /etc/systemd/system/veracrypt-automount.service
 [Unit]
 Description=Mount Veracrypt Devices
 After=boot.mount
@@ -307,14 +308,14 @@ Before=network.target
 
 [Service]
 Type=forking
-ExecStart=/bin/bash $SCRIPTS/veracrypt-automount.sh
+ExecStart=-/bin/bash $SCRIPTS/veracrypt-automount.sh
 TimeoutStopSec=1
 
 [Install]
 WantedBy=multi-user.target
 SERVICE
-    systemctl enable veracrypt-automount
-fi
+systemctl disable veracrypt-automount &>/dev/null
+systemctl enable veracrypt-automount
 
 # Adjust permissions
 print_text_in_color "$ICyan" "Adjusting permissions..."
