@@ -331,10 +331,13 @@ export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options
 # Fix Realtek on PN51
 if asuspn51
 then
-    # Upgrade Realtek drivers
-    print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
-    curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
-    bash "$SCRIPTS"/pn51.sh
+    if ! version 22.04 "$DISTRO" 22.04.10
+    then
+        # Upgrade Realtek drivers
+        print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
+        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+        bash "$SCRIPTS"/pn51.sh
+    fi
 fi
 
 # Update Netdata
