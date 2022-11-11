@@ -1542,7 +1542,7 @@ MULTIV=$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | hea
 if [ "$MULTIV" != "multiverse" ]
 then
     print_text_in_color "$ICyan" "Adding required repo (multiverse)."
-    add-apt-repository multiverse
+    yes | add-apt-repository multiverse
 fi
 }
 
