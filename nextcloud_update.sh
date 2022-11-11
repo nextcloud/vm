@@ -634,9 +634,6 @@ apt-get autoclean
 # Update GRUB, just in case
 update-grub
 
-# Remove update lists
-rm /var/lib/apt/lists/* -r
-
 # Free some space (ZFS snapshots)
 if is_this_installed libzfs4linux
 then
