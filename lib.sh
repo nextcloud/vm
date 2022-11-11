@@ -1538,8 +1538,7 @@ fi
 
 # Check universe repository
 check_multiverse() {
-MULTIV=$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | head -n 1 | cut -d "/" -f 2)
-if [ "$MULTIV" != "multiverse" ]
+if [ "$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | head -n 1 | cut -d "/" -f 2)" != "multiverse" ]
 then
     print_text_in_color "$ICyan" "Adding required repo (multiverse)."
     yes | add-apt-repository multiverse
