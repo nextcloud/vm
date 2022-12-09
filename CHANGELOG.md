@@ -10,6 +10,21 @@ PR's are more than welcome. Happy Nextclouding!
 ### Different versions
 If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M Hansson IT's shop](https://shop.hanssonit.se/product-category/virtual-machine/nextcloud/). 
 
+## 25.0.2
+
+### Small changelog:
+- Drop all tables from FTS when reinstalling to avoid leftovers
+- Make Talk security optional. Should work out of the box on all scenarios now. 
+- Previewgenerator and Webmin are no longer default apps during installation
+- Support really old versions when migrating/upgrading Nextcloud
+- Improve some scripts and other stuff in the `not-supported` folder
+- Minor bugfixes and improvments
+- And more...
+
+### Full changelog:
+- [https://github.com/nextcloud/vm/compare/24.0.5..25.0.2](https://github.com/nextcloud/vm/compare/24.0.5..25.0.2)
+- [https://nextcloud.com/changelog/#latest24](https://nextcloud.com/changelog/#latest25)
+
 ## 24.0.5
 
 ### Small changelog:
@@ -29,7 +44,7 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 ### Full changelog:
 - [https://github.com/nextcloud/vm/compare/24.0.1..24.0.5](https://github.com/nextcloud/vm/compare/24.0.1..24.0.5)
-- [https://nextcloud.com/changelog/#latest24](https://nextcloud.com/changelog/#latest24)
+- [https://nextcloud.com/changelog/#latest25](https://nextcloud.com/changelog/#latest24)
 
 
 ## 24.0.1
