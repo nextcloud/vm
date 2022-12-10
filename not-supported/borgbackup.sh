@@ -544,12 +544,15 @@ Please don't restart or shutdown your server until then!"
     # Run a borg compact which is required with borg 1.2.0 and higher
     if borg compact -h &>/dev/null
     then
-        inform_user "$ICyan" "Starting borg compact which will clean up not needed commits and free space..."
-        if ! borg compact "$BACKUP_TARGET_DIRECTORY"
-        then
-            re_rename_snapshot
-            send_error_mail "Some errors were reported during borg compact!"
-        fi
+        # Disable borg compact temporarily as it seems to be broken currently:
+        # https://github.com/borgbackup/borg/issues/6781
+        # https://github.com/borgbackup/borg/issues/6687
+        # inform_user "$ICyan" "Starting borg compact which will clean up not needed commits and free space..."
+        # if ! borg compact "$BACKUP_TARGET_DIRECTORY"
+        # then
+        #     re_rename_snapshot
+        #     send_error_mail "Some errors were reported during borg compact!"
+        # fi
     fi
 
     # Rename the snapshot back to normal
