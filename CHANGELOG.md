@@ -23,7 +23,7 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 ### Full changelog:
 - [https://github.com/nextcloud/vm/compare/24.0.5..25.0.2](https://github.com/nextcloud/vm/compare/24.0.5..25.0.2)
-- [https://nextcloud.com/changelog/#latest24](https://nextcloud.com/changelog/#latest25)
+- [https://nextcloud.com/changelog/#latest25](https://nextcloud.com/changelog/#latest25)
 
 ## 24.0.5
 
@@ -44,7 +44,7 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 
 ### Full changelog:
 - [https://github.com/nextcloud/vm/compare/24.0.1..24.0.5](https://github.com/nextcloud/vm/compare/24.0.1..24.0.5)
-- [https://nextcloud.com/changelog/#latest25](https://nextcloud.com/changelog/#latest24)
+- [https://nextcloud.com/changelog/#latest24](https://nextcloud.com/changelog/#latest24)
 
 
 ## 24.0.1
