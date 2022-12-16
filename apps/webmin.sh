@@ -37,6 +37,8 @@ else
     rm -f /etc/apt/trusted.gpg.d/webmin.gpg
     rm -f /etc/apt/keyrings/jcameron-key.asc
     sed -i '/webmin/d' /etc/apt/sources.list
+    apt-get clean all
+    apt-get update
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
