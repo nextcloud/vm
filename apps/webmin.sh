@@ -52,8 +52,9 @@ install_if_not libauthen-pam-perl
 install_if_not libpam-runtime
 install_if_not libio-pty-perl
 install_if_not apt-show-versions
-install_if_not python2
+install_if_not python
 install_if_not unzip
+install_if_not shared-mime-info
 install_if_not zip
 
 # https://github.com/webmin/webmin/issues/1169
