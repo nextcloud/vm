@@ -79,8 +79,8 @@ install_if_not webmin
 
 if ! dpkg-query -W -f='${Status}' "webmin" | grep -q "ok installed"
 then
-    wget http://prdownloads.sourceforge.net/webadmin/webmin_1.991_all.deb
-    dpkg --install webmin_1.991_all.deb
+    wget http://prdownloads.sourceforge.net/webadmin/webmin_2.010_all.deb
+    dpkg --install webmin_2.010_all.deb
 fi
 
 print_text_in_color "$ICyan" "Configuring Webmin..."
