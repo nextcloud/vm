@@ -198,13 +198,13 @@ while getopts "c:l:f:usodtzh" option; do
 		:)
 			error "Error: -${OPTARG} requires an argument."
 			usage
-			exit 1
+			die
 			;;
 		
 		*)
 			error "Invalid argument -${OPTARG} supplied."
 			usage
-			exit 1
+			die
 			;;
 	esac
 done
