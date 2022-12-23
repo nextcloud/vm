@@ -205,7 +205,7 @@ then
     # basic proxy settings
     ProxyRequests off
 
-    ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.3:9090/$1$2"
+    ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.3:9090/\$1\$2"
     ProxyPass / "http://127.0.0.3:9090/"
     ProxyPassReverse / "http://127.0.0.3:9090/"
 
