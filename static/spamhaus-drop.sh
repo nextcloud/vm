@@ -193,6 +193,7 @@ while getopts "c:l:f:usodtzh" option; do
 
 		h)  # show usage information
 		    usage
+		    die
 		    ;;
 		
 		:)
