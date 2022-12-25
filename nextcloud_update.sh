@@ -264,6 +264,7 @@ deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/ne
         chown www-data:www-data "$VMLOGS/nextcloud.log"
     fi
 }
+find_log
 if [ -d /var/log/ncvm/ ]
 then
     rsync -Aaxz /var/log/ncvm/ "$VMLOGS"
