@@ -72,7 +72,7 @@ To upgrade to the latest version, please run: 'sudo bash $SCRIPTS/update.sh' fro
         # Check if automated updates are set
         REBOOT_SET=$(grep -r "shutdown -r" "$SCRIPTS"/update.sh)
         # Check if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
-        if [ "$(stat --format=%Y "$SCRIPTS"/update.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
+        if [ "$(stat --format=%Y "$SCRIPTS"/update.sh)" -le "$(( $(date +%s) - (60*60*24*60) ))" ]
         then
             print_text_in_color "$ICyan" "Downloading the latest update script..."
             download_script STATIC update
