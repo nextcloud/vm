@@ -54,7 +54,6 @@ Additional options and arguments:
   -t                   Disable logging of blocklist hits in iptables
   -h                   Display this help message
 "
-	exit "$EXIT_CODE"
 }
 
 set_mode() {
@@ -131,7 +130,7 @@ update_iptables() {
 	fi;
 
 	# iterate through all known spamming hosts
-	LASSOIP="$(cut -d ' ' -f1 $CACHE_FILE | tr -d ';' | awk 'NF > 0')"
+	LASSOIP="$(cut -d ' ' -f1 "$CACHE_FILE" | tr -d ';' | awk 'NF > 0')"
 	for IP in $LASSOIP; do
 		if [ $LOG_BLOCKLIST_HITS -eq 1 ]; then
 			# add the ip address log rule to the chain
@@ -194,6 +193,7 @@ while getopts "c:l:f:usodtzh" option; do
 
 		h)  # show usage information
 		    usage
+		    die
 		    ;;
 		
 		:)
