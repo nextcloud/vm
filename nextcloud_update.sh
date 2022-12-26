@@ -1121,7 +1121,7 @@ then
     print_text_in_color "$ICyan" "Nextcloud crontab updated to run every 5 minutes."
 fi
 
-# Replace iNotify checker with a scrip instead
+# Replace iNotify checker with a script instead
 if crontab -u root -l | grep -q "files_external:notify -v"
 then
     download_script ADDONS notify-crontab
