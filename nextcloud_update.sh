@@ -180,7 +180,7 @@ rm -f /root/db-migration.sh
 
 # Fix bug in nextcloud.sh
 CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
-if [ -f $SCRIPTS/techandme.sh ]
+if [ -f "$SCRIPTS/techandme.sh" ]
 then
    rm -f "$SCRIPTS/techandme.sh"
    download_script STATIC nextcloud
@@ -197,7 +197,7 @@ else
     # Only update if it's older than 60 days (60 seconds * 60 minutes * 24 hours * 60 days)
     if [ -f "$SCRIPTS"/nextcloud.sh ]
     then
-        if [ "$(stat --format=%Y "$SCRIPTS"/nextcloud.sh)" -le "$(( $(date +%s) - ((60*60*24*60)) ))" ]
+        if [ "$(stat --format=%Y "$SCRIPTS"/nextcloud.sh)" -le "$(( $(date +%s) - (60*60*24*60) ))" ]
         then
             download_script STATIC nextcloud
             chown "$CURRUSR":"$CURRUSR" "$SCRIPTS"/nextcloud.sh
@@ -264,6 +264,7 @@ deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/ne
         chown www-data:www-data "$VMLOGS/nextcloud.log"
     fi
 }
+find_log
 if [ -d /var/log/ncvm/ ]
 then
     rsync -Aaxz /var/log/ncvm/ "$VMLOGS"
@@ -292,9 +293,9 @@ else
 fi
 
 # Remove the local lib.sh since it's causing issues with new functions (2020-06-01)
-if [ -f $SCRIPTS/lib.sh ]
+if [ -f "$SCRIPTS"/lib.sh ]
 then
-    rm -f $SCRIPTS/lib.sh
+    rm -f "$SCRIPTS"/lib.sh
 fi
 
 # Make sure everyone gets access to menu.sh
@@ -331,10 +332,13 @@ export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options
 # Fix Realtek on PN51
 if asuspn51
 then
-    # Upgrade Realtek drivers
-    print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
-    curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
-    bash "$SCRIPTS"/pn51.sh
+    if ! version 22.04 "$DISTRO" 22.04.10
+    then
+        # Upgrade Realtek drivers
+        print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
+        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+        bash "$SCRIPTS"/pn51.sh
+    fi
 fi
 
 # Update Netdata
@@ -398,15 +402,15 @@ then
     sed -i "/extension=redis.so/d" "$PHP_INI"
 fi
 # Check if redis is enabled and create the file if not
-if [ ! -f $PHP_MODS_DIR/redis.ini ]
+if [ ! -f "$PHP_MODS_DIR"/redis.ini ]
 then
-    touch $PHP_MODS_DIR/redis.ini
+    touch "$PHP_MODS_DIR"/redis.ini
 fi
 # Enable new redis
-if ! grep -qFx extension=redis.so $PHP_MODS_DIR/redis.ini
+if ! grep -qFx extension=redis.so "$PHP_MODS_DIR"/redis.ini
 then
-    echo "# PECL redis" > $PHP_MODS_DIR/redis.ini
-    echo "extension=redis.so" >> $PHP_MODS_DIR/redis.ini
+    echo "# PECL redis" > "$PHP_MODS_DIR"/redis.ini
+    echo "extension=redis.so" >> "$PHP_MODS_DIR"/redis.ini
     check_command phpenmod -v ALL redis
 fi
 
@@ -459,15 +463,15 @@ then
                 sed -i "/extension=igbinary.so/d" "$PHP_INI"
             fi
             # Check if igbinary is enabled and create the file if not
-            if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
+            if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
             then
-                touch $PHP_MODS_DIR/igbinary.ini
+                touch "$PHP_MODS_DIR"/igbinary.ini
             fi
             # Enable new igbinary
-            if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
+            if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
             then
-                echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
-                echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
+                echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
+                echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
                 check_command phpenmod -v ALL igbinary
             fi
         fi
@@ -475,15 +479,15 @@ then
         then
             yes no | pecl upgrade smbclient
             # Check if smbclient is enabled and create the file if not
-            if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
+            if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
             then
-               touch $PHP_MODS_DIR/smbclient.ini
+               touch "$PHP_MODS_DIR"/smbclient.ini
             fi
             # Enable new smbclient
-            if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
+            if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
             then
-                echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
-                echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
+                echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
+                echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
                 check_command phpenmod -v ALL smbclient
             fi
             # Remove old smbclient
@@ -500,14 +504,14 @@ then
                 sed -i "/extension=inotify.so/d" "$PHP_INI"
             fi
             yes no | pecl upgrade inotify
-            if [ ! -f $PHP_MODS_DIR/inotify.ini ]
+            if [ ! -f "$PHP_MODS_DIR"/inotify.ini ]
             then
-                touch $PHP_MODS_DIR/inotify.ini
+                touch "$PHP_MODS_DIR"/inotify.ini
             fi
-            if ! grep -qFx extension=inotify.so $PHP_MODS_DIR/inotify.ini
+            if ! grep -qFx extension=inotify.so "$PHP_MODS_DIR"/inotify.ini
             then
-                echo "# PECL inotify" > $PHP_MODS_DIR/inotify.ini
-                echo "extension=inotify.so" >> $PHP_MODS_DIR/inotify.ini
+                echo "# PECL inotify" > "$PHP_MODS_DIR"/inotify.ini
+                echo "extension=inotify.so" >> "$PHP_MODS_DIR"/inotify.ini
                 check_command phpenmod -v ALL inotify
             fi
         fi
@@ -518,7 +522,7 @@ fi
 restart_webserver
 
 # Update adminer
-if [ -d $ADMINERDIR ]
+if [ -d "$ADMINERDIR" ]
 then
     print_text_in_color "$ICyan" "Updating Adminer..."
     rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
@@ -631,9 +635,6 @@ apt-get autoclean
 # Update GRUB, just in case
 update-grub
 
-# Remove update lists
-rm /var/lib/apt/lists/* -r
-
 # Free some space (ZFS snapshots)
 if is_this_installed libzfs4linux
 then
@@ -644,10 +645,10 @@ then
 fi
 
 # Update updatenotification.sh (gets updated after each nextcloud update as well; see down below the script)
-if [ -f $SCRIPTS/updatenotification.sh ] && ! grep -q "Check for supported Nextcloud version" "$SCRIPTS/updatenotification.sh"
+if [ -f "$SCRIPTS"/updatenotification.sh ] && ! grep -q "Check for supported Nextcloud version" "$SCRIPTS/updatenotification.sh"
 then
     download_script STATIC updatenotification
-    chmod +x $SCRIPTS/updatenotification.sh
+    chmod +x "$SCRIPTS"/updatenotification.sh
 fi
 
 # Update all Nextcloud apps
@@ -698,14 +699,19 @@ lowest_compatible_nc 13
 if [ -f /tmp/minor.version ]
 then
     NCBAD=$(cat /tmp/minor.version)
-    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
+    NCVERSION=$(curl -s -m 900 "$NCREPO"/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "${CURRENTVERSION%%.*}" | tail -1)
     export NCVERSION
     export STABLEVERSION="nextcloud-$NCVERSION"
     rm -f /tmp/minor.version
 elif [ -f /tmp/nextmajor.version ]
 then
     NCBAD=$(cat /tmp/nextmajor.version)
-    NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep $NCNEXT | tail -1)
+    if [ "$NCNEXT" -lt "15" ]
+    then
+        NCVERSION=$(curl -s -m 900 "$NCREPO"/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "$NCNEXT" | head -1)
+    else
+        NCVERSION=$(curl -s -m 900 "$NCREPO"/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | grep "$NCNEXT" | tail -1)
+    fi
     if [ -z "$NCVERSION" ]
     then
         msg_box "The version that you are trying to upgrade to doesn't exist."
@@ -767,10 +773,10 @@ then
 fi
 
 # Update updatenotification.sh
-if [ -f $SCRIPTS/updatenotification.sh ]
+if [ -f "$SCRIPTS"/updatenotification.sh ]
 then
     download_script STATIC updatenotification
-    chmod +x $SCRIPTS/updatenotification.sh
+    chmod +x "$SCRIPTS"/updatenotification.sh
 fi
 
 ############# Don't upgrade to specific version
@@ -838,8 +844,23 @@ If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-
     fi
 fi
 
+# Check if PHP version is compatible with $NCVERSION
+# https://github.com/nextcloud/server/issues/29258
+PHP_VER=80
+NC_VER=26
+if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
+then
+    if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
+    then
+msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+
+If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+        exit
+    fi
+fi
+
 # Upgrade Nextcloud
-if ! site_200 $NCREPO
+if ! site_200 "$NCREPO"
 then
     msg_box "$NCREPO seems to be down, or temporarily not reachable. Please try again in a few minutes."
     exit 1
@@ -859,7 +880,7 @@ check_command systemctl stop apache2.service
 # Create backup dir (/mnt/NCBACKUP/)
 if [ ! -d "$BACKUP" ]
 then
-    mkdir -p $BACKUP
+    mkdir -p "$BACKUP"
 fi
 
 # Backup PostgreSQL
@@ -920,7 +941,7 @@ fi
 # Backup data
 for folders in config apps
 do
-    if [[ "$(rsync -Aaxz $NCPATH/$folders $BACKUP)" -eq 0 ]]
+    if [[ "$(rsync -Aaxz "$NCPATH"/$folders "$BACKUP")" -eq 0 ]]
     then
         BACKUP_OK=1
     else
@@ -928,7 +949,7 @@ do
     fi
 done
 
-if [ -z $BACKUP_OK ]
+if [ -z "$BACKUP_OK" ]
 then
     msg_box "Backup was not OK. Please check $BACKUP and see if the folders are backed up properly"
     exit 1
@@ -947,7 +968,7 @@ else
     exit 1
 fi
 
-if [ -d $BACKUP/config/ ]
+if [ -d "$BACKUP"/config/ ]
 then
     print_text_in_color "$ICyan" "$BACKUP/config/ exists"
 else
@@ -956,7 +977,7 @@ Please check in $BACKUP if config/ folder exist."
     exit 1
 fi
 
-if [ -d $BACKUP/apps/ ]
+if [ -d "$BACKUP"/apps/ ]
 then
     print_text_in_color "$ICyan" "$BACKUP/apps/ exists"
     echo
@@ -966,13 +987,13 @@ then
     "We will now start the update to Nextcloud $NCVERSION. $(date +%T)"
     nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
-    rm -rf $NCPATH
+    rm -rf "$NCPATH"
     print_text_in_color "$IGreen" "Extracting new package...."
     check_command tar -xjf "$HTML/$STABLEVERSION.tar.bz2" -C "$HTML"
     rm "$HTML/$STABLEVERSION.tar.bz2"
     print_text_in_color "$IGreen" "Restoring config to Nextcloud..."
-    rsync -Aaxz $BACKUP/config "$NCPATH"/
-    bash $SECURE & spinner_loading
+    rsync -Aaxz "$BACKUP"/config "$NCPATH"/
+    bash "$SECURE" & spinner_loading
     nextcloud_occ maintenance:mode --off
     # Don't execute the update before all cronjobs are finished
     check_running_cronjobs
@@ -982,7 +1003,7 @@ then
     print_text_in_color "$ICyan" "Optimizing Nextcloud..."
     yes | nextcloud_occ db:convert-filecache-bigint
     nextcloud_occ db:add-missing-indices
-    CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+    CURRENTVERSION=$(sudo -u www-data php "$NCPATH"/occ status | grep "versionstring" | awk '{print $3}')
     if [ "${CURRENTVERSION%%.*}" -ge "19" ]
     then
         check_php
@@ -1108,7 +1129,7 @@ print_text_in_color "$ICyan" "Setting RewriteBase to \"/\" in config.php..."
 chown -R www-data:www-data "$NCPATH"
 nextcloud_occ config:system:set htaccess.RewriteBase --value="/"
 nextcloud_occ maintenance:update:htaccess
-bash $SECURE & spinner_loading
+bash "$SECURE" & spinner_loading
 
 # Repair
 nextcloud_occ maintenance:repair

@@ -83,7 +83,7 @@ This script will now exit. Please add a second disk and start over."
 fi
 
 # Get the name of the drive
-DISKTYPE=$(fdisk -l | grep $DEVTYPE | awk '{print $2}' | cut -d ":" -f1 | head -1)
+DISKTYPE=$(fdisk -l | grep "$DEVTYPE" | awk '{print $2}' | cut -d ":" -f1 | head -1)
 if [ "$DISKTYPE" != "/dev/$DEVTYPE" ]
 then
     msg_box "It seems like your $SYSNAME secondary volume (/dev/$DEVTYPE) does not exist.
@@ -180,7 +180,7 @@ format
 # Do a backup of the ZFS mount
 if is_this_installed libzfs4linux
 then
-    if grep -r $POOLNAME /etc/mtab
+    if grep -r "$POOLNAME" /etc/mtab
     then
         install_if_not zfs-auto-snapshot
         sed -i "s|date --utc|date|g" /usr/sbin/zfs-auto-snapshot
@@ -191,8 +191,8 @@ fi
 if zpool list -v | grep "$DEVTYPE"
 then
     check_command partprobe -s
-    zpool export $POOLNAME
-    zpool import -d /dev/disk/by-id $POOLNAME
+    zpool export "$POOLNAME"
+    zpool import -d /dev/disk/by-id "$POOLNAME"
 fi
 
 # Success!
@@ -211,7 +211,7 @@ Manpage is here:
 http://manpages.ubuntu.com/manpages/focal/man8/zfs-auto-snapshot.8.html
 
 CURRENT STATUS:
-$(zpool status $POOLNAME)
+$(zpool status "$POOLNAME")
 
 $(zpool list)"
     fi

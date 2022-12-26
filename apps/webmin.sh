@@ -37,6 +37,8 @@ else
     rm -f /etc/apt/trusted.gpg.d/webmin.gpg
     rm -f /etc/apt/keyrings/jcameron-key.asc
     sed -i '/webmin/d' /etc/apt/sources.list
+    apt-get clean all
+    apt-get update
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -52,6 +54,7 @@ install_if_not libio-pty-perl
 install_if_not apt-show-versions
 install_if_not python2
 install_if_not unzip
+install_if_not shared-mime-info
 install_if_not zip
 
 # https://github.com/webmin/webmin/issues/1169
@@ -79,8 +82,8 @@ install_if_not webmin
 
 if ! dpkg-query -W -f='${Status}' "webmin" | grep -q "ok installed"
 then
-    wget http://prdownloads.sourceforge.net/webadmin/webmin_1.991_all.deb
-    dpkg --install webmin_1.991_all.deb
+    wget http://prdownloads.sourceforge.net/webadmin/webmin_2.010_all.deb
+    dpkg --install webmin_2.010_all.deb
 fi
 
 print_text_in_color "$ICyan" "Configuring Webmin..."

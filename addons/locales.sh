@@ -16,6 +16,9 @@ debug_mode
 # Must be root
 root_check
 
+# Install locales (doesn't exist on "minimal")
+install_if_not locales
+
 # Set locales
 print_text_in_color "$ICyan" "Setting locales..."
 if [ "$KEYBOARD_LAYOUT" = "us" ]

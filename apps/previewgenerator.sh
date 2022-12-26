@@ -65,8 +65,8 @@ else
 This will most likely clear a lot of space but your server will need to re-generate the previews \
 if you should opt to re-enable previews again."
     then
-        print_text_in_color "$ICyan" "Removing the preview folder. This can take a while..."
-        rm -r "$NCDATA"/appdata_*/preview
+        countdown "Removing the preview folder. This can take a while..." "5"
+        rm -rfv "$NCDATA"/appdata_*/preview
         print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory after removing all previews. \
 This can take a while..."
         nextcloud_occ files:scan-app-data -vvv

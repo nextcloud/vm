@@ -1538,11 +1538,10 @@ fi
 
 # Check universe repository
 check_multiverse() {
-MULTIV=$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | head -n 1 | cut -d "/" -f 2)
-if [ "$MULTIV" != "multiverse" ]
+if [ "$(apt-cache policy | grep http | awk '{print $3}' | grep multiverse | head -n 1 | cut -d "/" -f 2)" != "multiverse" ]
 then
     print_text_in_color "$ICyan" "Adding required repo (multiverse)."
-    add-apt-repository multiverse
+    yes | add-apt-repository multiverse
 fi
 }
 
@@ -1955,7 +1954,7 @@ fi
 check_free_space() {
     if vgs &>/dev/null
     then
-        FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+\.[0-9]" | sed 's|\.||')
+        FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+[\.,][0-9]" | sed 's|\.||')
     fi
     if [ -z "$FREE_SPACE" ]
     then

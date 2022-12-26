@@ -132,8 +132,8 @@ run_script ADDONS locales
 
 # Create new current user
 download_script STATIC adduser
-bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
-rm -f $SCRIPTS/adduser.sh
+bash "$SCRIPTS"/adduser.sh "nextcloud_install_production.sh"
+rm -f "$SCRIPTS"/adduser.sh
 
 check_universe
 check_multiverse
@@ -475,7 +475,7 @@ then
     while [ -z "$NCVERSION" ]
     do
         print_text_in_color "$ICyan" "Fetching the not-latest Nextcloud version..."
-        NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' \
+        NCVERSION=$(curl -s -m 900 "$NCREPO"/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' \
 | sort --version-sort | grep -v "\.0$\|\.1$\|\.2$" | tail -1)
         STABLEVERSION="nextcloud-$NCVERSION"
         print_text_in_color "$IGreen" "$NCVERSION"
@@ -497,7 +497,7 @@ rm "$HTML/$STABLEVERSION.tar.bz2"
 
 # Secure permissions
 download_script STATIC setup_secure_permissions_nextcloud
-bash $SECURE & spinner_loading
+bash "$SECURE" & spinner_loading
 
 # Ask to set a custom username
 if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$GUIUSER' to something else?"
@@ -669,14 +669,14 @@ run_script ADDONS redis-server-ubuntu
 # php"$PHPVER"-smbclient does not yet work in PHP 7.4
 install_if_not libsmbclient-dev
 yes no | pecl install smbclient
-if [ ! -f $PHP_MODS_DIR/smbclient.ini ]
+if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
 then
-    touch $PHP_MODS_DIR/smbclient.ini
+    touch "$PHP_MODS_DIR"/smbclient.ini
 fi
-if ! grep -qFx extension=smbclient.so $PHP_MODS_DIR/smbclient.ini
+if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
 then
-    echo "# PECL smbclient" > $PHP_MODS_DIR/smbclient.ini
-    echo "extension=smbclient.so" >> $PHP_MODS_DIR/smbclient.ini
+    echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
+    echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
     check_command phpenmod -v ALL smbclient
 fi
 
@@ -696,14 +696,14 @@ echo "# igbinary for PHP"
 echo "session.serialize_handler=igbinary"
 echo "igbinary.compact_strings=On"
 } >> "$PHP_INI"
-    if [ ! -f $PHP_MODS_DIR/igbinary.ini ]
+    if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
     then
-        touch $PHP_MODS_DIR/igbinary.ini
+        touch "$PHP_MODS_DIR"/igbinary.ini
     fi
-    if ! grep -qFx extension=igbinary.so $PHP_MODS_DIR/igbinary.ini
+    if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
     then
-        echo "# PECL igbinary" > $PHP_MODS_DIR/igbinary.ini
-        echo "extension=igbinary.so" >> $PHP_MODS_DIR/igbinary.ini
+        echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
+        echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
         check_command phpenmod -v ALL igbinary
     fi
 restart_webserver
@@ -715,7 +715,7 @@ yes | nextcloud_occ db:convert-filecache-bigint
 nextcloud_occ db:add-missing-indices
 while [ -z "$CURRENTVERSION" ]
 do
-    CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+    CURRENTVERSION=$(sudo -u www-data php "$NCPATH"/occ status | grep "versionstring" | awk '{print $3}')
 done
 if [ "${CURRENTVERSION%%.*}" -ge "19" ]
 then
@@ -733,7 +733,7 @@ install_if_not figlet
 install_if_not ssl-cert
 
 # Generate $HTTP_CONF
-if [ ! -f $SITES_AVAILABLE/$HTTP_CONF ]
+if [ ! -f "$SITES_AVAILABLE"/"$HTTP_CONF" ]
 then
     touch "$SITES_AVAILABLE/$HTTP_CONF"
     cat << HTTP_CREATE > "$SITES_AVAILABLE/$HTTP_CONF"
@@ -807,7 +807,7 @@ then
 fi
 
 # Generate $TLS_CONF
-if [ ! -f $SITES_AVAILABLE/$TLS_CONF ]
+if [ ! -f "$SITES_AVAILABLE"/"$TLS_CONF" ]
 then
     touch "$SITES_AVAILABLE/$TLS_CONF"
     cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
@@ -1009,21 +1009,24 @@ then
 fi
 
 # Set secure permissions final (./data/.htaccess has wrong permissions otherwise)
-bash $SECURE & spinner_loading
+bash "$SECURE" & spinner_loading
 
 # Put IP address in /etc/issue (shown before the login)
 if [ -f /etc/issue ]
 then
-    echo "\4" >> /etc/issue
+   printf '%s\n' "\4" >> /etc/issue
 fi
 
 # Fix Realtek on PN51
 if asuspn51
 then
-    # Upgrade Realtek drivers
-    print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
-    curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
-    bash "$SCRIPTS"/pn51.sh
+    if ! version 22.04 "$DISTRO" 22.04.10
+    then
+        # Upgrade Realtek drivers
+        print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
+        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+        bash "$SCRIPTS"/pn51.sh
+    fi
 fi
 
 # Update if it's the Home/SME Server

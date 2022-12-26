@@ -41,8 +41,8 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Documentserver" "(OnlyOffice or Collabora - Docker or Integrated)" OFF \
 "Bitwarden" "(External password manager)" OFF \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
-"PreviewGenerator" "(Pre-generate previews for Nextcloud)" "$STARTUP_SWITCH" \
-"Webmin" "(Server GUI like Cpanel)" "$STARTUP_SWITCH" \
+"PreviewGenerator" "(Pre-generate previews for Nextcloud)" OFF \
+"Webmin" "(Server GUI like Cpanel)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \

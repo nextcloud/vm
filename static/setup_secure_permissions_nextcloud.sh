@@ -73,7 +73,7 @@ then
 fi
 
 # Nextcloud datafolder
-if [ -d "$NCDATA" ]
+if [ -d "${NCDATA}" ]
 then
     # Always chown root dir
     chown "${htuser}":"${htgroup}" "${NCDATA}"/
@@ -81,6 +81,11 @@ then
     if find "${NCDATA}" -maxdepth 2 -type d -exec stat --printf='%U:%G\n' {} \; | grep -v "${htuser}":"${htgroup}"
     then
         chown -R "${htuser}":"${htgroup}" "${NCDATA}"/
+    fi
+    # Also always chown files_external (https://github.com/nextcloud/vm/issues/2398)
+    if [ -d "${NCDATA}"/files_external ]
+    then
+        chown -R "${htuser}":"${htgroup}" "${NCDATA}"/files_external
     fi
 fi
 

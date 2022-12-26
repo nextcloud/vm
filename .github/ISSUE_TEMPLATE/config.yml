@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Nextcloud Community Forums
-    url: https://help.nextcloud.com/vm
+    url: https://help.nextcloud.com/tag/vm
     about: Please visit the community forums for general community discussion, support and the development roadmap.
   - name: Customer Support
     url: https://www.hanssonit.se/#contact

@@ -604,4 +604,7 @@ Login to Nextcloud in your browser:
 print_text_in_color "$IGreen" "Installation done, system will now reboot..."
 check_command rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 check_command rm -f "$SCRIPTS/nextcloud-startup-script.sh"
-reboot
+if ! reboot
+then
+    shutdown -r now
+fi
