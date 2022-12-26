@@ -386,10 +386,7 @@ else
 It must differ from the current one: $NCADMIN.\n\nThe only allowed characters for the username are:
 
 'a-z', 'A-Z', '0-9', and '_.@-'")
-        if [[ "$NEWUSER" == *" "* ]]
-        then
-            msg_box "Please don't use spaces."
-        elif [ "$NEWUSER" = "$NCADMIN" ]
+        if [ "$NEWUSER" = "$NCADMIN" ]
         then
             msg_box "This username ($NCADMIN) is already in use. Please choose a different one."
         # - has to be escaped otherwise it won't work.
