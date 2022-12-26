@@ -1127,8 +1127,9 @@ then
     download_script ADDONS notify-crontab
     chmod +x "$SCRIPTS"/notify-crontab.sh
     chown root:root "$SCRIPTS"/notify-crontab.sh
+    MOUNT_ID=$(sudo -u postgres psql nextcloud_db -c "select mount_id from oc_external_config")
     crontab -u www-data -l | grep -v "files_external:notify -v" | crontab -u www-data -
-    crontab -u root -l | { cat; echo "@reboot $SCRIPTS/notify-crontab.sh $MOUNT_ID"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "@reboot $SCRIPTS/notify-crontab.sh $(echo "${MOUNT_ID##*  }" | head -1)"; } | crontab -u root -
     print_text_in_color "$ICyan" "Replaced  iNotify with a script instead of command."
 fi
 
