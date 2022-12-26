@@ -1122,13 +1122,13 @@ then
 fi
 
 # Replace iNotify checker with a script instead
-if crontab -u root -l | grep -q "files_external:notify -v"
+if crontab -u www-data -l | grep -q "files_external:notify -v"
 then
     download_script ADDONS notify-crontab
     chmod +x "$SCRIPTS"/notify-crontab.sh
-    chown root:root "$SCRIPTS"/notify-crontab.sh    
-    crontab -u root -l | grep -v "files_external:notify -v" | crontab -u root -
-    crontab -u root -l | { cat; echo "@reboot $SCRIPTS/notify-crontab.sh $MOUNT_ID"; } | crontab -u root
+    chown root:root "$SCRIPTS"/notify-crontab.sh
+    crontab -u www-data -l | grep -v "files_external:notify -v" | crontab -u www-data -
+    crontab -u root -l | { cat; echo "@reboot $SCRIPTS/notify-crontab.sh $MOUNT_ID"; } | crontab -u root -
     print_text_in_color "$ICyan" "Replaced  iNotify with a script instead of command."
 fi
 
