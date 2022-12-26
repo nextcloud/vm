@@ -410,7 +410,7 @@ files_inotify app and set up the cronjob for this external storage."
 
             # Download script
             download_script ADDONS notify-crontab
-            chmod 700 "$SCRIPTS"/notify-crontab.sh
+            chmod +x "$SCRIPTS"/notify-crontab.sh
             chown root:root "$SCRIPTS"/notify-crontab.sh
 
             # Add crontab
