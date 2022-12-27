@@ -384,12 +384,10 @@ else
     do
         NEWUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
 It must differ from the current one: $NCADMIN.\n\nThe only allowed characters for the username are:
-
 'a-z', 'A-Z', '0-9', and '_.@-'")
         if [[ "$NEWUSER" == *" "* ]]
         then
             msg_box "Please don't use spaces."
-        fi
         elif [ "$NEWUSER" = "$NCADMIN" ]
         then
             msg_box "This username ($NCADMIN) is already in use. Please choose a different one."
@@ -410,7 +408,6 @@ It must differ from the current one: $NCADMIN.\n\nThe only allowed characters fo
         if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWUSER --password-from-env -g admin"
         then
             msg_box "The new Web Admin in Nextcloud is now: $NEWUSER\nThe password is set to: $OC_PASS
-
 This is used when you login to Nextcloud itself, i.e. on the web."
             unset OC_PASS
             break
