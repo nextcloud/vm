@@ -327,7 +327,7 @@ then
 fi
 
 # Upgrade Talk repositrory if Talk is installed (2022-12-26)
-if is_app_installed spreed
+if is_this_installed nextcloud-spreed-signaling
 then
     print_text_in_color "$ICyan" "Upgrading dependencies for Talk..."
     apt-get update -q4 --allow-releaseinfo-change & spinner_loading
