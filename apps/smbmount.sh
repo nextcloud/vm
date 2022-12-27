@@ -408,9 +408,14 @@ files_inotify app and set up the cronjob for this external storage."
                 nextcloud_occ_no_check app:enable files_inotify
             fi
 
-            # Add crontab for this external storage
+            # Download script
+            download_script ADDONS notify-crontab
+            chmod +x "$SCRIPTS"/notify-crontab.sh
+            chown root:root "$SCRIPTS"/notify-crontab.sh
+
+            # Add crontab
             print_text_in_color "$ICyan" "Generating crontab..."
-            crontab -u www-data -l | { cat; echo "@reboot sleep 20 && php -f $NCPATH/occ files_external:notify -v $MOUNT_ID >> $VMLOGS/files_inotify.log"; } | crontab -u www-data -
+            crontab -u root -l | { cat; echo "@reboot $SCRIPTS/notify-crontab.sh $MOUNT_ID"; } | crontab -u root
 
             # Run the command in a subshell and don't exit if the smbmount script exits
             nohup sudo -u www-data php "$NCPATH"/occ files_external:notify -v "$MOUNT_ID" >> $VMLOGS/files_inotify.log &
