@@ -386,7 +386,11 @@ else
 It must differ from the current one: $NCADMIN.\n\nThe only allowed characters for the username are:
 
 'a-z', 'A-Z', '0-9', and '_.@-'")
-        if [ "$NEWUSER" = "$NCADMIN" ]
+        if [[ "$NEWUSER" == *" "* ]]
+        then
+            msg_box "Please don't use spaces."
+        fi
+        elif [ "$NEWUSER" = "$NCADMIN" ]
         then
             msg_box "This username ($NCADMIN) is already in use. Please choose a different one."
         # - has to be escaped otherwise it won't work.
@@ -401,10 +405,6 @@ It must differ from the current one: $NCADMIN.\n\nThe only allowed characters fo
     while :
     do
         OC_PASS=$(input_box_flow "Please type in the new password for the new Web Admin ($NEWUSER) in Nextcloud.")
-        if [[ "$OC_PASS" == *" "* ]]
-        then
-            msg_box "Please don't use spaces."
-        fi
         # Create new user
         export OC_PASS
         if su -s /bin/sh www-data -c "php $NCPATH/occ user:add $NEWUSER --password-from-env -g admin"
@@ -435,11 +435,6 @@ msg_box "Well done, you have now finished most of the setup.
 There are still a few steps left but they are automated so sit back and relax! :)"
 
 # Add default notifications
-notify_admin_gui \
-"Please set up SMTP" \
-"Please remember to set up SMTP to be able to send shared links, user notifications and more via email. \
-Please go here and start setting it up: https://your-nextcloud/settings/admin."
-
 notify_admin_gui \
 "Do you need support?" \
 "If you need support, please visit the shop: https://shop.hanssonit.se, or the forum: https://help.nextcloud.com."
