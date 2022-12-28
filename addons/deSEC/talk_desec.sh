@@ -224,7 +224,7 @@ https://gitlab.com/packaging/nextcloud-spreed-signaling
 https://gitlab.com/packaging/janus/"
 
 # Ask the user if he/she wants the HPB server as well
-if ! yesno_box_no "Do you want to install the $SCRIPT_NAME? Please note that using basic Talk is usally enough."
+if ! yesno_box_no "Do you want to install the $SCRIPT_NAME? Please note that using basic Talk is usually enough."
 then
     exit 1
 fi
