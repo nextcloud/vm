@@ -18,7 +18,7 @@ If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M
 - Previewgenerator and Webmin are no longer default apps during installation
 - Support really old versions when migrating/upgrading Nextcloud
 - Improve some scripts and other stuff in the `not-supported` folder
-- Minor bugfixes and improvments
+- Minor bugfixes and improvements
 - And more...
 
 ### Full changelog:
