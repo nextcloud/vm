@@ -53,7 +53,7 @@ install_certbot
 export SUBDOMAIN=collabora
 if run_script DESEC desec_subdomain
 then
-    SUBDOMAIN="$(grep dedyn.io $SCRIPTS/deSEC/.subdomain | tail -1 | cut -d '=' -f2)"
+    SUBDOMAIN="$(grep collabora $SCRIPTS/deSEC/.subdomain | cut -d '=' -f2)"
     # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
