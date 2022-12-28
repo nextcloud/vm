@@ -51,7 +51,7 @@ install_certbot
 export SUBDOMAIN=onlyoffice
 if run_script DESEC desec_subdomain
 then
-    SUBDOMAIN="$(grep onlyoffice -m 1 $SCRIPTS/deSEC/.subdomain | tail -1 | cut -d '=' -f2)"
+    SUBDOMAIN="$(grep onlyoffice -m 1 $SCRIPTS/deSEC/.subdomain | cut -d '=' -f2)"
     # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
