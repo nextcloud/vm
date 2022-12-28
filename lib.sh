@@ -851,7 +851,7 @@ done
 }
 
 # Let the user choose to setup a specific app with either deSEC, or regular TLS.
-# desec_app_tls_menu "DESEC collabora_docker_desec.sh" "APP collabora_docker.sh"
+# desec_app_tls_menu "DESEC collabora_docker_desec" "APP collabora_docker"
 desec_app_tls_menu() {
 choice=$(whiptail --title "$TITLE" --menu \
 "Choose TLS setup. Please note, to run the deSEC option, deSEC needs to be configured and setup already.\n
