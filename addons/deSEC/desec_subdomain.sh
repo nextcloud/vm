@@ -125,7 +125,7 @@ do
 done
 
 # Export the final subdomain for use in other scripts
-FINAL_SUBDOMAIN="$SUBDOMAIN.$DEDYN_NAME"
+export FINAL_SUBDOMAIN="$SUBDOMAIN.$DEDYN_NAME"
 echo "FINAL_SUBDOMAIN=$SUBDOMAIN.$DEDYN_NAME" >> "$SCRIPTS"/deSEC/.subdomain
 
 # Restart and force update of DDNS
