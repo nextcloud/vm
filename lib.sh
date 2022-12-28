@@ -850,6 +850,27 @@ to validate them with the $f method. We have exhausted all the methods. Please c
 done
 }
 
+# Let the user choose to setup a specific app with either deSEC, or regular TLS.
+# desec_app_tls_menu "DESEC collabora_docker_desec.sh" "APP collabora_docker.sh"
+desec_app_tls_menu() {
+choice=$(whiptail --title "$TITLE" --menu \
+"Choose TLS setup. Please note, to run the deSEC option, deSEC needs to be configured and setup already.\n
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"deSEC TLS setup" "(If you configured deSEC already. Works with custom port.)" \
+"Regular TLS setup" "(If deSEC isn't installed, setup normal TLS)" 3>&1 1>&2 2>&3)
+
+case "$choice" in
+    "deSEC TLS setup")
+        run_script "${1}"
+    ;;
+    "Regular TLS setup")
+        run_script "${2}"
+    ;;
+    *)
+    ;;
+esac
+}
+
 is_desec_installed() {
 # Check if deSEC is installed and add the needed variables if yes
 if [ -f "$SCRIPTS"/deSEC/.dedynauth ]
