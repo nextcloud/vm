@@ -17,7 +17,7 @@ debug_mode
 # Check if root
 root_check
 
-# Check if collabora is already installed
+# Check if onlyoffice is already installed
 if ! does_this_docker_exist 'onlyoffice/documentserver'
 then
     # Ask for installing
@@ -44,6 +44,29 @@ fi
 # Remove all office apps
 remove_all_office_apps
 
+# Install certbot (Let's Encrypt)
+install_certbot
+
+# Generate certs and auto-configure if successful
+export SUBDOMAIN=onlyoffice
+if run_script DESEC desec_subdomain
+then
+    SUBDOMAIN="$(grep onlyoffice -m 1 $SCRIPTS/deSEC/.subdomain | tail -1 | cut -d '=' -f2)"
+    # Generate DHparams cipher
+    if [ ! -f "$DHPARAMS_SUB" ]
+    then
+        openssl dhparam -out "$DHPARAMS_SUB" 2048
+    fi
+    print_text_in_color "$IGreen" "Certs are generated!"
+    a2ensite "$SUBDOMAIN.conf"
+    restart_webserver
+    # Install OnlyOffice
+    install_and_enable_app onlyoffice
+else
+    last_fail_tls "$SCRIPTS"/apps/onlyoffice.sh
+    exit 1
+fi
+
 # Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
 if [ "$(apache2ctl -M | grep evasive)" != "" ]
 then
@@ -60,11 +83,6 @@ It has compatibility issues with OnlyOffice and you can now choose to disable it
     fi
 fi
 
-# Ask for the domain for OnlyOffice
-SUBDOMAIN=$(input_box_flow "OnlyOffice subdomain e.g: office.yourdomain.com
-NOTE: This domain must be different than your Nextcloud domain. \
-They can however be hosted on the same server, but would require separate DNS entries.")
-
 # Nextcloud Main Domain
 NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 
@@ -74,28 +92,6 @@ source /var/scripts/fetch_lib.sh
 
 # Get all needed variables from the library
 nc_update
-
-# Notification
-msg_box "Before continuing, please make sure that you have you have \
-edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
-directly to this servers IP. A full extensive guide can be found here:
-https://www.techandme.se/open-port-80-443
-
-This can be done automatically if you have UPNP enabled in your firewall/router. \
-You will be offered to use UPNP in the next step.
-
-PLEASE NOTE:
-Using other ports than the default 80 and 443 is not supported, \
-though it may be possible with some custom modification:
-https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
-
-if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
-then
-    unset FAIL
-    open_port 80 TCP
-    open_port 443 TCP
-    cleanup_open_port
-fi
 
 # Get the latest packages
 apt-get update -q4 & spinner_loading
@@ -114,14 +110,6 @@ sudo curl -sLO $APP/onlyoffice_docker.sh
 sudo bash onlyoffice_docker.sh"
     exit 1
 fi
-
-# Check if $SUBDOMAIN exists and is reachable
-print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
-domain_check_200 "$SUBDOMAIN"
-
-# Check open ports with NMAP
-check_open_port 80 "$SUBDOMAIN"
-check_open_port 443 "$SUBDOMAIN"
 
 # Test RAM size (2GB min) + CPUs (min 2)
 ram_check 2 OnlyOffice
@@ -224,27 +212,6 @@ HTTPS_CREATE
         print_text_in_color "$IRed" "Please report this issue here $ISSUES"
         exit 1
     fi
-fi
-
-# Install certbot (Let's Encrypt)
-install_certbot
-
-# Generate certs
-if generate_cert "$SUBDOMAIN"
-then
-    # Generate DHparams cipher
-    if [ ! -f "$DHPARAMS_SUB" ]
-    then
-        openssl dhparam -out "$DHPARAMS_SUB" 2048
-    fi
-    print_text_in_color "$IGreen" "Certs are generated!"
-    a2ensite "$SUBDOMAIN.conf"
-    restart_webserver
-    # Install OnlyOffice
-    install_and_enable_app onlyoffice
-else
-    last_fail_tls "$SCRIPTS"/apps/onlyoffice.sh
-    exit 1
 fi
 
 # Set config for OnlyOffice
