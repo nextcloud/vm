@@ -29,7 +29,7 @@ fi
 while :
 do
     # Ask for subdomain
-    if [ -z $SUBDOMAIN ]
+    if [ -z "$SUBDOMAIN" ]
     then
         SUBDOMAIN=$(input_box_flow "Please enter the subdomain you want to add or delete, e.g: yoursubdomain")
         # Check if subdomain contains a dot
@@ -39,6 +39,8 @@ do
         else
             break
         fi
+    else
+        break
     fi
 done
 
@@ -128,7 +130,7 @@ do
 done
 
 # Export the final subdomain for use in other scripts
-export FINAL_SUBDOMAIN="$SUBDOMAIN.$DEDYN_NAME"
+FINAL_SUBDOMAIN="$SUBDOMAIN.$DEDYN_NAME"
 echo "FINAL_SUBDOMAIN=$SUBDOMAIN.$DEDYN_NAME" >> "$SCRIPTS"/deSEC/.subdomain
 
 # Restart and force update of DDNS
