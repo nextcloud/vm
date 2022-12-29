@@ -57,7 +57,7 @@ install_certbot
 export SUBDOMAIN=collabora
 if run_script DESEC desec_subdomain
 then
-    SUBDOMAIN="$(grep collabora $SCRIPTS/deSEC/.subdomain | cut -d '=' -f2)"
+    SUBDOMAIN="$(grep collabora -m 1 $SCRIPTS/deSEC/.subdomain | cut -d '=' -f2)"
     # Curl the library another time to get the correct DHPARAMS
     # shellcheck source=lib.sh
     source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
