@@ -856,8 +856,8 @@ desec_app_tls_menu() {
 choice=$(whiptail --title "$TITLE" --menu \
 "Choose TLS setup. Please note, to run the deSEC option, deSEC needs to be configured and setup already.\n
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"deSEC TLS setup" "(If you configured deSEC already. Works with custom port.)" \
-"Regular TLS setup" "(If deSEC isn't installed, setup normal TLS)" 3>&1 1>&2 2>&3)
+"Regular TLS setup" "(If deSEC isn't installed, setup normal TLS)" \
+"deSEC TLS setup" "(If you configured deSEC already. Works with custom port.)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "deSEC TLS setup")
