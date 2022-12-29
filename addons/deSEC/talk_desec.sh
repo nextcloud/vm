@@ -240,98 +240,22 @@ install_certbot
 export SUBDOMAIN=talk
 if run_script DESEC desec_subdomain
 then
-    SUBDOMAIN="$(grep talk -m1 $SCRIPTS/deSEC/.subdomain | cut -d '=' -f2)"
+    SUBDOMAIN="$(grep talk -m 1 $SCRIPTS/deSEC/.subdomain | cut -d '=' -f2)"
+    # Curl the library another time to get the correct DHPARAMS
+    # shellcheck source=lib.sh
+    source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
     # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
         openssl dhparam -out "$DHPARAMS_SUB" 2048
     fi
     print_text_in_color "$IGreen" "Certs are generated!"
-    a2ensite "$SUBDOMAIN.conf"
-    restart_webserver
-    # Install Collabora App
-    install_and_enable_app richdocuments
 else
-    last_fail_tls "$SCRIPTS"/apps/collabora.sh
+    # remove settings to be able to start over again
+    rm -f "$HTTPS_CONF"
+    last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
     exit 1
 fi
-
-# NATS
-## Pre-Configuration
-mkdir -p /etc/nats
-echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf
-## Installation
-curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nats-server.asc" "https://packaging.gitlab.io/nats-server/gpg.key"
-echo "deb https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list
-apt-get update -q4 & spinner_loading
-install_if_not nats-server
-chown nats:nats /etc/nats/nats.conf
-start_if_stopped nats-server
-check_command systemctl enable nats-server
-
-# Janus WebRTC Server
-## Installation
-case "${CODENAME}" in
-    "bionic"|"focal")
-        add_trusted_key_and_repo "gpg.key" \
-        "https://packaging.gitlab.io/janus" \
-        "https://packaging.gitlab.io/janus/$CODENAME" \
-        "$CODENAME main" \
-        "morph027-janus.list"
-        ;;
-    *)
-        :
-        ;;
-esac
-install_if_not janus
-## Configuration
-sed -i "s|#turn_rest_api_key.*|turn_rest_api_key = $JANUS_API_KEY|" /etc/janus/janus.jcfg
-sed -i "s|#full_trickle|full_trickle|g" /etc/janus/janus.jcfg
-sed -i 's|#interface.*|interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
-sed -i 's|#ws_interface.*|ws_interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
-start_if_stopped janus
-check_command systemctl enable janus
-
-# HPB
-## Installation
-add_trusted_key_and_repo "gpg.key" \
-"https://packaging.gitlab.io/nextcloud-spreed-signaling" \
-"https://packaging.gitlab.io/nextcloud-spreed-signaling" \
-"signaling main" \
-"morph027-nextcloud-spreed-signaling.list"
-install_if_not nextcloud-spreed-signaling
-## Configuration
-if [ ! -f "$SIGNALING_SERVER_CONF" ];
-then
-    cat << SIGNALING_CONF_CREATE > "$SIGNALING_SERVER_CONF"
-[http]
-listen = 127.0.0.1:8081
-[app]
-debug = false
-[sessions]
-hashkey = $(openssl rand -hex 16)
-blockkey = $(openssl rand -hex 16)
-[clients]
-internalsecret = $(openssl rand -hex 16)
-[backend]
-allowed = ${TURN_DOMAIN}
-allowall = false
-secret = ${NC_SECRET}
-timeout = 10
-connectionsperhost = 8
-[nats]
-url = nats://localhost:4222
-[mcu]
-type = janus
-url = ws://127.0.0.1:8188
-[turn]
-apikey = ${JANUS_API_KEY}
-secret = ${TURN_SECRET}
-servers = turn:$TURN_DOMAIN:$TURN_PORT?transport=tcp,turn:$TURN_DOMAIN:$TURN_PORT?transport=udp
-SIGNALING_CONF_CREATE
-fi
-start_if_stopped signaling
-check_command systemctl enable signaling
 
 # Apache Proxy
 # https://github.com/strukturag/nextcloud-spreed-signaling#apache
@@ -424,6 +348,8 @@ HTTPS_CREATE
     if [ -f "$HTTPS_CONF" ];
     then
         print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
+        a2ensite "$SUBDOMAIN.conf"
+        restart_webserver
         sleep 1
     else
         print_text_in_color "$IRed" "Unable to create vhost, exiting..."
@@ -431,6 +357,83 @@ HTTPS_CREATE
         exit 1
     fi
 fi
+
+# NATS
+## Pre-Configuration
+mkdir -p /etc/nats
+echo "listen: 127.0.0.1:4222" > /etc/nats/nats.conf
+## Installation
+curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nats-server.asc" "https://packaging.gitlab.io/nats-server/gpg.key"
+echo "deb https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list
+apt-get update -q4 & spinner_loading
+install_if_not nats-server
+chown nats:nats /etc/nats/nats.conf
+start_if_stopped nats-server
+check_command systemctl enable nats-server
+
+# Janus WebRTC Server
+## Installation
+case "${CODENAME}" in
+    "bionic"|"focal")
+        add_trusted_key_and_repo "gpg.key" \
+        "https://packaging.gitlab.io/janus" \
+        "https://packaging.gitlab.io/janus/$CODENAME" \
+        "$CODENAME main" \
+        "morph027-janus.list"
+        ;;
+    *)
+        :
+        ;;
+esac
+install_if_not janus
+## Configuration
+sed -i "s|#turn_rest_api_key.*|turn_rest_api_key = $JANUS_API_KEY|" /etc/janus/janus.jcfg
+sed -i "s|#full_trickle|full_trickle|g" /etc/janus/janus.jcfg
+sed -i 's|#interface.*|interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
+sed -i 's|#ws_interface.*|ws_interface = "lo"|g' /etc/janus/janus.transport.websockets.jcfg
+start_if_stopped janus
+check_command systemctl enable janus
+
+# HPB
+## Installation
+add_trusted_key_and_repo "gpg.key" \
+"https://packaging.gitlab.io/nextcloud-spreed-signaling" \
+"https://packaging.gitlab.io/nextcloud-spreed-signaling" \
+"signaling main" \
+"morph027-nextcloud-spreed-signaling.list"
+install_if_not nextcloud-spreed-signaling
+## Configuration
+if [ ! -f "$SIGNALING_SERVER_CONF" ];
+then
+    cat << SIGNALING_CONF_CREATE > "$SIGNALING_SERVER_CONF"
+[http]
+listen = 127.0.0.1:8081
+[app]
+debug = false
+[sessions]
+hashkey = $(openssl rand -hex 16)
+blockkey = $(openssl rand -hex 16)
+[clients]
+internalsecret = $(openssl rand -hex 16)
+[backend]
+allowed = ${TURN_DOMAIN}
+allowall = false
+secret = ${NC_SECRET}
+timeout = 10
+connectionsperhost = 8
+[nats]
+url = nats://localhost:4222
+[mcu]
+type = janus
+url = ws://127.0.0.1:8188
+[turn]
+apikey = ${JANUS_API_KEY}
+secret = ${TURN_SECRET}
+servers = turn:$TURN_DOMAIN:$TURN_PORT?transport=tcp,turn:$TURN_DOMAIN:$TURN_PORT?transport=udp
+SIGNALING_CONF_CREATE
+fi
+start_if_stopped signaling
+check_command systemctl enable signaling
 
 # Set signaling server strings
 SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
