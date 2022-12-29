@@ -18,6 +18,10 @@ debug_mode
 # Check if root
 root_check
 
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 2 Collabora
+cpu_check 2 Collabora
+
 # Check if Collabora is already installed
 print_text_in_color "$ICyan" "Checking if Collabora is already installed..."
 if ! does_this_docker_exist 'collabora/code'
@@ -54,63 +58,21 @@ export SUBDOMAIN=collabora
 if run_script DESEC desec_subdomain
 then
     SUBDOMAIN="$(grep collabora $SCRIPTS/deSEC/.subdomain | cut -d '=' -f2)"
+    # Curl the library another time to get the correct DHPARAMS
+    # shellcheck source=lib.sh
+    source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
     # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
         openssl dhparam -out "$DHPARAMS_SUB" 2048
     fi
     print_text_in_color "$IGreen" "Certs are generated!"
-    a2ensite "$SUBDOMAIN.conf"
-    restart_webserver
     # Install Collabora App
     install_and_enable_app richdocuments
 else
     last_fail_tls "$SCRIPTS"/apps/collabora.sh
     exit 1
 fi
-
-# Nextcloud Main Domain
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
-
-# Curl the library another time to get the correct https_conf
-# shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
-
-# Get all needed variables from the library
-nc_update
-
-# Get the latest packages
-apt-get update -q4 & spinner_loading
-
-# Check if Nextcloud is installed
-print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
-then
-    msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-$NCDOMAIN.
-Please install Nextcloud and make sure your domain is reachable, or activate TLS
-on your domain to be able to run this script.
-
-If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
-When TLS is activated, run these commands from your CLI:
-sudo curl -sLO $APP/collabora.sh
-sudo bash collabora.sh"
-    exit 1
-fi
-
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 Collabora
-cpu_check 2 Collabora
-
-# Check if Nextcloud is installed with TLS
-check_nextcloud_https "Collabora (Docker)"
-
-# Install Docker
-install_docker
-
-# Install Collabora docker
-docker pull collabora/code:latest
-docker run -t -d -p 127.0.0.1:9980:9980 -e "aliasgroup1=https://$NCDOMAIN:443" --restart always --name code --cap-add MKNOD collabora/code
 
 # Install Apache2
 install_if_not apache2
@@ -212,12 +174,54 @@ HTTPS_CREATE
     then
         print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
         sleep 1
+        a2ensite "$SUBDOMAIN.conf"
+        restart_webserver
     else
         print_text_in_color "$IRed" "Unable to create vhost, exiting..."
         print_text_in_color "$IRed" "Please report this issue here $ISSUES"
         exit 1
     fi
 fi
+
+# Nextcloud Main Domain
+NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+
+# Curl the library another time to get the correct https_conf
+# shellcheck source=lib.sh
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+nc_update
+
+# Get the latest packages
+apt-get update -q4 & spinner_loading
+
+# Check if Nextcloud is installed
+print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
+if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
+then
+    msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+$NCDOMAIN.
+Please install Nextcloud and make sure your domain is reachable, or activate TLS
+on your domain to be able to run this script.
+
+If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
+When TLS is activated, run these commands from your CLI:
+sudo curl -sLO $APP/collabora.sh
+sudo bash collabora.sh"
+    exit 1
+fi
+
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "Collabora (Docker)"
+
+# Install Docker
+install_docker
+
+# Install Collabora docker
+docker pull collabora/code:latest
+docker run -t -d -p 127.0.0.1:9980:9980 -e "aliasgroup1=https://$NCDOMAIN:443" --restart always --name code --cap-add MKNOD collabora/code
+
 
 # Set config for RichDocuments (Collabora App)
 if is_app_installed richdocuments
