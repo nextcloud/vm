@@ -17,6 +17,10 @@ debug_mode
 # Check if root
 root_check
 
+# Test RAM size (2GB min) + CPUs (min 2)
+ram_check 2 OnlyOffice
+cpu_check 2 OnlyOffice
+
 # Check if onlyoffice is already installed
 if ! does_this_docker_exist 'onlyoffice/documentserver'
 then
@@ -52,80 +56,21 @@ export SUBDOMAIN=onlyoffice
 if run_script DESEC desec_subdomain
 then
     SUBDOMAIN="$(grep onlyoffice -m 1 $SCRIPTS/deSEC/.subdomain | cut -d '=' -f2)"
+    # Curl the library another time to get the correct DHPARAMS
+    # shellcheck source=lib.sh
+    source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
     # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_SUB" ]
     then
         openssl dhparam -out "$DHPARAMS_SUB" 2048
     fi
     print_text_in_color "$IGreen" "Certs are generated!"
-    a2ensite "$SUBDOMAIN.conf"
-    restart_webserver
-    # Install OnlyOffice
+    # Install OnlyOffice App
     install_and_enable_app onlyoffice
 else
-    last_fail_tls "$SCRIPTS"/apps/onlyoffice.sh
+    last_fail_tls "$SCRIPTS"/apps/onlyoffice_docker.sh
     exit 1
 fi
-
-# Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
-if [ "$(apache2ctl -M | grep evasive)" != "" ]
-then
-    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. \
-It has compatibility issues with OnlyOffice and you can now choose to disable it."
-    if ! yesno_box_yes "Do you want to disable DDOS protection?"
-    then
-        print_text_in_color "$ICyan" "Keeping mod_evasive active."
-    else
-        a2dismod evasive
-        # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
-        apt-get purge libapache2-mod-evasive -y
-	systemctl restart apache2
-    fi
-fi
-
-# Nextcloud Main Domain
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
-
-true
-# shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh
-
-# Get all needed variables from the library
-nc_update
-
-# Get the latest packages
-apt-get update -q4 & spinner_loading
-
-# Check if Nextcloud is installed
-print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
-if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
-then
-    msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-$NCDOMAIN.
-Please install Nextcloud and make sure your domain is reachable, or activate TLS
-on your domain to be able to run this script.
-If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
-When TLS is activated, run these commands from your CLI:
-sudo curl -sLO $APP/onlyoffice_docker.sh
-sudo bash onlyoffice_docker.sh"
-    exit 1
-fi
-
-# Test RAM size (2GB min) + CPUs (min 2)
-ram_check 2 OnlyOffice
-cpu_check 2 OnlyOffice
-
-# Check if Nextcloud is installed with TLS
-check_nextcloud_https "OnlyOffice (Docker)"
-
-# Install Docker
-install_docker
-
-ONLYOFFICE_SECRET="$(gen_passwd "$SHUF" "a-zA-Z0-9")"
-
-# Install Onlyoffice docker
-docker pull onlyoffice/documentserver:latest
-docker run -i -t -d -p 127.0.0.3:9090:80 -e JWT_ENABLED=true -e JWT_HEADER=AuthorizationJwt -e JWT_SECRET="$ONLYOFFICE_SECRET" --restart always --name onlyoffice onlyoffice/documentserver
 
 # Install apache2
 install_if_not apache2
@@ -206,6 +151,8 @@ HTTPS_CREATE
     if [ -f "$HTTPS_CONF" ];
     then
         print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
+	a2ensite "$SUBDOMAIN.conf"
+        restart_webserver
         sleep 1
     else
         print_text_in_color "$IRed" "Unable to create vhost, exiting..."
@@ -213,6 +160,62 @@ HTTPS_CREATE
         exit 1
     fi
 fi
+
+# Check if apache2 evasive-mod is enabled and disable it because of compatibility issues
+if [ "$(apache2ctl -M | grep evasive)" != "" ]
+then
+    msg_box "We noticed that 'mod_evasive' is installed which is the DDOS protection for webservices. \
+It has compatibility issues with OnlyOffice and you can now choose to disable it."
+    if ! yesno_box_yes "Do you want to disable DDOS protection?"
+    then
+        print_text_in_color "$ICyan" "Keeping mod_evasive active."
+    else
+        a2dismod evasive
+        # a2dismod mod-evasive # not needed, but existing in the Extra Security script.
+        apt-get purge libapache2-mod-evasive -y
+	systemctl restart apache2
+    fi
+fi
+
+# Nextcloud Main Domain
+NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
+
+true
+# shellcheck source=lib.sh
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+
+# Get all needed variables from the library
+nc_update
+
+# Get the latest packages
+apt-get update -q4 & spinner_loading
+
+# Check if Nextcloud is installed
+print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
+if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
+then
+    msg_box "It seems like Nextcloud is not installed or that you don't use https on:
+$NCDOMAIN.
+Please install Nextcloud and make sure your domain is reachable, or activate TLS
+on your domain to be able to run this script.
+If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain.
+When TLS is activated, run these commands from your CLI:
+sudo curl -sLO $APP/onlyoffice_docker.sh
+sudo bash onlyoffice_docker.sh"
+    exit 1
+fi
+
+# Check if Nextcloud is installed with TLS
+check_nextcloud_https "OnlyOffice (Docker)"
+
+# Install Docker
+install_docker
+
+ONLYOFFICE_SECRET="$(gen_passwd "$SHUF" "a-zA-Z0-9")"
+
+# Install Onlyoffice docker
+docker pull onlyoffice/documentserver:latest
+docker run -i -t -d -p 127.0.0.3:9090:80 -e JWT_ENABLED=true -e JWT_HEADER=AuthorizationJwt -e JWT_SECRET="$ONLYOFFICE_SECRET" --restart always --name onlyoffice onlyoffice/documentserver
 
 # Set config for OnlyOffice
 if [ -d "$NC_APPS_PATH"/onlyoffice ]
