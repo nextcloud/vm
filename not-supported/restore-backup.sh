@@ -274,8 +274,10 @@ for repository in "${BORG_REPOS[@]}"
 do
     if grep -q "\[repository\]" "$repository"
     then
-
-        VALID_REPOS+=("${repository%/config}")
+        if ! echo "$repository" | grep -q "/.snapshots/"
+        then 
+            VALID_REPOS+=("${repository%/config}")
+        fi
     fi
 done
 if [ -z "${VALID_REPOS[*]}" ]
