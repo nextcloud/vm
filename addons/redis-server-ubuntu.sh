@@ -4,7 +4,7 @@ SCRIPT_NAME="Redis Server Ubuntu"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
