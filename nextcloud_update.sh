@@ -4,7 +4,7 @@
 # DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
 #################################################################################################################
 
-# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
@@ -83,6 +83,24 @@ then
     then
         nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
     fi
+fi
+
+# Add aliases
+if [ -f /root/.bash_aliases ]
+then
+    if ! grep -q "nextcloud" /root/.bash_aliases
+    then
+{
+echo "alias nextcloud_occ='sudo -u www-data php /var/www/nextcloud/occ'"
+echo "alias run_update_nextcloud='bash /var/scripts/update.sh'"
+} >> /root/.bash_aliases
+    fi
+elif [ ! -f /root/.bash_aliases ]
+then
+{
+echo "alias nextcloud_occ='sudo -u www-data php /var/www/nextcloud/occ'"
+echo "alias run_update_nextcloud='bash /var/scripts/update.sh'"
+} > /root/.bash_aliases
 fi
 
 # Inform about started update

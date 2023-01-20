@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=SC2024
@@ -274,8 +274,10 @@ for repository in "${BORG_REPOS[@]}"
 do
     if grep -q "\[repository\]" "$repository"
     then
-
-        VALID_REPOS+=("${repository%/config}")
+        if ! echo "$repository" | grep -q "/.snapshots/"
+        then 
+            VALID_REPOS+=("${repository%/config}")
+        fi
     fi
 done
 if [ -z "${VALID_REPOS[*]}" ]

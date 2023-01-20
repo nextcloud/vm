@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -100,7 +100,7 @@ then
 fi
 
 # Install requirements
-if version 20.04 "$DISTRO" 20.04.10
+if [[ "$PHPVER" = "8.1" ]]
 then
     # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-focal
     add_trusted_key_and_repo "repo.gpg.key" \
@@ -109,7 +109,7 @@ then
     "focal focal" \
     "facerecognition-pdlib.list"
     install_if_not php7.4-pdlib
-elif version 22.04 "$DISTRO" 22.04.10
+elif [[ "$PHPVER" = "8.1" ]]
 then
     # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-jammy
     add_trusted_key_and_repo "repo.gpg.key" \
