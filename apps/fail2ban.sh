@@ -118,6 +118,12 @@ install_if_not iptables
 # remove ncdata, else it will be used
 rm -f "$NCDATA"/nextcloud.log
 
+# Add auth.log just in case it's not created
+if ! [ -f /var/log/auth.log ]
+then
+    touch /var/log/auth.log
+fi
+
 # time to ban an IP that exceeded attempts
 BANTIME_=1209600
 # cooldown time for incorrect passwords
