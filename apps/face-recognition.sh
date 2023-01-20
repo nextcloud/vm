@@ -100,7 +100,7 @@ then
 fi
 
 # Install requirements
-if version 20.04 "$DISTRO" 20.04.10 && [[ "$PHPVER" = "8.1" ]]
+if version 20.04 "$DISTRO" 20.04.10
 then
     # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-focal
     add_trusted_key_and_repo "repo.gpg.key" \
@@ -108,8 +108,8 @@ then
     "https://repo.delellis.com.ar" \
     "focal focal" \
     "facerecognition-pdlib.list"
-    install_if_not php8.1-pdlib
-elif version 22.04 "$DISTRO" 22.04.10 && [[ "$PHPVER" = "8.1" ]]
+    install_if_not php"$PHPVER"-pdlib
+elif version 22.04 "$DISTRO" 22.04.10
 then
     # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-jammy
     add_trusted_key_and_repo "repo.gpg.key" \
@@ -117,16 +117,7 @@ then
     "https://repo.delellis.com.ar" \
     "$CODENAME $CODENAME" \
     "facerecognition-pdlib.list"
-    install_if_not php8.1-pdlib
-elif version 20.04 "$DISTRO" 20.04.10 && [[ "$PHPVER" = "7.4" ]]
-then
-    # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-focal
-    add_trusted_key_and_repo "repo.gpg.key" \
-    "https://repo.delellis.com.ar" \
-    "https://repo.delellis.com.ar" \
-    "focal focal" \
-    "facerecognition-pdlib.list"
-    install_if_not php7.4-pdlib
+    install_if_not php"$PHPVER"-pdlib
 fi
 
 # Install the app
