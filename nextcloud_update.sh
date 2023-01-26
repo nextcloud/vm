@@ -195,6 +195,10 @@ fi
 rm -f /root/php-upgrade.sh
 rm -f /tmp/php-upgrade.sh
 rm -f /root/db-migration.sh
+rm -f /root/migrate-between-psql-versions.sh
+rm -f "$SCRIPTS"/php-upgrade.sh
+rm -f "$SCRIPTS"/db-migration.sh
+rm -f "$SCRIPTS"/migrate-between-psql-versions.sh
 
 # Fix bug in nextcloud.sh
 CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
