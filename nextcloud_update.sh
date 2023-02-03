@@ -633,7 +633,12 @@ $DOCKER_RUN_OUTPUT"
     # Collabora CODE
     docker_update_specific 'code' 'Collabora'
     # OnlyOffice
-    docker_update_specific 'onlyoffice' 'OnlyOffice'
+    ## Don't upgrade to community if EE is installed
+    if ! does_this_docker_exist onlyoffice-ee
+    then
+        print_text_in_color "$IRed" "Skipping OnlyOffice due to issues with Websockets: https://forum.onlyoffice.com/t/onlyoffice-7-3-websocket-path-changed/3767/5"
+        #docker_update_specific 'onlyoffice' 'OnlyOffice'
+    fi
     # Full Text Search
     docker_update_specific 'fts_esror' 'Full Text Search'
     docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
