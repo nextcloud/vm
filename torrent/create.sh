@@ -36,7 +36,7 @@ echo "net.core.wmem_max = 4194304" >> /etc/sysctl.conf
 sysctl -p
 
 # Create torrent
-transmission-create -o nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" "$(for tracker in $(curl_to_dir "$GITHUB_REPO"/torrent trackers.txt /tmp && cat /tmp/trackers.txt); do echo "-t "$tracker""; done)" NextcloudVM.zip
+transmission-create -o nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" "$(for tracker in $(curl_to_dir "$GITHUB_REPO"/torrent trackers.txt /tmp && cat /tmp/trackers.txt); do echo "-t ""$tracker"""; done)" NextcloudVM.zip
 
 # Seed it!
 transmission-remote -n 'transmission:transmission' -a nextcloudvmhanssonit.torrent
