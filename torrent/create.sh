@@ -17,7 +17,7 @@ curl -fSLO --retry 3 https://download.kafit.se/s/dnkWptz8AK4JZDM/download
 mv download NextcloudVM.zip
 
 # Create torrent
-transmission-create -o nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" $(for tracker in $(curl_to_dir $GITHUB_REPO/torrent trackers.txt /tmp && cat /tmp/trackers.txt); do echo -t $tracker; done) NextcloudVM.zip
+transmission-create -o nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" "$(for tracker in $(curl_to_dir "$GITHUB_REPO"/torrent trackers.txt /tmp && cat /tmp/trackers.txt); do echo -t "$tracker"; done)" NextcloudVM.zip
 
 # Seed it!
 transmission-remote -n 'transmission:transmission' -a nextcloudvmhanssonit.torrent
