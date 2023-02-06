@@ -28,6 +28,7 @@ install_if_not transmission-daemon
 # Download the VM
 curl -fSLO --retry 3 https://download.kafit.se/s/dnkWptz8AK4JZDM/download
 mv download NextcloudVM.zip
+chown debian-transmission:debian-transmission NextcloudVM.zip
 
 # Set more memory to sysctl
 echo "net.core.rmem_max = 16777216" >> /etc/sysctl.conf
@@ -39,3 +40,10 @@ transmission-create -o nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se
 
 # Seed it!
 transmission-remote -n 'transmission:transmission' -a nextcloudvmhanssonit.torrent
+
+# Copy it to local NC account
+nextclouduser="$(input_box_flow "Please enter the Nextcloud user that you want to move the finished torrent file to:")"
+rsync -av nextcloudvmhanssonit.torrent /mnt/ncdata/"$nextclouduser"/files/
+chown www-data:www-data /mnt/ncdata/"$nextclouduser"/files/nextcloudvmhanssonit.torrent
+nextcloud_occ files:scan "$nextclouduser"
+unset nextclouduser
