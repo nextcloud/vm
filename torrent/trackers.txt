@@ -1,5 +1,3 @@
-udp://public.popcorn-tracker.org:6969/announce
-
 http://104.28.1.30:8080/announce
 
 http://104.28.16.69/announce
