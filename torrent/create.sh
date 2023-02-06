@@ -10,6 +10,7 @@
 ## Help is welcome!
 
 # shellcheck source=lib.sh
+# shellcheck disable=SC2046
 source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
@@ -43,6 +44,7 @@ transmission-create -o nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se
 transmission-remote -n 'transmission:transmission' -a nextcloudvmhanssonit.torrent
 
 # Copy it to local NC account
+install_if_not rsync
 nextclouduser="$(input_box_flow "Please enter the Nextcloud user that you want to move the finished torrent file to:")"
 rsync -av nextcloudvmhanssonit.torrent /mnt/ncdata/"$nextclouduser"/files/
 chown www-data:www-data /mnt/ncdata/"$nextclouduser"/files/nextcloudvmhanssonit.torrent
