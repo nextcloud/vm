@@ -29,8 +29,13 @@ install_if_not transmission-daemon
 curl -fSLO --retry 3 https://download.kafit.se/s/dnkWptz8AK4JZDM/download
 mv download NextcloudVM.zip
 
+# Set more memory to sysctl
+echo "net.core.rmem_max = 16777216" >> /etc/sysctl.conf
+echo "net.core.wmem_max = 4194304" >> /etc/sysctl.conf
+sysctl -p
+
 # Create torrent
-transmission-create -o nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" "$(for tracker in $(curl_to_dir "$GITHUB_REPO"/torrent trackers.txt /tmp && cat /tmp/trackers.txt); do echo -t "$tracker"; done)" NextcloudVM.zip
+transmission-create -o nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" "$(for tracker in $(curl_to_dir "$GITHUB_REPO"/torrent trackers.txt /tmp && cat /tmp/trackers.txt); do echo "-t "$tracker""; done)" NextcloudVM.zip
 
 # Seed it!
 transmission-remote -n 'transmission:transmission' -a nextcloudvmhanssonit.torrent
