@@ -195,6 +195,10 @@ fi
 rm -f /root/php-upgrade.sh
 rm -f /tmp/php-upgrade.sh
 rm -f /root/db-migration.sh
+rm -f /root/migrate-between-psql-versions.sh
+rm -f "$SCRIPTS"/php-upgrade.sh
+rm -f "$SCRIPTS"/db-migration.sh
+rm -f "$SCRIPTS"/migrate-between-psql-versions.sh
 
 # Fix bug in nextcloud.sh
 CURRUSR="$(getent group sudo | cut -d: -f4 | cut -d, -f1)"
@@ -629,7 +633,12 @@ $DOCKER_RUN_OUTPUT"
     # Collabora CODE
     docker_update_specific 'code' 'Collabora'
     # OnlyOffice
-    docker_update_specific 'onlyoffice' 'OnlyOffice'
+    ## Don't upgrade to community if EE is installed
+    if ! does_this_docker_exist onlyoffice-ee
+    then
+        print_text_in_color "$IRed" "Skipping OnlyOffice due to issues with Websockets: https://forum.onlyoffice.com/t/onlyoffice-7-3-websocket-path-changed/3767/5"
+        #docker_update_specific 'onlyoffice' 'OnlyOffice'
+    fi
     # Full Text Search
     docker_update_specific 'fts_esror' 'Full Text Search'
     docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"

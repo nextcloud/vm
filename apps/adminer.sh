@@ -129,6 +129,11 @@ then
 The script will exit."
     exit 1
 else
+    # Allow local access:
+    
+    check_command sed -i "s|local   all             postgres                                peer|local   all             postgres                                md5|g" /etc/postgresql/*/main/pg_hba.conf
+    restart_webserver
+
     msg_box "Adminer was successfully installed and can be reached here:
 https://$ADDRESS:9443
 
@@ -146,5 +151,3 @@ $(grep dbname $NCPATH/config/config.php)
 In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
 $ADMINER_CONF"
 fi
-
-exit
