@@ -261,45 +261,10 @@ for upgrading your server: https://shop.hanssonit.se/product/premium-support-per
     exit 0
 fi
 
-# Check if the DIR actually is a file
+# Check if the log DIR actually is a file
 if [ -f /var/log/nextcloud ]
 then
     rm -f /var/log/nextcloud
-fi
-
-# Move all logs to new dir (2019-09-04) # updated 2021-01-27
-mkdir -p "$VMLOGS"
-
-find_log() {
-    NCLOG=$(find / -type f -name "nextcloud.log" 2> /dev/null)
-    if [ "$NCLOG" != "$VMLOGS/nextcloud.log" ]
-    then
-        # Might enter here if no OR multiple logs already exist, tidy up any existing logs and set the correct path
-        print_text_in_color "$ICyan" "Unexpected or non-existent logging configuration - \
-deleting any discovered nextcloud.log files and creating a new one at $VMLOGS/nextcloud.log..."
-        xargs rm -f <<< "$NCLOG"
-        # Set logging
-        nextcloud_occ config:system:set log_type --value=file
-        nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
-        nextcloud_occ config:system:set loglevel --value=2
-        touch "$VMLOGS/nextcloud.log"
-        chown www-data:www-data "$VMLOGS/nextcloud.log"
-    fi
-}
-find_log
-if [ -d /var/log/ncvm/ ]
-then
-    rsync -Aaxz /var/log/ncvm/ "$VMLOGS"
-    rm -Rf /var/log/ncvm/
-    rm -f "$NCDATA"/*.log*
-elif [ -d /var/ncdata/ ] && [ -n "$(find /var/ncdata -maxdepth 1 -name "*.log")" ]
-then
-    rsync -Aaxz /var/ncdata/*.log "$VMLOGS"
-    rm -f /var/ncdata/*.log*
-elif [ -n "$(find "$NCDATA" -maxdepth 1 -name "*.log")" ]
-then
-    rsync -Aaxz "$NCDATA"/*.log "$VMLOGS"
-    rm -f "$NCDATA"/*.log*
 fi
 
 # Set secure permissions
