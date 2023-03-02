@@ -1824,7 +1824,7 @@ then
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         elif lshw -c storage | grep -q "SN700"
-            then
+        then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
     fi
