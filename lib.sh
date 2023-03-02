@@ -1820,8 +1820,11 @@ if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH\|PN50\|PN51\|PN52"
 then
     if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1\|9905744\|HMA82GS6JJR8N\|HMA82GS6CJR8N\|9905703-023\|9905744-110"
     then
-        if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B\|SN700"
+        if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B"
         then
+            NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
+        elif lshw -c storage | grep -q "SN700"
+            then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
     fi
