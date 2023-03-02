@@ -913,7 +913,7 @@ else
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "" ON \
 "Contacts" "" ON \
-"IssueTemplate" "" ON \
+"IssueTemplate" "" OFF \
 "PDFViewer" "" ON \
 "Extract" "" ON \
 "Text" "" ON \
