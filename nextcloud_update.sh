@@ -1102,6 +1102,15 @@ do
     fi
 done
 
+# Update all Nextcloud apps a second time (if the old backup was outdated)
+if [ "${CURRENTVERSION%%.*}" -ge "15" ]
+then
+    nextcloud_occ maintenance:mode --off
+    # Check for upgrades
+    print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps again..."
+    nextcloud_occ_no_check app:update --all
+fi
+
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
 then
