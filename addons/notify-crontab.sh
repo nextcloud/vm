@@ -16,7 +16,7 @@ root_check
 
 MOUNT_ID="$1"
 
-if nextcloud_occ files_external:list | grep $MOUNT_ID
+if nextcloud_occ files_external:list | grep "$MOUNT_ID"
 then
     # Start the iNotify for this external storage
     countdown "iNotify starts in 120 seconds" "120" >> "$VMLOGS"/files_inotify.log
