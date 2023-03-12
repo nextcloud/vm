@@ -16,5 +16,7 @@ root_check
 
 MOUNT_ID="$1"
 
+countdown "iNotify starts in 120 seconds" "120" >> "$VMLOGS"/files_inotify.log
+
 # Add crontab for this external storage
 nextcloud_occ files_external:notify -v "$MOUNT_ID" >> "$VMLOGS"/files_inotify.log
