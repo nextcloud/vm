@@ -666,9 +666,8 @@ install_if_not php"$PHPVER"-dev
 run_script ADDONS redis-server-ubuntu
 
 # Install smbclient
-# php"$PHPVER"-smbclient does not yet work in PHP 7.4
+install_if_not php"$PHPVER"-smbclient
 install_if_not libsmbclient-dev
-yes no | pecl install smbclient
 if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
 then
     touch "$PHP_MODS_DIR"/smbclient.ini
