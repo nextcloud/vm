@@ -122,6 +122,7 @@ then
     then
         install_if_not libmagickcore-6.q16-6-extra
     elif version 20.04 "$DISTRO" 20.04.10
+    then
         install_if_not libmagickcore-6.q16-3-extra
     fi
     # Choose file formats fo the case when imagick is installed.
