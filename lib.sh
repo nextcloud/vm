@@ -1669,7 +1669,7 @@ then
     print_text_in_color "$ICyan" "Installing Docker CE..."
     apt-get update -q4 & spinner_loading
     install_if_not curl
-    curl -fsSL get.docker.com | sh
+    curl -fsSL https://get.docker.com | sh
 fi
 
 # Set overlay2
