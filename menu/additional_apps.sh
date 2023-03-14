@@ -41,7 +41,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Documentserver" "(OnlyOffice or Collabora - Docker or Integrated)" OFF \
 "Bitwarden" "(External password manager)" OFF \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
-"Recognize" "(Use [local] AI on your photos in Nextcloud)" "$STARTUP_SWITCH" \
+"Recognize" "(Use [local] AI on your photos in Nextcloud)" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" OFF \
 "Webmin" "(Server GUI like Cpanel)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
@@ -136,9 +136,8 @@ to finish the setup once this script is done." "$SUBTITLE"
         run_script APP whiteboard
     ;;&
     *"Recognize"*)
-        print_text_in_color "$ICyan" "Installing Recognize..."
-        install_and_enable_app recognize
-        nextcloud_occ recognize:download-models
+        print_text_in_color "$ICyan" "Downloading the Recognize script..."
+        run_script APP recognize
     ;;&
     *"SMB-mount"*)
         print_text_in_color "$ICyan" "Downloading the SMB-mount script..."
