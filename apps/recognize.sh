@@ -30,7 +30,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    if yesno_box_no "Do you want to remove all generated faces and tags that were generated until now?"
+    if yesno_box_no "Do you want to remove all facerecognitions and tags that were generated until now?"
     then
         nextcloud_occ recognize:remove-legacy-tags
         nextcloud_occ recognize:cleanup-tags
