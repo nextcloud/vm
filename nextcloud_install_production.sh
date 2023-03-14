@@ -962,7 +962,7 @@ case "$choice" in
         install_and_enable_app collectives
     ;;&
     *"Suspicios Login detetion"*)
-        install_and_enable_app suspicioslogin
+        install_and_enable_app suspicios_login
     ;;&
     *"Group-Folders"*)
         install_and_enable_app groupfolders
