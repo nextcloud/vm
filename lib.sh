@@ -1125,10 +1125,7 @@ then
     print_text_in_color "$IRed" "Error: ${1} GB RAM required to install ${2}!" >&2
     print_text_in_color "$IRed" "Current RAM is: ($mem_available_gb GB)" >&2
     sleep 3
-    msg_box "** Error: insufficient memory. ${mem_available_gb}GB RAM installed, ${1}GB required.
-
-To bypass this check, comment out (add # before the line) 'ram_check X' in the script that you are trying to run.
-Please note this may affect performance. USE AT YOUR OWN RISK!"
+    msg_box "** Error: insufficient memory. ${mem_available_gb}GB RAM installed, ${1}GB required."
     exit 1
 else
     print_text_in_color "$IGreen" "RAM for ${2} OK! ($mem_available_gb GB)"
