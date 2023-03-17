@@ -562,6 +562,13 @@ msg_box "The installation process is *almost* done.
 
 Please hit OK in all the following prompts and let the server reboot to complete the installation process."
 
+# Enterprise?
+msg_box "ENTERPRISE?
+Nextcloud Enterprise gives professional organizations software optimized and tested for mission critical environments.
+
+More info here: https://nextcloud.com/enterprise/
+Get your license here: https://shop.hanssonit.se/product/nextcloud-enterprise-license-100-users/"
+
 msg_box "TIPS & TRICKS:
 1. Publish your server online: https://goo.gl/iUGE2U
 2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
@@ -569,11 +576,9 @@ msg_box "TIPS & TRICKS:
 4. Install apps, configure Nextcloud, and server: sudo bash $SCRIPTS/menu.sh"
 
 msg_box "SUPPORT:
-Please ask for help in the forums, visit our shop to buy support,
-or buy a yearly subscription from Nextcloud:
+Please ask for help in the forums, visit our shop to buy support:
 - SUPPORT: https://shop.hanssonit.se/product/premium-support-per-30-minutes/
 - FORUM: https://help.nextcloud.com/
-- SUBSCRIPTION: https://shop.hanssonit.se/product/nextcloud-enterprise-license-100-users/
 
 BUGS:
 Please report any bugs here: https://github.com/nextcloud/vm/issues"

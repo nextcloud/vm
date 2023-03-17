@@ -913,12 +913,14 @@ else
 $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "" ON \
 "Contacts" "" ON \
-"IssueTemplate" "" ON \
 "PDFViewer" "" ON \
 "Extract" "" ON \
 "Text" "" ON \
 "Mail" "" ON \
 "Deck" "" ON \
+"Collectives" "" ON \
+"Suspicios Login detetion" "" ON \
+"IssueTemplate" "" OFF \
 "Group-Folders" "" OFF 3>&1 1>&2 2>&3)
 fi
 
@@ -955,6 +957,12 @@ case "$choice" in
     ;;&
     *"Deck"*)
         install_and_enable_app deck
+    ;;&
+    *"Collectives"*)
+        install_and_enable_app collectives
+    ;;&
+    *"Suspicios Login detetion"*)
+        install_and_enable_app suspicios_login
     ;;&
     *"Group-Folders"*)
         install_and_enable_app groupfolders

@@ -48,7 +48,7 @@ else
     # reset the cronjob
     crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
     # Remove apps
-    APPS=(php-imagick libmagickcore-6.q16-3-extra)
+    APPS=(php-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
     for app in "${APPS[@]}"
     do
         if is_this_installed "$app"
@@ -118,8 +118,19 @@ then
     check_php
     # Install imagick
     install_if_not php"$PHPVER"-imagick
-    install_if_not libmagickcore-6.q16-3-extra
-
+    if version 22.04 "$DISTRO" 22.04.10
+    then
+        install_if_not libmagickcore-6.q16-6-extra
+    elif version 20.04 "$DISTRO" 20.04.10
+    then
+        install_if_not libmagickcore-6.q16-3-extra
+    fi
+    # Memory tuning
+    sed -i 's|policy domain="resource" name="memory" value=.*|policy domain="resource" name="memory" value="512MiB"|g' /etc/ImageMagick-6/policy.xml
+    sed -i 's|policy domain="resource" name="map" value=.*|policy domain="resource" name="map" value="1024MiB"|g' /etc/ImageMagick-6/policy.xml
+    sed -i 's|policy domain="resource" name="area" value=.*|policy domain="resource" name="area" value="256MiB"|g' /etc/ImageMagick-6/policy.xml
+    sed -i 's|policy domain="resource" name="disk" value=.*|policy domain="resource" name="disk" value="8GiB"|g' /etc/ImageMagick-6/policy.xml
+    
     # Choose file formats fo the case when imagick is installed.
     # for additional previews please look at the Nextcloud documentation. But these probably won't work.
     choice=$(whiptail --title "$TITLE - Choose file formats" --checklist \

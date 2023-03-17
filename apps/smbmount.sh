@@ -147,7 +147,7 @@ $MENU_GUIDE\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
                     print_text_in_color "$ICyan" "Using for backups..."
                     umount "$SMBSHARES/$count"
                     sed -i "/$SMBSHARES_SED\/$count /d" /etc/fstab
-                    echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail,noauto 0 0" >> /etc/fstab
+                    echo "$SERVER_SHARE_NAME $SMBSHARES/$count cifs credentials=$SMB_CREDENTIALS/SMB$count,uid=root,gid=root,file_mode=0600,dir_mode=0600,nounix,noserverino,cache=none,nofail 0 0" >> /etc/fstab
                     unset SMB_USER && unset SMB_PASSWORD
                     sleep 1
                     msg_box "The backup mount was successfully created!"
@@ -415,7 +415,7 @@ files_inotify app and set up the cronjob for this external storage."
 
             # Add crontab
             print_text_in_color "$ICyan" "Generating crontab..."
-            crontab -u root -l | { cat; echo "@reboot $SCRIPTS/notify-crontab.sh $MOUNT_ID"; } | crontab -u root
+            crontab -u root -l | { cat; echo "@reboot $SCRIPTS/notify-crontab.sh $MOUNT_ID"; } | crontab -u root -
 
             # Run the command in a subshell and don't exit if the smbmount script exits
             nohup sudo -u www-data php "$NCPATH"/occ files_external:notify -v "$MOUNT_ID" >> $VMLOGS/files_inotify.log &

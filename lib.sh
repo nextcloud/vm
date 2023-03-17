@@ -905,7 +905,7 @@ then
     # Generate DHparams cipher
     if [ ! -f "$DHPARAMS_TLS" ]
     then
-        openssl dhparam -dsaparam -out "$DHPARAMS_TLS" 4096
+        openssl dhparam -out "$DHPARAMS_TLS" 2048
     fi
     # Choose which port for public access
     msg_box "You will now be able to choose which port you want to put your Nextcloud on for public access.\n
@@ -1146,10 +1146,7 @@ then
     print_text_in_color "$IRed" "Error: ${1} GB RAM required to install ${2}!" >&2
     print_text_in_color "$IRed" "Current RAM is: ($mem_available_gb GB)" >&2
     sleep 3
-    msg_box "** Error: insufficient memory. ${mem_available_gb}GB RAM installed, ${1}GB required.
-
-To bypass this check, comment out (add # before the line) 'ram_check X' in the script that you are trying to run.
-Please note this may affect performance. USE AT YOUR OWN RISK!"
+    msg_box "** Error: insufficient memory. ${mem_available_gb}GB RAM installed, ${1}GB required."
     exit 1
 else
     print_text_in_color "$IGreen" "RAM for ${2} OK! ($mem_available_gb GB)"
@@ -1690,7 +1687,7 @@ then
     print_text_in_color "$ICyan" "Installing Docker CE..."
     apt-get update -q4 & spinner_loading
     install_if_not curl
-    curl -fsSL get.docker.com | sh
+    curl -fsSL https://get.docker.com | sh
 fi
 
 # Set overlay2
@@ -1837,11 +1834,14 @@ fi
 home_sme_server() {
 # OLD DISKS: "Samsung SSD 860" || ST5000LM000-2AN1  || ST5000LM015-2E81
 # OLD MEMORY: BLS16G4 (Balistix Sport) || 18ASF2G72HZ (ECC)
-if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH\|PN50\|PN51"
+if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH\|PN50\|PN51\|PN52"
 then
-    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1\|9905744\|HMA82GS6JJR8N\|HMA82GS6CJR8N\|9905703-023"
+    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1\|9905744\|HMA82GS6JJR8N\|HMA82GS6CJR8N\|9905703-023\|9905744-110"
     then
         if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B"
+        then
+            NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
+        elif lshw -c storage | grep -q "SN700"
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
