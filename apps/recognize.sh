@@ -19,7 +19,7 @@ root_check
 
 # Enough recouces?
 ram_check 8
-cpu_check 8
+cpu_check 4
 
 # Check if recognize is already installed
 if ! is_app_installed recognize
