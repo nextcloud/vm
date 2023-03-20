@@ -17,10 +17,6 @@ debug_mode
 # Check if root
 root_check
 
-# Enough recouces?
-ram_check 8
-cpu_check 4
-
 # Check if recognize is already installed
 if ! is_app_installed recognize
 then
@@ -44,6 +40,10 @@ else
 fi
 
 # Install recognize
+# Enough recouces?
+ram_check 8
+cpu_check 4
+
 install_and_enable_app recognize
 nextcloud_occ recognize:download-models
 
