@@ -45,6 +45,11 @@ else
     nextcloud_occ app:remove previewgenerator
     # reset the preview formats
     nextcloud_occ_no_check config:system:delete "enabledPreviewProviders"
+    nextcloud_occ config:system:delete preview_max_x
+    nextcloud_occ config:system:delete preview_max_y
+    nextcloud_occ config:system:delete jpeg_quality
+    nextcloud_occ config:system:delete preview_max_memory
+    nextcloud_occ config:system:delete enable_previews
     # reset the cronjob
     crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
     # Remove apps
