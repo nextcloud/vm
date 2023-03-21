@@ -30,6 +30,9 @@ else
     # Remove config.php value set when install was successful
     nextcloud_occ config:system:delete allow_local_remote_servers
     nextcloud_occ config:system:delete onlyoffice
+    nextcloud_occ config:system:delete allow_local_remote_servers
+    nextcloud_occ config:system:delete onlyoffice jwt_secret
+    nextcloud_occ config:system:delete onlyoffice jwt_header
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
