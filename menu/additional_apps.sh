@@ -44,10 +44,10 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Recognize" "(Use [local] AI on your photos in Nextcloud)" OFF \
 "PreviewGenerator" "(Pre-generate previews for Nextcloud)" OFF \
 "Webmin" "(Server GUI like Cpanel)" OFF \
+"Talk" "(Video calls and chat for Nextcloud)" "$STARTUP_SWITCH" \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
-"Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "FullTextSearch" "(Search for text inside documents [4GB RAM])" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
