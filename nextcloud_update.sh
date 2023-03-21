@@ -605,7 +605,7 @@ $DOCKER_RUN_OUTPUT"
         then
             docker_update_specific 'onlyoffice' 'OnlyOffice'
             msg_box "OnlyOffice updated the way websockets work, and you need to update your configuration.\n
-Please update your Apache2 config to this: https://github.com/nextcloud/vm/blob/onlyoffice/apps/onlyoffice_docker.sh#L210-L215.
+Please update your Apache2 config to this: https://github.com/nextcloud/vm/blob/master/apps/onlyoffice_docker.sh#L210-L215.
 Another option is to reinstall OnlyOffice with the menu script; sudo bash /var/scripts/menu.sh\n
 If you need help, please get support here: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
         fi
