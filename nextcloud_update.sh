@@ -602,6 +602,7 @@ $DOCKER_RUN_OUTPUT"
     if ! does_this_docker_exist onlyoffice-ee
     then
         print_text_in_color "$IRed" "Skipping OnlyOffice due to issues with Websockets: https://forum.onlyoffice.com/t/onlyoffice-7-3-websocket-path-changed/3767/5"
+        print_text_in_color "$IRed" "You are adviced to reinstall OnlyOffice with the menu script: sudo bash /var/scripts/menu.sh."
         #docker_update_specific 'onlyoffice' 'OnlyOffice'
     fi
     # Full Text Search
