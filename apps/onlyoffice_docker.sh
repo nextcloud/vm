@@ -204,8 +204,16 @@ then
 
     # basic proxy settings
     ProxyRequests off
-
-    ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.3:9090/\$1\$2"
+    
+    SetEnvIf Host "^(.*)$" THE_HOST=$1
+    RequestHeader setifempty X-Forwarded-Proto http
+    RequestHeader setifempty X-Forwarded-Host %{THE_HOST}e
+    ProxyAddHeaders Off
+    
+    RewriteEngine on
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteCond %{HTTP:Connection} upgrade [NC]
+    RewriteRule ^/?(.*) "ws://127.0.0.3:9090/\$1" [P,L]
     ProxyPass / "http://127.0.0.3:9090/"
     ProxyPassReverse / "http://127.0.0.3:9090/"
 
