@@ -30,6 +30,8 @@ else
     # Remove config.php value set when install was successful
     nextcloud_occ config:system:delete allow_local_remote_servers
     nextcloud_occ config:system:delete onlyoffice
+    nextcloud_occ config:system:delete onlyoffice jwt_secret
+    nextcloud_occ config:system:delete onlyoffice jwt_header
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -205,9 +207,12 @@ then
     # basic proxy settings
     ProxyRequests off
 
-    ProxyPassMatch (.*)(\/websocket)$ "ws://127.0.0.3:9090/\$1\$2"
     ProxyPass / "http://127.0.0.3:9090/"
     ProxyPassReverse / "http://127.0.0.3:9090/"
+    RewriteEngine on
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteCond %{HTTP:Connection} upgrade [NC]
+    RewriteRule ^/?(.*) "ws://127.0.0.3:9090/" [P,L]
 
     <Location />
         ProxyPassReverse /

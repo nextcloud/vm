@@ -601,9 +601,14 @@ $DOCKER_RUN_OUTPUT"
     ## Don't upgrade to community if EE is installed
     if ! does_this_docker_exist onlyoffice-ee
     then
-        print_text_in_color "$IRed" "Skipping OnlyOffice due to issues with Websockets: https://forum.onlyoffice.com/t/onlyoffice-7-3-websocket-path-changed/3767/5"
-        print_text_in_color "$IRed" "You are adviced to reinstall OnlyOffice with the menu script: sudo bash /var/scripts/menu.sh."
-        #docker_update_specific 'onlyoffice' 'OnlyOffice'
+        if does_this_docker_exist 'onlyoffice/documentserver'
+        then
+            docker_update_specific 'onlyoffice' 'OnlyOffice'
+            msg_box "OnlyOffice updated the way websockets work, and you need to update your configuration.\n
+Please update your Apache2 config to this: https://github.com/nextcloud/vm/blob/master/apps/onlyoffice_docker.sh#L210-L215.
+Another option is to reinstall OnlyOffice with the menu script; sudo bash /var/scripts/menu.sh\n
+If you need help, please get support here: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+        fi
     fi
     # Full Text Search
     docker_update_specific 'fts_esror' 'Full Text Search'
