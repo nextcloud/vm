@@ -32,6 +32,16 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
+# Automatically restart services (Ubuntu 22.04)
+if ! version 16.04.10 "$DISTRO" 20.04.10
+then
+    if ! grep -r "{restart} = 'a'" /etc/needrestart/needrestart.conf
+    then
+        # Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
+        sed -i "s|#\$nrconf{restart} = .*|\$nrconf{restart} = 'a';|g" /etc/needrestart/needrestart.conf
+    fi
+fi
+
 # Check for pending-snapshot
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
