@@ -17,6 +17,16 @@ debug_mode
 # Check if root
 root_check
 
+# Encryption may not be enabled
+if is_app_enabled encryption || is_app_enabled end_to_end_encryption
+then
+    msg_box "It seems like you have encryption enabled which is unsupported by the $SCRIPT_NAME app!"
+    exit 1
+fi
+
+# Compatible with NC26 and above
+lowest_compatible_nc 26
+
 # Check if suspicious_login are installed
 # https://github.com/nextcloud/recognize/issues/676
 if is_app_enabled suspicious_login
@@ -35,6 +45,21 @@ then
     else
         exit
     fi
+fi
+
+# Check if face-recognition is installed and ask to remove it
+if ! is_app_installed facerecognition
+then
+    msg_box "It seems like Face Recognition is installed. This app doesn't work with both installed at the same time. Please uninstall Face Recognition and try again:
+
+1. Hit OK here.
+2. Choose 'Uninstall'
+3. Run sudo bash $SCRIPTS/menu.sh --> Additional Apps --> Recognize
+4. Install
+
+We will run the uninstaller for you now, then exit."
+    wget https://raw.githubusercontent.com/nextcloud/vm/master/old/face-recognition.sh && bash face-recognition.sh && rm -f face-recognition.sh
+    exit
 fi
 
 # Check if recognize is already installed
