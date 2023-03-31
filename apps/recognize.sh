@@ -48,7 +48,7 @@ then
 fi
 
 # Check if face-recognition is installed and ask to remove it
-if ! is_app_installed facerecognition
+if is_app_installed facerecognition
 then
     msg_box "It seems like Face Recognition is installed. This app doesn't work with both installed at the same time. Please uninstall Face Recognition and try again:
 
