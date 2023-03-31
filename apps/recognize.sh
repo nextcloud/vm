@@ -40,11 +40,11 @@ else
     if yesno_box_no "Do you want to remove all facerecognitions and tags that were generated until now?"
     then
         print_text_in_color "$ICyan" "This will take some time..."
-        nextcloud_occ recognize:remove-legacy-tags
-        nextcloud_occ recognize:cleanup-tags
-        nextcloud_occ recognize:reset-face-clusters
-        nextcloud_occ recognize:reset-faces
-        nextcloud_occ recognize:reset-tags
+        nextcloud_occ_no_check recognize:remove-legacy-tags
+        nextcloud_occ_no_check recognize:cleanup-tags
+        nextcloud_occ_no_check recognize:reset-face-clusters
+        nextcloud_occ_no_check recognize:reset-faces
+        nextcloud_occ_no_check recognize:reset-tags
     fi
     nextcloud_occ app:remove recognize
     # Show successful uninstall if applicable
