@@ -549,6 +549,13 @@ run_script NETWORK trusted
 print_text_in_color "$ICyan" "System will now upgrade..."
 bash $SCRIPTS/update.sh minor
 
+# Check if new major is out, and inform on how to update
+if version_gt "$NCVERSION" "$CURRENTVERSION"
+then
+    msg_box "We noticed that there's a new major release of Nextcloud ($NCVERSION).\nIf you want to update to the latest release instantly, please check this:\n
+https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration?currentPageId=W7D3quPiqQz3_MsE"
+fi
+
 # Cleanup 2
 apt-get autoremove -y
 apt-get autoclean
