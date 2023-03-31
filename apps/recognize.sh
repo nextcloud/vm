@@ -19,15 +19,22 @@ root_check
 
 # Check if suspicious_login are installed
 # https://github.com/nextcloud/recognize/issues/676
-if is_app_installed suspicious_login
+if is_app_enabled suspicious_login
 then
-    msg_box "Since you have the app Suspicious Login Detection installed, you can't install Recognize. The reason is that it will cause issues with cron.php.\nIf you choose 'No' the installer will exit."
-    if yesno_box_no "Do you want to remove Suspicious Login to be able to install Recognize?"
-       then
-            nextcloud_occ app:remove suspicious_login
-       else
-           exit
-   fi
+    msg_box "Since you have the app Suspicious Login Detection installed, you can't install Recognize. The reason is that it will cause issues with cron.php.\nIf you choose 'No' the installer will exit"
+    if yesno_box_no "Do you want to disable Suspicious Login to be able to install Recognize?"
+    then
+        nextcloud_occ app:disable suspicious_login
+        if ! [ -f /etc/fail2ban/filter.d/nextcloud.conf ] || ! is_this_installed fail2ban
+        then
+            if yesno_box_yes "Do you want to install Fail2ban (IP blocking in Linux) instead?"
+            then
+                run_script APP fail2ban
+            fi
+        fi
+    else
+        exit
+    fi
 fi
 
 # Check if recognize is already installed
