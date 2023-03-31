@@ -774,6 +774,7 @@ restart_webserver() {
 # https://github.com/nextcloud/vm/issues/2358
 sleep 2
 check_command systemctl restart apache2.service
+check_php
 if is_this_installed php"$PHPVER"-fpm
 then
     check_command systemctl restart php"$PHPVER"-fpm.service
@@ -2019,6 +2020,9 @@ then
 elif grep 8.2 <<< "$GETPHP" >/dev/null 2>&1
 then
    export PHPVER=8.2
+elif grep 8.3 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.3
 fi
 
 # Export other PHP variables based on PHPVER
