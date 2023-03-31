@@ -21,10 +21,12 @@ root_check
 # https://github.com/nextcloud/recognize/issues/676
 if is_app_installed suspicious_login
 then
-    msg_box "Since you have the app Suspicious Login installed, you can't install Recognize since it will cause issues with cron.php."
+    msg_box "Since you have the app Suspicious Login Detection installed, you can't install Recognize. The reason is that it will cause issues with cron.php.\nIf you choose 'No' the installer will exit."
     if yesno_box_no "Do you want to remove Suspicious Login to be able to install Recognize?"
        then
             nextcloud_occ app:remove suspicious_login
+       else
+           exit
    fi
 fi
 
