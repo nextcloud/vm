@@ -17,6 +17,17 @@ debug_mode
 # Check if root
 root_check
 
+# Check if suspicios_login are installed
+# https://github.com/nextcloud/recognize/issues/676
+if is_app_installed suspicios_login
+then
+    msg_box "Since you have the app Suspicios Login installed, you can't install Recognize since it will cause issues with cron.php."
+    if yesno_box_no "Do you want to remove Suspicios Login to be able to install Recognize?"
+       then
+            nextcloud_occ app:remove suspicios_login
+   fi
+fi
+
 # Check if recognize is already installed
 if ! is_app_installed recognize
 then
@@ -44,17 +55,6 @@ fi
 # Enough recouces?
 ram_check 8
 cpu_check 4
-
-# Check if suspicios_login are installed
-# https://github.com/nextcloud/recognize/issues/676
-if is_app_installed suspicios_login
-then
-    msg_box "Since you have the app Suspicios Login installed, you can't install Recognize since it will cause issues with cron.php."
-    if yesno_box_no "Do you want to remove Suspicios Login to be able to install Recognize?"
-       then
-            nextcloud_occ app:remove suspicios_login
-   fi
-fi
 
 install_and_enable_app recognize
 nextcloud_occ recognize:download-models
