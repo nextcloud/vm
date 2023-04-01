@@ -63,6 +63,7 @@ fi
 if is_app_enabled previewgenerator
 then
     if yesno_box_yes "We noticed that you have Preview Generator enabled. Imagniary replaces this, and the old app Preview Generator is now legacy. We recomend you to remove it. Do you want to do that?"
+    then
         # Remove the app
         nextcloud_occ app:remove previewgenerator
         # Reset the cronjob
