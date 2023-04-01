@@ -61,6 +61,8 @@ else
                 apt-get purge "$app" -y
             fi
         done
+        # Remove custom config
+        rm -rf /etc/ImageMagick-6
         # Remove FFMPEG
         if is_this_installed ffmpeg && ! is_app_installed integration_whiteboard
         then
