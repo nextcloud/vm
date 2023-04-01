@@ -6,7 +6,7 @@
 
 true
 SCRIPT_NAME="Imaginary Docker"
-SCRIPT_EXPLAINER="This script will install Imaginay which is a replacement for the less secure Imagick. 
+SCRIPT_EXPLAINER="This script will install Imaginary which is a replacement for the less secure Imagick.
 It can speedup the loading of previews in Nextcloud a lot."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
@@ -39,7 +39,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    if yesno_box_no "Do you want to remove all Imaginary?"
+    if yesno_box_no "Do you want to remove the Imaginary docker container and settings?"
     then
         docker-compose_down "$SCRIPTS"/imaginary-docker/docker-compose.yml
         nextcloud_occ config:system:delete enabledPreviewProviders
@@ -79,7 +79,7 @@ docker compose -p imaginary -f "$SCRIPTS"/imaginary-docker/docker-compose.yml up
 # Test if imaginary is working
 if curl -O "http://127.0.0.1:9000/crop?width=500&height=400&url=https://raw.githubusercontent.com/h2non/imaginary/master/testdata/large.jpg"
 then
-    print_text_in_color "$IGreen" "Imaginary seems to be working OK!"
+    print_text_in_color "$IGreen" "imaginary seems to be working OK!"
 else
     msg_box "Test failed, please report this to: $ISSUES"
     exit
