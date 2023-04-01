@@ -109,15 +109,35 @@ The currently supported filetypes are:
 * MP3
 * TXT
 * Movie
-* Photoshop (needs Imaginary)
-* SVG (needs Imaginary)
-* TIFF (needs Imaginary)"
+* Photoshop (needs imagick)
+* SVG (needs imagick)
+* TIFF (needs imagick)"
 
-if yesno_box_no "Do you want to install Imaginary?"
+msg_box "IMPORTANT NOTE!!
+
+Imagick will put your server at risk as it's is known to have several flaws.
+You can check this issue to understand why: https://github.com/nextcloud/vm/issues/743
+
+Please note: If you choose not to install imagick, it will get removed now."
+if yesno_box_no "Do you want to install imagick?"
 then
-    # Install imaginary
-    run_script ADDONS imaginary
-    # Choose file formats fo the case when Imaginary is installed.
+    check_php
+    # Install imagick
+    install_if_not php"$PHPVER"-imagick
+    if version 22.04 "$DISTRO" 22.04.10
+    then
+        install_if_not libmagickcore-6.q16-6-extra
+    elif version 20.04 "$DISTRO" 20.04.10
+    then
+        install_if_not libmagickcore-6.q16-3-extra
+    fi
+    # Memory tuning
+    sed -i 's|policy domain="resource" name="memory" value=.*|policy domain="resource" name="memory" value="512MiB"|g' /etc/ImageMagick-6/policy.xml
+    sed -i 's|policy domain="resource" name="map" value=.*|policy domain="resource" name="map" value="1024MiB"|g' /etc/ImageMagick-6/policy.xml
+    sed -i 's|policy domain="resource" name="area" value=.*|policy domain="resource" name="area" value="256MiB"|g' /etc/ImageMagick-6/policy.xml
+    sed -i 's|policy domain="resource" name="disk" value=.*|policy domain="resource" name="disk" value="8GiB"|g' /etc/ImageMagick-6/policy.xml
+    
+    # Choose file formats fo the case when imagick is installed.
     # for additional previews please look at the Nextcloud documentation. But these probably won't work.
     choice=$(whiptail --title "$TITLE - Choose file formats" --checklist \
 "Now you can choose for which file formats you would like to generate previews for
