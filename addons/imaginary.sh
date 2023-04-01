@@ -20,8 +20,12 @@ debug_mode
 # Check if root
 root_check
 
+# Check recources
+ram_check 4
+cpu_check 4
+
 # Compatible with NC24 and above
-lowest_compatible_nc 24
+lowest_compatible_nc 26
 
 # Check if Imaginary is already installed
 if ! does_this_docker_exist nextcloud/aio-imaginary
@@ -34,11 +38,52 @@ else
     # Removal
     if yesno_box_no "Do you want to remove the Imaginary docker container and settings?"
     then
-        docker-compose_down "$SCRIPTS"/imaginary-docker/docker-compose.yml
-        nextcloud_occ config:system:delete enabledPreviewProviders
-        nextcloud_occ config:system:delete preview_imaginary_url
-        rm -rf "$SCRIPTS"/imaginary-docker
+        if docker-compose_down "$SCRIPTS"/imaginary-docker/docker-compose.yml
+        then
+            countdown "Waiting for the Docker image to be destroyed" "5"
+            nextcloud_occ config:system:delete enabledPreviewProviders
+            nextcloud_occ config:system:delete preview_imaginary_url
+            rm -rf "$SCRIPTS"/imaginary-docker
+            docker system prune -a -f
+        fi
     fi
+    # Remove everything that's related to previewgenerator - it's now legacy
+    nextcloud_occ app:remove previewgenerator
+    # reset the preview formats
+    nextcloud_occ_no_check config:system:delete "enabledPreviewProviders"
+    nextcloud_occ config:system:delete preview_max_x
+    nextcloud_occ config:system:delete preview_max_y
+    nextcloud_occ config:system:delete jpeg_quality
+    nextcloud_occ config:system:delete preview_max_memory
+    nextcloud_occ config:system:delete enable_previews
+    # reset the cronjob
+    crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
+    # Remove apps
+    APPS=(php-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
+    for app in "${APPS[@]}"
+    do
+        if is_this_installed "$app"
+        then
+            apt-get purge "$app" -y
+        fi
+    done
+    if is_this_installed ffmpeg && ! is_app_installed integration_whiteboard
+    then
+        apt-get purge ffmpeg -y
+    fi
+    apt-get autoremove -y
+    if yesno_box_yes "Do you want to remove all previews that were generated until now?
+This will most likely clear a lot of space! Also, pre-generated previews are not needed anymore once Imaginary are installed."
+    then
+        countdown "Removing the preview folder. This can take a while..." "5"
+        rm -rfv "$NCDATA"/appdata_*/preview
+        print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory after removing all previews. \
+This can take a while..."
+        nextcloud_occ files:scan-app-data -vvv
+        msg_box "All previews were successfully removed."
+    fi
+    # Remove log
+    rm -f "$VMLOGS"/previewgenerator.log
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -77,61 +122,31 @@ else
     exit
 fi
 
-# Set providers
-nextcloud_occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\JPEG"
-nextcloud_occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\PNG"
-nextcloud_occ config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\WEBP"
-nextcloud_occ config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\HEIF"
-nextcloud_occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\TIFF"
-nextcloud_occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\PDF"
-nextcloud_occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\GIF"
-nextcloud_occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\SVG"
-nextcloud_occ config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\MP3"
-nextcloud_occ config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\TXT"
-nextcloud_occ config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\MarkDown"
-nextcloud_occ config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\OpenDocument"
-nextcloud_occ config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\Krita"
-nextcloud_occ config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\BMP"
-nextcloud_occ config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\Imaginary"
+# Install dependencies for Imaginary
+check_php
+install_if_not php"$PHPVER"-sysvsem
+
+# Set default limits
+# https://github.com/nextcloud/server/pull/18210/files#diff-3bbe91e1f85eec5dbd0031642dfb0ad6749b550fc3b94af7aa68a98210b78738R1121
+nextcloud_occ config:system:set preview_concurrency_all --value="8"
+nextcloud_occ config:system:set preview_concurrency_new --value="4"
+
+# Set providers (https://github.com/nextcloud/server/blob/master/lib/private/Preview/Imaginary.php#L60)
+# https://github.com/nextcloud/vm/pull/2464#discussion_r1155074227
+# This is handled by Imagniary itself
+nextcloud_occ config:system:set enabledPreviewProviders --value="OC\\Preview\\Imaginary"
 nextcloud_occ config:system:set preview_imaginary_url --value="http://127.0.0.1:9000"
 
 # Set general values
 nextcloud_occ config:system:set preview_max_x --value="2048"
 nextcloud_occ config:system:set preview_max_y --value="2048"
 nextcloud_occ config:system:set jpeg_quality --value="60"
-nextcloud_occ config:system:set preview_max_memory --value="128"
+nextcloud_occ config:system:set preview_max_memory --value="256"
 nextcloud_occ config:app:set preview jpeg_quality --value="60"
 
-# Rebuild is only happening if previewgenerator is installed
-if is_app_installed previewgenerator
+if docker logs imaginary
 then
-    # Enable previews (even if it's installed it might not be enabled)
-    install_and_enable_app previewgenerator
-    nextcloud_occ config:system:set enable_previews --value=true --type=boolean
-    
-    # Install needed dependency for movies 
-    # TODO: Should we remove this during uninstall?
-    install_if_not ffmpeg
-    nextcloud_occ config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\Movie"
-
-    # Set values
-    nextcloud_occ config:app:set previewgenerator squareSizes --value="32 256"
-    nextcloud_occ config:app:set previewgenerator widthSizes  --value="256 384"
-    nextcloud_occ config:app:set previewgenerator heightSizes --value="256"
-
-    # Add logs
-    touch "$VMLOGS"/previewgenerator.log
-    chown www-data:www-data "$VMLOGS"/previewgenerator.log
-
-    # Rebuild
-    print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory to rebuild all previews all previews. This will take a while..."
-    nextcloud_occ files:scan-app-data -vvv
-    nextcloud_occ preview:generate-all --verbose >> "$VMLOGS"/previewgenerator.log
-    tail -f "$VMLOGS"/previewgenerator.log
-
-    # Uninstall Preview Generator, not needed anymore
-    # TODO, is this needed for future previews or not?
-    nextcloud_occ app:remove previewgenerator
-    crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
-    # rm -f "$VMLOGS"/previewgenerator.log
+    msg_box "Imaginary was succesfully installed!"
+else
+    msg_box "It seems that something is wrong. Please post the full installation output to $ISSUES"
 fi
