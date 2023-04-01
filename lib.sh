@@ -1737,12 +1737,18 @@ docker-compose_down() {
 if [ -f "$1" ]
 then
     cd "$(dirname "$1")"
-    docker-compose down  --volume --rmi all
+    if is_this_installed docker-compose
+    then
+        docker-compose down --volumes --rmi all
+    else
+        docker compose down --volumes --rmi all
+    fi
+    # Remove leftovers
+    docker system prune -a -f
 else
     echo "Non-existing docker-compose file path, skipping..."
 fi
 }
-
 
 # Update specific Docker image
 # docker_update_specific 'vaultwarden' 'Vaultwarden' (docker conainter name = $1, the name in text = $2)
