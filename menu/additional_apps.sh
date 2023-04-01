@@ -104,8 +104,8 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Pico CMS script..."
         run_script APP pico_cms
     ;;&
-    *"PreviewGenerator"*)
-        print_text_in_color "$ICyan" "Downloading the PreviewGenerator script..."
+    *"Imaginary"*)
+        print_text_in_color "$ICyan" "Downloading the Imaginary script..."
         run_script APP previewgenerator
     ;;&
     *"Notify Push"*)
