@@ -30,8 +30,8 @@ then
     exit
 fi
 
-# Check if imaginary is already installed
-if ! does_this_docker_exist h2non/imaginary
+# Check if Imaginary is already installed
+if ! does_this_docker_exist nextcloud/aio-imaginary
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -57,11 +57,12 @@ if [ ! -f "$SCRIPTS/imaginary-docker/docker-compose.yml" ]
 then
     touch "$SCRIPTS/imaginary-docker/docker-compose.yml"
     cat << IMAGINARY_DOCKER_CREATE > "$SCRIPTS"/imaginary-docker/docker-compose.yml
-version: '3'
+version: '3.1'
 services:
   imaginary:
-    image: h2non/imaginary
+    image: nextcloud/aio-imaginary:latest
     container_name: imaginary
+    restart: always
     environment:
        PORT: 9000
     command: -concurrency 50 -enable-url-source -log-level debug
