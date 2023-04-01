@@ -117,6 +117,7 @@ countdown "Testing if it works in 3 sedonds" "3"
 if curl -O "http://127.0.0.1:9000/crop?width=500&height=400&url=https://raw.githubusercontent.com/h2non/imaginary/master/testdata/large.jpg"
 then
     print_text_in_color "$IGreen" "imaginary seems to be working OK!"
+    rm -f large.jpg
 else
     msg_box "Test failed, please report this to: $ISSUES"
     exit
