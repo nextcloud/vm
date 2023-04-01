@@ -795,7 +795,7 @@ then
     download_script STATIC updatenotification
     chmod +x "$SCRIPTS"/updatenotification.sh
     crontab -u root -l | grep -v "$SCRIPTS/updatenotification.sh" | crontab -u root -
-    crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * 5 $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
+    crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 fi
 
 ############# Don't upgrade to specific version
