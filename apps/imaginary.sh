@@ -115,7 +115,7 @@ nextcloud_occ config:system:set preview_concurrency_new --value="4"
 # Set providers (https://github.com/nextcloud/server/blob/master/lib/private/Preview/Imaginary.php#L60)
 # https://github.com/nextcloud/vm/pull/2464#discussion_r1155074227
 # This is handled by Imagniary itself
-nextcloud_occ config:system:set enabledPreviewProviders --value="OC\\Preview\\Imaginary"
+nextcloud_occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
 nextcloud_occ config:system:set preview_imaginary_url --value="http://127.0.0.1:9000"
 
 # Set general values
