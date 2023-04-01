@@ -36,81 +36,61 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    if yesno_box_no "Do you want to remove the Imaginary docker container and settings?"
+    if yesno_box_yes "Do you want to remove the Imaginary docker container and settings?"
     then
-        if docker-compose_down "$SCRIPTS"/imaginary-docker/docker-compose.yml
+        # Remove docker container
+        docker_prune_this 'nextcloud/aio-imaginary'
+        # reset the preview formats
+        nextcloud_occ config:system:delete "preview_imaginary_url"
+        nextcloud_occ config:system:delete "enabledPreviewProviders"
+        nextcloud_occ config:system:delete "preview_max_x"
+        nextcloud_occ config:system:delete "preview_max_y"
+        nextcloud_occ config:system:delete "jpeg_quality"
+        nextcloud_occ config:system:delete "preview_max_memory"
+        nextcloud_occ config:system:delete "enable_previews"
+        # Remove everything that is related to previewgenerator --> LEGACY
+        nextcloud_occ_no_check app:remove previewgenerator
+        # Reset the cronjob
+        crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
+        # Remove apps
+        APPS=(php-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
+        for app in "${APPS[@]}"
+        do
+            if is_this_installed "$app"
+            then
+                apt-get purge "$app" -y
+            fi
+        done
+        # Remove FFMPEG
+        if is_this_installed ffmpeg && ! is_app_installed integration_whiteboard
         then
-            countdown "Waiting for the Docker image to be destroyed" "5"
-            nextcloud_occ config:system:delete enabledPreviewProviders
-            nextcloud_occ config:system:delete preview_imaginary_url
-            rm -rf "$SCRIPTS"/imaginary-docker
-            docker system prune -a -f
+            apt-get purge ffmpeg -y
+            apt-get autoremove -y
         fi
-    fi
-    # Remove everything that's related to previewgenerator - it's now legacy
-    nextcloud_occ app:remove previewgenerator
-    # reset the preview formats
-    nextcloud_occ_no_check config:system:delete "enabledPreviewProviders"
-    nextcloud_occ config:system:delete preview_max_x
-    nextcloud_occ config:system:delete preview_max_y
-    nextcloud_occ config:system:delete jpeg_quality
-    nextcloud_occ config:system:delete preview_max_memory
-    nextcloud_occ config:system:delete enable_previews
-    # reset the cronjob
-    crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
-    # Remove apps
-    APPS=(php-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
-    for app in "${APPS[@]}"
-    do
-        if is_this_installed "$app"
-        then
-            apt-get purge "$app" -y
-        fi
-    done
-    if is_this_installed ffmpeg && ! is_app_installed integration_whiteboard
-    then
-        apt-get purge ffmpeg -y
-    fi
-    apt-get autoremove -y
-    if yesno_box_yes "Do you want to remove all previews that were generated until now?
+        # Remove previews
+        if yesno_box_yes "Do you want to remove all previews that were generated until now?
 This will most likely clear a lot of space! Also, pre-generated previews are not needed anymore once Imaginary are installed."
-    then
-        countdown "Removing the preview folder. This can take a while..." "5"
-        rm -rfv "$NCDATA"/appdata_*/preview
-        print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory after removing all previews. \
+        then
+            countdown "Removing the preview folder. This can take a while..." "5"
+            rm -rfv "$NCDATA"/appdata_*/preview
+            print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory after removing all previews. \
 This can take a while..."
-        nextcloud_occ files:scan-app-data -vvv
-        msg_box "All previews were successfully removed."
+            nextcloud_occ files:scan-app-data -vvv
+            msg_box "All previews were successfully removed."
+        fi
+        # Remove log
+        rm -f "$VMLOGS"/previewgenerator.log
+        # Show successful uninstall if applicable
+        removal_popup "$SCRIPT_NAME"
     fi
-    # Remove log
-    rm -f "$VMLOGS"/previewgenerator.log
-    # Show successful uninstall if applicable
-    removal_popup "$SCRIPT_NAME"
 fi
 
-# Generate docker-compose.yml
-mkdir -p "$SCRIPTS"/imaginary-docker
-if [ ! -f "$SCRIPTS/imaginary-docker/docker-compose.yml" ]
-then
-    touch "$SCRIPTS/imaginary-docker/docker-compose.yml"
-    cat << IMAGINARY_DOCKER_CREATE > "$SCRIPTS"/imaginary-docker/docker-compose.yml
-version: '3.1'
-services:
-  imaginary:
-    image: nextcloud/aio-imaginary:latest
-    container_name: imaginary
-    restart: always
-    environment:
-       PORT: 9000
-    command: -concurrency 50 -enable-url-source -log-level debug
-    ports:
-      -  127.0.0.1:9000:9000
-IMAGINARY_DOCKER_CREATE
-    print_text_in_color "$IGreen" "SCRIPTS/imaginary-docker/docker-compose.yml was successfully created."
-fi
+# Install Docker
+install_docker
 
-# Start the container
-docker compose -p imaginary -f "$SCRIPTS"/imaginary-docker/docker-compose.yml up -d
+# Pull and start
+docker pull nextcloud/aio-imaginary:latest
+docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary -concurrency 50 -enable-url-source -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"
