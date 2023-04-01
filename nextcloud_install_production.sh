@@ -564,7 +564,7 @@ nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
 print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
 download_script STATIC updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
-crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * 1-12 6 $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
+crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * 6 $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
