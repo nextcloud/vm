@@ -48,12 +48,27 @@ else
         nextcloud_occ config:system:delete "jpeg_quality"
         nextcloud_occ config:system:delete "preview_max_memory"
         nextcloud_occ config:system:delete "enable_previews"
-        # Remove everything that is related to previewgenerator --> LEGACY
-        nextcloud_occ_no_check app:remove previewgenerator
+        # Remove FFMPEG
+        if is_this_installed ffmpeg && ! is_app_installed integration_whiteboard
+        then
+            apt-get purge ffmpeg -y
+            apt-get autoremove -y
+        fi
+        # Show successful uninstall if applicable
+        removal_popup "$SCRIPT_NAME"
+    fi
+fi
+
+# Remove everything that is related to previewgenerator
+if is_app_enabled previewgenerator
+then
+    if yesno_box_yes "We noticed that you have Preview Generator enabled. Imagniary replaces this, and the old app Preview Generator is now legacy. We recomend you to remove it. Do you want to do that?"
+        # Remove the app
+        nextcloud_occ app:remove previewgenerator
         # Reset the cronjob
         crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
         # Remove apps
-        APPS=(php-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
+        APPS=(php-imagick php"$PHPVER"-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
         for app in "${APPS[@]}"
         do
             if is_this_installed "$app"
@@ -63,12 +78,6 @@ else
         done
         # Remove custom config
         rm -rf /etc/ImageMagick-6
-        # Remove FFMPEG
-        if is_this_installed ffmpeg && ! is_app_installed integration_whiteboard
-        then
-            apt-get purge ffmpeg -y
-            apt-get autoremove -y
-        fi
         # Remove previews
         if yesno_box_yes "Do you want to remove all previews that were generated until now?
 This will most likely clear a lot of space! Also, pre-generated previews are not needed anymore once Imaginary are installed."
@@ -82,11 +91,8 @@ This can take a while..."
         fi
         # Remove log
         rm -f "$VMLOGS"/previewgenerator.log
-        # Show successful uninstall if applicable
-        removal_popup "$SCRIPT_NAME"
     fi
 fi
-
 # Install Docker
 install_docker
 
@@ -105,9 +111,10 @@ else
     exit
 fi
 
-# Install dependencies for Imaginary
+# Install dependencies
 check_php
 install_if_not php"$PHPVER"-sysvsem
+install_if_not ffmpeg
 
 # Set default limits
 # https://github.com/nextcloud/server/pull/18210/files#diff-3bbe91e1f85eec5dbd0031642dfb0ad6749b550fc3b94af7aa68a98210b78738R1121
@@ -116,8 +123,21 @@ nextcloud_occ config:system:set preview_concurrency_new --value="4"
 
 # Set providers (https://github.com/nextcloud/server/blob/master/lib/private/Preview/Imaginary.php#L60)
 # https://github.com/nextcloud/vm/pull/2464#discussion_r1155074227
-# This is handled by Imagniary itself
-nextcloud_occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
+nextcloud_occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\BMP"
+nextcloud_occ config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\x-bitmap"
+nextcloud_occ config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\PNG"
+nextcloud_occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\JPEG"
+nextcloud_occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\GIF"
+nextcloud_occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\HEIC"
+nextcloud_occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\HEIF"
+nextcloud_occ config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\SVG"
+nextcloud_occ config:system:set enabledPreviewProviders 9 --value="OC\\Preview\\TIFF"
+nextcloud_occ config:system:set enabledPreviewProviders 10 --value="OC\\Preview\\WEBP"
+nextcloud_occ config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\XML"
+nextcloud_occ config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\PDF"
+nextcloud_occ config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\Ilustrator"
+nextcloud_occ config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\Movie"
+nextcloud_occ config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\Imaginary"
 nextcloud_occ config:system:set preview_imaginary_url --value="http://127.0.0.1:9000"
 
 # Set general values
@@ -125,7 +145,6 @@ nextcloud_occ config:system:set preview_max_x --value="2048"
 nextcloud_occ config:system:set preview_max_y --value="2048"
 nextcloud_occ config:system:set jpeg_quality --value="60"
 nextcloud_occ config:system:set preview_max_memory --value="256"
-nextcloud_occ config:app:set preview jpeg_quality --value="60"
 
 if docker logs imaginary
 then
