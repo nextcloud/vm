@@ -48,6 +48,8 @@ else
         nextcloud_occ config:system:delete "jpeg_quality"
         nextcloud_occ config:system:delete "preview_max_memory"
         nextcloud_occ config:system:delete "enable_previews"
+        nextcloud_occ config:system:delete "preview_concurrency_new"
+        nextcloud_occ config:system:delete "preview_concurrency_all"
         # Remove FFMPEG
         if is_this_installed ffmpeg && ! is_app_installed integration_whiteboard
         then
