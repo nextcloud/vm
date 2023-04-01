@@ -6,4 +6,4 @@ source /var/scripts/lib.sh
 
 ####### TEMPORARY 2023-04-01 ####### 
 
-run_script APPS imaginary
+run_script APP imaginary
