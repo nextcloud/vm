@@ -46,7 +46,6 @@ else
         nextcloud_occ config:system:delete preview_imaginary_url
         rm -rf "$SCRIPTS"/imaginary-docker
     fi
-    nextcloud_occ app:remove recognize
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
