@@ -84,7 +84,7 @@ This can take a while..."
     fi
     # Remove log
     rm -f "$VMLOGS"/previewgenerator.log
-    # Show successful uninstall if applicable
+    # Show successfull uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
 
@@ -146,7 +146,7 @@ nextcloud_occ config:app:set preview jpeg_quality --value="60"
 
 if docker logs imaginary
 then
-    msg_box "Imaginary was succesfully installed!"
+    msg_box "Imaginary was successfully installed!"
 else
     msg_box "It seems that something is wrong. Please post the full installation output to $ISSUES"
 fi
