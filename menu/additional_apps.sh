@@ -106,7 +106,7 @@ case "$choice" in
     ;;&
     *"Imaginary"*)
         print_text_in_color "$ICyan" "Downloading the Imaginary script..."
-        run_script APP previewgenerator
+        run_script APP imaginary
     ;;&
     *"Notify Push"*)
         print_text_in_color "$ICyan" "Downloading the Notify Push script..."
