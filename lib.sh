@@ -70,7 +70,7 @@ INTERNET_DNS="9.9.9.9"
 # Default Quad9 DNS servers, overwritten by the systemd global DNS defined servers, if set
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
-NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443 9000)
+NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443 9000 9980)
 use_global_systemd_dns() {
 if [ -f "/etc/systemd/resolved.conf" ]
 then
@@ -1654,7 +1654,7 @@ is_image_present() {
 }
 
 # Check if old docker exists
-# FULL NAME e.g. ark74/nc_fts or containrrr/watchtower or collabora/code
+# FULL NAME e.g. ark74/nc_fts or containrrr/watchtower or collabora/code or 'nextcloud/aio-imaginary'
 does_this_docker_exist() {
 is_docker_running && is_image_present "$1";
 }
@@ -1691,30 +1691,31 @@ print_text_in_color "$ICyan" "Checking if there are any old images and removing 
 DOCKERPS=$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')
 if [ "$DOCKERPS" != "" ]
 then
-    msg_box "Removing old Docker instance(s)... ($DOCKERPS)
-
-Please note that we will not remove $1 ($2).
-
-You will be given the option to abort when you hit OK."
-    any_key "Press any key to continue. Press CTRL+C to abort"
-    docker stop "$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')"
-    docker container prune -f
-    docker image prune -a -f
-    docker volume prune -f
+    if yesno_box_yes "Do you want to remove old Docker instance(s)... ($DOCKERPS)? Please note that we will not remove $1 ($2)."
+    then
+        docker stop "$(docker ps -a | grep -v "$1" | awk 'NR>1 {print $1}')"
+        docker container prune -f
+        docker image prune -a -f
+        docker volume prune -f
+    else
+        msg_box "OK, this script will now exit, but there's still leftovers to cleanup. You can run it again at any time."
+        exit
+    fi
 fi
 }
 
 # Remove selected Docker image
-# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts'
+# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'nextcloud/aio-imaginary'
 docker_prune_this() {
 if does_this_docker_exist "$1"
 then
-    msg_box "Removing old Docker image: $1
-You will be given the option to abort when you hit OK."
-    any_key "Press any key to continue. Press CTRL+C to abort"
+    if yesno_box_yes "Do you want to remove $1?"
     docker stop "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
     docker rm "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)" --volumes
     docker image prune -a -f
+else
+    msg_box "OK, this script will now exit, but there's still leftovers to cleanup. You can run it again at any time."
+    exit
 fi
 }
 
