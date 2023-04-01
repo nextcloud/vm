@@ -1710,12 +1710,14 @@ docker_prune_this() {
 if does_this_docker_exist "$1"
 then
     if yesno_box_yes "Do you want to remove $1?"
-    docker stop "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
-    docker rm "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)" --volumes
-    docker image prune -a -f
-else
-    msg_box "OK, this script will now exit, but there's still leftovers to cleanup. You can run it again at any time."
-    exit
+    then
+        docker stop "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
+        docker rm "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)" --volumes
+        docker image prune -a -f
+    else
+        msg_box "OK, this script will now exit, but there's still leftovers to cleanup. You can run it again at any time."
+        exit
+    fi
 fi
 }
 
