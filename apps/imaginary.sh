@@ -84,7 +84,7 @@ This can take a while..."
     fi
     # Remove log
     rm -f "$VMLOGS"/previewgenerator.log
-    # Show successfull uninstall if applicable
+    # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
 
