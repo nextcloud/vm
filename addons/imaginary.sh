@@ -23,13 +23,6 @@ root_check
 # Compatible with NC24 and above
 lowest_compatible_nc 24
 
-# Only applies if previewgenerator is installed
-if ! is_app_installed previewgenerator
-then
-    msg_box "Imaginary is only needed if your use the Preview Generator app, no need to run this script."
-    exit
-fi
-
 # Check if Imaginary is already installed
 if ! does_this_docker_exist nextcloud/aio-imaginary
 then
@@ -84,21 +77,6 @@ else
     exit
 fi
 
-# Install preview generator just in case
-install_and_enable_app previewgenerator
-
-# check if the previewgenerator is installed and enabled
-if is_app_enabled previewgenerator
-then
-    # enable previews
-    nextcloud_occ config:system:set enable_previews --value=true --type=boolean
-
-    # install needed dependency for movies
-    install_if_not ffmpeg
-else
-    exit
-fi
-
 # Set providers
 nextcloud_occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\JPEG"
 nextcloud_occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\PNG"
@@ -114,31 +92,46 @@ nextcloud_occ config:system:set enabledPreviewProviders 10 --value="OC\\Preview\
 nextcloud_occ config:system:set enabledPreviewProviders 11 --value="OC\\Preview\\OpenDocument"
 nextcloud_occ config:system:set enabledPreviewProviders 12 --value="OC\\Preview\\Krita"
 nextcloud_occ config:system:set enabledPreviewProviders 13 --value="OC\\Preview\\BMP"
-nextcloud_occ config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\Movie"
-nextcloud_occ config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\Imaginary"
+nextcloud_occ config:system:set enabledPreviewProviders 14 --value="OC\\Preview\\Imaginary"
 nextcloud_occ config:system:set preview_imaginary_url --value="http://127.0.0.1:9000"
 
-# Set values
-nextcloud_occ config:app:set previewgenerator squareSizes --value="32 256"
-nextcloud_occ config:app:set previewgenerator widthSizes  --value="256 384"
-nextcloud_occ config:app:set previewgenerator heightSizes --value="256"
+# Set general values
 nextcloud_occ config:system:set preview_max_x --value="2048"
 nextcloud_occ config:system:set preview_max_y --value="2048"
 nextcloud_occ config:system:set jpeg_quality --value="60"
 nextcloud_occ config:system:set preview_max_memory --value="128"
 nextcloud_occ config:app:set preview jpeg_quality --value="60"
 
-# Add logs
-touch "$VMLOGS"/previewgenerator.log
-chown www-data:www-data "$VMLOGS"/previewgenerator.log
+# Rebuild is only happening if previewgenerator is installed
+if is_app_installed previewgenerator
+then
+    # Enable previews (even if it's installed it might not be enabled)
+    install_and_enable_app previewgenerator
+    nextcloud_occ config:system:set enable_previews --value=true --type=boolean
+    
+    # Install needed dependency for movies 
+    # TODO: Should we remove this during uninstall?
+    install_if_not ffmpeg
+    nextcloud_occ config:system:set enabledPreviewProviders 15 --value="OC\\Preview\\Movie"
 
-# Rebuild
-print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory to rebuild all previews all previews. This will take a while..."
-nextcloud_occ files:scan-app-data -vvv
-nextcloud_occ preview:generate-all --verbose >> "$VMLOGS"/previewgenerator.log
+    # Set values
+    nextcloud_occ config:app:set previewgenerator squareSizes --value="32 256"
+    nextcloud_occ config:app:set previewgenerator widthSizes  --value="256 384"
+    nextcloud_occ config:app:set previewgenerator heightSizes --value="256"
 
-# Uninstall Preview Generator, not needed anymore (?)
-# nextcloud_occ app:remove previewgenerator
-# reset the cronjob
-# crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
-# rm -f "$VMLOGS"/previewgenerator.log
+    # Add logs
+    touch "$VMLOGS"/previewgenerator.log
+    chown www-data:www-data "$VMLOGS"/previewgenerator.log
+
+    # Rebuild
+    print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory to rebuild all previews all previews. This will take a while..."
+    nextcloud_occ files:scan-app-data -vvv
+    nextcloud_occ preview:generate-all --verbose >> "$VMLOGS"/previewgenerator.log
+    tail -f "$VMLOGS"/previewgenerator.log
+
+    # Uninstall Preview Generator, not needed anymore
+    # TODO, is this needed for future previews or not?
+    nextcloud_occ app:remove previewgenerator
+    crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
+    # rm -f "$VMLOGS"/previewgenerator.log
+fi
