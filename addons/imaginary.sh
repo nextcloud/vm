@@ -69,7 +69,6 @@ services:
     ports:
       -  127.0.0.1:9000:9000
 IMAGINARY_DOCKER_CREATE
-
     print_text_in_color "$IGreen" "SCRIPTS/imaginary-docker/docker-compose.yml was successfully created."
 fi
 
@@ -77,6 +76,7 @@ fi
 docker compose -p imaginary -f "$SCRIPTS"/imaginary-docker/docker-compose.yml up -d
 
 # Test if imaginary is working
+countdown "Testing if it works in 3 sedonds" "3"
 if curl -O "http://127.0.0.1:9000/crop?width=500&height=400&url=https://raw.githubusercontent.com/h2non/imaginary/master/testdata/large.jpg"
 then
     print_text_in_color "$IGreen" "imaginary seems to be working OK!"
