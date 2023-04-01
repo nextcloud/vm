@@ -20,8 +20,8 @@ debug_mode
 # Check if root
 root_check
 
-# Compatible with NC26 and above
-lowest_compatible_nc 26
+# Compatible with NC24 and above
+lowest_compatible_nc 24
 
 # Only applies if previewgenerator is installed
 if ! is_app_installed previewgenerator
