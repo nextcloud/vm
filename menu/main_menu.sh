@@ -57,12 +57,15 @@ do_the_update() {
             msg_box "Since you have automated updates enabled with the reboot option set, we won't run update script a second time to the latest version automatically.
 To upgrade to the latest version, please run: 'sudo bash $SCRIPTS/update.sh' from your CLI."
         else
-            if yesno_box_yes "We will now run the update script a second time to update to the latest major version ($NCVERSION). Do you want to continue?"
+            if version_gt "$NCVERSION" "$CURRENTVERSION"
             then
-                # Check if it's an unsupported major version (will exit if it is)
-                major_versions_unsupported
-                # Do the upgrade if it's not
-                bash "$SCRIPTS"/update.sh
+                if yesno_box_yes "We will now run the update script a second time to update to the latest major version ($NCVERSION). Do you want to continue?"
+                then
+                    # Check if it's an unsupported major version (will exit if it is)
+                    major_versions_unsupported
+                    # Do the upgrade if it's not
+                    bash "$SCRIPTS"/update.sh
+                fi
             fi
         fi
     fi
