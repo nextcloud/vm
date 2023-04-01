@@ -17,6 +17,51 @@ debug_mode
 # Check if root
 root_check
 
+# Encryption may not be enabled
+if is_app_enabled encryption || is_app_enabled end_to_end_encryption
+then
+    msg_box "It seems like you have encryption enabled which is unsupported by the $SCRIPT_NAME app!"
+    exit 1
+fi
+
+# Compatible with NC26 and above
+lowest_compatible_nc 26
+
+# Check if suspicious_login are installed
+# https://github.com/nextcloud/recognize/issues/676
+if is_app_enabled suspicious_login
+then
+    msg_box "Since you have the app Suspicious Login Detection installed, you can't install Recognize. The reason is that it will cause issues with cron.php.\nIf you choose 'No' the installer will exit"
+    if yesno_box_no "Do you want to disable Suspicious Login to be able to install Recognize?"
+    then
+        nextcloud_occ app:disable suspicious_login
+        if ! [ -f /etc/fail2ban/filter.d/nextcloud.conf ] || ! is_this_installed fail2ban
+        then
+            if yesno_box_yes "Do you want to install Fail2ban (IP blocking in Linux) instead?"
+            then
+                run_script APP fail2ban
+            fi
+        fi
+    else
+        exit
+    fi
+fi
+
+# Check if face-recognition is installed and ask to remove it
+if is_app_installed facerecognition
+then
+    msg_box "It seems like Face Recognition is installed. This app doesn't work with both installed at the same time. Please uninstall Face Recognition and try again:
+
+1. Hit OK here.
+2. Choose 'Uninstall'
+3. Run sudo bash $SCRIPTS/menu.sh --> Additional Apps --> Recognize
+4. Install
+
+We will run the uninstaller for you now, then exit."
+    wget https://raw.githubusercontent.com/nextcloud/vm/master/old/face-recognition.sh && bash face-recognition.sh && rm -f face-recognition.sh
+    exit
+fi
+
 # Check if recognize is already installed
 if ! is_app_installed recognize
 then
@@ -29,11 +74,11 @@ else
     if yesno_box_no "Do you want to remove all facerecognitions and tags that were generated until now?"
     then
         print_text_in_color "$ICyan" "This will take some time..."
-        nextcloud_occ recognize:remove-legacy-tags
-        nextcloud_occ recognize:cleanup-tags
-        nextcloud_occ recognize:reset-face-clusters
-        nextcloud_occ recognize:reset-faces
-        nextcloud_occ recognize:reset-tags
+        nextcloud_occ_no_check recognize:remove-legacy-tags
+        nextcloud_occ_no_check recognize:cleanup-tags
+        nextcloud_occ_no_check recognize:reset-face-clusters
+        nextcloud_occ_no_check recognize:reset-faces
+        nextcloud_occ_no_check recognize:reset-tags
     fi
     nextcloud_occ app:remove recognize
     # Show successful uninstall if applicable
@@ -44,17 +89,6 @@ fi
 # Enough recouces?
 ram_check 8
 cpu_check 4
-
-# Check if suspicios_login are installed
-# https://github.com/nextcloud/recognize/issues/676
-if is_app_installed suspicios_login
-then
-    msg_box "Since you have the app Suspicios Login installed, you can't install Recognize since it will cause issues with cron.php."
-    if yesno_box_no "Do you want to remove Suspicios Login to be able to install Recognize?"
-       then
-            nextcloud_occ app:remove suspicios_login
-   fi
-fi
 
 install_and_enable_app recognize
 nextcloud_occ recognize:download-models

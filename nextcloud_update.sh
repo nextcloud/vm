@@ -625,6 +625,8 @@ If you need help, please get support here: https://shop.hanssonit.se/product/pre
     docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
+    # Imaginary
+    docker_update_specific 'imaginary' "Imaginary"
 fi
 
 # Fix Collabora change too coolwsd
