@@ -84,10 +84,10 @@ then
 This will most likely clear a lot of space! Also, pre-generated previews are not needed anymore once Imaginary are installed."
         then
             countdown "Removing the preview folder. This can take a while..." "5"
-            rm -rfv "$NCDATA"/appdata_*/preview
+            rm -rfv "$NCDATA"/appdata_*/preview/*
             print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory after removing all previews. \
 This can take a while..."
-            nextcloud_occ files:scan-app-data -vvv
+            nextcloud_occ files:scan-app-data preview -vvv
             msg_box "All previews were successfully removed."
         fi
         # Remove log
