@@ -286,6 +286,7 @@ It will also do the following:
 - Set correct Rewriterules for Nextcloud
 - Copy content from .htaccess to .user.ini (because we use php-fpm)
 - Add additional options if you choose them
+- Set correct CPU cores for Imaginary
 - And more..."
 
 msg_box "PLEASE NOTE:
@@ -478,6 +479,16 @@ else
 
     # Run again if values are reset on last run
     calculate_php_fpm
+fi
+
+# Set correct amount of CPUs for Imaginary
+if which nproc >/dev/null 2>&1
+then
+    nextcloud_occ config:system:set preview_concurrency_new --value="$(nproc)"
+    nextcloud_occ config:system:set preview_concurrency_all --value="$(($(nproc)*2))"
+else
+    nextcloud_occ config:system:set preview_concurrency_new --value="2"
+    nextcloud_occ config:system:set preview_concurrency_all --value="4"
 fi
 
 # Add temporary fix if needed
