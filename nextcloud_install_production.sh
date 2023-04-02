@@ -920,6 +920,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Deck" "" ON \
 "Collectives" "" ON \
 "Suspicios Login detetion" "" ON \
+"Imaginary" "" ON \
 "IssueTemplate" "" OFF \
 "Group-Folders" "" OFF 3>&1 1>&2 2>&3)
 fi
@@ -963,6 +964,9 @@ case "$choice" in
     ;;&
     *"Suspicios Login detetion"*)
         install_and_enable_app suspicios_login
+    ;;&
+    *"Imaginary"*)
+        run_script APP imaginary
     ;;&
     *"Group-Folders"*)
         install_and_enable_app groupfolders
