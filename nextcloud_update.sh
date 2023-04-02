@@ -260,7 +260,7 @@ if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
 Holding PHP to avoid upgrading to a newer version without migration..."
-    apt-mark hold php*
+    apt-mark hold php* >/dev/null 2>&1
 fi
 
 # Don't allow MySQL/MariaDB
