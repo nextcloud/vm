@@ -51,18 +51,18 @@ if [ "$NCVERSION" == "$NCMIN" ] && version_gt "$NCMIN" "$REPORTEDMIN" && version
 then
     sed -i "s|^REPORTEDMAJ.*|REPORTEDMAJ=$NCVERSION|" $SCRIPTS/updatenotification.sh
     sed -i "s|^REPORTEDMIN.*|REPORTEDMIN=$NCMIN|" $SCRIPTS/updatenotification.sh
-    if crontab -l -u root | grep -q $SCRIPTS/update.sh
+    if crontab -l -u root | grep -q $SCRIPTS/menu.sh
     then
         notify_admin_gui \
         "New minor Nextcloud Update!" \
         "Nextcloud $NCMIN just became available. Since you are running Automatic \
-Updates on Saturdays at $AUT_UPDATES_TIME:00, you don't need to bother about updating \
+Updates every month on Saturdays at $AUT_UPDATES_TIME:00, you don't need to bother about updating \
 the server to minor Nextcloud versions manually, as that's already taken care of."
     else
         notify_admin_gui \
         "New minor Nextcloud Update!" \
         "Nextcloud $NCMIN just became available. Please run 'sudo bash \
-/var/scripts/update.sh minor' from your CLI to update your server to Nextcloud $NCMIN."
+/var/scripts/menu.sh' --> Update Nextcloud from your CLI to update your server to Nextcloud $NCMIN."
     fi
     exit
 fi
@@ -70,7 +70,7 @@ fi
 if version_gt "$NCMIN" "$REPORTEDMIN" && version_gt "$NCMIN" "$CURRENTVERSION"
 then
     sed -i "s|^REPORTEDMIN.*|REPORTEDMIN=$NCMIN|" $SCRIPTS/updatenotification.sh
-    if crontab -l -u root | grep -q $SCRIPTS/update.sh
+    if crontab -l -u root | grep -q $SCRIPTS/menu.sh
     then
         notify_admin_gui \
         "New minor Nextcloud Update!" \
@@ -81,7 +81,7 @@ the server to minor Nextcloud versions manually, as that's already taken care of
         notify_admin_gui \
         "New minor Nextcloud Update!" \
         "Nextcloud $NCMIN just became available. Please run 'sudo bash \
-/var/scripts/update.sh minor' from your CLI to update your server to Nextcloud $NCMIN."
+/var/scripts/menu.sh' --> Update Nextcloud from your CLI to update your server to Nextcloud $NCMIN."
     fi
 fi
 
@@ -91,7 +91,7 @@ then
     notify_admin_gui \
     "New major Nextcloud Update!" \
     "Nextcloud $NCVERSION just became available. Please run 'sudo bash \
-/var/scripts/update.sh' from your CLI to update your server to Nextcloud $NCVERSION. \
+/var/scripts/menu.sh' --> Update Nextcloud from your CLI to update your server to Nextcloud $NCVERSION. \
 Before updating though, you should visit https://your-nc-domain/settings/admin/overview \
 and make sure that all apps are compatible with the new version. And please never forget to \
 create a backup and/or snapshot before updating!"

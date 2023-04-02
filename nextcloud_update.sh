@@ -32,6 +32,16 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
+# Automatically restart services (Ubuntu 22.04)
+if ! version 16.04.10 "$DISTRO" 20.04.10
+then
+    if ! grep -r "{restart} = 'a'" /etc/needrestart/needrestart.conf
+    then
+        # Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
+        sed -i "s|#\$nrconf{restart} = .*|\$nrconf{restart} = 'a';|g" /etc/needrestart/needrestart.conf
+    fi
+fi
+
 # Check for pending-snapshot
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
@@ -250,7 +260,7 @@ if apt-cache policy | grep "ondrej" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Ondrejs PPA is installed. \
 Holding PHP to avoid upgrading to a newer version without migration..."
-    apt-mark hold php*
+    apt-mark hold php* >/dev/null 2>&1
 fi
 
 # Don't allow MySQL/MariaDB
@@ -601,14 +611,22 @@ $DOCKER_RUN_OUTPUT"
     ## Don't upgrade to community if EE is installed
     if ! does_this_docker_exist onlyoffice-ee
     then
-        print_text_in_color "$IRed" "Skipping OnlyOffice due to issues with Websockets: https://forum.onlyoffice.com/t/onlyoffice-7-3-websocket-path-changed/3767/5"
-        #docker_update_specific 'onlyoffice' 'OnlyOffice'
+        if does_this_docker_exist 'onlyoffice/documentserver'
+        then
+            docker_update_specific 'onlyoffice' 'OnlyOffice'
+            msg_box "OnlyOffice updated the way websockets work, and you need to update your configuration.\n
+Please update your Apache2 config to this: https://github.com/nextcloud/vm/blob/master/apps/onlyoffice_docker.sh#L210-L215.
+Another option is to reinstall OnlyOffice with the menu script; sudo bash /var/scripts/menu.sh\n
+If you need help, please get support here: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
+        fi
     fi
     # Full Text Search
     docker_update_specific 'fts_esror' 'Full Text Search'
     docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
+    # Imaginary
+    docker_update_specific 'imaginary' "Imaginary"
 fi
 
 # Fix Collabora change too coolwsd
@@ -776,6 +794,8 @@ if [ -f "$SCRIPTS"/updatenotification.sh ]
 then
     download_script STATIC updatenotification
     chmod +x "$SCRIPTS"/updatenotification.sh
+    crontab -u root -l | grep -v "$SCRIPTS/updatenotification.sh" | crontab -u root -
+    crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 fi
 
 ############# Don't upgrade to specific version

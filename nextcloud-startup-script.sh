@@ -286,6 +286,7 @@ It will also do the following:
 - Set correct Rewriterules for Nextcloud
 - Copy content from .htaccess to .user.ini (because we use php-fpm)
 - Add additional options if you choose them
+- Set correct CPU cores for Imaginary
 - And more..."
 
 msg_box "PLEASE NOTE:
@@ -480,6 +481,16 @@ else
     calculate_php_fpm
 fi
 
+# Set correct amount of CPUs for Imaginary
+if which nproc >/dev/null 2>&1
+then
+    nextcloud_occ config:system:set preview_concurrency_new --value="$(nproc)"
+    nextcloud_occ config:system:set preview_concurrency_all --value="$(($(nproc)*2))"
+else
+    nextcloud_occ config:system:set preview_concurrency_new --value="2"
+    nextcloud_occ config:system:set preview_concurrency_all --value="4"
+fi
+
 # Add temporary fix if needed
 if network_ok
 then
@@ -548,6 +559,13 @@ run_script NETWORK trusted
 # Upgrade system
 print_text_in_color "$ICyan" "System will now upgrade..."
 bash $SCRIPTS/update.sh minor
+
+# Check if new major is out, and inform on how to update
+if version_gt "$NCVERSION" "$CURRENTVERSION"
+then
+    msg_box "We noticed that there's a new major release of Nextcloud ($NCVERSION).\nIf you want to update to the latest release instantly, please check this:\n
+https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration?currentPageId=W7D3quPiqQz3_MsE"
+fi
 
 # Cleanup 2
 apt-get autoremove -y

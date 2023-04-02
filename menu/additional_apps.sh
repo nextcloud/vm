@@ -42,12 +42,13 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitwarden" "(External password manager)" OFF \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
 "Recognize" "(Use [local] AI on your photos in Nextcloud)" OFF \
-"PreviewGenerator" "(Pre-generate previews for Nextcloud)" OFF \
+"Imaginary" "(Generate image previews for Nextcloud) [4GB RAM + 4 CPU]" "OFF" \
 "Webmin" "(Server GUI like Cpanel)" OFF \
+"Talk" "(Video calls and chat for Nextcloud - requires port 3478)" "$STARTUP_SWITCH" \
+"SMB-mount" "(Mount SMB-shares from your local network)" OFF \
 "Adminer" "(PostgreSQL GUI)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
-"Talk" "(Video calls and chat for Nextcloud)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
 "FullTextSearch" "(Search for text inside documents [4GB RAM])" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
@@ -56,7 +57,6 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Pico CMS" "(Lightweight CMS integration in Nextcloud)" OFF \
 "Whiteboard" "(Whiteboard for Nextcloud)" OFF \
 "Extract" "(Archive extraction for Nextcloud)" OFF \
-"SMB-mount" "(Mount SMB-shares from your local network)" OFF \
 "PDF Annotations" "(Annotate PDF files in Nextcloud)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
@@ -104,9 +104,9 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Pico CMS script..."
         run_script APP pico_cms
     ;;&
-    *"PreviewGenerator"*)
-        print_text_in_color "$ICyan" "Downloading the PreviewGenerator script..."
-        run_script APP previewgenerator
+    *"Imaginary"*)
+        print_text_in_color "$ICyan" "Downloading the Imaginary script..."
+        run_script APP imaginary
     ;;&
     *"Notify Push"*)
         print_text_in_color "$ICyan" "Downloading the Notify Push script..."
