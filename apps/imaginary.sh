@@ -120,10 +120,16 @@ check_php
 install_if_not php"$PHPVER"-sysvsem
 install_if_not ffmpeg
 
-# Set default limits
+# Calculate CPU cores
 # https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/config_sample_php_parameters.html#previews
-nextcloud_occ config:system:set preview_concurrency_all --value="4"
-nextcloud_occ config:system:set preview_concurrency_new --value="2"
+if which nproc >/dev/null 2>&1
+then
+    nextcloud_occ config:system:set preview_concurrency_new --value="$(nproc)"
+    nextcloud_occ config:system:set preview_concurrency_all --value="$(expr $(nproc) '*' 2)"
+else
+    nextcloud_occ config:system:set preview_concurrency_new --value="2"
+    nextcloud_occ config:system:set preview_concurrency_all --value="4"
+fi
 
 # Set providers (https://github.com/nextcloud/server/blob/master/lib/private/Preview/Imaginary.php#L60)
 # https://github.com/nextcloud/vm/issues/2465
