@@ -42,7 +42,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Bitwarden" "(External password manager)" OFF \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
 "Recognize" "(Use [local] AI on your photos in Nextcloud)" OFF \
-"Imaginary" "(Generate image previews for Nextcloud) [4GB RAM + 4 CPU]" "$STARTUP_SWITCH" \
+"Imaginary" "(Generate image previews for Nextcloud) [4GB RAM + 4 CPU]" "OFF" \
 "Webmin" "(Server GUI like Cpanel)" OFF \
 "Talk" "(Video calls and chat for Nextcloud - requires port 3478)" "$STARTUP_SWITCH" \
 "SMB-mount" "(Mount SMB-shares from your local network)" OFF \
