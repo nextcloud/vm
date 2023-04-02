@@ -36,7 +36,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    if yesno_box_yes "Do you want to remove the Imaginary docker container and settings?"
+    if yesno_box_yes "Do you want to remove the Imaginary and all it's settings?"
     then
         # Remove docker container
         docker_prune_this 'nextcloud/aio-imaginary'
