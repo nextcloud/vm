@@ -965,7 +965,7 @@ case "$choice" in
     *"Suspicios Login detetion"*)
         install_and_enable_app suspicios_login
     ;;&
-    *"Suspicios Login detetion"*)
+    *"Imaginary"*)
         run_script APP imaginary
     ;;&
     *"Group-Folders"*)
