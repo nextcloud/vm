@@ -22,7 +22,7 @@ root_check
 
 # Check recources
 ram_check 4
-cpu_check 4
+cpu_check 2
 
 # Compatible with NC24 and above
 lowest_compatible_nc 26
@@ -121,12 +121,12 @@ install_if_not php"$PHPVER"-sysvsem
 install_if_not ffmpeg
 
 # Set default limits
-# https://github.com/nextcloud/server/pull/18210/files#diff-3bbe91e1f85eec5dbd0031642dfb0ad6749b550fc3b94af7aa68a98210b78738R1121
-nextcloud_occ config:system:set preview_concurrency_all --value="8"
-nextcloud_occ config:system:set preview_concurrency_new --value="4"
+# https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/config_sample_php_parameters.html#previews
+nextcloud_occ config:system:set preview_concurrency_all --value="4"
+nextcloud_occ config:system:set preview_concurrency_new --value="2"
 
 # Set providers (https://github.com/nextcloud/server/blob/master/lib/private/Preview/Imaginary.php#L60)
-# https://github.com/nextcloud/vm/pull/2464#discussion_r1155074227
+# https://github.com/nextcloud/vm/issues/2465
 nextcloud_occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
 nextcloud_occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\Image"
 nextcloud_occ config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\MarkDown"
