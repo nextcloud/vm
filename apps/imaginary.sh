@@ -64,19 +64,20 @@ fi
 # Remove everything that is related to previewgenerator
 if is_app_enabled previewgenerator
 then
-    if yesno_box_yes "We noticed that you have Preview Generator enabled. Imagniary replaces this, and the old app Preview Generator is now legacy. We recommend you to remove it. Do you want to do that?"
+    if yesno_box_yes "We noticed that you have Preview Generator enabled. Imagniary replaces this, and the old app Preview Generator is now legacy.\nWe recommend you to remove it. Do you want to do that?"
     then
         # Remove the app
         nextcloud_occ app:remove previewgenerator
         # Reset the cronjob
         crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
-        # Remove apps
-        APPS=(php-imagick php"$PHPVER"-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
-        for app in "${APPS[@]}"
+        # Remove dependecies
+        DEPENDENCY=(php-imagick php"$PHPVER"-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
+        for installeddependency in "${DEPENDENCY[@]}"
         do
-            if is_this_installed "$app"
+            if is_this_installed "$installeddependency"
             then
-                apt-get purge "$app" -y
+                # --allow-change-held-packages in case running on Ondrejs PPA and it's held
+                apt-get purge "$installeddependency" -y --allow-change-held-packages
             fi
         done
         # Remove custom config
