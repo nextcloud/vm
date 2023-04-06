@@ -11,8 +11,7 @@ It can speedup the loading of previews in Nextcloud a lot."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-IMAGINARY_USER=imaginary_usr
-IMAGINARY_HOME=/home/"$IMAGINARY_USER"
+IMAGINARY_USER=imaginary_docker_user
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -63,7 +62,6 @@ else
         if id "$IMAGINARY_USER" >/dev/null 2>&1
         then
             userdel "$IMAGINARY_USER"
-            rm -rf "${IMAGINARY_HOME:?}/"
         fi
         # Show successful uninstall if applicable
         removal_popup "$SCRIPT_NAME"
@@ -113,20 +111,15 @@ install_docker
 if ! id "$IMAGINARY_USER" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Specifying a certain user for Imaginary: $IMAGINARY_USER..."
-    useradd -s /bin/bash -d "$IMAGINARY_HOME" -m -G docker "$IMAGINARY_USER"
-else
-    userdel "$IMAGINARY_USER"
-    rm -rf "${IMAGINARY_HOME:?}/"
-    print_text_in_color "$ICyan" "Specifying a certain user for Imaginary: $IMAGINARY_USER..."
-    useradd -s /bin/bash -d "$IMAGINARY_HOME/" -m -G docker "$IMAGINARY_USER"
+    useradd -s /sbin/nologin -m -G docker "$IMAGINARY_USER"
 fi
 
-# Wait for home to be created
+# Wait for the user to be created
 while :
 do
-    if ! ls "$IMAGINARY_HOME" >/dev/null 2>&1
+    if ! id "$IMAGINARY_USER" >/dev/null 2>&1
     then
-        print_text_in_color "$ICyan" "Waiting for $IMAGINARY_HOME to be created"
+        print_text_in_color "$ICyan" "Waiting for $IMAGINARY_USER to be created"
         sleep 1
     else
        break
