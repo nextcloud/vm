@@ -785,6 +785,7 @@ Additional Apps --> $1."
 restart_webserver() {
 # https://github.com/nextcloud/vm/issues/2358
 sleep 2
+print_text_in_color "$ICyan" "Restarting Apache2 and PHP-FPM..."
 check_command systemctl restart apache2.service
 check_php
 if is_this_installed php"$PHPVER"-fpm
