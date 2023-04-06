@@ -100,7 +100,7 @@ fi
 # Install Docker
 install_docker
 
-# Create bitwarden user
+# Create imaginary user
 if ! id "$IMAGINARY_USER" >/dev/null 2>&1
 then
     print_text_in_color "$ICyan" "Specifying a certain user for Imaginary: $IMAGINARY_USER..."
