@@ -11,6 +11,9 @@ It can speedup the loading of previews in Nextcloud a lot."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
+IMAGINARY_USER=imaginary_usr
+IMAGINARY_HOME=/home/"$IMAGINARY_USER"
+
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -55,6 +58,12 @@ else
         then
             apt-get purge ffmpeg -y
             apt-get autoremove -y
+        fi
+        # Remove user
+        if id "$IMAGINARY_USER" >/dev/null 2>&1
+        then
+            userdel "$IMAGINARY_USER"
+            rm -rf "${IMAGINARY_HOME:?}/"
         fi
         # Show successful uninstall if applicable
         removal_popup "$SCRIPT_NAME"
@@ -124,9 +133,13 @@ do
     fi
 done
 
+# Check ID for IMAGINARY_USER
+UID_IMAGINARY_USER="$(id -u $IMAGINARY_USER)"
+
 # Pull and start
 sudo -u "$IMAGINARY_USER" docker pull nextcloud/aio-imaginary:latest
-sudo -u "$IMAGINARY_USER" docker run --user "$IMAGINARY_USER" -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary -concurrency 50 -enable-url-source -log-level debug
+sudo -u "$IMAGINARY_USER" docker run --user "$UID_IMAGINARY_USER" -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary -concurrency 50 -enable-url-source -log-level debug
+unset UID_IMAGINARY_USER
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"
