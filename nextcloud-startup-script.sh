@@ -369,7 +369,7 @@ else
     then
         msg_box "The new password for the current CLI user in Ubuntu ($UNIXUSER) is now set to: $UNIX_PASSWORD
 
-    This is used when you login to the Ubuntu CLI."
+This is used when you login to the Ubuntu CLI."
     fi
 fi
 unset UNIX_PASSWORD
