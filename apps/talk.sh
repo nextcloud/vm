@@ -4,8 +4,8 @@
 
 true
 SCRIPT_NAME="Nextcloud Talk"
-SCRIPT_EXPLAINER="This script installs Nextcloud Talk and also offers the possibility \
-to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
+SCRIPT_EXPLAINER="This script installs Nextcloud Talk whcih is a replacement for Teams/Skype and similar.\
+You will also be offered the possibility to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
 It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
