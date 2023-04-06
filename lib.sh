@@ -761,13 +761,24 @@ fi
 check_nextcloud_https() {
     if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
     then
-        msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
+        if [ "$1" == 'Collabora (Docker)' ] || [ "$1" == 'OnlyOffice (Docker)' ]
+        then
+            msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
 You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
 More info here: https://bit.ly/37wRCin
 
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
 Additional Apps --> Documentserver --> $1."
-        exit
+            exit
+        else
+            msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
+You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
+More info here: https://bit.ly/37wRCin
+
+To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
+Additional Apps --> $1."
+            exit
+        fi
     fi
 }
 
