@@ -100,9 +100,33 @@ fi
 # Install Docker
 install_docker
 
+# Create bitwarden user
+if ! id "$IMAGINARY_USER" >/dev/null 2>&1
+then
+    print_text_in_color "$ICyan" "Specifying a certain user for Imaginary: $IMAGINARY_USER..."
+    useradd -s /bin/bash -d "$IMAGINARY_HOME" -m -G docker "$IMAGINARY_USER"
+else
+    userdel "$IMAGINARY_USER"
+    rm -rf "${IMAGINARY_HOME:?}/"
+    print_text_in_color "$ICyan" "Specifying a certain user for Imaginary: $IMAGINARY_USER..."
+    useradd -s /bin/bash -d "$IMAGINARY_HOME/" -m -G docker "$IMAGINARY_USER"
+fi
+
+# Wait for home to be created
+while :
+do
+    if ! ls "$IMAGINARY_HOME" >/dev/null 2>&1
+    then
+        print_text_in_color "$ICyan" "Waiting for $IMAGINARY_HOME to be created"
+        sleep 1
+    else
+       break
+    fi
+done
+
 # Pull and start
-docker pull nextcloud/aio-imaginary:latest
-docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary -concurrency 50 -enable-url-source -log-level debug
+sudo -u "$IMAGINARY_USER" docker pull nextcloud/aio-imaginary:latest
+sudo -u "$IMAGINARY_USER" docker run --user "$IMAGINARY_USER" -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary -concurrency 50 -enable-url-source -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"
