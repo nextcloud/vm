@@ -906,15 +906,34 @@ fi
 if is_this_installed postgresql-common
 then
     cd /tmp
-    if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCDB'" | grep "1 row" > /dev/null
+    # Test connection to PostgreSQL
+    if ! sudo -u postgres psql -c "\q"
     then
-        print_text_in_color "$ICyan" "Doing pgdump of $NCDB..."
-        check_command sudo -u postgres pg_dump -Fc "$NCDB"  > "$BACKUP"/nextclouddb.dump
-        # Import:
-        # sudo -u postgres pg_restore --verbose --clean --no-acl --no-owner -h localhost -U ncadmin -d nextcloud_db "$BACKUP"/nextclouddb.dump
+        # If it fails, trust the 'postgres' user to be able to perform backup
+        sed -i "s|local   all             postgres                                .*|local   all             postgres                                trust|g" /etc/postgresql/*/main/pg_hba.conf
+        systemctl restart postgresql.service
+        if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCDB'" | grep "1 row" > /dev/null
+        then
+            print_text_in_color "$ICyan" "Doing pgdump of $NCDB..."
+            check_command sudo -u postgres pg_dump -Fc "$NCDB"  > "$BACKUP"/nextclouddb.dump
+            # Import:
+            # sudo -u postgres pg_restore --verbose --clean --no-acl --no-owner -h localhost -U ncadmin -d nextcloud_db "$BACKUP"/nextclouddb.dump
+        else
+            print_text_in_color "$ICyan" "Doing pgdump of all databases..."
+            check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.dump
+        fi
     else
-        print_text_in_color "$ICyan" "Doing pgdump of all databases..."
-        check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.dump
+        # If there's no issues, then continue as normal
+        if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCDB'" | grep "1 row" > /dev/null
+        then
+            print_text_in_color "$ICyan" "Doing pgdump of $NCDB..."
+            check_command sudo -u postgres pg_dump -Fc "$NCDB"  > "$BACKUP"/nextclouddb.dump
+            # Import:
+            # sudo -u postgres pg_restore --verbose --clean --no-acl --no-owner -h localhost -U ncadmin -d nextcloud_db "$BACKUP"/nextclouddb.dump
+        else
+            print_text_in_color "$ICyan" "Doing pgdump of all databases..."
+            check_command sudo -u postgres pg_dumpall > "$BACKUP"/alldatabases.dump
+        fi
     fi
 fi
 
