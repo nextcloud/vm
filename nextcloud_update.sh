@@ -910,6 +910,7 @@ then
     if ! sudo -u postgres psql -c "\q"
     then
         # If it fails, trust the 'postgres' user to be able to perform backup
+        rsync -a /etc/postgresql/*/main/pg_hba.conf "$BACKUP"/pg_hba.conf_BACKUP
         sed -i "s|local   all             postgres                                .*|local   all             postgres                                trust|g" /etc/postgresql/*/main/pg_hba.conf
         systemctl restart postgresql.service
         if sudo -u postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCDB'" | grep "1 row" > /dev/null
