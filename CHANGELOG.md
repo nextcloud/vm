@@ -10,6 +10,12 @@ PR's are more than welcome. Happy Nextclouding!
 ### Different versions
 If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M Hansson IT's shop](https://shop.hanssonit.se/product-category/virtual-machine/nextcloud/). 
 
+## 26.0.0
+
+### Full changelog:
+- [VM](https://github.com/nextcloud/vm/releases/tag/26.0.0)
+- [Nextcloud](https://nextcloud.com/changelog/#latest26)
+
 ## 25.0.2
 
 ### Small changelog:
