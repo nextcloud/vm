@@ -62,13 +62,13 @@ else
 fi
 
 # Remove everything that is related to previewgenerator
-if is_app_enabled previewgenerator
+if crontab -u www-data -l | grep -q "preview:pre-generate"
 then
     if yesno_box_yes "We noticed that you have Preview Generator enabled. Imagniary replaces this, and the old app Preview Generator is now legacy.\nWe recommend you to remove it. Do you want to do that?"
     then
         # Remove the app
         nextcloud_occ app:remove previewgenerator
-        # Reset the cronjob
+        # Remove the cronjob
         crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
         # Remove dependecies
         DEPENDENCY=(php-imagick php"$PHPVER"-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
