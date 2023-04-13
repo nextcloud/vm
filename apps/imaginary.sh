@@ -67,7 +67,7 @@ then
     if yesno_box_yes "We noticed that you have Preview Generator enabled. Imagniary replaces this, and the old app Preview Generator is now legacy.\nWe recommend you to remove it. Do you want to do that?"
     then
         # Remove the app
-        nextcloud_occ app:remove previewgenerator
+        nextcloud_occ_no_check app:remove previewgenerator
         # Remove the cronjob
         crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
         # Remove dependecies
