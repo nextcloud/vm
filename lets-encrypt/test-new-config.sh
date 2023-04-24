@@ -35,7 +35,9 @@ then
 fi
 
 # Set trusted domains
-run_script NETWORK trusted
+nextcloud occ config:system:set trusted_domains 3 --value="${ADDRESS[@]}" "$(hostname)" "$(hostname --fqdn)"
+nextcloud occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
+nextcloud_occ maintenance:update:htaccess
 
 # Add crontab
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"
