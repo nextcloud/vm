@@ -554,7 +554,7 @@ mesg n
 ROOTNEWPROFILE
 
 # Set trusted domain in config.php
-nnextcloud occ config:system:set trusted_domains 0 --value="localhost"
+nextcloud occ config:system:set trusted_domains 0 --value="localhost"
 nextcloud occ config:system:set trusted_domains 1 --value="${ADDRESS[@]}"
 nextcloud occ config:system:set trusted_domains 2 --value="$(hostname)"
 nextcloud occ config:system:set trusted_domains 3 --value="$(hostname --fqdn)"
