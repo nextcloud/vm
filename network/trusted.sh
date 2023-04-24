@@ -14,9 +14,7 @@ DEBUG=0
 debug_mode
 
 # Change config.php
-nextcloud occ config:system:set trusted_domains 3 --value=${ADDRESS[@]} "$(hostname)" "$(hostname --fqdn)"
-nextcloud occ config:system:set overwrite.cli.url --value=https://"$(hostname --fqdn)"
-
-# Change .htaccess accordingly
-sed -i "s|RewriteBase /nextcloud|RewriteBase /|g" $NCPATH/.htaccess
+nextcloud occ config:system:set trusted_domains 3 --value="${ADDRESS[@]}" "$(hostname)" "$(hostname --fqdn)"
+nextcloud occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
+nextcloud_occ maintenance:update:htaccess
 
