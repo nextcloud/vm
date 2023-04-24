@@ -25,8 +25,8 @@ fi
 
 # Dirs
 SCRIPTS=/var/scripts
-NCPATH=/var/www/nextcloud
 HTML=/var/www
+NCPATH="$HTML"/nextcloud
 POOLNAME=ncdata
 NCDATA=/mnt/"$POOLNAME"
 SNAPDIR=/var/snap/spreedme
