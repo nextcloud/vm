@@ -1218,6 +1218,8 @@ Thank you for using T&M Hansson IT's updater!"
     if [ -n "$SNAPSHOT_EXISTS" ]
     then
         check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
+        msg_box "Automatically restarting your server in 1min since LVM-snapshots are present."
+        shutdown -r +1
     fi
     exit 0
 else
