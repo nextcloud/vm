@@ -554,7 +554,9 @@ mesg n
 ROOTNEWPROFILE
 
 # Set trusted domain in config.php
-run_script NETWORK trusted
+nextcloud occ config:system:set trusted_domains 3 --value="${ADDRESS[@]}" "$(hostname)" "$(hostname --fqdn)"
+nextcloud occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
+nextcloud_occ maintenance:update:htaccess
 
 # Upgrade system
 print_text_in_color "$ICyan" "System will now upgrade..."
