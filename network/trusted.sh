@@ -6,9 +6,9 @@ source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
 
 # Removed in NC 26.0.0.
 
-nextcloud occ config:system:set trusted_domains 0 --value="localhost"
-nextcloud occ config:system:set trusted_domains 1 --value="${ADDRESS[@]}"
-nextcloud occ config:system:set trusted_domains 2 --value="$(hostname)"
-nextcloud occ config:system:set trusted_domains 3 --value="$(hostname --fqdn)"
-nextcloud occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
+# Set trusted domains
+nextcloud_occ config:system:set trusted_domains 0 --value="localhost"
+nextcloud_occ config:system:set trusted_domains 1 --value="$ADDRESS"
+nextcloud_occ config:system:set trusted_domains 2 --value="$(hostname -f)"
+nextcloud_occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
 nextcloud_occ maintenance:update:htaccess
