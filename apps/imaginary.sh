@@ -140,6 +140,7 @@ nextcloud_occ config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\
 nextcloud_occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\TXT"
 nextcloud_occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\OpenDocument"
 nextcloud_occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\Movie"
+nextcloud_occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\PDF"
 nextcloud_occ config:system:set preview_imaginary_url --value="http://127.0.0.1:9000"
 
 # Set general values
