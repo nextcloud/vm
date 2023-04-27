@@ -102,7 +102,7 @@ install_docker
 
 # Pull and start
 docker pull nextcloud/aio-imaginary:latest
-docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary -concurrency 50 -enable-url-source -log-level debug
+docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary –cap-add=sys_nice -return-size -concurrency 50 -enable-url-source -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"
@@ -141,6 +141,7 @@ nextcloud_occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\
 nextcloud_occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\OpenDocument"
 nextcloud_occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\Movie"
 nextcloud_occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\PDF"
+nextcloud_occ config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\HEIC"
 nextcloud_occ config:system:set preview_imaginary_url --value="http://127.0.0.1:9000"
 
 # Set general values
