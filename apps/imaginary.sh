@@ -102,7 +102,7 @@ install_docker
 
 # Pull and start
 docker pull nextcloud/aio-imaginary:latest
-docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary -concurrency 50 -enable-url-source -log-level debug
+docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"
@@ -133,6 +133,7 @@ fi
 
 # Set providers (https://github.com/nextcloud/server/blob/master/lib/private/Preview/Imaginary.php#L60)
 # https://github.com/nextcloud/vm/issues/2465
+# Already enabled: https://github.com/nextcloud/server/blob/5e96228eb1f7999a327dacab22055ec2aa8e28a3/lib/private/Preview/Imaginary.php#L60
 nextcloud_occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
 nextcloud_occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\Image"
 nextcloud_occ config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\MarkDown"
@@ -140,7 +141,7 @@ nextcloud_occ config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\
 nextcloud_occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\TXT"
 nextcloud_occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\OpenDocument"
 nextcloud_occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\Movie"
-nextcloud_occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\PDF"
+nextcloud_occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\Krita"
 nextcloud_occ config:system:set preview_imaginary_url --value="http://127.0.0.1:9000"
 
 # Set general values
