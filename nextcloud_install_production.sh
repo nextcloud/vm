@@ -755,26 +755,27 @@ then
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
     AllowOverride None
-    ### include all .htaccess
-    Include $NCPATH/.htaccess
-    Include $NCPATH/config/.htaccess
-    Include $NCDATA/.htaccess
-    ###
     Require all granted
     Satisfy Any
+    # This is to include all the Nextcloud rules due to that we use PHP-FPM and .htaccess aren't read
+    Include $NCPATH/.htaccess
+    </Directory>
+
+    # Deny access to your data directory
+    <Directory $NCDATA>
+    Require all denied
+    </Directory>
+
+    # Deny access to the Nextcloud config folder
+    <Directory "$NCPATH"/config/>
+    Require all denied
     </Directory>
 
     <IfModule mod_dav.c>
     Dav off
     </IfModule>
 
-    <Directory "$NCDATA">
-    # just in case if .htaccess gets disabled
-    Require all denied
-    </Directory>
-
-    # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
+    # The following lines prevent .htaccess and .htpasswd files from being viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
@@ -848,13 +849,20 @@ then
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
     AllowOverride None
-    ### include all .htaccess
-    Include $NCPATH/.htaccess
-    Include $NCPATH/config/.htaccess
-    Include $NCDATA/.htaccess
-    ###
     Require all granted
     Satisfy Any
+    # This is to include all the Nextcloud rules due to that we use PHP-FPM and .htaccess aren't read
+    Include $NCPATH/.htaccess
+    </Directory>
+
+    # Deny access to your data directory
+    <Directory $NCDATA>
+    Require all denied
+    </Directory>
+
+    # Deny access to the Nextcloud config folder
+    <Directory "$NCPATH"/config/>
+    Require all denied
     </Directory>
 
     <IfModule mod_dav.c>
