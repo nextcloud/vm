@@ -761,7 +761,7 @@ then
     Include $NCPATH/.htaccess
     </Directory>
 
-     # Deny access to your data directory
+    # Deny access to your data directory
     <Directory $NCDATA>
     Require all denied
     </Directory>
@@ -849,13 +849,20 @@ then
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
     AllowOverride None
-    ### include all .htaccess
-    Include $NCPATH/.htaccess
-    Include $NCPATH/config/.htaccess
-    Include $NCDATA/.htaccess
-    ###
     Require all granted
     Satisfy Any
+    # This is to include all the Nextcloud rules due to that we use PHP-FPM and .htaccess aren't read
+    Include $NCPATH/.htaccess
+    </Directory>
+
+    # Deny access to your data directory
+    <Directory $NCDATA>
+    Require all denied
+    </Directory>
+
+    # Deny access to the Nextcloud config folder
+    <Directory "$NCPATH"/config/>
+    Require all denied
     </Directory>
 
     <IfModule mod_dav.c>
