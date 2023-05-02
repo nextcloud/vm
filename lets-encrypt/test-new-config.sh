@@ -35,8 +35,8 @@ then
 fi
 
 # Set the domain as trusted
-add_to_trusted_domains "$1"
-nextcloud_occ config:system:set overwrite.cli.url --value="https://$1"
+add_to_trusted_domains "$FQDOMAIN"
+nextcloud_occ config:system:set overwrite.cli.url --value="https://$FQDOMAIN"
 nextcloud_occ maintenance:update:htaccess
 
 # Add crontab
