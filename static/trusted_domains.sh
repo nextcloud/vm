@@ -13,14 +13,14 @@ DEBUG=0
 debug_mode
 
 # Set trusted domains default
-if [ -n $ADDRESS ]
+if [ -n "$ADDRESS" ]
 then
     nextcloud_occ config:system:set trusted_domains 0 --value="localhost"
     nextcloud_occ config:system:set trusted_domains 1 --value="$ADDRESS"
     nextcloud_occ config:system:set trusted_domains 2 --value="$(hostname)"
     nextcloud_occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
     # Also set WAN address if it exists
-    if [ -n $WANIP4 ]
+    if [ -n "$WANIP4" ]
     then
         nextcloud_occ config:system:set trusted_domains 3 --value="$WANIP4"
     fi
@@ -29,7 +29,7 @@ else
     nextcloud_occ config:system:set trusted_domains 1 --value="$(hostname)"
     nextcloud_occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
     # Also set WAN address if it exists
-    if [ -n $WANIP4 ]
+    if [ -n "$WANIP4" ]
     then
         nextcloud_occ config:system:set trusted_domains 2 --value="$WANIP4"
     fi
