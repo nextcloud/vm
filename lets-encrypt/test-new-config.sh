@@ -35,6 +35,7 @@ then
 fi
 
 # Set the domain as trusted
+add_to_trusted_domains "$1"
 nextcloud_occ config:system:set overwrite.cli.url --value="https://$1"
 nextcloud_occ maintenance:update:htaccess
 
