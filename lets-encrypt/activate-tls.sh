@@ -165,9 +165,11 @@ then
     LogLevel warn
     CustomLog \${APACHE_LOG_DIR}/access.log combined
     ErrorLog \${APACHE_LOG_DIR}/error.log
-
+    
+    # Document root folder
     DocumentRoot $NCPATH
 
+    # The Nextcloud folder
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
     AllowOverride None
@@ -198,12 +200,6 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-
-    # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
-    <Files ".ht*">
-    Require all denied
-    </Files>
 
     # Disable HTTP TRACE method.
     TraceEnable off
