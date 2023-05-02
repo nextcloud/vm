@@ -742,16 +742,22 @@ then
 
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
-#    ServerName example.com
-#    ServerAlias subdomain.example.com
+#    ServerName cloud.example.com
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
+    # Logs
+    LogLevel warn
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+
+    # Document root folder
     DocumentRoot $NCPATH
 
+    # The Nextcloud folder
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
     AllowOverride None
@@ -780,22 +786,20 @@ then
     Require all denied
     </Files>
 
+    SetEnv HOME $NCPATH
+    SetEnv HTTP_HOME $NCPATH
+    
     # Disable HTTP TRACE method.
     TraceEnable off
-
     # Disable HTTP TRACK method.
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} ^TRACK
     RewriteRule .* - [R=405,L]
 
-    SetEnv HOME $NCPATH
-    SetEnv HTTP_HOME $NCPATH
-
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-
 </VirtualHost>
 HTTP_CREATE
     print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
@@ -844,8 +848,10 @@ then
     CustomLog \${APACHE_LOG_DIR}/access.log combined
     ErrorLog \${APACHE_LOG_DIR}/error.log
 
+    # Document root folder
     DocumentRoot $NCPATH
 
+    # The Nextcloud folder
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
     AllowOverride None
@@ -869,27 +875,20 @@ then
     Dav off
     </IfModule>
 
-    <Directory "$NCDATA">
-    # just in case if .htaccess gets disabled
-    Require all denied
-    </Directory>
-
-    # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
+    # The following lines prevent .htaccess and .htpasswd files from being viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
 
+    SetEnv HOME $NCPATH
+    SetEnv HTTP_HOME $NCPATH
+    
     # Disable HTTP TRACE method.
     TraceEnable off
-
     # Disable HTTP TRACK method.
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} ^TRACK
     RewriteRule .* - [R=405,L]
-
-    SetEnv HOME $NCPATH
-    SetEnv HTTP_HOME $NCPATH
 
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
