@@ -554,11 +554,7 @@ mesg n
 ROOTNEWPROFILE
 
 # Set trusted domains
-nextcloud_occ config:system:set trusted_domains 0 --value="localhost"
-nextcloud_occ config:system:set trusted_domains 1 --value="$ADDRESS"
-nextcloud_occ config:system:set trusted_domains 2 --value="$(hostname -f)"
-nextcloud_occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
-nextcloud_occ maintenance:update:htaccess
+run_script STATIC trusted_domains
 
 # Upgrade system
 print_text_in_color "$ICyan" "System will now upgrade..."
