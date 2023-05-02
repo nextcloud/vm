@@ -183,7 +183,7 @@ then
     </Directory>
 
     # Deny access to the Nextcloud config folder
-    <Directory "$NCPATH"/config/>
+    <Directory $NCPATH/config/>
     Require all denied
     </Directory>
 
