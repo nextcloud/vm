@@ -34,11 +34,9 @@ then
     sed -i "s|env\[HOSTNAME\] = .*|env[HOSTNAME] = $(hostname -f)|g" "$PHP_POOL_DIR"/nextcloud.conf
 fi
 
-# Set trusted domains
-nextcloud_occ config:system:set trusted_domains 0 --value="localhost"
-nextcloud_occ config:system:set trusted_domains 1 --value="$ADDRESS"
-nextcloud_occ config:system:set trusted_domains 2 --value="$(hostname -f)"
-nextcloud_occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
+# Set the domain as trusted
+add_to_trusted_domains "$1"
+nextcloud_occ config:system:set overwrite.cli.url --value="https://$1"
 nextcloud_occ maintenance:update:htaccess
 
 # Add crontab
