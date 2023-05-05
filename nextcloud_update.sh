@@ -383,6 +383,14 @@ fi
 # Fix PHP error message
 mkdir -p /tmp/pear/cache
 
+# Just in case PECLs XML are bad
+if ! pecl channel-update pecl.php.net
+then
+    curl_to_dir http://pecl.php.net channel.xml /tmp
+    pear channel-update /tmp/channel.xml
+    rm -f /tmp/channel.xml
+fi
+
 # Update Redis PHP extension (18.04 --> 20.04 since 16.04 already is deprecated in the top of this script)
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 
@@ -396,7 +404,7 @@ then
     then
         install_if_not php"$PHPVER"-dev
     fi
-    pecl channel-update pecl.php.net
+
     yes no | pecl upgrade redis
     systemctl restart redis-server.service
 fi
