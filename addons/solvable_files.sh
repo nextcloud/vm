@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
 # Based on: https://raw.githubusercontent.com/nextcloud-gmbh/mtime_fixer_tool_kit/master/solvable_files.sh
 
 true
@@ -8,19 +7,13 @@ SCRIPT_NAME="Fix 'Could not update metadata due to invalid modified time'."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
+# Get needed variables for database managment
+ncdb
+
 # Check if root
 root_check
 
-#2022-04-10 platima: Added option to correct date using birthday instead of current system time, failing back to change date if birthday missing
-#2022-04-10 platima: Added additional output when using 'list' mode
-#2022-04-10 platima: Addded verbose option
-#2022-04-11 platima: Updated to confirm to code style and wrapped other outputs in verbose qualifier
-#2023-05-04 Customized it to fit the Nextcloud VM
-
-# Usage: ./solvable_files.sh <data_dir> <mysql|pgsql> <db_host> <db_user> <db_pwd> <db_name> <fix,list> <scan,noscan> <use_birthday,dont_use_birthday> <verbose,noverbose>
-
-source /var/scripts/fetch_lib.sh
-ncdb
+#2023-05-04 Customized the original script to fit the Nextcloud VM users setup. Also fixed some shellcheck issues.
 
 data_dir="$(realpath "$NCDATA")"
 export data_dir
