@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# Based on: https://raw.githubusercontent.com/nextcloud-gmbh/mtime_fixer_tool_kit/master/solvable_files.sh
 
 true
 SCRIPT_NAME="Fix 'Could not update metadata due to invalid modified time'."
@@ -24,9 +25,6 @@ msg_box "OK, let's go!
 
 Please note, this script might take several hours to run, depening on the size of your datadir. Don't abort it!"
 
-# Download the script
-curl_to_dir https://raw.githubusercontent.com/nextcloud-gmbh/mtime_fixer_tool_kit/master solvable_files.sh $NCPATH
-
 # Run all the needed variables
 ncdb
 
@@ -38,8 +36,7 @@ fi
 
 # Run the script and remove it
 print_text_in_color "$ICyan" "Running the scan and fixing broken files..."
-bash "$NCPATH"/solvable_files.sh "$NCDATA" "$NCDBTYPE" "$NCDBHOST" "$NCDBUSER" "$NCDBPASS" "$NCDB" fix use_birthday verbose
-rm "$NCPATH"/solvable_files.sh
+run_script ADDONS solvable_files
 
 # Scan all files
 nextcloud_occ files:scan --all
