@@ -7,7 +7,7 @@ SCRIPT_NAME="Fix 'Could not update metadata due to invalid modified time'."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# Get needed variables for database managment
+# Get needed variables for database management
 ncdb
 
 # Check if root
