@@ -561,6 +561,7 @@ print_text_in_color "$ICyan" "System will now upgrade..."
 bash $SCRIPTS/update.sh minor
 
 # Check if new major is out, and inform on how to update
+nc_update
 if version_gt "$NCVERSION" "$CURRENTVERSION"
 then
     msg_box "We noticed that there's a new major release of Nextcloud ($NCVERSION).\nIf you want to update to the latest release instantly, please check this:\n
