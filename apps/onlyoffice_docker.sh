@@ -31,6 +31,7 @@ else
     nextcloud_occ config:system:delete allow_local_remote_servers
     nextcloud_occ config:system:delete onlyoffice
     nextcloud_occ config:system:delete onlyoffice jwt_secret
+    nextcloud_occ config:app:delete onlyoffice jwt_secret
     nextcloud_occ config:system:delete onlyoffice jwt_header
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
@@ -262,6 +263,7 @@ then
     # Allow remote servers with local addresses e.g. in federated shares, webcal services and more
     nextcloud_occ config:system:set allow_local_remote_servers --value="true"
     nextcloud_occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
+    nextcloud_occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
     nextcloud_occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
     # Add prune command
     add_dockerprune
