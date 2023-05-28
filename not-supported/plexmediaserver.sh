@@ -94,7 +94,7 @@ install_docker
 # Create plex user
 if ! id plex &>/dev/null
 then
-    check_command adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "plex"
+    check_command adduser --no-create-home --quiet --disabled-login --uid 1005 --gid 1006 --force-badname --gecos "" "plex"
 fi
 
 PLEX_UID="$(id -u plex)"
