@@ -348,6 +348,7 @@ Listen 8094
     ProxyRequests off
     ProxyPass / "http://127.0.0.1:8093/"
     ProxyPassReverse / "http://127.0.0.1:8093/"
+    ProxyPreserveHost On
 		
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
