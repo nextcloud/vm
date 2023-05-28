@@ -47,10 +47,6 @@ If you have already installed a desktop environment, you will not need to instal
             apt-get install gnome-session --no-install-recommends -y
             sudo -u "$UNIXUSER" dbus-launch gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
             sudo -u "$UNIXUSER" dbus-launch gsettings set org.gnome.desktop.interface enable-animations false
-            install_if_not gnome-shell-extension-dash-to-panel
-            check_command sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable dash-to-panel@jderose9.github.com
-            install_if_not gnome-shell-extension-arc-menu
-            sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable arc-menu@linxgem33.com
         fi
     fi
     
