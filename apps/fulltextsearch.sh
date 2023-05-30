@@ -36,6 +36,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
+    nextcloud_occ_no_check fulltextsearch:stop
     nextcloud_occ_no_check fulltextsearch:reset
     # Drop database tables
     sudo -Hiu postgres psql "$NCDB" -c "DROP TABLE oc_fulltextsearch_ticks;"
