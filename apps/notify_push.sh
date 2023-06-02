@@ -39,7 +39,7 @@ then
     exit 1
 fi
 # Check TLS
-check_nextcloud_https
+check_nextcloud_https "Notify Push"
 
 # Check apache conf
 NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
