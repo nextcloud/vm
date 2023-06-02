@@ -39,16 +39,8 @@ then
     exit 1
 fi
 # Check TLS
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
-if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
-then
-    msg_box "It seems like Nextcloud is not installed or that you don't use https on:
-$NCDOMAIN.
-Please install Nextcloud and make sure your domain is reachable, or activate TLS
-on your domain to be able to run this script.
-If you use the Nextcloud VM you can use the Let's Encrypt script to get TLS and activate your Nextcloud domain."
-    exit 1
-fi
+check_nextcloud_https
+
 # Check apache conf
 if ! [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
 then
