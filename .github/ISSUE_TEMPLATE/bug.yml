@@ -38,7 +38,7 @@ body:
     id: screenshots
     attributes:
       label: Screenshots, Videos, or Pastebins
-      description: If applicable, add screenshots and/or a short video to help explain your problem. You can use https://0bin.net for long error messages or logs.
+      description: If applicable, add screenshots and/or a short video to help explain your problem. You can use https://paste.sh for long error messages or logs.
   - type: textarea
     id: additional-context
     attributes:
