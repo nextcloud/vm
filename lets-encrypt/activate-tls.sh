@@ -215,8 +215,8 @@ then
 
 ### LOCATION OF CERT FILES ###
 
-    SSLCertificateChainFile $CERTFILES/$TLSDOMAIN/chain.pem
-    SSLCertificateFile $CERTFILES/$TLSDOMAIN/cert.pem
+    # SSLCertificateChainFile $CERTFILES/$TLSDOMAIN/chain.pem
+    SSLCertificateFile $CERTFILES/$TLSDOMAIN/fullchain.pem
     SSLCertificateKeyFile $CERTFILES/$TLSDOMAIN/privkey.pem
     SSLOpenSSLConfCmd DHParameters $DHPARAMS_TLS
 </VirtualHost>
