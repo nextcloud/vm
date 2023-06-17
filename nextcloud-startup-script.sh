@@ -589,7 +589,7 @@ More info here: https://nextcloud.com/enterprise/
 Get your license here: https://shop.hanssonit.se/product/nextcloud-enterprise-license-100-users/"
 
 msg_box "TIPS & TRICKS:
-1. Publish your server online: https://goo.gl/iUGE2U
+1. Publish your server online: http://shortio.hanssonit.se/ffOQOXS6Kh
 2. To login to PostgreSQL just type: sudo -u postgres psql nextcloud_db
 3. To update this server just type: sudo bash /var/scripts/update.sh
 4. Install apps, configure Nextcloud, and server: sudo bash $SCRIPTS/menu.sh"

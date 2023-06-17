@@ -150,7 +150,7 @@ The hook files will end up in $SCRIPTS/deSEC, please don't touch that folder unl
 You can read more about it here: https://github.com/desec-io/desec-certbot-hook
 
 Please remember that you still need to open the port you choose to make your server publicly available.
-You can read more about that here: https://goo.gl/iUGE2U"
+You can read more about that here: http://shortio.hanssonit.se/ffOQOXS6Kh"
 
     # Run the TLS script
     run_script LETS_ENC activate-tls

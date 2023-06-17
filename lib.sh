@@ -753,7 +753,7 @@ check_nextcloud_https() {
         then
             msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
 You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
-More info here: https://bit.ly/37wRCin
+More info here: http://shortio.hanssonit.se/1EAgBmPyFc
 
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
 Additional Apps --> Documentserver --> $1."
@@ -761,7 +761,7 @@ Additional Apps --> Documentserver --> $1."
         else
             msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
 You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
-More info here: https://bit.ly/37wRCin
+More info here: http://shortio.hanssonit.se/1EAgBmPyFc
 
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
 Additional Apps --> $1."
