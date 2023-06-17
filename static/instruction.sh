@@ -17,8 +17,8 @@ echo -e "|"  "${IGreen}The default sudoer password is: ${BIGreen}nextcloud${IGre
 cat << INST2
 |                                                                       |
 | You can find the complete install instructions here:                  |
-| Nextcloud VM              = https://bit.ly/2S8eGfS                    |
-| Nextcloud Home/SME Server = https://bit.ly/2k2TNaM                    |
+| Nextcloud VM              = http://shortio.hanssonit.se/6xxdsHvhwe    |
+| Nextcloud Home/SME Server = http://shortio.hanssonit.se/LnrY5GMQYy    |
 |                                                                       |
 | Optional:                                                             |
 | If you are running Windows 10 (1809) or later, you can simply use SSH |
