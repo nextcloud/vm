@@ -1099,6 +1099,12 @@ fi
 install_if_not() {
 if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
+    # https://askubuntu.com/questions/1235914/hash-sum-mismatch-error-due-to-identical-sha1-and-md5-but-different-sha256#1242739
+    #if ! -f /etc/gcrypt/hwf.deny ]
+    #then
+    #    mkdir -p /etc/gcrypt
+    #    echo all > /etc/gcrypt/hwf.deny
+    #fi
     apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install "${1}" -y
 fi
 }
