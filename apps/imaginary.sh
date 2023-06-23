@@ -90,6 +90,8 @@ This will most likely clear a lot of space! Also, pre-generated previews are not
             rm -rfv "$NCDATA"/appdata_*/preview/*
             print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory after removing all previews. \
 This can take a while..."
+            # Don't execute the update before all cronjobs are finished
+            check_running_cronjobs
             nextcloud_occ files:scan-app-data preview -vvv
             msg_box "All previews were successfully removed."
         fi
