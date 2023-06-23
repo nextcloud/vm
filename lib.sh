@@ -1971,7 +1971,7 @@ fi
 check_free_space() {
     if vgs &>/dev/null
     then
-        FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+[\.,][0-9]" | sed 's|\.||')
+        FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+[\.,][0-9]" | sed 's|[.,]||')
     fi
     if [ -z "$FREE_SPACE" ]
     then
