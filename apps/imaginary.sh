@@ -93,7 +93,7 @@ This can take a while..."
             # Don't execute the update before all cronjobs are finished
             check_running_cronjobs
             nextcloud_occ files:scan-app-data preview -vvv
-            msg_box "All previews were successfully removed."
+            print_text_in_color "$IGreen" "All previews were successfully removed."
         fi
         # Remove log
         rm -f "$VMLOGS"/previewgenerator.log
