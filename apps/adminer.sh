@@ -28,6 +28,7 @@ else
     # Removal
     check_external_ip # Check that the script can see the external IP (apache fails otherwise)
     a2disconf adminer.conf
+    restart_webserver
     rm -f $ADMINER_CONF
     rm -rf $ADMINERDIR
     check_command apt-get purge adminer -y
