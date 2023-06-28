@@ -915,7 +915,7 @@ if is_this_installed postgresql-common
 then
     cd /tmp
     # Test connection to PostgreSQL
-    if ! sudo -u postgres psql -c "\q"
+    if ! sudo -u postgres psql -w -c "\q"
     then
         # If it fails, trust the 'postgres' user to be able to perform backup
         rsync -a /etc/postgresql/*/main/pg_hba.conf "$BACKUP"/pg_hba.conf_BACKUP
