@@ -21,8 +21,15 @@ debug_mode
 root_check
 
 # Check recources
-ram_check 4
-cpu_check 2
+# If we can calculate the cpu and ram, then set it to the lowest possible, if not, then hardcode it to a recomended minimum.
+if which nproc >/dev/null 2>&1
+then
+    ram_check Imaginary 1
+    cpu_check Imaginary 1
+else
+    ram_check Imaginary 4
+    cpu_check Imaginary 2
+fi
 
 # Compatible with NC24 and above
 lowest_compatible_nc 26
