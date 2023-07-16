@@ -101,7 +101,7 @@ install_and_enable_app files_antivirus
 nextcloud_occ config:app:set files_antivirus av_mode --value="socket"
 nextcloud_occ config:app:set files_antivirus av_socket --value="/var/run/clamav/clamd.ctl"
 nextcloud_occ config:app:set files_antivirus av_stream_max_length --value="1048576000"
-nextcloud_occ config:app:set files_antivirus av_max_file_size --value="-1"
+nextcloud_occ config:app:set files_antivirus av_max_file_size --value="1048576000"
 nextcloud_occ config:app:set files_antivirus av_infected_action --value="only_log"
 
 # Create av notification script
