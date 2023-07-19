@@ -486,7 +486,6 @@ then
     exit 1
 else
     msg_box "Congratulations, everything is working as intended! The Talk Signaling installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
-    exit 0
 fi
 
 ####### Talk recording
@@ -502,7 +501,7 @@ print_text_in_color "$ICyan" "Setting up Talk recording..."
 
 # Pull and start
 docker pull nextcloud/aio-talk-recording:latest
-docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" --restart --name talk-recording nextcloud/aio-talk-recording –cap-add=sys_nice --shm-size=2g -e NC_DOMAIN="${TURN_DOMAIN}" -e TZ="$(cat /etc/timezone)" -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}"
+docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" --restart --name talk-recording nextcloud/aio-talk-recording --shm-size=2g -e NC_DOMAIN="${TURN_DOMAIN}" -e TZ="$(cat /etc/timezone)" -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}"
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
