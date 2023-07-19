@@ -200,11 +200,11 @@ turn_install() {
     TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
-    NC_INTERNAL_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+    SIGNALING_SERVER_CONF=/etc/signaling/server.conf
+    TURN_INTERNAL_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     TURN_RECORDING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     TURN_RECORDING_HOST=127.0.0.1
     TURN_RECORDING_HOST_PORT=1234
-    SIGNALING_SERVER_CONF=/etc/signaling/server.conf
 }
 
 ## FUNCTIONS
