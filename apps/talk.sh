@@ -501,7 +501,14 @@ print_text_in_color "$ICyan" "Setting up Talk recording..."
 
 # Pull and start
 docker pull nextcloud/aio-talk-recording:latest
-docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" --restart --name talk-recording nextcloud/aio-talk-recording --shm-size=2g -e NC_DOMAIN="${TURN_DOMAIN}" -e TZ="$(cat /etc/timezone)" -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}"
+docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
+--restart \
+--name talk-recording nextcloud/aio-talk-recording \
+--shm-size=2g \
+-e NC_DOMAIN="${TURN_DOMAIN}" \
+-e TZ="$(cat /etc/timezone)" \
+-e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
+-e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}"
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
@@ -513,7 +520,8 @@ then
             echo "waiting for Talk Recording to become available..."
             sleep 5
         done
- 
-        nextcloud_occ_no_check config:app:set spreed recording_servers --value="{\"servers\":[{\"server\":\"http://$TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT/\",\"verify\":true}],\"secret\":\"$TURN_RECORDING_SECRET\"}"
+        
+        RECORDING_SERVERS_STRING="{\"servers\":[{\"server\":\"http://$TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT/\",\"verify\":true}],\"secret\":\"$TURN_RECORDING_SECRET\"}"
+        nextcloud_occ_no_check config:app:set spreed recording_servers --value="RECORDING_SERVERS_STRING" --output json
     fi
 fi
