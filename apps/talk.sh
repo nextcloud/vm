@@ -492,7 +492,7 @@ print_text_in_color "$ICyan" "Setting up Talk recording..."
 
 # Pull and start
 docker pull nextcloud/aio-talk-recording:latest
-docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" ±
+docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
 --restart always \
 --name talk-recording \
 nextcloud/aio-talk-recording \
