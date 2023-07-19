@@ -325,7 +325,7 @@ debug = false
 hashkey = $(openssl rand -hex 16)
 blockkey = $(openssl rand -hex 16)
 [clients]
-internalsecret = $(openssl rand -hex 16)
+internalsecret = $(NC_INTERNAL_SECRET)
 [backend]
 allowed = ${TURN_DOMAIN}
 allowall = false
