@@ -4,7 +4,7 @@
 
 true
 SCRIPT_NAME="Nextcloud Talk"
-SCRIPT_EXPLAINER="This script installs Nextcloud Talk whcih is a replacement for Teams/Skype and similar.\
+SCRIPT_EXPLAINER="This script installs Nextcloud Talk which is a replacement for Teams/Skype and similar.\
 You will also be offered the possibility to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
 It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
 # shellcheck source=lib.sh
@@ -485,32 +485,32 @@ then
     msg_box "Installation failed. :/\n\nPlease run this script again to uninstall if you want to clean the system, or choose to reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 1
 else
-    msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
+    msg_box "Congratulations, everything is working as intended! The Talk Signaling installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 0
 fi
 
 ####### Talk recording
+if ! yesno_box_yes "Do you want install Talk Recording to be able to record your calls?"
+then
+    exit
+fi
+
+# It's pretty recource intensive
+cpu_check 4
+
 print_text_in_color "$ICyan" "Setting up Talk recording..."
 
 # Pull and start
 docker pull nextcloud/aio-talk-recording:latest
-docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
---restart always \
---name talk-recording \
-nextcloud/aio-talk-recording \
-–cap-add=sys_nice \
---shm-size=2g \
--e NC_DOMAIN="${TURN_DOMAIN}" \
--e TZ="$(cat /etc/timezone)" \
--e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
--e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}"
+docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" --restart --name talk-recording nextcloud/aio-talk-recording –cap-add=sys_nice --shm-size=2g -e NC_DOMAIN="${TURN_DOMAIN}" -e TZ="$(cat /etc/timezone)" -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}"
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
 then
     if does_this_docker_exist talk-recording
     then
-        while ! nc -z "$TURN_RECORDING_HOST" 1234; do
+        while ! nc -z "$TURN_RECORDING_HOST" 1234
+        do
             echo "waiting for Talk Recording to become available..."
             sleep 5
         done
