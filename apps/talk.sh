@@ -498,10 +498,10 @@ docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RE
 nextcloud/aio-talk-recording \
 –cap-add=sys_nice \
 --shm-size=2g \
--e NC_DOMAIN=${TURN_DOMAIN} \
--e TZ=${TIMEZONE} \
--e RECORDING_SECRET=${TURN_RECORDING_SECRET} \
--e INTERNAL_SECRET=${TURN_INTERNAL_SECRET}
+-e NC_DOMAIN="${TURN_DOMAIN}" \
+-e TZ="${TIMEZONE}" \
+-e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
+-e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}"
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
