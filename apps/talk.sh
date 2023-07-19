@@ -486,3 +486,35 @@ else
     msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 0
 fi
+
+####### Talk recording
+print_text_in_color "$ICyan" "Setting up Talk recording..."
+
+# Pull and start
+docker pull nextcloud/aio-talk-recording:latest
+docker run -t -d -p $TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT:$TURN_RECORDING_HOST_PORT ±
+--restart always \
+--name talk-recording \
+nextcloud/aio-talk-recording \
+–cap-add=sys_nice \
+shm_size=2g \
+-e NC_DOMAIN=${TURN_DOMAIN} \
+-e TZ=${TIMEZONE} \
+-e RECORDING_SECRET=${TURN_RECORDING_SECRET} \
+-e INTERNAL_SECRET=${TURN_INTERNAL_SECRET}
+
+# Talk recording
+if [ -d "$NCPATH/apps/spreed" ]
+then
+    if [ "$TALK_RECORDING_ENABLED" = 'yes' ]
+    then
+        while ! nc -z "$TURN_RECORDING_HOST" 1234; do
+            echo "waiting for Talk Recording to become available..."
+            sleep 5
+        done
+ 
+        nextcloud_occ config:app:set spreed recording_servers --value="{\"servers\":[{\"server\":\"http://$TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT/\",\"verify\":true}],\"secret\":\"$TURN_RECORDING_SECRET\"}"
+    else
+        nextcloud_occ config:app:delete spreed recording_servers
+    fi
+fi
