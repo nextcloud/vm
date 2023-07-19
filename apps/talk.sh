@@ -38,6 +38,7 @@ else
     nextcloud_occ_no_check config:app:delete spreed stun_servers
     nextcloud_occ_no_check config:app:delete spreed turn_servers
     nextcloud_occ_no_check config:app:delete spreed signaling_servers
+    nextcloud_occ_no_check config:app:delete spreed recording_servers
     nextcloud_occ_no_check app:remove spreed
     rm -rf \
         "$TURN_CONF" \
@@ -66,6 +67,7 @@ else
         fi
     done
     apt-get autoremove -y
+    docker_prune_this talk-recording
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -506,15 +508,13 @@ nextcloud/aio-talk-recording \
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
 then
-    if [ "$TALK_RECORDING_ENABLED" = 'yes' ]
+    if does_this_docker_exist talk-recording
     then
         while ! nc -z "$TURN_RECORDING_HOST" 1234; do
             echo "waiting for Talk Recording to become available..."
             sleep 5
         done
  
-        nextcloud_occ config:app:set spreed recording_servers --value="{\"servers\":[{\"server\":\"http://$TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT/\",\"verify\":true}],\"secret\":\"$TURN_RECORDING_SECRET\"}"
-    else
-        nextcloud_occ config:app:delete spreed recording_servers
+        nextcloud_occ_no_check config:app:set spreed recording_servers --value="{\"servers\":[{\"server\":\"http://$TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT/\",\"verify\":true}],\"secret\":\"$TURN_RECORDING_SECRET\"}"
     fi
 fi
