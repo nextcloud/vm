@@ -499,7 +499,7 @@ nextcloud/aio-talk-recording \
 –cap-add=sys_nice \
 --shm-size=2g \
 -e NC_DOMAIN="${TURN_DOMAIN}" \
--e TZ="${TIMEZONE}" \
+-e TZ="$(cat /etc/timezone)" \
 -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
 -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}"
 
