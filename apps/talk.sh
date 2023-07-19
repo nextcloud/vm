@@ -497,7 +497,7 @@ docker run -t -d -p $TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT:$TURN_RECORDI
 --name talk-recording \
 nextcloud/aio-talk-recording \
 –cap-add=sys_nice \
-shm_size=2g \
+--shm-size=2g \
 -e NC_DOMAIN=${TURN_DOMAIN} \
 -e TZ=${TIMEZONE} \
 -e RECORDING_SECRET=${TURN_RECORDING_SECRET} \
