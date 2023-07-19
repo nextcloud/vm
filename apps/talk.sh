@@ -522,6 +522,6 @@ then
         done
         
         RECORDING_SERVERS_STRING="{\"servers\":[{\"server\":\"http://$TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT/\",\"verify\":true}],\"secret\":\"$TURN_RECORDING_SECRET\"}"
-        nextcloud_occ_no_check config:app:set spreed recording_servers --value="RECORDING_SERVERS_STRING" --output json
+        nextcloud_occ_no_check config:app:set spreed recording_servers --value="$RECORDING_SERVERS_STRING" --output json
     fi
 fi
