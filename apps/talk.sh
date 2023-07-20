@@ -523,7 +523,7 @@ fi
 lowest_compatible_nc 26
 
 # It's pretty recource intensive
-cpu_check 4
+cpu_check 4 Talk Recording
 
 print_text_in_color "$ICyan" "Setting up Talk recording..."
 
