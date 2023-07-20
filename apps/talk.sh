@@ -390,6 +390,7 @@ a2enmod remoteip
 # Allow CustomLog
 touch $VMLOGS/talk_apache_access.log
 touch $VMLOGS/talk_apache_error.log
+chown root:adm $VMLOGS/talk_apache_*
 
 # Prep the error page
 mkdir -p /var/www/html/error
@@ -429,7 +430,7 @@ then
 
     # Logs
     LogLevel warn
-    CustomLog $VMLOGS/talk_apache_access.log combined
+    CustomLog $VMLOGS/talk_apache_access.log common
     ErrorLog $VMLOGS/talk_apache_error.log
 
     # Just in case - see below
