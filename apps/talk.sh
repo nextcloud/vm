@@ -43,7 +43,7 @@ else
     nextcloud_occ_no_check config:app:delete spreed signaling_servers
     nextcloud_occ_no_check config:app:delete spreed recording_servers
     nextcloud_occ_no_check app:remove spreed
-    if [ ! -f "$SIGNALING_SERVER_CONF" ]
+    if [ -f "$SIGNALING_SERVER_CONF" ]
     then
         SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Talk Signaling, e.g: talk.yourdomain.com")
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
