@@ -199,7 +199,7 @@ turn_install() {
     SHUF=$(shuf -i 25-29 -n 1)
     TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
-    NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+    SIGNALING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
     TURN_INTERNAL_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
     TURN_RECORDING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")

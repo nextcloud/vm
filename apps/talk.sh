@@ -43,6 +43,18 @@ else
     nextcloud_occ_no_check config:app:delete spreed signaling_servers
     nextcloud_occ_no_check config:app:delete spreed recording_servers
     nextcloud_occ_no_check app:remove spreed
+    if [ ! -f "$SIGNALING_SERVER_CONF" ]
+    then
+        SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Talk Signaling, e.g: talk.yourdomain.com")
+        if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+        then
+            yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+            REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+            for remove in $REMOVE_OLD
+                do rm -rf "$remove"
+            done
+        fi
+    fi
     rm -rf \
         "$TURN_CONF" \
         "$SIGNALING_SERVER_CONF" \
@@ -324,24 +336,34 @@ then
     cat << SIGNALING_CONF_CREATE > "$SIGNALING_SERVER_CONF"
 [http]
 listen = 127.0.0.1:8081
+
 [app]
 debug = false
+
 [sessions]
 hashkey = $(openssl rand -hex 16)
 blockkey = $(openssl rand -hex 16)
+
 [clients]
 internalsecret = ${TURN_INTERNAL_SECRET}
+
 [backend]
-allowed = ${TURN_DOMAIN}
+backends = backend-1
 allowall = false
-secret = ${NC_SECRET}
 timeout = 10
 connectionsperhost = 8
+
+[backend-1]
+url = https://${TURN_DOMAIN}
+secret = ${SIGNALING_SECRET}
+
 [nats]
-url = nats://localhost:4222
+url = nats://127.0.0.1:4222
+
 [mcu]
 type = janus
 url = ws://127.0.0.1:8188
+
 [turn]
 apikey = ${JANUS_API_KEY}
 secret = ${TURN_SECRET}
@@ -507,12 +529,12 @@ docker pull nextcloud/aio-talk-recording:latest
 docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
 --restart always \
 --name talk-recording \
---shm-size=2g \
+--shm-size=2GB \
 -e NC_DOMAIN="${TURN_DOMAIN}" \
 -e TZ="$(cat /etc/timezone)" \
 -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
 -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
-nextcloud/aio-talk-recording 
+nextcloud/aio-talk-recording
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
@@ -520,7 +542,7 @@ then
     if does_this_docker_exist nextcloud/aio-talk-recording
     then
         install_if_not netcat
-        while ! nc -z "$TURN_RECORDING_HOST" 1234
+        while ! nc -z "$TURN_RECORDING_HOST" "$TURN_RECORDING_HOST_PORT"
         do
             print_text_in_color "$ICyan" "Waiting for Talk Recording to become available..."
             sleep 5
