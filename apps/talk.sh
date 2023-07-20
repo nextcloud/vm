@@ -36,16 +36,9 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    sed "/# Talk Signaling Server/d" /etc/hosts >/dev/null 2>&1
-    sed "/127.0.1.1             $SUBDOMAIN/d" /etc/hosts >/dev/null 2>&1
-    nextcloud_occ_no_check config:app:delete spreed stun_servers
-    nextcloud_occ_no_check config:app:delete spreed turn_servers
-    nextcloud_occ_no_check config:app:delete spreed signaling_servers
-    nextcloud_occ_no_check config:app:delete spreed recording_servers
-    nextcloud_occ_no_check app:remove spreed
     if [ -f "$SIGNALING_SERVER_CONF" ]
     then
-        SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for Talk Signaling, e.g: talk.yourdomain.com")
+        SUBDOMAIN=$(input_box_flow "Please enter the subdomain you were using for Talk Signaling, e.g: talk.yourdomain.com. This will be removed.")
         if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
         then
             yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -55,6 +48,13 @@ else
             done
         fi
     fi
+    sed "/# Talk Signaling Server/d" /etc/hosts >/dev/null 2>&1
+    sed "/127.0.1.1             $SUBDOMAIN/d" /etc/hosts >/dev/null 2>&1
+    nextcloud_occ_no_check config:app:delete spreed stun_servers
+    nextcloud_occ_no_check config:app:delete spreed turn_servers
+    nextcloud_occ_no_check config:app:delete spreed signaling_servers
+    nextcloud_occ_no_check config:app:delete spreed recording_servers
+    nextcloud_occ_no_check app:remove spreed
     rm -rf \
         "$TURN_CONF" \
         "$SIGNALING_SERVER_CONF" \
@@ -97,7 +97,7 @@ https://shop.hanssonit.se/"
 exit
 fi
 
-# Nextcloud 19 is required.
+# Nextcloud 20 is required.
 lowest_compatible_nc 20
 
 ####################### TALK (COTURN)
@@ -354,7 +354,7 @@ timeout = 10
 connectionsperhost = 8
 
 [backend-1]
-url = https://${SUBDOMAIN}
+url = https://${TURN_DOMAIN}
 secret = ${SIGNALING_SECRET}
 
 [nats]
@@ -518,6 +518,9 @@ then
     exit
 fi
 
+# Nextcloud 26 is required.
+lowest_compatible_nc 26
+
 # It's pretty recource intensive
 cpu_check 4
 
@@ -530,6 +533,7 @@ docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RE
 --name talk-recording \
 --shm-size=2GB \
 -e NC_DOMAIN="${TURN_DOMAIN}" \
+-e HPB_DOMAIN="${SUBDOMAIN}" \
 -e TZ="$(cat /etc/timezone)" \
 -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
 -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
