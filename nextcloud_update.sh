@@ -330,8 +330,23 @@ then
     apt-get update -q4 --allow-releaseinfo-change & spinner_loading
 fi
 
+# Enter maintenance_mode 
+nextcloud_occ_no_check maintenance_mode --on
+
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+
+# Improve Apache for PHP-FPM
+if is_this_installed php"$PHPVER"-fpm
+then
+    if [ -d "$PHP_FPM_DIR" ]
+    then
+        # Just make sure that MPM_EVENT is default
+        a2dismod mpm_prefork
+        a2enmod mpm_event
+        restart_webserver
+    fi
+fi
 
 # Fix Realtek on PN51
 if asuspn51
@@ -676,10 +691,12 @@ then
     chmod +x "$SCRIPTS"/updatenotification.sh
 fi
 
+# Disable maintenance_mode 
+nextcloud_occ_no_check maintenance_mode --off
+
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    nextcloud_occ maintenance:mode --off
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     UPDATED_APPS="$(nextcloud_occ_no_check app:update --all)"
