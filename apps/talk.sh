@@ -70,7 +70,7 @@ else
         fi
     done
     apt-get autoremove -y
-    docker_prune_this talk-recording
+    docker_prune_this nextcloud/aio-talk-recording
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
