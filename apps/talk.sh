@@ -4,9 +4,12 @@
 
 true
 SCRIPT_NAME="Nextcloud Talk"
-SCRIPT_EXPLAINER="This script installs Nextcloud Talk which is a replacement for Teams/Skype and similar.\
-You will also be offered the possibility to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
-It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
+SCRIPT_EXPLAINER="This script installs Nextcloud Talk which is a replacement for Teams/Skype and similar.
+
+You will also be offered the possibility to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app.
+It's called 'Talk Signaling' and you will be offered to install it as part two of this script.
+
+And last but not least, Talk Recording is also offered to be installed. It enables recording of sessions in Talk and it's part three of this script."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -514,11 +517,12 @@ nextcloud/aio-talk-recording
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
 then
-    if does_this_docker_exist talk-recording
+    if does_this_docker_exist nextcloud/aio-talk-recording
     then
+        install_if_not netcat
         while ! nc -z "$TURN_RECORDING_HOST" 1234
         do
-            echo "waiting for Talk Recording to become available..."
+            print_text_in_color "$ICyan" "Waiting for Talk Recording to become available..."
             sleep 5
         done
         
