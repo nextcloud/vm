@@ -367,6 +367,7 @@ systemctl restart postgresql.service
 
 # Install Apache
 check_command install_if_not apache2
+check_command install_if_not libapache2-mod-fcgid
 a2enmod rewrite \
         headers \
         proxy \
@@ -377,7 +378,11 @@ a2enmod rewrite \
         dir \
         authz_core \
         alias \
+        mpm_event \
         ssl
+
+# Apache wih PHP-FPM
+a2enconf php"$PHPVER"-fpm
 
 # We don't use Apache PHP (just to be sure)
 a2dismod mpm_prefork
