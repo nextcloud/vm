@@ -64,8 +64,8 @@ else
         /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
         /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
         /etc/apt/trusted.gpg.d/morph027-coturn.asc \
-        /etc/apt/keyrings/morph027-coturn.asc
-        /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
+        /etc/apt/keyrings/morph027-coturn.asc \
+        /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list \
         /etc/apt/sources.list.d/morph027-janus.list \
         /etc/apt/sources.list.d/morph027-nats-server.list \
         /etc/apt/sources.list.d/morph027-coturn.list \
