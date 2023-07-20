@@ -341,15 +341,9 @@ if is_this_installed php"$PHPVER"-fpm
 then
     if [ -d "$PHP_FPM_DIR" ]
     then
-        systemctl stop apache2
-        # Just make sure it's disabled
+        # Just make sure that MPM_EVENT is default
         a2dismod mpm_prefork
-        a2dismod php"$PHPVER"
-        # Add some PHP-FPM tweaks
-        install_if_not libapache2-mod-fcgid
-        a2enconf php"$PHPVER"-fpm
         a2enmod mpm_event
-        a2enmod proxy_fcgi
         restart_webserver
     fi
 fi
