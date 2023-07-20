@@ -4,7 +4,7 @@
 
 true
 SCRIPT_NAME="Nextcloud Talk"
-SCRIPT_EXPLAINER="This script installs Nextcloud Talk whcih is a replacement for Teams/Skype and similar.\
+SCRIPT_EXPLAINER="This script installs Nextcloud Talk which is a replacement for Teams/Skype and similar.\
 You will also be offered the possibility to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
 It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
 # shellcheck source=lib.sh
@@ -38,6 +38,7 @@ else
     nextcloud_occ_no_check config:app:delete spreed stun_servers
     nextcloud_occ_no_check config:app:delete spreed turn_servers
     nextcloud_occ_no_check config:app:delete spreed signaling_servers
+    nextcloud_occ_no_check config:app:delete spreed recording_servers
     nextcloud_occ_no_check app:remove spreed
     rm -rf \
         "$TURN_CONF" \
@@ -66,6 +67,7 @@ else
         fi
     done
     apt-get autoremove -y
+    docker_prune_this talk-recording
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -325,7 +327,7 @@ debug = false
 hashkey = $(openssl rand -hex 16)
 blockkey = $(openssl rand -hex 16)
 [clients]
-internalsecret = $(openssl rand -hex 16)
+internalsecret = ${TURN_INTERNAL_SECRET}
 [backend]
 allowed = ${TURN_DOMAIN}
 allowall = false
@@ -483,6 +485,44 @@ then
     msg_box "Installation failed. :/\n\nPlease run this script again to uninstall if you want to clean the system, or choose to reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 1
 else
-    msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
-    exit 0
+    msg_box "Congratulations, everything is working as intended! The Talk Signaling installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
+fi
+
+####### Talk recording
+if ! yesno_box_yes "Do you want install Talk Recording to be able to record your calls? NOTE, this function is not thoroughly tested yet."
+then
+    exit
+fi
+
+# It's pretty recource intensive
+cpu_check 4
+
+print_text_in_color "$ICyan" "Setting up Talk recording..."
+
+# Pull and start
+docker pull nextcloud/aio-talk-recording:latest
+docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
+--restart always \
+--name talk-recording \
+--shm-size=2g \
+-e NC_DOMAIN="${TURN_DOMAIN}" \
+-e TZ="$(cat /etc/timezone)" \
+-e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
+-e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
+nextcloud/aio-talk-recording 
+
+# Talk recording
+if [ -d "$NCPATH/apps/spreed" ]
+then
+    if does_this_docker_exist talk-recording
+    then
+        while ! nc -z "$TURN_RECORDING_HOST" 1234
+        do
+            echo "waiting for Talk Recording to become available..."
+            sleep 5
+        done
+        
+        RECORDING_SERVERS_STRING="{\"servers\":[{\"server\":\"http://$TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT/\",\"verify\":true}],\"secret\":\"$TURN_RECORDING_SECRET\"}"
+        nextcloud_occ_no_check config:app:set spreed recording_servers --value="$RECORDING_SERVERS_STRING" --output json
+    fi
 fi
