@@ -197,12 +197,12 @@ turn_install() {
     TURN_PORT=3478
     TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
     SHUF=$(shuf -i 25-29 -n 1)
-    TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
-    JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
-    SIGNALING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+    TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9")
+    JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9")
+    SIGNALING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
-    TURN_INTERNAL_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
-    TURN_RECORDING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+    TURN_INTERNAL_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9")
+    TURN_RECORDING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9")
     TURN_RECORDING_HOST=127.0.0.1
     TURN_RECORDING_HOST_PORT=1234
 }

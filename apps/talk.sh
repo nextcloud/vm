@@ -354,7 +354,7 @@ timeout = 10
 connectionsperhost = 8
 
 [backend-1]
-url = https://${TURN_DOMAIN}
+url = https://${SUBDOMAIN}
 secret = ${SIGNALING_SECRET}
 
 [nats]
