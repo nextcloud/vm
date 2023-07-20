@@ -390,7 +390,6 @@ a2enmod remoteip
 # Allow CustomLog
 touch $VMLOGS/talk_apache_access.log
 touch $VMLOGS/talk_apache_error.log
-chown www-data:www-data $VMLOGS/talk_apache_error.log $VMLOGS/talk_apache_access.log
 
 # Prep the error page
 mkdir -p /var/www/html/error
@@ -430,8 +429,8 @@ then
 
     # Logs
     LogLevel warn
-    CustomLog \${APACHE_LOG_DIR}/access.log combined
-    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog $VMLOGS/talk_apache_access.log combined
+    ErrorLog $VMLOGS/talk_apache_error.log
 
     # Just in case - see below
     SSLProxyEngine On
