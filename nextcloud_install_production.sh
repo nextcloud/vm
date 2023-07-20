@@ -381,7 +381,7 @@ a2enmod rewrite \
         mpm_event \
         ssl
 
-# Apache wih PHP-FPM
+# Apache with PHP-FPM
 a2enconf php"$PHPVER"-fpm
 
 # We don't use Apache PHP (just to be sure)
