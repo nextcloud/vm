@@ -1944,7 +1944,7 @@ zpool_import_if_missing() {
 # ZFS needs to be installed
 if ! is_this_installed zfsutils-linux
 then
-    print_text_in_color "$IRed" "This function is only intened to be run if you have ZFS installed."
+    print_text_in_color "$IRed" "This function is only intended to be run if you have ZFS installed."
     return 1
 elif [ -z "$POOLNAME" ]
 then
