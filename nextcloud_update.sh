@@ -330,8 +330,8 @@ then
     apt-get update -q4 --allow-releaseinfo-change & spinner_loading
 fi
 
-# Enter maintenance_mode 
-nextcloud_occ_no_check maintenance_mode --on
+# Enter maintenance:mode 
+nextcloud_occ_no_check maintenance:mode --on
 
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
@@ -691,8 +691,8 @@ then
     chmod +x "$SCRIPTS"/updatenotification.sh
 fi
 
-# Disable maintenance_mode 
-nextcloud_occ_no_check maintenance_mode --off
+# Disable maintenance:mode 
+nextcloud_occ_no_check maintenance:mode --off
 
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
