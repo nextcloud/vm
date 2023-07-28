@@ -147,7 +147,7 @@ then
     then
         check_command systemctl stop docker
     fi
-    nextcloud_occ maintenance:mode --on
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
     if does_snapshot_exist "NcVM-startup"
     then
         check_command lvremove /dev/ubuntu-vg/NcVM-startup -y
@@ -155,7 +155,7 @@ then
     then
         if ! lvremove /dev/ubuntu-vg/NcVM-snapshot -y
         then
-            nextcloud_occ maintenance:mode --off
+            sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
             start_if_stopped docker
             notify_admin_gui "Update failed!" \
 "Could not remove NcVM-snapshot - Please reboot your server! $(date +%T)"
@@ -166,7 +166,7 @@ This should work again after a reboot of your server."
     fi
     if ! lvcreate --size 5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
     then
-        nextcloud_occ maintenance:mode --off
+        sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
         start_if_stopped docker
         notify_admin_gui "Update failed!" \
 "Could not create NcVM-snapshot - Please reboot your server! $(date +%T)"
@@ -177,12 +177,12 @@ It should then start working again."
     fi
     if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
     then
-        nextcloud_occ maintenance:mode --off
+        sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
         start_if_stopped docker
         msg_box "Could not rename the snapshot before starting the update. Please reboot your system!"
         exit 1
     fi
-    nextcloud_occ maintenance:mode --off
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     start_if_stopped docker
 fi
 
@@ -323,15 +323,16 @@ then
     apt-mark hold veracrypt
 fi
 
+# Enter maintenance:mode
+print_text_in_color "$IGreen" "Enabling maintenance:mode..."
+sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
+
 # Upgrade Talk repositrory if Talk is installed (2022-12-26)
 if is_this_installed nextcloud-spreed-signaling
 then
     print_text_in_color "$ICyan" "Upgrading dependencies for Talk..."
     apt-get update -q4 --allow-releaseinfo-change & spinner_loading
 fi
-
-# Enter maintenance:mode 
-nextcloud_occ_no_check maintenance:mode --on
 
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
@@ -699,8 +700,9 @@ then
     chmod +x "$SCRIPTS"/updatenotification.sh
 fi
 
-# Disable maintenance:mode 
-nextcloud_occ_no_check maintenance:mode --off
+# Disable maintenance:mode
+print_text_in_color "$IGreen" "Disabling maintenance:mode..."
+sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
 
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
@@ -1057,7 +1059,7 @@ then
     send_mail \
     "New Nextcloud version found!" \
     "We will now start the update to Nextcloud $NCVERSION. $(date +%T)"
-    nextcloud_occ maintenance:mode --on
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf "$NCPATH"
     print_text_in_color "$IGreen" "Extracting new package...."
@@ -1066,7 +1068,7 @@ then
     print_text_in_color "$IGreen" "Restoring config to Nextcloud..."
     rsync -Aaxz "$BACKUP"/config "$NCPATH"/
     bash "$SECURE" & spinner_loading
-    nextcloud_occ maintenance:mode --off
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     # Don't execute the update before all cronjobs are finished
     check_running_cronjobs
     # Execute the update
@@ -1178,7 +1180,6 @@ done
 # Update all Nextcloud apps a second time (if the old backup was outdated)
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    nextcloud_occ maintenance:mode --off
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps again..."
     nextcloud_occ_no_check app:update --all
@@ -1195,10 +1196,10 @@ then
 fi
 
 # Fix crontab every 5 minutes instead of 15
-if crontab -u www-data -l | grep -q "\*/15  \*  \*  \*  \* php -f $NCPATH/cron.php"
+if crontab -u www-data -l | grep -q "\*/15  \*  \*  \*  \* php -f "$NCPATH"/cron.php"
 then
-    crontab -u www-data -l | grep -v "php -f $NCPATH/cron.php" | crontab -u www-data -
-    crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+    crontab -u www-data -l | grep -v "php -f "$NCPATH"/cron.php" | crontab -u www-data -
+    crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f "$NCPATH"/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
     print_text_in_color "$ICyan" "Nextcloud crontab updated to run every 5 minutes."
 fi
 
@@ -1229,11 +1230,11 @@ then
 ||| UPGRADE SUCCESS! |||
 
 If you notice that some apps are disabled, it's because they are not compatible with the new Nextcloud version.
-To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
+To recover your old apps, please check $BACKUP/apps and copy them to "$NCPATH"/apps manually.
 
 Thank you for using T&M Hansson IT's updater!"
     nextcloud_occ status
-    nextcloud_occ maintenance:mode --off
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     # Restart notify push if existing
     if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
     then
