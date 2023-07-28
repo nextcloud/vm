@@ -31,6 +31,7 @@ if [ "${CURRENTVERSION%%.*}" -ge "25" ]
 then
     msg_box "Sorry, it's not possible to install FTS anymore since Nextcloud decided to remove support for OpenSearch.
 Read more in this issue: https://github.com/nextcloud/fulltextsearch_elasticsearch/issues/271"
+   exit 1
 fi
 
 # Check if Full Text Search is already installed
