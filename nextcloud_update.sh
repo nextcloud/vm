@@ -1196,10 +1196,10 @@ then
 fi
 
 # Fix crontab every 5 minutes instead of 15
-if crontab -u www-data -l | grep -q "\*/15  \*  \*  \*  \* php -f "$NCPATH"/cron.php"
+if crontab -u www-data -l | grep -q "\*/15  \*  \*  \*  \* php -f $NCPATH/cron.php"
 then
-    crontab -u www-data -l | grep -v "php -f "$NCPATH"/cron.php" | crontab -u www-data -
-    crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f "$NCPATH"/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+    crontab -u www-data -l | grep -v "php -f $NCPATH/cron.php" | crontab -u www-data -
+    crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
     print_text_in_color "$ICyan" "Nextcloud crontab updated to run every 5 minutes."
 fi
 
