@@ -1230,7 +1230,7 @@ then
 ||| UPGRADE SUCCESS! |||
 
 If you notice that some apps are disabled, it's because they are not compatible with the new Nextcloud version.
-To recover your old apps, please check $BACKUP/apps and copy them to "$NCPATH"/apps manually.
+To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
 
 Thank you for using T&M Hansson IT's updater!"
     nextcloud_occ status
