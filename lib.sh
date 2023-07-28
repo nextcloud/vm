@@ -1925,11 +1925,11 @@ print_text_in_color "$ICyan" "Posting notification to users that are admins, thi
 send_mail "$1" "$2"
 if [ -z "${NC_ADMIN_USER[*]}" ]
 then
-    NC_USERS=$(sudo -u www-data php "$NCPATH"/occ user:list | sed 's|^  - ||g' | sed 's|:.*||')
+    NC_USERS=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
     mapfile -t NC_USERS <<< "$NC_USERS"
     for user in "${NC_USERS[@]}"
     do
-        if sudo -u www-data php "$NCPATH"/occ user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
+        if nextcloud_occ_no_check user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
         then
             NC_ADMIN_USER+=("$user")
         fi
@@ -1939,7 +1939,7 @@ fi
 for admin in "${NC_ADMIN_USER[@]}"
 do
     print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-    sudo -u www-data php "$NCPATH"/occ notification:generate -l "$2" "$admin" "$(hostname -f): $1"
+    nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$(hostname -f): $1"
 done
 }
 
