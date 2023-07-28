@@ -1184,11 +1184,11 @@ nextcloud_occ() {
 if sudo -u www-data php "$NCPATH"/occ maintenance:mode | grep -q enabled >/dev/null 2>&1
 then
     # Disable maintenance:mode
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off >/dev/null 2>&1
     # Run the actual command
     check_command sudo -u www-data php "$NCPATH"/occ "$@";
     # Enable maintenance:mode again
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on >/dev/null 2>&1
 else
     sudo -u www-data php "$NCPATH"/occ "$@";
 fi
@@ -1200,11 +1200,11 @@ nextcloud_occ_no_check() {
 if sudo -u www-data php "$NCPATH"/occ maintenance:mode | grep -q enabled >/dev/null 2>&1
 then
     # Disable maintenance:mode
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off >/dev/null 2>&1
     # Run the actual command
     sudo -u www-data php "$NCPATH"/occ "$@";
     # Enable maintenance:mode again
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on >/dev/null 2>&1
 else
     sudo -u www-data php "$NCPATH"/occ "$@";
 fi
