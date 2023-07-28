@@ -929,6 +929,7 @@ then
 fi
 
 # Stop Apache2
+print_text_in_color "$ICyan" "Stopping Apache2..."
 check_command systemctl stop apache2.service
 
 # Create backup dir (/mnt/NCBACKUP/)
@@ -1059,7 +1060,6 @@ then
     send_mail \
     "New Nextcloud version found!" \
     "We will now start the update to Nextcloud $NCVERSION. $(date +%T)"
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf "$NCPATH"
     print_text_in_color "$IGreen" "Extracting new package...."
@@ -1068,7 +1068,6 @@ then
     print_text_in_color "$IGreen" "Restoring config to Nextcloud..."
     rsync -Aaxz "$BACKUP"/config "$NCPATH"/
     bash "$SECURE" & spinner_loading
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     # Don't execute the update before all cronjobs are finished
     check_running_cronjobs
     # Execute the update
@@ -1110,6 +1109,9 @@ Please check in $BACKUP if the folders exist."
     exit 1
 fi
 
+# Repair
+nextcloud_occ maintenance:repair
+
 # Update Bitwarden
 if is_docker_running
 then
@@ -1146,6 +1148,7 @@ then
 fi
 
 # Start Apache2
+print_text_in_color "$ICyan" "Starting Apache2..."
 start_if_stopped apache2
 
 # Just double check if the DB is started as well
@@ -1196,10 +1199,10 @@ then
 fi
 
 # Fix crontab every 5 minutes instead of 15
-if crontab -u www-data -l | grep -q "\*/15  \*  \*  \*  \* php -f "$NCPATH"/cron.php"
+if crontab -u www-data -l | grep -q "\*/15  \*  \*  \*  \* php -f $NCPATH/cron.php"
 then
-    crontab -u www-data -l | grep -v "php -f "$NCPATH"/cron.php" | crontab -u www-data -
-    crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f "$NCPATH"/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+    crontab -u www-data -l | grep -v "php -f $NCPATH/cron.php" | crontab -u www-data -
+    crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
     print_text_in_color "$ICyan" "Nextcloud crontab updated to run every 5 minutes."
 fi
 
@@ -1212,9 +1215,6 @@ chown -R www-data:www-data "$NCPATH"
 nextcloud_occ config:system:set htaccess.RewriteBase --value="/"
 nextcloud_occ maintenance:update:htaccess
 bash "$SECURE" & spinner_loading
-
-# Repair
-nextcloud_occ maintenance:repair
 
 # Create $VMLOGS dir
 if [ ! -d "$VMLOGS" ]
@@ -1230,11 +1230,10 @@ then
 ||| UPGRADE SUCCESS! |||
 
 If you notice that some apps are disabled, it's because they are not compatible with the new Nextcloud version.
-To recover your old apps, please check $BACKUP/apps and copy them to "$NCPATH"/apps manually.
+To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/apps manually.
 
 Thank you for using T&M Hansson IT's updater!"
     nextcloud_occ status
-    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     # Restart notify push if existing
     if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
     then
