@@ -1181,10 +1181,9 @@ fi
 # Example: nextcloud_occ_no_check 'maintenance:mode --on'
 nextcloud_occ() {
 # Check it maintenance:mode is enabled
-if sudo -u www-data php "$NCPATH"/occ maintenance:mode | grep enabled >/dev/null 2>&1
+if sudo -u www-data php "$NCPATH"/occ maintenance:mode | grep -q enabled >/dev/null 2>&1
 then
     # Disable maintenance:mode
-    print_text_in_color "$IRed" "nextcloud_occ_no_check maintenance:mode --off"
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     # Run the actual command
     check_command sudo -u www-data php "$NCPATH"/occ "$@";
@@ -1198,10 +1197,9 @@ fi
 # Example: nextcloud_occ_no_check 'maintenance:mode --on'
 nextcloud_occ_no_check() {
 # Check it maintenance:mode is enabled
-if sudo -u www-data php "$NCPATH"/occ maintenance:mode | grep enabled >/dev/null 2>&1
+if sudo -u www-data php "$NCPATH"/occ maintenance:mode | grep -q enabled >/dev/null 2>&1
 then
     # Disable maintenance:mode
-    print_text_in_color "$IRed" "nextcloud_occ_no_check maintenance:mode --off"
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     # Run the actual command
     sudo -u www-data php "$NCPATH"/occ "$@";
@@ -1927,11 +1925,11 @@ print_text_in_color "$ICyan" "Posting notification to users that are admins, thi
 send_mail "$1" "$2"
 if [ -z "${NC_ADMIN_USER[*]}" ]
 then
-    NC_USERS=$(nextcloud_occ_no_check user:list | sed 's|^  - ||g' | sed 's|:.*||')
+    NC_USERS=$(sudo -u www-data php "$NCPATH"/occ user:list | sed 's|^  - ||g' | sed 's|:.*||')
     mapfile -t NC_USERS <<< "$NC_USERS"
     for user in "${NC_USERS[@]}"
     do
-        if nextcloud_occ_no_check user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
+        if sudo -u www-data php "$NCPATH"/occ user:info "$user" | cut -d "-" -f2 | grep -x -q " admin"
         then
             NC_ADMIN_USER+=("$user")
         fi
@@ -1941,7 +1939,7 @@ fi
 for admin in "${NC_ADMIN_USER[@]}"
 do
     print_text_in_color "$IGreen" "Posting '$1' to: $admin"
-    nextcloud_occ_no_check notification:generate -l "$2" "$admin" "$(hostname -f): $1"
+    sudo -u www-data php "$NCPATH"/occ notification:generate -l "$2" "$admin" "$(hostname -f): $1"
 done
 }
 
