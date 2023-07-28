@@ -1197,7 +1197,20 @@ fi
 
 # Example: nextcloud_occ_no_check 'maintenance:mode --on'
 nextcloud_occ_no_check() {
+# Disable maintenance mode if enabled to be able to perform db task and notify
+if sudo -u www-data php "$NCPATH"/occ maintenance:mode | grep enabled
+then
+   sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
+   MMODE=enabled
+fi
+# Run the actual command
 sudo -u www-data php "$NCPATH"/occ "$@";
+# Enable maintenance:mode again if it was enabled when running this function
+if [ -n "$MMODE" ]
+then
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
+    unset MMODE
+fi
 }
 
 # Backwards compatibility (2020-10-08)
