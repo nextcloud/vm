@@ -1190,7 +1190,7 @@ then
     # Enable maintenance:mode again
     sudo -u www-data php "$NCPATH"/occ maintenance:mode --on >/dev/null 2>&1
 else
-    sudo -u www-data php "$NCPATH"/occ "$@";
+    check_command sudo -u www-data php "$NCPATH"/occ "$@";
 fi
 }
 
