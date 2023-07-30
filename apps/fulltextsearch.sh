@@ -27,17 +27,15 @@ root_check
 # Nextcloud 21 is required.
 lowest_compatible_nc 21
 
-if [ "${CURRENTVERSION%%.*}" -ge "25" ]
-then
-    msg_box "Sorry, it's not possible to install FTS anymore since Nextcloud decided to remove support for OpenSearch.
-Read more in this issue: https://github.com/nextcloud/fulltextsearch_elasticsearch/issues/271"
-   exit 1
-fi
-
 # Check if Full Text Search is already installed
 if ! does_this_docker_exist "$nc_fts" && ! does_this_docker_exist "$opens_fts" && ! is_app_installed fulltextsearch
 then
     # Ask for installing
+    if [ "${CURRENTVERSION%%.*}" -ge "25" ]
+    then
+        msg_box "Sorry, it's not possible to install FTS anymore since Nextcloud decided to remove support for OpenSearch. Read more in this issue: https://github.com/nextcloud/fulltextsearch_elasticsearch/issues/271"
+        exit 1
+    fi
     install_popup "$SCRIPT_NAME"
 else
     # Ask for removal or reinstallation
