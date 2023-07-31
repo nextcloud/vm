@@ -39,7 +39,7 @@ start_services() {
     systemctl start postgresql
     if [ -z "$MAINTENANCE_MODE_ON" ]
     then
-        nextcloud_occ_no_check maintenance:mode --off
+        sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     fi
     start_if_stopped docker
     # Restart notify push if existing
@@ -272,11 +272,11 @@ Please don't restart or shutdown your server until then!"
     then
         systemctl stop docker
     fi
-    if [ "$(nextcloud_occ_no_check config:system:get maintenance)" = "true" ]
+    if [ "$(sudo -u www-data php "$NCPATH"/occ config:system:get maintenance)" = "true" ]
     then
         MAINTENANCE_MODE_ON=1
     fi
-    nextcloud_occ_no_check maintenance:mode --on
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
     # Database export
     # Not really necessary since the root partition gets backed up but easier to restore on new systems
     ncdb # get NCDB
