@@ -460,14 +460,14 @@ check_running_cronjobs() {
     while [ -n "$(pgrep -f nextcloud/cron.php)" ]
     do
         # Check if virus scan is running, could take ages for it to finish...
-        if ! "$(pgrep -f clamd)"
+        if ! pgrep -f clamd
         then
             # If not running, then keep waiting
             countdown "Waiting for the Nextcloud cronjob to finish..." "30"
         else
             # If virus scan is running, then wait a bit longer, and kill it to release cron.php
             countdown "Waiting for the Nextcloud cronjob and virusscan to finish..." "120"
-            pkill clamd
+            pkill -f clamd
     done
 }
 
