@@ -468,6 +468,7 @@ check_running_cronjobs() {
             # If virus scan is running, then wait a bit longer, and kill it to release cron.php
             countdown "Waiting for the Nextcloud cronjob and virusscan to finish..." "120"
             pkill -f clamd
+        fi
     done
 }
 
