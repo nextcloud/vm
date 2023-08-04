@@ -24,11 +24,11 @@ root_check
 # If we can calculate the cpu and ram, then set it to the lowest possible, if not, then hardcode it to a recomended minimum.
 if which nproc >/dev/null 2>&1
 then
-    ram_check Imaginary 1
-    cpu_check Imaginary 1
+    ram_check 2 Imaginary
+    cpu_check 2 Imaginary
 else
-    ram_check Imaginary 4
-    cpu_check Imaginary 2
+    ram_check 4 Imaginary
+    cpu_check 2 Imaginary
 fi
 
 # Compatible with NC24 and above
