@@ -647,13 +647,17 @@ If you need help, please get support here: https://shop.hanssonit.se/product/pre
     # Full Text Search
     if [ "${CURRENTVERSION%%.*}" -ge "25" ]
     then
-    msg_box "Sorry, it's not possible to install or upgrade FTS anymore since Nextcloud decided to remove support for OpenSearchh
+        opensearch_install
+        if does_this_docker_exist "$nc_fts" && does_this_docker_exist "$opens_fts"
+        then
+            msg_box "Sorry, it's not possible to install or upgrade FTS anymore since Nextcloud decided to remove support for OpenSearchh
 Read more in this issue: https://github.com/nextcloud/fulltextsearch_elasticsearch/issues/271
 
 Please consider removing it by issuing the uninstall script: sudo bash $SCRIPTS/menu.sh --> Additional Apps --> FullTextSearch"
-    else
-        docker_update_specific 'fts_esror' 'Full Text Search'
-        docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
+        else
+            docker_update_specific 'fts_esror' 'Full Text Search'
+            docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
+        fi
     fi
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
@@ -670,7 +674,7 @@ then
     for apacheconf in "${LOOLWSDCONF[@]}"
     do
         sed -i "s|/loleaflet|/browser|g" "${apacheconf}"
-        sed -i "s|loleaflet is the|broswer is the|g" "${apacheconf}"
+        sed -i "s|loleaflet is the|browser is the|g" "${apacheconf}"
         sed -i "s|loolwsd|coolwsd|g" "${apacheconf}"
         sed -i "s|/lool|/cool|g" "${apacheconf}"
     done
