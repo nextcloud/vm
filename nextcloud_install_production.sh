@@ -636,7 +636,7 @@ phpenmod opcache
 echo "# OPcache settings for Nextcloud"
 echo "opcache.enable=1"
 echo "opcache.enable_cli=1"
-echo "opcache.interned_strings_buffer=16"
+echo "opcache.interned_strings_buffer=$opcache_interned_strings_buffer_value"
 echo "opcache.max_accelerated_files=10000"
 echo "opcache.memory_consumption=256"
 echo "opcache.save_comments=1"
