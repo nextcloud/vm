@@ -1211,7 +1211,7 @@ then
 fi
 
 # Update opcache.interned_strings_buffer
-sed -i "s|opcache.interned_strings_buffer=.*|opcache.interned_strings_buffer="$opcache_interned_strings_buffer_value"|g" $PHP_INI
+sed -i "s|opcache.interned_strings_buffer=.*|opcache.interned_strings_buffer=$opcache_interned_strings_buffer_value|g" $PHP_INI
 restart_webserver
 
 # Change owner of $BACKUP folder to root
