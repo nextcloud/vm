@@ -1210,6 +1210,10 @@ then
     print_text_in_color "$ICyan" "Nextcloud crontab updated to run every 5 minutes."
 fi
 
+# Update opcache.interned_strings_buffer
+sed -i "s|opcache.interned_strings_buffer=.*|opcache.interned_strings_buffer="$opcache_interned_strings_buffer_value"|g" $PHP_INI
+restart_webserver
+
 # Change owner of $BACKUP folder to root
 chown -R root:root "$BACKUP"
 
