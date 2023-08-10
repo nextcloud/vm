@@ -109,7 +109,7 @@ mkdir -p "$OPNSDIR"
 
 # Temporary solution, use AIO for now.
 docker pull nextcloud/aio-fulltextsearch
-docker run -t -d -p 127.0.0.1:9200 --restart always --name imaginary nextcloud/aio-fulltextsearch –cap-add=sys_nice -log-level debug
+docker run -t -d -p 127.0.0.1:9200 --restart always --name fulltextsearch nextcloud/aio-fulltextsearch –cap-add=sys_nice -log-level debug
 
 # Wait for bootstrapping
 if [ "$(nproc)" -gt 2 ]
