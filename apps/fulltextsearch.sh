@@ -120,7 +120,7 @@ else
 fi
 
 # For the future, use this in the docker. Maybe elasticsearch can be run directly?
-#docker exec -it aio-fulltextsearch \
+#docker exec -it fulltextsearch \
 #    bash -c "cd \
 #        set -ex; \
 #        \
@@ -132,7 +132,7 @@ fi
 #        rm -rf /var/lib/apt/lists/*; \
 #        elasticsearch-plugin install --batch ingest-attachment
 
-docker logs aio-fulltextsearch
+docker logs fulltextsearch
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
