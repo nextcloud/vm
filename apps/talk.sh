@@ -514,7 +514,7 @@ else
 fi
 
 ####### Talk recording
-if ! yesno_box_yes "Do you want install Talk Recording to be able to record your calls? NOTE, this function is not thoroughly tested yet."
+if ! yesno_box_no "Do you want install Talk Recording to be able to record your calls? NOTE, this function is not thoroughly tested yet."
 then
     exit
 fi
@@ -528,7 +528,7 @@ cpu_check 4 Talk Recording
 print_text_in_color "$ICyan" "Setting up Talk recording..."
 
 # Pull and start
-docker pull nextcloud/aio-talk-recording:latest
+docker pull nextcloud/aio-talk-recording:beta
 docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
 --restart always \
 --name talk-recording \
