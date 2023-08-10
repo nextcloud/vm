@@ -119,6 +119,9 @@ else
 fi
 
 # For the future, use this in the docker. Maybe elasticsearch can be run directly?
+# Have a look at this code, maybe reusable?
+# https://github.com/nextcloud/vm/blob/ce6e539c351854d089e8c1d2c98c1291ceee1b2d/apps/fulltextsearch.sh#L94C17-L124
+
 #docker exec -it fulltextsearch \
 #    bash -c "cd \
 #        set -ex; \
