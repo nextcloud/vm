@@ -5,7 +5,7 @@
 
 true
 SCRIPT_NAME="Full Text Search"
-SCRIPT_EXPLAINER="Full Text Search provides OpenSearch for Nextcloud, which makes it possible to search for text inside files."
+SCRIPT_EXPLAINER="Full Text Search provides ElastichSearch for Nextcloud, which makes it possible to search for text inside files."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -28,14 +28,9 @@ root_check
 lowest_compatible_nc 21
 
 # Check if Full Text Search is already installed
-if ! does_this_docker_exist "$nc_fts" && ! does_this_docker_exist "$opens_fts" && ! is_app_installed fulltextsearch
+if ! does_this_docker_exist nextcloud/aio-fulltextsearch && ! is_app_installed fulltextsearch
 then
     # Ask for installing
-    if [ "${CURRENTVERSION%%.*}" -ge "25" ]
-    then
-        msg_box "Sorry, it's not possible to install FTS anymore since Nextcloud decided to remove support for OpenSearch. Read more in this issue: https://github.com/nextcloud/fulltextsearch_elasticsearch/issues/271"
-        exit 1
-    fi
     install_popup "$SCRIPT_NAME"
 else
     # Ask for removal or reinstallation
@@ -56,16 +51,10 @@ else
             nextcloud_occ app:remove "$app"
         fi
     done
-    # Removal Docker image
-    docker_prune_this "$nc_fts"
-    docker_prune_volume "esdata"
-    docker-compose_down "$OPNSDIR/docker-compose.yml"
-    # Remove configuration files
-    rm -rf "$RORDIR"
-    rm -rf "$OPNSDIR"
+    # Removal Elastichsearch Docker image
+    docker_prune_this "nextcloud/aio-fulltextsearch"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
-    apt-get purge docker-compose -y
 fi
 
 # Test RAM size (4GB min) + CPUs (min 2)
@@ -95,6 +84,18 @@ then
     deluser --group solr
 fi
 
+# Removal Opensearch Docker image
+if does_this_docker_exist "$nc_fts" && does_this_docker_exist "$opens_fts" 
+then
+    docker_prune_this "$nc_fts"
+    docker_prune_volume "esdata"
+    docker-compose_down "$OPNSDIR/docker-compose.yml"
+    # Remove configuration files
+    rm -rf "$RORDIR"
+    rm -rf "$OPNSDIR"
+    apt-get purge docker-compose -y
+fi
+
 # Check if the app is compatible with the current Nextcloud version
 if ! install_and_enable_app fulltextsearch
 then
@@ -103,9 +104,7 @@ fi
 
 # Check & install docker
 install_docker
-install_if_not docker-compose
 set_max_count
-mkdir -p "$OPNSDIR"
 
 # Temporary solution, use AIO for now.
 docker pull nextcloud/aio-fulltextsearch
