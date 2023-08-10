@@ -514,7 +514,7 @@ else
 fi
 
 ####### Talk recording
-if yesno_box_no "Do you want install Talk Recording to be able to record your calls? NOTE, this function is not thoroughly tested yet."
+if ! yesno_box_no "Do you want install Talk Recording to be able to record your calls? NOTE, this function is not thoroughly tested yet."
 then
     exit
 fi
