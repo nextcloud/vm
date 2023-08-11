@@ -35,6 +35,10 @@ is_process_running dpkg
 # Automatically restart services (Ubuntu 22.04)
 if ! version 16.04.10 "$DISTRO" 20.04.10
 then
+    if [ ! -f /etc/needrestart/needrestart.conf ] 
+    then
+        install_if_not needrestart
+    fi
     if ! grep -rq "{restart} = 'a'" /etc/needrestart/needrestart.conf
     then
         # Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
