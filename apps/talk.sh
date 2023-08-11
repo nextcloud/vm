@@ -69,9 +69,9 @@ else
         /etc/apt/sources.list.d/morph027-janus.list \
         /etc/apt/sources.list.d/morph027-nats-server.list \
         /etc/apt/sources.list.d/morph027-coturn.list \
-        $VMLOGS/talk_apache_error.log \
-        $VMLOGS/talk_apache_access.log \
-        $VMLOGS/turnserver.log \
+        "$VMLOGS"/talk_apache_error.log \
+        "$VMLOGS"/talk_apache_access.log \
+        "$VMLOGS"/turnserver.log \
         /var/www/html/error
     APPS=(coturn nats-server janus nextcloud-spreed-signaling)
     for app in "${APPS[@]}"
@@ -388,9 +388,9 @@ a2enmod headers
 a2enmod remoteip
 
 # Allow CustomLog
-touch $VMLOGS/talk_apache_access.log
-touch $VMLOGS/talk_apache_error.log
-chown root:adm $VMLOGS/talk_apache_*
+touch "$VMLOGS"/talk_apache_access.log
+touch "$VMLOGS"/talk_apache_error.log
+chown root:adm "$VMLOGS"/talk_apache_*
 
 # Prep the error page
 mkdir -p /var/www/html/error
