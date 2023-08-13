@@ -538,7 +538,7 @@ docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RE
 -e TZ="$(cat /etc/timezone)" \
 -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
 -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
-nextcloud/aio-talk-recording
+nextcloud/aio-talk-recording:beta
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
