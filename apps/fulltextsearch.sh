@@ -10,10 +10,8 @@ SCRIPT_EXPLAINER="Full Text Search provides ElastichSearch for Nextcloud, which 
 source /var/scripts/fetch_lib.sh
 
 # Get all needed variables from the library
-ncdb
 nc_update
 fulltextsearch_install
-ncdomain
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -114,9 +112,9 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
     container_name: $DOCKER_IMAGE_NAME
+    restart: always
     ports:
-      - 9200:9200
-      #- 9300:9300
+      - 127.0.0.1:9200:9200
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=true
