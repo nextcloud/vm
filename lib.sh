@@ -1713,10 +1713,11 @@ then
   "storage-driver": "overlay2"
 }
 OVERLAY2
-fi
 
-systemctl daemon-reload
-systemctl restart docker.service
+    # Only restart if changed
+    systemctl daemon-reload
+    systemctl restart docker.service
+fi
 }
 
 # Remove all dockers excluding one
