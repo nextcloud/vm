@@ -53,7 +53,7 @@ else
     done
     # Removal Elastichsearch Docker image
     docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
-    rm -rf "FULLTEXTSEARCH_DIR"
+    rm -rf "$FULLTEXTSEARCH_DIR"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -107,7 +107,7 @@ fi
 install_docker
 set_max_count
 
-mkdir -p "FULLTEXTSEARCH_DIR"
+mkdir -p "$FULLTEXTSEARCH_DIR"
 cat << YML_DOCKER_COMPOSE > "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
 version: '3'
 services:
@@ -140,13 +140,13 @@ networks:
 YML_DOCKER_COMPOSE
 
 # Start the docker image
-cd "FULLTEXTSEARCH_DIR"
+cd "$FULLTEXTSEARCH_DIR"
 docker compose up -d
 
 # Check if online
 until curl -sS "http://localhost:9200/_cat/health?h=status" | grep -q "green\|yellow"
 do
-    countdown "Waiting for ElasticSearch to come online..." "1"
+    countdown "Waiting for ElasticSearch to come online..." "3"
 done
 
 # Already included?
