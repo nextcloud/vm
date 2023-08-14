@@ -656,7 +656,7 @@ If you need help, please get support here: https://shop.hanssonit.se/product/pre
         then
             msg_box "Please consider reinstalling FUllTextSearch since you seem to have the old (and not working) implemantation by issuing the uninstall script: sudo bash $SCRIPTS/menu.sh --> Additional Apps --> FullTextSearch"
         else
-            docker-compose_update '$DOCKER_IMAGE_NAME' 'Full Text Search' "$FULLTEXTSEARCH_DIR"
+            docker-compose_update "$DOCKER_IMAGE_NAME" 'Full Text Search' "$FULLTEXTSEARCH_DIR"
         fi
     fi
     # Plex
