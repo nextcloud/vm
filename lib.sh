@@ -20,8 +20,6 @@ SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
-RORDIR=/opt/es/
-OPNSDIR=/opt/opensearch
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 
@@ -179,11 +177,10 @@ fulltextsearch_install() {
     DOCKER_IMAGE_NAME=es01
     FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
     # Legacy
-    nc_fts="ark74/nc_fts"
+    RORDIR=/opt/es/
+    OPNSDIR=/opt/opensearch
     nc_fts="ark74/nc_fts"
     opens_fts="opensearchproject/opensearch:1"
-    opens_fts="opensearchproject/opensearch:1"
-    fts_node="fts_os-node"
     fts_node="fts_os-node"
 }
 # Name in trusted_config
