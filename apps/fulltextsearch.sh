@@ -119,7 +119,9 @@ services:
       #- 9300:9300
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - ELASTIC_PASSWORD=$ELASTIC_USER_PASSWORD
     ulimits:
       memlock:
         soft: -1
@@ -128,10 +130,7 @@ services:
         soft: 65536
         hard: 65536
     networks:
-      - elasticsearch-network
-    # Is this needed?
-    cap_add:
-      - IPC_LOCK
+      - $DOCKER_IMAGE_NAME-network
 
 volumes:
   $DOCKER_IMAGE_NAME-data:
@@ -144,30 +143,14 @@ cd "$FULLTEXTSEARCH_DIR"
 docker compose up -d
 
 # Check if online
-until curl -sS "http://localhost:9200/_cat/health?h=status" | grep -q "green\|yellow"
+until curl -sS "http://elastic:$ELASTIC_USER_PASSWORD@localhost:9200/_cat/health?h=status" | grep -q "green\|yellow"
 do
     countdown "Waiting for ElasticSearch to come online..." "3"
 done
 
-# Already included?
-# https://www.elastic.co/guide/en/elasticsearch/plugins/current/ingest-attachment.html
-docker compose exec -u 0 -it $DOCKER_IMAGE_NAME \
-    bash -c "apt-get-update; \
-        export DEBIAN_FRONTEND=noninteractive; \
-        apt-get install -y --no-install-recommends tzdata; \
-        rm -rf /var/lib/apt/lists/*; \
-        elasticsearch-plugin install --batch ingest-attachment;"
-
-# Create custom index
-curl -X PUT "http://localhost:9200/${INDEX_USER}-index" -H "Content-Type: application/json" -d
-
 # Check logs
-print_tex_in_color "$ICyan" "Checking logs..."
-docker logs $DOCKER_IMAGE_NAME
-
-# Check index
-print_tex_in_color "$ICyan" "Checking index..."
-curl -X GET "http://localhost:9200/${INDEX_USER}-index"
+print_text_in_color "$ICyan" "Checking logs..."
+docker logs "$DOCKER_IMAGE_NAME"
 
 countdown "Waiting a bit more before testing..." "10"
 
@@ -175,11 +158,11 @@ countdown "Waiting a bit more before testing..." "10"
 install_and_enable_app fulltextsearch
 install_and_enable_app fulltextsearch_elasticsearch
 install_and_enable_app files_fulltextsearch
-chown -R www-data:www-data $NC_APPS_PATH
+chown -R www-data:www-data "$NC_APPS_PATH"
 
 # Final setup
 nextcloud_occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://${INDEX_USER}:${OPNSREST}@localhost:9200\",\"elastic_index\":\"${INDEX_USER}-index\"}"
+nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://elastic:$ELASTIC_USER_PASSWORD@localhost:9200\",\"elastic_index\":\"${NEXTCLOUD_INDEX}\"}"
 nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 
 # Wait further for cache for index to work
