@@ -11,6 +11,7 @@ source /var/scripts/fetch_lib.sh
 
 # Get all needed variables from the library
 nc_update
+ncdb
 fulltextsearch_install
 
 # Check for errors + debug code and abort if something isn't right
