@@ -52,7 +52,8 @@ else
         fi
     done
     # Removal Elastichsearch Docker image
-    docker_prune_this "nextcloud/aio-fulltextsearch"
+    docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
+    rm -r "$SCRIPTS"/fulltextsearch
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -85,11 +86,11 @@ then
 fi
 
 # Removal Opensearch Docker image
-if does_this_docker_exist "$nc_fts" && does_this_docker_exist "$opens_fts" 
+if does_this_docker_exist "$nc_fts" && does_this_docker_exist "$opens_fts"
 then
     docker_prune_this "$nc_fts"
     docker_prune_volume "esdata"
-    docker-compose_down "$OPNSDIR/docker-compose.yml"
+    docker compose down "$OPNSDIR/docker-compose.yml"
     # Remove configuration files
     rm -rf "$RORDIR"
     rm -rf "$OPNSDIR"
@@ -106,35 +107,63 @@ fi
 install_docker
 set_max_count
 
-# Temporary solution, use AIO for now.
-docker pull nextcloud/aio-fulltextsearch
-docker run -t -d -p 127.0.0.1:9200 --restart always --name fulltextsearch nextcloud/aio-fulltextsearch –cap-add=sys_nice -log-level debug
+mkdir -p "$SCRIPTS"/fulltextsearch/
+cat << YML_DOCKER_COMPOSE > "$SCRIPTS/fulltextsearch/docker-compose.yaml"
+version: '3'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
+    container_name: fulltextsearch-elasticsearch
+    ports:
+      - 9200:9200
+      #- 9300:9300
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    networks:
+      - elasticsearch-network
 
-# Wait for bootstrapping
-if [ "$(nproc)" -gt 2 ]
-then
-    countdown "Waiting for Docker bootstrapping..." "60"
-else
-    countdown "Waiting for Docker bootstrapping..." "120"
-fi
+volumes:
+  elasticsearch-data:
+networks:
+  elasticsearch-network:
+YML_DOCKER_COMPOSE
 
-# For the future, use this in the docker. Maybe elasticsearch can be run directly?
-# Have a look at this code, maybe reusable?
-# https://github.com/nextcloud/vm/blob/ce6e539c351854d089e8c1d2c98c1291ceee1b2d/apps/fulltextsearch.sh#L94C17-L124
+cd "$SCRIPTS"/fulltextsearch
+docker compose up -d
 
-#docker exec -it fulltextsearch \
-#    bash -c "cd \
-#        set -ex; \
-#        \
-#        export DEBIAN_FRONTEND=noninteractive; \
-#        apt-get update; \
-#        apt-get install -y --no-install-recommends \
-#        tzdata \
-#        ; \
-#        rm -rf /var/lib/apt/lists/*; \
-#        elasticsearch-plugin install --batch ingest-attachment
+# Check if online
+until curl -sS "http://localhost:9200/_cat/health?h=status" | grep -q "green\|yellow"
+do
+    countdown "Waiting for ElasticSearch to come online..." "1"
+done
 
-docker logs fulltextsearch
+# Already included?
+# https://www.elastic.co/guide/en/elasticsearch/plugins/current/ingest-attachment.html
+docker compose exec -u 0 -it fulltextsearch-elasticsearch \
+    bash -c "apt-get-update; \
+        export DEBIAN_FRONTEND=noninteractive; \
+        apt-get install -y --no-install-recommends tzdata; \
+        rm -rf /var/lib/apt/lists/*; \
+        elasticsearch-plugin install --batch ingest-attachment;"
+
+# Create custom index
+curl -X PUT "http://localhost:9200/${INDEX_USER}-index" -H "Content-Type: application/json" -d
+
+# Check logs
+docker logs fulltextsearch-elasticsearch
+
+# Check index
+curl -X GET "http://localhost:9200/${INDEX_USER}-index"
+
+sleep 10
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
