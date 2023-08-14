@@ -173,20 +173,18 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-opensearch_install() {
-    INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
-    OPNSREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
+fulltextsearch_install() {
+    NEXTCLOUD_INDEX=$(gen_passwd "$SHUF" '[:lower:]')
+    ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
+    DOCKER_IMAGE_NAME=es01
+    FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
+    # Legacy
+    nc_fts="ark74/nc_fts"
     nc_fts="ark74/nc_fts"
     opens_fts="opensearchproject/opensearch:1"
+    opens_fts="opensearchproject/opensearch:1"
     fts_node="fts_os-node"
-}
-create_certs(){
-    download_script APP opensearch_certs
-    check_command sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
-    check_command mv "$SCRIPTS"/opensearch_certs.sh "$OPNSDIR"
-    check_command cd "$OPNSDIR"
-    check_command bash opensearch_certs.sh
-    rm -f "$OPNSDIR"/opensearch_certs.sh
+    fts_node="fts_os-node"
 }
 # Name in trusted_config
 ncdomain() {
@@ -1798,14 +1796,14 @@ then
     echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
 fi
 }
-# docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
+# docker-compose_update 'fulltextsearch-elasticsearch' 'Full Text Search' "$FTSDIR"
 # (docker conainter name = $1, the name in text = $2 , docker-compose directory = $3)
 docker-compose_update() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
     cd "$3"
-    docker-compose pull
-    docker-compose up -d --remove-orphans
+    docker compose pull
+    docker compose up -d --remove-orphans
     docker image prune -a -f
     print_text_in_color "$IGreen" "$2 docker image just got updated!"
     echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
