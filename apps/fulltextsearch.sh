@@ -28,7 +28,7 @@ root_check
 lowest_compatible_nc 21
 
 # Check if Full Text Search is already installed
-if ! does_this_docker_exist nextcloud/aio-fulltextsearch && ! is_app_installed fulltextsearch
+if ! does_this_docker_exist docker.elastic.co/elasticsearch/elasticsearch && ! is_app_installed fulltextsearch
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -53,7 +53,7 @@ else
     done
     # Removal Elastichsearch Docker image
     docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
-    rm -r "$SCRIPTS"/fulltextsearch
+    rm -rf "FULLTEXTSEARCH_DIR"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -90,7 +90,7 @@ if does_this_docker_exist "$nc_fts" && does_this_docker_exist "$opens_fts"
 then
     docker_prune_this "$nc_fts"
     docker_prune_volume "esdata"
-    docker compose down "$OPNSDIR/docker-compose.yml"
+    docker-compose_down "$OPNSDIR/docker-compose.yml"
     # Remove configuration files
     rm -rf "$RORDIR"
     rm -rf "$OPNSDIR"
@@ -107,13 +107,13 @@ fi
 install_docker
 set_max_count
 
-mkdir -p "$SCRIPTS"/fulltextsearch/
-cat << YML_DOCKER_COMPOSE > "$SCRIPTS/fulltextsearch/docker-compose.yaml"
+mkdir -p "FULLTEXTSEARCH_DIR"
+cat << YML_DOCKER_COMPOSE > "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
 version: '3'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
-    container_name: fulltextsearch-elasticsearch
+    container_name: $DOCKER_IMAGE_NAME
     ports:
       - 9200:9200
       #- 9300:9300
@@ -131,12 +131,13 @@ services:
       - elasticsearch-network
 
 volumes:
-  elasticsearch-data:
+  $DOCKER_IMAGE_NAME-data:
 networks:
-  elasticsearch-network:
+  $DOCKER_IMAGE_NAME-network:
 YML_DOCKER_COMPOSE
 
-cd "$SCRIPTS"/fulltextsearch
+# Start the docker image
+cd "FULLTEXTSEARCH_DIR"
 docker compose up -d
 
 # Check if online
@@ -158,12 +159,14 @@ docker compose exec -u 0 -it fulltextsearch-elasticsearch \
 curl -X PUT "http://localhost:9200/${INDEX_USER}-index" -H "Content-Type: application/json" -d
 
 # Check logs
+print_tex_in_color "$ICyan" "Checking logs..."
 docker logs fulltextsearch-elasticsearch
 
 # Check index
+print_tex_in_color "$ICyan" "Checking index..."
 curl -X GET "http://localhost:9200/${INDEX_USER}-index"
 
-sleep 10
+countdown "Waiting a bit more before testing..." "10"
 
 # Get Full Text Search app for nextcloud
 install_and_enable_app fulltextsearch
