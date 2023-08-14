@@ -174,13 +174,16 @@ ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
 fulltextsearch_install() {
-    INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
-    DOCKER_IMAGE_NAME=fulltextsearch-elasticsearch
+    NEXTCLOUD_INDEX=$(gen_passwd "$SHUF" '[:lower:]')
+    ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
+    DOCKER_IMAGE_NAME=es01
     FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
     # Legacy
-    OPNSREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
+    nc_fts="ark74/nc_fts"
     nc_fts="ark74/nc_fts"
     opens_fts="opensearchproject/opensearch:1"
+    opens_fts="opensearchproject/opensearch:1"
+    fts_node="fts_os-node"
     fts_node="fts_os-node"
 }
 # Name in trusted_config
