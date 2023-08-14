@@ -85,11 +85,11 @@ then
 fi
 
 # Removal Opensearch Docker image
-if does_this_docker_exist "$nc_fts" && does_this_docker_exist "$opens_fts"
+if does_this_docker_exist "$nc_fts" || does_this_docker_exist "$opens_fts"
 then
     docker_prune_this "$nc_fts"
+    docker_prune_this "$opens_fts"
     docker_prune_volume "esdata"
-    docker-compose_down "$OPNSDIR/docker-compose.yml"
     # Remove configuration files
     rm -rf "$RORDIR"
     rm -rf "$OPNSDIR"
