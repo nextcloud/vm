@@ -12,7 +12,7 @@ source /var/scripts/fetch_lib.sh
 # Get all needed variables from the library
 ncdb
 nc_update
-opensearch_install
+fulltextsearch_install
 ncdomain
 
 # Check for errors + debug code and abort if something isn't right
@@ -129,6 +129,9 @@ services:
         hard: 65536
     networks:
       - elasticsearch-network
+    # Is this needed?
+    cap_add:
+      - IPC_LOCK
 
 volumes:
   $DOCKER_IMAGE_NAME-data:
@@ -148,7 +151,7 @@ done
 
 # Already included?
 # https://www.elastic.co/guide/en/elasticsearch/plugins/current/ingest-attachment.html
-docker compose exec -u 0 -it fulltextsearch-elasticsearch \
+docker compose exec -u 0 -it $DOCKER_IMAGE_NAME \
     bash -c "apt-get-update; \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get install -y --no-install-recommends tzdata; \
@@ -160,7 +163,7 @@ curl -X PUT "http://localhost:9200/${INDEX_USER}-index" -H "Content-Type: applic
 
 # Check logs
 print_tex_in_color "$ICyan" "Checking logs..."
-docker logs fulltextsearch-elasticsearch
+docker logs $DOCKER_IMAGE_NAME
 
 # Check index
 print_tex_in_color "$ICyan" "Checking index..."
