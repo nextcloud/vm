@@ -58,6 +58,7 @@ else
     rm -rf \
         "$TURN_CONF" \
         "$SIGNALING_SERVER_CONF" \
+        /etc/signaling \
         /etc/nats \
         /etc/janus \
         /etc/apt/trusted.gpg.d/morph027-janus.asc \
@@ -523,7 +524,7 @@ fi
 lowest_compatible_nc 26
 
 # It's pretty recource intensive
-cpu_check 6 "Talk Recording"
+cpu_check 4 "Talk Recording"
 ram_check 4 "Talk Recording"
 
 print_text_in_color "$ICyan" "Setting up Talk recording..."
