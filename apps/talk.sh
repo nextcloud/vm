@@ -528,7 +528,7 @@ cpu_check 4 "Talk Recording"
 print_text_in_color "$ICyan" "Setting up Talk recording..."
 
 # Pull and start
-docker pull nextcloud/aio-talk-recording:beta
+docker pull nextcloud/aio-talk-recording:latest
 docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
 --restart always \
 --name talk-recording \
@@ -539,7 +539,7 @@ docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RE
 -e TZ="$(cat /etc/timezone)" \
 -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
 -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
-nextcloud/aio-talk-recording:beta
+nextcloud/aio-talk-recording:latest
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
