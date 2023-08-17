@@ -514,7 +514,7 @@ else
 fi
 
 ####### Talk recording
-if ! yesno_box_no "Do you want install Talk Recording to be able to record your calls? NOTE, this function is not thoroughly tested yet."
+if ! yesno_box_yes "Do you want install Talk Recording to be able to record your calls?"
 then
     exit
 fi
@@ -523,7 +523,8 @@ fi
 lowest_compatible_nc 26
 
 # It's pretty recource intensive
-cpu_check 4 "Talk Recording"
+cpu_check 6 "Talk Recording"
+ram_check 4 "Talk Recording"
 
 print_text_in_color "$ICyan" "Setting up Talk recording..."
 
