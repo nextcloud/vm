@@ -52,7 +52,10 @@ else
     done
     # Removal Elastichsearch Docker image
     docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
-    docker network rm fulltextsearch_es01-network
+    if docker network ls | grep fulltextsearch_es01-network
+    then
+        docker network rm fulltextsearch_es01-network
+    fi
     rm -rf "$FULLTEXTSEARCH_DIR"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
