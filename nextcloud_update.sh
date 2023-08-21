@@ -642,10 +642,6 @@ $DOCKER_RUN_OUTPUT"
         if does_this_docker_exist 'onlyoffice/documentserver'
         then
             docker_update_specific 'onlyoffice' 'OnlyOffice'
-            msg_box "OnlyOffice updated the way websockets work, and you need to update your configuration.\n
-Please update your Apache2 config to this: https://github.com/nextcloud/vm/blob/master/apps/onlyoffice_docker.sh#L210-L215.
-Another option is to reinstall OnlyOffice with the menu script; sudo bash /var/scripts/menu.sh\n
-If you need help, please get support here: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
         fi
     fi
     # Full Text Search
@@ -654,11 +650,13 @@ If you need help, please get support here: https://shop.hanssonit.se/product/pre
         fulltextsearch_install
         if does_this_docker_exist "$nc_fts" && does_this_docker_exist "$opens_fts"
         then
-            msg_box "Please consider reinstalling FUllTextSearch since you seem to have the old (and not working) implemantation by issuing the uninstall script: sudo bash $SCRIPTS/menu.sh --> Additional Apps --> FullTextSearch"
+            msg_box "Please consider reinstalling FullTextSearch since you seem to have the old (and not working) implemantation by issuing the uninstall script: sudo bash $SCRIPTS/menu.sh --> Additional Apps --> FullTextSearch"
         else
             docker-compose_update "$DOCKER_IMAGE_NAME" 'Full Text Search' "$FULLTEXTSEARCH_DIR"
         fi
     fi
+    # Talk Recording
+    docker_update_specific 'talk-recording' "Talk Recording"
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
     # Imaginary
