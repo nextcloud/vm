@@ -1788,9 +1788,11 @@ fi
 docker_update_specific() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
-    docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
-    print_text_in_color "$IGreen" "$2 docker image just got updated!"
-    echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
+    if docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
+    then
+        print_text_in_color "$IGreen" "$2 docker image just got updated!"
+        echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
+    fi
 fi
 }
 # docker-compose_update 'fulltextsearch-elasticsearch' 'Full Text Search' "$FTSDIR"
