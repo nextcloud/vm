@@ -56,25 +56,17 @@ then
 fi
 install_if_not redis-server
 
-# Prepare for adding redis configuration
-sed -i "s|);||g" $NCPATH/config/config.php
-
 # Add the needed config to Nextclouds config.php
-cat <<ADD_TO_CONFIG >> $NCPATH/config/config.php
-  'memcache.local' => '\\OC\\Memcache\\Redis',
-  'filelocking.enabled' => true,
-  'memcache.distributed' => '\\OC\\Memcache\\Redis',
-  'memcache.locking' => '\\OC\\Memcache\\Redis',
-  'redis' =>
-  array (
-    'host' => '$REDIS_SOCK',
-    'port' => 0,
-    'timeout' => 0.5,
-    'dbindex' => 0,
-    'password' => '$REDIS_PASS',
-  ),
-);
-ADD_TO_CONFIG
+nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
+nextcloud_occ config:system:set filelocking.enabled --value='true'
+nextcloud_occ config:system:set memcache.distributed --value='\OC\Memcache\Redis'
+nextcloud_occ config:system:set memcache.locking --value='\OC\Memcache\Redis'
+
+nextcloud_occ config:system:set redis host --value="$REDIS_SOCK"
+nextcloud_occ config:system:set redis port --value=0
+nextcloud_occ config:system:set redis dbindex --value=0
+nextcloud_occ config:system:set redis timeout --value=0.5
+nextcloud_occ config:system:set redis timeout --value="$REDIS_PASS"
 
 ## Redis performance tweaks ##
 if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
