@@ -1100,9 +1100,9 @@ then
     if [ "${CURRENTVERSION%%.*}" -ge "23" ]
     then
         # Update opcache.interned_strings_buffer
-        if ! grep -r opcache.interned_strings_buffer="$opcache_interned_strings_buffer_value" $PHP_INI
+        if ! grep -r opcache.interned_strings_buffer="$opcache_interned_strings_buffer_value" "$PHP_INI"
         then
-            sed -i "s|opcache.interned_strings_buffer=.*|opcache.interned_strings_buffer=$opcache_interned_strings_buffer_value|g" $PHP_INI
+            sed -i "s|opcache.interned_strings_buffer=.*|opcache.interned_strings_buffer=$opcache_interned_strings_buffer_value|g" "$PHP_INI"
             restart_webserver
         fi
     fi
