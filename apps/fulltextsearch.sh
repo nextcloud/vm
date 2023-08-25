@@ -148,7 +148,7 @@ docker compose up -d
 # Check if online
 until curl -sS "http://elastic:$ELASTIC_USER_PASSWORD@localhost:9200/_cat/health?h=status" | grep -q "green\|yellow"
 do
-    countdown "Waiting for ElasticSearch to come online..." "3"
+    countdown "Waiting for ElasticSearch to come online, please don't abort..." "10"
 done
 
 # Check logs
