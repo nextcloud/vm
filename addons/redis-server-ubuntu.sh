@@ -56,18 +56,6 @@ then
 fi
 install_if_not redis-server
 
-# Add the needed config to Nextclouds config.php
-nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
-nextcloud_occ config:system:set filelocking.enabled --value='true'
-nextcloud_occ config:system:set memcache.distributed --value='\OC\Memcache\Redis'
-nextcloud_occ config:system:set memcache.locking --value='\OC\Memcache\Redis'
-
-nextcloud_occ config:system:set redis host --value="$REDIS_SOCK"
-nextcloud_occ config:system:set redis port --value=0
-nextcloud_occ config:system:set redis dbindex --value=0
-nextcloud_occ config:system:set redis timeout --value=0.5
-nextcloud_occ config:system:set redis timeout --value="$REDIS_PASS"
-
 ## Redis performance tweaks ##
 if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
 then
@@ -101,5 +89,17 @@ chmod 600 /etc/redis/redis.conf
 apt-get update -q4 & spinner_loading
 apt-get autoremove -y
 apt-get autoclean
+
+# Add the needed config to Nextclouds config.php
+nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
+nextcloud_occ config:system:set filelocking.enabled --value='true'
+nextcloud_occ config:system:set memcache.distributed --value='\OC\Memcache\Redis'
+nextcloud_occ config:system:set memcache.locking --value='\OC\Memcache\Redis'
+
+nextcloud_occ config:system:set redis host --value="$REDIS_SOCK"
+nextcloud_occ config:system:set redis port --value=0
+nextcloud_occ config:system:set redis dbindex --value=0
+nextcloud_occ config:system:set redis timeout --value=0.5
+nextcloud_occ config:system:set redis timeout --value="$REDIS_PASS"
 
 exit
