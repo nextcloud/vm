@@ -34,7 +34,29 @@ fi
 # Check the current PHPVER
 check_php
 
+if is_this_installed redis-server
+then
+    print_text_in_color "$ICyan" "Removing old Redis server installation..."
+    if nextcloud_occ_no_check -V
+    then
+        # Remove the config from Nextclouds config.php
+        nextcloud_occ config:system:delete memcache.local
+        nextcloud_occ config:system:delete filelocking.enabled
+        nextcloud_occ config:system:delete memcache.distributed
+        nextcloud_occ config:system:delete memcache.locking
+        nextcloud_occ config:system:delete redis
+    fi
+    if pecl list | grep -q redis
+    then
+        pecl uninstall redis
+    fi
+    apt-get purge redis-server -y
+    apt-get autoremove -y
+    apt-get autoclean
+fi
+
 # Install Redis
+print_text_in_color "$ICyan" "Installing Redis server..."
 install_if_not php"$PHPVER"-dev
 pecl channel-update pecl.php.net
 if ! yes no | pecl install -Z redis
@@ -42,7 +64,7 @@ then
     msg_box "PHP module installation failed"
 exit 1
 else
-    printf "${IGreen}\nPHP module installation OK!${Color_Off}\n"
+    print_text_in_color "$IGreen" "Redis PHP module installation OK!"
 fi
 if [ ! -f $PHP_MODS_DIR/redis.ini ]
 then
@@ -81,28 +103,26 @@ sed -i "s|# unixsocket .*|unixsocket $REDIS_SOCK|g" $REDIS_CONF
 sed -i "s|# unixsocketperm .*|unixsocketperm 777|g" $REDIS_CONF
 sed -i "s|^port.*|port 0|" $REDIS_CONF
 sed -i 's|# rename-command CONFIG ""|rename-command CONFIG ""|' $REDIS_CONF
+systemctl restart redis-server
 systemctl restart redis
 
 # Secure Redis
 chown redis:root /etc/redis/redis.conf
 chmod 600 /etc/redis/redis.conf
 
-apt-get update -q4 & spinner_loading
-apt-get autoremove -y
-apt-get autoclean
-
 # Add the needed config to Nextclouds config.php
-nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
-nextcloud_occ config:system:set filelocking.enabled --value='true'
-nextcloud_occ config:system:set memcache.distributed --value='\OC\Memcache\Redis'
-nextcloud_occ config:system:set memcache.locking --value='\OC\Memcache\Redis'
-
 nextcloud_occ config:system:set redis host --value="$REDIS_SOCK"
 nextcloud_occ config:system:set redis port --value=0
 nextcloud_occ config:system:set redis dbindex --value=0
 nextcloud_occ config:system:set redis timeout --value=0.5
 
+nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
+nextcloud_occ config:system:set filelocking.enabled --value='true'
+nextcloud_occ config:system:set memcache.distributed --value='\OC\Memcache\Redis'
+nextcloud_occ config:system:set memcache.locking --value='\OC\Memcache\Redis'
+
 # Set password
 sed -i "s|# requirepass .*|requirepass $REDIS_PASS|g" $REDIS_CONF
-nextcloud_occ config:system:set redis timeout --value="$REDIS_PASS"
+nextcloud_occ config:system:set redis password --value="$REDIS_PASS"
+systemctl restart redis-server
 systemctl restart redis
