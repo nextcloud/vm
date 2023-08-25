@@ -482,13 +482,16 @@ else
 fi
 
 # Set correct amount of CPUs for Imaginary
-if which nproc >/dev/null 2>&1
+if does_this_docker_exist nextcloud/aio-imaginary
 then
-    nextcloud_occ config:system:set preview_concurrency_new --value="$(nproc)"
-    nextcloud_occ config:system:set preview_concurrency_all --value="$(($(nproc)*2))"
-else
-    nextcloud_occ config:system:set preview_concurrency_new --value="2"
-    nextcloud_occ config:system:set preview_concurrency_all --value="4"
+    if which nproc >/dev/null 2>&1
+    then
+        nextcloud_occ config:system:set preview_concurrency_new --value="$(nproc)"
+        nextcloud_occ config:system:set preview_concurrency_all --value="$(($(nproc)*2))"
+    else
+        nextcloud_occ config:system:set preview_concurrency_new --value="2"
+        nextcloud_occ config:system:set preview_concurrency_all --value="4"
+    fi
 fi
 
 # Add temporary fix if needed
