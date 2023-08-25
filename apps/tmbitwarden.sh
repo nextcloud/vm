@@ -102,7 +102,6 @@ https://imgur.com/a/3ytwvp6"
 
 # Install Docker
 install_docker
-install_if_not docker-compose
 
 # Create bitwarden user
 if ! id "$BITWARDEN_USER" >/dev/null 2>&1
