@@ -61,7 +61,7 @@ install_if_not php"$PHPVER"-dev
 pecl channel-update pecl.php.net
 if ! yes no | pecl install -Z redis
 then
-    msg_box "PHP module installation failed"
+    msg_box "Redis PHP module installation failed"
 exit 1
 else
     print_text_in_color "$IGreen" "Redis PHP module installation OK!"
@@ -104,13 +104,9 @@ sed -i "s|# unixsocketperm .*|unixsocketperm 777|g" $REDIS_CONF
 sed -i "s|^port.*|port 0|" $REDIS_CONF
 sed -i 's|# rename-command CONFIG ""|rename-command CONFIG ""|' $REDIS_CONF
 systemctl restart redis-server
-systemctl restart redis
-
-# Secure Redis
-chown redis:root /etc/redis/redis.conf
-chmod 600 /etc/redis/redis.conf
 
 # Add the needed config to Nextclouds config.php
+# Redis needs to be set first for the connection, else it will fail.
 nextcloud_occ config:system:set redis host --value="$REDIS_SOCK"
 nextcloud_occ config:system:set redis port --value=0
 nextcloud_occ config:system:set redis dbindex --value=0
@@ -121,8 +117,11 @@ nextcloud_occ config:system:set filelocking.enabled --value='true'
 nextcloud_occ config:system:set memcache.distributed --value='\OC\Memcache\Redis'
 nextcloud_occ config:system:set memcache.locking --value='\OC\Memcache\Redis'
 
+# Secure Redis
+chown redis:root /etc/redis/redis.conf
+chmod 600 /etc/redis/redis.conf
+
 # Set password
 sed -i "s|# requirepass .*|requirepass $REDIS_PASS|g" $REDIS_CONF
 nextcloud_occ config:system:set redis password --value="$REDIS_PASS"
 systemctl restart redis-server
-systemctl restart redis
