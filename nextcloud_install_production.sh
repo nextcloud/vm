@@ -63,50 +63,6 @@ fi
 # Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
 sed -i "s|#\$nrconf{restart} = .*|\$nrconf{restart} = 'a';|g" /etc/needrestart/needrestart.conf
 
-# Fix LVM on BASE image
-if grep -q "LVM" /etc/fstab
-then
-    if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want to make all free space available to your root partition?"
-    then
-    # Resize LVM (live installer is &%¤%/!
-    # VM
-    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
-    lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
-
-    # Run it again manually just to be sure it's done
-    while :
-    do
-        lvdisplay | grep "Size" | awk '{print $3}'
-        if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-        then
-            if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-            then
-                if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-                then
-                    if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
-                    then
-                        resize2fs /dev/ubuntu-vg/ubuntu-lv
-                        break
-                    fi
-                fi
-            fi
-        fi
-    done
-    fi
-fi
-
-# Install needed dependencies
-install_if_not lshw
-install_if_not net-tools
-install_if_not whiptail
-install_if_not apt-utils
-install_if_not keyboard-configuration
-
-# Nice to have dependencies
-install_if_not bash-completion
-install_if_not htop
-install_if_not iputils-ping
-
 # Check for flags
 if [ "$1" = "" ]
 then
@@ -155,6 +111,50 @@ Enabling this will also force an automatic reboot after running the update scrip
         fi
     fi
 fi
+
+# Fix LVM on BASE image
+if grep -q "LVM" /etc/fstab
+then
+    if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want to make all free space available to your root partition?"
+    then
+    # Resize LVM (live installer is &%¤%/!
+    # VM
+    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
+    lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+
+    # Run it again manually just to be sure it's done
+    while :
+    do
+        lvdisplay | grep "Size" | awk '{print $3}'
+        if ! lvextend -L +10G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+        then
+            if ! lvextend -L +1G /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+            then
+                if ! lvextend -L +100M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                then
+                    if ! lvextend -L +1M /dev/ubuntu-vg/ubuntu-lv >/dev/null 2>&1
+                    then
+                        resize2fs /dev/ubuntu-vg/ubuntu-lv
+                        break
+                    fi
+                fi
+            fi
+        fi
+    done
+    fi
+fi
+
+# Install needed dependencies
+install_if_not lshw
+install_if_not net-tools
+install_if_not whiptail
+install_if_not apt-utils
+install_if_not keyboard-configuration
+
+# Nice to have dependencies
+install_if_not bash-completion
+install_if_not htop
+install_if_not iputils-ping
 
 # Download needed libraries before execution of the first script
 mkdir -p "$SCRIPTS"
@@ -558,6 +558,56 @@ nextcloud_occ status
 sleep 3
 echo
 
+# Install PECL dependencies
+install_if_not php"$PHPVER"-dev
+
+# Install Redis (distributed cache)
+run_script ADDONS redis-server-ubuntu
+
+# Install smbclient
+# php"$PHPVER"-smbclient does not yet work in PHP 7.4
+install_if_not libsmbclient-dev
+yes no | pecl install smbclient
+if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
+then
+    touch "$PHP_MODS_DIR"/smbclient.ini
+fi
+if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
+then
+    echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
+    echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
+    check_command phpenmod -v ALL smbclient
+fi
+
+# Enable igbinary for PHP
+# https://github.com/igbinary/igbinary
+if is_this_installed "php$PHPVER"-dev
+then
+    if ! yes no | pecl install -Z igbinary
+    then
+        msg_box "igbinary PHP module installation failed"
+        exit
+    else
+        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
+    fi
+{
+echo "# igbinary for PHP"
+echo "session.serialize_handler=igbinary"
+echo "igbinary.compact_strings=On"
+} >> "$PHP_INI"
+    if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
+    then
+        touch "$PHP_MODS_DIR"/igbinary.ini
+    fi
+    if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
+    then
+        echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
+        echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
+        check_command phpenmod -v ALL igbinary
+    fi
+restart_webserver
+fi
+
 # Prepare cron.php to be run every 5 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
 
@@ -661,56 +711,6 @@ echo "pgsql.max_links = -1"
 echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
-
-# Install PECL dependencies
-install_if_not php"$PHPVER"-dev
-
-# Install Redis (distributed cache)
-run_script ADDONS redis-server-ubuntu
-
-# Install smbclient
-# php"$PHPVER"-smbclient does not yet work in PHP 7.4
-install_if_not libsmbclient-dev
-yes no | pecl install smbclient
-if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
-then
-    touch "$PHP_MODS_DIR"/smbclient.ini
-fi
-if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
-then
-    echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
-    echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
-    check_command phpenmod -v ALL smbclient
-fi
-
-# Enable igbinary for PHP
-# https://github.com/igbinary/igbinary
-if is_this_installed "php$PHPVER"-dev
-then
-    if ! yes no | pecl install -Z igbinary
-    then
-        msg_box "igbinary PHP module installation failed"
-        exit
-    else
-        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
-    fi
-{
-echo "# igbinary for PHP"
-echo "session.serialize_handler=igbinary"
-echo "igbinary.compact_strings=On"
-} >> "$PHP_INI"
-    if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
-    then
-        touch "$PHP_MODS_DIR"/igbinary.ini
-    fi
-    if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
-    then
-        echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
-        echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
-        check_command phpenmod -v ALL igbinary
-    fi
-restart_webserver
-fi
 
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
