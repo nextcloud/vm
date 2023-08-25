@@ -542,7 +542,7 @@ This is used when you login to Nextcloud itself, i.e. on the web."
 fi
 
 # Install Nextcloud
-print_text_in_color "$ICyan" "Installing Nextcloud..."
+print_text_in_color "$ICyan" "Installing Nextcloud, it might take a while..."
 cd "$NCPATH"
 nextcloud_occ maintenance:install \
 --data-dir="$NCDATA" \
@@ -552,11 +552,9 @@ nextcloud_occ maintenance:install \
 --database-pass="$PGDB_PASS" \
 --admin-user="$GUIUSER" \
 --admin-pass="$GUIPASS"
-echo
 print_text_in_color "$ICyan" "Nextcloud version:"
 nextcloud_occ status
 sleep 3
-echo
 
 # Install PECL dependencies
 install_if_not php"$PHPVER"-dev
