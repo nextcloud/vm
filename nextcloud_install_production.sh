@@ -550,6 +550,7 @@ nextcloud_occ maintenance:install \
 --database-name=nextcloud_db \
 --database-user="$PGDB_USER" \
 --database-pass="$PGDB_PASS" \
+--database-persistent=true \
 --admin-user="$GUIUSER" \
 --admin-pass="$GUIPASS"
 print_text_in_color "$ICyan" "Nextcloud version:"
