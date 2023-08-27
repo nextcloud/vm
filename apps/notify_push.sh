@@ -42,7 +42,11 @@ fi
 check_nextcloud_https "Notify Push"
 
 # Get the NCDOMAIN variable
-ncdomain
+if [ -z $NCDOMAIN ]
+then
+    ncdomain
+fi
+
 # Check apache conf
 if ! [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
 then
