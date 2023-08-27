@@ -341,6 +341,14 @@ fi
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
+# Temporary fix for PHP 2023-08-27
+# There's a bug in PHP 8.1.21 which causes server to crash
+# If you're on Ondrejs PPA, PHP isn't updated, so do that here instead
+apt-mark unhold php* >/dev/null 2>&1
+apt-get update -q4
+export DEBIAN_FRONTEND=noninteractive ; apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+apt-mark hold php* >/dev/null 2>&1
+
 # Improve Apache for PHP-FPM
 if is_this_installed php"$PHPVER"-fpm
 then
