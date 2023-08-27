@@ -41,8 +41,9 @@ fi
 # Check TLS
 check_nextcloud_https "Notify Push"
 
+# Get the NCDOMAIN variable
+ncdomain
 # Check apache conf
-NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
 if ! [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
 then
     msg_box "It seems like you haven't used the built-in 'Activate TLS' script to enable 'Let's Encrypt!' \
