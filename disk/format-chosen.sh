@@ -172,7 +172,7 @@ then
     check_command zpool create -f -o ashift=12 "$POOLNAME" "$DISKTYPE"
     check_command zpool set failmode=continue "$POOLNAME"
     check_command zfs set mountpoint="$MOUNT_" "$POOLNAME"
-    check_command zfs set compression=lz4 "$POOLNAME"
+    check_command zfs set compression=zstd "$POOLNAME"
     check_command zfs set sync=standard "$POOLNAME"
     check_command zfs set xattr=sa "$POOLNAME"
     check_command zfs set primarycache=all "$POOLNAME"
