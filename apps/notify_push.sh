@@ -42,7 +42,7 @@ fi
 check_nextcloud_https "Notify Push"
 
 # Get the NCDOMAIN variable
-if [ -z $NCDOMAIN ]
+if [ -z "$NCDOMAIN" ]
 then
     ncdomain
 fi
