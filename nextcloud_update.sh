@@ -652,7 +652,7 @@ $DOCKER_RUN_OUTPUT"
         then
             msg_box "Please consider reinstalling FullTextSearch since you seem to have the old (and not working) implemantation by issuing the uninstall script: sudo bash $SCRIPTS/menu.sh --> Additional Apps --> FullTextSearch"
         else
-            print_tex_in_color "$ICyan" "Full Text Search is version based, to upgrade it, please change the version in $FULLTEXTSEARCH_DIR and run 'docker compose pull && docker compose up -d'. Latest tags are here: https://www.docker.elastic.co/r/elasticsearch and release notes here: https://www.elastic.co/guide/en/elasticsearch/reference/current/release-highlights.html"
+            print_text_in_color "$ICyan" "Full Text Search is version based, to upgrade it, please change the version in $FULLTEXTSEARCH_DIR and run 'docker compose pull && docker compose up -d'. Latest tags are here: https://www.docker.elastic.co/r/elasticsearch and release notes here: https://www.elastic.co/guide/en/elasticsearch/reference/current/release-highlights.html"
         fi
     fi
     # Talk Recording
