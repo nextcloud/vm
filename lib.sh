@@ -747,9 +747,13 @@ fi
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https() {
-    if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
+if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
+then
+    # Check if it's used by any of the Documentserver apps and adopt the message to that
+    if [ "$1" == 'Collabora (Docker)' ] || [ "$1" == 'OnlyOffice (Docker)' ]
     then
-        if [ "$1" == 'Collabora (Docker)' ] || [ "$1" == 'OnlyOffice (Docker)' ]
+        ncdomain
+        if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
         then
             msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
 You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
@@ -758,7 +762,12 @@ More info here: http://shortio.hanssonit.se/1EAgBmPyFc
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
 Additional Apps --> Documentserver --> $1."
             exit
-        else
+        fi
+    else
+    # Adopt the error message to anything else but the Documentserver apps
+        ncdomain
+        if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
+        then
             msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
 You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
 More info here: http://shortio.hanssonit.se/1EAgBmPyFc
@@ -768,6 +777,7 @@ Additional Apps --> $1."
             exit
         fi
     fi
+fi
 }
 
 restart_webserver() {
