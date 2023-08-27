@@ -36,7 +36,7 @@ and avoid a fatal crash. Please check $VMLOGS/zfs_prune.log for the results."
                 # On screen information
                 msg_box "Your disk space is almost full (more than 70% or less than 100GB left).
 
-To solve that, we will now delete ZFS snapshots older than 4 weeks
+To solve that, we will now delete ZFS snapshots older than 2 days.
 
 The script will also delete everything in trashbin for all users to free up some space."
                 countdown "To abort, please press CTRL+C within 10 seconds." 10
