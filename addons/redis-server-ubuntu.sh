@@ -44,7 +44,10 @@ then
         nextcloud_occ config:system:delete filelocking.enabled
         nextcloud_occ config:system:delete memcache.distributed
         nextcloud_occ config:system:delete memcache.locking
+        nextcloud_occ config:system:delete redis password
         nextcloud_occ config:system:delete redis
+        # Check that everything is functioning
+        nextcloud_occ -V
     fi
     if pecl list | grep -q redis
     then
