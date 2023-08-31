@@ -41,8 +41,8 @@ then
     then
         # Remove the config from Nextclouds config.php
         nextcloud_occ config:system:delete memcache.local
-        nextcloud_occ config:system:delete filelocking.enabled
         nextcloud_occ config:system:delete memcache.distributed
+        nextcloud_occ config:system:delete filelocking.enabled
         nextcloud_occ config:system:delete memcache.locking
         nextcloud_occ config:system:delete redis password
         nextcloud_occ config:system:delete redis
