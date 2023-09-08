@@ -177,13 +177,15 @@ then
     print_text_in_color "Turning of swap temporarily..."
     swapoff -a
     if nextcloud_occ fulltextsearch:index < /dev/null
-    swapon -a
     then
         msg_box "Full Text Search was successfully installed!"
     fi
 else
     msg_box "There seems to be an issue with the Full Text Search test. Please report this to $ISSUES."
 fi
+
+# Turn on swap again
+swapon -a
 
 # Make sure the script exists
 exit
