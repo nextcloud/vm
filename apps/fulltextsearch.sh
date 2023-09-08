@@ -173,7 +173,11 @@ nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_offic
 countdown "Waiting for a few seconds before indexing starts..." "10"
 if nextcloud_occ fulltextsearch:test
 then
+    # Turn off swap temporarily https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html
+    print_text_in_color "Turning of swap temporarily..."
+    swapoff -a
     if nextcloud_occ fulltextsearch:index < /dev/null
+    swapon -a
     then
         msg_box "Full Text Search was successfully installed!"
     fi
