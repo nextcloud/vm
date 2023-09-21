@@ -52,9 +52,9 @@ else
     done
     # Removal Elastichsearch Docker image
     docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
-    if docker network ls | grep fulltextsearch_"$DOCKER_IMAGE_NAME"-network
+    if docker network ls | grep "$FULLTEXTSEARCH_IMAGE_NAME"-network
     then
-        docker network rm fulltextsearch_"$DOCKER_IMAGE_NAME"-network
+        docker network rm "$FULLTEXTSEARCH_IMAGE_NAME"-network
     fi
     rm -rf "$FULLTEXTSEARCH_DIR"
     # Show successful uninstall if applicable
@@ -115,8 +115,8 @@ cat << YML_DOCKER_COMPOSE > "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
 version: '3'
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.2
-    container_name: $DOCKER_IMAGE_NAME
+    image: docker.elastic.co/elasticsearch/elasticsearch:latest
+    container_name: $FULLTEXTSEARCH_IMAGE_NAME
     restart: always
     ports:
       - 127.0.0.1:9200:9200
@@ -134,12 +134,12 @@ services:
         soft: 65536
         hard: 65536
     networks:
-      - $DOCKER_IMAGE_NAME-network
+      - $FULLTEXTSEARCH_IMAGE_NAME-network
 
 volumes:
-  $DOCKER_IMAGE_NAME-data:
+  $FULLTEXTSEARCH_IMAGE_NAME-data:
 networks:
-  $DOCKER_IMAGE_NAME-network:
+  $FULLTEXTSEARCH_IMAGE_NAME-network:
 YML_DOCKER_COMPOSE
 
 # Start the docker image
@@ -154,7 +154,7 @@ done
 
 # Check logs
 print_text_in_color "$ICyan" "Checking logs..."
-docker logs "$DOCKER_IMAGE_NAME"
+docker logs "$FULLTEXTSEARCH_IMAGE_NAME"
 
 countdown "Waiting a bit more before testing..." "10"
 
