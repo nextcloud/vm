@@ -664,6 +664,7 @@ $DOCKER_RUN_OUTPUT"
             # Check if new name standard is set, and only update if it is (since it contains the latest tag)
             if grep -rq "$FULLTEXTSEARCH_IMAGE_NAME" "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
             then
+                sed -i "s|image: docker.elastic.co/elasticsearch/elasticsearch:.*|image: docker.elastic.co/elasticsearch/elasticsearch:$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG|g" "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
                 docker-compose_update "$FULLTEXTSEARCH_IMAGE_NAME" 'Full Text Search' "$FULLTEXTSEARCH_DIR"
             else
                 print_text_in_color "$ICyan" "Full Text Search is version based, to upgrade it, please change the version in $FULLTEXTSEARCH_DIR and run 'docker compose pull && docker compose up -d'. Latest tags are here: https://www.docker.elastic.co/r/elasticsearch and release notes here: https://www.elastic.co/guide/en/elasticsearch/reference/current/release-highlights.html"

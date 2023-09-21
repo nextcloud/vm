@@ -115,7 +115,7 @@ cat << YML_DOCKER_COMPOSE > "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
 version: '3'
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:latest
+    image: docker.elastic.co/elasticsearch/elasticsearch:$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG
     container_name: $FULLTEXTSEARCH_IMAGE_NAME
     restart: always
     ports:
