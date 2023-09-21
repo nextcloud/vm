@@ -170,7 +170,7 @@ nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http:/
 nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 
 # Add SystemD service for live indexing
-cat << SYSTEMCTL_FTS > "/etc/systemd/system/"$FULLTEXTSEARCH_SERVICE"
+cat << SYSTEMCTL_FTS > "/etc/systemd/system/$FULLTEXTSEARCH_SERVICE"
 [Unit]
 Description=Elasticsearch Worker for Nextcloud FullTextSearch
 After=network.target
