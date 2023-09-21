@@ -172,13 +172,14 @@ ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
 fulltextsearch_install() {
+    FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
     NEXTCLOUD_INDEX=$(gen_passwd "$SHUF" '[:lower:]')
     ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
     FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
+    FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
     # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
-    FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
-    # Legacy
+    # Legacy, not used at all
     RORDIR=/opt/es/
     OPNSDIR=/opt/opensearch
     nc_fts="ark74/nc_fts"

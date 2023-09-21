@@ -169,6 +169,25 @@ nextcloud_occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_
 nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://elastic:$ELASTIC_USER_PASSWORD@localhost:9200\",\"elastic_index\":\"${NEXTCLOUD_INDEX}\"}"
 nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 
+# Add SystemD service for live indexing
+cat << SYSTEMCTL_FTS > "/etc/systemd/system/$FULLTEXTSEARCH_SERVICE"
+[Unit]
+Description=Elasticsearch Worker for Nextcloud FullTextSearch
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=$NCPATH
+ExecStart=/usr/bin/php $NCPATH/occ fulltextsearch:live -q
+ExecStop=/usr/bin/php $NCPATH/occ fulltextsearch:stop
+Nice=19
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+SYSTEMCTL_FTS
+
 # Wait further for cache for index to work
 countdown "Waiting for a few seconds before indexing starts..." "10"
 if nextcloud_occ fulltextsearch:test
@@ -179,6 +198,9 @@ then
     if nextcloud_occ fulltextsearch:index < /dev/null
     then
         msg_box "Full Text Search was successfully installed!"
+        # Enable the live service
+        systemctl enable "$FULLTEXTSEARCH_SERVICE"
+        systemctl start "$FULLTEXTSEARCH_SERVICE"
     fi
 else
     msg_box "There seems to be an issue with the Full Text Search test. Please report this to $ISSUES."
