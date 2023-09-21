@@ -177,6 +177,7 @@ fulltextsearch_install() {
     ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
     FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
     FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
+    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://www.docker.elastic.co/r/elasticsearch | grep -Eo [[:digit:]]\\.[[:digit:]]\\.[[:digit:]] | sort --version-sort | tail -1)"
     # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
     # Legacy, not used at all
