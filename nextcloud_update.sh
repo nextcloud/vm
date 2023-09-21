@@ -1171,7 +1171,6 @@ then
 fi
 
 # Start Apache2
-print_text_in_color "$ICyan" "Starting Apache2..."
 start_if_stopped apache2
 
 # Just double check if the DB is started as well
