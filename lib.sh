@@ -174,6 +174,8 @@ APACHE2=/etc/apache2/apache2.conf
 fulltextsearch_install() {
     NEXTCLOUD_INDEX=$(gen_passwd "$SHUF" '[:lower:]')
     ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
+    FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch-es01
+    # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
     FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
     # Legacy
