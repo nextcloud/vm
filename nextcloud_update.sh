@@ -1121,6 +1121,10 @@ then
             restart_webserver
         fi
     fi
+    if [ "${CURRENTVERSION%%.*}" -ge "27" ]
+    then
+        nextcloud_occ dav:sync-system-addressbook
+    fi
 else
     msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if the folders exist."
