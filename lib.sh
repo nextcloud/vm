@@ -177,7 +177,7 @@ fulltextsearch_install() {
     ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
     FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
     FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
-    # Supports 0-9.0-99.0-9. If the new major becomes 10.X.X, then another [[:digit:]] is needed in the first tab before the dot.
+    # Supports 0-9.0-99.0-9. Max supprted version with this function is 9.99.9. When ES 10.0.0 is out we have a problem.
     FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://www.docker.elastic.co/r/elasticsearch | grep -Eo "[[:digit:]]\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" | sort --version-sort | tail -1)"
     # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
