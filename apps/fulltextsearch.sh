@@ -23,7 +23,7 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 21 is required.
+# Nextcloud 26 is required.
 lowest_compatible_nc 26
 
 # Check if Full Text Search is already installed
