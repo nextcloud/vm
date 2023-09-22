@@ -62,7 +62,7 @@ else
 fi
 
 # Check if version tag is available
-if [ ! -n "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" ]
+if [ -z "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" ]
 then
     msg_box "The Elasticsearch version tag is not available, please report this to $ISSUES"
     exit 1
