@@ -24,7 +24,7 @@ debug_mode
 root_check
 
 # Nextcloud 21 is required.
-lowest_compatible_nc 21
+lowest_compatible_nc 26
 
 # Check if Full Text Search is already installed
 if ! does_this_docker_exist docker.elastic.co/elasticsearch/elasticsearch && ! is_app_installed fulltextsearch
@@ -59,6 +59,13 @@ else
     rm -rf "$FULLTEXTSEARCH_DIR"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
+fi
+
+# Check if version tag is available
+if [ ! -n "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" ]
+then
+    msg_box "The Elasticsearch version tag is not available, please report this to $ISSUES"
+    exit 1
 fi
 
 # Test RAM size (4GB min) + CPUs (min 2)
