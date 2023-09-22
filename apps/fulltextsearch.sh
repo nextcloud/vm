@@ -68,8 +68,8 @@ then
     exit 1
 fi
 
-# Test RAM size (4GB min) + CPUs (min 2)
-ram_check 4 FullTextSearch
+# Test RAM size (6GB min) + CPUs (min 2)
+ram_check 6 FullTextSearch
 cpu_check 2 FullTextSearch
 
 # Make sure there is an Nextcloud installation
