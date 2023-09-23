@@ -42,6 +42,7 @@ else
     sudo -Hiu postgres psql "$NCDB" -c "DROP TABLE oc_fulltextsearch_index;"
     sudo -Hiu postgres psql "$NCDB" -c "DELETE FROM oc_migrations WHERE app='fulltextsearch';"
     sudo -Hiu postgres psql "$NCDB" -c "DELETE FROM oc_preferences WHERE appid='fulltextsearch';"
+    # Remove apps
     APPS=(fulltextsearch fulltextsearch_elasticsearch files_fulltextsearch)
     for app in "${APPS[@]}"
     do
@@ -50,6 +51,10 @@ else
             nextcloud_occ app:remove "$app"
         fi
     done
+    # Remove live service
+    systemctl stop "$FULLTEXTSEARCH_SERVICE"
+    systemctl disable "$FULLTEXTSEARCH_SERVICE"
+    rm -f "$FULLTEXTSEARCH_SERVICE"
     # Removal Elastichsearch Docker image
     docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
     if docker network ls | grep "$FULLTEXTSEARCH_IMAGE_NAME"-network
