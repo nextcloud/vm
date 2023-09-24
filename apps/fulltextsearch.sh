@@ -106,6 +106,10 @@ then
     docker_prune_this "$nc_fts"
     docker_prune_this "$opens_fts"
     docker_prune_volume "esdata"
+    if docker network ls | grep opensearch_fts_os-net
+    then
+        docker network rm opensearch_fts_os-net
+    fi
     # Remove configuration files
     rm -rf "$RORDIR"
     rm -rf "$OPNSDIR"
