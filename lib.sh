@@ -185,7 +185,7 @@ fulltextsearch_install() {
     RORDIR=/opt/es/
     OPNSDIR=/opt/opensearch
     nc_fts="ark74/nc_fts"
-    opens_fts="opensearchproject/opensearch:1"
+    opens_fts="opensearchproject/opensearch"
     fts_node="fts_os-node"
 }
 # Name in trusted_config
