@@ -1751,15 +1751,22 @@ fi
 }
 
 # Remove selected Docker image
-# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'nextcloud/aio-imaginary'
+# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'imaginary'
 docker_prune_this() {
 if does_this_docker_exist "$1"
 then
     if yesno_box_yes "Do you want to remove $1?"
     then
-        docker stop "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
-        docker rm "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)" --volumes
+        CONTAINER="$(docker container ls -a | grep $1 | awk '{print $1}' | tail -1)"
+        if [ -z "$CONTAINER" ]
+        then
+            # Special solution if the container name is scrambled, then search for the actual name instead 
+            CONTAINER="$(docker container ls -a | grep $2 | awk '{print $1}' | tail -1)"
+        fi
+        docker stop "$CONTAINER"
+        docker rm "$CONTAINER"
         docker image prune -a -f
+        docker system prune -a -f
     else
         msg_box "OK, this script will now exit, but there's still leftovers to cleanup. You can run it again at any time."
         exit
