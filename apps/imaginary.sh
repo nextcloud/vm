@@ -46,7 +46,7 @@ else
     if yesno_box_yes "Do you want to remove the Imaginary and all it's settings?"
     then
         # Remove docker container
-        docker_prune_this 'nextcloud/aio-imaginary'
+        docker_prune_this 'nextcloud/aio-imaginary' 'imaginary'
         # reset the preview formats
         nextcloud_occ config:system:delete "preview_imaginary_url"
         nextcloud_occ config:system:delete "enabledPreviewProviders"
