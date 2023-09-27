@@ -1757,11 +1757,11 @@ if does_this_docker_exist "$1"
 then
     if yesno_box_yes "Do you want to remove $1?"
     then
-        CONTAINER="$(docker container ls -a | grep $1 | awk '{print $1}' | tail -1)"
+        CONTAINER="$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
         if [ -z "$CONTAINER" ]
         then
             # Special solution if the container name is scrambled, then search for the actual name instead 
-            CONTAINER="$(docker container ls -a | grep $2 | awk '{print $1}' | tail -1)"
+            CONTAINER="$(docker container ls -a | grep "$2" | awk '{print $1}' | tail -1)"
         fi
         docker stop "$CONTAINER"
         docker rm "$CONTAINER"
