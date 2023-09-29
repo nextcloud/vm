@@ -1847,10 +1847,14 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
 # Apply patch
-# git_apply_patch 15992 server 16.0.2
+# App:
+# git_apply_patch "319" "fulltextsearch_elasticsearch" "27.1.1" "$NCPATH/apps/fulltextsearch_elasticsearch"
+# Server (no folder needs to be set):
+# git_apply_patch "15992" "server" "16.0.2"
 # 1 = pull
 # 2 = repository
-# Nextcloud version
+# 3 = Nextcloud version
+# 4 = Folder on system
 git_apply_patch() {
 if [ -z "$NCVERSION" ]
 then
@@ -1860,7 +1864,11 @@ if [[ "$CURRENTVERSION" = "$3" ]]
 then
     curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
     install_if_not git
-    cd "$NCPATH"
+    if [ -z "$4" ]
+    then
+        4="$NCPATH"
+    fi
+    cd "${4}"
     if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "Applying patch https://github.com/nextcloud/${2}/pull/${1} ..."
