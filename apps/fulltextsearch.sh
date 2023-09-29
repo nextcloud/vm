@@ -39,7 +39,7 @@ else
     install_if_not expect
     REMOVE_FTS_INDEX=$(expect -c "
     set timeout 3
-    spawn sudo -u www-data php "$NCPATH"/occ fulltextsearch:reset
+    spawn sudo -u www-data php $NCPATH/occ fulltextsearch:reset
     expect \"Do you really want to reset your indexed documents ? (y/N)\"
     send \"y\r\"
     expect \"Please confirm this destructive operation by typing 'reset ALL ALL':\"
