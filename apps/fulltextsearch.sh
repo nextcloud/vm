@@ -34,6 +34,10 @@ then
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
+    # Remove live service
+    systemctl stop "$FULLTEXTSEARCH_SERVICE"
+    systemctl disable "$FULLTEXTSEARCH_SERVICE"
+    rm -f "$FULLTEXTSEARCH_SERVICE"
     # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
     nextcloud_occ_no_check fulltextsearch:stop
     install_if_not expect
@@ -62,10 +66,6 @@ else
             nextcloud_occ app:remove "$app"
         fi
     done
-    # Remove live service
-    systemctl stop "$FULLTEXTSEARCH_SERVICE"
-    systemctl disable "$FULLTEXTSEARCH_SERVICE"
-    rm -f "$FULLTEXTSEARCH_SERVICE"
     # Removal Elastichsearch Docker image
     docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
     if docker network ls | grep "$FULLTEXTSEARCH_IMAGE_NAME"-network
