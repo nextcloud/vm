@@ -191,9 +191,6 @@ install_and_enable_app fulltextsearch_elasticsearch
 install_and_enable_app files_fulltextsearch
 chown -R www-data:www-data "$NC_APPS_PATH"
 
-# Apply patch
-git_apply_patch 319 fulltextsearch_elasticsearch 27.1.1 "$NCPATH/apps/fulltextsearch_elasticsearch"
-
 # Final setup
 nextcloud_occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
 nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://elastic:$ELASTIC_USER_PASSWORD@localhost:9200\",\"elastic_index\":\"${NEXTCLOUD_INDEX}\"}"
