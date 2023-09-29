@@ -36,7 +36,18 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
     nextcloud_occ_no_check fulltextsearch:stop
-    nextcloud_occ_no_check fulltextsearch:reset
+    install_if_not expect
+    REMOVE_FTS_INDEX=$(expect -c "
+    set timeout 3
+    spawn sudo -u www-data php "$NCPATH"/occ fulltextsearch:reset
+    expect \"Do you really want to reset your indexed documents ? (y/N)\"
+    send \"y\r\"
+    expect \"Please confirm this destructive operation by typing 'reset ALL ALL':\"
+    send \"reset ALL ALL\r\"
+    expect eof
+    ")
+    echo "$REMOVE_FTS_INDEX"
+    apt -y purge expect
     # Drop database tables
     sudo -Hiu postgres psql "$NCDB" -c "DROP TABLE oc_fulltextsearch_ticks;"
     sudo -Hiu postgres psql "$NCDB" -c "DROP TABLE oc_fulltextsearch_index;"
@@ -179,6 +190,9 @@ install_and_enable_app fulltextsearch
 install_and_enable_app fulltextsearch_elasticsearch
 install_and_enable_app files_fulltextsearch
 chown -R www-data:www-data "$NC_APPS_PATH"
+
+# Apply patch
+git_apply_patch 319 fulltextsearch_elasticsearch 27.1.1 "$NCPATH/apps/fulltextsearch_elasticsearch"
 
 # Final setup
 nextcloud_occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
