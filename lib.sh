@@ -497,7 +497,8 @@ You can use this site to check if the IP seems correct: https://www.whatsmydns.n
     fi
 
     # Is the DNS record same as the external IP address of the server?
-    if dig +short "${1}" @resolver1.opendns.com | grep -q "$WANIP4"
+    DIG="$(dig +short "${1}" @resolver1.opendns.com)"
+    if "$DIG" | grep -q "$WANIP4"
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
     else
