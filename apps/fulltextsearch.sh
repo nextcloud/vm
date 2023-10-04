@@ -23,8 +23,8 @@ debug_mode
 # Must be root
 root_check
 
-# Nextcloud 21 is required.
-lowest_compatible_nc 21
+# Nextcloud 26 is required.
+lowest_compatible_nc 26
 
 # Check if Full Text Search is already installed
 if ! does_this_docker_exist docker.elastic.co/elasticsearch/elasticsearch && ! is_app_installed fulltextsearch
@@ -34,14 +34,30 @@ then
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
+    # Remove live service
+    systemctl stop "$FULLTEXTSEARCH_SERVICE"
+    systemctl disable "$FULLTEXTSEARCH_SERVICE"
+    rm -f "$FULLTEXTSEARCH_SERVICE"
     # Reset Full Text Search to be able to index again, and also remove the app to be able to install it again
     nextcloud_occ_no_check fulltextsearch:stop
-    nextcloud_occ_no_check fulltextsearch:reset
+    install_if_not expect
+    REMOVE_FTS_INDEX=$(expect -c "
+    set timeout 3
+    spawn sudo -u www-data php $NCPATH/occ fulltextsearch:reset
+    expect \"Do you really want to reset your indexed documents ? (y/N)\"
+    send \"y\r\"
+    expect \"Please confirm this destructive operation by typing 'reset ALL ALL':\"
+    send \"reset ALL ALL\r\"
+    expect eof
+    ")
+    echo "$REMOVE_FTS_INDEX"
+    apt -y purge expect
     # Drop database tables
     sudo -Hiu postgres psql "$NCDB" -c "DROP TABLE oc_fulltextsearch_ticks;"
     sudo -Hiu postgres psql "$NCDB" -c "DROP TABLE oc_fulltextsearch_index;"
     sudo -Hiu postgres psql "$NCDB" -c "DELETE FROM oc_migrations WHERE app='fulltextsearch';"
     sudo -Hiu postgres psql "$NCDB" -c "DELETE FROM oc_preferences WHERE appid='fulltextsearch';"
+    # Remove apps
     APPS=(fulltextsearch fulltextsearch_elasticsearch files_fulltextsearch)
     for app in "${APPS[@]}"
     do
@@ -52,17 +68,24 @@ else
     done
     # Removal Elastichsearch Docker image
     docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
-    if docker network ls | grep fulltextsearch_"$DOCKER_IMAGE_NAME"-network
+    if docker network ls | grep "$FULLTEXTSEARCH_IMAGE_NAME"-network
     then
-        docker network rm fulltextsearch_"$DOCKER_IMAGE_NAME"-network
+        docker network rm "$FULLTEXTSEARCH_IMAGE_NAME"-network
     fi
     rm -rf "$FULLTEXTSEARCH_DIR"
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Test RAM size (4GB min) + CPUs (min 2)
-ram_check 4 FullTextSearch
+# Check if version tag is available
+if [ -z "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" ]
+then
+    msg_box "The Elasticsearch version tag is not available, please report this to $ISSUES"
+    exit 1
+fi
+
+# Test RAM size (6GB min) + CPUs (min 2)
+ram_check 6 FullTextSearch
 cpu_check 2 FullTextSearch
 
 # Make sure there is an Nextcloud installation
@@ -94,6 +117,10 @@ then
     docker_prune_this "$nc_fts"
     docker_prune_this "$opens_fts"
     docker_prune_volume "esdata"
+    if docker network ls | grep opensearch_fts_os-net
+    then
+        docker network rm opensearch_fts_os-net
+    fi
     # Remove configuration files
     rm -rf "$RORDIR"
     rm -rf "$OPNSDIR"
@@ -115,8 +142,8 @@ cat << YML_DOCKER_COMPOSE > "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
 version: '3'
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.1
-    container_name: $DOCKER_IMAGE_NAME
+    image: docker.elastic.co/elasticsearch/elasticsearch:$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG
+    container_name: $FULLTEXTSEARCH_IMAGE_NAME
     restart: always
     ports:
       - 127.0.0.1:9200:9200
@@ -124,6 +151,7 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=false
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - ELASTIC_PASSWORD=$ELASTIC_USER_PASSWORD
     ulimits:
       memlock:
@@ -133,12 +161,12 @@ services:
         soft: 65536
         hard: 65536
     networks:
-      - $DOCKER_IMAGE_NAME-network
+      - $FULLTEXTSEARCH_IMAGE_NAME-network
 
 volumes:
-  $DOCKER_IMAGE_NAME-data:
+  $FULLTEXTSEARCH_IMAGE_NAME-data:
 networks:
-  $DOCKER_IMAGE_NAME-network:
+  $FULLTEXTSEARCH_IMAGE_NAME-network:
 YML_DOCKER_COMPOSE
 
 # Start the docker image
@@ -153,7 +181,7 @@ done
 
 # Check logs
 print_text_in_color "$ICyan" "Checking logs..."
-docker logs "$DOCKER_IMAGE_NAME"
+docker logs "$FULLTEXTSEARCH_IMAGE_NAME"
 
 countdown "Waiting a bit more before testing..." "10"
 
@@ -168,17 +196,45 @@ nextcloud_occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_
 nextcloud_occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://elastic:$ELASTIC_USER_PASSWORD@localhost:9200\",\"elastic_index\":\"${NEXTCLOUD_INDEX}\"}"
 nextcloud_occ files_fulltextsearch:configure "{\"files_pdf\":\"1\",\"files_office\":\"1\"}"
 
+# Add SystemD service for live indexing
+cat << SYSTEMCTL_FTS > "/etc/systemd/system/$FULLTEXTSEARCH_SERVICE"
+[Unit]
+Description=Elasticsearch Worker for Nextcloud FullTextSearch
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=$NCPATH
+ExecStart=/usr/bin/php $NCPATH/occ fulltextsearch:live -q
+ExecStop=/usr/bin/php $NCPATH/occ fulltextsearch:stop
+Nice=19
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+SYSTEMCTL_FTS
+
 # Wait further for cache for index to work
 countdown "Waiting for a few seconds before indexing starts..." "10"
 if nextcloud_occ fulltextsearch:test
 then
+    # Turn off swap temporarily https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html
+    print_text_in_color "Turning of swap temporarily..."
+    swapoff -a
     if nextcloud_occ fulltextsearch:index < /dev/null
     then
         msg_box "Full Text Search was successfully installed!"
+        # Enable the live service
+        systemctl enable "$FULLTEXTSEARCH_SERVICE"
+        systemctl start "$FULLTEXTSEARCH_SERVICE"
     fi
 else
     msg_box "There seems to be an issue with the Full Text Search test. Please report this to $ISSUES."
 fi
+
+# Turn on swap again
+swapon -a
 
 # Make sure the script exists
 exit

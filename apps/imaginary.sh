@@ -46,7 +46,7 @@ else
     if yesno_box_yes "Do you want to remove the Imaginary and all it's settings?"
     then
         # Remove docker container
-        docker_prune_this 'nextcloud/aio-imaginary'
+        docker_prune_this 'nextcloud/aio-imaginary' 'imaginary'
         # reset the preview formats
         nextcloud_occ config:system:delete "preview_imaginary_url"
         nextcloud_occ config:system:delete "enabledPreviewProviders"
@@ -111,7 +111,7 @@ install_docker
 
 # Pull and start
 docker pull nextcloud/aio-imaginary:latest
-docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -log-level debug
+docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -return-size -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"

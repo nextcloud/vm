@@ -172,15 +172,20 @@ ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
 fulltextsearch_install() {
+    FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
     NEXTCLOUD_INDEX=$(gen_passwd "$SHUF" '[:lower:]')
     ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
+    FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
+    FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
+    # Supports 0-9.0-99.0-9. Max supprted version with this function is 9.99.9. When ES 10.0.0 is out we have a problem.
+    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://www.docker.elastic.co/r/elasticsearch | grep -Eo "[[:digit:]]\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" | sort --version-sort | tail -1)"
+    # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
-    FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
-    # Legacy
+    # Legacy, not used at all
     RORDIR=/opt/es/
     OPNSDIR=/opt/opensearch
     nc_fts="ark74/nc_fts"
-    opens_fts="opensearchproject/opensearch:1"
+    opens_fts="opensearchproject/opensearch"
     fts_node="fts_os-node"
 }
 # Name in trusted_config
@@ -492,7 +497,8 @@ You can use this site to check if the IP seems correct: https://www.whatsmydns.n
     fi
 
     # Is the DNS record same as the external IP address of the server?
-    if dig +short "${1}" @resolver1.opendns.com | grep -q "$WANIP4"
+    DIG="$(dig +short "${1}" @resolver1.opendns.com)"
+    if [ "$DIG" = "$WANIP4" ]
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
     else
@@ -1746,15 +1752,22 @@ fi
 }
 
 # Remove selected Docker image
-# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'nextcloud/aio-imaginary'
+# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'imaginary'
 docker_prune_this() {
 if does_this_docker_exist "$1"
 then
     if yesno_box_yes "Do you want to remove $1?"
     then
-        docker stop "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
-        docker rm "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)" --volumes
+        CONTAINER="$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
+        if [ -z "$CONTAINER" ]
+        then
+            # Special solution if the container name is scrambled, then search for the actual name instead 
+            CONTAINER="$(docker container ls -a | grep "$2" | awk '{print $1}' | tail -1)"
+        fi
+        docker stop "$CONTAINER"
+        docker rm "$CONTAINER"
         docker image prune -a -f
+        docker system prune -a -f
     else
         msg_box "OK, this script will now exit, but there's still leftovers to cleanup. You can run it again at any time."
         exit
@@ -1835,10 +1848,14 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
 # Apply patch
-# git_apply_patch 15992 server 16.0.2
+# App:
+# git_apply_patch "319" "fulltextsearch_elasticsearch" "27.1.1" "$NCPATH/apps/fulltextsearch_elasticsearch"
+# Server:
+# git_apply_patch "15992" "server" "16.0.2" "$NCPATH"
 # 1 = pull
 # 2 = repository
-# Nextcloud version
+# 3 = Nextcloud version
+# 4 = Folder on system
 git_apply_patch() {
 if [ -z "$NCVERSION" ]
 then
@@ -1848,7 +1865,7 @@ if [[ "$CURRENTVERSION" = "$3" ]]
 then
     curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
     install_if_not git
-    cd "$NCPATH"
+    cd "${4}"
     if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "Applying patch https://github.com/nextcloud/${2}/pull/${1} ..."

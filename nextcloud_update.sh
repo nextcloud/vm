@@ -661,7 +661,17 @@ $DOCKER_RUN_OUTPUT"
             msg_box "Please consider reinstalling FullTextSearch since you seem to have the old (and not working) implemantation by issuing the uninstall script: sudo bash $SCRIPTS/menu.sh --> Additional Apps --> FullTextSearch"
         elif [ -d "$FULLTEXTSEARCH_DIR" ]
         then
-            print_text_in_color "$ICyan" "Full Text Search is version based, to upgrade it, please change the version in $FULLTEXTSEARCH_DIR and run 'docker compose pull && docker compose up -d'. Latest tags are here: https://www.docker.elastic.co/r/elasticsearch and release notes here: https://www.elastic.co/guide/en/elasticsearch/reference/current/release-highlights.html"
+            # Check if new name standard is set, and only update if it is (since it contains the latest tag)
+            if grep -rq "$FULLTEXTSEARCH_IMAGE_NAME" "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
+            then
+                if [ -n "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" ]
+                then
+                    sed -i "s|image: docker.elastic.co/elasticsearch/elasticsearch:.*|image: docker.elastic.co/elasticsearch/elasticsearch:$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG|g" "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
+                    docker-compose_update "$FULLTEXTSEARCH_IMAGE_NAME" 'Full Text Search' "$FULLTEXTSEARCH_DIR"
+                fi
+            else
+                print_text_in_color "$ICyan" "Full Text Search is version based, to upgrade it, please change the version in $FULLTEXTSEARCH_DIR and run 'docker compose pull && docker compose up -d'. Latest tags are here: https://www.docker.elastic.co/r/elasticsearch and release notes here: https://www.elastic.co/guide/en/elasticsearch/reference/current/release-highlights.html"
+            fi
         fi
     fi
     # Talk Recording
@@ -1115,6 +1125,10 @@ then
             restart_webserver
         fi
     fi
+    if [ "${CURRENTVERSION%%.*}" -ge "27" ]
+    then
+        nextcloud_occ dav:sync-system-addressbook
+    fi
 else
     msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if the folders exist."
@@ -1160,7 +1174,6 @@ then
 fi
 
 # Start Apache2
-print_text_in_color "$ICyan" "Starting Apache2..."
 start_if_stopped apache2
 
 # Just double check if the DB is started as well

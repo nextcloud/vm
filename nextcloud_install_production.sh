@@ -544,7 +544,9 @@ fi
 # Install Nextcloud
 print_text_in_color "$ICyan" "Installing Nextcloud, it might take a while..."
 cd "$NCPATH"
-nextcloud_occ maintenance:install \
+# Don't use nextcloud_occ here as it takes alooong time.
+# https://github.com/nextcloud/vm/issues/2542#issuecomment-1700406020
+check_command sudo -u www-data php "$NCPATH"/occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
