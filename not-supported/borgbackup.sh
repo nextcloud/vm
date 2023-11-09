@@ -662,7 +662,7 @@ then
 fi
 
 # Check the backup
-inform_user "$ICyan" "Checking the backup integity..."
+inform_user "$ICyan" "Checking the backup integrity..."
 # TODO: check how long this takes. If too long, remove the --verifa-data flag
 if ! borg check --verify-data "$BACKUP_TARGET_DIRECTORY"
 then
