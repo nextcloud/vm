@@ -970,6 +970,7 @@ case "$choice" in
     ;;&
     *"Collectives"*)
         install_and_enable_app collectives
+        install_if_not php"$PHPVER"-sqlite3
     ;;&
     *"Suspicios Login detetion"*)
         install_and_enable_app suspicios_login
