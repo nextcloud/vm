@@ -28,6 +28,14 @@ else
     apt-get install curl -y
 fi
 
+# Install whiptail if not existing
+if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" = "1" ]
+then
+    echo "whiptail OK"
+else
+    apt-get install whiptail -y
+fi
+
 true
 SCRIPT_NAME="Nextcloud Install Script"
 SCRIPT_EXPLAINER="This script is installing all requirements that are needed for Nextcloud to run.
