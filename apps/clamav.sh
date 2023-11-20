@@ -246,6 +246,11 @@ fi
 INFECTED_FILES_LOG="\$(sed -n '/----------- SCAN SUMMARY -----------/,\$p' $VMLOGS/clamav-fullscan.log)"
 INFECTED_FILES="\$(grep 'FOUND$' $VMLOGS/clamav-fullscan.log)"
 
+if [ -z "$INFECTED_FILES" ];
+then
+    INFECTED_FILES="No infected files found"
+fi
+
 # Send notification
 if ! send_mail "Your weekly full-scan ClamAV report" "\$INFECTED_FILES_LOG\n
 \$INFECTED_FILES"
