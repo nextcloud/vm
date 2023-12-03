@@ -117,7 +117,7 @@ then
     docker_prune_this "$nc_fts"
     docker_prune_this "$opens_fts"
     docker_prune_volume "esdata"
-    nextcloud_occ fulltextsearch:migratiton:24
+    nextcloud_occ fulltextsearch:migration:24
     if docker network ls | grep opensearch_fts_os-net
     then
         docker network rm opensearch_fts_os-net
