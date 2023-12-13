@@ -1106,6 +1106,11 @@ check_command run_script STATIC change-root-profile
 print_text_in_color "$ICyan" "Disable hibernation..."
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
+# Adjust file ownership and permissions
+chown -R www-data:www-data /var/www/nextcloud
+find /var/www/nextcloud/ -type d -exec chmod 750 {} \;
+find /var/www/nextcloud/ -type f -exec chmod 640 {} \;
+
 # Reboot
 if [ -z "$PROVISIONING" ]
 then
