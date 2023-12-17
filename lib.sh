@@ -1554,10 +1554,8 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
-if [ -z "$NCVERSION" ]
-then
-    nc_update
-fi
+source /var/scripts/fetch_lib.sh
+nc_update
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
