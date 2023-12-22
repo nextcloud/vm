@@ -39,6 +39,7 @@ then
     PATH="/home/$UNIXUSER/bin:$PATH"
 fi
 bash /var/scripts/instruction.sh
+# clear .bash_history by default as a security precaution
 bash /var/scripts/history.sh
 sudo -i
 
