@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -415,7 +415,7 @@ check_command umount "$BACKUP_MOUNT"
 cat << WRITE_BACKUP_SCRIPT > "$BACKUP_SCRIPT_NAME"
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -114,7 +114,7 @@ then
     cat << SMART_NOTIFICATION > "$SCRIPTS/smart-notification.sh"
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -161,7 +161,7 @@ $SCRIPTS/smart-notification.sh -s (S/../.././01|L/../../6/02)" > /etc/smartd.con
     cat << SMART_NOTIFICATION > "$SCRIPTS/smart-notification.sh"
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true

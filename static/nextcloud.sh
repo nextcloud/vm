@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 WANIP6=$(curl -s -k -m 5 -6 https://api64.ipify.org)
 WANIP4=$(curl -s -k -m 5 -4 https://api64.ipify.org)
