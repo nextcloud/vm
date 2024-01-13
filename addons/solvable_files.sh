@@ -13,7 +13,7 @@ ncdb
 # Check if root
 root_check
 
-#2024-05-04 Customized the original script to fit the Nextcloud VM users setup. Also fixed some shellcheck issues.
+#2023-05-04 Customized the original script to fit the Nextcloud VM users setup. Also fixed some shellcheck issues.
 
 data_dir="$(realpath "$NCDATA")"
 export data_dir
