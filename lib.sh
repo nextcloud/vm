@@ -180,7 +180,7 @@ fulltextsearch_install() {
     # Supports 0-9.0-99.0-9. Max supprted version with this function is 9.99.9. When ES 10.0.0 is out we have a problem.
     # Maybe "10\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" will work?
     FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://www.docker.elastic.co/r/elasticsearch | grep -Eo "[[:digit:]]\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" | sort --version-sort | tail -1)"
-    # Legacy, changed 2024-09-21
+    # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
     # Legacy, not used at all
     RORDIR=/opt/es/
