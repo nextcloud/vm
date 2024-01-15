@@ -4,7 +4,7 @@
 # DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
 #################################################################################################################
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
@@ -341,7 +341,7 @@ fi
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
-# Temporary fix for PHP 2023-08-27
+# Temporary fix for PHP 2024-08-27
 # There's a bug in PHP 8.1.21 which causes server to crash
 # If you're on Ondrejs PPA, PHP isn't updated, so do that here instead
 apt-mark unhold php* >/dev/null 2>&1

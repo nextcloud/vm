@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 # Use local lib file in case there is no internet connection
 if printf "Testing internet connection..." && ping github.com -c 2 >/dev/null 2>&1

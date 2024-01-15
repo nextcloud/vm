@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -164,7 +164,7 @@ If you want to cancel, type 'exit' and press [ENTER].")
     then
         msg_box "The directory isn't allowed to start with '/mnt/smbshares'"
     else
-        echo "UUID=$UUID $MOUNT_PATH btrfs defaults 0 0" >> /etc/fstab
+        echo "UUID=$UUID $MOUNT_PATH btrfs defaults,nofail 0 0" >> /etc/fstab
         mkdir -p "$MOUNT_PATH"
         if ! mount "$MOUNT_PATH"
         then
@@ -313,7 +313,7 @@ fi
 
 # Execute the change to a backup drive
 print_text_in_color "$ICyan" "Adjusting permissions..."
-sed -i "/$UUID/s/defaults/defaults,noauto/" /etc/fstab
+sed -i "/$UUID/s/defaults,nofail/defaults,noauto/" /etc/fstab
 chown -R root:root "$MOUNT_PATH"
 chmod -R 600 "$MOUNT_PATH"
 umount "$MOUNT_PATH"
