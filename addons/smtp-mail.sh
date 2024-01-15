@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -148,6 +148,17 @@ fi
 # Enter the recipient
 RECIPIENT=$(input_box_flow "Please enter the recipient email address that shall receive all mails.\nE.g. recipient@mail.com")
 
+# Check if the server use self-signed certificates
+if yesno_box_no "Does the SMTP-server use self-signed certificates?"
+then
+    SELF_SIGNED_CERT=yes
+    nextcloud_occ config:system:set mail_smtpstreamoptions ssl allow_self_signed --value=true
+    nextcloud_occ config:system:set mail_smtpstreamoptions ssl verify_peer --value=false
+    nextcloud_occ config:system:set mail_smtpstreamoptions ssl verify_peer_name --value=false
+else
+    SELF_SIGNED_CERT=no
+fi
+
 # Present what we gathered, if everything okay, write to files
 msg_box "These are the settings that will be used. Please check that everything seems correct.
 
@@ -156,11 +167,13 @@ Encryption=$PROTOCOL
 SMTP Port=$SMTP_PORT
 SMTP Username=$MAIL_USERNAME
 SMTP Password=$MAIL_PASSWORD
-Recipient=$RECIPIENT"
+Recipient=$RECIPIENT
+Self-signed TLS/SSL certificate=$SELF_SIGNED_CERT"
 
 # Ask if everything is okay
 if ! yesno_box_yes "Does everything look correct?"
 then
+    msg_box "OK, please start over by running this script again."
     exit
 fi
 

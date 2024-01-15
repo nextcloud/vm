@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Change ncadmin Profile"
@@ -39,6 +39,7 @@ then
     PATH="/home/$UNIXUSER/bin:$PATH"
 fi
 bash /var/scripts/instruction.sh
+# clear .bash_history by default as a security precaution
 bash /var/scripts/history.sh
 sudo -i
 

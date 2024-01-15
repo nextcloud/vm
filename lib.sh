@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
@@ -20,8 +20,6 @@ SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
-RORDIR=/opt/es/
-OPNSDIR=/opt/opensearch
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 
@@ -158,6 +156,7 @@ PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
 PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
+opcache_interned_strings_buffer_value=24
 # Notify push
 NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
 # Adminer
@@ -172,20 +171,23 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-opensearch_install() {
-    INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
-    OPNSREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
+fulltextsearch_install() {
+    FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
+    NEXTCLOUD_INDEX=$(gen_passwd "$SHUF" '[:lower:]')
+    ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
+    FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
+    FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
+    # Supports 0-9.0-99.0-9. Max supprted version with this function is 9.99.9. When ES 10.0.0 is out we have a problem.
+    # Maybe "10\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" will work?
+    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://www.docker.elastic.co/r/elasticsearch | grep -Eo "[[:digit:]]\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" | sort --version-sort | tail -1)"
+    # Legacy, changed 2023-09-21
+    DOCKER_IMAGE_NAME=es01
+    # Legacy, not used at all
+    RORDIR=/opt/es/
+    OPNSDIR=/opt/opensearch
     nc_fts="ark74/nc_fts"
-    opens_fts="opensearchproject/opensearch:1"
+    opens_fts="opensearchproject/opensearch"
     fts_node="fts_os-node"
-}
-create_certs(){
-    download_script APP opensearch_certs
-    check_command sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
-    check_command mv "$SCRIPTS"/opensearch_certs.sh "$OPNSDIR"
-    check_command cd "$OPNSDIR"
-    check_command bash opensearch_certs.sh
-    rm -f "$OPNSDIR"/opensearch_certs.sh
 }
 # Name in trusted_config
 ncdomain() {
@@ -505,7 +507,8 @@ You can use this site to check if the IP seems correct: https://www.whatsmydns.n
     fi
 
     # Is the DNS record same as the external IP address of the server?
-    if dig +short "${1}" @resolver1.opendns.com | grep -q "$WANIP4"
+    DIG="$(dig +short "${1}" @resolver1.opendns.com)"
+    if [ "$DIG" = "$WANIP4" ]
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
     else
@@ -760,9 +763,13 @@ fi
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https() {
-    if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
+if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
+then
+    # Check if it's used by any of the Documentserver apps and adopt the message to that
+    if [ "$1" == 'Collabora (Docker)' ] || [ "$1" == 'OnlyOffice (Docker)' ]
     then
-        if [ "$1" == 'Collabora (Docker)' ] || [ "$1" == 'OnlyOffice (Docker)' ]
+        ncdomain
+        if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
         then
             msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
 You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
@@ -771,7 +778,12 @@ More info here: http://shortio.hanssonit.se/1EAgBmPyFc
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
 Additional Apps --> Documentserver --> $1."
             exit
-        else
+        fi
+    else
+    # Adopt the error message to anything else but the Documentserver apps
+        ncdomain
+        if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
+        then
             msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
 You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
 More info here: http://shortio.hanssonit.se/1EAgBmPyFc
@@ -781,6 +793,7 @@ Additional Apps --> $1."
             exit
         fi
     fi
+fi
 }
 
 restart_webserver() {
@@ -1550,10 +1563,8 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
-if [ -z "$NCVERSION" ]
-then
-    nc_update
-fi
+source /var/scripts/fetch_lib.sh
+nc_update
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
@@ -1721,10 +1732,11 @@ then
   "storage-driver": "overlay2"
 }
 OVERLAY2
-fi
 
-systemctl daemon-reload
-systemctl restart docker.service
+    # Only restart if changed
+    systemctl daemon-reload
+    systemctl restart docker.service
+fi
 }
 
 # Remove all dockers excluding one
@@ -1748,15 +1760,22 @@ fi
 }
 
 # Remove selected Docker image
-# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'nextcloud/aio-imaginary'
+# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'imaginary'
 docker_prune_this() {
 if does_this_docker_exist "$1"
 then
     if yesno_box_yes "Do you want to remove $1?"
     then
-        docker stop "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
-        docker rm "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)" --volumes
+        CONTAINER="$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
+        if [ -z "$CONTAINER" ]
+        then
+            # Special solution if the container name is scrambled, then search for the actual name instead 
+            CONTAINER="$(docker container ls -a | grep "$2" | awk '{print $1}' | tail -1)"
+        fi
+        docker stop "$CONTAINER"
+        docker rm "$CONTAINER"
         docker image prune -a -f
+        docker system prune -a -f
     else
         msg_box "OK, this script will now exit, but there's still leftovers to cleanup. You can run it again at any time."
         exit
@@ -1800,19 +1819,21 @@ fi
 docker_update_specific() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
-    docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
-    print_text_in_color "$IGreen" "$2 docker image just got updated!"
-    echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
+    if docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
+    then
+        print_text_in_color "$IGreen" "$2 docker image just got updated!"
+        echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
+    fi
 fi
 }
-# docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
+# docker-compose_update 'fulltextsearch-elasticsearch' 'Full Text Search' "$FTSDIR"
 # (docker conainter name = $1, the name in text = $2 , docker-compose directory = $3)
 docker-compose_update() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
     cd "$3"
-    docker-compose pull
-    docker-compose up -d --remove-orphans
+    docker compose pull
+    docker compose up -d --remove-orphans
     docker image prune -a -f
     print_text_in_color "$IGreen" "$2 docker image just got updated!"
     echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
@@ -1835,10 +1856,14 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
 # Apply patch
-# git_apply_patch 15992 server 16.0.2
+# App:
+# git_apply_patch "319" "fulltextsearch_elasticsearch" "27.1.1" "$NCPATH/apps/fulltextsearch_elasticsearch"
+# Server:
+# git_apply_patch "15992" "server" "16.0.2" "$NCPATH"
 # 1 = pull
 # 2 = repository
-# Nextcloud version
+# 3 = Nextcloud version
+# 4 = Folder on system
 git_apply_patch() {
 if [ -z "$NCVERSION" ]
 then
@@ -1848,7 +1873,7 @@ if [[ "$CURRENTVERSION" = "$3" ]]
 then
     curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
     install_if_not git
-    cd "$NCPATH"
+    cd "${4}"
     if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "Applying patch https://github.com/nextcloud/${2}/pull/${1} ..."

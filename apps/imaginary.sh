@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
@@ -24,11 +24,11 @@ root_check
 # If we can calculate the cpu and ram, then set it to the lowest possible, if not, then hardcode it to a recomended minimum.
 if which nproc >/dev/null 2>&1
 then
-    ram_check Imaginary 1
-    cpu_check Imaginary 1
+    ram_check 2 Imaginary
+    cpu_check 2 Imaginary
 else
-    ram_check Imaginary 4
-    cpu_check Imaginary 2
+    ram_check 4 Imaginary
+    cpu_check 2 Imaginary
 fi
 
 # Compatible with NC24 and above
@@ -46,7 +46,7 @@ else
     if yesno_box_yes "Do you want to remove the Imaginary and all it's settings?"
     then
         # Remove docker container
-        docker_prune_this 'nextcloud/aio-imaginary'
+        docker_prune_this 'nextcloud/aio-imaginary' 'imaginary'
         # reset the preview formats
         nextcloud_occ config:system:delete "preview_imaginary_url"
         nextcloud_occ config:system:delete "enabledPreviewProviders"
@@ -111,7 +111,7 @@ install_docker
 
 # Pull and start
 docker pull nextcloud/aio-imaginary:latest
-docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -log-level debug
+docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -return-size -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"

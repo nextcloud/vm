@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=2024
@@ -662,7 +662,7 @@ then
 fi
 
 # Check the backup
-inform_user "$ICyan" "Checking the backup integity..."
+inform_user "$ICyan" "Checking the backup integrity..."
 # TODO: check how long this takes. If too long, remove the --verifa-data flag
 if ! borg check --verify-data "$BACKUP_TARGET_DIRECTORY"
 then

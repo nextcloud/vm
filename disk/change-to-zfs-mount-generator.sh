@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 # https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
 # Tested on Ubuntu 20.04

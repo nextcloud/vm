@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Nextcloud Talk"
@@ -58,6 +58,7 @@ else
     rm -rf \
         "$TURN_CONF" \
         "$SIGNALING_SERVER_CONF" \
+        /etc/signaling \
         /etc/nats \
         /etc/janus \
         /etc/apt/trusted.gpg.d/morph027-janus.asc \
@@ -69,9 +70,9 @@ else
         /etc/apt/sources.list.d/morph027-janus.list \
         /etc/apt/sources.list.d/morph027-nats-server.list \
         /etc/apt/sources.list.d/morph027-coturn.list \
-        $VMLOGS/talk_apache_error.log \
-        $VMLOGS/talk_apache_access.log \
-        $VMLOGS/turnserver.log \
+        "$VMLOGS"/talk_apache_error.log \
+        "$VMLOGS"/talk_apache_access.log \
+        "$VMLOGS"/turnserver.log \
         /var/www/html/error
     APPS=(coturn nats-server janus nextcloud-spreed-signaling)
     for app in "${APPS[@]}"
@@ -388,9 +389,9 @@ a2enmod headers
 a2enmod remoteip
 
 # Allow CustomLog
-touch $VMLOGS/talk_apache_access.log
-touch $VMLOGS/talk_apache_error.log
-chown root:adm $VMLOGS/talk_apache_*
+touch "$VMLOGS"/talk_apache_access.log
+touch "$VMLOGS"/talk_apache_error.log
+chown root:adm "$VMLOGS"/talk_apache_*
 
 # Prep the error page
 mkdir -p /var/www/html/error
@@ -514,7 +515,7 @@ else
 fi
 
 ####### Talk recording
-if ! yesno_box_yes "Do you want install Talk Recording to be able to record your calls? NOTE, this function is not thoroughly tested yet."
+if ! yesno_box_yes "Do you want install Talk Recording to be able to record your calls?"
 then
     exit
 fi
@@ -523,7 +524,8 @@ fi
 lowest_compatible_nc 26
 
 # It's pretty recource intensive
-cpu_check 4 Talk Recording
+cpu_check 4 "Talk Recording"
+ram_check 4 "Talk Recording"
 
 print_text_in_color "$ICyan" "Setting up Talk recording..."
 
@@ -535,10 +537,11 @@ docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RE
 --shm-size=2GB \
 -e NC_DOMAIN="${TURN_DOMAIN}" \
 -e HPB_DOMAIN="${SUBDOMAIN}" \
+-e HPB_PATH=/ \
 -e TZ="$(cat /etc/timezone)" \
 -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
 -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
-nextcloud/aio-talk-recording
+nextcloud/aio-talk-recording:latest
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]

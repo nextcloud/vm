@@ -4,7 +4,7 @@
 # DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
 #################################################################################################################
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
@@ -35,6 +35,10 @@ is_process_running dpkg
 # Automatically restart services (Ubuntu 22.04)
 if ! version 16.04.10 "$DISTRO" 20.04.10
 then
+    if [ ! -f /etc/needrestart/needrestart.conf ] 
+    then
+        install_if_not needrestart
+    fi
     if ! grep -rq "{restart} = 'a'" /etc/needrestart/needrestart.conf
     then
         # Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
@@ -337,6 +341,14 @@ fi
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
+# Temporary fix for PHP 2024-08-27
+# There's a bug in PHP 8.1.21 which causes server to crash
+# If you're on Ondrejs PPA, PHP isn't updated, so do that here instead
+apt-mark unhold php* >/dev/null 2>&1
+apt-get update -q4
+export DEBIAN_FRONTEND=noninteractive ; apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+apt-mark hold php* >/dev/null 2>&1
+
 # Improve Apache for PHP-FPM
 if is_this_installed php"$PHPVER"-fpm
 then
@@ -638,23 +650,32 @@ $DOCKER_RUN_OUTPUT"
         if does_this_docker_exist 'onlyoffice/documentserver'
         then
             docker_update_specific 'onlyoffice' 'OnlyOffice'
-            msg_box "OnlyOffice updated the way websockets work, and you need to update your configuration.\n
-Please update your Apache2 config to this: https://github.com/nextcloud/vm/blob/master/apps/onlyoffice_docker.sh#L210-L215.
-Another option is to reinstall OnlyOffice with the menu script; sudo bash /var/scripts/menu.sh\n
-If you need help, please get support here: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
         fi
     fi
     # Full Text Search
     if [ "${CURRENTVERSION%%.*}" -ge "25" ]
     then
-    msg_box "Sorry, it's not possible to install or upgrade FTS anymore since Nextcloud decided to remove support for OpenSearchh
-Read more in this issue: https://github.com/nextcloud/fulltextsearch_elasticsearch/issues/271
-
-Please consider removing it by issuing the uninstall script: sudo bash $SCRIPTS/menu.sh --> Additional Apps --> FullTextSearch"
-    else
-        docker_update_specific 'fts_esror' 'Full Text Search'
-        docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
+        fulltextsearch_install
+        if does_this_docker_exist "$nc_fts" && does_this_docker_exist "$opens_fts"
+        then
+            msg_box "Please consider reinstalling FullTextSearch since you seem to have the old (and not working) implemantation by issuing the uninstall script: sudo bash $SCRIPTS/menu.sh --> Additional Apps --> FullTextSearch"
+        elif [ -d "$FULLTEXTSEARCH_DIR" ]
+        then
+            # Check if new name standard is set, and only update if it is (since it contains the latest tag)
+            if grep -rq "$FULLTEXTSEARCH_IMAGE_NAME" "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
+            then
+                if [ -n "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" ]
+                then
+                    sed -i "s|image: docker.elastic.co/elasticsearch/elasticsearch:.*|image: docker.elastic.co/elasticsearch/elasticsearch:$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG|g" "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
+                    docker-compose_update "$FULLTEXTSEARCH_IMAGE_NAME" 'Full Text Search' "$FULLTEXTSEARCH_DIR"
+                fi
+            else
+                print_text_in_color "$ICyan" "Full Text Search is version based, to upgrade it, please change the version in $FULLTEXTSEARCH_DIR and run 'docker compose pull && docker compose up -d'. Latest tags are here: https://www.docker.elastic.co/r/elasticsearch and release notes here: https://www.elastic.co/guide/en/elasticsearch/reference/current/release-highlights.html"
+            fi
+        fi
     fi
+    # Talk Recording
+    docker_update_specific 'talk-recording' "Talk Recording"
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
     # Imaginary
@@ -670,7 +691,7 @@ then
     for apacheconf in "${LOOLWSDCONF[@]}"
     do
         sed -i "s|/loleaflet|/browser|g" "${apacheconf}"
-        sed -i "s|loleaflet is the|broswer is the|g" "${apacheconf}"
+        sed -i "s|loleaflet is the|browser is the|g" "${apacheconf}"
         sed -i "s|loolwsd|coolwsd|g" "${apacheconf}"
         sed -i "s|/lool|/cool|g" "${apacheconf}"
     done
@@ -1097,11 +1118,16 @@ then
     fi
     if [ "${CURRENTVERSION%%.*}" -ge "23" ]
     then
-        # Raise OPCache
-        if grep -q "opcache.interned_strings_buffer=8" "$PHP_INI"
+        # Update opcache.interned_strings_buffer
+        if ! grep -rq opcache.interned_strings_buffer="$opcache_interned_strings_buffer_value" "$PHP_INI"
         then
-            sed -i "s|opcache.interned_strings_buffer.*|opcache.interned_strings_buffer=16|g" "$PHP_INI"
+            sed -i "s|opcache.interned_strings_buffer=.*|opcache.interned_strings_buffer=$opcache_interned_strings_buffer_value|g" "$PHP_INI"
+            restart_webserver
         fi
+    fi
+    if [ "${CURRENTVERSION%%.*}" -ge "27" ]
+    then
+        nextcloud_occ dav:sync-system-addressbook
     fi
 else
     msg_box "Something went wrong with backing up your old Nextcloud instance
@@ -1148,7 +1174,6 @@ then
 fi
 
 # Start Apache2
-print_text_in_color "$ICyan" "Starting Apache2..."
 start_if_stopped apache2
 
 # Just double check if the DB is started as well

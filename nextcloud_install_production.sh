@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/master/LICENSE
 
@@ -26,6 +26,14 @@ then
 else
     apt-get update -q4
     apt-get install curl -y
+fi
+
+# Install whiptail if not existing
+if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" = "1" ]
+then
+    echo "whiptail OK"
+else
+    apt-get install whiptail -y
 fi
 
 true
@@ -62,18 +70,6 @@ fi
 # Automatically restart services
 # Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
 sed -i "s|#\$nrconf{restart} = .*|\$nrconf{restart} = 'a';|g" /etc/needrestart/needrestart.conf
-
-# Install needed dependencies
-install_if_not lshw
-install_if_not net-tools
-install_if_not whiptail
-install_if_not apt-utils
-install_if_not keyboard-configuration
-
-# Nice to have dependencies
-install_if_not bash-completion
-install_if_not htop
-install_if_not iputils-ping
 
 # Check for flags
 if [ "$1" = "" ]
@@ -124,38 +120,6 @@ Enabling this will also force an automatic reboot after running the update scrip
     fi
 fi
 
-# Download needed libraries before execution of the first script
-mkdir -p "$SCRIPTS"
-download_script GITHUB_REPO lib
-download_script STATIC fetch_lib
-
-# Set locales
-run_script ADDONS locales
-
-# Create new current user
-download_script STATIC adduser
-bash "$SCRIPTS"/adduser.sh "nextcloud_install_production.sh"
-rm -f "$SCRIPTS"/adduser.sh
-
-check_universe
-check_multiverse
-
-# Check if key is available
-if ! site_200 "$NCREPO"
-then
-    msg_box "Nextcloud repo is not available, exiting..."
-    exit 1
-fi
-
-# Test Home/SME function
-if home_sme_server
-then
-    msg_box "This is the Home/SME server, function works!"
-else
-    print_text_in_color "$ICyan" "Home/SME Server not detected. No worries, just testing the function."
-    sleep 3
-fi
-
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
@@ -186,6 +150,50 @@ then
         fi
     done
     fi
+fi
+
+# Install needed dependencies
+install_if_not lshw
+install_if_not net-tools
+install_if_not whiptail
+install_if_not apt-utils
+install_if_not keyboard-configuration
+
+# Nice to have dependencies
+install_if_not bash-completion
+install_if_not htop
+install_if_not iputils-ping
+
+# Download needed libraries before execution of the first script
+mkdir -p "$SCRIPTS"
+download_script GITHUB_REPO lib
+download_script STATIC fetch_lib
+
+# Set locales
+run_script ADDONS locales
+
+# Create new current user
+download_script STATIC adduser
+bash "$SCRIPTS"/adduser.sh "nextcloud_install_production.sh"
+rm -f "$SCRIPTS"/adduser.sh
+
+check_universe
+check_multiverse
+
+# Check if key is available
+if ! site_200 "$NCREPO"
+then
+    msg_box "Nextcloud repo is not available, exiting..."
+    exit 1
+fi
+
+# Test Home/SME function
+if home_sme_server
+then
+    msg_box "This is the Home/SME server, function works!"
+else
+    print_text_in_color "$ICyan" "Home/SME Server not detected. No worries, just testing the function."
+    sleep 3
 fi
 
 # Check if it's a clean server
@@ -542,9 +550,11 @@ This is used when you login to Nextcloud itself, i.e. on the web."
 fi
 
 # Install Nextcloud
-print_text_in_color "$ICyan" "Installing Nextcloud..."
+print_text_in_color "$ICyan" "Installing Nextcloud, it might take a while..."
 cd "$NCPATH"
-nextcloud_occ maintenance:install \
+# Don't use nextcloud_occ here as it takes alooong time.
+# https://github.com/nextcloud/vm/issues/2542#issuecomment-1700406020
+check_command sudo -u www-data php "$NCPATH"/occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
@@ -552,11 +562,59 @@ nextcloud_occ maintenance:install \
 --database-pass="$PGDB_PASS" \
 --admin-user="$GUIUSER" \
 --admin-pass="$GUIPASS"
-echo
 print_text_in_color "$ICyan" "Nextcloud version:"
 nextcloud_occ status
 sleep 3
-echo
+
+# Install PECL dependencies
+install_if_not php"$PHPVER"-dev
+
+# Install Redis (distributed cache)
+run_script ADDONS redis-server-ubuntu
+
+# Install smbclient
+# php"$PHPVER"-smbclient does not yet work in PHP 7.4
+install_if_not libsmbclient-dev
+yes no | pecl install smbclient
+if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
+then
+    touch "$PHP_MODS_DIR"/smbclient.ini
+fi
+if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
+then
+    echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
+    echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
+    check_command phpenmod -v ALL smbclient
+fi
+
+# Enable igbinary for PHP
+# https://github.com/igbinary/igbinary
+if is_this_installed "php$PHPVER"-dev
+then
+    if ! yes no | pecl install -Z igbinary
+    then
+        msg_box "igbinary PHP module installation failed"
+        exit
+    else
+        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
+    fi
+{
+echo "# igbinary for PHP"
+echo "session.serialize_handler=igbinary"
+echo "igbinary.compact_strings=On"
+} >> "$PHP_INI"
+    if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
+    then
+        touch "$PHP_MODS_DIR"/igbinary.ini
+    fi
+    if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
+    then
+        echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
+        echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
+        check_command phpenmod -v ALL igbinary
+    fi
+restart_webserver
+fi
 
 # Prepare cron.php to be run every 5 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
@@ -636,7 +694,7 @@ phpenmod opcache
 echo "# OPcache settings for Nextcloud"
 echo "opcache.enable=1"
 echo "opcache.enable_cli=1"
-echo "opcache.interned_strings_buffer=16"
+echo "opcache.interned_strings_buffer=$opcache_interned_strings_buffer_value"
 echo "opcache.max_accelerated_files=10000"
 echo "opcache.memory_consumption=256"
 echo "opcache.save_comments=1"
@@ -661,56 +719,6 @@ echo "pgsql.max_links = -1"
 echo "pgsql.ignore_notice = 0"
 echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
-
-# Install PECL dependencies
-install_if_not php"$PHPVER"-dev
-
-# Install Redis (distributed cache)
-run_script ADDONS redis-server-ubuntu
-
-# Install smbclient
-# php"$PHPVER"-smbclient does not yet work in PHP 7.4
-install_if_not libsmbclient-dev
-yes no | pecl install smbclient
-if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
-then
-    touch "$PHP_MODS_DIR"/smbclient.ini
-fi
-if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
-then
-    echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
-    echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
-    check_command phpenmod -v ALL smbclient
-fi
-
-# Enable igbinary for PHP
-# https://github.com/igbinary/igbinary
-if is_this_installed "php$PHPVER"-dev
-then
-    if ! yes no | pecl install -Z igbinary
-    then
-        msg_box "igbinary PHP module installation failed"
-        exit
-    else
-        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
-    fi
-{
-echo "# igbinary for PHP"
-echo "session.serialize_handler=igbinary"
-echo "igbinary.compact_strings=On"
-} >> "$PHP_INI"
-    if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
-    then
-        touch "$PHP_MODS_DIR"/igbinary.ini
-    fi
-    if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
-    then
-        echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
-        echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
-        check_command phpenmod -v ALL igbinary
-    fi
-restart_webserver
-fi
 
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
@@ -970,6 +978,7 @@ case "$choice" in
     ;;&
     *"Collectives"*)
         install_and_enable_app collectives
+        install_if_not php"$PHPVER"-sqlite3
     ;;&
     *"Suspicios Login detetion"*)
         install_and_enable_app suspicios_login

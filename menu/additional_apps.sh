@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Additional Apps Menu"
@@ -50,7 +50,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
-"FullTextSearch" "(Search for text inside documents [4GB RAM])" OFF \
+"FullTextSearch" "(Search for text inside documents [6GB RAM])" OFF \
 "BPYTOP" "(Real-time server monitoring in CLI)" OFF \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \

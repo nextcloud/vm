@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Format sdb"
@@ -155,7 +155,7 @@ then
     check_command zpool create -f -o ashift=12 "$POOLNAME" "$DISKTYPE"
     check_command zpool set failmode=continue "$POOLNAME"
     check_command zfs set mountpoint="$MOUNT_" "$POOLNAME"
-    check_command zfs set compression=lz4 "$POOLNAME"
+    check_command zfs set compression=zstd "$POOLNAME"
     check_command zfs set sync=standard "$POOLNAME"
     check_command zfs set xattr=sa "$POOLNAME"
     check_command zfs set primarycache=all "$POOLNAME"
