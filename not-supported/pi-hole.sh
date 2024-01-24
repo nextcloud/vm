@@ -192,6 +192,9 @@ sed -i "s|getStaticIPv4Settings$|echo getStaticIPv4Settings|" "$SCRIPTS"/pihole-
 PIHOLE_INTERFACE="$IFACE"
 export PIHOLE_INTERFACE
 
+# Fix php versions getting hold for pi-hole install script
+apt-mark unhold php"$PHPVER"*
+
 # Run the script
 bash "$SCRIPTS"/pihole-install.sh | tee "$SCRIPTS"/pihole-install.report
 
