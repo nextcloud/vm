@@ -152,9 +152,9 @@ RECIPIENT=$(input_box_flow "Please enter the recipient email address that shall 
 if yesno_box_no "Does the SMTP-server use self-signed certificates?"
 then
     SELF_SIGNED_CERT=yes
-    nextcloud_occ config:system:set mail_smtpstreamoptions ssl allow_self_signed --value=true
-    nextcloud_occ config:system:set mail_smtpstreamoptions ssl verify_peer --value=false
-    nextcloud_occ config:system:set mail_smtpstreamoptions ssl verify_peer_name --value=false
+    nextcloud_occ config:system:set mail_smtpstreamoptions ssl allow_self_signed --value=true --type=boolean
+    nextcloud_occ config:system:set mail_smtpstreamoptions ssl verify_peer --value=false --type=boolean
+    nextcloud_occ config:system:set mail_smtpstreamoptions ssl verify_peer_name --value=false --type=boolean
 else
     SELF_SIGNED_CERT=no
 fi
