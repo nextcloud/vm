@@ -149,14 +149,6 @@ else
     MAKEMKV_SWITCH=ON
 fi
 
-# OnlyOffice
-if is_this_installed onlyoffice-desktopeditors
-then
-    ONLYOFFICE_SWITCH=OFF
-else
-    ONLYOFFICE_SWITCH=ON
-fi
-
 # Picard
 if is_this_installed picard
 then
@@ -202,7 +194,6 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Grsync" "(File sync)" "$GRSYNC_SWITCH" \
 "MakeMKV" "(Rip DVDs and Blu-rays)" "$MAKEMKV_SWITCH" \
 "Nautilus" "(File Manager)" "$NAUTILUS_SWITCH" \
-"OnlyOffice" "(Open Source Office Suite)" "$ONLYOFFICE_SWITCH" \
 "Picard" "(Music tagger)" "$PICARD_SWITCH" \
 "Sound Juicer" "(Rip CDs)" "$SJ_SWITCH" \
 "VLC" "(Play Videos and Audio)" "$VLC_SWITCH" \
@@ -258,7 +249,7 @@ case "$choice" in
 as well as the gnome desktop." "$SUBTITLE"
         if yesno_box_no "Do you want to do this?" "$SUBTITLE"
         then
-            APPS=(evince eog firefox gedit grsync gnome-themes-extra makemkv-oss makemkv-bin nautilus onlyoffice-desktopeditors \
+            APPS=(evince eog firefox gedit grsync gnome-themes-extra makemkv-oss makemkv-bin nautilus \
 picard sound-juicer vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-extension-arc-menu gnome-session xrdp)
             for app in "${APPS[@]}"
             do
@@ -324,34 +315,6 @@ We will need to add a 3rd party repository to install it which can set your serv
     ;;&
     *"Nautilus"*)
         install_remove_packet nautilus Nautilus
-    ;;&
-    *"OnlyOffice"*)
-        SUBTITLE="OnlyOffice"
-        if is_this_installed onlyoffice-desktopeditors
-        then
-            print_text_in_color "$ICyan" "Uninstalling $SUBTITLE"
-            apt-get purge onlyoffice-desktopeditors -y
-            apt-get autoremove -y
-            rm -f /etc/apt/sources.list.d/onlyoffice-desktopeditors.list
-            apt-get update -q4 & spinner_loading
-            print_text_in_color "$ICyan" "$SUBTITLE was successfully uninstalled."
-        else
-            msg_box "OnlyOffice Desktop Editors are open source but not existing in the Ubuntu repositories.
-Hence, we will add a 3rd-party repository to your server \
-to be able to install and update OnlyOffice Desktop Editors using the apt packet manager.
-This can set your server under risk, though!" "$SUBTITLE"
-            if yesno_box_yes "Do you want to install OnlyOffice Desktop Editors nonetheless?" "$SUBTITLE"
-            then
-                print_text_in_color "$ICyan" "Installing $SUBTITLE"
-                apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CB2DE8E5
-                echo "deb https://download.onlyoffice.com/repo/debian squeeze main" \
-> /etc/apt/sources.list.d/onlyoffice-desktopeditors.list
-                apt-get update -q4 & spinner_loading
-                install_if_not onlyoffice-desktopeditors
-                print_text_in_color "$ICyan" "$SUBTITLE was successfully installed"
-            fi
-        fi
-        unset SUBTITLE
     ;;&
     *"Picard"*)
         install_remove_packet picard Picard
