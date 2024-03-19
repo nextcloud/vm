@@ -937,7 +937,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Mail" "" ON \
 "Deck" "" ON \
 "Collectives" "" ON \
-"Suspicios Login detetion" "" ON \
+"Suspicious Login detection" "" ON \
 "IssueTemplate" "" OFF \
 "Group-Folders" "" OFF 3>&1 1>&2 2>&3)
 fi
@@ -980,7 +980,7 @@ case "$choice" in
         install_and_enable_app collectives
         install_if_not php"$PHPVER"-sqlite3
     ;;&
-    *"Suspicios Login detetion"*)
+    *"Suspicious Login detection"*)
         install_and_enable_app suspicios_login
     ;;&
     *"Group-Folders"*)
