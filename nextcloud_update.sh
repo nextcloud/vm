@@ -760,14 +760,15 @@ else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
 fi
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Restart notify push if existing
 if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
 then
-    systemctl restart notify_push
+    chmod +x "$NC_APPS_PATH"/notify_push/bin/x86_64/notify_push
+    systemctl restart notify_push.service
 fi
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
 
 if [ -f /tmp/minor.version ]
 then
