@@ -770,6 +770,11 @@ then
     systemctl restart notify_push.service
 fi
 
+# Make all previous files executable
+print_text_in_color "$ICyan" "Finding all executable files in $NC_APPS_PATH"
+find_executables="(find $NC_APPS_PATH -type f -executable)"
+export "$find_executables"
+
 if [ -f /tmp/minor.version ]
 then
     NCBAD=$(cat /tmp/minor.version)
@@ -1173,6 +1178,13 @@ then
         fi
     fi
 fi
+
+# Make all files in executable again
+for executable in $find_executables
+do
+    chmod +x $executable
+    unset "$find_executables"
+done
 
 # Start Apache2
 start_if_stopped apache2
