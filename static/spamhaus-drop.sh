@@ -14,10 +14,10 @@
 IPTABLES="/sbin/iptables"
 
 # list of known spammers
-URLS="https://www.spamhaus.org/drop/drop.lasso https://www.spamhaus.org/drop/edrop.lasso"
+URLS="https://www.spamhaus.org/drop/drop.txt https://www.spamhaus.org/drop/edrop.txt"
 
 # local cache copy
-CACHE_FILE="/tmp/drop.lasso"
+CACHE_FILE="/tmp/drop.txt"
 
 # iptables custom chain name
 CHAIN="Spamhaus"
@@ -130,8 +130,8 @@ update_iptables() {
 	fi;
 
 	# iterate through all known spamming hosts
-	LASSOIP="$(cut -d ' ' -f1 "$CACHE_FILE" | tr -d ';' | awk 'NF > 0')"
-	for IP in $LASSOIP; do
+	SPAMIP="$(cut -d ' ' -f1 "$CACHE_FILE" | tr -d ';' | awk 'NF > 0')"
+	for IP in $SPAMIP; do
 		if [ $LOG_BLOCKLIST_HITS -eq 1 ]; then
 			# add the ip address log rule to the chain
 			$IPTABLES -A "$CHAIN" -p 0 -s "$IP" -j LOG --log-prefix "[SPAMHAUS BLOCK]" -m limit --limit 3/min --limit-burst 10
