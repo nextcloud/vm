@@ -773,7 +773,7 @@ fi
 # Make all previous files executable
 print_text_in_color "$ICyan" "Finding all executable files in $NC_APPS_PATH"
 find_executables="(find $NC_APPS_PATH -type f -executable)"
-export "$find_executables"
+export "{$find_executables}"
 
 if [ -f /tmp/minor.version ]
 then
