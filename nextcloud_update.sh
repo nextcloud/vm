@@ -1182,7 +1182,7 @@ fi
 # Make all files in executable again
 for executable in $find_executables
 do
-    chmod +x $executable
+    chmod +x "$executable"
     unset "$find_executables"
 done
 
