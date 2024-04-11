@@ -61,9 +61,9 @@ is_process_running apt
 is_process_running dpkg
 
 # Check distribution and version
-if ! version 22.04 "$DISTRO" 22.04.10
+if ! version 24.04 "$DISTRO" 24.04.10
 then
-    msg_box "This script can only be run on Ubuntu 22.04 (server)."
+    msg_box "This script can only be run on Ubuntu 24.04 (server)."
     exit 1
 fi
 
@@ -211,6 +211,7 @@ stop_if_installed php7.3-fpm
 stop_if_installed php8.0-fpm
 stop_if_installed php8.1-fpm
 stop_if_installed php8.2-fpm
+stop_if_installed php8.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
@@ -815,13 +816,6 @@ HTTP_CREATE
     print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
 fi
 
-# Fix zero file sizes
-# See https://github.com/nextcloud/server/issues/3056
-if version 22.04 "$DISTRO" 26.04.10
-then
-    SETENVPROXY="SetEnv proxy-sendcl 1"
-fi
-
 # Generate $TLS_CONF
 if [ ! -f "$SITES_AVAILABLE"/"$TLS_CONF" ]
 then
@@ -906,7 +900,7 @@ then
     </IfModule>
     
     # Avoid zero byte files (only works in Ubuntu 22.04 -->>)
-    $SETENVPROXY
+    SETENVPROXY="SetEnv proxy-sendcl 1"
 
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
@@ -1047,7 +1041,7 @@ fi
 # Fix Realtek on PN51
 if asuspn51
 then
-    if ! version 22.04 "$DISTRO" 22.04.10
+    if ! version 24.04 "$DISTRO" 24.04.10
     then
         # Upgrade Realtek drivers
         print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
