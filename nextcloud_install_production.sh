@@ -900,7 +900,7 @@ then
 
     # Avoid zero byte files (only works in Ubuntu 24.04 -->>)
     # See https://github.com/nextcloud/server/issues/3056
-    SETENVPROXY="SetEnv proxy-sendcl 1"
+    SetEnv proxy-sendcl 1
 
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
