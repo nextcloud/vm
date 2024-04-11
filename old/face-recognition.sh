@@ -102,7 +102,7 @@ fi
 # Install requirements
 if version 22.04 "$DISTRO" 22.04.10
 then
-    # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-focal
+    # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-jammy
     add_trusted_key_and_repo "repo.gpg.key" \
     "https://repo.delellis.com.ar" \
     "https://repo.delellis.com.ar" \
@@ -111,7 +111,7 @@ then
     install_if_not php"$PHPVER"-pdlib
 elif version 24.04 "$DISTRO" 24.04.10
 then
-    # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-jammy
+    # https://github.com/matiasdelellis/facerecognition/wiki/PDlib-Installation#ubuntu-noble
     add_trusted_key_and_repo "repo.gpg.key" \
     "https://repo.delellis.com.ar" \
     "https://repo.delellis.com.ar" \
