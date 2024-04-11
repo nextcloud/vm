@@ -87,7 +87,7 @@ Confirm by pressing [ENTER]. Cancel by pressing [ESC]."
 MENU_GUIDE="Navigate with the [ARROW] keys and confirm by pressing [ENTER]. Cancel by pressing [ESC]."
 RUN_LATER_GUIDE="You can view this script later by running 'sudo bash $SCRIPTS/menu.sh'."
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS"
 STATIC="$GITHUB_REPO/static"
 LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
@@ -151,7 +151,7 @@ HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # PHP-FPM
-PHPVER=8.3
+PHPVER=8.1
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
@@ -708,10 +708,10 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 22.04 "$DISTRO" 24.04.10
+if ! version 20.04 "$DISTRO" 24.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-22.04 - 24.04.10 to run this script."
+20.04 - 24.04.10 to run this script."
     print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -1093,7 +1093,7 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 22.04 "$DISTRO" 24.04.10; then
+if ! version 20.04 "$DISTRO" 24.04.10; then
     msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 24.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
@@ -1253,7 +1253,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 22.04 "$DISTRO" 24.04.10
+if version 20.04 "$DISTRO" 24.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if site_200 github.com
@@ -1278,7 +1278,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 24.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -1769,7 +1769,7 @@ then
         CONTAINER="$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
         if [ -z "$CONTAINER" ]
         then
-            # Special solution if the container name is scrambled, then search for the actual name instead 
+            # Special solution if the container name is scrambled, then search for the actual name instead
             CONTAINER="$(docker container ls -a | grep "$2" | awk '{print $1}' | tail -1)"
         fi
         docker stop "$CONTAINER"
@@ -2160,7 +2160,7 @@ add_trusted_key_and_repo() {
     check_distro_version
 
     # Do the magic
-    if version 22.04 "$DISTRO" 24.04.10
+    if version 24.04 "$DISTRO" 24.04.10
     then
         # New recommended way not using apt-key
         print_text_in_color "$ICyan" "Adding trusted key in /etc/apt/keyrings/$1..."
