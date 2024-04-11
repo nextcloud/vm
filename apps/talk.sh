@@ -88,10 +88,10 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Must be 22.04
-if ! version 20.04 "$DISTRO" 22.04.10
+# Must be 24.04
+if ! version 22.04 "$DISTRO" 24.04.10
 then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to install Talk"
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to install Talk"
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -398,8 +398,8 @@ mkdir -p /var/www/html/error
 echo "Hi there! :) If you see this page, the Apache2 proxy for $SCRIPT_NAME is up and running." > /var/www/html/error/404_proxy.html
 chown -R www-data:www-data /var/www/html/error
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi

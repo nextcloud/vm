@@ -56,8 +56,8 @@ curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
 curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
 ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi

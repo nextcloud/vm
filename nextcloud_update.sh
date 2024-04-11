@@ -11,7 +11,7 @@
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS/lib.sh)
 
 # Get all needed variables from the library
 ncdb
@@ -32,8 +32,8 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
-# Automatically restart services (Ubuntu 22.04)
-if ! version 16.04.10 "$DISTRO" 20.04.10
+# Automatically restart services (Ubuntu 24.04)
+if ! version 16.04.10 "$DISTRO" 22.04.10
 then
     if [ ! -f /etc/needrestart/needrestart.conf ] 
     then
@@ -364,11 +364,11 @@ fi
 # Fix Realtek on PN51
 if asuspn51
 then
-    if ! version 22.04 "$DISTRO" 22.04.10
+    if ! version 24.04 "$DISTRO" 24.04.10
     then
         # Upgrade Realtek drivers
         print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
-        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS/network/asusnuc pn51.sh "$SCRIPTS"
         bash "$SCRIPTS"/pn51.sh
     fi
 fi
@@ -419,7 +419,7 @@ then
     rm -f /tmp/channel.xml
 fi
 
-# Update Redis PHP extension (18.04 --> 20.04 since 16.04 already is deprecated in the top of this script)
+# Update Redis PHP extension (18.04 --> 22.04 since 16.04 already is deprecated in the top of this script)
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 
 # Check current PHP version

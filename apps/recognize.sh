@@ -58,7 +58,7 @@ then
 4. Install
 
 We will run the uninstaller for you now, then exit."
-    wget https://raw.githubusercontent.com/nextcloud/vm/master/old/face-recognition.sh && bash face-recognition.sh && rm -f face-recognition.sh
+    wget https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS/old/face-recognition.sh && bash face-recognition.sh && rm -f face-recognition.sh
     exit
 fi
 

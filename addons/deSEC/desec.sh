@@ -140,9 +140,9 @@ then
     # Add DNS renewals with the deSEC hoock script
     print_text_in_color "$ICyan" "Preparing for DNS-renewals..."
     mkdir -p "$SCRIPTS"/deSEC
-    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" "hook.sh" "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS/addons/deSEC" "hook.sh" "$SCRIPTS"/deSEC
     chmod +x "$SCRIPTS"/deSEC/hook.sh
-    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" ".dedynauth" "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS/addons/deSEC" ".dedynauth" "$SCRIPTS"/deSEC
     check_command sed -i "s|DEDYN_TOKEN=.*|DEDYN_TOKEN=$DEDYNAUTHTOKEN|g" "$SCRIPTS"/deSEC/.dedynauth
     check_command sed -i "s|DEDYN_NAME=.*|DEDYN_NAME=$DEDYNDOMAIN|g" "$SCRIPTS"/deSEC/.dedynauth
     msg_box "DNS updates for deSEC are now set. This means you don't have to open any ports (80|443) for the renewal process since deSEC TLS renewals will be run with a built in hook. \

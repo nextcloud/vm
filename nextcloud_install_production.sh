@@ -41,7 +41,7 @@ SCRIPT_NAME="Nextcloud Install Script"
 SCRIPT_EXPLAINER="This script is installing all requirements that are needed for Nextcloud to run.
 It's the first of two parts that are necessary to finish your customized Nextcloud installation."
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -211,7 +211,6 @@ stop_if_installed php7.3-fpm
 stop_if_installed php8.0-fpm
 stop_if_installed php8.1-fpm
 stop_if_installed php8.2-fpm
-stop_if_installed php8.3-fpm
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
@@ -799,7 +798,7 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Disable HTTP TRACE method.
     TraceEnable off
     # Disable HTTP TRACK method.
@@ -886,7 +885,7 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Disable HTTP TRACE method.
     TraceEnable off
     # Disable HTTP TRACK method.
@@ -898,8 +897,9 @@ then
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-    
-    # Avoid zero byte files (only works in Ubuntu 22.04 -->>)
+
+    # Avoid zero byte files (only works in Ubuntu 24.04 -->>)
+    # See https://github.com/nextcloud/server/issues/3056
     SETENVPROXY="SetEnv proxy-sendcl 1"
 
 ### LOCATION OF CERT FILES ###
@@ -1045,7 +1045,7 @@ then
     then
         # Upgrade Realtek drivers
         print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
-        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS/network/asusnuc pn51.sh "$SCRIPTS"
         bash "$SCRIPTS"/pn51.sh
     fi
 fi

@@ -708,10 +708,10 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 20.04 "$DISTRO" 24.04.10
+if ! version 22.04 "$DISTRO" 24.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-20.04 - 24.04.10 to run this script."
+22.04 - 24.04.10 to run this script."
     print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -1067,7 +1067,7 @@ remove_from_trusted_domains() {
 }
 
 check_distro_version() {
-# Subṕport Ubuntu 22.0.4 jammy, and Ubuntu 20.04 focal.
+# Subṕport Ubuntu 22.0.4 jammy, and Ubuntu 22.04 focal.
 
 # Check Ubuntu version
 if [ "${CODENAME}" == "jammy" ] || [ "${CODENAME}" == "focal" ]
@@ -1093,8 +1093,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 20.04 "$DISTRO" 24.04.10; then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 24.04.10 to run this script."
+if ! version 22.04 "$DISTRO" 24.04.10; then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/product/upgrade-ubuntu-os-between-major-versions/"
@@ -1253,7 +1253,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 20.04 "$DISTRO" 24.04.10
+if version 22.04 "$DISTRO" 24.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if site_200 github.com
@@ -1278,7 +1278,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 24.04.10 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -1769,7 +1769,7 @@ then
         CONTAINER="$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
         if [ -z "$CONTAINER" ]
         then
-            # Special solution if the container name is scrambled, then search for the actual name instead
+            # Special solution if the container name is scrambled, then search for the actual name instead 
             CONTAINER="$(docker container ls -a | grep "$2" | awk '{print $1}' | tail -1)"
         fi
         docker stop "$CONTAINER"
@@ -2167,7 +2167,7 @@ add_trusted_key_and_repo() {
         curl -sL "$2"/"$1" | tee -a /etc/apt/keyrings/"$1"
         echo "deb [signed-by=/etc/apt/keyrings/$1] $3 $4" > "/etc/apt/sources.list.d/$5"
         apt-get update -q4 & spinner_loading
-    elif version 20.04 "$DISTRO" 20.04.10
+    elif version 22.04 "$DISTRO" 22.04.10
     then
         # Legacy way with apt-key
         print_text_in_color "$ICyan" "Adding trusted key with apt-key..."

@@ -16,9 +16,9 @@ debug_mode
 root_check
 
 # Check Ubuntu version
-if ! version 18.04 "$DISTRO" 22.04.10
+if ! version 18.04 "$DISTRO" 24.04.10
 then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 22.04.10 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 18.04 - 24.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"

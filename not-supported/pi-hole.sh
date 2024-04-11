@@ -220,7 +220,7 @@ mkdir -p "$SCRIPTS"
 # Insert the new lines into pihole-update.sh
 cat << PIHOLE_UPDATE > "$SCRIPTS/pihole-update.sh"
 #!/bin/bash
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS/lib.sh)
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 notify_admin_gui "Starting the Pi-hole update." "You will be notified when it is done."
 # Create backup first
@@ -313,8 +313,8 @@ a2enmod ssl
 a2enmod proxy
 a2enmod proxy_http
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi
