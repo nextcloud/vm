@@ -1067,16 +1067,16 @@ remove_from_trusted_domains() {
 }
 
 check_distro_version() {
-# Subṕport Ubuntu 22.0.4 jammy, and Ubuntu 22.04 focal.
+# Support Ubuntu 22.04 jammy, and Ubuntu 24.04 noble.
 
 # Check Ubuntu version
-if [ "${CODENAME}" == "jammy" ] || [ "${CODENAME}" == "focal" ]
+if [ "${CODENAME}" == "jammy" ] || [ "${CODENAME}" == "noble" ]
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
 then
     OS=1
-elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "focal" &> /dev/null
+elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "noble" &> /dev/null
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu" &> /dev/null
@@ -2100,6 +2100,15 @@ then
 elif grep 8.3 <<< "$GETPHP" >/dev/null 2>&1
 then
    export PHPVER=8.3
+elif grep 8.4 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.4
+elif grep 8.5 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.5
+elif grep 8.6 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.6
 fi
 
 # Export other PHP variables based on PHPVER
@@ -2160,14 +2169,14 @@ add_trusted_key_and_repo() {
     check_distro_version
 
     # Do the magic
-    if version 24.04 "$DISTRO" 24.04.10
+    if version 22.04 "$DISTRO" 24.04.10
     then
         # New recommended way not using apt-key
         print_text_in_color "$ICyan" "Adding trusted key in /etc/apt/keyrings/$1..."
         curl -sL "$2"/"$1" | tee -a /etc/apt/keyrings/"$1"
         echo "deb [signed-by=/etc/apt/keyrings/$1] $3 $4" > "/etc/apt/sources.list.d/$5"
         apt-get update -q4 & spinner_loading
-    elif version 22.04 "$DISTRO" 22.04.10
+    elif version 20.04 "$DISTRO" 20.04.10
     then
         # Legacy way with apt-key
         print_text_in_color "$ICyan" "Adding trusted key with apt-key..."
