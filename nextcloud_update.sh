@@ -725,6 +725,10 @@ fi
 print_text_in_color "$IGreen" "Disabling maintenance:mode..."
 sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
 
+# Make all previous files executable
+print_text_in_color "$ICyan" "Finding all executable files in $NC_APPS_PATH"
+find_executables="$(find $NC_APPS_PATH -type f -executable)"
+
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
@@ -760,14 +764,15 @@ else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
 fi
 
+# Nextcloud 13 is required.
+lowest_compatible_nc 13
+
 # Restart notify push if existing
 if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
 then
-    systemctl restart notify_push
+    chmod +x "$NC_APPS_PATH"/notify_push/bin/x86_64/notify_push
+    systemctl restart notify_push.service
 fi
-
-# Nextcloud 13 is required.
-lowest_compatible_nc 13
 
 if [ -f /tmp/minor.version ]
 then
@@ -1246,6 +1251,12 @@ if [ ! -d "$VMLOGS" ]
 then
     mkdir -p "$VMLOGS"
 fi
+
+# Make all files in executable again
+for executable in $find_executables
+do
+    chmod +x "$executable"
+done
 
 CURRENTVERSION_after=$(nextcloud_occ status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]] || [ -n "$PRERELEASE_VERSION" ]
