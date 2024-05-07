@@ -57,7 +57,7 @@ fi
 # Download the driver before it's removed (no internet when it's removed)
 if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
 then
-    curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
+    curl_to_dir https://github.com/nextcloud/vm/raw/main/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
 fi
 
 # Install latest driver

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Initially forked from cowgill, extended and improved for our mailserver needs.
-## Credit: https://github.com/cowgill/spamhaus/blob/master/spamhaus.sh
+## Credit: https://github.com/cowgill/spamhaus/blob/main/spamhaus.sh
 
 # based off the following two scripts
 # http://www.theunsupported.com/2012/07/block-malicious-ip-addresses/

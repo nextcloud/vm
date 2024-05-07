@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
-# Based on: https://raw.githubusercontent.com/nextcloud-gmbh/mtime_fixer_tool_kit/master/solvable_files.sh
+# Based on: https://raw.githubusercontent.com/nextcloud-gmbh/mtime_fixer_tool_kit/main/solvable_files.sh
 
 true
 SCRIPT_NAME="Fix 'Could not update metadata due to invalid modified time'."

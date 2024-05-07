@@ -6,7 +6,7 @@
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
-# https://github.com/nextcloud/vm/blob/master/LICENSE
+# https://github.com/nextcloud/vm/blob/main/LICENSE
 
 true
 SCRIPT_NAME="Nextcloud Update Script"
@@ -384,7 +384,7 @@ then
     then
         bash "$NETDATA_UPDATER_PATH"
     else
-        curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer/ netdata-updater.sh "$SCRIPTS"
+        curl_to_dir https://raw.githubusercontent.com/netdata/netdata/main/packaging/installer/ netdata-updater.sh "$SCRIPTS"
         bash "$SCRIPTS"/netdata-updater.sh
         rm -f "$SCRIPTS"/netdata-updater.sh
     fi
@@ -738,7 +738,7 @@ then
     # Update pdfannotate
     if [ -d "$NC_APPS_PATH/pdfannotate" ]
     then
-        INFO_XML="$(curl -s https://gitlab.com/nextcloud-other/nextcloud-annotate/-/raw/master/appinfo/info.xml)"
+        INFO_XML="$(curl -s https://gitlab.com/nextcloud-other/nextcloud-annotate/-/raw/main/appinfo/info.xml)"
         if [ "$(echo "$INFO_XML" | grep -oP 'min-version="[0-9]+"' | grep -oP '[0-9]+')" -le "${CURRENTVERSION%%.*}" ] \
 && [ "$(echo "$INFO_XML" | grep -oP 'max-version="[0-9]+"' | grep -oP '[0-9]+')" -ge "${CURRENTVERSION%%.*}" ]
         then
@@ -1152,7 +1152,7 @@ then
         then
             if [ -d /root/bwdata ]
             then
-                curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "/root"
+                curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/main/scripts" "bitwarden.sh" "/root"
                 chmod +x /root/bitwarden.sh
                 if [ -f /root/bitwarden.sh ]
                 then
@@ -1163,7 +1163,7 @@ then
                 fi
             elif [ -d "$BITWARDEN_HOME"/bwdata ]
             then
-                curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+                curl_to_dir "https://raw.githubusercontent.com/bitwarden/server/main/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
                 chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
                 chmod +x "$BITWARDEN_HOME"/bitwarden.sh
                 if [ -f "$BITWARDEN_HOME"/bitwarden.sh ]

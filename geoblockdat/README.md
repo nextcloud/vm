@@ -1,5 +1,5 @@
 # What is this folder about?
-This folder is only meant for storing GeoIP Legacy Databases which are used by the [geoip script](https://github.com/nextcloud/vm/blob/master/network/geoblock.sh).
+This folder is only meant for storing GeoIP Legacy Databases which are used by the [geoip script](https://github.com/nextcloud/vm/blob/main/network/geoblock.sh).
 
 All .dat files in this folder are from https://www.miyuru.lk/geoiplegacy and converted by Miyuru Sankalpa.
 

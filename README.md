@@ -32,15 +32,15 @@ Server installation. Simplified. :cloud:
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
 * Report [your issue](https://github.com/nextcloud/vm/issues/new)
 * Help us with [existing issues](https://github.com/nextcloud/vm/issues)
-* Test what's not yet released into the stable VM. Please have a look at [this subfolder](https://github.com/nextcloud/vm/tree/master/not-supported) for further information.
+* Test what's not yet released into the stable VM. Please have a look at [this subfolder](https://github.com/nextcloud/vm/tree/main/not-supported) for further information.
 * Write scripts so that the release process becomes automated with [Vagrant](https://www.vagrantup.com/docs/getting-started/), [Terraform](https://www.terraform.io/) or similar
 * **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB for both VMware, Hyper-V and [more](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration?currentPageId=bls17dahv0jgrltpif20)**
 
 **FYI**
 
-Developed by [Daniel Hansson](https://github.com/enoch85) and the Nextcloud community. Nextcloud GmbH does not offer support for the VM in the [master branch](https://github.com/nextcloud/vm/tree/master) (full-version), as we only support manual tarball/zip-package installations. You can download the official Nextcloud VM appliance ([also from this repo](https://github.com/nextcloud/vm/tree/official-basic-vm)) from [our website](https://download.nextcloud.com/vm/Official-Nextcloud-VM.zip) to get a stripped down version for testing if you rather want to skip all the manual steps in our documentation.
+Developed by [Daniel Hansson](https://github.com/enoch85) and the Nextcloud community. Nextcloud GmbH does not offer support for the VM in the [maain branch](https://github.com/nextcloud/vm/tree/main) (full-version), as we only support manual tarball/zip-package installations. You can download the official Nextcloud VM appliance ([also from this repo](https://github.com/nextcloud/vm/tree/official-basic-vm)) from [our website](https://download.nextcloud.com/vm/Official-Nextcloud-VM.zip) to get a stripped down version for testing if you rather want to skip all the manual steps in our documentation.
 
-If you want support regarding the full-version VM in master, please contact our partner [Hansson IT](https://www.hanssonit.se/nextcloud-vm).
+If you want support regarding the full-version VM in main, please contact our partner [Hansson IT](https://www.hanssonit.se/nextcloud-vm).
   
 ## Full documentation
 * [VM](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm) (the easiest option)
@@ -66,13 +66,13 @@ Please keep in mind that this is only intended for testing and might crash your 
 
 The `nextcloud_install_production.sh` script can be run as part of Vagrant provisioning.
 
-See [this subrepo](https://github.com/nextcloud/vm/tree/master/vagrant) for more information.
+See [this subrepo](https://github.com/nextcloud/vm/tree/main/vagrant) for more information.
 
 Please report any issues you can find. Improvements are welcome!
 
 ## First look
 #### Nextcloud
-![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
+![alt tag](https://github.com/nextcloud/nextcloud.com/blob/main/assets/img/features/VMwelcome.png)
 #### Adminer (Database Administration) *not default*
 ![alt tag](https://i.imgur.com/tiF4chg.png)
 #### Webmin (Server Administration GUI) *not default*

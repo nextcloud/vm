@@ -233,7 +233,7 @@ msg_box "You will now be presented with the option to install the Talk Signaling
 This aims to give you greater performance and ability to have more users in a call at the same time.
 
 You can read more here: 
-https://github.com/strukturag/nextcloud-spreed-signaling/blob/master/README.md
+https://github.com/strukturag/nextcloud-spreed-signaling/blob/main/README.md
 
 We will use apt packages from https://gitlab.com/morph027 which is a trusted contributor to this repository.
 

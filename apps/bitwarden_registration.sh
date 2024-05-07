@@ -53,7 +53,7 @@ case "$choice" in
             # Restart Bitwarden
             install_if_not curl
             cd /root
-            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
+            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/main/scripts" "bitwarden.sh" "/root"
             chmod +x /root/bitwarden.sh
             check_command ./bitwarden.sh restart
         elif [ -f "$BITWARDEN_HOME"/bwdata/env/global.override.env ]
@@ -62,7 +62,7 @@ case "$choice" in
             # Restart Bitwarden
             install_if_not curl
             cd "$BITWARDEN_HOME"
-            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/main/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
             chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
             chmod +x "$BITWARDEN_HOME"/bitwarden.sh
             check_command systemctl restart bitwarden
@@ -77,7 +77,7 @@ case "$choice" in
             # Restart Bitwarden
             install_if_not curl
             cd /root
-            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "/root"
+            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/main/scripts" "bitwarden.sh" "/root"
             chmod +x /root/bitwarden.sh
             check_command ./bitwarden.sh restart
         elif [ -f "$BITWARDEN_HOME"/bwdata/env/global.override.env ]
@@ -86,7 +86,7 @@ case "$choice" in
             # Restart Bitwarden
             install_if_not curl
             cd "$BITWARDEN_HOME"
-            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/master/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
+            curl_to_dir "https://raw.githubusercontent.com/bitwarden/core/main/scripts" "bitwarden.sh" "$BITWARDEN_HOME"
             chown "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"/bitwarden.sh
             chmod +x "$BITWARDEN_HOME"/bitwarden.sh
             check_command systemctl restart bitwarden

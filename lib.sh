@@ -2,7 +2,7 @@
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
-# https://github.com/nextcloud/vm/blob/master/LICENSE
+# https://github.com/nextcloud/vm/blob/main/LICENSE
 
 # shellcheck disable=SC2034
 true
@@ -387,7 +387,7 @@ something is wrong here. Please report this to $ISSUES"
 # Used in geoblock.sh
 get_newest_dat_files() {
     # IPv4
-    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
     if [ -z "$IPV4_NAME" ]
     then
@@ -413,7 +413,7 @@ get_newest_dat_files() {
         fi
     fi
     # IPv6
-    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
     if [ -z "$IPV6_NAME" ]
     then
@@ -1450,7 +1450,7 @@ If it still fails, please report this issue to: $ISSUES."
     fi
 }
 
-# Run any script in ../master
+# Run any script in ../main
 # call like: run_main_script name_of_script
 run_main_script() {
 run_script GITHUB_REPO "${1}"
@@ -1542,7 +1542,7 @@ or experience other issues then please report this to $ISSUES"
 
     # Download the latest updater
 #    cd $NCPATH
-#    curl sLO https://github.com/nextcloud/updater/archive/master.zip
+#    curl sLO https://github.com/nextcloud/updater/archive/main.zip
 #    install_if_not unzip
 #    unzip -q master.zip
 #    rm master.zip*

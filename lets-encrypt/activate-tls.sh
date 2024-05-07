@@ -325,7 +325,7 @@ Please consider showing them your gratitude:
 https://letsencrypt.org/become-a-sponsor/
 
 If you want to contribute to these scripts, have a look here:
-https://github.com/nextcloud/vm/tree/master/lets-encrypt"
+https://github.com/nextcloud/vm/tree/main/lets-encrypt"
             exit 0
         fi
     else
