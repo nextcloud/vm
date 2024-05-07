@@ -253,6 +253,10 @@ then
     fi
 fi
 
+# Since the branch change, always get the latest update script
+download_script STATIC update
+chmod +x $SCRIPTS/update.sh
+
 # Ubuntu 16.04 is deprecated
 check_distro_version
 
