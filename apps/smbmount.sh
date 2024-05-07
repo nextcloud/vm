@@ -77,7 +77,7 @@ then
     msg_box "All $MAX_COUNT slots are occupied. No mounting slots available. Please delete one of the SMB-mounts.
 If you really want to mount more, you can simply download the smb-mount script \
 directly and edit the variable 'MAX_COUNT' to a higher value than $MAX_COUNT by running:
-'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/master/apps/smbmount.sh' # Download the script
+'curl -sLO https://raw.githubusercontent.com/nextcloud/vm/main/apps/smbmount.sh' # Download the script
 'nano smbmount.sh' # Edit MAX_COUNT=$MAX_COUNT to your likings and save the file
 'sudo bash smbmount.sh' # Execute the script." "$SUBTITLE"
     return
@@ -340,7 +340,7 @@ We please you to do the math yourself if the number is high enough for your setu
             fi
 
             # Install the inotify PHP extension
-            # https://github.com/icewind1991/files_inotify/blob/master/README.md
+            # https://github.com/icewind1991/files_inotify/blob/main/README.md
             if ! pecl list | grep -q inotify
             then 
                 print_text_in_color "$ICyan" "Installing the PHP inotify extension..."

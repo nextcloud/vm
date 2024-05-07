@@ -2,7 +2,7 @@
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
-# https://github.com/nextcloud/vm/blob/master/LICENSE
+# https://github.com/nextcloud/vm/blob/main/LICENSE
 
 # shellcheck disable=SC2034
 true
@@ -87,7 +87,7 @@ Confirm by pressing [ENTER]. Cancel by pressing [ESC]."
 MENU_GUIDE="Navigate with the [ARROW] keys and confirm by pressing [ENTER]. Cancel by pressing [ESC]."
 RUN_LATER_GUIDE="You can view this script later by running 'sudo bash $SCRIPTS/menu.sh'."
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/main"
 STATIC="$GITHUB_REPO/static"
 LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
@@ -151,7 +151,7 @@ HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # PHP-FPM
-PHPVER=8.1
+PHPVER=8.3
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
@@ -387,7 +387,7 @@ something is wrong here. Please report this to $ISSUES"
 # Used in geoblock.sh
 get_newest_dat_files() {
     # IPv4
-    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
     if [ -z "$IPV4_NAME" ]
     then
@@ -413,7 +413,7 @@ get_newest_dat_files() {
         fi
     fi
     # IPv6
-    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
+    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
     | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
     if [ -z "$IPV6_NAME" ]
     then
@@ -708,10 +708,10 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 20.04 "$DISTRO" 22.04.10
+if ! version 22.04 "$DISTRO" 24.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-20.04 - 22.04.10 to run this script."
+22.04 - 24.04.10 to run this script."
     print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -1067,16 +1067,16 @@ remove_from_trusted_domains() {
 }
 
 check_distro_version() {
-# Subṕport Ubuntu 22.0.4 jammy, and Ubuntu 20.04 focal.
+# Support Ubuntu 22.04 jammy, and Ubuntu 24.04 noble.
 
 # Check Ubuntu version
-if [ "${CODENAME}" == "jammy" ] || [ "${CODENAME}" == "focal" ]
+if [ "${CODENAME}" == "jammy" ] || [ "${CODENAME}" == "noble" ]
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
 then
     OS=1
-elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "focal" &> /dev/null
+elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "noble" &> /dev/null
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu" &> /dev/null
@@ -1093,8 +1093,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 20.04 "$DISTRO" 22.04.10; then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
+if ! version 22.04 "$DISTRO" 24.04.10; then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/product/upgrade-ubuntu-os-between-major-versions/"
@@ -1253,7 +1253,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 20.04 "$DISTRO" 22.04.10
+if version 22.04 "$DISTRO" 24.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if site_200 github.com
@@ -1278,7 +1278,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -1450,7 +1450,7 @@ If it still fails, please report this issue to: $ISSUES."
     fi
 }
 
-# Run any script in ../master
+# Run any script in ../main
 # call like: run_main_script name_of_script
 run_main_script() {
 run_script GITHUB_REPO "${1}"
@@ -1542,7 +1542,7 @@ or experience other issues then please report this to $ISSUES"
 
     # Download the latest updater
 #    cd $NCPATH
-#    curl sLO https://github.com/nextcloud/updater/archive/master.zip
+#    curl sLO https://github.com/nextcloud/updater/archive/main.zip
 #    install_if_not unzip
 #    unzip -q master.zip
 #    rm master.zip*
@@ -2100,6 +2100,15 @@ then
 elif grep 8.3 <<< "$GETPHP" >/dev/null 2>&1
 then
    export PHPVER=8.3
+elif grep 8.4 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.4
+elif grep 8.5 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.5
+elif grep 8.6 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.6
 fi
 
 # Export other PHP variables based on PHPVER
@@ -2160,7 +2169,7 @@ add_trusted_key_and_repo() {
     check_distro_version
 
     # Do the magic
-    if version 22.04 "$DISTRO" 22.04.10
+    if version 22.04 "$DISTRO" 24.04.10
     then
         # New recommended way not using apt-key
         print_text_in_color "$ICyan" "Adding trusted key in /etc/apt/keyrings/$1..."

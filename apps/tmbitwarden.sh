@@ -181,7 +181,7 @@ USERGROUPID=$(id -g $BITWARDEN_USER)
 sed -i "s|database_docker_volume:.*|database_docker_volume: true|g" "$BITWARDEN_HOME"/bwdata/config.yml
 sed -i "s|LOCAL_UID=.*|LOCAL_UID=$USERID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
 sed -i "s|LOCAL_GID=.*|LOCAL_GID=$USERGROUPID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
-# Get Subdomain from config.yml and change it to https
+# Get subdomain from config.yml and change it to https
 SUBDOMAIN=$(grep ^url "$BITWARDEN_HOME"/bwdata/config.yml)
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
 sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.yml
@@ -240,8 +240,8 @@ a2enmod ssl
 a2enmod headers
 a2enmod remoteip
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi

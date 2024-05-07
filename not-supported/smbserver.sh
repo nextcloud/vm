@@ -907,7 +907,7 @@ We please you to do the math yourself if the number is high enough for your setu
     fi
 
     # Install the inotify PHP extension
-    # https://github.com/icewind1991/files_inotify/blob/master/README.md
+    # https://github.com/icewind1991/files_inotify/blob/main/README.md
     if ! pecl list | grep -q inotify
     then 
         print_text_in_color "$ICyan" "Installing the PHP inotify extension..."

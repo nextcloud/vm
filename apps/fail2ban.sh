@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
-# Inspired by https://github.com/nextcloud/nextcloudpi/blob/master/etc/nextcloudpi-config.d/fail2ban.sh
+# Inspired by https://github.com/nextcloud/nextcloudpi/blob/main/etc/nextcloudpi-config.d/fail2ban.sh
 
 true
 SCRIPT_NAME="Fail2ban"

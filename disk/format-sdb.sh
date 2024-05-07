@@ -10,7 +10,7 @@ source /var/scripts/fetch_lib.sh
 # Check if root
 root_check
 
-# Needs to be Ubuntu 20.04 and Multiverse
+# Needs to be Ubuntu 22.04 and Multiverse
 check_distro_version
 check_multiverse
 

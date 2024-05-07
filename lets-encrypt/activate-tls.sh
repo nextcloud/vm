@@ -115,15 +115,15 @@ fi
 # To get the correct version for the Apache conf file
 check_php
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi
 
 # Fix zero file sizes
 # See https://github.com/nextcloud/server/issues/3056
-if version 22.04 "$DISTRO" 26.04.10
+if version 24.04 "$DISTRO" 26.04.10
 then
     SETENVPROXY="SetEnv proxy-sendcl 1"
 fi
@@ -325,7 +325,7 @@ Please consider showing them your gratitude:
 https://letsencrypt.org/become-a-sponsor/
 
 If you want to contribute to these scripts, have a look here:
-https://github.com/nextcloud/vm/tree/master/lets-encrypt"
+https://github.com/nextcloud/vm/tree/main/lets-encrypt"
             exit 0
         fi
     else

@@ -2,7 +2,7 @@
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
-# https://github.com/nextcloud/vm/blob/master/LICENSE
+# https://github.com/nextcloud/vm/blob/main/LICENSE
 
 # Prefer IPv4 for apt
 echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
@@ -41,7 +41,7 @@ SCRIPT_NAME="Nextcloud Install Script"
 SCRIPT_EXPLAINER="This script is installing all requirements that are needed for Nextcloud to run.
 It's the first of two parts that are necessary to finish your customized Nextcloud installation."
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -61,9 +61,9 @@ is_process_running apt
 is_process_running dpkg
 
 # Check distribution and version
-if ! version 22.04 "$DISTRO" 22.04.10
+if ! version 24.04 "$DISTRO" 24.04.10
 then
-    msg_box "This script can only be run on Ubuntu 22.04 (server)."
+    msg_box "This script can only be run on Ubuntu 24.04 (server)."
     exit 1
 fi
 
@@ -798,7 +798,7 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Disable HTTP TRACE method.
     TraceEnable off
     # Disable HTTP TRACK method.
@@ -813,13 +813,6 @@ then
 </VirtualHost>
 HTTP_CREATE
     print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
-fi
-
-# Fix zero file sizes
-# See https://github.com/nextcloud/server/issues/3056
-if version 22.04 "$DISTRO" 26.04.10
-then
-    SETENVPROXY="SetEnv proxy-sendcl 1"
 fi
 
 # Generate $TLS_CONF
@@ -892,7 +885,7 @@ then
 
     SetEnv HOME $NCPATH
     SetEnv HTTP_HOME $NCPATH
-    
+
     # Disable HTTP TRACE method.
     TraceEnable off
     # Disable HTTP TRACK method.
@@ -904,9 +897,10 @@ then
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-    
-    # Avoid zero byte files (only works in Ubuntu 22.04 -->>)
-    $SETENVPROXY
+
+    # Avoid zero byte files (only works in Ubuntu 24.04 -->>)
+    # See https://github.com/nextcloud/server/issues/3056
+    SetEnv proxy-sendcl 1
 
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
@@ -1047,11 +1041,11 @@ fi
 # Fix Realtek on PN51
 if asuspn51
 then
-    if ! version 22.04 "$DISTRO" 22.04.10
+    if ! version 24.04 "$DISTRO" 24.04.10
     then
         # Upgrade Realtek drivers
         print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
-        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/main/network/asusnuc pn51.sh "$SCRIPTS"
         bash "$SCRIPTS"/pn51.sh
     fi
 fi

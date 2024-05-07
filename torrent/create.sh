@@ -2,7 +2,7 @@
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
-# https://github.com/nextcloud/vm/blob/master/LICENSE
+# https://github.com/nextcloud/vm/blob/main/LICENSE
 
 #########
 
@@ -11,7 +11,7 @@
 
 # shellcheck source=lib.sh
 # shellcheck disable=SC2046
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
