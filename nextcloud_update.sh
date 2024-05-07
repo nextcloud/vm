@@ -860,7 +860,7 @@ then
 fi
 
 ############# Don't upgrade to specific version
-DONOTUPDATETO='23.0.0'
+DONOTUPDATETO='29.0.0'
 if [[ "$NCVERSION" == "$DONOTUPDATETO" ]]
 then
     msg_box "Due to major bugs with Nextcloud $DONOTUPDATETO we won't upgrade to that version since it's a risk it will break your server. Please try to upgrade again when the next maintenance release is out."
