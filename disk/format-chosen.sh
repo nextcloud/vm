@@ -43,9 +43,13 @@ elif [ "$SYSVENDOR" == "Xen" ];
 then
     SYSNAME="Xen/XCP-NG"
     DEVTYPE=xvdb
-elif [[ "$SYSVENDOR" == "QEMU" || "$SYSVENDOR" == "Red Hat" ]];
+elif [[ "$SYSVENDOR" == "QEMU" ]];
 then
-    SYSNAME="KVM/QEMU"
+    SYSNAME="Proxmox/QEMU"
+    DEVTYPE=sdb
+elif [ "$SYSVENDOR" == "Red Hat" ];
+then
+    SYSNAME="Red Hat"
     DEVTYPE=vdb
 elif [ "$SYSVENDOR" == "DigitalOcean" ];
 then
