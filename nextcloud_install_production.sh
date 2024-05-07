@@ -81,8 +81,8 @@ then
     print_text_in_color "$ICyan" "Running in provisioning mode..."
     export PROVISIONING=1
     sleep 1
-#elif [ "$1" = "--not-latest" ]
-#then
+elif [ "$1" = "--not-latest" ]
+then
     NOT_LATEST=1
     print_text_in_color "$ICyan" "Running in not-latest mode..."
     sleep 1
@@ -481,6 +481,7 @@ then
 fi
 
 # Get not-latest Nextcloud version
+NOT_LATEST=1
 if [ -n "$NOT_LATEST" ]
 then
     while [ -z "$NCVERSION" ]
