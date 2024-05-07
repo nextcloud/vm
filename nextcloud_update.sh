@@ -738,7 +738,7 @@ then
     # Update pdfannotate
     if [ -d "$NC_APPS_PATH/pdfannotate" ]
     then
-        INFO_XML="$(curl -s https://gitlab.com/nextcloud-other/nextcloud-annotate/-/raw/main/appinfo/info.xml)"
+        INFO_XML="$(curl -s https://gitlab.com/nextcloud-other/nextcloud-annotate/-/raw/master/appinfo/info.xml)"
         if [ "$(echo "$INFO_XML" | grep -oP 'min-version="[0-9]+"' | grep -oP '[0-9]+')" -le "${CURRENTVERSION%%.*}" ] \
 && [ "$(echo "$INFO_XML" | grep -oP 'max-version="[0-9]+"' | grep -oP '[0-9]+')" -ge "${CURRENTVERSION%%.*}" ]
         then
