@@ -220,7 +220,7 @@ mkdir -p "$SCRIPTS"
 # Insert the new lines into pihole-update.sh
 cat << PIHOLE_UPDATE > "$SCRIPTS/pihole-update.sh"
 #!/bin/bash
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/24.04-LTS/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 notify_admin_gui "Starting the Pi-hole update." "You will be notified when it is done."
 # Create backup first
