@@ -140,7 +140,6 @@ set_max_count
 
 mkdir -p "$FULLTEXTSEARCH_DIR"
 cat << YML_DOCKER_COMPOSE > "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
-version: '3'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG
