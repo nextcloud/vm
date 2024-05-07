@@ -5,7 +5,7 @@
 # Author: Dave Eddy <dave@daveeddy.com>
 # Date: November 20, 2015
 # License: MIT
-# https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/main/zfs-prune-snapshots
+# https://raw.githubusercontent.com/bahamas10/zfs-prune-snapshots/master/zfs-prune-snapshots
 
 VERSION='v1.1.0'
 

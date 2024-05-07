@@ -155,7 +155,7 @@ check_command systemctl enable bitwarden
 # Install Bitwarden
 install_if_not curl
 check_command cd "$BITWARDEN_HOME"
-curl_to_dir "https://raw.githubusercontent.com/bitwarden/self-host/main" "bitwarden.sh" "$BITWARDEN_HOME"
+curl_to_dir "https://raw.githubusercontent.com/bitwarden/self-host/master" "bitwarden.sh" "$BITWARDEN_HOME"
 chmod +x "$BITWARDEN_HOME"/bitwarden.sh
 chown -R "$BITWARDEN_USER":"$BITWARDEN_USER" "$BITWARDEN_HOME"
 check_command sudo -u "$BITWARDEN_USER" ./bitwarden.sh install
@@ -181,7 +181,7 @@ USERGROUPID=$(id -g $BITWARDEN_USER)
 sed -i "s|database_docker_volume:.*|database_docker_volume: true|g" "$BITWARDEN_HOME"/bwdata/config.yml
 sed -i "s|LOCAL_UID=.*|LOCAL_UID=$USERID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
 sed -i "s|LOCAL_GID=.*|LOCAL_GID=$USERGROUPID|g" "$BITWARDEN_HOME"/bwdata/env/uid.env
-# Get Subdomain from config.yml and change it to https
+# Get subdomain from config.yml and change it to https
 SUBDOMAIN=$(grep ^url "$BITWARDEN_HOME"/bwdata/config.yml)
 SUBDOMAIN=${SUBDOMAIN##*url: http://}
 sed -i "s|^url: .*|url: https://$SUBDOMAIN|g" "$BITWARDEN_HOME"/bwdata/config.yml

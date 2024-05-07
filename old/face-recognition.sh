@@ -130,7 +130,7 @@ fi
 
 # Set up face model and max memory usage
 # https://github.com/matiasdelellis/facerecognition/wiki/Models#comparison
-# https://github.com/matiasdelellis/facerecognition/tree/main#initial-setup
+# https://github.com/matiasdelellis/facerecognition/tree/master#initial-setup
 nextcloud_occ face:setup --memory 2GB
 nextcloud_occ face:setup --model 3
 

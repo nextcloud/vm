@@ -115,7 +115,7 @@ docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcl
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"
-if curl -O "http://127.0.0.1:9000/crop?width=500&height=400&url=https://raw.githubusercontent.com/h2non/imaginary/main/testdata/large.jpg"
+if curl -O "http://127.0.0.1:9000/crop?width=500&height=400&url=https://raw.githubusercontent.com/h2non/imaginary/master/testdata/large.jpg"
 then
     print_text_in_color "$IGreen" "imaginary seems to be working OK!"
     rm -f large.jpg
@@ -140,7 +140,7 @@ else
     nextcloud_occ config:system:set preview_concurrency_all --value="4"
 fi
 
-# Set providers (https://github.com/nextcloud/server/blob/main/lib/private/Preview/Imaginary.php#L60)
+# Set providers (https://github.com/nextcloud/server/blob/master/lib/private/Preview/Imaginary.php#L60)
 # https://github.com/nextcloud/vm/issues/2465
 # Already enabled: https://github.com/nextcloud/server/blob/5e96228eb1f7999a327dacab22055ec2aa8e28a3/lib/private/Preview/Imaginary.php#L60
 nextcloud_occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"

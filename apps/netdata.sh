@@ -55,7 +55,7 @@ else
     then
         bash /usr/libexec/netdata/netdata-uninstaller.sh -y -f
     else
-        curl_to_dir https://raw.githubusercontent.com/netdata/netdata/main/packaging/installer netdata-uninstaller.sh $SCRIPTS
+        curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer netdata-uninstaller.sh $SCRIPTS
         check_command bash $SCRIPTS/netdata-uninstaller.sh -y -f
         rm $SCRIPTS/netdata-uninstaller.sh
         rm -rf /var/lib/netdata
