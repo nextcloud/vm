@@ -646,6 +646,7 @@ sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" "$PHP_INI"
 nextcloud_occ config:system:set log_type --value=file
 nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
 rm -f "$NCDATA/nextcloud.log"
+rm -f "$NCPATH/data/nextcloud.log"
 nextcloud_occ config:system:set loglevel --value=2
 install_and_enable_app admin_audit
 nextcloud_occ config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
