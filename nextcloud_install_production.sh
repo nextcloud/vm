@@ -551,7 +551,6 @@ fi
 
 # Install Nextcloud
 # NC 29 fix ## TODO: is this needed in coming versions?
-mkdir "$NCPATH"/data
 chown www-data:www-data "$NCPATH"/data
 # Normal install
 print_text_in_color "$ICyan" "Installing Nextcloud, it might take a while..."
