@@ -708,7 +708,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 22.04 "$DISTRO" 24.04.10
+if ! version 20.04 "$DISTRO" 24.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
 22.04 - 24.04.10 to run this script."
