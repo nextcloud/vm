@@ -481,7 +481,6 @@ then
 fi
 
 # Get not-latest Nextcloud version
-NOT_LATEST=1
 if [ -n "$NOT_LATEST" ]
 then
     while [ -z "$NCVERSION" ]
@@ -551,6 +550,10 @@ This is used when you login to Nextcloud itself, i.e. on the web."
 fi
 
 # Install Nextcloud
+# NC 29 fix ## TODO: is this needed in coming versions?
+mkdir "$NCPATH"/data
+chown www-data:www-data "$NCPATH"/data
+# Normal install
 print_text_in_color "$ICyan" "Installing Nextcloud, it might take a while..."
 cd "$NCPATH"
 # Don't use nextcloud_occ here as it takes alooong time.
