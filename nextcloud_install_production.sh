@@ -652,6 +652,10 @@ install_and_enable_app admin_audit
 nextcloud_occ config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
 nextcloud_occ config:system:set log.condition apps 0 --value admin_audit
 
+# Set maintenance window for cron
+# https://docs.nextcloud.com/server/29/admin_manual/configuration_server/background_jobs_configuration.html#background-jobs
+nextcloud_occ config:system:set maintenance_window_start --type=integer --value=2
+
 # Set SMTP mail
 nextcloud_occ config:system:set mail_smtpmode --value="smtp"
 
