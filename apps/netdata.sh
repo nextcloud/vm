@@ -71,7 +71,7 @@ fi
 is_process_running dpkg
 is_process_running apt
 apt-get update -q4 & spinner_loading
-curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
+curl_to_dir https://get.netdata.cloud kickstart.sh $SCRIPTS
 sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --reinstall-even-if-unsafe --non-interactive --no-updates --stable-channel --disable-cloud
 rm -f $SCRIPTS/kickstart.sh
 
