@@ -22,16 +22,6 @@ debug_mode
 # Must be sudo
 root_check
 
-# Can't be run as pure root user (doesn't work in Ubuntu 24.04)
-#if [ -z "$UNIXUSER" ]
-#then
-#    msg_box "You can't run this script as a pure root user. You need to issue the following command:
-#sudo -u regular_user sudo bash $SCRIPTS/menu.sh
-
-#Then choose Additional Apps --> Netdata"
-#    exit 1
-#fi
-
 # Check if netdata is already installed
 if ! [ -d /etc/netdata ]
 then
@@ -63,6 +53,8 @@ else
     rm -rf /etc/netdata
     apt-get purge netdata -y
     apt-get autoremove -y
+    rm -rf /var/cache/netdata
+    rm -rf /var/log/netdata
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
