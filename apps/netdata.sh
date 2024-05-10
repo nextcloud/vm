@@ -22,15 +22,15 @@ debug_mode
 # Must be sudo
 root_check
 
-# Can't be run as pure root user
-if [ -z "$UNIXUSER" ]
-then
-    msg_box "You can't run this script as a pure root user. You need to issue the following command:
-sudo -u regular_user sudo bash $SCRIPTS/menu.sh
+# Can't be run as pure root user (doesn't work in Ubuntu 24.04)
+#if [ -z "$UNIXUSER" ]
+#then
+#    msg_box "You can't run this script as a pure root user. You need to issue the following command:
+#sudo -u regular_user sudo bash $SCRIPTS/menu.sh
 
-Then choose Additional Apps --> Netdata"
-    exit 1
-fi
+#Then choose Additional Apps --> Netdata"
+#    exit 1
+#fi
 
 # Check if netdata is already installed
 if ! [ -d /etc/netdata ]
@@ -72,7 +72,7 @@ is_process_running dpkg
 is_process_running apt
 apt-get update -q4 & spinner_loading
 curl_to_dir https://get.netdata.cloud kickstart.sh $SCRIPTS
-sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --reinstall-even-if-unsafe --non-interactive --no-updates --stable-channel --disable-cloud
+bash $SCRIPTS/kickstart.sh --reinstall-even-if-unsafe --non-interactive --no-updates --stable-channel --disable-cloud
 rm -f $SCRIPTS/kickstart.sh
 
 # Check Netdata instructions after script is done
