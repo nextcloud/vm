@@ -162,6 +162,7 @@ NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
 # Adminer
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
+ADMINER_CONF_PLUGIN="$ADMINERDIR/extra_plugins.php"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
