@@ -52,9 +52,13 @@ a2enmod ssl
 # Install Adminer
 apt-get update -q4 & spinner_loading
 install_if_not adminer
-curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
+curl_to_dir "https://download.adminerevo.org/latest/adminer" "adminer-pgsql.zip" "$ADMINERDIR"
+install_if_not unzip
+# Unzip the latest version
+unzip "$ADMINERDIR"/adminer-pgsql.zip -d "$ADMINERDIR"
+rm -f "$ADMINERDIR"/adminer-pgsql.zip
 curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
-ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+ln -s "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
 
 # Only add TLS 1.3 on Ubuntu later than 22.04
 if version 22.04 "$DISTRO" 24.04.10
