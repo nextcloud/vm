@@ -58,7 +58,7 @@ install_if_not unzip
 unzip "$ADMINERDIR"/adminer-pgsql.zip -d "$ADMINERDIR"
 rm -f "$ADMINERDIR"/adminer-pgsql.zip
 # curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
-ln -s "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
+mv "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
 
 # Only add TLS 1.3 on Ubuntu later than 22.04
 if version 22.04 "$DISTRO" 24.04.10
@@ -175,7 +175,6 @@ The script will exit."
     exit 1
 else
     # Allow local access:
-    
     check_command sed -i "s|local   all             postgres                                peer|local   all             postgres                                md5|g" /etc/postgresql/*/main/pg_hba.conf
     restart_webserver
 
