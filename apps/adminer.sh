@@ -57,7 +57,7 @@ install_if_not unzip
 # Unzip the latest version
 unzip "$ADMINERDIR"/adminer-pgsql.zip -d "$ADMINERDIR"
 rm -f "$ADMINERDIR"/adminer-pgsql.zip
-curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
+# curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
 ln -s "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
 
 # Only add TLS 1.3 on Ubuntu later than 22.04
