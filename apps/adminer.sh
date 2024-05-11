@@ -69,6 +69,44 @@ fi
 # Get PHP version for the conf file
 check_php
 
+# Add ability to add plugins easily
+cat << ADMINER_CREATE_PLUGIN > "$ADMINER_CONF_PLUGIN"
+<?php
+function adminer_object() {
+    // required to run any plugin
+    include_once "./plugins/plugin.php";
+
+    // autoloader
+    foreach (glob("plugins/*.php") as $filename) {
+        include_once "./$filename";
+    }
+
+    // enable extra drivers just by including them
+    //~ include "./plugins/drivers/simpledb.php";
+
+    $plugins = array(
+        // specify enabled plugins here
+        new AdminerDumpXml(),
+        new AdminerTinymce(),
+        new AdminerFileUpload("data/"),
+        new AdminerSlugify(),
+        new AdminerTranslation(),
+        new AdminerForeignSystem(),
+    );
+
+    /* It is possible to combine customization and plugins:
+    class AdminerCustomization extends AdminerPlugin {
+    }
+    return new AdminerCustomization($plugins);
+    */
+
+    return new AdminerPlugin($plugins);
+}
+
+// include original Adminer or Adminer Editor
+include "./adminer.php";
+ADMINER_CREATE_PLUGIN"
+
 cat << ADMINER_CREATE > "$ADMINER_CONF"
  <VirtualHost *:80>
      RewriteEngine On
