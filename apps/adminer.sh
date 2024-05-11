@@ -5,7 +5,7 @@
 true
 SCRIPT_NAME="Adminer"
 SCRIPT_EXPLAINER="Adminer is a full-featured database management tool written in PHP."
-# shellcheck source=lib.sh
+# shellcheck source=lib.sh disable=SC2154
 source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
