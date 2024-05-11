@@ -105,7 +105,7 @@ function adminer_object() {
 
 // include original Adminer or Adminer Editor
 include "./adminer.php";
-ADMINER_CREATE_PLUGIN"
+ADMINER_CREATE_PLUGIN
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
  <VirtualHost *:80>
