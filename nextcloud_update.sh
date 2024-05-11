@@ -569,9 +569,14 @@ restart_webserver
 if [ -d "$ADMINERDIR" ]
 then
     print_text_in_color "$ICyan" "Updating Adminer..."
-    rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
-    curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
-    ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+    rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php "$ADMINERDIR"/adminer-pgsql.php
+    # Download the latest version
+    curl_to_dir "https://download.adminerevo.org/latest/adminer" "adminer-pgsql.zip" "$ADMINERDIR"
+    install_if_not unzip
+    # Unzip the latest version
+    unzip "$ADMINERDIR"/adminer-pgsql.zip -d "$ADMINERDIR"
+    rm -f "$ADMINERDIR"/adminer-pgsql.zip
+    mv "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
 fi
 
 # Get newest dat files for geoblock.sh
