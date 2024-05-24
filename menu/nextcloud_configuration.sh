@@ -122,6 +122,11 @@ daily
 rotate 10
 copytruncate
 }
+$VMLOGS/audit.log {
+daily
+rotate 10
+copytruncate
+}
 NEXTCLOUD_CONF
 
             # Set needed ownership for the Nextcloud log folder to work correctly
