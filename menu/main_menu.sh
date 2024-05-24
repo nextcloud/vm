@@ -81,7 +81,7 @@ To upgrade to the latest version, please run: 'sudo bash $SCRIPTS/update.sh' fro
             download_script STATIC update
             if [ -n "$REBOOT_SET" ]
             then
-                sed -i "s|exit|/sbin/shutdown -r +1|g" "$SCRIPTS"/update.sh
+                sed -i "s|exit|/sbin/shutdown -r +10|g" "$SCRIPTS"/update.sh
             fi
             do_the_update
         else
