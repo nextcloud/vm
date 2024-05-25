@@ -136,8 +136,11 @@ then
     sleep 2
     cat << TLS_CREATE > "$tls_conf"
 <VirtualHost *:80>
-    RewriteEngine On
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+    ServerName $TLSDOMAIN
+    RewriteEngine on
+    RewriteCond %{SERVER_NAME} =$TLSDOMAIN [OR]
+    RewriteCond %{SERVER_NAME} =$TLSDOMAIN
+    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
 </VirtualHost>
 
 <VirtualHost *:443>
