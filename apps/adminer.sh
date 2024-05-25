@@ -152,7 +152,7 @@ Listen 9443
     <IfModule mod_dir.c>
         DirectoryIndex adminer.php
     </IfModule>
-    AllowOverride None
+    AllowOverride All
 
     # Only allow connections from localhost:
     Require ip $GATEWAY/24

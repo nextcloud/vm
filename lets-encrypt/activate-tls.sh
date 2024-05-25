@@ -172,7 +172,7 @@ then
     # The Nextcloud folder
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
-    AllowOverride None
+    AllowOverride All
     Require all granted
     Satisfy Any
     # This is to include all the Nextcloud rules due to that we use PHP-FPM and .htaccess aren't read
