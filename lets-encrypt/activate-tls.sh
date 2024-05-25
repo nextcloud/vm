@@ -137,7 +137,7 @@ then
     cat << TLS_CREATE > "$tls_conf"
 <VirtualHost *:80>
     RewriteEngine On
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [END,NE,R=permanent]
 </VirtualHost>
 
 <VirtualHost *:443>
