@@ -138,9 +138,7 @@ then
 <VirtualHost *:80>
     ServerName $TLSDOMAIN
     RewriteEngine on
-    RewriteCond %{SERVER_NAME} =$TLSDOMAIN [OR]
-    RewriteCond %{SERVER_NAME} =$TLSDOMAIN
-    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [END,NE,R=permanent]
 </VirtualHost>
 
 <VirtualHost *:443>
