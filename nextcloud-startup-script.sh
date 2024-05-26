@@ -563,6 +563,9 @@ run_script STATIC trusted_domains
 print_text_in_color "$ICyan" "System will now upgrade..."
 bash $SCRIPTS/update.sh minor
 
+# Add missing indices (if any)
+nextcloud_occ db:add-missing-indices
+
 # Check if new major is out, and inform on how to update
 nc_update
 if version_gt "$NCMAJOR" "$CURRENTMAJOR"
