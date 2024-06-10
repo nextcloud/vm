@@ -34,7 +34,6 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Backup Viewer" "(View your Backups)" OFF \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
 "Firewall" "(Setting up a firewall)" OFF \
-"Harden SSH" "(Harden SSH configuration)" OFF \
 "Monitor Link Shares" "(Monitors the creation of link shares)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
@@ -80,10 +79,6 @@ case "$choice" in
     *"Firewall"*)
         print_text_in_color "$ICyan" "Downloading the Firewall script..."
         run_script NOT_SUPPORTED_FOLDER firewall
-    ;;&
-    *"Harden SSH"*)
-        print_text_in_color "$ICyan" "Downloading the Harden SSH script..."
-        run_script ADDONS harden-ssh
     ;;&
     *"Monitor Link Shares"*)
         print_text_in_color "$ICyan" "Monitor Link Shares..."
