@@ -244,8 +244,11 @@ then
     if certbot certonly --manual --text --key-type ecdsa --renew-by-default --server https://acme-v02.api.letsencrypt.org/directory --no-eff-email --agree-tos --preferred-challenges dns --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh -d "$DEDYNDOMAIN"
     then
         # Generate DHparams cipher
-        if [ ! -f "$DHPARAMS_TLS" ]
+        if [ -f "$DHPARAMS_TLS" ]
         then
+            rm -f "$DHPARAMS_TLS"
+            openssl dhparam -out "$DHPARAMS_TLS" 2048
+        else
             openssl dhparam -out "$DHPARAMS_TLS" 2048
         fi
         # Choose which port for public access
