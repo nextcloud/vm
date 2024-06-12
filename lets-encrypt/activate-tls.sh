@@ -307,8 +307,11 @@ else
         if [ -d "$CERTFILES" ]
         then
             # Generate DHparams cipher
-            if [ ! -f "$DHPARAMS_TLS" ]
+            if [ -f "$DHPARAMS_TLS" ]
             then
+                rm -f "$DHPARAMS_TLS"
+                openssl dhparam -out "$DHPARAMS_TLS" 2048
+            else
                 openssl dhparam -out "$DHPARAMS_TLS" 2048
             fi
             # Activate new config
