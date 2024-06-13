@@ -343,9 +343,13 @@ This can set your server under risk, though!" "$SUBTITLE"
             if yesno_box_yes "Do you want to install OnlyOffice Desktop Editors nonetheless?" "$SUBTITLE"
             then
                 print_text_in_color "$ICyan" "Installing $SUBTITLE"
-                apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CB2DE8E5
-                echo "deb https://download.onlyoffice.com/repo/debian squeeze main" \
-> /etc/apt/sources.list.d/onlyoffice-desktopeditors.list
+                # From https://helpcenter.onlyoffice.com/installation/desktop-install-ubuntu.aspx
+                mkdir -p ~/.gnupg
+                gpg --no-default-keyring --keyring gnupg-ring:/tmp/onlyoffice.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CB2DE8E5
+                chmod 644 /tmp/onlyoffice.gpg
+                chown root:root /tmp/onlyoffice.gpg
+                mv /tmp/onlyoffice.gpg /usr/share/keyrings/onlyoffice.gpg
+                echo "deb [signed-by=/usr/share/keyrings/onlyoffice.gpg] https://download.onlyoffice.com/repo/debian squeeze main" > "/etc/apt/sources.list.d/onlyoffice-desktopeditors.list"
                 apt-get update -q4 & spinner_loading
                 install_if_not onlyoffice-desktopeditors
                 print_text_in_color "$ICyan" "$SUBTITLE was successfully installed"

@@ -592,6 +592,12 @@ fi
 # individually depending on which docker containers that exist.
 if is_docker_running
 then
+    # Fix Docker compose issue
+    if is_this_installed docker-compose
+    then
+        apt purge docker-compose -y
+        install_if_not docker-compose-plugin
+    fi
     # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower
     # to avoid updating Bitwarden again, and only update the specified docker images above
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
