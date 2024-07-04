@@ -1,0 +1,1 @@
+az network nsg rule create --resource-group "[sandbox resource group name]" --nsg-name my-vmNSG --name allow-http --protocol tcp --priority 100 --destination-port-range 80 --access Allow
