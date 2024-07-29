@@ -787,7 +787,7 @@ then
     mapfile -t REDIRECTRULE <<< "$REDIRECTRULE"
     for rule in "${REDIRECTRULE[@]}"
     do
-        sed -i "s|\[R=301,L\]|\[END,NE,R=permanent\]|g" "$rule"
+        sed -i "s|{HTTP_HOST} \[R=301,L\]|{HTTP_HOST}\$1 \[END,NE,R=permanent\]|g" "$rule"
     done
     # Restart Apache
     if check_command apachectl configtest
