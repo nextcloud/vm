@@ -793,6 +793,7 @@ then
     if check_command apachectl configtest
     then
         restart_webserver
+    fi
 fi
 
 # Nextcloud 13 is required.
