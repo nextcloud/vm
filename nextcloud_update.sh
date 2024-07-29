@@ -779,11 +779,13 @@ else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
 fi
 
+# Apply correct redirect rule to avoid security check errors
 REDIRECTRULE="$(grep -r "\[R=301,L\]" $SITES_AVAILABLE | cut -d ":" -f1)"
 if [ -n "$REDIRECTRULE" ]
 then
-    # Change the redirect rule in all files
-    for rule in "$REDIRECTRULE"
+    # Change the redirect rule in all files in Apache available
+    mapfile -t REDIRECTRULE <<< "$REDIRECTRULE"
+    for rule in "${REDIRECTRULE[@]}"
     do
         sed -i "s|\[R=301,L\]|\[END,NE,R=permanent\]|g" "$rule"
     done
