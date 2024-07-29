@@ -345,7 +345,7 @@ fi
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
-# Temporary fix for PHP 2024-08-27
+# Temporary fix for PHP 2023-08-27
 # There's a bug in PHP 8.1.21 which causes server to crash
 # If you're on Ondrejs PPA, PHP isn't updated, so do that here instead
 apt-mark unhold php* >/dev/null 2>&1
@@ -777,6 +777,21 @@ then
     nextcloud_occ upgrade
 else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
+fi
+
+REDIRECTRULE="$(grep -r "\[R=301,L\]" $SITES_AVAILABLE | cut -d ":" -f1)"
+if [ -n "$REDIRECTRULE" ]
+then
+    # Change the redirect rule in all files
+    for rule in "$REDIRECTRULE"
+    do
+        sed -i "s|\[R=301,L\]|\[END,NE,R=permanent\]|g" "$rule"
+    done
+    # Restart Apache
+    if apachectl configtest
+    then
+        restart_webserver
+    fi
 fi
 
 # Nextcloud 13 is required.
