@@ -790,10 +790,9 @@ then
         sed -i "s|\[R=301,L\]|\[END,NE,R=permanent\]|g" "$rule"
     done
     # Restart Apache
-    if apachectl configtest
+    if check_command apachectl configtest
     then
         restart_webserver
-    fi
 fi
 
 # Nextcloud 13 is required.
