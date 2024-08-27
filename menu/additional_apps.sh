@@ -125,7 +125,7 @@ to finish the setup once this script is done." "$SUBTITLE"
     ;;&
     *"Talk"*)
         print_text_in_color "$ICyan" "Downloading the Talk script..."
-        run_script APP talk
+        desec_app_tls_menu "DESEC talk_desec" "APP talk"
     ;;&
     *"Webmin"*)
         print_text_in_color "$ICyan" "Downloading the Webmin script..."
