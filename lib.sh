@@ -394,7 +394,7 @@ gzip -d /tmp/maxmind"$1".dat.gz
 mv /tmp/maxmind"$1".dat /usr/share/GeoIP/GeoIP"$2".dat
 chown root:root /usr/share/GeoIP/GeoIP"$2".dat
 chmod 644 /usr/share/GeoIP/GeoIP"$2".dat
-find -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP"$2"\.dat" -delete
+find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP"$2"\.dat" -delete
 }
 
 get_newest_dat_files() {
