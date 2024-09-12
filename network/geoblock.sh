@@ -162,7 +162,7 @@ fi
 GEOIP_CONF="#Geoip-block-start - Please don't remove or change this line
 <IfModule mod_geoip.c>
   GeoIPEnable On
-  GeoIPDBFile /usr/share/GeoIP/GeoIP.dat
+  GeoIPDBFile /usr/share/GeoIP/GeoIPv4.dat
   GeoIPDBFile /usr/share/GeoIP/GeoIPv6.dat
 </IfModule>
 <Location />\n"
