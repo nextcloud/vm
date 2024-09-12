@@ -407,13 +407,13 @@ then
         mv /tmp/maxmind4.dat.gz /usr/share/GeoIP/GeoIP.dat
         chown root:root /usr/share/GeoIP/GeoIP.dat
         chmod 644 /usr/share/GeoIP/GeoIP.dat
-        find -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -delete
+        find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -delete
         # IPv6
         curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind6.dat.gz /tmp
         mv /tmp/maxmind6.dat.gz /usr/share/GeoIP/GeoIPv6.dat
         chown root:root /usr/share/GeoIP/GeoIPv6.dat
         chmod 644 /usr/share/GeoIP/GeoIPv6.dat
-        find -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -delete
+        find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -delete
     fi
 fi
 }
