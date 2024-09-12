@@ -387,58 +387,36 @@ something is wrong here. Please report this to $ISSUES"
 
 # Used in geoblock.sh
 get_newest_dat_files() {
-    # IPv4
-    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
-    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
-    if [ -z "$IPV4_NAME" ]
-    then
-        print_text_in_color "$IRed" "Could not get the latest IPv4 name. Not updating the .dat file"
-        sleep 1
-    else
-        if ! [ -f "$SCRIPTS/$IPV4_NAME" ]
-        then
-            print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
-            sleep 1
-            curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
-            mkdir -p /usr/share/GeoIP
-            rm -f /usr/share/GeoIP/GeoIP.dat
-            check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
-            check_command mv "/usr/share/GeoIP/$IPV4_NAME" /usr/share/GeoIP/GeoIP.dat
-            chown root:root /usr/share/GeoIP/GeoIP.dat
-            chmod 644 /usr/share/GeoIP/GeoIP.dat
-            find /var/scripts -type f -regex \
-"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -not -name "$IPV4_NAME" -delete
-        else
-            print_text_in_color "$ICyan" "The latest IPv4 dat file is already downloaded."
-            sleep 1
-        fi
+# Check current month and year
+CURR_MONTH="$(date +%B)"
+# https://stackoverflow.com/a/12487455
+CURR_MONTH="${CURR_MONTH^}"
+CURR_YEAR="$(date +%Y)"
+
+# Check latest updated
+if curl -s https://www.miyuru.lk/geoiplegacy | grep -q "$CURR_MONTH $CURR_YEAR"
+then
+    # DIFF local file with month from curl
+    # This is to know if the online file is the same month as the local file
+    LOCAL_FILE_TIMESTAMP=$(date -r /usr/share/GeoIP/GeoIP.dat "+%B %Y")
+    LOCAL_FILE_TIMESTAMP="${LOCAL_FILE_TIMESTAMP^}"
+    ONLINE_FILE_TIMESTAMP="$CURR_MONTH $CURR_YEAR"
+    if [ "$ONLINE_FILE_TIMESTAMP" = "$LOCAL_FILE_TIMESTAMP" ]
+    then # If true then update!
+        # IPv4
+        curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind4.dat.gz /tmp
+        mv /tmp/maxmind4.dat.gz /usr/share/GeoIP/GeoIP.dat
+        chown root:root /usr/share/GeoIP/GeoIP.dat
+        chmod 644 /usr/share/GeoIP/GeoIP.dat
+        find -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -delete
+        # IPv6
+        curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind6.dat.gz /tmp
+        mv /tmp/maxmind6.dat.gz /usr/share/GeoIP/GeoIPv6.dat
+        chown root:root /usr/share/GeoIP/GeoIPv6.dat
+        chmod 644 /usr/share/GeoIP/GeoIPv6.dat
+        find -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -delete
     fi
-    # IPv6
-    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
-    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
-    if [ -z "$IPV6_NAME" ]
-    then
-        print_text_in_color "$IRed" "Could not get the latest IPv6 name. Not updating the .dat file"
-        sleep 1
-    else
-        if ! [ -f "$SCRIPTS/$IPV6_NAME" ]
-        then
-            print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
-            sleep 1
-            curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
-            mkdir -p /usr/share/GeoIP
-            rm -f /usr/share/GeoIP/GeoIPv6.dat
-            check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
-            check_command mv "/usr/share/GeoIP/$IPV6_NAME" /usr/share/GeoIP/GeoIPv6.dat
-            chown root:root /usr/share/GeoIP/GeoIPv6.dat
-            chmod 644 /usr/share/GeoIP/GeoIPv6.dat
-            find /var/scripts -type f -regex \
-"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -not -name "$IPV6_NAME" -delete
-        else
-            print_text_in_color "$ICyan" "The latest IPv6 dat file is already downloaded."
-            sleep 1
-        fi
-    fi
+fi
 }
 
 # Check if process is runnnig: is_process_running dpkg
