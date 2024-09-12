@@ -385,6 +385,18 @@ something is wrong here. Please report this to $ISSUES"
 }
 
 # Used in geoblock.sh
+download_geoip_dat() {
+# 1 = IP version 4 or 6
+# 2 = v4 or v6
+curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind"$1".dat.gz /tmp
+install_if_not gzip
+gzip -d /tmp/maxmind"$1".dat.gz
+mv /tmp/maxmind"$1".dat /usr/share/GeoIP/GeoIP"$2".dat
+chown root:root /usr/share/GeoIP/GeoIP"$2".dat
+chmod 644 /usr/share/GeoIP/GeoIP"$2".dat
+find -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP"$2"\.dat" -delete
+}
+
 get_newest_dat_files() {
 # Check current month and year
 CURR_MONTH="$(date +%B)"
@@ -403,17 +415,9 @@ then
     if [ "$ONLINE_FILE_TIMESTAMP" = "$LOCAL_FILE_TIMESTAMP" ]
     then # If true then update!
         # IPv4
-        curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind4.dat.gz /tmp
-        mv /tmp/maxmind4.dat.gz /usr/share/GeoIP/GeoIP.dat
-        chown root:root /usr/share/GeoIP/GeoIP.dat
-        chmod 644 /usr/share/GeoIP/GeoIP.dat
-        find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -delete
+        download_geoip_dat "4" "v4"
         # IPv6
-        curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind6.dat.gz /tmp
-        mv /tmp/maxmind6.dat.gz /usr/share/GeoIP/GeoIPv6.dat
-        chown root:root /usr/share/GeoIP/GeoIPv6.dat
-        chmod 644 /usr/share/GeoIP/GeoIPv6.dat
-        find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -delete
+        download_geoip_dat "6" "v6"
     fi
 fi
 }
