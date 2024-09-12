@@ -54,7 +54,16 @@ check_command systemctl restart apache2
 # Download newest dat files
 find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
-get_newest_dat_files
+# IPv4
+curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind4.dat.gz /tmp
+mv /tmp/maxmind4.dat.gz /usr/share/GeoIP/GeoIP.dat
+chown root:root /usr/share/GeoIP/GeoIP.dat
+chmod 644 /usr/share/GeoIP/GeoIP.dat
+# IPv6
+curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind6.dat.gz /tmp
+mv /tmp/maxmind6.dat.gz /usr/share/GeoIP/GeoIPv6.dat
+chown root:root /usr/share/GeoIP/GeoIPv6.dat
+chmod 644 /usr/share/GeoIP/GeoIPv6.dat
 
 # Restrict to countries and/or continents
 choice=$(whiptail --title "$TITLE"  --checklist \
