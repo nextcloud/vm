@@ -99,7 +99,6 @@ DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
 NOT_SUPPORTED_FOLDER="$GITHUB_REPO/not-supported"
-GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
