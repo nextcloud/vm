@@ -52,7 +52,7 @@ check_command a2enmod geoip rewrite
 check_command systemctl restart apache2
 
 # Download newest dat files
-find /var/scripts -type f -regex \
+find "$SCRIPTS" -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
 # IPv4
 curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind4.dat.gz /tmp
