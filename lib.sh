@@ -414,11 +414,11 @@ then
     then
         # DIFF local file with month from curl
         # This is to know if the online file is the same month as the local file
-        LOCAL_FILE_TIMESTAMP=$(date -r /usr/share/GeoIP/GeoIP.dat "+%B %Y")
+        LOCAL_FILE_TIMESTAMP=$(date -r /usr/share/GeoIP/GeoIPv4.dat "+%B %Y")
         LOCAL_FILE_TIMESTAMP="${LOCAL_FILE_TIMESTAMP^}"
         ONLINE_FILE_TIMESTAMP="$CURR_MONTH $CURR_YEAR"
-        if [ "$ONLINE_FILE_TIMESTAMP" = "$LOCAL_FILE_TIMESTAMP" ] # Should this check if the file is NOT the same?
-        then # If true then update!
+        if [ "$ONLINE_FILE_TIMESTAMP" != "$LOCAL_FILE_TIMESTAMP" ]
+        then
             # IPv4
             download_geoip_dat "4" "v4"
             # IPv6
