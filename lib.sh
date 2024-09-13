@@ -401,7 +401,7 @@ if site_200 https://dl.miyuru.lk/geoip/maxmind/country/maxmind"$1".dat.gz
 then
     curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind"$1".dat.gz /tmp
     # Scan file for virus
-    if ! metadefender-scan /tmp/maxmind"$1".dat.gz | grep '"scan_all_result_i":0,"current_av_result_i":0,"'
+    if ! metadefender-scan /tmp/maxmind"$1".dat.gz | grep '"scan_all_result_a":"No Threat Detected","current_av_result_a":"No Threat Detected"'
     then
         msg_box "Potential threat found in .dat file! Please report this to $ISSUES. We will now delete the file!"
         rm -f /tmp/maxmind"$1".dat.gz
