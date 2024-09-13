@@ -412,6 +412,7 @@ then
         chown root:root /usr/share/GeoIP/GeoIP"$2".dat
         chmod 644 /usr/share/GeoIP/GeoIP"$2".dat
         find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP$2\.dat" -delete
+        rm -f /usr/share/GeoIP/GeoIP.dat
     fi
 fi
 }
