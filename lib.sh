@@ -464,13 +464,13 @@ check_running_cronjobs() {
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-print_text_in_color "$ICyan" "Checking connection..."
+print_text_in_color "$ICyan" "Checking connection to ${1}..."
         CURL_STATUS="$(curl -LI "${1}" -o /dev/null -w '%{http_code}\n' -s)"
         if [[ "$CURL_STATUS" = "200" ]]
         then
             return 0
         else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is ${1} reachable?"
+            msg_box "curl didn't produce a 200 status, is ${1} reachable? Please report this to $ISSUES."
             return 1
         fi
 }
