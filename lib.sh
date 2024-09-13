@@ -403,7 +403,7 @@ then
     # Scan file for virus
     if ! metadefender-scan /tmp/maxmind"$1".dat.gz | grep '"scan_all_result_a":"No Threat Detected","current_av_result_a":"No Threat Detected"'
     then
-        msg_box "Potential threat found in /tmp/maxmind"$1".dat.gz! Please report this to $ISSUES. We will now delete the file!"
+        msg_box "Potential threat found in /tmp/maxmind$1.dat.gz! Please report this to $ISSUES. We will now delete the file!"
         rm -f /tmp/maxmind"$1".dat.gz
     else
         install_if_not gzip
