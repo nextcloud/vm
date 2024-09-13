@@ -384,6 +384,15 @@ something is wrong here. Please report this to $ISSUES"
     fi
 }
 
+metadefender-scan() {
+# Usage:
+# metadefender-scan.sh $PATH $APIKEY, for example:
+hash="$(sha256sum "$1")"
+hash="${hash%% *}"
+apikey=7283aa9bbcee83132506659a4e5675bb
+curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
+}
+
 # Used in geoblock.sh
 download_geoip_dat() {
 # 1 = IP version 4 or 6
@@ -391,12 +400,19 @@ download_geoip_dat() {
 if site_200 https://dl.miyuru.lk/geoip/maxmind/country/maxmind"$1".dat.gz
 then
     curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind"$1".dat.gz /tmp
-    install_if_not gzip
-    gzip -d /tmp/maxmind"$1".dat.gz
-    mv /tmp/maxmind"$1".dat /usr/share/GeoIP/GeoIP"$2".dat
-    chown root:root /usr/share/GeoIP/GeoIP"$2".dat
-    chmod 644 /usr/share/GeoIP/GeoIP"$2".dat
-    find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP$2\.dat" -delete
+    # Scan file for virus
+    if ! metadefender-scan /tmp/maxmind"$1".dat.gz | grep '"scan_all_result_i":0,"current_av_result_i":0,"'
+    then
+        msg_box "Potential threat found in .dat file! Please report this to $ISSUES. We will now delete the file!"
+        rm -f /tmp/maxmind"$1".dat.gz
+    else
+        install_if_not gzip
+        gzip -d /tmp/maxmind"$1".dat.gz
+        mv /tmp/maxmind"$1".dat /usr/share/GeoIP/GeoIP"$2".dat
+        chown root:root /usr/share/GeoIP/GeoIP"$2".dat
+        chmod 644 /usr/share/GeoIP/GeoIP"$2".dat
+        find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP$2\.dat" -delete
+    fi
 fi
 }
 
