@@ -52,9 +52,10 @@ check_command a2enmod geoip rewrite
 check_command systemctl restart apache2
 
 # Download newest dat files
-find /var/scripts -type f -regex \
-"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
-get_newest_dat_files
+# IPv4
+download_geoip_dat "4" "v4"
+# IPv6
+download_geoip_dat "6" "v6"
 
 # Restrict to countries and/or continents
 choice=$(whiptail --title "$TITLE"  --checklist \
@@ -161,7 +162,7 @@ fi
 GEOIP_CONF="#Geoip-block-start - Please don't remove or change this line
 <IfModule mod_geoip.c>
   GeoIPEnable On
-  GeoIPDBFile /usr/share/GeoIP/GeoIP.dat
+  GeoIPDBFile /usr/share/GeoIP/GeoIPv4.dat
   GeoIPDBFile /usr/share/GeoIP/GeoIPv6.dat
 </IfModule>
 <Location />\n"

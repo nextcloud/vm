@@ -582,8 +582,14 @@ fi
 # Get newest dat files for geoblock.sh
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
-    get_newest_dat_files
-    check_command systemctl restart apache2
+    if get_newest_dat_files
+    then
+        if grep -c GeoIP.dat /etc/apache2/apache2.conf
+        then
+            sed -i "s|GeoIPDBFile /usr/share/GeoIP/GeoIP.dat|GeoIPDBFile /usr/share/GeoIP/GeoIPv4.dat|g" /etc/apache2/apache2.conf
+        fi
+        check_command systemctl restart apache2
+    fi
 fi
 
 # Update docker containers and remove Watchtower if Bitwarden is present due to compatibility issue

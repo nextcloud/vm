@@ -99,7 +99,6 @@ DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
 NOT_SUPPORTED_FOLDER="$GITHUB_REPO/not-supported"
-GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
@@ -386,59 +385,47 @@ something is wrong here. Please report this to $ISSUES"
 }
 
 # Used in geoblock.sh
+download_geoip_dat() {
+# 1 = IP version 4 or 6
+# 2 = v4 or v6
+if site_200 https://dl.miyuru.lk/geoip/maxmind/country/maxmind"$1".dat.gz
+then
+    curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind"$1".dat.gz /tmp
+    install_if_not gzip
+    gzip -d /tmp/maxmind"$1".dat.gz
+    mv /tmp/maxmind"$1".dat /usr/share/GeoIP/GeoIP"$2".dat
+    chown root:root /usr/share/GeoIP/GeoIP"$2".dat
+    chmod 644 /usr/share/GeoIP/GeoIP"$2".dat
+    find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP$2\.dat" -delete
+fi
+}
+
 get_newest_dat_files() {
-    # IPv4
-    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
-    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
-    if [ -z "$IPV4_NAME" ]
+# Check current month and year
+CURR_MONTH="$(date +%B)"
+# https://stackoverflow.com/a/12487455
+CURR_MONTH="${CURR_MONTH^}"
+CURR_YEAR="$(date +%Y)"
+
+# Check latest updated
+if site_200 https://www.miyuru.lk/geoiplegacy
+then
+    if curl -s https://www.miyuru.lk/geoiplegacy | grep -q "$CURR_MONTH $CURR_YEAR"
     then
-        print_text_in_color "$IRed" "Could not get the latest IPv4 name. Not updating the .dat file"
-        sleep 1
-    else
-        if ! [ -f "$SCRIPTS/$IPV4_NAME" ]
+        # DIFF local file with month from curl
+        # This is to know if the online file is the same month as the local file
+        LOCAL_FILE_TIMESTAMP=$(date -r /usr/share/GeoIP/GeoIPv4.dat "+%B %Y")
+        LOCAL_FILE_TIMESTAMP="${LOCAL_FILE_TIMESTAMP^}"
+        ONLINE_FILE_TIMESTAMP="$CURR_MONTH $CURR_YEAR"
+        if [ "$ONLINE_FILE_TIMESTAMP" != "$LOCAL_FILE_TIMESTAMP" ]
         then
-            print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
-            sleep 1
-            curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
-            mkdir -p /usr/share/GeoIP
-            rm -f /usr/share/GeoIP/GeoIP.dat
-            check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
-            check_command mv "/usr/share/GeoIP/$IPV4_NAME" /usr/share/GeoIP/GeoIP.dat
-            chown root:root /usr/share/GeoIP/GeoIP.dat
-            chmod 644 /usr/share/GeoIP/GeoIP.dat
-            find /var/scripts -type f -regex \
-"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -not -name "$IPV4_NAME" -delete
-        else
-            print_text_in_color "$ICyan" "The latest IPv4 dat file is already downloaded."
-            sleep 1
+            # IPv4
+            download_geoip_dat "4" "v4"
+            # IPv6
+            download_geoip_dat "6" "v6"
         fi
     fi
-    # IPv6
-    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
-    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
-    if [ -z "$IPV6_NAME" ]
-    then
-        print_text_in_color "$IRed" "Could not get the latest IPv6 name. Not updating the .dat file"
-        sleep 1
-    else
-        if ! [ -f "$SCRIPTS/$IPV6_NAME" ]
-        then
-            print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
-            sleep 1
-            curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
-            mkdir -p /usr/share/GeoIP
-            rm -f /usr/share/GeoIP/GeoIPv6.dat
-            check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
-            check_command mv "/usr/share/GeoIP/$IPV6_NAME" /usr/share/GeoIP/GeoIPv6.dat
-            chown root:root /usr/share/GeoIP/GeoIPv6.dat
-            chmod 644 /usr/share/GeoIP/GeoIPv6.dat
-            find /var/scripts -type f -regex \
-"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -not -name "$IPV6_NAME" -delete
-        else
-            print_text_in_color "$ICyan" "The latest IPv6 dat file is already downloaded."
-            sleep 1
-        fi
-    fi
+fi
 }
 
 # Check if process is runnnig: is_process_running dpkg
@@ -477,13 +464,13 @@ check_running_cronjobs() {
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-print_text_in_color "$ICyan" "Checking connection..."
+print_text_in_color "$ICyan" "Checking connection to ${1}..."
         CURL_STATUS="$(curl -LI "${1}" -o /dev/null -w '%{http_code}\n' -s)"
         if [[ "$CURL_STATUS" = "200" ]]
         then
             return 0
         else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is ${1} reachable?"
+            msg_box "curl didn't produce a 200 status, is ${1} reachable? Please report this to $ISSUES."
             return 1
         fi
 }
