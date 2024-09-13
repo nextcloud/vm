@@ -36,6 +36,7 @@ else
     then
         a2dismod geoip
         apt-get purge libapache2-mod-geoip -y
+        rm -rf /usr/share/GeoIP
     fi
     apt-get autoremove -y
     sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
