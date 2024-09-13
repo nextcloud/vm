@@ -388,13 +388,16 @@ something is wrong here. Please report this to $ISSUES"
 download_geoip_dat() {
 # 1 = IP version 4 or 6
 # 2 = v4 or v6
-curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind"$1".dat.gz /tmp
-install_if_not gzip
-gzip -d /tmp/maxmind"$1".dat.gz
-mv /tmp/maxmind"$1".dat /usr/share/GeoIP/GeoIP"$2".dat
-chown root:root /usr/share/GeoIP/GeoIP"$2".dat
-chmod 644 /usr/share/GeoIP/GeoIP"$2".dat
-find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP$2\.dat" -delete
+if site_200 https://dl.miyuru.lk/geoip/maxmind/country/maxmind"$1".dat.gz
+then
+    curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind"$1".dat.gz /tmp
+    install_if_not gzip
+    gzip -d /tmp/maxmind"$1".dat.gz
+    mv /tmp/maxmind"$1".dat /usr/share/GeoIP/GeoIP"$2".dat
+    chown root:root /usr/share/GeoIP/GeoIP"$2".dat
+    chmod 644 /usr/share/GeoIP/GeoIP"$2".dat
+    find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP$2\.dat" -delete
+fi
 }
 
 get_newest_dat_files() {
@@ -405,19 +408,22 @@ CURR_MONTH="${CURR_MONTH^}"
 CURR_YEAR="$(date +%Y)"
 
 # Check latest updated
-if curl -s https://www.miyuru.lk/geoiplegacy | grep -q "$CURR_MONTH $CURR_YEAR"
+if site_200 https://www.miyuru.lk/geoiplegacy
 then
-    # DIFF local file with month from curl
-    # This is to know if the online file is the same month as the local file
-    LOCAL_FILE_TIMESTAMP=$(date -r /usr/share/GeoIP/GeoIP.dat "+%B %Y")
-    LOCAL_FILE_TIMESTAMP="${LOCAL_FILE_TIMESTAMP^}"
-    ONLINE_FILE_TIMESTAMP="$CURR_MONTH $CURR_YEAR"
-    if [ "$ONLINE_FILE_TIMESTAMP" = "$LOCAL_FILE_TIMESTAMP" ] # Should this check if the file is NOT the same?
-    then # If true then update!
-        # IPv4
-        download_geoip_dat "4" "v4"
-        # IPv6
-        download_geoip_dat "6" "v6"
+    if curl -s https://www.miyuru.lk/geoiplegacy | grep -q "$CURR_MONTH $CURR_YEAR"
+    then
+        # DIFF local file with month from curl
+        # This is to know if the online file is the same month as the local file
+        LOCAL_FILE_TIMESTAMP=$(date -r /usr/share/GeoIP/GeoIP.dat "+%B %Y")
+        LOCAL_FILE_TIMESTAMP="${LOCAL_FILE_TIMESTAMP^}"
+        ONLINE_FILE_TIMESTAMP="$CURR_MONTH $CURR_YEAR"
+        if [ "$ONLINE_FILE_TIMESTAMP" = "$LOCAL_FILE_TIMESTAMP" ] # Should this check if the file is NOT the same?
+        then # If true then update!
+            # IPv4
+            download_geoip_dat "4" "v4"
+            # IPv6
+            download_geoip_dat "6" "v6"
+        fi
     fi
 fi
 }
