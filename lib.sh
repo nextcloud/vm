@@ -1503,7 +1503,7 @@ any_key() {
 
 lowest_compatible_nc() {
 # .ocdata needs to exist to be able to check version, occ relies on everytihgn working
-until [ -f "$NCDATA"/.ocdata ]
+until [ -f "$NCDATA"/.ocdata ] || [ -f "$NCDATA"/.ncdata ]
 do
         # SUPPORT LEGACY: If it's not in the standard path, check for existing datadir in config.php
         if [ -f "$NCPATH"/config/config.php ]
@@ -1516,7 +1516,7 @@ do
 If you think this is a bug, please report it to $ISSUES"
             else
                 # Check again an break if found
-                if [ -f "$NCDATA"/.ocdata ]
+                if [ -f "$NCDATA"/.ocdata ] || [ -f "$NCDATA"/.ncdata ] 
                 then
                     break
                 fi
