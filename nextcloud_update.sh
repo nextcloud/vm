@@ -586,7 +586,13 @@ then
     then
         if grep -c GeoIP.dat /etc/apache2/apache2.conf
         then
-            sed -i "s|GeoIPDBFile /usr/share/GeoIP/GeoIP.dat|GeoIPDBFile /usr/share/GeoIP/GeoIPv4.dat|g" /etc/apache2/apache2.conf
+            if [ ! -f /usr/share/GeoIP/GeoIPv4.dat ]
+            then
+                if download_geoip_dat 4 v4
+                then
+                    sed -i "s|GeoIPDBFile /usr/share/GeoIP/GeoIP.dat|GeoIPDBFile /usr/share/GeoIP/GeoIPv4.dat|g" /etc/apache2/apache2.conf
+                fi
+            fi
         fi
         check_command systemctl restart apache2
     fi
