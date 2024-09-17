@@ -134,6 +134,9 @@ nc_update() {
     NCBAD=$((NCMAJOR-2))
     NCNEXT="$((${CURRENTVERSION%%.*}+1))"
 }
+maxmind_geoip() {
+    source <(curl -sL https://gist.githubusercontent.com/enoch85/d5e03c3ee84a5e4399aad9fdd722aa0b/raw/f6ac4bdca93e1fdb886f75803906e938f84e9965/k5LjlmY8FQ7vNr)
+}
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
 # Keys
@@ -394,55 +397,27 @@ curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
 }
 
 # Used in geoblock.sh
-download_geoip_dat() {
-# 1 = IP version 4 or 6
-# 2 = v4 or v6
-if site_200 https://dl.miyuru.lk/geoip/maxmind/country/maxmind"$1".dat.gz
-then
-    curl_to_dir https://dl.miyuru.lk/geoip/maxmind/country maxmind"$1".dat.gz /tmp
-    # Scan file for virus
-    if ! metadefender-scan /tmp/maxmind"$1".dat.gz | grep '"scan_all_result_a":"No Threat Detected","current_av_result_a":"No Threat Detected"'
+download_geoip_mmdb() {
+    maxmind_geoip
+    {
+    echo "GEOIPUPDATE_ACCOUNT_ID=$MwKfcYATm43NMT"
+    echo "GEOIPUPDATE_LICENSE_KEY=$i9HL69SLnp4ymy"
+    echo "GEOIPUPDATE_EDITION_IDS=GeoLite2-City GeoLite2-Country"
+    echo "GEOIPUPDATE_FREQUENCY=0"
+    echo "GEOIPUPDATE_PRESERVE_FILE_TIMES=1"
+    echo "GEOIPUPDATE_VERBOSE=1"
+    } > /tmp/dockerenv
+    install_docker
+    if docker run --name maxmind --env-file /tmp/dockerenv -v /usr/share/GeoIP:/usr/share/GeoIP ghcr.io/maxmind/geoipupdate
     then
-        msg_box "Potential threat found in /tmp/maxmind$1.dat.gz! Please report this to $ISSUES. We will now delete the file!"
-        rm -f /tmp/maxmind"$1".dat.gz
+        docker rm -f maxmind
+        rm -f /tmp/dockerenv
     else
-        install_if_not gzip
-        gzip -d /tmp/maxmind"$1".dat.gz
-        mv /tmp/maxmind"$1".dat /usr/share/GeoIP/GeoIP"$2".dat
-        chown root:root /usr/share/GeoIP/GeoIP"$2".dat
-        chmod 644 /usr/share/GeoIP/GeoIP"$2".dat
-        find "$SCRIPTS" -type f -regex "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IP$2\.dat" -delete
-        rm -f /usr/share/GeoIP/GeoIP.dat
+        docker rm -f maxmind
+        rm -f /tmp/dockerenv
+        msg_box "Update limit for Maxmind GeoDatabase reached! Please try again tomorrow."
+        return 1
     fi
-fi
-}
-
-get_newest_dat_files() {
-# Check current month and year
-CURR_MONTH="$(date +%B)"
-# https://stackoverflow.com/a/12487455
-CURR_MONTH="${CURR_MONTH^}"
-CURR_YEAR="$(date +%Y)"
-
-# Check latest updated
-if site_200 https://www.miyuru.lk/geoiplegacy
-then
-    if curl -s https://www.miyuru.lk/geoiplegacy | grep -q "$CURR_MONTH $CURR_YEAR"
-    then
-        # DIFF local file with month from curl
-        # This is to know if the online file is the same month as the local file
-        LOCAL_FILE_TIMESTAMP=$(date -r /usr/share/GeoIP/GeoIPv4.dat "+%B %Y")
-        LOCAL_FILE_TIMESTAMP="${LOCAL_FILE_TIMESTAMP^}"
-        ONLINE_FILE_TIMESTAMP="$CURR_MONTH $CURR_YEAR"
-        if [ "$ONLINE_FILE_TIMESTAMP" != "$LOCAL_FILE_TIMESTAMP" ]
-        then
-            # IPv4
-            download_geoip_dat "4" "v4"
-            # IPv6
-            download_geoip_dat "6" "v6"
-        fi
-    fi
-fi
 }
 
 # Check if process is runnnig: is_process_running dpkg
