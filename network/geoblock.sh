@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
