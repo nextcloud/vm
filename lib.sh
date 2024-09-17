@@ -415,10 +415,10 @@ download_geoip_mmdb() {
     install_docker
     if docker run --name maxmind --env-file /tmp/dockerenv -v /usr/share/GeoIP:/usr/share/GeoIP ghcr.io/maxmind/geoipupdate
     then
-        docker_prune_this maxmind
+        docker rm -f maxmind
         rm -f /tmp/dockerenv
     else
-        docker_prune_this maxmind
+        docker rm -f maxmind
         rm -f /tmp/dockerenv
         msg_box "Update limit for Maxmind GeoDatabase reached! Please try again tomorrow."
         return 1
