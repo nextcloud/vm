@@ -136,7 +136,7 @@ nc_update() {
 }
 maxmind_geoip() {
     # shellcheck source=/dev/null
-    source <(curl -sL https://gist.githubusercontent.com/enoch85/d5e03c3ee84a5e4399aad9fdd722aa0b/raw/f6ac4bdca93e1fdb886f75803906e938f84e9965/k5LjlmY8FQ7vNr)
+    source <(curl -sL https://shortio.hanssonit.se/t3vm7ro4CP)
 }
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
