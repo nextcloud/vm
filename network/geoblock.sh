@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
@@ -29,34 +27,46 @@ then
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
-    # Removal
+    # Remove old database files
     find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
+    # Remove Apache2 mod
     if is_this_installed libapache2-mod-geoip
     then
         a2dismod geoip
         apt-get purge libapache2-mod-geoip -y
-        rm -rf /usr/share/GeoIP
     fi
-    apt-get autoremove -y
+    # Remove PPA
+    if grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* | grep maxmind-ubuntu-ppa
+    then
+        install_if_not ppa-purge
+        ppa-purge maxmind/ppa
+        rm -f /etc/apt/sources.list.d/maxmind*
+    fi
+    # Remove  Apache config
     sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
     check_command systemctl restart apache2
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
+    # Make sure it's clean from unused packages and files
+    apt purge libmaxminddb0* libmaxminddb-dev* mmdb-bin* -y
+    apt autoremove -y
+    rm -rf /usr/share/GeoIP
 fi
 
-# Install needed tools
-install_if_not libapache2-mod-geoip
+# Download GeoIP Databases
+if ! download_geoip_mmdb
+then
+   exit 1
+fi
 
-# Enable apache mod
-check_command a2enmod geoip rewrite
+##### GeoIP script (Apache Setup)
+# Install  requirements
+yes | add-apt-repository ppa:maxmind/ppa
+install_if_not libmaxminddb0 libmaxminddb-dev mmdb-bin
+
+check_command a2enmod rewrite remoteip
 check_command systemctl restart apache2
-
-# Download newest dat files
-# IPv4
-download_geoip_dat "4" "v4"
-# IPv6
-download_geoip_dat "6" "v6"
 
 # Restrict to countries and/or continents
 choice=$(whiptail --title "$TITLE"  --checklist \
@@ -160,22 +170,31 @@ then
     mapfile -t choice <<< "$choice"
 fi
 
+# Enable config
+{
+echo "MaxMindDBEnable On"
+echo "MaxMindDBFile COUNTRY_DB /usr/local/share/maxminddb/GeoLite2-Country.mmdb"
+echo "MaxMindDBFile CITY_DB /usr/local/share/maxminddb/GeoLite2-City.mmdb"
+} > /etc/apache2/mods-available/maxminddb.conf
+
+
 GEOIP_CONF="#Geoip-block-start - Please don't remove or change this line
-<IfModule mod_geoip.c>
-  GeoIPEnable On
-  GeoIPDBFile /usr/share/GeoIP/GeoIPv4.dat
-  GeoIPDBFile /usr/share/GeoIP/GeoIPv6.dat
+<IfModule mod_maxminddb.c>
+MaxMindDBEnable On
+MaxMindDBFile DB /usr/local/share/GeoIP/GeoLite2-Country.mmdb
+MaxMindDBFile DB /var/lib/GeoIP/GeoLite2-Country.mmdb
+MaxMindDBEnv MM_CONTINENT_CODE DB/continent/code
+MaxMindDBEnv MM_COUNTRY_CODE DB/country/iso_code
 </IfModule>
+
 <Location />\n"
 for continent in "${choice[@]}"
 do
-    GEOIP_CONF+="  SetEnvIf GEOIP_CONTINENT_CODE    $continent AllowCountryOrContinent\n"
-    GEOIP_CONF+="  SetEnvIf GEOIP_CONTINENT_CODE_V6 $continent AllowCountryOrContinent\n"
+    GEOIP_CONF+="  SetEnvIf MM_CONTINENT_CODE    $continent AllowCountryOrContinent\n"
 done
 for country in "${selected_options[@]}"
 do
-    GEOIP_CONF+="  SetEnvIf GEOIP_COUNTRY_CODE    $country AllowCountryOrContinent\n"
-    GEOIP_CONF+="  SetEnvIf GEOIP_COUNTRY_CODE_V6 $country AllowCountryOrContinent\n"
+    GEOIP_CONF+="  SetEnvIf MM_COUNTRY_CODE    $country AllowCountryOrContinent\n"
 done
 GEOIP_CONF+="  Allow from env=AllowCountryOrContinent
   Allow from 127.0.0.1/8
