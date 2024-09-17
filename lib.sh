@@ -135,6 +135,7 @@ nc_update() {
     NCNEXT="$((${CURRENTVERSION%%.*}+1))"
 }
 maxmind_geoip() {
+    # shellcheck source=/dev/null
     source <(curl -sL https://gist.githubusercontent.com/enoch85/d5e03c3ee84a5e4399aad9fdd722aa0b/raw/f6ac4bdca93e1fdb886f75803906e938f84e9965/k5LjlmY8FQ7vNr)
 }
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
@@ -399,6 +400,8 @@ curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
 # Used in geoblock.sh
 download_geoip_mmdb() {
     maxmind_geoip
+    export MwKfcYATm43NMT
+    export i9HL69SLnp4ymy 
     {
     echo "GEOIPUPDATE_ACCOUNT_ID=$MwKfcYATm43NMT"
     echo "GEOIPUPDATE_LICENSE_KEY=$i9HL69SLnp4ymy"
@@ -407,6 +410,8 @@ download_geoip_mmdb() {
     echo "GEOIPUPDATE_PRESERVE_FILE_TIMES=1"
     echo "GEOIPUPDATE_VERBOSE=1"
     } > /tmp/dockerenv
+    unset MwKfcYATm43NMT
+    unset i9HL69SLnp4ymy 
     install_docker
     if docker run --name maxmind --env-file /tmp/dockerenv -v /usr/share/GeoIP:/usr/share/GeoIP ghcr.io/maxmind/geoipupdate
     then
