@@ -582,19 +582,20 @@ fi
 # Get newest dat files for geoblock.sh
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
-    if get_newest_dat_files
+    if grep -c GeoIPDBFile /etc/apache2/apache2.conf
     then
-        if grep -c GeoIP.dat /etc/apache2/apache2.conf
+        msg_box "We have updated GeoIP to a new version which isn't compatible with the old one. Please reinstall with the menu script to get the latest version."
+        notify_admin_gui \
+"GeoBlock needs to be reinstalled!" \
+"We have updated GeoIP to a new version which isn't compatible with the old one.
+Please reinstall with the menu script to get the latest version.
+
+sudo bash /ar/scripts/menu.sh --> Server Configuration --> GeoBlock"
+    else
+        if download_geoip_mmdb
         then
-            if [ ! -f /usr/share/GeoIP/GeoIPv4.dat ]
-            then
-                if download_geoip_dat 4 v4
-                then
-                    sed -i "s|GeoIPDBFile /usr/share/GeoIP/GeoIP.dat|GeoIPDBFile /usr/share/GeoIP/GeoIPv4.dat|g" /etc/apache2/apache2.conf
-                fi
-            fi
+            check_command systemctl restart apache2
         fi
-        check_command systemctl restart apache2
     fi
 fi
 
