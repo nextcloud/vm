@@ -153,6 +153,8 @@ HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 # Collabora App
 HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
+# GeoBlock
+GEOBLOCK_MOD_CONF="etc/apache2/mods-available/maxminddb.load"
 # PHP-FPM
 PHPVER=8.3
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
