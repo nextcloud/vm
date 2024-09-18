@@ -10,7 +10,7 @@ Attention!
 Geoblock can break the certificate renewal via \"Let's encrypt!\" if done too strict!
 If you have problems with \"Let's encrypt!\", please uninstall geoblock first to see if that fixes those issues!"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/geoblock-v2/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -22,13 +22,15 @@ debug_mode
 root_check
 
 # Check if it is already configured
-if ! grep -q "^#Geoip-block" /etc/apache2/apache2.conf
+if [  -f /etc/apache2/mods-available/maxminddb.load ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
+    # Remove Apache mod config
+    rm -f /etc/apache2/mods-available/maxminddb.load
     # Remove old database files
     find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
@@ -42,7 +44,7 @@ else
     if grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* | grep maxmind-ubuntu-ppa
     then
         install_if_not ppa-purge
-        ppa-purge maxmind/ppa
+        yes no | ppa-purge maxmind/ppa
         rm -f /etc/apt/sources.list.d/maxmind*
     fi
     # Remove  Apache config
@@ -172,19 +174,10 @@ then
     mapfile -t choice <<< "$choice"
 fi
 
-# Enable config
-{
-echo "MaxMindDBEnable On"
-echo "MaxMindDBFile COUNTRY_DB /usr/local/share/maxminddb/GeoLite2-Country.mmdb"
-echo "MaxMindDBFile CITY_DB /usr/local/share/maxminddb/GeoLite2-City.mmdb"
-} > /etc/apache2/mods-available/maxminddb.conf
-
-
-GEOIP_CONF="#Geoip-block-start - Please don't remove or change this line
+GEOIP_CONF="
 <IfModule mod_maxminddb.c>
 MaxMindDBEnable On
-MaxMindDBFile DB /usr/local/share/GeoIP/GeoLite2-Country.mmdb
-MaxMindDBFile DB /var/lib/GeoIP/GeoLite2-Country.mmdb
+MaxMindDBFile DB /usr/share/GeoIP/GeoLite2-Country.mmdb
 MaxMindDBEnv MM_CONTINENT_CODE DB/continent/code
 MaxMindDBEnv MM_COUNTRY_CODE DB/country/iso_code
 </IfModule>
@@ -209,11 +202,15 @@ GEOIP_CONF+="  Allow from env=AllowCountryOrContinent
   Order Deny,Allow
   Deny from all
 </Location>
-#Geoip-block-end - Please don't remove or change this line"
 
+  # Logs
+  LogLevel info
+  CustomLog /var/log/nextcloud/geoblock_access.log custom
 # Write everything to the file
-echo -e "$GEOIP_CONF" >> /etc/apache2/apache2.conf
+echo -e "$GEOIP_CONF" > /etc/apache2/mods-available/maxminddb.load
 
+# Enable config
+a2enmod maxminddb
 check_command systemctl restart apache2
 
 msg_box "GeoBlock was successfully configured"
