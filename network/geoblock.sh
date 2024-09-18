@@ -22,7 +22,7 @@ debug_mode
 root_check
 
 # Check if it is already configured
-if [ ! -f /etc/apache2/mods-available/maxminddb.load ]
+if [ ! -f "$GEOBLOCK_MOD_CONF" ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -30,7 +30,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Remove Apache mod config
-    rm -f /etc/apache2/mods-available/maxminddb.load
+    rm -f "$GEOBLOCK_MOD_CONF"
     # Remove old database files
     find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
@@ -173,8 +173,6 @@ if [ -n "$choice" ]
 then
     mapfile -t choice <<< "$choice"
 fi
-
-GEOBLOCK_MOD_CONF=/etc/apache2/mods-available/maxminddb.load
 
 # Create conff
 cat << GEOBLOCKCONF_CREATE > "$GEOBLOCK_MOD_CONF"
