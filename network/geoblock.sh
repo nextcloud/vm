@@ -22,7 +22,7 @@ debug_mode
 root_check
 
 # Check if it is already configured
-if [  -f /etc/apache2/mods-available/maxminddb.load ]
+if [ ! -f /etc/apache2/mods-available/maxminddb.load ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -174,24 +174,37 @@ then
     mapfile -t choice <<< "$choice"
 fi
 
-GEOIP_CONF="
+GEOBLOCK_MOD_CONF=/etc/apache2/mods-available/maxminddb.load
+
+# Create conff
+cat << GEOBLOCKCONF_CREATE > "$GEOBLOCK_MOD_CONF"
 <IfModule mod_maxminddb.c>
-MaxMindDBEnable On
-MaxMindDBFile DB /usr/share/GeoIP/GeoLite2-Country.mmdb
-MaxMindDBEnv MM_CONTINENT_CODE DB/continent/code
-MaxMindDBEnv MM_COUNTRY_CODE DB/country/iso_code
+  MaxMindDBEnable On
+  MaxMindDBFile DB /usr/share/GeoIP/GeoLite2-Country.mmdb
+  #MaxMindDBFile DB /var/lib/GeoIP/GeoLite2-Country.mmdb
+  MaxMindDBEnv MM_CONTINENT_CODE DB/continent/code
+  MaxMindDBEnv MM_COUNTRY_CODE DB/country/iso_code
 </IfModule>
 
-<Location />\n"
+  # Geoblock rules
+GEOBLOCKCONF_CREATE
+
+# Add <Location> parameters to maxmind conf
+echo "<Location />" >> "$GEOBLOCK_MOD_CONF"
 for continent in "${choice[@]}"
 do
-    GEOIP_CONF+="  SetEnvIf MM_CONTINENT_CODE    $continent AllowCountryOrContinent\n"
+    echo "  SetEnvIf MM_CONTINENT_CODE    $continent AllowCountryOrContinent" >> "$GEOBLOCK_MOD_CONF"
 done
 for country in "${selected_options[@]}"
 do
-    GEOIP_CONF+="  SetEnvIf MM_COUNTRY_CODE    $country AllowCountryOrContinent\n"
+    echo "  SetEnvIf MM_COUNTRY_CODE    $country AllowCountryOrContinent" >> "$GEOBLOCK_MOD_CONF"
 done
-GEOIP_CONF+="  Allow from env=AllowCountryOrContinent
+echo "  Allow from env=AllowCountryOrContinent" >> "$GEOBLOCK_MOD_CONF"
+
+# Add allow rules to maxmind conf
+cat << GEOBLOCKALLOW_CREATE >> "$GEOBLOCK_MOD_CONF"
+
+  # Specifically allow this
   Allow from 127.0.0.1/8
   Allow from 192.168.0.0/16
   Allow from 172.16.0.0/12
@@ -205,14 +218,12 @@ GEOIP_CONF+="  Allow from env=AllowCountryOrContinent
 
   # Logs
   LogLevel info
-  CustomLog /var/log/nextcloud/geoblock_access.log custom
-# Write everything to the file
-echo -e "$GEOIP_CONF" > /etc/apache2/mods-available/maxminddb.load
+  CustomLog "$VMLOGS/geoblock_access.log" common
+GEOBLOCKALLOW_CREATE
 
-# Enable config
-a2enmod maxminddb
-check_command systemctl restart apache2
-
-msg_box "GeoBlock was successfully configured"
-
-exit
+if check_command systemctl restart apache2
+then
+    msg_box "GeoBlock was successfully configured"
+else
+    msg_box "Something went wrong, please check Apache error logs."
+fi
