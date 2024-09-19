@@ -1,4 +1,3 @@
-root@nextcloud:~# cat hej.sh 
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
