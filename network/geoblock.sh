@@ -55,12 +55,17 @@ else
     fi
     # Remove  Apache config
     sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
+    if [ -f "$GEOBLOCK_MOD_CONF" ]
+    then
+        a2disconf geoblock
+        rm -f "$GEOBLOCK_MOD_CONF"
+    fi
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
     # Make sure it's clean from unused packages and files
     apt purge libmaxminddb0* libmaxminddb-dev* mmdb-bin* apache2-dev* -y
     apt autoremove -y
-    rm -rf /usr/share/GeoIP
+    #rm -rf /usr/share/GeoIP keep these to save downloads...
     check_command systemctl restart apache2
 fi
 
