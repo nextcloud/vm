@@ -31,8 +31,7 @@ chmod 755 /usr/local/bin/fast-apt-mirror
 
 # Variables
 CURRENT_MIRROR=$(fast-apt-mirror current)
-FIND_MIRROR=$(fast-apt-mirror find -v)
-APPLY_MIRROR=$(fast-apt-mirror current --apply)
+FIND_MIRROR=$(fast-apt-mirror find -v --healthchecks 100)
 msg_box "Current mirror is $CURRENT_MIRROR"
 
 # Ask
@@ -43,14 +42,19 @@ then
 else
     # Find
     print_text_in_color "$ICyan" "Locating the best mirrors..."
-    if yesno_box_yes "Do you want to replace the $CURRENT_MIRROR with $FIND_MIRROR?"
+    if [ "$CURRENT_MIRROR/" != "$FIND_MIRROR" ]
     then
-        # Backup
-        cp -f /etc/apt/sources.list /etc/apt/sources.list.backup
-        # Replace
-        if fast-apt-mirror current --apply # TODO is fast-apt-mirror.sh set better here?
+        if yesno_box_yes "Do you want to replace the $CURRENT_MIRROR with $FIND_MIRROR?"
         then
-            msg_box "Your Ubuntu repo was successfully changed to $FASTEST_MIRROR"
+            # Backup
+            cp -f /etc/apt/sources.list /etc/apt/sources.list.backup
+            # Replace
+            if fast-apt-mirror current --apply # TODO is fast-apt-mirror.sh set better here?
+            then
+                msg_box "Your Ubuntu repo was successfully changed to $FASTEST_MIRROR"
+            fi
         fi
+    else
+        msg_box "You already have the fastest mirror available, congrats!"
     fi
 fi
