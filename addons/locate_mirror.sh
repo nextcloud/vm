@@ -75,7 +75,7 @@ This script can only handle one keymap at the time.\nThe default mirror ($CURREN
         exit 1
     fi
     # Find
-    FIND_MIRROR="$(fast-apt-mirror find -v --healthchecks 100 --speedtests 10 --country $KEYBOARD_LAYOUT)"
+    FIND_MIRROR="$(fast-apt-mirror find -v --healthchecks 100 --speedtests 10 --country "$KEYBOARD_LAYOUT")"
     print_text_in_color "$ICyan" "Locating the best mirrors..."
     if [ "$CURRENT_MIRROR" != "$FIND_MIRROR" ]
     then
