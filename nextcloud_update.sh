@@ -980,7 +980,7 @@ fi
 # Check if PHP version is compatible with $NCVERSION
 # https://github.com/nextcloud/server/issues/29258
 PHP_VER=81
-NC_VER=32
+NC_VER=31
 if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
 then
     if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
