@@ -99,6 +99,8 @@ then
        msg_box "Couldn't install the Apache module for MaxMind. Please report this to $ISSUES"
        exit 1
     fi
+    # Cleanup
+    rm -rf mod_maxminddb-1.2.0 mod_maxminddb-1.2.0.tar.gz
 fi
 
 check_command a2enmod rewrite remoteip maxminddb
