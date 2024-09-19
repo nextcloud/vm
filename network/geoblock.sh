@@ -50,7 +50,7 @@ else
     if grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* | grep maxmind-ubuntu-ppa
     then
         install_if_not ppa-purge
-        yes no | ppa-purge maxmind/ppa
+        yes | ppa-purge maxmind/ppa
         rm -f /etc/apt/sources.list.d/maxmind*
     fi
     # Remove  Apache config
