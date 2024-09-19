@@ -48,7 +48,7 @@ else
         # Backup
         cp -f /etc/apt/sources.list /etc/apt/sources.list.backup
         # Replace
-        if fast-apt-mirror current --apply
+        if fast-apt-mirror current --apply # TODO is fast-apt-mirror.sh set better here?
         then
             msg_box "Your Ubuntu repo was successfully changed to $FASTEST_MIRROR"
         fi
