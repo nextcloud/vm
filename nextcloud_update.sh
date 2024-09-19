@@ -596,7 +596,7 @@ elif [ -f "$GEOBLOCK_MOD" ]
 then
     if download_geoip_mmdb
     then
-        print_text_in_color "IGreen" "MaxMind database updated!"
+        print_text_in_color "$IGreen" "MaxMind database updated!"
     fi
 fi
 
