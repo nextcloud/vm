@@ -22,7 +22,7 @@ debug_mode
 root_check
 
 # Check if it is already configured
-if [ ! -f "$GEOBLOCK_MOD_CONF" ]
+if [ ! -f "$GEOBLOCK_MOD_CONF" ] || [ ! -f "$GEOBLOCK_MOD" ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
