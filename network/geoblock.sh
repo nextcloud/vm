@@ -35,6 +35,12 @@ else
     find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
     # Remove Apache2 mod
+    if [ -f "$GEOBLOCK_MOD" ]
+    then
+        a2dismod maxminddb
+        rm -f "$GEOBLOCK_MOD"
+        rm -f /usr/lib/apache2/modules/mod_maxminddb.so
+    fi
     if is_this_installed libapache2-mod-geoip
     then
         a2dismod geoip
@@ -49,15 +55,13 @@ else
     fi
     # Remove  Apache config
     sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
-    check_command systemctl restart apache2
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
     # Make sure it's clean from unused packages and files
     apt purge libmaxminddb0* libmaxminddb-dev* mmdb-bin* apache2-dev* -y
     apt autoremove -y
-    rm -f /usr/lib/apache2/modules/mod_maxminddb.so
     rm -rf /usr/share/GeoIP
-    systemctl apache2 restart
+    check_command systemctl restart apache2
 fi
 
 # Download GeoIP Databases
@@ -69,7 +73,7 @@ fi
 ##### GeoIP script (Apache Setup)
 # Install  requirements
 yes | add-apt-repository ppa:maxmind/ppa
-install_if_not libmaxminddb0 
+install_if_not libmaxminddb0
 install_if_not libmaxminddb-dev
 install_if_not mmdb-bin
 install_if_not apache2-dev
@@ -78,18 +82,18 @@ install_if_not apache2-dev
 cd /tmp
 curl_to_dir https://github.com/maxmind/mod_maxminddb/releases/download/1.2.0/ mod_maxminddb-1.2.0.tar.gz /tmp
 tar -xzf mod_maxminddb-1.2.0.tar.gz
-cd mod_maxminddb-1.2.0/
+cd mod_maxminddb-1.2.0
 if ./configure
 then
     make install
-    if ! apachectl -M | grep -i maxmin*
+    if ! apachectl -M | grep -i "maxminddb"
     then
-       msg_box "Couldn't install the libmodule for maxmind. Please report this to $ISSUES"
+       msg_box "Couldn't install the Apache module for MaxMind. Please report this to $ISSUES"
        exit 1
     fi
 fi
 
-check_command a2enmod rewrite remoteip
+check_command a2enmod rewrite remoteip maxminddb
 check_command systemctl restart apache2
 
 # Restrict to countries and/or continents
@@ -199,7 +203,7 @@ cat << GEOBLOCKCONF_CREATE > "$GEOBLOCK_MOD_CONF"
 <IfModule mod_maxminddb.c>
   MaxMindDBEnable On
   MaxMindDBFile DB /usr/share/GeoIP/GeoLite2-Country.mmdb
-  #MaxMindDBFile DB /var/lib/GeoIP/GeoLite2-Country.mmdb
+
   MaxMindDBEnv MM_CONTINENT_CODE DB/continent/code
   MaxMindDBEnv MM_COUNTRY_CODE DB/country/iso_code
 </IfModule>
@@ -238,6 +242,9 @@ cat << GEOBLOCKALLOW_CREATE >> "$GEOBLOCK_MOD_CONF"
   LogLevel info
   CustomLog "$VMLOGS/geoblock_access.log" common
 GEOBLOCKALLOW_CREATE
+
+# Enable config
+check_command a2enconf geoblock
 
 if check_command systemctl restart apache2
 then
