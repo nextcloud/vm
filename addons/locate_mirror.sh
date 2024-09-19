@@ -1,3 +1,4 @@
+root@nextcloud:~# cat hej.sh 
 #!/bin/bash
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
@@ -14,6 +15,10 @@ root_check
 if [ -z "$REPO" ]
 then
     REPO=$(apt-get update -q4 && apt-cache policy | grep http | tail -1 | awk '{print $2}')
+    if ! grep "ubuntu.com"  <<< "$REPO"
+    then
+        REPO=$(apt-get update -q4 && apt-cache policy | grep ubuntu.com | tail -1 | awk '{print $2}')
+    fi
 fi
 
 # Check where the best mirrors are and update
@@ -39,19 +44,14 @@ This script can only handle one keymap at the time.\nThe default mirror ($REPO) 
         exit 1
     fi
     print_text_in_color "$ICyan" "Locating the best mirrors..."
-    curl_to_dir https://bootstrap.pypa.io get-pip.py /tmp
-    install_if_not python3
-    install_if_not python3-testresources
-    install_if_not python3-distutils
-    cd /tmp && python3 get-pip.py
-    pip install \
-        --upgrade pip \
-        apt-select
-    check_command apt-select -m up-to-date -t 4 -c -C "$KEYBOARD_LAYOUT"
-    sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-    if [ -f sources.list ]
-    then
-        sudo mv sources.list /etc/apt/
-    fi
-    msg_box "The apt-mirror was successfully changed."
+    # Install
+    install_if_not netselect
+    # Run
+    FASTEST_MIRROR=$(netselect -vv -s1 -t20 -m5 `curl -L https://launchpad.net/ubuntu/+archivemirrors | grep -P -B8 "statusUP|statusFOUR" | grep -o -P "htt(p|ps)://[^\"]*"` | awk '{print $2}')
+    echo "$FASTEST_MIRROR"
+    # Backup
+    sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
+    # Replace
+    sed -i "s|deb [a-z]*://[^ ]* |deb $FASTEST_MIRROR |g" /etc/apt/sources.list
+    msg_box "Your Ubuntu repo was successfully changed to $FASTEST_MIRROR"
 fi
