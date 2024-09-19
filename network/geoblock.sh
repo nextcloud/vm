@@ -11,6 +11,7 @@ Geoblock can break the certificate renewal via \"Let's encrypt!\" if done too st
 If you have problems with \"Let's encrypt!\", please uninstall geoblock first to see if that fixes those issues!"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
+# source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/geoblock-v2/lib.sh) # TODO, remove after testing
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -22,41 +23,89 @@ debug_mode
 root_check
 
 # Check if it is already configured
-if ! grep -q "^#Geoip-block" /etc/apache2/apache2.conf
+if [ ! -f "$GEOBLOCK_MOD_CONF" ] || [ ! -f "$GEOBLOCK_MOD" ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
 else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
-    # Removal
+    # Remove Apache mod config
+    rm -f "$GEOBLOCK_MOD_CONF"
+    # Remove old database files
     find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
+    # Remove Apache2 mod
+    if [ -f "$GEOBLOCK_MOD" ]
+    then
+        a2dismod maxminddb
+        rm -f "$GEOBLOCK_MOD"
+        rm -f /usr/lib/apache2/modules/mod_maxminddb.so
+    fi
     if is_this_installed libapache2-mod-geoip
     then
         a2dismod geoip
         apt-get purge libapache2-mod-geoip -y
-        rm -rf /usr/share/GeoIP
     fi
-    apt-get autoremove -y
-    sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
-    check_command systemctl restart apache2
+    # Remove PPA
+    if grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/* | grep maxmind-ubuntu-ppa
+    then
+        install_if_not ppa-purge
+        yes | ppa-purge maxmind/ppa
+        rm -f /etc/apt/sources.list.d/maxmind*
+    fi
+    # Remove  Apache config
+    if grep "Geoip-block-start" /etc/apache2/apache2.conf
+    then
+        sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
+    fi
+    if [ -f "$GEOBLOCK_MOD_CONF" ]
+    then
+        a2disconf geoblock
+        rm -f "$GEOBLOCK_MOD_CONF"
+    fi
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
+    # Make sure it's clean from unused packages and files
+    apt purge libmaxminddb0* libmaxminddb-dev* mmdb-bin* apache2-dev* -y
+    apt autoremove -y
+    #rm -rf /usr/share/GeoIP keep these to save downloads...
+    check_command systemctl restart apache2
 fi
 
-# Install needed tools
-install_if_not libapache2-mod-geoip
+# Download GeoIP Databases
+if ! download_geoip_mmdb
+then
+   exit 1
+fi
 
-# Enable apache mod
-check_command a2enmod geoip rewrite
+##### GeoIP script (Apache Setup)
+# Install  requirements
+yes | add-apt-repository ppa:maxmind/ppa
+install_if_not libmaxminddb0
+install_if_not libmaxminddb-dev
+install_if_not mmdb-bin
+install_if_not apache2-dev
+
+# maxminddb_module https://github.com/maxmind/mod_maxminddb
+cd /tmp
+curl_to_dir https://github.com/maxmind/mod_maxminddb/releases/download/1.2.0/ mod_maxminddb-1.2.0.tar.gz /tmp
+tar -xzf mod_maxminddb-1.2.0.tar.gz
+cd mod_maxminddb-1.2.0
+if ./configure
+then
+    make install
+    if ! apachectl -M | grep -i "maxminddb"
+    then
+       msg_box "Couldn't install the Apache module for MaxMind. Please report this to $ISSUES"
+       exit 1
+    fi
+    # Cleanup
+    rm -rf mod_maxminddb-1.2.0 mod_maxminddb-1.2.0.tar.gz
+fi
+
+check_command a2enmod rewrite remoteip maxminddb
 check_command systemctl restart apache2
-
-# Download newest dat files
-# IPv4
-download_geoip_dat "4" "v4"
-# IPv6
-download_geoip_dat "6" "v6"
 
 # Restrict to countries and/or continents
 choice=$(whiptail --title "$TITLE"  --checklist \
@@ -160,24 +209,35 @@ then
     mapfile -t choice <<< "$choice"
 fi
 
-GEOIP_CONF="#Geoip-block-start - Please don't remove or change this line
-<IfModule mod_geoip.c>
-  GeoIPEnable On
-  GeoIPDBFile /usr/share/GeoIP/GeoIPv4.dat
-  GeoIPDBFile /usr/share/GeoIP/GeoIPv6.dat
+# Create conff
+cat << GEOBLOCKCONF_CREATE > "$GEOBLOCK_MOD_CONF"
+<IfModule mod_maxminddb.c>
+  MaxMindDBEnable On
+  MaxMindDBFile DB /usr/share/GeoIP/GeoLite2-Country.mmdb
+
+  MaxMindDBEnv MM_CONTINENT_CODE DB/continent/code
+  MaxMindDBEnv MM_COUNTRY_CODE DB/country/iso_code
 </IfModule>
-<Location />\n"
+
+  # Geoblock rules
+GEOBLOCKCONF_CREATE
+
+# Add <Location> parameters to maxmind conf
+echo "<Location />" >> "$GEOBLOCK_MOD_CONF"
 for continent in "${choice[@]}"
 do
-    GEOIP_CONF+="  SetEnvIf GEOIP_CONTINENT_CODE    $continent AllowCountryOrContinent\n"
-    GEOIP_CONF+="  SetEnvIf GEOIP_CONTINENT_CODE_V6 $continent AllowCountryOrContinent\n"
+    echo "  SetEnvIf MM_CONTINENT_CODE    $continent AllowCountryOrContinent" >> "$GEOBLOCK_MOD_CONF"
 done
 for country in "${selected_options[@]}"
 do
-    GEOIP_CONF+="  SetEnvIf GEOIP_COUNTRY_CODE    $country AllowCountryOrContinent\n"
-    GEOIP_CONF+="  SetEnvIf GEOIP_COUNTRY_CODE_V6 $country AllowCountryOrContinent\n"
+    echo "  SetEnvIf MM_COUNTRY_CODE    $country AllowCountryOrContinent" >> "$GEOBLOCK_MOD_CONF"
 done
-GEOIP_CONF+="  Allow from env=AllowCountryOrContinent
+echo "  Allow from env=AllowCountryOrContinent" >> "$GEOBLOCK_MOD_CONF"
+
+# Add allow rules to maxmind conf
+cat << GEOBLOCKALLOW_CREATE >> "$GEOBLOCK_MOD_CONF"
+
+  # Specifically allow this
   Allow from 127.0.0.1/8
   Allow from 192.168.0.0/16
   Allow from 172.16.0.0/12
@@ -188,13 +248,18 @@ GEOIP_CONF+="  Allow from env=AllowCountryOrContinent
   Order Deny,Allow
   Deny from all
 </Location>
-#Geoip-block-end - Please don't remove or change this line"
 
-# Write everything to the file
-echo -e "$GEOIP_CONF" >> /etc/apache2/apache2.conf
+  # Logs
+  LogLevel info
+  CustomLog "$VMLOGS/geoblock_access.log" common
+GEOBLOCKALLOW_CREATE
 
-check_command systemctl restart apache2
+# Enable config
+check_command a2enconf geoblock
 
-msg_box "GeoBlock was successfully configured"
-
-exit
+if check_command systemctl restart apache2
+then
+    msg_box "GeoBlock was successfully configured"
+else
+    msg_box "Something went wrong, please check Apache error logs."
+fi
