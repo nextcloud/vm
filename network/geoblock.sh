@@ -54,7 +54,10 @@ else
         rm -f /etc/apt/sources.list.d/maxmind*
     fi
     # Remove  Apache config
-    sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
+    if grep "Geoip-block-start" /etc/apache2/apache2.conf
+    then
+        sed -i "/^#Geoip-block-start/,/^#Geoip-block-end/d" /etc/apache2/apache2.conf
+    fi
     if [ -f "$GEOBLOCK_MOD_CONF" ]
     then
         a2disconf geoblock
