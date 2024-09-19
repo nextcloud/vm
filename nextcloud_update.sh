@@ -579,16 +579,24 @@ then
     mv "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
 fi
 
-# Get newest dat files for geoblock.sh
+# Get latest Maxmind databse for Geoblock
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
-    if get_newest_dat_files
+    if grep -c GeoIPDBFile /etc/apache2/apache2.conf
     then
-        if grep -c GeoIP.dat /etc/apache2/apache2.conf
-        then
-            sed -i "s|GeoIPDBFile /usr/share/GeoIP/GeoIP.dat|GeoIPDBFile /usr/share/GeoIP/GeoIPv4.dat|g" /etc/apache2/apache2.conf
-        fi
-        check_command systemctl restart apache2
+        msg_box "We have updated GeoBlock to a new version which isn't compatible with the old one. Please reinstall with the menu script to get the latest version."
+        notify_admin_gui \
+"GeoBlock needs to be reinstalled!" \
+"We have updated GeoBlock to a new version which isn't compatible with the old one.
+Please reinstall with the menu script to get the latest version.
+
+sudo bash /ar/scripts/menu.sh --> Server Configuration --> GeoBlock"
+    fi
+elif [ -f "$GEOBLOCK_MOD" ]
+then
+    if download_geoip_mmdb
+    then
+        print_text_in_color "$IGreen" "MaxMind database updated!"
     fi
 fi
 
