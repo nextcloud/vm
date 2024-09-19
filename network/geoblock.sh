@@ -53,9 +53,11 @@ else
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
     # Make sure it's clean from unused packages and files
-    apt purge libmaxminddb0* libmaxminddb-dev* mmdb-bin* -y
+    apt purge libmaxminddb0* libmaxminddb-dev* mmdb-bin* apache2-dev* -y
     apt autoremove -y
+    rm -f /usr/lib/apache2/modules/mod_maxminddb.so
     rm -rf /usr/share/GeoIP
+    systemctl apache2 restart
 fi
 
 # Download GeoIP Databases
@@ -67,7 +69,25 @@ fi
 ##### GeoIP script (Apache Setup)
 # Install  requirements
 yes | add-apt-repository ppa:maxmind/ppa
-install_if_not libmaxminddb0 libmaxminddb-dev mmdb-bin
+install_if_not libmaxminddb0 
+install_if_not libmaxminddb-dev
+install_if_not mmdb-bin
+install_if_not apache2-dev
+
+# maxminddb_module https://github.com/maxmind/mod_maxminddb
+cd /tmp
+curl_to_dir https://github.com/maxmind/mod_maxminddb/releases/download/1.2.0/ mod_maxminddb-1.2.0.tar.gz /tmp
+tar -xzf mod_maxminddb-1.2.0.tar.gz
+cd mod_maxminddb-1.2.0/
+if ./configure
+then
+    make install
+    if ! apachectl -M | grep -i maxmin*
+    then
+       msg_box "Couldn't install the libmodule for maxmind. Please report this to $ISSUES"
+       exit 1
+    fi
+fi
 
 check_command a2enmod rewrite remoteip
 check_command systemctl restart apache2
