@@ -35,6 +35,8 @@ else
     # Remove old database files
     find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
+find /usr/share/GeoIP -type f -regex \
+"*.dat" -delete
     # Remove Apache2 mod
     if [ -f "$GEOBLOCK_MOD" ]
     then
@@ -69,7 +71,6 @@ else
     # Make sure it's clean from unused packages and files
     apt purge libmaxminddb0* libmaxminddb-dev* mmdb-bin* apache2-dev* -y
     apt autoremove -y
-    #rm -rf /usr/share/GeoIP keep these to save downloads...
     check_command systemctl restart apache2
 fi
 
@@ -82,6 +83,7 @@ fi
 ##### GeoIP script (Apache Setup)
 # Install  requirements
 yes | add-apt-repository ppa:maxmind/ppa
+apt-get update -q4 & spinner_loading
 install_if_not libmaxminddb0
 install_if_not libmaxminddb-dev
 install_if_not mmdb-bin
