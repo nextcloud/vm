@@ -39,16 +39,6 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Check where the best mirrors are and update
-msg_box "To make downloads as fast as possible when updating Ubuntu \
-you should download mirrors that are as geographically close to you as possible.
-
-Please note that there are no guarantees that the download mirrors \
-this script finds will remain for the lifetime of this server.
-Because of this, we don't recommend that you change the mirror unless you live far away from the default.
-
-This is the method used: https://github.com/vegardit/fast-apt-mirror.sh"
-
 # Install
 install_if_not bash
 install_if_not curl
