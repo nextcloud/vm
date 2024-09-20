@@ -35,6 +35,8 @@ else
     # Remove old database files
     find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
+find /usr/share/GeoIP -type f -regex \
+"*.dat" -delete
     # Remove Apache2 mod
     if [ -f "$GEOBLOCK_MOD" ]
     then
