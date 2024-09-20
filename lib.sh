@@ -408,7 +408,7 @@ download_geoip_mmdb() {
     {
     echo "GEOIPUPDATE_ACCOUNT_ID=$MwKfcYATm43NMT"
     echo "GEOIPUPDATE_LICENSE_KEY=$i9HL69SLnp4ymy"
-    echo "GEOIPUPDATE_EDITION_IDS=GeoLite2-City GeoLite2-Country"
+    echo "GEOIPUPDATE_EDITION_IDS=GeoLite2-Country"
     echo "GEOIPUPDATE_FREQUENCY=0"
     echo "GEOIPUPDATE_PRESERVE_FILE_TIMES=1"
     echo "GEOIPUPDATE_VERBOSE=1"
