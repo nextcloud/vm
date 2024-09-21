@@ -97,6 +97,9 @@ cd mod_maxminddb-1.2.0
 if ./configure
 then
     make install
+    # Delete conf made by module
+    rm -f /etc/apache2/mods-enabled/maxminddb.conf
+    # Check if module is enabled
     if ! apachectl -M | grep -i "maxminddb"
     then
        msg_box "Couldn't install the Apache module for MaxMind. Please report this to $ISSUES"
@@ -106,7 +109,10 @@ then
     rm -rf mod_maxminddb-1.2.0 mod_maxminddb-1.2.0.tar.gz
 fi
 
+# Enable modules
 check_command a2enmod rewrite remoteip maxminddb
+# Delete conf made by module
+rm -f /etc/apache2/mods-enabled/maxminddb.conf
 check_command systemctl restart apache2
 
 # Restrict to countries and/or continents
@@ -211,7 +217,7 @@ then
     mapfile -t choice <<< "$choice"
 fi
 
-# Create conff
+# Create conf
 cat << GEOBLOCKCONF_CREATE > "$GEOBLOCK_MOD_CONF"
 <IfModule mod_maxminddb.c>
   MaxMindDBEnable On
