@@ -23,7 +23,7 @@ debug_mode
 root_check
 
 # Check if it is already configured
-if [ ! -f "$GEOBLOCK_MOD_CONF" ] || [ ! -f "$GEOBLOCK_MOD" ]
+if [ ! -f "$GEOBLOCK_MOD_CONF" ] || [ ! -f "$GEOBLOCK_MOD" ] || grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
