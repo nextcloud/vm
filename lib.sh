@@ -156,6 +156,7 @@ HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 # GeoBlock
 GEOBLOCK_MOD_CONF="/etc/apache2/conf-available/geoblock.conf"
 GEOBLOCK_MOD="/etc/apache2/mods-available/maxminddb.load"
+GEOBLOCK_DIR="/usr/share/GeoIP"
 # PHP-FPM
 PHPVER=8.3
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
@@ -404,7 +405,8 @@ curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
 download_geoip_mmdb() {
     maxmind_geoip
     export MwKfcYATm43NMT
-    export i9HL69SLnp4ymy 
+    export i9HL69SLnp4ymy
+    export x8v8GyVQg2UejdPh
     {
     echo "GEOIPUPDATE_ACCOUNT_ID=$MwKfcYATm43NMT"
     echo "GEOIPUPDATE_LICENSE_KEY=$i9HL69SLnp4ymy"
@@ -414,18 +416,29 @@ download_geoip_mmdb() {
     echo "GEOIPUPDATE_VERBOSE=1"
     } > /tmp/dockerenv
     unset MwKfcYATm43NMT
-    unset i9HL69SLnp4ymy 
+    unset i9HL69SLnp4ymy
     install_docker
-    if docker run --name maxmind --env-file /tmp/dockerenv -v /usr/share/GeoIP:/usr/share/GeoIP ghcr.io/maxmind/geoipupdate
+    if docker run --name maxmind --env-file /tmp/dockerenv -v "$GEOBLOCK_DIR":"$GEOBLOCK_DIR" ghcr.io/maxmind/geoipupdate
     then
         docker rm -f maxmind
         rm -f /tmp/dockerenv
+        # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove IPInfos config
+        rm -f "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
     else
         docker rm -f maxmind
         rm -f /tmp/dockerenv
-        msg_box "Update limit for Maxmind GeoDatabase reached! Please try again tomorrow."
-        return 1
+        print_text_in_color "$ICyan" "Rate limit for Maxmind GeoDatabase reached! We're now trying to get the Country Database from https://ipinfo.io instead."
+        if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+        then
+            msg_box "Sorry, we couldn't get the needed IP geolocation database from any source, please try again in 24 hours."
+            return 1
+        else
+            # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove MaxMinds config
+            rm -f "$GEOBLOCK_DIR"/GeoLite2-Country.mmdb
+            return 0
+        fi
     fi
+    unset x8v8GyVQg2UejdPh
 }
 
 # Check if process is runnnig: is_process_running dpkg
