@@ -221,10 +221,19 @@ fi
 cat << GEOBLOCKCONF_CREATE > "$GEOBLOCK_MOD_CONF"
 <IfModule mod_maxminddb.c>
   MaxMindDBEnable On
-  MaxMindDBFile DB $GEOBLOCK_DIR/GeoLite2-Country.mmdb
 
-  MaxMindDBEnv MM_CONTINENT_CODE DB/continent/code
-  MaxMindDBEnv MM_COUNTRY_CODE DB/country/iso_code
+  # Check for IPinfo mmdb
+  <IfFile "$GEOBLOCK_DIR/IPInfo-Country.mmdb">
+    MaxMindDBFile DB $GEOBLOCK_DIR/IPInfo-Country.mmdb
+    MaxMindDBEnv MM_CONTINENT_CODE DB/continent
+    MaxMindDBEnv MM_COUNTRY_CODE DB/country
+  </IfFile>
+  # Check for Maxmind mmdb
+  <IfFile "$GEOBLOCK_DIR/GeoLite2-Country.mmdb">
+    MaxMindDBFile DB $GEOBLOCK_DIR/GeoLite2-Country.mmdb
+    MaxMindDBEnv MM_CONTINENT_CODE DB/continent/code
+    MaxMindDBEnv MM_COUNTRY_CODE DB/country/iso_code
+  </IfFile>
 </IfModule>
 
   # Geoblock rules
