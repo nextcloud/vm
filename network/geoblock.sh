@@ -35,8 +35,9 @@ else
     # Remove old database files
     find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
-find "$GEOBLOCK_DIR" -type f -regex \
+    find "$GEOBLOCK_DIR" -type f -regex \
 "*.dat" -delete
+    rm -f "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
     # Remove Apache2 mod
     if [ -f "$GEOBLOCK_MOD" ]
     then
@@ -69,8 +70,8 @@ find "$GEOBLOCK_DIR" -type f -regex \
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
     # Make sure it's clean from unused packages and files
-    apt purge libmaxminddb0* libmaxminddb-dev* mmdb-bin* apache2-dev* -y
-    apt autoremove -y
+    apt-get purge libmaxminddb0* libmaxminddb-dev* mmdb-bin* apache2-dev* -y
+    apt-get autoremove -y
     check_command systemctl restart apache2
 fi
 
