@@ -425,12 +425,14 @@ download_geoip_mmdb() {
     else
         docker rm -f maxmind
         rm -f /tmp/dockerenv
-        print_text_in_color "$ICyan" "Rate limit for Maxmind GeoDatabase reached! We're now trying to get the Country Database from https://ipinfo.io instead."
-        if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/GeoLite2-Country.mmdb
-        then
-            msg_box "Sorry, we couldn't get the needed IP geolocation database from any source, please try again in 24 hours."
-            return 1
-        fi
+        msg_box "Update limit for Maxmind GeoDatabase reached! Please try again tomorrow."
+        return 1
+        #print_text_in_color "$ICyan" "Rate limit for Maxmind GeoDatabase reached! We're now trying to get the Country Database from https://ipinfo.io instead."
+        #if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/GeoLite2-Country.mmdb
+        #then
+        #    msg_box "Sorry, we couldn't get the needed IP geolocation database from any source, please try again in 24 hours."
+        #    return 1
+        #fi
     fi
     unset x8v8GyVQg2UejdPh
 }
