@@ -35,7 +35,7 @@ else
     # Remove old database files
     find /var/scripts -type f -regex \
 "$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv[46]\.dat" -delete
-find /usr/share/GeoIP -type f -regex \
+find "$GEOBLOCK_DIR" -type f -regex \
 "*.dat" -delete
     # Remove Apache2 mod
     if [ -f "$GEOBLOCK_MOD" ]
@@ -221,7 +221,7 @@ fi
 cat << GEOBLOCKCONF_CREATE > "$GEOBLOCK_MOD_CONF"
 <IfModule mod_maxminddb.c>
   MaxMindDBEnable On
-  MaxMindDBFile DB /usr/share/GeoIP/GeoLite2-Country.mmdb
+  MaxMindDBFile DB $GEOBLOCK_DIR/GeoLite2-Country.mmdb
 
   MaxMindDBEnv MM_CONTINENT_CODE DB/continent/code
   MaxMindDBEnv MM_COUNTRY_CODE DB/country/iso_code
