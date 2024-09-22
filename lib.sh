@@ -405,7 +405,8 @@ curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
 download_geoip_mmdb() {
     maxmind_geoip
     export MwKfcYATm43NMT
-    export i9HL69SLnp4ymy 
+    export i9HL69SLnp4ymy
+    export x8v8GyVQg2UejdPh
     {
     echo "GEOIPUPDATE_ACCOUNT_ID=$MwKfcYATm43NMT"
     echo "GEOIPUPDATE_LICENSE_KEY=$i9HL69SLnp4ymy"
@@ -415,9 +416,10 @@ download_geoip_mmdb() {
     echo "GEOIPUPDATE_VERBOSE=1"
     } > /tmp/dockerenv
     unset MwKfcYATm43NMT
-    unset i9HL69SLnp4ymy 
+    unset i9HL69SLnp4ymy
+    unset x8v8GyVQg2UejdPh
     install_docker
-    if docker run --name maxmind --env-file /tmp/dockerenv -v /usr/share/GeoIP:/usr/share/GeoIP ghcr.io/maxmind/geoipupdate
+    if docker run --name maxmind --env-file /tmp/dockerenv -v "$GEOBLOCK_DIR":"$GEOBLOCK_DIR" ghcr.io/maxmind/geoipupdate
     then
         docker rm -f maxmind
         rm -f /tmp/dockerenv
