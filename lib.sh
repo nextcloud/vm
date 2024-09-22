@@ -417,7 +417,6 @@ download_geoip_mmdb() {
     } > /tmp/dockerenv
     unset MwKfcYATm43NMT
     unset i9HL69SLnp4ymy
-    unset x8v8GyVQg2UejdPh
     install_docker
     if docker run --name maxmind --env-file /tmp/dockerenv -v "$GEOBLOCK_DIR":"$GEOBLOCK_DIR" ghcr.io/maxmind/geoipupdate
     then
@@ -433,6 +432,7 @@ download_geoip_mmdb() {
             return 1
         fi
     fi
+    unset x8v8GyVQg2UejdPh
 }
 
 # Check if process is runnnig: is_process_running dpkg
