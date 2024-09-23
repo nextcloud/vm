@@ -37,7 +37,12 @@ else
 fi
 
 # Get the correct apt-mirror
-REPO=$(grep "URIs:" "$(find /etc/apt/ -type f -name "*sources*")" | grep http | awk '{print $2}' | head -1)
+# Handle several sources
+for source in "$(find /etc/apt/ -type f -name "*sources*")"
+do
+  REPO=$(grep "URIs:" $source | grep http | awk '{print $2}' | head -1)
+done
+# Check if it matches
 if [ "$REPO" = 'http://archive.ubuntu.com/ubuntu' ]
 then
     MIRROR_SWITCH="ON"
@@ -60,7 +65,7 @@ choice=$(whiptail --title "$TITLE" --checklist \
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Keyboard Layout" "(Change the keyboard layout from '$KEYBOARD_LAYOUT')" "$KEYBOARD_LAYOUT_SWITCH" \
 "Timezone" "(Change the timezone from $(cat /etc/timezone))" "$TIMEZONE_SWITCH" \
-"Locate Mirror" "(Change the apt repo for better download performance)" OFF 3>&1 1>&2 2>&3)
+"Locate Mirror" "(Change the apt repo for better download performance)" "$MIRROR_SWITCH" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Keyboard Layout"*)
