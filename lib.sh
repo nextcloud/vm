@@ -45,7 +45,6 @@ SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
 IFACE=$(ip r | grep "default via" | awk '{print $5}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
-REPO=$(grep "^deb " /etc/apt/sources.list | grep http | awk '{print $2}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 WANIP4=$(curl -s -k -m 5 -4 https://api64.ipify.org)
 INTERFACES="/etc/netplan/nextcloud.yaml"
