@@ -307,6 +307,7 @@ fi
 # Install borg
 print_text_in_color "$ICyan" "Installing borgbackup..."
 install_if_not borgbackup
+apt-get install python3-pyfuse3 --no-install-recommends -y
 
 # Enter password
 while :

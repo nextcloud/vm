@@ -72,7 +72,7 @@ Please report any issues you can find. Improvements are welcome!
 
 ## First look
 #### Nextcloud
-![alt tag](https://github.com/nextcloud/nextcloud.com/blob/main/assets/img/features/VMwelcome.png)
+![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
 #### Adminer (Database Administration) *not default*
 ![alt tag](https://i.imgur.com/tiF4chg.png)
 #### Webmin (Server Administration GUI) *not default*
@@ -113,6 +113,7 @@ Please report any issues you can find. Improvements are welcome!
 * [Georg Großmann](https://github.com/ggeorgg)
 * [liao20081228](https://github.com/liao20081228)
 * [aaaskew](https://github.com/aaaskew)
+* IP address data powered by [IPinfo](https://ipinfo.io/)
 
 [Nextcloud Server]: http://shortio.hanssonit.se/r1Rx0GqXa9
 [app store]: http://shortio.hanssonit.se/Rz1GEXt9dL

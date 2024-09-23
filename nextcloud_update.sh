@@ -345,7 +345,7 @@ fi
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
-# Temporary fix for PHP 2024-08-27
+# Temporary fix for PHP 2023-08-27
 # There's a bug in PHP 8.1.21 which causes server to crash
 # If you're on Ondrejs PPA, PHP isn't updated, so do that here instead
 apt-mark unhold php* >/dev/null 2>&1
@@ -579,11 +579,25 @@ then
     mv "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
 fi
 
-# Get newest dat files for geoblock.sh
+# Get latest Maxmind databse for Geoblock
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
-    get_newest_dat_files
-    check_command systemctl restart apache2
+    if grep -c GeoIPDBFile /etc/apache2/apache2.conf
+    then
+        msg_box "We have updated GeoBlock to a new version which isn't compatible with the old one. Please reinstall with the menu script to get the latest version."
+        notify_admin_gui \
+"GeoBlock needs to be reinstalled!" \
+"We have updated GeoBlock to a new version which isn't compatible with the old one.
+Please reinstall with the menu script to get the latest version.
+
+sudo bash /ar/scripts/menu.sh --> Server Configuration --> GeoBlock"
+    fi
+elif [ -f "$GEOBLOCK_MOD" ]
+then
+    if download_geoip_mmdb
+    then
+        print_text_in_color "$IGreen" "GeoBlock database updated!"
+    fi
 fi
 
 # Update docker containers and remove Watchtower if Bitwarden is present due to compatibility issue
@@ -779,6 +793,23 @@ else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
 fi
 
+# Apply correct redirect rule to avoid security check errors
+REDIRECTRULE="$(grep -r "\[R=301,L\]" $SITES_AVAILABLE | cut -d ":" -f1)"
+if [ -n "$REDIRECTRULE" ]
+then
+    # Change the redirect rule in all files in Apache available
+    mapfile -t REDIRECTRULE <<< "$REDIRECTRULE"
+    for rule in "${REDIRECTRULE[@]}"
+    do
+        sed -i "s|{HTTP_HOST} \[R=301,L\]|{HTTP_HOST}\$1 \[END,NE,R=permanent\]|g" "$rule"
+    done
+    # Restart Apache
+    if check_command apachectl configtest
+    then
+        restart_webserver
+    fi
+fi
+
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
 
@@ -943,6 +974,21 @@ fi
 # https://github.com/nextcloud/server/issues/29258
 PHP_VER=80
 NC_VER=26
+if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
+then
+    if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
+    then
+msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+
+If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+        exit
+    fi
+fi
+
+# Check if PHP version is compatible with $NCVERSION
+# https://github.com/nextcloud/server/issues/29258
+PHP_VER=81
+NC_VER=31
 if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
 then
     if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]

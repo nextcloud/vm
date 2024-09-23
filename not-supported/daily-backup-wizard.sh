@@ -381,6 +381,7 @@ fi
 # Install needed tools
 msg_box "We will now install all needed tools, initialize the Borg backup repository and create the daily backup script now."
 install_if_not borgbackup
+apt-get install python3-pyfuse3 --no-install-recommends -y
 
 # Initialize the borg backup repository
 export BORG_PASSPHRASE="$ENCRYPTION_KEY"

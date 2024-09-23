@@ -99,7 +99,6 @@ DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
 NOT_SUPPORTED_FOLDER="$GITHUB_REPO/not-supported"
-GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
@@ -135,6 +134,10 @@ nc_update() {
     NCBAD=$((NCMAJOR-2))
     NCNEXT="$((${CURRENTVERSION%%.*}+1))"
 }
+maxmind_geoip() {
+    # shellcheck source=/dev/null
+    source <(curl -sL https://shortio.hanssonit.se/t3vm7ro4CP)
+}
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
 # Keys
@@ -150,6 +153,10 @@ HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 # Collabora App
 HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
+# GeoBlock
+GEOBLOCK_MOD_CONF="/etc/apache2/conf-available/geoblock.conf"
+GEOBLOCK_MOD="/etc/apache2/mods-available/maxminddb.load"
+GEOBLOCK_DIR="/usr/share/GeoIP"
 # PHP-FPM
 PHPVER=8.3
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
@@ -180,7 +187,7 @@ fulltextsearch_install() {
     FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
     # Supports 0-9.0-99.0-9. Max supprted version with this function is 9.99.9. When ES 10.0.0 is out we have a problem.
     # Maybe "10\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" will work?
-    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://www.docker.elastic.co/r/elasticsearch | grep -Eo "[[:digit:]]\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" | sort --version-sort | tail -1)"
+    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://www.docker.elastic.co/r/elasticsearch?limit=500 | grep -Eo "[[:digit:]]\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" | sort --version-sort | tail -1)"
     # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
     # Legacy, not used at all
@@ -385,60 +392,53 @@ something is wrong here. Please report this to $ISSUES"
     fi
 }
 
+metadefender-scan() {
+# Usage:
+# metadefender-scan.sh $PATH $APIKEY, for example:
+hash="$(sha256sum "$1")"
+hash="${hash%% *}"
+apikey=7283aa9bbcee83132506659a4e5675bb
+curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
+}
+
 # Used in geoblock.sh
-get_newest_dat_files() {
-    # IPv4
-    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
-    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
-    if [ -z "$IPV4_NAME" ]
+download_geoip_mmdb() {
+    maxmind_geoip
+    export MwKfcYATm43NMT
+    export i9HL69SLnp4ymy
+    export x8v8GyVQg2UejdPh
+    {
+    echo "GEOIPUPDATE_ACCOUNT_ID=$MwKfcYATm43NMT"
+    echo "GEOIPUPDATE_LICENSE_KEY=$i9HL69SLnp4ymy"
+    echo "GEOIPUPDATE_EDITION_IDS=GeoLite2-Country"
+    echo "GEOIPUPDATE_FREQUENCY=0"
+    echo "GEOIPUPDATE_PRESERVE_FILE_TIMES=1"
+    echo "GEOIPUPDATE_VERBOSE=1"
+    } > /tmp/dockerenv
+    unset MwKfcYATm43NMT
+    unset i9HL69SLnp4ymy
+    install_docker
+    if docker run --name maxmind --env-file /tmp/dockerenv -v "$GEOBLOCK_DIR":"$GEOBLOCK_DIR" ghcr.io/maxmind/geoipupdate
     then
-        print_text_in_color "$IRed" "Could not get the latest IPv4 name. Not updating the .dat file"
-        sleep 1
+        docker rm -f maxmind
+        rm -f /tmp/dockerenv
+        # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove IPInfos config
+        rm -f "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
     else
-        if ! [ -f "$SCRIPTS/$IPV4_NAME" ]
+        docker rm -f maxmind
+        rm -f /tmp/dockerenv
+        print_text_in_color "$ICyan" "Rate limit for Maxmind GeoDatabase reached! We're now trying to get the Country Database from https://ipinfo.io instead."
+        if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
         then
-            print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
-            sleep 1
-            curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
-            mkdir -p /usr/share/GeoIP
-            rm -f /usr/share/GeoIP/GeoIP.dat
-            check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
-            check_command mv "/usr/share/GeoIP/$IPV4_NAME" /usr/share/GeoIP/GeoIP.dat
-            chown root:root /usr/share/GeoIP/GeoIP.dat
-            chmod 644 /usr/share/GeoIP/GeoIP.dat
-            find /var/scripts -type f -regex \
-"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -not -name "$IPV4_NAME" -delete
+            msg_box "Sorry, we couldn't get the needed IP geolocation database from any source, please try again in 24 hours."
+            return 1
         else
-            print_text_in_color "$ICyan" "The latest IPv4 dat file is already downloaded."
-            sleep 1
+            # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove MaxMinds config
+            rm -f "$GEOBLOCK_DIR"/GeoLite2-Country.mmdb
+            return 0
         fi
     fi
-    # IPv6
-    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/main/geoblockdat \
-    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
-    if [ -z "$IPV6_NAME" ]
-    then
-        print_text_in_color "$IRed" "Could not get the latest IPv6 name. Not updating the .dat file"
-        sleep 1
-    else
-        if ! [ -f "$SCRIPTS/$IPV6_NAME" ]
-        then
-            print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
-            sleep 1
-            curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
-            mkdir -p /usr/share/GeoIP
-            rm -f /usr/share/GeoIP/GeoIPv6.dat
-            check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
-            check_command mv "/usr/share/GeoIP/$IPV6_NAME" /usr/share/GeoIP/GeoIPv6.dat
-            chown root:root /usr/share/GeoIP/GeoIPv6.dat
-            chmod 644 /usr/share/GeoIP/GeoIPv6.dat
-            find /var/scripts -type f -regex \
-"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -not -name "$IPV6_NAME" -delete
-        else
-            print_text_in_color "$ICyan" "The latest IPv6 dat file is already downloaded."
-            sleep 1
-        fi
-    fi
+    unset x8v8GyVQg2UejdPh
 }
 
 # Check if process is runnnig: is_process_running dpkg
@@ -477,13 +477,13 @@ check_running_cronjobs() {
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-print_text_in_color "$ICyan" "Checking connection..."
+print_text_in_color "$ICyan" "Checking connection to ${1}..."
         CURL_STATUS="$(curl -LI "${1}" -o /dev/null -w '%{http_code}\n' -s)"
         if [[ "$CURL_STATUS" = "200" ]]
         then
             return 0
         else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is ${1} reachable?"
+            msg_box "curl didn't produce a 200 status, is ${1} reachable? Please report this to $ISSUES."
             return 1
         fi
 }
@@ -1382,7 +1382,7 @@ fi
 print_text_in_color "$ICyan" "Checking SHA256 checksum..."
 mkdir -p "$SHA256_DIR"
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.sha256" "$SHA256_DIR"
-SHA256SUM="$(tail "$SHA256_DIR"/"$STABLEVERSION".tar.bz2.sha256 | awk '{print$1}')"
+SHA256SUM="$(tail "$SHA256_DIR"/"$STABLEVERSION".tar.bz2.sha256 | awk '{print$1}' | head -1)"
 if ! echo "$SHA256SUM" "$STABLEVERSION.tar.bz2" | sha256sum -c
 then
     msg_box "The SHA256 checksums of $STABLEVERSION.tar.bz2 didn't match, please try again."
@@ -1499,7 +1499,7 @@ any_key() {
 
 lowest_compatible_nc() {
 # .ocdata needs to exist to be able to check version, occ relies on everytihgn working
-until [ -f "$NCDATA"/.ocdata ]
+until [ -f "$NCDATA"/.ocdata ] || [ -f "$NCDATA"/.ncdata ]
 do
         # SUPPORT LEGACY: If it's not in the standard path, check for existing datadir in config.php
         if [ -f "$NCPATH"/config/config.php ]
@@ -1512,7 +1512,7 @@ do
 If you think this is a bug, please report it to $ISSUES"
             else
                 # Check again an break if found
-                if [ -f "$NCDATA"/.ocdata ]
+                if [ -f "$NCDATA"/.ocdata ] || [ -f "$NCDATA"/.ncdata ] 
                 then
                     break
                 fi
