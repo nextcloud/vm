@@ -38,7 +38,8 @@ fi
 
 # Get the correct apt-mirror
 # Handle several sources
-for source in "$(find /etc/apt/ -type f -name "*sources*")"
+FIND_SOURCES="$(find /etc/apt/ -type f -name "*sources*")"
+for source in $FIND_SOURCES
 do
   REPO=$(grep "URIs:" $source | grep http | awk '{print $2}' | head -1)
 done
