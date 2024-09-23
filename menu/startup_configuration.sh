@@ -41,7 +41,7 @@ fi
 FIND_SOURCES="$(find /etc/apt/ -type f -name "*sources*")"
 for source in $FIND_SOURCES
 do
-  REPO=$(grep "URIs:" $source | grep http | awk '{print $2}' | head -1)
+  REPO=$(grep "URIs:" "$source" | grep http | awk '{print $2}' | head -1)
 done
 # Check if it matches
 if [ "$REPO" = 'http://archive.ubuntu.com/ubuntu' ]
