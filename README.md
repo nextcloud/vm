@@ -113,6 +113,7 @@ Please report any issues you can find. Improvements are welcome!
 * [Georg Großmann](https://github.com/ggeorgg)
 * [liao20081228](https://github.com/liao20081228)
 * [aaaskew](https://github.com/aaaskew)
+* IP address data powered by [IPinfo](https://ipinfo.io/)
 
 [Nextcloud Server]: http://shortio.hanssonit.se/r1Rx0GqXa9
 [app store]: http://shortio.hanssonit.se/Rz1GEXt9dL
