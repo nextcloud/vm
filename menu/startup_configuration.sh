@@ -37,7 +37,7 @@ else
 fi
 
 # Get the correct apt-mirror
-REPO=$(grep "URIs:" $(find /etc/apt/ -type f -name "*sources*") | grep http | awk '{print $2}' | head -1)
+REPO=$(grep "URIs:" "$(find /etc/apt/ -type f -name "*sources*")" | grep http | awk '{print $2}' | head -1)
 if [ "$REPO" = 'http://archive.ubuntu.com/ubuntu' ]
 then
     MIRROR_SWITCH="ON"
