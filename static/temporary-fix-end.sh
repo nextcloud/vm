@@ -16,4 +16,4 @@ debug_mode
 # Must be root
 root_check
 
-nextcloud_occ db:add-missing-indices
+exit
