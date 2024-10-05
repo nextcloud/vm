@@ -402,11 +402,26 @@ curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
 
 # Used in geoblock.sh
 download_geoip_mmdb() {
+    # Do not download if less than 2 hour old file
+    if [ -f "$GEOBLOCK_DIR/IPInfo-Country.mmdb" ]
+    then
+        if [ "$(( $(date +"%s") - $(stat -c "%Y" "$GEOBLOCK_DIR/IPInfo-Country.mmdb") ))" -lt "7200" ]
+        then
+            print_text_in_color "$IGreen" "No need to update $GEOBLOCK_DIR/IPInfo-Country.mmdb since it's newer than 2 hours."
+            return 1
+        fi
+    elif [ -f "$GEOBLOCK_DIR/GeoLite2-Country.mmdb" ]
+    then
+        print_text_in_color "$ICyan" "Replacing Maxmind with IPInfo GeoIP database..."
+    fi
+
+    # Download or update current GeoIP DB
     maxmind_geoip
     export x8v8GyVQg2UejdPh
     print_text_in_color "$ICyan" "Downloading latest GeoIP database from https://ipinfo.io..."
     if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
     then
+        print_text_in_color "$IRed" "Failed downloading GeoIP database from IPInfo..."
         export MwKfcYATm43NMT
         export i9HL69SLnp4ymy
         {
@@ -429,7 +444,7 @@ download_geoip_mmdb() {
         else
             docker rm -f maxmind
             rm -f /tmp/dockerenv
-            print_text_in_color "$ICyan" "Rate limit for Maxmind GeoDatabase reached! Can't continue from here, please report this to $ISSUES"
+            print_text_in_color "$IRed" "Rate limit for Maxmind GeoIP database reached! Can't continue from here, please report this to $ISSUES"
         fi
     else
         # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove MaxMinds config
