@@ -402,12 +402,12 @@ curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
 
 # Used in geoblock.sh
 download_geoip_mmdb() {
-    # Do not download if less than 2 hour old file
+    # Rate limit to 1 hour, we have 24 requests per day
     if [ -f "$GEOBLOCK_DIR/IPInfo-Country.mmdb" ]
     then
-        if [ "$(( $(date +"%s") - $(stat -c "%Y" "$GEOBLOCK_DIR/IPInfo-Country.mmdb") ))" -lt "7200" ]
+        if [ "$(( $(date +"%s") - $(stat -c "%Y" "$GEOBLOCK_DIR/IPInfo-Country.mmdb") ))" -lt "3600" ]
         then
-            print_text_in_color "$IGreen" "No need to update $GEOBLOCK_DIR/IPInfo-Country.mmdb since it's newer than 2 hours."
+            print_text_in_color "$IGreen" "No need to update $GEOBLOCK_DIR/IPInfo-Country.mmdb since it's newer than 1 hour."
             return 1
         fi
     elif [ -f "$GEOBLOCK_DIR/GeoLite2-Country.mmdb" ]
