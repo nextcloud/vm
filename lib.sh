@@ -421,7 +421,7 @@ download_geoip_mmdb() {
     print_text_in_color "$ICyan" "Downloading latest GeoIP database from https://ipinfo.io..."
     if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
     then
-        print_text_in_color "$IRed" "Failed downloading GeoIP database from IPInfo..."
+        print_text_in_color "$IRed" "Failed downloading GeoIP database from IPInfo, trying plan B..."
         export MwKfcYATm43NMT
         export i9HL69SLnp4ymy
         {
@@ -441,6 +441,7 @@ download_geoip_mmdb() {
             rm -f /tmp/dockerenv
             # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove IPInfos config
             rm -f "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+            print_text_in_color "$IGreen" "Maxmind GeoIP database downloaded!"
         else
             docker rm -f maxmind
             rm -f /tmp/dockerenv
