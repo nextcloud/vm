@@ -22,8 +22,7 @@ root_check
 # Check if already installed
 if is_this_installed clevis-luks || is_this_installed clevis-tpm2 || is_this_installed clevis-initramfs
 then
-    msg_box "It seems like clevis-luks is already installed.\nThis script can unfortunately not run twice."
-    exit 1
+    msg_box "It seems like clevis-luks is already installed. We are trying to do the configuration again."
 else
     # Ask for installation
     install_popup "$SCRIPT_NAME"
@@ -99,7 +98,7 @@ PASSWORD=$(input_box_flow "Please enter a new password that will secure your GRU
 GRUB_PASS="$(echo -e "$PASSWORD\n$PASSWORD" | grub-mkpasswd-pbkdf2 | grep -oP 'grub\.pbkdf2\.sha512\.10000\..*')"
 if [ -n "${PASSWORD##grub.pbkdf2.sha512.10000.}" ]
 then
-    cat << GRUB_CONF >> /etc/grub.d/40_custom
+    cat << GRUB_CONF > /etc/grub.d/40_custom
 
 # Password-protect GRUB
 set superusers="grub"
