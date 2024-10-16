@@ -44,7 +44,7 @@ fi
 
 # Test if device is present
 # https://github.com/noobient/noobuntu/wiki/Full-Disk-Encryption#tpm-2
-if ! dmesg | grep -i "tpm" | grep -q "2"
+if ! dmesg | grep -iq "tpm2"
 then
     msg_box "No TPM 2.0 device found."
     exit 1
