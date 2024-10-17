@@ -131,7 +131,7 @@ fi
 if [[ "$choice" = *"Countries"* ]]
 then
     # Download csv file
-    if ! curl_to_dir "https://dev.maxmind.com/csv-files/codes" "iso3166.csv" "$SCRIPTS"
+    if ! curl_to_dir "https://dev.maxmind.com/static/csv/codes" "iso3166.csv" "$SCRIPTS"
     then
         msg_box "Could not download the iso3166.csv file.
 Please report this to $ISSUES"

@@ -45,7 +45,6 @@ SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
 IFACE=$(ip r | grep "default via" | awk '{print $5}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
-REPO=$(grep "^deb " /etc/apt/sources.list | grep http | awk '{print $2}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 WANIP4=$(curl -s -k -m 5 -4 https://api64.ipify.org)
 INTERFACES="/etc/netplan/nextcloud.yaml"
@@ -403,40 +402,55 @@ curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
 
 # Used in geoblock.sh
 download_geoip_mmdb() {
-    maxmind_geoip
-    export MwKfcYATm43NMT
-    export i9HL69SLnp4ymy
-    export x8v8GyVQg2UejdPh
-    {
-    echo "GEOIPUPDATE_ACCOUNT_ID=$MwKfcYATm43NMT"
-    echo "GEOIPUPDATE_LICENSE_KEY=$i9HL69SLnp4ymy"
-    echo "GEOIPUPDATE_EDITION_IDS=GeoLite2-Country"
-    echo "GEOIPUPDATE_FREQUENCY=0"
-    echo "GEOIPUPDATE_PRESERVE_FILE_TIMES=1"
-    echo "GEOIPUPDATE_VERBOSE=1"
-    } > /tmp/dockerenv
-    unset MwKfcYATm43NMT
-    unset i9HL69SLnp4ymy
-    install_docker
-    if docker run --name maxmind --env-file /tmp/dockerenv -v "$GEOBLOCK_DIR":"$GEOBLOCK_DIR" ghcr.io/maxmind/geoipupdate
+    # Rate limit to 1 hour, we have 24 requests per day
+    if [ -f "$GEOBLOCK_DIR/IPInfo-Country.mmdb" ]
     then
-        docker rm -f maxmind
-        rm -f /tmp/dockerenv
-        # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove IPInfos config
-        rm -f "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
-    else
-        docker rm -f maxmind
-        rm -f /tmp/dockerenv
-        print_text_in_color "$ICyan" "Rate limit for Maxmind GeoDatabase reached! We're now trying to get the Country Database from https://ipinfo.io instead."
-        if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+        if [ "$(( $(date +"%s") - $(stat -c "%Y" "$GEOBLOCK_DIR/IPInfo-Country.mmdb") ))" -lt "3600" ]
         then
-            msg_box "Sorry, we couldn't get the needed IP geolocation database from any source, please try again in 24 hours."
+            print_text_in_color "$IGreen" "No need to update $GEOBLOCK_DIR/IPInfo-Country.mmdb since it's newer than 1 hour."
             return 1
-        else
-            # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove MaxMinds config
-            rm -f "$GEOBLOCK_DIR"/GeoLite2-Country.mmdb
-            return 0
         fi
+    elif [ -f "$GEOBLOCK_DIR/GeoLite2-Country.mmdb" ]
+    then
+        print_text_in_color "$ICyan" "Replacing Maxmind with IPInfo GeoIP database..."
+    fi
+
+    # Download or update current GeoIP DB
+    maxmind_geoip
+    export x8v8GyVQg2UejdPh
+    print_text_in_color "$ICyan" "Downloading latest GeoIP database from https://ipinfo.io..."
+    if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+    then
+        print_text_in_color "$IRed" "Failed downloading GeoIP database from IPInfo, trying plan B..."
+        export MwKfcYATm43NMT
+        export i9HL69SLnp4ymy
+        {
+        echo "GEOIPUPDATE_ACCOUNT_ID=$MwKfcYATm43NMT"
+        echo "GEOIPUPDATE_LICENSE_KEY=$i9HL69SLnp4ymy"
+        echo "GEOIPUPDATE_EDITION_IDS=GeoLite2-Country"
+        echo "GEOIPUPDATE_FREQUENCY=0"
+        echo "GEOIPUPDATE_PRESERVE_FILE_TIMES=1"
+        echo "GEOIPUPDATE_VERBOSE=1"
+        } > /tmp/dockerenv
+        unset MwKfcYATm43NMT
+        unset i9HL69SLnp4ymy
+        install_docker
+        if docker run --name maxmind --env-file /tmp/dockerenv -v "$GEOBLOCK_DIR":"$GEOBLOCK_DIR" ghcr.io/maxmind/geoipupdate
+        then
+            docker rm -f maxmind
+            rm -f /tmp/dockerenv
+            # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove IPInfos config
+            rm -f "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+            print_text_in_color "$IGreen" "Maxmind GeoIP database downloaded!"
+        else
+            docker rm -f maxmind
+            rm -f /tmp/dockerenv
+            print_text_in_color "$IRed" "Rate limit for Maxmind GeoIP database reached! Can't continue from here, please report this to $ISSUES"
+        fi
+    else
+        # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove MaxMinds config
+        rm -f "$GEOBLOCK_DIR"/GeoLite2-Country.mmdb
+        return 0
     fi
     unset x8v8GyVQg2UejdPh
 }
