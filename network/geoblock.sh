@@ -11,7 +11,6 @@ Geoblock can break the certificate renewal via \"Let's encrypt!\" if done too st
 If you have problems with \"Let's encrypt!\", please uninstall geoblock first to see if that fixes those issues!"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
-# source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/geoblock-v2/lib.sh) # TODO, remove after testing
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
