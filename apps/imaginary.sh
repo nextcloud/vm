@@ -159,7 +159,7 @@ nextcloud_occ config:system:set preview_max_x --value="2048"
 nextcloud_occ config:system:set preview_max_y --value="2048"
 nextcloud_occ config:system:set preview_max_memory --value="256"
 nextcloud_occ config:system:set preview_format --value="webp"
-nextcloud_occ config:app:set preview webp_quality --value="80"
+nextcloud_occ config:app:set preview webp_quality --value="65"
 
 if docker logs imaginary
 then
