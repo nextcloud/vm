@@ -157,8 +157,9 @@ nextcloud_occ config:system:set preview_imaginary_url --value="http://127.0.0.1:
 # Set general values
 nextcloud_occ config:system:set preview_max_x --value="2048"
 nextcloud_occ config:system:set preview_max_y --value="2048"
-nextcloud_occ config:system:set jpeg_quality --value="60"
 nextcloud_occ config:system:set preview_max_memory --value="256"
+nextcloud_occ config:system:set preview_format --value="webp"
+nextcloud_occ config:app:set preview webp_quality --value="65"
 
 if docker logs imaginary
 then

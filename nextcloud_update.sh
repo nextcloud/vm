@@ -1202,7 +1202,7 @@ Please check in $BACKUP if the folders exist."
 fi
 
 # Repair
-nextcloud_occ maintenance:repair
+nextcloud_occ maintenance:repair --include-expensive
 
 # Update Bitwarden
 if is_docker_running
