@@ -184,9 +184,8 @@ fulltextsearch_install() {
     ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
     FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
     FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
-    # Supports 0-9.0-99.0-9. Max supprted version with this function is 9.99.9. When ES 10.0.0 is out we have a problem.
-    # Maybe "10\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" will work?
-    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://www.docker.elastic.co/r/elasticsearch?limit=500 | grep -Eo "[[:digit:]]\\.[[:digit:]][[:digit:]]\\.[[:digit:]]" | sort --version-sort | tail -1)"
+    # Gets the version from the latest tag here: https://github.com/docker-library/official-images/blob/master/library/elasticsearch
+    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://raw.githubusercontent.com/docker-library/official-images/refs/heads/master/library/elasticsearch | grep "Tags:" | head -1 | awk '{print $2}')"
     # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
     # Legacy, not used at all
