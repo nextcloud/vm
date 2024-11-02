@@ -185,7 +185,7 @@ fulltextsearch_install() {
     FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
     FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
     # Gets the version from the latest tag here: https://github.com/docker-library/official-images/blob/master/library/elasticsearch
-    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(https://raw.githubusercontent.com/docker-library/official-images/refs/heads/master/library/elasticsearch | grep "Tags:" | head -1 | awk '{print $2}')"
+    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://raw.githubusercontent.com/docker-library/official-images/refs/heads/master/library/elasticsearch | grep "Tags:" | head -1 | awk '{print $2}')"
     # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
     # Legacy, not used at all
