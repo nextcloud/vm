@@ -548,7 +548,7 @@ if [ -d "$NCPATH/apps/spreed" ]
 then
     if does_this_docker_exist nextcloud/aio-talk-recording
     then
-        install_if_not netcat
+        install_if_not netcat-traditional
         while ! nc -z "$TURN_RECORDING_HOST" "$TURN_RECORDING_HOST_PORT"
         do
             print_text_in_color "$ICyan" "Waiting for Talk Recording to become available..."
