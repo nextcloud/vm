@@ -511,42 +511,44 @@ download_script STATIC setup_secure_permissions_nextcloud
 bash "$SECURE" & spinner_loading
 
 # Ask to set a custom username
-if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$GUIUSER' to something else?"
+if [ -z "$PROVISIONING" ]
 then
-    while :
-    do
-        GUIUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
+    if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$GUIUSER' to something else?"
+    then
+        while :
+        do
+            GUIUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
 \nThe only allowed characters for the username are:
 'a-z', 'A-Z', '0-9', and '_.@-'")
-        if [[ "$GUIUSER" == *" "* ]]
-        then
-            msg_box "Please don't use spaces."
-        # - has to be escaped otherwise it won't work.
-        # Inspired by: https://unix.stackexchange.com/a/498731/433213
-        elif [ "${GUIUSER//[A-Za-z0-9_.\-@]}" ]
-        then
-            msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
-        else
-            break
-        fi
-    done
-    while :
-    do
-        GUIPASS=$(input_box_flow "Please type in the new password for the new Web Admin ($GUIUSER) in Nextcloud.")
-        if [[ "$GUIPASS" == *" "* ]]
-        then
-            msg_box "Please don't use spaces."
-        fi
-        if [ "${GUIPASS//[A-Za-z0-9_.\-@]}" ]
-        then
-            msg_box "Allowed characters for the password are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
-        else
-        msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $GUIPASS
+            if [[ "$GUIUSER" == *" "* ]]
+            then
+                msg_box "Please don't use spaces."
+            # - has to be escaped otherwise it won't work.
+            # Inspired by: https://unix.stackexchange.com/a/498731/433213
+            elif [ "${GUIUSER//[A-Za-z0-9_.\-@]}" ]
+            then
+                msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+            else
+                break
+            fi
+        done
+        while :
+        do
+            GUIPASS=$(input_box_flow "Please type in the new password for the new Web Admin ($GUIUSER) in Nextcloud.")
+            if [[ "$GUIPASS" == *" "* ]]
+            then
+                msg_box "Please don't use spaces."
+            fi
+            if [ "${GUIPASS//[A-Za-z0-9_.\-@]}" ]
+            then
+                msg_box "Allowed characters for the password are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+            else
+                msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $GUIPASS
 This is used when you login to Nextcloud itself, i.e. on the web."
             break
-        fi
-    done
-
+            fi
+        done
+    fi
 fi
 
 # Install Nextcloud
