@@ -869,7 +869,7 @@ local  standalone="certbot certonly --standalone --pre-hook \"systemctl stop apa
 #tls-alpn-01
 local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default_le"
 #dns
-local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
+local  dns="certbot certonly --manual --preferred-challenges dns $default_le"
 local  methods=(standalone dns)
 
 for f in "${methods[@]}"
