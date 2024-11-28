@@ -128,6 +128,13 @@ then
     SETENVPROXY="SetEnv proxy-sendcl 1"
 fi
 
+# Install Brotli
+if version 24.04 "$DISTRO" 26.04.10
+then
+    install_if_not brotli
+    a2enmod brotli
+fi
+
 # Generate nextcloud_tls_domain.conf
 if [ ! -f "$tls_conf" ]
 then
@@ -151,6 +158,11 @@ then
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
+    # Brotli support
+    <IfModule mod_brotli.c>
+        AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/x-javascript application/javascript application/json application/x-font-ttf application/vnd.ms-fontobject image/x-icon
+    </IfModule>
+    
     # Intermediate configuration
     Header add Strict-Transport-Security: "max-age=15552000;includeSubdomains"
     SSLEngine               on
