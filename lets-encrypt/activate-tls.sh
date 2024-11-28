@@ -131,7 +131,7 @@ fi
 # Install Brotli
 if version 24.04 "$DISTRO" 26.04.10
 then
-    if [ -z /etc/apache2/conf-available/brotli.conf ]
+    if ! [ -f /etc/apache2/conf-available/brotli.conf ]
     then
         # Install needed packaages
         install_if_not brotli
