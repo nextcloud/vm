@@ -172,7 +172,7 @@ then
     <FilesMatch "\.php$">
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
-    
+
     # Intermediate configuration
     Header add Strict-Transport-Security: "max-age=15552000;includeSubdomains"
     SSLEngine               on
