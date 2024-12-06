@@ -32,6 +32,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "NTFS Mount" "(Mount NTFS drives)" OFF \
 "NTFS Veracrypt" "(Format, encrypt and mount Veracrypt NTFS drives)" OFF \
 "Backup Viewer" "(View your Backups)" OFF \
+"Restic Cloud Backup" "(Backup your server using Restic to multiple clouds)" OFF \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
 "Firewall" "(Setting up a firewall)" OFF \
 "Monitor Link Shares" "(Monitors the creation of link shares)" OFF \
