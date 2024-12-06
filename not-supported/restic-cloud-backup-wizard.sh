@@ -64,6 +64,26 @@ choose_backup_location() {
     RESTIC_PASSWORD=$(input_box_flow "Enter Restic Repository Password \nSAVE THIS! \nIF YOU LOSE IT YOU WILL NOT BE ABLE TO RESTORE THIS BACKUP:")
 }
 
+choose_backup_scope() {
+    BACKUP_SCOPE=$(whiptail --title "$TITLE" --menu \
+    "Choose what to backup" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+    "Minimal" "(Config files and database only)" \
+    "Full" "(Config, database and /mnt/ncdata)" 3>&1 1>&2 2>&3)
+
+    case "$BACKUP_SCOPE" in
+        "Minimal")
+            BACKUP_NCDATA="no"
+            ;;
+        "Full")
+            BACKUP_NCDATA="yes"
+            ;;
+        *)
+            msg_box "Invalid selection"
+            exit 1
+            ;;
+    esac
+}
+
 # Ask for execution
 msg_box "$SCRIPT_EXPLAINER"
 if ! yesno_box_yes "Do you want to create a backup script?"
@@ -95,6 +115,9 @@ POSTGRES_HOST=$NCDBHOST
 # Configure backup destination
 choose_backup_location
 
+# Choose backup scope
+choose_backup_scope
+
 # Configure retention policy
 BACKUP_RETENTION_DAILY=$(input_box_flow "Enter number of daily backups to keep:" "7")
 BACKUP_RETENTION_WEEKLY=$(input_box_flow "Enter number of weekly backups to keep:" "4")
@@ -123,11 +146,15 @@ POSTGRES_USER="$POSTGRES_USER"
 POSTGRES_PASSWORD="$POSTGRES_PASSWORD"
 POSTGRES_HOST="$POSTGRES_HOST"
 BACKUP_TYPE="$BACKUP_TYPE"
+BACKUP_SCOPE="$BACKUP_SCOPE"
+BACKUP_NCDATA="$BACKUP_NCDATA"
 RESTIC_PASSWORD="$RESTIC_PASSWORD"
 RESTIC_REPOSITORY="$RESTIC_REPOSITORY"
 BACKUP_RETENTION_DAILY="$BACKUP_RETENTION_DAILY"
 BACKUP_RETENTION_WEEKLY="$BACKUP_RETENTION_WEEKLY"
 BACKUP_RETENTION_MONTHLY="$BACKUP_RETENTION_MONTHLY"
+
+
 
 # B2 Configuration
 B2_ACCOUNT_ID="$B2_ACCOUNT_ID"
@@ -203,8 +230,15 @@ then
     # Initialize repository if needed
     restic snapshots || restic init
 
-    # Create backup
-    restic backup "$BACKUP_DIR" /var/www/nextcloud/data
+    # Create backup based on scope
+    if [ "$BACKUP_NCDATA" = "yes" ]
+    then
+        print_text_in_color "$ICyan" "Creating full backup including /mnt/ncdata..."
+        restic backup "$BACKUP_DIR" /mnt/ncdata
+    else
+        print_text_in_color "$ICyan" "Creating minimal backup (config and database only)..."
+        restic backup "$BACKUP_DIR"
+    fi
 
     # Clean up
     rm -rf "$BACKUP_DIR"
