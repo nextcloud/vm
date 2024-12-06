@@ -32,6 +32,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "NTFS Mount" "(Mount NTFS drives)" OFF \
 "NTFS Veracrypt" "(Format, encrypt and mount Veracrypt NTFS drives)" OFF \
 "Backup Viewer" "(View your Backups)" OFF \
+"Restic Cloud Backup" "(Backup your server using Restic to multiple clouds)" OFF \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
 "Firewall" "(Setting up a firewall)" OFF \
 "Monitor Link Shares" "(Monitors the creation of link shares)" OFF \
@@ -75,6 +76,10 @@ case "$choice" in
     *"Daily Backup Wizard"*)
         print_text_in_color "$ICyan" "Downloading the Daily Backup Wizard script..."
         run_script NOT_SUPPORTED_FOLDER daily-backup-wizard
+    ;;&
+    *"Restic Cloud Backup Wizard"*)
+        print_text_in_color "$ICyan" "Downloading the Cloud Backup Wizard script..."
+        run_script NOT_SUPPORTED_FOLDER restic-cloud-backup-wizard
     ;;&
     *"Firewall"*)
         print_text_in_color "$ICyan" "Downloading the Firewall script..."
