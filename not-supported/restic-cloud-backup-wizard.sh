@@ -2,10 +2,15 @@
 
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Sami Nieminen - 2024 https://nenimein.fi
+
+# This script helps creating a backup script for your Nextcloud instance to various cloud storage providers.
+# It uses Restic to back up your configuration, database and optionally your /mnt/ncdata folder.
+# Server will be set to maintenance mode during backup. 
+# If you have large amount of files to backup, please run the script interactively before automatic schedule.
+
 true
 
 SCRIPT_NAME="Nextcloud Restic cloud backup wizard"
-SCRIPT_EXPLAINER="This script helps creating a backup script for your Nextcloud instance to various cloud storage providers.\nIt uses Restic and backs up your configuration and database."
 
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
@@ -84,8 +89,71 @@ choose_backup_scope() {
     esac
 }
 
+setup_restic_excludes() {
+    # Variables
+    RESTIC_EXCLUDES="$HOME/.restic_cloud_backup_excludes"
+
+    # Check if excludes file already exists
+    if [ -f "$RESTIC_EXCLUDES" ]
+    then
+        msg_box "The restic excludes file already exists at $RESTIC_EXCLUDES. It will be used for backups."
+        if yesno_box_yes "Do you want to edit the existing excludes file?"
+        then
+            if [ -x "$(command -v nano)" ]
+            then
+                nano "$RESTIC_EXCLUDES"
+            else
+                vim "$RESTIC_EXCLUDES"
+            fi
+        fi
+        return 0
+    fi
+
+    # Create default excludes file
+    touch "$RESTIC_EXCLUDES"
+    chmod 600 "$RESTIC_EXCLUDES"
+
+    # Add default excludes
+    {
+        echo "# Restic excludes file"
+        echo "# One exclude pattern per line"
+        echo ""
+
+        # Add Nextcloud preview excludes if /mnt/ncdata is selected
+        if [ -d "/mnt/ncdata" ] && echo "$BACKUP_DIRECTORIES" | grep -q "/mnt/ncdata"
+        then
+            echo ""
+            echo "# Nextcloud preview cache"
+            echo "/mnt/ncdata/appdata*/preview/*"
+            echo "/mnt/ncdata/appdata*/thumbnails/*"
+        fi
+
+    } > "$RESTIC_EXCLUDES"
+
+    msg_box "A default excludes file has been created at $RESTIC_EXCLUDES.
+You can edit this file to add or remove paths that should be excluded from backups.
+Each line should contain one path or pattern to exclude."
+
+    if yesno_box_yes "Do you want to edit the excludes file now?"
+    then
+        if [ -x "$(command -v nano)" ]
+        then
+            nano "$RESTIC_EXCLUDES"
+        else
+            vim "$RESTIC_EXCLUDES"
+        fi
+    fi
+
+    # Return success
+    return 0
+}
+
 # Ask for execution
-msg_box "$SCRIPT_EXPLAINER"
+msg_box "This script helps creating a backup script for your Nextcloud instance to various cloud storage providers.
+It uses Restic to back up your configuration, database and optionally your /mnt/ncdata folder.
+Server will be set to maintenance mode during backup. 
+If you have large amount of files to backup, please run the script interactively before automatic schedule."
+
 if ! yesno_box_yes "Do you want to create a backup script?"
 then
     exit
@@ -117,6 +185,11 @@ choose_backup_location
 
 # Choose backup scope
 choose_backup_scope
+
+if ! setup_restic_excludes; then
+    msg_box "Failed to set up restic excludes file. Cannot continue."
+    exit 1
+fi
 
 # Configure retention policy
 BACKUP_RETENTION_DAILY=$(input_box_flow "Enter number of daily backups to keep:" "7")
@@ -150,10 +223,10 @@ BACKUP_SCOPE="$BACKUP_SCOPE"
 BACKUP_NCDATA="$BACKUP_NCDATA"
 RESTIC_PASSWORD="$RESTIC_PASSWORD"
 RESTIC_REPOSITORY="$RESTIC_REPOSITORY"
+RESTIC_EXCLUDES="$RESTIC_EXCLUDES"
 BACKUP_RETENTION_DAILY="$BACKUP_RETENTION_DAILY"
 BACKUP_RETENTION_WEEKLY="$BACKUP_RETENTION_WEEKLY"
 BACKUP_RETENTION_MONTHLY="$BACKUP_RETENTION_MONTHLY"
-
 
 
 # B2 Configuration
@@ -234,10 +307,10 @@ then
     if [ "$BACKUP_NCDATA" = "yes" ]
     then
         print_text_in_color "$ICyan" "Creating full backup including /mnt/ncdata..."
-        restic backup "$BACKUP_DIR" /mnt/ncdata
+        restic backup "$BACKUP_DIR" /mnt/ncdata --exclude-file="$RESTIC_EXCLUDES"
     else
         print_text_in_color "$ICyan" "Creating minimal backup (config and database only)..."
-        restic backup "$BACKUP_DIR"
+        restic backup "$BACKUP_DIR" 
     fi
 
     # Clean up
