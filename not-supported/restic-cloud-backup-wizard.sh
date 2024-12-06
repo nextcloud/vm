@@ -4,8 +4,8 @@
 # Sami Nieminen - 2024 https://nenimein.fi
 true
 
-SCRIPT_NAME="Nextcloud Cloud Backup Wizard"
-SCRIPT_EXPLAINER="This script helps creating a backup script for your Nextcloud instance to various cloud storage providers."
+SCRIPT_NAME="Nextcloud Restic cloud backup wizard"
+SCRIPT_EXPLAINER="This script helps creating a backup script for your Nextcloud instance to various cloud storage providers. It uses Restic and backs up your configuration and database."
 
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
@@ -235,6 +235,6 @@ msg_box "The backup script has been created successfully!
 Location: $BACKUP_SCRIPT_NAME
 
 The first backup will run automatically at $BACKUP_TIME.
-Please make sure to keep your configuration and passwords safe."
+Please make sure to keep your configuration and API keys safe!"
 
 exit 0

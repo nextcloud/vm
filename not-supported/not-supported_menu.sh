@@ -76,9 +76,9 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Daily Backup Wizard script..."
         run_script NOT_SUPPORTED_FOLDER daily-backup-wizard
     ;;&
-    *"Cloud Backup Wizard"*)
+    *"Restic Cloud Backup Wizard"*)
         print_text_in_color "$ICyan" "Downloading the Cloud Backup Wizard script..."
-        run_script NOT_SUPPORTED_FOLDER cloudbackup
+        run_script NOT_SUPPORTED_FOLDER restic-cloud-backup-wizard
     ;;&
     *"Firewall"*)
         print_text_in_color "$ICyan" "Downloading the Firewall script..."
