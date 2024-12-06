@@ -5,6 +5,7 @@
 
 # This script helps creating a backup script for your Nextcloud instance to various cloud storage providers.
 # It uses Restic to back up your configuration, database and optionally your /mnt/ncdata folder.
+# Restic will be downloaded from official binaries to make Azure backups work.
 # Server will be set to maintenance mode during backup. 
 # If you have large amount of files to backup, please run the script interactively before automatic schedule.
 
@@ -31,6 +32,71 @@ ncdb
 BACKUP_SCRIPT_NAME="$SCRIPTS/restic-cloud-backup.sh"
 BACKUP_CONFIG="$HOME/.restic_cloud_backup_config"
 
+# Install restic from official binaries because debian decided to remove Azure backups from binary for some unknown reason :(
+# https://forum.restic.net/t/version-0-16-4-and-azure-blob/7864
+# https://salsa.debian.org/go-team/packages/restic/-/tree/master/debian/patches?ref_type=heads
+install_restic() {
+    # Check if restic is already installed with correct version
+    if [ -x "$(command -v restic)" ]; then
+        INSTALLED_VERSION=$(restic version | grep "restic" | awk '{print $2}')
+        print_text_in_color "$ICyan" "Restic $INSTALLED_VERSION is already installed, checking for newer version..."
+    fi
+
+    # Get latest version from GitHub API
+    print_text_in_color "$ICyan" "Getting latest restic version..."
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/restic/restic/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    if [ -z "$LATEST_VERSION" ]; then
+        msg_box "Failed to get latest restic version. Please try again later."
+        exit 1
+    fi
+
+    # Check if we need to upgrade
+    if [ -n "$INSTALLED_VERSION" ] && [ "$INSTALLED_VERSION" = "$LATEST_VERSION" ]; then
+        print_text_in_color "$IGreen" "Latest version $LATEST_VERSION is already installed!"
+        return 0
+    fi
+
+    # Download and install restic
+    print_text_in_color "$ICyan" "Installing restic $LATEST_VERSION..."
+
+    # Create temp directory
+    TMP_DIR=$(mktemp -d)
+
+    # Download binary
+    if ! curl -L "https://github.com/restic/restic/releases/download/$LATEST_VERSION/restic_${LATEST_VERSION#v}_linux_amd64.bz2" -o "$TMP_DIR/restic.bz2"; then
+        msg_box "Failed to download restic. Please try again later."
+        rm -rf "$TMP_DIR"
+        exit 1
+    fi
+
+    # Extract binary
+    if ! bunzip2 "$TMP_DIR/restic.bz2"; then
+        msg_box "Failed to extract restic binary."
+        rm -rf "$TMP_DIR"
+        exit 1
+    fi
+
+    # Make executable and move to /usr/local/bin
+    chmod +x "$TMP_DIR/restic"
+    if ! mv "$TMP_DIR/restic" /usr/local/bin/; then
+        msg_box "Failed to install restic binary."
+        rm -rf "$TMP_DIR"
+        exit 1
+    fi
+
+    # Clean up
+    rm -rf "$TMP_DIR"
+
+    # Verify installation
+    if ! restic version | grep -q "$LATEST_VERSION"; then
+        msg_box "Failed to verify restic installation."
+        exit 1
+    fi
+
+    print_text_in_color "$IGreen" "Successfully installed restic $LATEST_VERSION"
+    return 0
+}
+
 # Functions
 choose_backup_location() {
     BACKUP_TYPE=$(whiptail --title "$TITLE" --menu \
@@ -54,10 +120,10 @@ choose_backup_location() {
             RESTIC_REPOSITORY="s3:s3.${AWS_DEFAULT_REGION}.amazonaws.com/${S3_BUCKET_NAME}"
             ;;
         "Azure Blob")
-            AZURE_ACCOUNT_NAME=$(input_box_flow "Enter Azure Storage Account Name:")
+            AZURE_ACCOUNT_NAME=$(input_box_flow "Enter Azure Storage Account Name")
             AZURE_ACCOUNT_KEY=$(input_box_flow "Enter Azure Storage Account Key:")
-            AZURE_CONTAINER_NAME=$(input_box_flow "Enter Azure Container Name:")
-            RESTIC_REPOSITORY="azure:${AZURE_CONTAINER_NAME}:"
+            AZURE_CONTAINER_NAME=$(input_box_flow "Enter Azure Storage Account Blob name:")
+            RESTIC_REPOSITORY="azure:${AZURE_ACCOUNT_NAME}:/${AZURE_CONTAINER_NAME}"
             ;;
         *)
             msg_box "Invalid selection"
@@ -151,6 +217,7 @@ Each line should contain one path or pattern to exclude."
 # Ask for execution
 msg_box "This script helps creating a backup script for your Nextcloud instance to various cloud storage providers.
 It uses Restic to back up your configuration, database and optionally your /mnt/ncdata folder.
+Restic will be downloaded from official binaries to make Azure backups work.
 Server will be set to maintenance mode during backup. 
 If you have large amount of files to backup, please run the script interactively before automatic schedule."
 
@@ -167,11 +234,9 @@ then
 fi
 
 # Install restic if not installed
-if ! command -v restic &> /dev/null
-then
-    msg_box "Press ok to install Restic"
-    apt-get update -q4 & spinner_loading
-    apt-get install restic -y
+if ! install_restic; then
+    msg_box "Failed to install restic. Cannot continue."
+    exit 1
 fi
 
 # Configure PostgreSQL credentials
