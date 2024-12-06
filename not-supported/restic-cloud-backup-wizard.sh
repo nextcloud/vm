@@ -50,6 +50,9 @@ install_restic() {
         exit 1
     fi
 
+    # Remove 'v' prefix from version for comparison and binary download
+    LATEST_VERSION_CLEAN=${LATEST_VERSION#v}
+
     # Check if we need to upgrade
     if [ -n "$INSTALLED_VERSION" ] && [ "$INSTALLED_VERSION" = "$LATEST_VERSION" ]; then
         print_text_in_color "$IGreen" "Latest version $LATEST_VERSION is already installed!"
@@ -90,11 +93,8 @@ install_restic() {
     # Clean up
     rm -rf "$TMP_DIR"
 
-    # Update bash
-    hash -d restic
-
     # Verify installation
-    if ! restic version | grep -q "$LATEST_VERSION"; then
+    if ! restic version | grep -q "$LATEST_VERSION_CLEAN"; then
         msg_box "Failed to verify restic installation."
         exit 1
     fi
