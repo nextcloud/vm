@@ -20,8 +20,8 @@ debug_mode
 root_check
 
 # Variables
-BACKUP_SCRIPT_NAME="$SCRIPTS/cloudbackup.sh"
-BACKUP_CONFIG="$HOME/.cloud_backup_config"
+BACKUP_SCRIPT_NAME="$SCRIPTS/restic-cloud-backup.sh"
+BACKUP_CONFIG="$HOME/.restic-cloud_backup_config"
 
 # Functions
 choose_backup_location() {
@@ -33,9 +33,9 @@ choose_backup_location() {
 
     case "$BACKUP_TYPE" in
         "Backblaze B2")
-            B2_ACCOUNT_ID=$(input_box_flow "Enter Backblaze B2 Account ID:")
-            B2_ACCOUNT_KEY=$(input_box_flow "Enter Backblaze B2 Account Key:")
-            B2_BUCKET_NAME=$(input_box_flow "Enter B2 Bucket Name:")
+            B2_ACCOUNT_ID=$(input_box_flow "Enter Backblaze B2 Account ID \nThis is your Application Key keyID:")
+            B2_ACCOUNT_KEY=$(input_box_flow "Enter Backblaze B2 Account Key \nThis is the Application Key Secret:")
+            B2_BUCKET_NAME=$(input_box_flow "Enter Backblaze B2 Bucket Name:")
             RESTIC_REPOSITORY="b2:$B2_BUCKET_NAME:"
             ;;
         "AWS S3")
@@ -58,7 +58,7 @@ choose_backup_location() {
     esac
 
     # Configure restic password
-    RESTIC_PASSWORD=$(input_box_flow "Enter Restic Repository Password:")
+    RESTIC_PASSWORD=$(input_box_flow "Enter Restic Repository Password \nSAVE THIS! \nIF YOU LOSE IT YOU WILL NOT BE ABLE TO RESTORE THIS BACKUP:")
 }
 
 # Ask for execution
@@ -78,7 +78,7 @@ fi
 # Install restic if not installed
 if ! command -v restic &> /dev/null
 then
-    msg_box "Installing restic..."
+    msg_box "Press ok to install Restic"
     apt-get update -q4 & spinner_loading
     apt-get install restic -y
 fi
@@ -235,6 +235,6 @@ msg_box "The backup script has been created successfully!
 Location: $BACKUP_SCRIPT_NAME
 
 The first backup will run automatically at $BACKUP_TIME.
-Please make sure to keep your configuration and API keys safe!"
+Please make sure to keep your configuration, API keys and Restic password safe!"
 
 exit 0
