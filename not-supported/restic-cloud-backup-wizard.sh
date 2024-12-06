@@ -63,6 +63,7 @@ install_restic() {
     TMP_DIR=$(mktemp -d)
 
     # Download binary
+    print_text_in_color "$ICyan" "Downloading restic $LATEST_VERSION..."
     if ! curl -L "https://github.com/restic/restic/releases/download/$LATEST_VERSION/restic_${LATEST_VERSION#v}_linux_amd64.bz2" -o "$TMP_DIR/restic.bz2"; then
         msg_box "Failed to download restic. Please try again later."
         rm -rf "$TMP_DIR"
@@ -70,6 +71,7 @@ install_restic() {
     fi
 
     # Extract binary
+    print_text_in_color "$ICyan" "Extracting restic binary to $TMP_DIR"
     if ! bunzip2 "$TMP_DIR/restic.bz2"; then
         msg_box "Failed to extract restic binary."
         rm -rf "$TMP_DIR"
@@ -77,6 +79,7 @@ install_restic() {
     fi
 
     # Make executable and move to /usr/local/bin
+    print_text_in_color "$ICyan" "Moving restic binary to /usr/local/bin/"
     chmod +x "$TMP_DIR/restic"
     if ! mv "$TMP_DIR/restic" /usr/local/bin/; then
         msg_box "Failed to install restic binary."
@@ -86,6 +89,9 @@ install_restic() {
 
     # Clean up
     rm -rf "$TMP_DIR"
+
+    # Update bash
+    hash -d restic
 
     # Verify installation
     if ! restic version | grep -q "$LATEST_VERSION"; then
