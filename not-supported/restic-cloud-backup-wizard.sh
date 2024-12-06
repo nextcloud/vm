@@ -19,9 +19,12 @@ debug_mode
 # Check if root
 root_check
 
+# Get database details
+ncdb
+
 # Variables
 BACKUP_SCRIPT_NAME="$SCRIPTS/restic-cloud-backup.sh"
-BACKUP_CONFIG="$HOME/.restic-cloud_backup_config"
+BACKUP_CONFIG="$HOME/.restic_cloud_backup_config"
 
 # Functions
 choose_backup_location() {
@@ -86,6 +89,7 @@ fi
 # Configure PostgreSQL credentials
 POSTGRES_USER=$NCDBUSER
 POSTGRES_PASSWORD=$NCDBPASS
+POSTGRES_HOST=$NCDBHOST
 
 # Configure backup destination
 choose_backup_location
@@ -115,6 +119,7 @@ fi
 cat > "$BACKUP_CONFIG" << EOL
 POSTGRES_USER="$POSTGRES_USER"
 POSTGRES_PASSWORD="$POSTGRES_PASSWORD"
+POSTGRES_HOST="$POSTGRES_HOST"
 BACKUP_TYPE="$BACKUP_TYPE"
 RESTIC_PASSWORD="$RESTIC_PASSWORD"
 RESTIC_REPOSITORY="$RESTIC_REPOSITORY"
@@ -155,7 +160,7 @@ SCRIPT_EXPLAINER="This script executes the daily backup to cloud storage."
 source /var/scripts/fetch_lib.sh
 
 # Load configuration
-source "$HOME/.restic_backup_config"
+source "$HOME/.restic_cloud_backup_config"
 
 # Export environment variables based on backup type
 case "$BACKUP_TYPE" in
@@ -188,7 +193,7 @@ then
     mkdir -p "$BACKUP_DIR"
 
     # Backup PostgreSQL database
-    PGPASSWORD="$NCDBPASS" pg_dump -U "$POSTGRES_USER" nextcloud > "$BACKUP_DIR/nextcloud_db.sql"
+    PGPASSWORD="$POSTGRES_PASSWORD" pg_dump -U "$POSTGRES_USER" -h "$POSTGRES_HOST" nextcloud > "$BACKUP_DIR/nextcloud_db.sql"
 
     # Backup Nextcloud config
     cp /var/www/nextcloud/config/config.php "$BACKUP_DIR/"
