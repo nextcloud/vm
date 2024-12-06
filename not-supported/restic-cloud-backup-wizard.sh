@@ -382,7 +382,7 @@ then
         restic backup "$BACKUP_DIR" /mnt/ncdata --exclude-file="$RESTIC_EXCLUDES"
     else
         print_text_in_color "$ICyan" "Creating minimal backup (config and database only)..."
-        restic backup "$BACKUP_DIR" 
+        restic backup "$BACKUP_DIR"
     fi
 
     # Clean up
@@ -394,7 +394,19 @@ then
                   --keep-monthly "$BACKUP_RETENTION_MONTHLY" --prune
 
     # Check repository
-    restic check
+    print_text_in_color "$ICyan" "Checking repository integrity..."
+    if ! restic check; then
+        # Disable maintenance mode before exiting
+        sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
+
+        # Notify admin and exit with error
+        notify_admin_gui \
+            "Restic repository check failed!" \
+            "The backup completed but repository integrity check failed.\nPlease check the logs and verify your backup repository."
+
+        print_text_in_color "$IRed" "Repository check failed!"
+        exit 1
+    fi
 
     # Disable maintenance mode
     sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
@@ -402,7 +414,7 @@ then
     # Notify on success
     if [ $? -eq 0 ]
     then
-        notify_admin_gui "Restic backup was successfull."
+        notify_admin_gui "Restic backup was successful."
     else
         notify_admin_gui "Restic backup failed!" "Please check the logs for more information."
     fi
