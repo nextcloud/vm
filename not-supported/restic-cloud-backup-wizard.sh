@@ -119,8 +119,8 @@ setup_restic_excludes() {
         echo "# One exclude pattern per line"
         echo ""
 
-        # Add Nextcloud preview excludes if /mnt/ncdata is selected
-        if [ -d "/mnt/ncdata" ] && echo "$BACKUP_DIRECTORIES" | grep -q "/mnt/ncdata"
+        # Add Nextcloud appdata/preview folder excludes if full backup is selected.
+        if [ "$BACKUP_NCDATA" = "yes" ]
         then
             echo ""
             echo "# Nextcloud preview cache"
