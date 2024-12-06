@@ -36,12 +36,6 @@ BACKUP_CONFIG="$HOME/.restic_cloud_backup_config"
 # https://forum.restic.net/t/version-0-16-4-and-azure-blob/7864
 # https://salsa.debian.org/go-team/packages/restic/-/tree/master/debian/patches?ref_type=heads
 install_restic() {
-    # Check if restic is already installed with correct version
-    if [ -x "$(command -v restic)" ]; then
-        INSTALLED_VERSION=$(restic version | grep "restic" | awk '{print $2}')
-        print_text_in_color "$ICyan" "Restic $INSTALLED_VERSION is already installed, checking for newer version..."
-    fi
-
     # Get latest version from GitHub API
     print_text_in_color "$ICyan" "Getting latest restic version..."
     LATEST_VERSION=$(curl -s https://api.github.com/repos/restic/restic/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -53,8 +47,14 @@ install_restic() {
     # Remove 'v' prefix from version for comparison and binary download
     LATEST_VERSION_CLEAN=${LATEST_VERSION#v}
 
+    # Check if restic is already installed with correct version
+    if [ -x "$(command -v restic)" ]; then
+        INSTALLED_VERSION=$(restic version | grep "restic" | awk '{print $2}')
+        print_text_in_color "$ICyan" "Restic $INSTALLED_VERSION is already installed, checking for newer version..."
+    fi
+
     # Check if we need to upgrade
-    if [ -n "$INSTALLED_VERSION" ] && [ "$INSTALLED_VERSION" = "$LATEST_VERSION" ]; then
+    if [ -n "$INSTALLED_VERSION" ] && [ "$INSTALLED_VERSION" = "$LATEST_VERSION_CLEAN" ]; then
         print_text_in_color "$IGreen" "Latest version $LATEST_VERSION is already installed!"
         return 0
     fi
