@@ -25,9 +25,6 @@ debug_mode
 # Check if root
 root_check
 
-# Get database details
-ncdb
-
 # Variables
 BACKUP_SCRIPT_NAME="$SCRIPTS/restic-cloud-backup.sh"
 BACKUP_CONFIG="$HOME/.restic_cloud_backup_config"
@@ -328,6 +325,9 @@ debug_mode
 # Check if root
 root_check
 
+# Get database details
+ncdb
+
 # Ensure VMLOGS directory exists
 if [ ! -d "$VMLOGS/restic" ]; then
     mkdir -p "$VMLOGS/restic"
@@ -336,6 +336,30 @@ fi
 # Define log file
 DATE=\$(date +%Y%m%d-%H%M%S)
 BACKUP_LOG="$VMLOGS/restic/restic-backup_\${DATE}.log"
+
+# Load configuration
+source "$HOME/.restic_cloud_backup_config"
+
+# Export environment variables based on backup type
+case "$BACKUP_TYPE" in
+    "Backblaze B2")
+        export B2_ACCOUNT_ID="$B2_ACCOUNT_ID"
+        export B2_ACCOUNT_KEY="$B2_ACCOUNT_KEY"
+        ;;
+    "AWS S3")
+        export AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"
+        export AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"
+        export AWS_DEFAULT_REGION="$AWS_DEFAULT_REGION"
+        ;;
+    "Azure Blob")
+        export AZURE_ACCOUNT_NAME="$AZURE_ACCOUNT_NAME"
+        export AZURE_ACCOUNT_KEY="$AZURE_ACCOUNT_KEY"
+        export AZURE_CONTAINER_NAME="$AZURE_CONTAINER_NAME"
+        ;;
+esac
+
+export RESTIC_REPOSITORY="$RESTIC_REPOSITORY"
+export RESTIC_PASSWORD="$RESTIC_PASSWORD"
 
 # Start logging
 {
@@ -346,19 +370,19 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_\${DATE}.log"
     if ! network_ok
     then
         echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: No network connection"
-        notify_admin_gui "Unable to execute backup" "No network connection."
+        notify_admin_gui "Unable to execute Restic backup" "No network connection."
         exit 1
     fi
 
     # Load backup config
     if [ -f "$BACKUP_CONFIG" ]
     then
-        echo "\$(date '+%Y-%m-%d %H:%M:%S') Loading backup configuration"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') Loading Restic backup configuration"
         # shellcheck disable=SC1090
         source "$BACKUP_CONFIG"
     else
-        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Backup configuration not found"
-        notify_admin_gui "Unable to execute backup" "Configuration file not found."
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Restic Backup configuration not found"
+        notify_admin_gui "Unable to execute Restic backup" "Configuration file not found."
         exit 1
     fi
 
@@ -376,20 +400,20 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_\${DATE}.log"
     if PGPASSWORD="\$NCDBPASS" pg_dump -U "\$NCDBUSER" -h "\$NCDBHOST" -d "\$NCDB" > "\$BACKUP_DIR/nextcloud_db.sql"; then
         echo "\$(date '+%Y-%m-%d %H:%M:%S') Database backup completed successfully"
     else
-        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Database backup failed"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Nextcloud database backup failed"
         sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
-        notify_admin_gui "Backup failed!" "Database backup failed."
+        notify_admin_gui "Restic backup failed!" "Database backup failed."
         exit 1
     fi
 
     # Backup Nextcloud config
     echo "\$(date '+%Y-%m-%d %H:%M:%S') Backing up Nextcloud configuration"
     if cp /var/www/nextcloud/config/config.php "\$BACKUP_DIR/"; then
-        echo "\$(date '+%Y-%m-%d %H:%M:%S') Configuration backup completed successfully"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') Nextcloud configuration backup completed successfully"
     else
-        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Configuration backup failed"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Nextcloud configuration backup failed"
         sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
-        notify_admin_gui "Backup failed!" "Configuration backup failed."
+        notify_admin_gui "Restic backup failed!" "Nextcloud configuration backup failed."
         exit 1
     fi
 
@@ -398,9 +422,9 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_\${DATE}.log"
     if ! restic snapshots; then
         echo "\$(date '+%Y-%m-%d %H:%M:%S') Initializing new repository"
         if ! restic init; then
-            echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Repository initialization failed"
+            echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Restic repository initialization failed"
             sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
-            notify_admin_gui "Backup failed!" "Repository initialization failed."
+            notify_admin_gui "Restic backup failed!" "Repository initialization failed."
             exit 1
         fi
     fi
@@ -410,17 +434,17 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_\${DATE}.log"
     then
         echo "\$(date '+%Y-%m-%d %H:%M:%S') Creating full backup including /mnt/ncdata"
         if ! restic backup "\$BACKUP_DIR" /mnt/ncdata --exclude-file="$RESTIC_EXCLUDES"; then
-            echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Full backup failed"
+            echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Restic full backup failed"
             sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
-            notify_admin_gui "Backup failed!" "Full backup creation failed."
+            notify_admin_gui "Restic backup failed!" "Full backup creation failed."
             exit 1
         fi
     else
         echo "\$(date '+%Y-%m-%d %H:%M:%S') Creating minimal backup (config and database only)"
         if ! restic backup "\$BACKUP_DIR"; then
-            echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Minimal backup failed"
+            echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Restic minimal backup failed"
             sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
-            notify_admin_gui "Backup failed!" "Minimal backup creation failed."
+            notify_admin_gui "Restic backup failed!" "Minimal backup creation failed."
             exit 1
         fi
     fi
@@ -435,6 +459,10 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_\${DATE}.log"
                       --keep-weekly "$BACKUP_RETENTION_WEEKLY" \
                       --keep-monthly "$BACKUP_RETENTION_MONTHLY" --prune; then
         echo "\$(date '+%Y-%m-%d %H:%M:%S') WARNING: Failed to apply retention policy"
+        notify_admin_gui \
+            "Restic retention policy not applied!" \
+            "The backup completed but repository retention policy failed.\nPlease check the logs at \$BACKUP_LOG"
+        exit 1
     fi
 
     # Check repository
@@ -459,7 +487,7 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_\${DATE}.log"
 } 2>&1 | tee -a "\$BACKUP_LOG"
 
 # Check if any errors occurred in the pipeline
-if [ ${PIPESTATUS[0]} -ne 0 ]; then
+if [ \${PIPESTATUS[0]} -ne 0 ]; then
     notify_admin_gui "Restic backup failed!" "Please check the logs at \$BACKUP_LOG"
     exit 1
 fi
