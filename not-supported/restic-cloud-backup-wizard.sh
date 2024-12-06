@@ -5,7 +5,7 @@
 true
 
 SCRIPT_NAME="Nextcloud Restic cloud backup wizard"
-SCRIPT_EXPLAINER="This script helps creating a backup script for your Nextcloud instance to various cloud storage providers. It uses Restic and backs up your configuration and database."
+SCRIPT_EXPLAINER="This script helps creating a backup script for your Nextcloud instance to various cloud storage providers.\nIt uses Restic and backs up your configuration and database."
 
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
@@ -87,6 +87,7 @@ then
 fi
 
 # Configure PostgreSQL credentials
+POSTGRES_DB=$NCDB
 POSTGRES_USER=$NCDBUSER
 POSTGRES_PASSWORD=$NCDBPASS
 POSTGRES_HOST=$NCDBHOST
@@ -117,6 +118,7 @@ fi
 
 # Save configuration
 cat > "$BACKUP_CONFIG" << EOL
+POSTGRES_DB="$POSTGRES_DB"
 POSTGRES_USER="$POSTGRES_USER"
 POSTGRES_PASSWORD="$POSTGRES_PASSWORD"
 POSTGRES_HOST="$POSTGRES_HOST"
@@ -193,7 +195,7 @@ then
     mkdir -p "$BACKUP_DIR"
 
     # Backup PostgreSQL database
-    PGPASSWORD="$POSTGRES_PASSWORD" pg_dump -U "$POSTGRES_USER" -h "$POSTGRES_HOST" nextcloud > "$BACKUP_DIR/nextcloud_db.sql"
+    PGPASSWORD="$POSTGRES_PASSWORD" pg_dump -U "$POSTGRES_USER" -h "$POSTGRES_HOST" -d "$POSTGRES_DB" > "$BACKUP_DIR/nextcloud_db.sql"
 
     # Backup Nextcloud config
     cp /var/www/nextcloud/config/config.php "$BACKUP_DIR/"
@@ -218,9 +220,11 @@ then
     # Disable maintenance mode
     sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
 
-    # Notify on failure
-    if [ $? -ne 0 ]
+    # Notify on success
+    if [ $? -eq 0 ]
     then
+        notify_admin_gui "Restic backup was successfull."
+    else
         notify_admin_gui "Restic backup failed!" "Please check the logs for more information."
     fi
 else
