@@ -129,7 +129,7 @@ choose_backup_location() {
             AZURE_ACCOUNT_NAME=$(input_box_flow "Enter Azure Storage Account Name")
             AZURE_ACCOUNT_KEY=$(input_box_flow "Enter Azure Storage Account Key:")
             AZURE_CONTAINER_NAME=$(input_box_flow "Enter Azure Storage Account Blob name:")
-            RESTIC_REPOSITORY="azure:${AZURE_ACCOUNT_NAME}:/"
+            RESTIC_REPOSITORY="azure:${AZURE_CONTAINER_NAME}:/"
             ;;
         *)
             msg_box "Invalid selection"
@@ -349,6 +349,7 @@ case "$BACKUP_TYPE" in
     "Azure Blob")
         export AZURE_ACCOUNT_NAME="$AZURE_ACCOUNT_NAME"
         export AZURE_ACCOUNT_KEY="$AZURE_ACCOUNT_KEY"
+        export AZURE_CONTAINER_NAME="$AZURE_CONTAINER_NAME"
         ;;
 esac
 
