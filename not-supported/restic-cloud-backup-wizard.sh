@@ -319,8 +319,24 @@ EOL
 chmod 600 "$BACKUP_CONFIG"
 
 # Create backup script
-cat > "$BACKUP_SCRIPT_NAME" << BACKUP_SCRIPT
+cat << BACKUP_SCRIPT > "$BACKUP_SCRIPT_NAME"
 #!/bin/bash
+
+true
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# Sami Nieminen - 2024 https://nenimein.fi
+
+# shellcheck source=lib.sh
+source /var/scripts/fetch_lib.sh
+
+# Check for errors + debug code and abort if something isn't right
+# 1 = ON
+# 0 = OFF
+DEBUG=0
+debug_mode
+
+# Check if root
+root_check
 
 # Ensure VMLOGS directory exists
 if [ ! -d "$VMLOGS/restic" ]; then
@@ -328,18 +344,18 @@ if [ ! -d "$VMLOGS/restic" ]; then
 fi
 
 # Define log file
-DATE=$(date +%Y%m%d-%H%M%S)
+DATE=\$(date +%Y%m%d-%H%M%S)
 BACKUP_LOG="$VMLOGS/restic/restic-backup_${DATE}.log"
 
 # Start logging
 {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Starting Restic backup script"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Starting Restic backup script"
     echo "----------------------------------------"
 
     # Check if we have network connection
     if ! network_ok
     then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: No network connection"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: No network connection"
         notify_admin_gui "Unable to execute backup" "No network connection."
         exit 1
     fi
@@ -347,52 +363,52 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_${DATE}.log"
     # Load backup config
     if [ -f "$BACKUP_CONFIG" ]
     then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') Loading backup configuration"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') Loading backup configuration"
         # shellcheck disable=SC1090
         source "$BACKUP_CONFIG"
     else
-        echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: Backup configuration not found"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Backup configuration not found"
         notify_admin_gui "Unable to execute backup" "Configuration file not found."
         exit 1
     fi
 
     # Create backup directory
     BACKUP_DIR="/tmp/nextcloud_backup_${DATE}"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Creating backup directory: $BACKUP_DIR"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Creating backup directory: $BACKUP_DIR"
     mkdir -p "$BACKUP_DIR"
 
     # Enable maintenance mode
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Enabling maintenance mode"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Enabling maintenance mode"
     sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --on
 
     # Backup PostgreSQL database
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Backing up PostgreSQL database"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Backing up PostgreSQL database"
     if PGPASSWORD="$POSTGRES_PASSWORD" pg_dump -U "$POSTGRES_USER" -h "$POSTGRES_HOST" -d "$POSTGRES_DB" > "$BACKUP_DIR/nextcloud_db.sql"; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') Database backup completed successfully"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') Database backup completed successfully"
     else
-        echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: Database backup failed"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Database backup failed"
         sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
         notify_admin_gui "Backup failed!" "Database backup failed."
         exit 1
     fi
 
     # Backup Nextcloud config
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Backing up Nextcloud configuration"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Backing up Nextcloud configuration"
     if cp /var/www/nextcloud/config/config.php "$BACKUP_DIR/"; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') Configuration backup completed successfully"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') Configuration backup completed successfully"
     else
-        echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: Configuration backup failed"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Configuration backup failed"
         sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
         notify_admin_gui "Backup failed!" "Configuration backup failed."
         exit 1
     fi
 
     # Initialize repository if needed
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Checking/Initializing repository"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Checking/Initializing repository"
     if ! restic snapshots; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') Initializing new repository"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') Initializing new repository"
         if ! restic init; then
-            echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: Repository initialization failed"
+            echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Repository initialization failed"
             sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
             notify_admin_gui "Backup failed!" "Repository initialization failed."
             exit 1
@@ -402,17 +418,17 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_${DATE}.log"
     # Create backup based on scope
     if [ "$BACKUP_NCDATA" = "yes" ]
     then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') Creating full backup including /mnt/ncdata"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') Creating full backup including /mnt/ncdata"
         if ! restic backup "$BACKUP_DIR" /mnt/ncdata --exclude-file="$RESTIC_EXCLUDES"; then
-            echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: Full backup failed"
+            echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Full backup failed"
             sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
             notify_admin_gui "Backup failed!" "Full backup creation failed."
             exit 1
         fi
     else
-        echo "$(date '+%Y-%m-%d %H:%M:%S') Creating minimal backup (config and database only)"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') Creating minimal backup (config and database only)"
         if ! restic backup "$BACKUP_DIR"; then
-            echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: Minimal backup failed"
+            echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Minimal backup failed"
             sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
             notify_admin_gui "Backup failed!" "Minimal backup creation failed."
             exit 1
@@ -420,21 +436,21 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_${DATE}.log"
     fi
 
     # Clean up backup directory
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Cleaning up temporary backup directory"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Cleaning up temporary backup directory"
     rm -rf "$BACKUP_DIR"
 
     # Apply retention policy
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Applying retention policy"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Applying retention policy"
     if ! restic forget --keep-daily "$BACKUP_RETENTION_DAILY" \
                       --keep-weekly "$BACKUP_RETENTION_WEEKLY" \
                       --keep-monthly "$BACKUP_RETENTION_MONTHLY" --prune; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') WARNING: Failed to apply retention policy"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') WARNING: Failed to apply retention policy"
     fi
 
     # Check repository
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Checking repository integrity"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Checking repository integrity"
     if ! restic check; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: Repository check failed"
+        echo "\$(date '+%Y-%m-%d %H:%M:%S') ERROR: Repository check failed"
         sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
         notify_admin_gui \
             "Restic repository check failed!" \
@@ -443,11 +459,11 @@ BACKUP_LOG="$VMLOGS/restic/restic-backup_${DATE}.log"
     fi
 
     # Disable maintenance mode
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Disabling maintenance mode"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Disabling maintenance mode"
     sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
 
     echo "----------------------------------------"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') Backup completed successfully"
+    echo "\$(date '+%Y-%m-%d %H:%M:%S') Backup completed successfully"
     notify_admin_gui "Restic backup was successful." "Backup log available at: $BACKUP_LOG"
 
 } 2>&1 | tee -a "$BACKUP_LOG"
