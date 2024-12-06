@@ -1,15 +1,12 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2022, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Nextcloud Talk"
-SCRIPT_EXPLAINER="This script installs Nextcloud Talk which is a replacement for Teams/Skype and similar.
-
-You will also be offered the possibility to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app.
-It's called 'Talk Signaling' and you will be offered to install it as part two of this script.
-
-And last but not least, Talk Recording is also offered to be installed. It enables recording of sessions in Talk and it's part three of this script."
+SCRIPT_EXPLAINER="This script installs Nextcloud Talk and also offers the possibility \
+to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
+It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -36,43 +33,29 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    if [ -f "$SIGNALING_SERVER_CONF" ]
-    then
-        SUBDOMAIN=$(input_box_flow "Please enter the subdomain you were using for Talk Signaling, e.g: talk.yourdomain.com. This will be removed.")
-        if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
-        then
-            yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
-            REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
-            for remove in $REMOVE_OLD
-                do rm -rf "$remove"
-            done
-        fi
-    fi
     sed "/# Talk Signaling Server/d" /etc/hosts >/dev/null 2>&1
     sed "/127.0.1.1             $SUBDOMAIN/d" /etc/hosts >/dev/null 2>&1
     nextcloud_occ_no_check config:app:delete spreed stun_servers
     nextcloud_occ_no_check config:app:delete spreed turn_servers
     nextcloud_occ_no_check config:app:delete spreed signaling_servers
-    nextcloud_occ_no_check config:app:delete spreed recording_servers
     nextcloud_occ_no_check app:remove spreed
     rm -rf \
         "$TURN_CONF" \
         "$SIGNALING_SERVER_CONF" \
-        /etc/signaling \
         /etc/nats \
         /etc/janus \
         /etc/apt/trusted.gpg.d/morph027-janus.asc \
         /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
         /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
         /etc/apt/trusted.gpg.d/morph027-coturn.asc \
-        /etc/apt/keyrings/morph027-coturn.asc \
-        /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list \
+        /etc/apt/keyrings/morph027-coturn.asc
+        /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
         /etc/apt/sources.list.d/morph027-janus.list \
         /etc/apt/sources.list.d/morph027-nats-server.list \
         /etc/apt/sources.list.d/morph027-coturn.list \
-        "$VMLOGS"/talk_apache_error.log \
-        "$VMLOGS"/talk_apache_access.log \
-        "$VMLOGS"/turnserver.log \
+        $VMLOGS/talk_apache_error.log \
+        $VMLOGS/talk_apache_access.log \
+        $VMLOGS/turnserver.log \
         /var/www/html/error
     APPS=(coturn nats-server janus nextcloud-spreed-signaling)
     for app in "${APPS[@]}"
@@ -83,22 +66,21 @@ else
         fi
     done
     apt-get autoremove -y
-    docker_prune_this nextcloud/aio-talk-recording
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Must be 24.04
-if ! version 22.04 "$DISTRO" 24.04.10
+# Must be 22.04
+if ! version 20.04 "$DISTRO" 22.04.10
 then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to install Talk"
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to install Talk"
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
 exit
 fi
 
-# Nextcloud 20 is required.
+# Nextcloud 19 is required.
 lowest_compatible_nc 20
 
 ####################### TALK (COTURN)
@@ -233,7 +215,7 @@ msg_box "You will now be presented with the option to install the Talk Signaling
 This aims to give you greater performance and ability to have more users in a call at the same time.
 
 You can read more here: 
-https://github.com/strukturag/nextcloud-spreed-signaling/blob/main/README.md
+https://github.com/strukturag/nextcloud-spreed-signaling/blob/master/README.md
 
 We will use apt packages from https://gitlab.com/morph027 which is a trusted contributor to this repository.
 
@@ -247,45 +229,134 @@ then
     exit 1
 fi
 
-# Ask for the domain for Talk
-SUBDOMAIN=$(input_box_flow "Talk Signaling Server subdomain e.g: talk.yourdomain.com
-
-NOTE: This domain must be different than your Nextcloud domain. \
-They can however be hosted on the same server, but would require separate DNS entries.")
-
 # curl the lib another time to get the correct https_conf
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# Notification
-msg_box "Before continuing, please make sure that you have you have \
-edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
-directly to this servers IP. A full extensive guide can be found here:
-https://www.techandme.se/open-port-80-443
+# Install certbot (Let's Encrypt)
+install_certbot
 
-This can be done automatically if you have UPNP enabled in your firewall/router. \
-You will be offered to use UPNP in the next step.
-
-PLEASE NOTE:
-Using other ports than the default 80 and 443 is not supported, \
-though it may be possible with some custom modification:
-https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
-
-if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
+# Generate certs and auto-configure if successful
+export SUBDOMAIN=talk
+if run_script DESEC desec_subdomain
 then
-    unset FAIL
-    open_port 80 TCP
-    open_port 443 TCP
-    cleanup_open_port
+    SUBDOMAIN="$(grep talk -m 1 $SCRIPTS/deSEC/.subdomain | cut -d '=' -f2)"
+    # Curl the library another time to get the correct DHPARAMS
+    # shellcheck source=lib.sh
+    source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+    # Generate DHparams cipher
+    if [ ! -f "$DHPARAMS_SUB" ]
+    then
+        openssl dhparam -out "$DHPARAMS_SUB" 2048
+    fi
+    print_text_in_color "$IGreen" "Certs are generated!"
+else
+    # remove settings to be able to start over again
+    rm -f "$HTTPS_CONF"
+    last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
+    exit 1
 fi
 
-# Check if $SUBDOMAIN exists and is reachable
-print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."
-domain_check_200 "$SUBDOMAIN"
+# Apache Proxy
+# https://github.com/strukturag/nextcloud-spreed-signaling#apache
 
-# Check open ports with NMAP
-check_open_port 80 "$SUBDOMAIN"
-check_open_port 443 "$SUBDOMAIN"
+# Install Apache2
+install_if_not apache2
+
+# Enable Apache2 module's
+a2enmod proxy
+a2enmod proxy_wstunnel
+a2enmod proxy_http
+a2enmod ssl
+a2enmod headers
+a2enmod remoteip
+
+# Allow CustomLog
+touch $VMLOGS/talk_apache_access.log
+touch $VMLOGS/talk_apache_error.log
+chown www-data:www-data $VMLOGS/talk_apache_error.log $VMLOGS/talk_apache_access.log
+
+# Prep the error page
+mkdir -p /var/www/html/error
+echo "Hi there! :) If you see this page, the Apache2 proxy for $SCRIPT_NAME is up and running." > /var/www/html/error/404_proxy.html
+chown -R www-data:www-data /var/www/html/error
+
+# Only add TLS 1.3 on Ubuntu later than 20.04
+if version 20.04 "$DISTRO" 22.04.10
+then
+    TLS13="+TLSv1.3"
+fi
+
+if [ -f "$HTTPS_CONF" ]
+then
+    a2dissite "$SUBDOMAIN.conf"
+    rm -f "$HTTPS_CONF"
+fi
+
+if [ ! -f "$HTTPS_CONF" ];
+then
+    cat << HTTPS_CREATE > "$HTTPS_CONF"
+<VirtualHost *:443>
+    ServerName $SUBDOMAIN:443
+    SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
+    SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
+    SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
+    SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
+
+    # Intermediate configuration
+    SSLEngine               on
+    SSLCompression          off
+    SSLProtocol             -all +TLSv1.2 $TLS13
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
+    ServerSignature         off
+
+    # Logs
+    LogLevel warn
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+
+    # Just in case - see below
+    SSLProxyEngine On
+    SSLProxyVerify None
+    SSLProxyCheckPeerCN Off
+    SSLProxyCheckPeerName Off
+    # contra mixed content warnings
+    RequestHeader set X-Forwarded-Proto "https"
+    # Custom error page
+    ProxyErrorOverride On
+    DocumentRoot "/var/www/html"
+    ProxyPass /error/ !
+    ErrorDocument 404 /error/404_proxy.html
+    # Enable proxying Websocket requests to the standalone signaling server.
+    # https://httpd.apache.org/docs/2.4/mod/mod_proxy_wstunnel.html
+    ProxyPass / "http://127.0.0.1:8081/"
+    RewriteEngine on
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteCond %{HTTP:Connection} upgrade [NC]
+    RewriteRule ^/?(.*) "ws://127.0.0.1:8081/\$1" [P,L]
+    # Extra (remote) headers
+    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set X-Content-Type-Options nosniff
+    Header set Content-Security-Policy "frame-ancestors 'self'"
+</VirtualHost>
+HTTPS_CREATE
+
+    if [ -f "$HTTPS_CONF" ];
+    then
+        print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
+        a2ensite "$SUBDOMAIN.conf"
+        restart_webserver
+        sleep 1
+    else
+        print_text_in_color "$IRed" "Unable to create vhost, exiting..."
+        print_text_in_color "$IRed" "Please report this issue here $ISSUES"
+        exit 1
+    fi
+fi
 
 # NATS
 ## Pre-Configuration
@@ -337,34 +408,24 @@ then
     cat << SIGNALING_CONF_CREATE > "$SIGNALING_SERVER_CONF"
 [http]
 listen = 127.0.0.1:8081
-
 [app]
 debug = false
-
 [sessions]
 hashkey = $(openssl rand -hex 16)
 blockkey = $(openssl rand -hex 16)
-
 [clients]
-internalsecret = ${TURN_INTERNAL_SECRET}
-
+internalsecret = $(openssl rand -hex 16)
 [backend]
-backends = backend-1
+allowed = ${TURN_DOMAIN}
 allowall = false
+secret = ${NC_SECRET}
 timeout = 10
 connectionsperhost = 8
-
-[backend-1]
-url = https://${TURN_DOMAIN}
-secret = ${SIGNALING_SECRET}
-
 [nats]
-url = nats://127.0.0.1:4222
-
+url = nats://localhost:4222
 [mcu]
 type = janus
 url = ws://127.0.0.1:8188
-
 [turn]
 apikey = ${JANUS_API_KEY}
 secret = ${TURN_SECRET}
@@ -374,128 +435,8 @@ fi
 start_if_stopped signaling
 check_command systemctl enable signaling
 
-# Apache Proxy
-# https://github.com/strukturag/nextcloud-spreed-signaling#apache
-
-# Install Apache2
-install_if_not apache2
-
-# Enable Apache2 module's
-a2enmod proxy
-a2enmod proxy_wstunnel
-a2enmod proxy_http
-a2enmod ssl
-a2enmod headers
-a2enmod remoteip
-
-# Allow CustomLog
-touch "$VMLOGS"/talk_apache_access.log
-touch "$VMLOGS"/talk_apache_error.log
-chown root:adm "$VMLOGS"/talk_apache_*
-
-# Prep the error page
-mkdir -p /var/www/html/error
-echo "Hi there! :) If you see this page, the Apache2 proxy for $SCRIPT_NAME is up and running." > /var/www/html/error/404_proxy.html
-chown -R www-data:www-data /var/www/html/error
-
-# Only add TLS 1.3 on Ubuntu later than 22.04
-if version 22.04 "$DISTRO" 24.04.10
-then
-    TLS13="+TLSv1.3"
-fi
-
-if [ -f "$HTTPS_CONF" ]
-then
-    a2dissite "$SUBDOMAIN.conf"
-    rm -f "$HTTPS_CONF"
-fi
-
-if [ ! -f "$HTTPS_CONF" ];
-then
-    cat << HTTPS_CREATE > "$HTTPS_CONF"
-<VirtualHost *:443>
-    ServerName $SUBDOMAIN:443
-    SSLCertificateChainFile $CERTFILES/$SUBDOMAIN/chain.pem
-    SSLCertificateFile $CERTFILES/$SUBDOMAIN/cert.pem
-    SSLCertificateKeyFile $CERTFILES/$SUBDOMAIN/privkey.pem
-    SSLOpenSSLConfCmd DHParameters $DHPARAMS_SUB
-
-    # Intermediate configuration
-    SSLEngine               on
-    SSLCompression          off
-    SSLProtocol             -all +TLSv1.2 $TLS13
-    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
-    SSLHonorCipherOrder     off
-    SSLSessionTickets       off
-    ServerSignature         off
-
-    # Logs
-    LogLevel warn
-    CustomLog $VMLOGS/talk_apache_access.log common
-    ErrorLog $VMLOGS/talk_apache_error.log
-
-    # Just in case - see below
-    SSLProxyEngine On
-    SSLProxyVerify None
-    SSLProxyCheckPeerCN Off
-    SSLProxyCheckPeerName Off
-    # contra mixed content warnings
-    RequestHeader set X-Forwarded-Proto "https"
-    # Custom error page
-    ProxyErrorOverride On
-    DocumentRoot "/var/www/html"
-    ProxyPass /error/ !
-    ErrorDocument 404 /error/404_proxy.html
-    # Enable proxying Websocket requests to the standalone signaling server.
-    # https://httpd.apache.org/docs/2.4/mod/mod_proxy_wstunnel.html
-    ProxyPass / "http://127.0.0.1:8081/"
-    RewriteEngine on
-    RewriteCond %{HTTP:Upgrade} websocket [NC]
-    RewriteCond %{HTTP:Connection} upgrade [NC]
-    RewriteRule ^/?(.*) "ws://127.0.0.1:8081/\$1" [P,L]
-    # Extra (remote) headers
-    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
-    Header set X-XSS-Protection "1; mode=block"
-    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    Header set X-Content-Type-Options nosniff
-    Header set Content-Security-Policy "frame-ancestors 'self'"
-</VirtualHost>
-HTTPS_CREATE
-
-    if [ -f "$HTTPS_CONF" ];
-    then
-        print_text_in_color "$IGreen" "$HTTPS_CONF was successfully created."
-        sleep 1
-    else
-        print_text_in_color "$IRed" "Unable to create vhost, exiting..."
-        print_text_in_color "$IRed" "Please report this issue here $ISSUES"
-        exit 1
-    fi
-fi
-
-# Install certbot (Let's Encrypt)
-install_certbot
-
-# Generate certs and  auto-configure  if successful
-if generate_cert  "$SUBDOMAIN"
-then
-    # Generate DHparams cipher
-    if [ ! -f "$DHPARAMS_SUB" ]
-    then
-        openssl dhparam -out "$DHPARAMS_SUB" 2048
-    fi
-    print_text_in_color "$IGreen" "Certs are generated!"
-    a2ensite "$SUBDOMAIN.conf"
-    restart_webserver
-else
-    # remove settings to be able to start over again
-    rm -f "$HTTPS_CONF"
-    last_fail_tls "$SCRIPTS"/apps/talk_signaling.sh
-    exit 1
-fi
-
 # Set signaling server strings
-SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$SIGNALING_SECRET\"}"
+SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
 nextcloud_occ config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
 
 # Add to /etc/hosts
@@ -511,51 +452,6 @@ then
     msg_box "Installation failed. :/\n\nPlease run this script again to uninstall if you want to clean the system, or choose to reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 1
 else
-    msg_box "Congratulations, everything is working as intended! The Talk Signaling installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
-fi
-
-####### Talk recording
-if ! yesno_box_yes "Do you want install Talk Recording to be able to record your calls?"
-then
-    exit
-fi
-
-# Nextcloud 26 is required.
-lowest_compatible_nc 26
-
-# It's pretty recource intensive
-cpu_check 4 "Talk Recording"
-ram_check 4 "Talk Recording"
-
-print_text_in_color "$ICyan" "Setting up Talk recording..."
-
-# Pull and start
-docker pull nextcloud/aio-talk-recording:latest
-docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
---restart always \
---name talk-recording \
---shm-size=2GB \
--e NC_DOMAIN="${TURN_DOMAIN}" \
--e HPB_DOMAIN="${SUBDOMAIN}" \
--e HPB_PATH=/ \
--e TZ="$(cat /etc/timezone)" \
--e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
--e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
-nextcloud/aio-talk-recording:latest
-
-# Talk recording
-if [ -d "$NCPATH/apps/spreed" ]
-then
-    if does_this_docker_exist nextcloud/aio-talk-recording
-    then
-        install_if_not netcat-traditional
-        while ! nc -z "$TURN_RECORDING_HOST" "$TURN_RECORDING_HOST_PORT"
-        do
-            print_text_in_color "$ICyan" "Waiting for Talk Recording to become available..."
-            sleep 5
-        done
-        # Set values in Nextcloud
-        RECORDING_SERVERS_STRING="{\"servers\":[{\"server\":\"http://$TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT/\",\"verify\":false}],\"secret\":\"$TURN_RECORDING_SECRET\"}"
-        nextcloud_occ_no_check config:app:set spreed recording_servers --value="$RECORDING_SERVERS_STRING" --output json
-    fi
+    msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
+    exit 0
 fi
