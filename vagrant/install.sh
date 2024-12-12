@@ -9,7 +9,7 @@ git clone https://github.com/nextcloud/vm.git
 # We need a check here due to Shellcheck
 if [ -d vm ]
 then
-    cd vm
+    cd vm || exit
 else
     echo "Sorry, but the 'cd' dir doesn't exist, please report this issue to https://github.com/nextcloud/vm/"
     exit
