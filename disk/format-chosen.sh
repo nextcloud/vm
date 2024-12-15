@@ -103,7 +103,7 @@ while
         done
     [[ -z "${devtype_present+x}" ]]
 do
-    printf "${BRed}$DEVTYPE is not a valid disk. Please try again.${Color_Off}\n"
+    print_text_in_color "$BRed" "$DEVTYPE is not a valid disk. Please try again."
     :
 done
 
@@ -183,6 +183,11 @@ then
     check_command zfs set atime=off "$POOLNAME"
     check_command zfs set recordsize=128k "$POOLNAME"
     check_command zfs set logbias=latency "$POOLNAME"
+    if [ -d /sys/firmware/efi ]
+    then
+        # dnodesize can't boot on BIOS, only UEFI mode
+        check_command zfs set dnodesize=auto "$POOLNAME"
+    fi
 
 else
     msg_box "It seems like /dev/$DEVTYPE does not exist.
