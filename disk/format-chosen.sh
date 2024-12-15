@@ -103,7 +103,7 @@ while
         done
     [[ -z "${devtype_present+x}" ]]
 do
-    print_text_in_color "BRed" "$DEVTYPE is not a valid disk. Please try again."
+    print_text_in_color "$BRed" "$DEVTYPE is not a valid disk. Please try again."
     :
 done
 
