@@ -5,7 +5,7 @@
 
 true
 SCRIPT_NAME="Fail2ban"
-SCRIPT_EXPLAINER="Fail2ban provides extra Brute Force protextion for Nextcloud.
+SCRIPT_EXPLAINER="Fail2ban provides extra Brute Force protection for Nextcloud.
 It scans the Nextcloud and SSH log files and bans IPs that show malicious \
 signs -- too many password failures, seeking for exploits, etc. 
 Generally Fail2Ban is then used to update firewall rules to \
