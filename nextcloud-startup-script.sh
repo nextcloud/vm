@@ -577,6 +577,9 @@ then
 https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration?currentPageId=W7D3quPiqQz3_MsE"
 fi
 
+# Repair
+nextcloud_occ maintenance:repair --include-expensive
+
 # Cleanup 2
 apt-get autoremove -y
 apt-get autoclean
