@@ -623,7 +623,7 @@ Login to Nextcloud in your browser:
 ### PLEASE HIT OK TO REBOOT ###"
 
 # Reboot
-print_text_in_color "$IGreen" "Installation done, system will now reboot..."
+print_text_in_color "$IGreen" "Installation done! Please hit OK to cleanup the setup files, and reboot the system."
 check_command rm -f "$SCRIPTS/you-can-not-run-the-startup-script-several-times"
 check_command rm -f "$SCRIPTS/nextcloud-startup-script.sh"
 if ! reboot
