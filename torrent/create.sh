@@ -6,7 +6,7 @@
 
 #########
 
-## This doesn't seem to work in current state.
+## This script will install Transmission, download the latest version of the VM, create a torrent of the file and seed it using Transmission 
 ## Help is welcome!
 
 # shellcheck source=lib.sh
@@ -28,20 +28,24 @@ install_if_not transmission-daemon
 
 # Download the VM
 curl -fSLO --retry 3 https://download.kafit.se/s/dnkWptz8AK4JZDM/download
-mv download NextcloudVM.zip
-chown debian-transmission:debian-transmission NextcloudVM.zip
+# Move the file to default directory set in transmission config
+mv download /var/lib/transmission-daemon/downloads/NextcloudVM.zip
 
+# I dont think these are necessary in 2025?
 # Set more memory to sysctl
-echo "net.core.rmem_max = 16777216" >> /etc/sysctl.conf
-echo "net.core.wmem_max = 4194304" >> /etc/sysctl.conf
-sysctl -p
+#echo "net.core.rmem_max = 16777216" >> /etc/sysctl.conf
+#echo "net.core.wmem_max = 4194304" >> /etc/sysctl.conf
+#sysctl -p
 
 # Create torrent
 curl_to_dir "$GITHUB_REPO"/torrent trackers.txt /tmp
 transmission-create -o nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" -t $(cat /tmp/trackers.txt) NextcloudVM.zip
 
+# Copy torrent file to default directory so seeding restarts after reboots etc.
+cp nextcloudvmhanssonit.torrent /var/lib/transmission-daemon/downloads/nextcloudvmhanssonit.torrent
+
 # Seed it!
-transmission-remote -n 'transmission:transmission' -a nextcloudvmhanssonit.torrent
+transmission-remote -n 'transmission:transmission' --torrent=/var/lib/transmission-daemon/downloads/nextcloudvmhanssonit.torrent -a /var/lib/transmission-daemon/downloads/nextcloudvmhanssonit.torrent --start --verify
 
 # Copy it to local NC account
 install_if_not rsync
