@@ -26,10 +26,17 @@ root_check
 install_if_not transmission-cli
 install_if_not transmission-daemon
 
-# Download the VM
-curl -fSLO --retry 3 https://download.kafit.se/s/dnkWptz8AK4JZDM/download
-# Move the file to default directory set in transmission config
-mv download /var/lib/transmission-daemon/downloads/NextcloudVM.zip
+# Modify transmission service file to fix https://github.com/transmission/transmission/issues/6991
+sed -i 's/Type=notify/Type=simple/' /etc/systemd/system/multi-user.target.wants/transmission-daemon.service
+systemctl daemon-reload
+
+# Check if NextcloudVM.zip already exists
+if [ ! -f "/var/lib/transmission-daemon/downloads/NextcloudVM.zip" ]; then
+    # Download the VM only if it doesn't exist
+    curl -fSLO --retry 3 https://download.kafit.se/s/dnkWptz8AK4JZDM/download -o /var/lib/transmission-daemon/downloads/NextcloudVM.zip
+else
+    echo "NextcloudVM.zip already exists in transmission default downloads directory, skipping download"
+fi
 
 # I dont think these are necessary in 2025?
 # Set more memory to sysctl
