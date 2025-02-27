@@ -3,7 +3,7 @@
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2016,2034,2059,2178
+# shellcheck disable=2016,2034,2059,2178,2317
 true
 SCRIPT_NAME="Pi-hole"
 SCRIPT_EXPLAINER="The Pi-hole® is a DNS sinkhole that protects your devices from unwanted content, \
@@ -20,6 +20,10 @@ debug_mode
 
 # Check if root
 root_check
+
+msg_box "The pi-hole script is unfortunately deprecated as it needs a rewrite since many parts in the upstream pi-hole project changed.
+Feel free to subscribe to https://github.com/szaimen/Nextcloud-NAS-Guide/issues/133 in the meantime."
+exit 1
 
 # Check if already installed
 if ! pihole &>/dev/null
@@ -69,6 +73,8 @@ If you press 'yes', we will remove Pi-hole, its settings and all those listed pr
     
     # Make an array from installed applications
     read -r -a INSTALLED <<< "$INSTALLED"
+
+    # /opt/pihole/uninstall.sh edit file and put setupVars variable setupVars="/etc/pihole/setupVars.conf" at 5th line or something
 
     UNINSTALL="/etc/.pihole/automated install/uninstall.sh"
     # Uninstall pihole; we need to modify it, else it is not unattended
