@@ -50,7 +50,7 @@ fi
 
 # Create torrent
 curl_to_dir "$GITHUB_REPO"/torrent trackers.txt /tmp
-transmission-create -o $TRANSMISSION_DL_DIR/nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" -t $(cat /tmp/trackers.txt) "$TRANSMISSION_DL_DIR"/"$NC_OVA"
+transmission-create -o $TRANSMISSION_DL_DIR/nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm VERSION: $VERSION_TAG HUB: $VERSION_HUB" -t $(cat /tmp/trackers.txt) "$TRANSMISSION_DL_DIR"/"$NC_OVA"
 
 # Seed it!
 transmission-remote -n 'transmission:transmission' --torrent="$TRANSMISSION_DL_DIR/nextcloudvmhanssonit.torrent" -a "$TRANSMISSION_DL_DIR/nextcloudvmhanssonit.torrent" --start --verify
