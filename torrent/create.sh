@@ -7,11 +7,10 @@
 #########
 
 ## This script will install Transmission, download the latest version of the VM, create a torrent of the file and seed it using Transmission 
-## Help is welcome!
+## Improvments to the script are welcome!
 
 # shellcheck source=lib.sh
 # shellcheck disable=SC2046
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -27,20 +26,21 @@ install_if_not transmission-cli
 install_if_not transmission-daemon
 
 TRANSMISSION_DL_DIR="/var/lib/transmission-daemon/downloads"
-NC_ZIP="NextcloudVM.zip"
+NC_OVA="100GB_Nextcloud-VM_www.hanssonit.se.ova"
+VERSION_TAG=30.0.1
+VERSION_HUB=9
 
 # Modify transmission service file to fix https://github.com/transmission/transmission/issues/6991
-sed -i 's/Type=notify/Type=simple/' /etc/systemd/system/multi-user.target.wants/transmission-daemon.service
+sed -i "s|Type=notify|Type=simple|g" /etc/systemd/system/multi-user.target.wants/transmission-daemon.service
 systemctl daemon-reload
 
 # Check if NextcloudVM.zip already exists
-if [ ! -f "$TRANSMISSION_DL_DIR"/"$NC_ZIP" ]
+if [ ! -f "$TRANSMISSION_DL_DIR"/"$NC_OVA" ]
 then
     # Download the VM only if it doesn't exist
-    curl_to_dir https://download.kafit.se/s/dnkWptz8AK4JZDM download "$TRANSMISSION_DL_DIR"
-    mv "$TRANSMISSION_DL_DIR"/download "$TRANSMISSION_DL_DIR"/"$NC_ZIP"
+    curl_to_dir "https://download.kafit.se/public.php/dav/files/dnkWptz8AK4JZDM/$VERSION_TAG%20-%20HUB%20$VERSION_HUB" "$NC_OVA" "$TRANSMISSION_DL_DIR"
 else
-    echo "$NC_ZIP already exists in transmission default downloads directory, skipping download"
+    echo "$NC_OVA already exists in transmission default downloads directory, skipping download"
 fi
 
 # Set more memory to sysctl
@@ -50,7 +50,7 @@ fi
 
 # Create torrent
 curl_to_dir "$GITHUB_REPO"/torrent trackers.txt /tmp
-transmission-create -o $TRANSMISSION_DL_DIR/nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" -t "$(cat /tmp/trackers.txt)" "$TRANSMISSION_DL_DIR"/"$NC_ZIP"
+transmission-create -o $TRANSMISSION_DL_DIR/nextcloudvmhanssonit.torrent -c "https://www.hanssonit.se/nextcloud-vm" -t $(cat /tmp/trackers.txt) "$TRANSMISSION_DL_DIR"/"$NC_OVA"
 
 # Seed it!
 transmission-remote -n 'transmission:transmission' --torrent="$TRANSMISSION_DL_DIR/nextcloudvmhanssonit.torrent" -a "$TRANSMISSION_DL_DIR/nextcloudvmhanssonit.torrent" --start --verify
