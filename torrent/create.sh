@@ -28,7 +28,7 @@ install_if_not transmission-daemon
 
 TRANSMISSION_DL_DIR="/var/lib/transmission-daemon/downloads"
 NC_OVA="100GB_Nextcloud-VM_www.hanssonit.se.ova"
-VERSION_TAG=30.0.1
+VERSION_TAG=31.0.2
 VERSION_HUB=9
 
 # Modify transmission service file to fix https://github.com/transmission/transmission/issues/6991
