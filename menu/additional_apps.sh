@@ -56,8 +56,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Midnight Commander" "(CLI file manager)" OFF \
 "Pico CMS" "(Lightweight CMS integration in Nextcloud)" OFF \
 "Whiteboard" "(Whiteboard for Nextcloud)" OFF \
-"Extract" "(Archive extraction for Nextcloud)" OFF \
-"PDF Annotations" "(Annotate PDF files in Nextcloud)" OFF 3>&1 1>&2 2>&3)
+"Extract" "(Archive extraction for Nextcloud)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Documentserver"*)
@@ -142,10 +141,6 @@ to finish the setup once this script is done." "$SUBTITLE"
     *"SMB-mount"*)
         print_text_in_color "$ICyan" "Downloading the SMB-mount script..."
         run_script APP smbmount
-    ;;&
-    *"PDF Annotations"*)
-        print_text_in_color "$ICyan" "Downloading the PDF Annotations script..."
-        run_script APP pdfannotate
     ;;&
     *)
     ;;
