@@ -482,7 +482,7 @@ else
 fi
 
 # Set correct amount of CPUs for Imaginary
-if does_this_docker_exist nextcloud/aio-imaginary
+if does_this_docker_exist ghcr.io/nextcloud-releases/aio-imaginary
 then
     if which nproc >/dev/null 2>&1
     then

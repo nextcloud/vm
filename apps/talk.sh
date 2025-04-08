@@ -84,6 +84,7 @@ else
     done
     apt-get autoremove -y
     docker_prune_this nextcloud/aio-talk-recording
+    docker_prune_this ghcr.io/nextcloud-releases/aio-talk-recording
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -530,7 +531,7 @@ ram_check 4 "Talk Recording"
 print_text_in_color "$ICyan" "Setting up Talk recording..."
 
 # Pull and start
-docker pull nextcloud/aio-talk-recording:latest
+docker pull ghcr.io/nextcloud-releases/aio-talk-recording:latest
 docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
 --restart always \
 --name talk-recording \
@@ -541,12 +542,12 @@ docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RE
 -e TZ="$(cat /etc/timezone)" \
 -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
 -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
-nextcloud/aio-talk-recording:latest
+ghcr.io/nextcloud-releases/aio-talk-recording:latest
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
 then
-    if does_this_docker_exist nextcloud/aio-talk-recording
+    if does_this_docker_exist ghcr.io/nextcloud-releases/aio-talk-recording
     then
         install_if_not netcat-traditional
         while ! nc -z "$TURN_RECORDING_HOST" "$TURN_RECORDING_HOST_PORT"

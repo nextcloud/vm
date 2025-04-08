@@ -35,7 +35,7 @@ fi
 lowest_compatible_nc 26
 
 # Check if Imaginary is already installed
-if ! does_this_docker_exist nextcloud/aio-imaginary
+if ! does_this_docker_exist nextcloud/aio-imaginary && ! does_this_docker_exist ghcr.io/nextcloud-releases/aio-imaginary
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -47,6 +47,7 @@ else
     then
         # Remove docker container
         docker_prune_this 'nextcloud/aio-imaginary' 'imaginary'
+        docker_prune_this 'ghcr.io/nextcloud-releases/aio-imaginary' 'imaginary'
         # reset the preview formats
         nextcloud_occ config:system:delete "preview_imaginary_url"
         nextcloud_occ config:system:delete "enabledPreviewProviders"
@@ -110,8 +111,8 @@ fi
 install_docker
 
 # Pull and start
-docker pull nextcloud/aio-imaginary:latest
-docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -return-size -log-level debug
+docker pull ghcr.io/nextcloud-releases/aio-imaginary:latest
+docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary ghcr.io/nextcloud-releases/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -return-size -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"
