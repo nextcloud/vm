@@ -445,7 +445,7 @@ Please don't restart or shutdown your server until then!"
 
     # Prune system archives
     inform_user "$ICyan" "Pruning the system archives..."
-    if ! borg prune --prefix '*_*-NcVM-system-partition' "${BORG_PRUNE_OPTS[@]}"
+    if ! borg prune --glob-archives '*_*-NcVM-system-partition*' "${BORG_PRUNE_OPTS[@]}"
     then
         re_rename_snapshot
         send_error_mail "Some errors were reported by the prune system command."
@@ -464,7 +464,7 @@ Please don't restart or shutdown your server until then!"
 
     # Prune boot archives
     inform_user "$ICyan" "Pruning the boot archives..."
-    if ! borg prune --prefix '*_*-NcVM-boot-partition' "${BORG_PRUNE_OPTS[@]}"
+    if ! borg prune --glob-archives '*_*-NcVM-boot-partition*' "${BORG_PRUNE_OPTS[@]}"
     then
         re_rename_snapshot
         send_error_mail "Some errors were reported by the prune boot command."
@@ -485,7 +485,7 @@ Please don't restart or shutdown your server until then!"
         fi
         # Prune ncdata archives
         inform_user "$ICyan" "Pruning the ncdata archives..."
-        if ! borg prune --prefix '*_*-NcVM-ncdata-partition' "${BORG_PRUNE_OPTS[@]}"
+        if ! borg prune --glob-archives '*_*-NcVM-ncdata-partition*' "${BORG_PRUNE_OPTS[@]}"
         then
             re_rename_snapshot
             send_error_mail "Some errors were reported by the prune ncdata command."
@@ -534,7 +534,7 @@ Please don't restart or shutdown your server until then!"
 
         # Prune archives
         inform_user "$ICyan" "Pruning the $DIRECTORY_NAME archives..."
-        if ! borg prune --prefix "*_*-NcVM-$DIRECTORY_NAME-directory" "${BORG_PRUNE_OPTS[@]}"
+        if ! borg prune --glob-archives "*_*-NcVM-$DIRECTORY_NAME-directory*" "${BORG_PRUNE_OPTS[@]}"
         then
             re_rename_snapshot
             send_error_mail "Some errors were reported by the prune $DIRECTORY_NAME command."
