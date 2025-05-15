@@ -50,6 +50,9 @@ else
     fi
     sed "/# Talk Signaling Server/d" /etc/hosts >/dev/null 2>&1
     sed "/127.0.1.1             $SUBDOMAIN/d" /etc/hosts >/dev/null 2>&1
+    systemctl stop nats-server
+    systemctl disable nats-server
+    deluser nats
     nextcloud_occ_no_check config:app:delete spreed stun_servers
     nextcloud_occ_no_check config:app:delete spreed turn_servers
     nextcloud_occ_no_check config:app:delete spreed signaling_servers
@@ -84,7 +87,6 @@ else
     done
     apt-get autoremove -y
     docker_prune_this nextcloud/aio-talk-recording
-    docker_prune_this ghcr.io/nextcloud-releases/aio-talk-recording
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -297,7 +299,49 @@ curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nats-server.asc" "https://packaging
 echo "deb https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list
 apt-get update -q4 & spinner_loading
 install_if_not nats-server
+getent passwd nats >/dev/null 2>&1 || adduser \
+  --system \
+  --shell /usr/sbin/nologin \
+  --gecos 'High-Performance server for NATS, the cloud native messaging system.' \
+  --group \
+  --disabled-password \
+  --no-create-home \
+  nats
+
 chown nats:nats /etc/nats/nats.conf
+
+# Check if nats systemd service is in the package or not
+if [ ! -f "/lib/systemd/system/nats-server.service" ];
+then
+# Generate nats systemd service
+cat << NATS_SYSTEMD > /lib/systemd/system/nats-server.service
+[Unit]
+Description=NATS messaging server
+Documentation=https://docs.nats.io/nats-server/
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/nats-server --config /etc/nats/nats.conf
+User=nats
+Group=nats
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+NATS_SYSTEMD
+        if [ -f "/lib/systemd/system/nats-server.service" ];
+        then
+                print_text_in_color "$IGreen" "NATS systemd service  was successfully created."
+        else
+                print_text_in_color "$IRed" "Unable to create NATS systemd service , exiting..."
+                print_text_in_color "$IRed" "Please report this issue here $ISSUES"
+                exit 1
+        fi
+else
+        print_text_in_color "$IGreen" "Nats systemd service is already in place, continuing"
+fi
+
+
 start_if_stopped nats-server
 check_command systemctl enable nats-server
 
@@ -531,7 +575,7 @@ ram_check 4 "Talk Recording"
 print_text_in_color "$ICyan" "Setting up Talk recording..."
 
 # Pull and start
-docker pull ghcr.io/nextcloud-releases/aio-talk-recording:latest
+docker pull nextcloud/aio-talk-recording:latest
 docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
 --restart always \
 --name talk-recording \
@@ -542,14 +586,14 @@ docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RE
 -e TZ="$(cat /etc/timezone)" \
 -e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
 -e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
-ghcr.io/nextcloud-releases/aio-talk-recording:latest
+nextcloud/aio-talk-recording:latest
 
 # Talk recording
 if [ -d "$NCPATH/apps/spreed" ]
 then
-    if does_this_docker_exist ghcr.io/nextcloud-releases/aio-talk-recording
+    if does_this_docker_exist nextcloud/aio-talk-recording
     then
-        install_if_not netcat-traditional
+        install_if_not netcat
         while ! nc -z "$TURN_RECORDING_HOST" "$TURN_RECORDING_HOST_PORT"
         do
             print_text_in_color "$ICyan" "Waiting for Talk Recording to become available..."
