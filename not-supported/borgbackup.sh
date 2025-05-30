@@ -445,7 +445,7 @@ Please don't restart or shutdown your server until then!"
 
     # Prune system archives
     inform_user "$ICyan" "Pruning the system archives..."
-    if ! borg prune --glob-archives '*_*-NcVM-system-partition*' "${BORG_PRUNE_OPTS[@]}"
+    if ! borg prune --glob-archives '*_*-NcVM-system-partition' "${BORG_PRUNE_OPTS[@]}"
     then
         re_rename_snapshot
         send_error_mail "Some errors were reported by the prune system command."
