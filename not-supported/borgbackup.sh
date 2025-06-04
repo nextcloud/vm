@@ -464,7 +464,7 @@ Please don't restart or shutdown your server until then!"
 
     # Prune boot archives
     inform_user "$ICyan" "Pruning the boot archives..."
-    if ! borg prune --glob-archives '*_*-NcVM-boot-partition*' "${BORG_PRUNE_OPTS[@]}"
+    if ! borg prune --glob-archives '*_*-NcVM-boot-partition' "${BORG_PRUNE_OPTS[@]}"
     then
         re_rename_snapshot
         send_error_mail "Some errors were reported by the prune boot command."
