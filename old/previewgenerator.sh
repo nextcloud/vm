@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Preview Generator"
@@ -124,10 +124,10 @@ then
     check_php
     # Install imagick
     install_if_not php"$PHPVER"-imagick
-    if version 22.04 "$DISTRO" 22.04.10
+    if version 24.04 "$DISTRO" 24.04.10
     then
         install_if_not libmagickcore-6.q16-6-extra
-    elif version 20.04 "$DISTRO" 20.04.10
+    elif version 22.04 "$DISTRO" 22.04.10
     then
         install_if_not libmagickcore-6.q16-3-extra
     fi

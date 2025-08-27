@@ -31,6 +31,7 @@ else
     nextcloud_occ config:system:delete allow_local_remote_servers
     nextcloud_occ config:system:delete onlyoffice
     nextcloud_occ config:system:delete onlyoffice jwt_secret
+    nextcloud_occ config:app:delete onlyoffice jwt_secret
     nextcloud_occ config:system:delete onlyoffice jwt_header
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
@@ -151,8 +152,8 @@ a2enmod proxy_http
 a2enmod ssl
 a2enmod headers
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi
@@ -262,6 +263,7 @@ then
     # Allow remote servers with local addresses e.g. in federated shares, webcal services and more
     nextcloud_occ config:system:set allow_local_remote_servers --value="true"
     nextcloud_occ config:system:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
+    nextcloud_occ config:app:set onlyoffice jwt_secret --value="$ONLYOFFICE_SECRET"
     nextcloud_occ config:system:set onlyoffice jwt_header --value="AuthorizationJwt"
     # Add prune command
     add_dockerprune

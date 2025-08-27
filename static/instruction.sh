@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 BIGreen='\e[1;92m'      # Green
 IGreen='\e[0;92m'       # Green
@@ -17,8 +17,8 @@ echo -e "|"  "${IGreen}The default sudoer password is: ${BIGreen}nextcloud${IGre
 cat << INST2
 |                                                                       |
 | You can find the complete install instructions here:                  |
-| Nextcloud VM              = https://bit.ly/2S8eGfS                    |
-| Nextcloud Home/SME Server = https://bit.ly/2k2TNaM                    |
+| Nextcloud VM              = http://shortio.hanssonit.se/6xxdsHvhwe    |
+| Nextcloud Home/SME Server = http://shortio.hanssonit.se/LnrY5GMQYy    |
 |                                                                       |
 | Optional:                                                             |
 | If you are running Windows 10 (1809) or later, you can simply use SSH |
@@ -28,7 +28,7 @@ cat << INST2
 |                                                                       |
 | This server could be made maintenance free by using automatic updates |
 | with the built in update script. If you want automatic updates on     |
-| a weekly schedule, choose to configure it later during this setup.    |
+| a monthly schedule, choose to configure it later during this setup.   |
 |                                                                       |
 |  ###################### T&M Hansson IT - $(date +"%Y") ######################  |
 +-----------------------------------------------------------------------+

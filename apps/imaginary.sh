@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
-# https://github.com/nextcloud/vm/blob/master/LICENSE
+# https://github.com/nextcloud/vm/blob/main/LICENSE
 
 true
 SCRIPT_NAME="Imaginary Docker"
@@ -21,14 +21,21 @@ debug_mode
 root_check
 
 # Check recources
-ram_check 4
-cpu_check 2
+# If we can calculate the cpu and ram, then set it to the lowest possible, if not, then hardcode it to a recomended minimum.
+if which nproc >/dev/null 2>&1
+then
+    ram_check 2 Imaginary
+    cpu_check 2 Imaginary
+else
+    ram_check 4 Imaginary
+    cpu_check 2 Imaginary
+fi
 
 # Compatible with NC24 and above
 lowest_compatible_nc 26
 
 # Check if Imaginary is already installed
-if ! does_this_docker_exist nextcloud/aio-imaginary
+if ! does_this_docker_exist nextcloud/aio-imaginary && ! does_this_docker_exist ghcr.io/nextcloud-releases/aio-imaginary
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -39,7 +46,8 @@ else
     if yesno_box_yes "Do you want to remove the Imaginary and all it's settings?"
     then
         # Remove docker container
-        docker_prune_this 'nextcloud/aio-imaginary'
+        docker_prune_this 'nextcloud/aio-imaginary' 'imaginary'
+        docker_prune_this 'ghcr.io/nextcloud-releases/aio-imaginary' 'imaginary'
         # reset the preview formats
         nextcloud_occ config:system:delete "preview_imaginary_url"
         nextcloud_occ config:system:delete "enabledPreviewProviders"
@@ -62,13 +70,13 @@ else
 fi
 
 # Remove everything that is related to previewgenerator
-if is_app_enabled previewgenerator
+if crontab -u www-data -l | grep -q "preview:pre-generate"
 then
     if yesno_box_yes "We noticed that you have Preview Generator enabled. Imagniary replaces this, and the old app Preview Generator is now legacy.\nWe recommend you to remove it. Do you want to do that?"
     then
         # Remove the app
-        nextcloud_occ app:remove previewgenerator
-        # Reset the cronjob
+        nextcloud_occ_no_check app:remove previewgenerator
+        # Remove the cronjob
         crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
         # Remove dependecies
         DEPENDENCY=(php-imagick php"$PHPVER"-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
@@ -90,8 +98,10 @@ This will most likely clear a lot of space! Also, pre-generated previews are not
             rm -rfv "$NCDATA"/appdata_*/preview/*
             print_text_in_color "$ICyan" "Scanning Nextclouds appdata directory after removing all previews. \
 This can take a while..."
+            # Don't execute the update before all cronjobs are finished
+            check_running_cronjobs
             nextcloud_occ files:scan-app-data preview -vvv
-            msg_box "All previews were successfully removed."
+            print_text_in_color "$IGreen" "All previews were successfully removed."
         fi
         # Remove log
         rm -f "$VMLOGS"/previewgenerator.log
@@ -101,8 +111,8 @@ fi
 install_docker
 
 # Pull and start
-docker pull nextcloud/aio-imaginary:latest
-docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary nextcloud/aio-imaginary -concurrency 50 -enable-url-source -log-level debug
+docker pull ghcr.io/nextcloud-releases/aio-imaginary:latest
+docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary ghcr.io/nextcloud-releases/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -return-size -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 sedonds" "3"
@@ -133,6 +143,7 @@ fi
 
 # Set providers (https://github.com/nextcloud/server/blob/master/lib/private/Preview/Imaginary.php#L60)
 # https://github.com/nextcloud/vm/issues/2465
+# Already enabled: https://github.com/nextcloud/server/blob/5e96228eb1f7999a327dacab22055ec2aa8e28a3/lib/private/Preview/Imaginary.php#L60
 nextcloud_occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
 nextcloud_occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\Image"
 nextcloud_occ config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\MarkDown"
@@ -140,13 +151,16 @@ nextcloud_occ config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\
 nextcloud_occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\TXT"
 nextcloud_occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\OpenDocument"
 nextcloud_occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\Movie"
+nextcloud_occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\Krita"
+nextcloud_occ config:system:set enabledPreviewProviders 8 --value="OC\Preview\ImaginaryPDF"
 nextcloud_occ config:system:set preview_imaginary_url --value="http://127.0.0.1:9000"
 
 # Set general values
 nextcloud_occ config:system:set preview_max_x --value="2048"
 nextcloud_occ config:system:set preview_max_y --value="2048"
-nextcloud_occ config:system:set jpeg_quality --value="60"
 nextcloud_occ config:system:set preview_max_memory --value="256"
+nextcloud_occ config:system:set preview_format --value="webp"
+nextcloud_occ config:app:set preview webp_quality --value="65"
 
 if docker logs imaginary
 then

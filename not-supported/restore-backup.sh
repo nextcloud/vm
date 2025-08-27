@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=SC2024
@@ -307,6 +307,7 @@ fi
 # Install borg
 print_text_in_color "$ICyan" "Installing borgbackup..."
 install_if_not borgbackup
+apt-get install python3-pyfuse3 --no-install-recommends -y
 
 # Enter password
 while :

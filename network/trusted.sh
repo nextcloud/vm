@@ -1,28 +1,14 @@
 #!/bin/bash
-
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
-
 true
-SCRIPT_NAME="Trusted"
+SCRIPT_NAME="Set trusted domain"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 
-# Check for errors + debug code and abort if something isn't right
-# 1 = ON
-# 0 = OFF
-DEBUG=0
-debug_mode
+# Removed in NC 26.0.0.
 
-download_script NETWORK update-config
-if [ -f $SCRIPTS/update-config.php ]
-then
-    # Change config.php
-    php $SCRIPTS/update-config.php $NCPATH/config/config.php 'trusted_domains[]' localhost "${ADDRESS[@]}" "$(hostname)" "$(hostname --fqdn)" >/dev/null 2>&1
-    php $SCRIPTS/update-config.php $NCPATH/config/config.php overwrite.cli.url https://"$(hostname --fqdn)"/ >/dev/null 2>&1
-
-    # Change .htaccess accordingly
-    sed -i "s|RewriteBase /nextcloud|RewriteBase /|g" $NCPATH/.htaccess
-
-    # Cleanup
-    rm -f $SCRIPTS/update-config.php
-fi
+# Set trusted domains
+nextcloud_occ config:system:set trusted_domains 0 --value="localhost"
+nextcloud_occ config:system:set trusted_domains 1 --value="$ADDRESS"
+nextcloud_occ config:system:set trusted_domains 2 --value="$(hostname -f)"
+nextcloud_occ config:system:set overwrite.cli.url --value="https://$(hostname --fqdn)"
+nextcloud_occ maintenance:update:htaccess

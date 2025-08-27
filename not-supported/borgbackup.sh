@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=2024
@@ -39,7 +39,7 @@ start_services() {
     systemctl start postgresql
     if [ -z "$MAINTENANCE_MODE_ON" ]
     then
-        nextcloud_occ_no_check maintenance:mode --off
+        sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     fi
     start_if_stopped docker
     # Restart notify push if existing
@@ -272,11 +272,11 @@ Please don't restart or shutdown your server until then!"
     then
         systemctl stop docker
     fi
-    if [ "$(nextcloud_occ_no_check config:system:get maintenance)" = "true" ]
+    if [ "$(sudo -u www-data php "$NCPATH"/occ config:system:get maintenance)" = "true" ]
     then
         MAINTENANCE_MODE_ON=1
     fi
-    nextcloud_occ_no_check maintenance:mode --on
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
     # Database export
     # Not really necessary since the root partition gets backed up but easier to restore on new systems
     ncdb # get NCDB
@@ -445,7 +445,7 @@ Please don't restart or shutdown your server until then!"
 
     # Prune system archives
     inform_user "$ICyan" "Pruning the system archives..."
-    if ! borg prune --prefix '*_*-NcVM-system-partition' "${BORG_PRUNE_OPTS[@]}"
+    if ! borg prune --glob-archives '*_*-NcVM-system-partition' "${BORG_PRUNE_OPTS[@]}"
     then
         re_rename_snapshot
         send_error_mail "Some errors were reported by the prune system command."
@@ -464,7 +464,7 @@ Please don't restart or shutdown your server until then!"
 
     # Prune boot archives
     inform_user "$ICyan" "Pruning the boot archives..."
-    if ! borg prune --prefix '*_*-NcVM-boot-partition' "${BORG_PRUNE_OPTS[@]}"
+    if ! borg prune --glob-archives '*_*-NcVM-boot-partition' "${BORG_PRUNE_OPTS[@]}"
     then
         re_rename_snapshot
         send_error_mail "Some errors were reported by the prune boot command."
@@ -485,7 +485,7 @@ Please don't restart or shutdown your server until then!"
         fi
         # Prune ncdata archives
         inform_user "$ICyan" "Pruning the ncdata archives..."
-        if ! borg prune --prefix '*_*-NcVM-ncdata-partition' "${BORG_PRUNE_OPTS[@]}"
+        if ! borg prune --glob-archives '*_*-NcVM-ncdata-partition' "${BORG_PRUNE_OPTS[@]}"
         then
             re_rename_snapshot
             send_error_mail "Some errors were reported by the prune ncdata command."
@@ -534,7 +534,7 @@ Please don't restart or shutdown your server until then!"
 
         # Prune archives
         inform_user "$ICyan" "Pruning the $DIRECTORY_NAME archives..."
-        if ! borg prune --prefix "*_*-NcVM-$DIRECTORY_NAME-directory" "${BORG_PRUNE_OPTS[@]}"
+        if ! borg prune --glob-archives "*_*-NcVM-$DIRECTORY_NAME-directory" "${BORG_PRUNE_OPTS[@]}"
         then
             re_rename_snapshot
             send_error_mail "Some errors were reported by the prune $DIRECTORY_NAME command."
@@ -662,7 +662,7 @@ then
 fi
 
 # Check the backup
-inform_user "$ICyan" "Checking the backup integity..."
+inform_user "$ICyan" "Checking the backup integrity..."
 # TODO: check how long this takes. If too long, remove the --verifa-data flag
 if ! borg check --verify-data "$BACKUP_TARGET_DIRECTORY"
 then

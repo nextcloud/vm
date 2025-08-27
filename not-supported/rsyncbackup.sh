@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -19,7 +19,6 @@ debug_mode
 root_check
 
 # Variables
-LVM_MOUNT="/system"
 START_TIME=$(date +%s)
 CURRENT_DATE=$(date --date @"$START_TIME" +"%Y%m%d_%H%M%S")
 CURRENT_DATE_READABLE=$(date --date @"$START_TIME" +"%d.%m.%Y - %H:%M:%S")
@@ -48,14 +47,17 @@ show_drive_usage() {
 send_error_mail() {
     if [ -d "$BACKUP_TARGET_DIRECTORY" ]
     then
-        inform_user "$ICyan" "Unmounting the off-shore backup drive..."
-        umount "$BACKUP_MOUNTPOINT"
+        if [ -z "$DO_NOT_UMOUNT_BACKUP_DRIVES" ]
+        then
+            inform_user "$ICyan" "Unmounting the offshore backup drive..."
+            umount "$BACKUP_MOUNTPOINT"
+        fi
     fi
     if [ -d "$BACKUP_SOURCE_DIRECTORY" ]
     then
-        if [ -z "$DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE" ]
+        if [ -z "$DO_NOT_UMOUNT_BACKUP_DRIVES" ]
         then
-            inform_user "$ICyan" "Unmounting the backup drive..."
+            inform_user "$ICyan" "Unmounting the daily backup drive..."
             umount "$BACKUP_SOURCE_MOUNTPOINT"
         fi
     fi
@@ -124,7 +126,7 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
-    DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE=1
+    DO_NOT_UMOUNT_BACKUP_DRIVES=1
     msg_box "The snapshot pending does exist. Can currently not proceed.
 Please try again later.\n
 If you are sure that no update or backup is currently running, you can fix this by rebooting your server."
@@ -193,7 +195,7 @@ fi
 # Check if pending snapshot is existing and cancel the backup in this case.
 if does_snapshot_exist "NcVM-snapshot-pending"
 then
-    DO_NOT_UMOUNT_DAILY_BACKUP_DRIVE=1
+    DO_NOT_UMOUNT_BACKUP_DRIVES=1
     msg_box "The snapshot pending does exist. Can currently not proceed.
 Please try again later.\n
 If you are sure that no update or backup is currently running, you can fix this by rebooting your server."

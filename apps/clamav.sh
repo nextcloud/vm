@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="ClamAV"
@@ -101,7 +101,7 @@ install_and_enable_app files_antivirus
 nextcloud_occ config:app:set files_antivirus av_mode --value="socket"
 nextcloud_occ config:app:set files_antivirus av_socket --value="/var/run/clamav/clamd.ctl"
 nextcloud_occ config:app:set files_antivirus av_stream_max_length --value="1048576000"
-nextcloud_occ config:app:set files_antivirus av_max_file_size --value="-1"
+nextcloud_occ config:app:set files_antivirus av_max_file_size --value="1048576000"
 nextcloud_occ config:app:set files_antivirus av_infected_action --value="only_log"
 
 # Create av notification script
@@ -198,7 +198,7 @@ esac
 cat << CLAMAV_REPORT > "$SCRIPTS"/clamav-fullscan.sh
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 source /var/scripts/fetch_lib.sh
 
@@ -245,6 +245,11 @@ fi
 
 INFECTED_FILES_LOG="\$(sed -n '/----------- SCAN SUMMARY -----------/,\$p' $VMLOGS/clamav-fullscan.log)"
 INFECTED_FILES="\$(grep 'FOUND$' $VMLOGS/clamav-fullscan.log)"
+
+if [ -z "$INFECTED_FILES" ]
+then
+    INFECTED_FILES="No infected files found"
+fi
 
 # Send notification
 if ! send_mail "Your weekly full-scan ClamAV report" "\$INFECTED_FILES_LOG\n

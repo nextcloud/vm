@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -19,19 +19,19 @@ debug_mode
 # Check if root
 root_check
 
+# Don't run this script as root user, because we will need the account
+if [ -z "$UNIXUSER" ]
+then
+    msg_box "Please don't run this script as pure root user!"
+    exit 1
+fi
+
 # Check if xrdp is installed
 if ! is_this_installed xrdp
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
     XRDP_INSTALL=1
-    
-    # Don't run this script as root user, because we will need the account
-    if [ -z "$UNIXUSER" ]
-    then
-        msg_box "Please don't run this script as pure root user!"
-        exit 1
-    fi
 
     # Check if gnome-session is installed
     if ! is_this_installed gnome-session 
@@ -47,10 +47,6 @@ If you have already installed a desktop environment, you will not need to instal
             apt-get install gnome-session --no-install-recommends -y
             sudo -u "$UNIXUSER" dbus-launch gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
             sudo -u "$UNIXUSER" dbus-launch gsettings set org.gnome.desktop.interface enable-animations false
-            install_if_not gnome-shell-extension-dash-to-panel
-            check_command sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable dash-to-panel@jderose9.github.com
-            install_if_not gnome-shell-extension-arc-menu
-            sudo -u "$UNIXUSER" dbus-launch gnome-extensions enable arc-menu@linxgem33.com
         fi
     fi
     
@@ -347,9 +343,13 @@ This can set your server under risk, though!" "$SUBTITLE"
             if yesno_box_yes "Do you want to install OnlyOffice Desktop Editors nonetheless?" "$SUBTITLE"
             then
                 print_text_in_color "$ICyan" "Installing $SUBTITLE"
-                apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CB2DE8E5
-                echo "deb https://download.onlyoffice.com/repo/debian squeeze main" \
-> /etc/apt/sources.list.d/onlyoffice-desktopeditors.list
+                # From https://helpcenter.onlyoffice.com/installation/desktop-install-ubuntu.aspx
+                mkdir -p ~/.gnupg
+                gpg --no-default-keyring --keyring gnupg-ring:/tmp/onlyoffice.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CB2DE8E5
+                chmod 644 /tmp/onlyoffice.gpg
+                chown root:root /tmp/onlyoffice.gpg
+                mv /tmp/onlyoffice.gpg /usr/share/keyrings/onlyoffice.gpg
+                echo "deb [signed-by=/usr/share/keyrings/onlyoffice.gpg] https://download.onlyoffice.com/repo/debian squeeze main" > "/etc/apt/sources.list.d/onlyoffice-desktopeditors.list"
                 apt-get update -q4 & spinner_loading
                 install_if_not onlyoffice-desktopeditors
                 print_text_in_color "$ICyan" "$SUBTITLE was successfully installed"

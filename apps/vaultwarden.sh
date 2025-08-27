@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Vaultwarden (formerly Bitwarden RS)"
@@ -122,8 +122,8 @@ a2enmod ssl
 a2enmod headers
 a2enmod remoteip
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi

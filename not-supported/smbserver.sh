@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -907,7 +907,7 @@ We please you to do the math yourself if the number is high enough for your setu
     fi
 
     # Install the inotify PHP extension
-    # https://github.com/icewind1991/files_inotify/blob/master/README.md
+    # https://github.com/icewind1991/files_inotify/blob/main/README.md
     if ! pecl list | grep -q inotify
     then 
         print_text_in_color "$ICyan" "Installing the PHP inotify extension..."

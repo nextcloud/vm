@@ -4,7 +4,7 @@ SCRIPT_NAME="Activate TLS"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -115,17 +115,39 @@ fi
 # To get the correct version for the Apache conf file
 check_php
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi
 
 # Fix zero file sizes
 # See https://github.com/nextcloud/server/issues/3056
-if version 22.04 "$DISTRO" 26.04.10
+if version 24.04 "$DISTRO" 26.04.10
 then
     SETENVPROXY="SetEnv proxy-sendcl 1"
+fi
+
+# Install Brotli
+if version 24.04 "$DISTRO" 26.04.10
+then
+    if ! [ -f /etc/apache2/conf-available/brotli.conf ]
+    then
+        # Install needed packaages
+        install_if_not brotli
+
+        # Add the config
+        {
+            echo "# Brotli support"
+            echo "<IfModule mod_brotli.c>"
+            echo "    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/x-javascript application/javascript application/json application/x-font-ttf application/vnd.ms-fontobject image/x-icon"
+            echo "</IfModule>"
+        } > /etc/apache2/conf-available/brotli.conf
+
+        # Enable the config
+        a2enmod brotli
+        a2enconf brotli
+    fi
 fi
 
 # Generate nextcloud_tls_domain.conf
@@ -137,7 +159,7 @@ then
     cat << TLS_CREATE > "$tls_conf"
 <VirtualHost *:80>
     RewriteEngine On
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}\$1 [END,NE,R=permanent]
 </VirtualHost>
 
 <VirtualHost *:443>
@@ -156,7 +178,7 @@ then
     SSLEngine               on
     SSLCompression          off
     SSLProtocol             -all +TLSv1.2 $TLS13
-    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384 
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
     SSLHonorCipherOrder     off
     SSLSessionTickets       off
     ServerSignature         off
@@ -166,32 +188,40 @@ then
     CustomLog \${APACHE_LOG_DIR}/access.log combined
     ErrorLog \${APACHE_LOG_DIR}/error.log
 
+    # Document root folder
     DocumentRoot $NCPATH
 
+    # The Nextcloud folder
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
-    AllowOverride None
-    ### include all .htaccess
-    Include $NCPATH/.htaccess
-    Include $NCPATH/config/.htaccess
-    Include $NCDATA/.htaccess
-    ###
+    AllowOverride All
     Require all granted
     Satisfy Any
+    # This is to include all the Nextcloud rules due to that we use PHP-FPM and .htaccess aren't read
+    Include $NCPATH/.htaccess
+    </Directory>
+
+    # Deny access to your data directory
+    <Directory $NCDATA>
+    Require all denied
+    </Directory>
+
+    # Deny access to the Nextcloud config folder
+    <Directory $NCPATH/config/>
+    Require all denied
     </Directory>
 
     <IfModule mod_dav.c>
     Dav off
     </IfModule>
 
-    SetEnv HOME $NCPATH
-    SetEnv HTTP_HOME $NCPATH
-
-    # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
+    # The following lines prevent .htaccess and .htpasswd files from being viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
+
+    SetEnv HOME $NCPATH
+    SetEnv HTTP_HOME $NCPATH
 
     # Disable HTTP TRACE method.
     TraceEnable off
@@ -207,8 +237,8 @@ then
 
 ### LOCATION OF CERT FILES ###
 
-    SSLCertificateChainFile $CERTFILES/$TLSDOMAIN/chain.pem
-    SSLCertificateFile $CERTFILES/$TLSDOMAIN/cert.pem
+    # SSLCertificateChainFile $CERTFILES/$TLSDOMAIN/chain.pem
+    SSLCertificateFile $CERTFILES/$TLSDOMAIN/fullchain.pem
     SSLCertificateKeyFile $CERTFILES/$TLSDOMAIN/privkey.pem
     SSLOpenSSLConfCmd DHParameters $DHPARAMS_TLS
 </VirtualHost>
@@ -236,8 +266,11 @@ then
     if certbot certonly --manual --text --key-type ecdsa --renew-by-default --server https://acme-v02.api.letsencrypt.org/directory --no-eff-email --agree-tos --preferred-challenges dns --manual-auth-hook "$SCRIPTS"/deSEC/hook.sh --manual-cleanup-hook "$SCRIPTS"/deSEC/hook.sh -d "$DEDYNDOMAIN"
     then
         # Generate DHparams cipher
-        if [ ! -f "$DHPARAMS_TLS" ]
+        if [ -f "$DHPARAMS_TLS" ]
         then
+            rm -f "$DHPARAMS_TLS"
+            openssl dhparam -out "$DHPARAMS_TLS" 2048
+        else
             openssl dhparam -out "$DHPARAMS_TLS" 2048
         fi
         # Choose which port for public access
@@ -296,8 +329,11 @@ else
         if [ -d "$CERTFILES" ]
         then
             # Generate DHparams cipher
-            if [ ! -f "$DHPARAMS_TLS" ]
+            if [ -f "$DHPARAMS_TLS" ]
             then
+                rm -f "$DHPARAMS_TLS"
+                openssl dhparam -out "$DHPARAMS_TLS" 2048
+            else
                 openssl dhparam -out "$DHPARAMS_TLS" 2048
             fi
             # Activate new config
@@ -317,7 +353,7 @@ Please consider showing them your gratitude:
 https://letsencrypt.org/become-a-sponsor/
 
 If you want to contribute to these scripts, have a look here:
-https://github.com/nextcloud/vm/tree/master/lets-encrypt"
+https://github.com/nextcloud/vm/tree/main/lets-encrypt"
             exit 0
         fi
     else

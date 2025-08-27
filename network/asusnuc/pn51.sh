@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 # Implements this way of doing it: https://askubuntu.com/a/1281319
 
@@ -46,18 +46,13 @@ mkdir -p "$INSTALLDIR"
 print_text_in_color "$ICyan" "Checking for newer version of firmware..."
 if ! curl -k -s https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software | grep "$RVERSION" >/dev/null
 then
-    msg_box "It seems like there's a newer version of the Realtek Driver for the LAN network card.
-
-Please report this to $ISSUES including this link:
-https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software
-
-Thanks!"
+    print_text_in_color "$ICyan" "Newer firmware for your Realtek card available. Please check here for upgrading: https://github.com/awesometic/realtek-r8125-dkms"
 fi
 
 # Download the driver before it's removed (no internet when it's removed)
 if [ ! -f "$INSTALLDIR"/r8125-"$RVERSION".tar.bz2 ]
 then
-    curl_to_dir https://github.com/nextcloud/vm/raw/master/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
+    curl_to_dir https://github.com/nextcloud/vm/raw/main/network/asusnuc r8125-"$RVERSION".tar.bz2 "$INSTALLDIR"
 fi
 
 # Install latest driver

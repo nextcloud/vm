@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Format sda NUC Server"
@@ -10,7 +10,7 @@ source /var/scripts/fetch_lib.sh
 # Check if root
 root_check
 
-# Needs to be Ubuntu 20.04 and Multiverse
+# Needs to be Ubuntu 22.04 and Multiverse
 check_distro_version
 check_multiverse
 

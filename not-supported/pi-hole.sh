@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
-# shellcheck disable=2016,2034,2059,2178
+# shellcheck disable=2016,2034,2059,2178,2317
 true
 SCRIPT_NAME="Pi-hole"
 SCRIPT_EXPLAINER="The Pi-hole® is a DNS sinkhole that protects your devices from unwanted content, \
@@ -20,6 +20,10 @@ debug_mode
 
 # Check if root
 root_check
+
+msg_box "The pi-hole script is unfortunately deprecated as it needs a rewrite since many parts in the upstream pi-hole project changed.
+Feel free to subscribe to https://github.com/szaimen/Nextcloud-NAS-Guide/issues/133 in the meantime."
+exit 1
 
 # Check if already installed
 if ! pihole &>/dev/null
@@ -69,6 +73,8 @@ If you press 'yes', we will remove Pi-hole, its settings and all those listed pr
     
     # Make an array from installed applications
     read -r -a INSTALLED <<< "$INSTALLED"
+
+    # /opt/pihole/uninstall.sh edit file and put setupVars variable setupVars="/etc/pihole/setupVars.conf" at 5th line or something
 
     UNINSTALL="/etc/.pihole/automated install/uninstall.sh"
     # Uninstall pihole; we need to modify it, else it is not unattended
@@ -192,6 +198,9 @@ sed -i "s|getStaticIPv4Settings$|echo getStaticIPv4Settings|" "$SCRIPTS"/pihole-
 PIHOLE_INTERFACE="$IFACE"
 export PIHOLE_INTERFACE
 
+# Fix php versions getting hold for pi-hole install script
+apt-mark unhold php"$PHPVER"*
+
 # Run the script
 bash "$SCRIPTS"/pihole-install.sh | tee "$SCRIPTS"/pihole-install.report
 
@@ -217,7 +226,7 @@ mkdir -p "$SCRIPTS"
 # Insert the new lines into pihole-update.sh
 cat << PIHOLE_UPDATE > "$SCRIPTS/pihole-update.sh"
 #!/bin/bash
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 notify_admin_gui "Starting the Pi-hole update." "You will be notified when it is done."
 # Create backup first
@@ -310,8 +319,8 @@ a2enmod ssl
 a2enmod proxy
 a2enmod proxy_http
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi
@@ -348,6 +357,7 @@ Listen 8094
     ProxyRequests off
     ProxyPass / "http://127.0.0.1:8093/"
     ProxyPassReverse / "http://127.0.0.1:8093/"
+    ProxyPreserveHost On
 		
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem

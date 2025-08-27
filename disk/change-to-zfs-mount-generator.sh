@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 # https://wiki.archlinux.org/index.php/ZFS#Using_zfs-mount-generator
-# Tested on Ubuntu 20.04
+# Tested on Ubuntu 22.04
 
-# This script came to life when we were having issues with importing the ZFS pool (ncdata) on Ubuntu 20.04.
+# This script came to life when we were having issues with importing the ZFS pool (ncdata) on Ubuntu 22.04.
 # After some forum reading and some digging on Github, this is the result.
 # The intention here is to make the import process more robust, and less prune to fail
 # Essentially, changing from 'zfs-mount.service' to 'zfs-mount-generator' which by many has been working better.
@@ -18,12 +18,12 @@ source /var/scripts/fetch_lib.sh
 # Check if root
 root_check
 
-# Needs to be Ubuntu 20.04 and Multiverse
+# Needs to be Ubuntu 22.04 and Multiverse
 check_distro_version
 check_multiverse
 
 # Import if missing and export again to import it with UUID
-# https://github.com/nextcloud/vm/blob/master/lib.sh#L1233
+# https://github.com/nextcloud/vm/blob/main/lib.sh#L1233
 # Set a different name for the pool (if used outside of this repo)
 # export POOLNAME=ncdata
 zpool_import_if_missing

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 # Use local lib file in case there is no internet connection
 if printf "Testing internet connection..." && ping github.com -c 2 >/dev/null 2>&1
@@ -186,7 +186,7 @@ network:
        $IFACE: #object name
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
-         addresses: 
+         addresses:
          - $LANIP
          routes:
           - to: default
@@ -198,6 +198,7 @@ IPCONFIG
         msg_box "These are your settings, please make sure they are correct:
 
 $(cat /etc/netplan/nextcloud.yaml)"
+        chmod 600 /etc/netplan/nextcloud.yaml
         netplan try
         set_systemd_resolved_dns "$IFACE"
     else
@@ -208,7 +209,7 @@ network:
        $IFACE2: #object name
          dhcp4: false # dhcp v4 disable
          dhcp6: false # dhcp v6 disable
-         addresses: 
+         addresses:
          - $LANIP
          routes:
           - to: default
@@ -220,6 +221,7 @@ IPCONFIGnonvmware
         msg_box "These are your settings, please make sure they are correct:
 
 $(cat /etc/netplan/nextcloud.yaml)"
+        chmod 600 /etc/netplan/nextcloud.yaml
         netplan try
         set_systemd_resolved_dns "$IFACE2"
     fi

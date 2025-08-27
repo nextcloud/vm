@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Collabora (Docker)"
 SCRIPT_EXPLAINER="This script will install the Collabora Office Server bundled with Docker"
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 # To work with https://github.com/nextcloud/richdocuments/pull/2235
 
 # Check for errors + debug code and abort if something isn't right
@@ -57,7 +57,7 @@ NCDOMAIN=$(nextcloud_occ_no_check config:system:get overwrite.cli.url | sed 's|h
 
 # Curl the library another time to get the correct https_conf
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 
 # Get all needed variables from the library
 nc_update
@@ -135,8 +135,8 @@ a2enmod proxy_http
 a2enmod ssl
 a2enmod headers
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi

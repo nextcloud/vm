@@ -17,12 +17,12 @@ Server installation. Simplified. :cloud:
 --------------------
 
 ## Dependencies:
-(Ubuntu Server 22.04 LTS *minimal* 64-bit)
+(Ubuntu Server 24.04 LTS *minimal* 64-bit)
 <br>
-(Linux Kernel: 5.15)
+(Linux Kernel: 6.8)
 - Apache 2.4
-- PostgreSQL 14
-- PHP-FPM 8.1
+- PostgreSQL 16
+- PHP-FPM 8.3
 - Redis Memcache (latest stable version from PECL)
 - PHP-igbinary (latest stable version from PECL
 - PHP-smbclient (latest stable version from PECL)
@@ -32,15 +32,15 @@ Server installation. Simplified. :cloud:
 * [Create a PR](https://help.github.com/articles/creating-a-pull-request/) and improve the code
 * Report [your issue](https://github.com/nextcloud/vm/issues/new)
 * Help us with [existing issues](https://github.com/nextcloud/vm/issues)
-* Test what's not yet released into the stable VM. Please have a look at [this subfolder](https://github.com/nextcloud/vm/tree/master/not-supported) for further information.
+* Test what's not yet released into the stable VM. Please have a look at [this subfolder](https://github.com/nextcloud/vm/tree/main/not-supported) for further information.
 * Write scripts so that the release process becomes automated with [Vagrant](https://www.vagrantup.com/docs/getting-started/), [Terraform](https://www.terraform.io/) or similar
 * **[Donate](https://shop.hanssonit.se/product-category/donate/) or buy our [pre-configured VMs](https://shop.hanssonit.se/product-category/virtual-machine/): 500 GB, 1 TB, 2TB for both VMware, Hyper-V and [more](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration?currentPageId=bls17dahv0jgrltpif20)**
 
 **FYI**
 
-Developed by [Daniel Hansson](https://github.com/enoch85) and the Nextcloud community. Nextcloud GmbH does not offer support for the VM in the [master branch](https://github.com/nextcloud/vm/tree/master) (full-version), as we only support manual tarball/zip-package installations. You can download the official Nextcloud VM appliance ([also from this repo](https://github.com/nextcloud/vm/tree/official-basic-vm)) from [our website](https://download.nextcloud.com/vm/Official-Nextcloud-VM.zip) to get a stripped down version for testing if you rather want to skip all the manual steps in our documentation.
+Developed by [Daniel Hansson](https://github.com/enoch85) and the Nextcloud community. Nextcloud GmbH does not offer support for the VM in the [main branch](https://github.com/nextcloud/vm/tree/main) (full-version), as we only support manual tarball/zip-package installations. You can download the official Nextcloud VM appliance ([also from this repo](https://github.com/nextcloud/vm/tree/official-basic-vm)) from [our website](https://download.nextcloud.com/vm/Official-Nextcloud-VM.zip) to get a stripped down version for testing if you rather want to skip all the manual steps in our documentation.
 
-If you want support regarding the full-version VM in master, please contact our partner [Hansson IT](https://www.hanssonit.se/nextcloud-vm).
+If you want support regarding the full-version VM in main, please contact our partner [Hansson IT](https://www.hanssonit.se/nextcloud-vm).
   
 ## Full documentation
 * [VM](https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm) (the easiest option)
@@ -66,7 +66,7 @@ Please keep in mind that this is only intended for testing and might crash your 
 
 The `nextcloud_install_production.sh` script can be run as part of Vagrant provisioning.
 
-See [this subrepo](https://github.com/nextcloud/vm/tree/master/vagrant) for more information.
+See [this subrepo](https://github.com/nextcloud/vm/tree/main/vagrant) for more information.
 
 Please report any issues you can find. Improvements are welcome!
 
@@ -106,17 +106,18 @@ Please report any issues you can find. Improvements are welcome!
 * You? :)
 
 ## Special thanks to
-* [Ezra Holm](https://github.com/ezraholm50) @ [Tech and Me](https://www.techandme.se)
+* Ezra Holm @ [Tech and Me](https://www.techandme.se)
 * [Luis Guzman](https://github.com/Ark74) @ [SwITNet](https://switnet.net)
 * [Stefan Heitmüller](https://github.com/morph027) @ [morph027's Blog](https://morph027.gitlab.io/)
 * [Lorenzo Faleschini](https://github.com/penzoiders)
 * [Georg Großmann](https://github.com/ggeorgg)
 * [liao20081228](https://github.com/liao20081228)
 * [aaaskew](https://github.com/aaaskew)
+* IP address data powered by [IPinfo](https://ipinfo.io/)
 
-[Nextcloud Server]: https://bit.ly/2CHIUkA
-[app store]: https://bit.ly/2HUy4v9
-[\*nix]: https://bit.ly/2UaCC7b
-[A+ security-rated]: https://bit.ly/2mvlyJ3
-[Collabora Online]: https://bit.ly/2WjVVZ8
-[ONLYOFFICE]: https://bit.ly/2FA0TKj
+[Nextcloud Server]: http://shortio.hanssonit.se/r1Rx0GqXa9
+[app store]: http://shortio.hanssonit.se/Rz1GEXt9dL
+[\*nix]: http://shortio.hanssonit.se/52hOTQbhdh
+[A+ security-rated]: http://shortio.hanssonit.se/aMTjg0SJi3
+[Collabora Online]: http://shortio.hanssonit.se/IKjBoOfQOT
+[ONLYOFFICE]: http://shortio.hanssonit.se/oRLShCfRK3

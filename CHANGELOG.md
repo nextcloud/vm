@@ -2,13 +2,20 @@
 
 **Please note that BOTH disks need to be imported for the VM to function properly.**
 
-- Check the latest commits here: https://github.com/nextcloud/vm/commits/master
+- Check the latest commits here: https://github.com/nextcloud/vm/commits/main
 - Documentation can be found here: https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W7Du9uPiqQz3_Mr1/nextcloud-vm-machine-configuration
 
 PR's are more than welcome. Happy Nextclouding!
 
 ### Different versions
 If you run Hyper-V or want 500 GB, 1 TB or 2 TB VM you can download it from [T&M Hansson IT's shop](https://shop.hanssonit.se/product-category/virtual-machine/nextcloud/). 
+
+## All future releases
+
+### Full changelog:
+- [VM](https://github.com/nextcloud/vm/releases/)
+- [Nextcloud](https://nextcloud.com/changelog/)
+
 
 ## 26.0.0
 
@@ -241,7 +248,7 @@ This release is quite huge, including Ubuntu 22.04 (minimal), PHP-FPM 8.1, and P
 - Add the Azure kernel for Hyper-V VMs
 - Shorten the time files are stored in trashbin (can still be configured)
 - Escape all Apache Log dirs correctly
-- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
+- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/main/not-supported)
 - Minor bugfixes and improvements
 - And more...
 
@@ -265,7 +272,7 @@ This release is quite huge, including Ubuntu 22.04 (minimal), PHP-FPM 8.1, and P
 - ClamAV - improve weekly full-scan tremendously
 - Update geoblock database - april
 - Speed up the network check if the network already works
-- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
+- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/main/not-supported)
 - Minor bugfixes and improvements
 
 ### Full changelog:
@@ -292,7 +299,7 @@ This release is quite huge, including Ubuntu 22.04 (minimal), PHP-FPM 8.1, and P
 - Don't break update when enabling app
 - Fix not enabled PECL extensions
 - Prevent apps from breaking the update due to incompatibility
-- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
+- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/main/not-supported)
 - Minor bugfixes and improvements
 
 ### Full changelog:
@@ -305,7 +312,7 @@ This release is quite huge, including Ubuntu 22.04 (minimal), PHP-FPM 8.1, and P
 - Ask to get the latest `update.sh` script when running updates from `menu.sh`
 - Allow to reinstall Bitwarden RS also if local files are present
 - Updated geoblock database files
-- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported)
+- Made some enhancements to scripts in the [not-supported folder](https://github.com/nextcloud/vm/tree/main/not-supported)
 - Minor bugfixes and improvements
 
 ### Full changelog:
@@ -377,7 +384,7 @@ This release is quite huge, including Ubuntu 22.04 (minimal), PHP-FPM 8.1, and P
 - Allow to reinstall automatic updates
 - Improved partition check during the install-script
 - Fixed some typo's
-- Added more options to the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported) and made some enhancements
+- Added more options to the [not-supported folder](https://github.com/nextcloud/vm/tree/main/not-supported) and made some enhancements
 - Minor bugfixes and improvements
 
 
@@ -415,7 +422,7 @@ This release is quite huge, including Ubuntu 22.04 (minimal), PHP-FPM 8.1, and P
 - Fixed problems with static-ip
 - Added Docker migrate script
 - Fixed and issue with ClamAV
-- Added more options to the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported) and made some enhancements
+- Added more options to the [not-supported folder](https://github.com/nextcloud/vm/tree/main/not-supported) and made some enhancements
 - Minor bugfixes and improvements
 
 ### Full changelog:
@@ -438,7 +445,7 @@ This release is quite huge, including Ubuntu 22.04 (minimal), PHP-FPM 8.1, and P
 - SMBmount: Introduce the option to customize the mount before adding as external storage to Nextcloud
 - SMBmount: Add the option to utilize inotify to actively watch over externally changed files and folders
 - Repository: cleanup by removing duplicate scripts and not-needed functions
-- Repository: added the [not-supported folder](https://github.com/nextcloud/vm/tree/master/not-supported) with additional options like creating a SMB-server
+- Repository: added the [not-supported folder](https://github.com/nextcloud/vm/tree/main/not-supported) with additional options like creating a SMB-server
 
 - Minor bugfixes and improvements
 

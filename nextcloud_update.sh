@@ -4,14 +4,14 @@
 # DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
 #################################################################################################################
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
-# https://github.com/nextcloud/vm/blob/master/LICENSE
+# https://github.com/nextcloud/vm/blob/main/LICENSE
 
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 
 # Get all needed variables from the library
 ncdb
@@ -32,9 +32,13 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
-# Automatically restart services (Ubuntu 22.04)
-if ! version 16.04.10 "$DISTRO" 20.04.10
+# Automatically restart services (Ubuntu 24.04)
+if ! version 16.04.10 "$DISTRO" 22.04.10
 then
+    if [ ! -f /etc/needrestart/needrestart.conf ]
+    then
+        install_if_not needrestart
+    fi
     if ! grep -rq "{restart} = 'a'" /etc/needrestart/needrestart.conf
     then
         # Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
@@ -147,7 +151,7 @@ then
     then
         check_command systemctl stop docker
     fi
-    nextcloud_occ maintenance:mode --on
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
     if does_snapshot_exist "NcVM-startup"
     then
         check_command lvremove /dev/ubuntu-vg/NcVM-startup -y
@@ -155,7 +159,7 @@ then
     then
         if ! lvremove /dev/ubuntu-vg/NcVM-snapshot -y
         then
-            nextcloud_occ maintenance:mode --off
+            sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
             start_if_stopped docker
             notify_admin_gui "Update failed!" \
 "Could not remove NcVM-snapshot - Please reboot your server! $(date +%T)"
@@ -166,7 +170,7 @@ This should work again after a reboot of your server."
     fi
     if ! lvcreate --size 5G --snapshot --name "NcVM-snapshot" /dev/ubuntu-vg/ubuntu-lv
     then
-        nextcloud_occ maintenance:mode --off
+        sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
         start_if_stopped docker
         notify_admin_gui "Update failed!" \
 "Could not create NcVM-snapshot - Please reboot your server! $(date +%T)"
@@ -177,12 +181,12 @@ It should then start working again."
     fi
     if ! lvrename /dev/ubuntu-vg/NcVM-snapshot /dev/ubuntu-vg/NcVM-snapshot-pending
     then
-        nextcloud_occ maintenance:mode --off
+        sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
         start_if_stopped docker
         msg_box "Could not rename the snapshot before starting the update. Please reboot your system!"
         exit 1
     fi
-    nextcloud_occ maintenance:mode --off
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
     start_if_stopped docker
 fi
 
@@ -248,6 +252,10 @@ then
         chmod 644 /etc/apt/apt.conf.d/99progressbar
     fi
 fi
+
+# Since the branch change, always get the latest update script
+download_script STATIC update
+chmod +x $SCRIPTS/update.sh
 
 # Ubuntu 16.04 is deprecated
 check_distro_version
@@ -323,6 +331,10 @@ then
     apt-mark hold veracrypt
 fi
 
+# Enter maintenance:mode
+print_text_in_color "$IGreen" "Enabling maintenance:mode..."
+sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
+
 # Upgrade Talk repositrory if Talk is installed (2022-12-26)
 if is_this_installed nextcloud-spreed-signaling
 then
@@ -333,14 +345,34 @@ fi
 # Upgrade OS dependencies
 export DEBIAN_FRONTEND=noninteractive ; apt-get dist-upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 
+# Temporary fix for PHP 2023-08-27
+# There's a bug in PHP 8.1.21 which causes server to crash
+# If you're on Ondrejs PPA, PHP isn't updated, so do that here instead
+apt-mark unhold php* >/dev/null 2>&1
+apt-get update -q4
+export DEBIAN_FRONTEND=noninteractive ; apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+apt-mark hold php* >/dev/null 2>&1
+
+# Improve Apache for PHP-FPM
+if is_this_installed php"$PHPVER"-fpm
+then
+    if [ -d "$PHP_FPM_DIR" ]
+    then
+        # Just make sure that MPM_EVENT is default
+        a2dismod mpm_prefork
+        a2enmod mpm_event
+        restart_webserver
+    fi
+fi
+
 # Fix Realtek on PN51
 if asuspn51
 then
-    if ! version 22.04 "$DISTRO" 22.04.10
+    if ! version 24.04 "$DISTRO" 24.04.10
     then
         # Upgrade Realtek drivers
         print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
-        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/main/network/asusnuc pn51.sh "$SCRIPTS"
         bash "$SCRIPTS"/pn51.sh
     fi
 fi
@@ -356,7 +388,7 @@ then
     then
         bash "$NETDATA_UPDATER_PATH"
     else
-        curl_to_dir https://raw.githubusercontent.com/netdata/netdata/master/packaging/installer/ netdata-updater.sh "$SCRIPTS"
+        curl_to_dir https://raw.githubusercontent.com/netdata/netdata/main/packaging/installer/ netdata-updater.sh "$SCRIPTS"
         bash "$SCRIPTS"/netdata-updater.sh
         rm -f "$SCRIPTS"/netdata-updater.sh
     fi
@@ -383,7 +415,15 @@ fi
 # Fix PHP error message
 mkdir -p /tmp/pear/cache
 
-# Update Redis PHP extension (18.04 --> 20.04 since 16.04 already is deprecated in the top of this script)
+# Just in case PECLs XML are bad
+if ! pecl channel-update pecl.php.net
+then
+    curl_to_dir http://pecl.php.net channel.xml /tmp
+    pear channel-update /tmp/channel.xml
+    rm -f /tmp/channel.xml
+fi
+
+# Update Redis PHP extension (18.04 -->, since 16.04 already is deprecated in the top of this script)
 print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
 
 # Check current PHP version
@@ -396,7 +436,7 @@ then
     then
         install_if_not php"$PHPVER"-dev
     fi
-    pecl channel-update pecl.php.net
+
     yes no | pecl upgrade redis
     systemctl restart redis-server.service
 fi
@@ -529,16 +569,35 @@ restart_webserver
 if [ -d "$ADMINERDIR" ]
 then
     print_text_in_color "$ICyan" "Updating Adminer..."
-    rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
-    curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
-    ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+    rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php "$ADMINERDIR"/adminer-pgsql.php
+    # Download the latest version
+    curl_to_dir "https://download.adminerevo.org/latest/adminer" "adminer-pgsql.zip" "$ADMINERDIR"
+    install_if_not unzip
+    # Unzip the latest version
+    unzip "$ADMINERDIR"/adminer-pgsql.zip -d "$ADMINERDIR"
+    rm -f "$ADMINERDIR"/adminer-pgsql.zip
+    mv "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
 fi
 
-# Get newest dat files for geoblock.sh
+# Get latest Maxmind databse for Geoblock
 if grep -q "^#Geoip-block" /etc/apache2/apache2.conf
 then
-    get_newest_dat_files
-    check_command systemctl restart apache2
+    if grep -c GeoIPDBFile /etc/apache2/apache2.conf
+    then
+        msg_box "We have updated GeoBlock to a new version which isn't compatible with the old one. Please reinstall with the menu script to get the latest version."
+        notify_admin_gui \
+"GeoBlock needs to be reinstalled!" \
+"We have updated GeoBlock to a new version which isn't compatible with the old one.
+Please reinstall with the menu script to get the latest version.
+
+sudo bash /ar/scripts/menu.sh --> Server Configuration --> GeoBlock"
+    fi
+elif [ -f "$GEOBLOCK_MOD" ]
+then
+    if download_geoip_mmdb
+    then
+        print_text_in_color "$IGreen" "GeoBlock database updated!"
+    fi
 fi
 
 # Update docker containers and remove Watchtower if Bitwarden is present due to compatibility issue
@@ -547,6 +606,12 @@ fi
 # individually depending on which docker containers that exist.
 if is_docker_running
 then
+    # Fix Docker compose issue
+    if is_this_installed docker-compose
+    then
+        apt purge docker-compose -y
+        install_if_not docker-compose-plugin
+    fi
     # To fix https://github.com/nextcloud/vm/issues/1459 we need to remove Watchtower
     # to avoid updating Bitwarden again, and only update the specified docker images above
     if docker ps -a --format '{{.Names}}' | grep -Eq "bitwarden";
@@ -614,15 +679,32 @@ $DOCKER_RUN_OUTPUT"
         if does_this_docker_exist 'onlyoffice/documentserver'
         then
             docker_update_specific 'onlyoffice' 'OnlyOffice'
-            msg_box "OnlyOffice updated the way websockets work, and you need to update your configuration.\n
-Please update your Apache2 config to this: https://github.com/nextcloud/vm/blob/master/apps/onlyoffice_docker.sh#L210-L215.
-Another option is to reinstall OnlyOffice with the menu script; sudo bash /var/scripts/menu.sh\n
-If you need help, please get support here: https://shop.hanssonit.se/product/premium-support-per-30-minutes/"
         fi
     fi
     # Full Text Search
-    docker_update_specific 'fts_esror' 'Full Text Search'
-    docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
+    if [ "${CURRENTVERSION%%.*}" -ge "25" ]
+    then
+        fulltextsearch_install
+        if does_this_docker_exist "$nc_fts" && does_this_docker_exist "$opens_fts"
+        then
+            msg_box "Please consider reinstalling FullTextSearch since you seem to have the old (and not working) implemantation by issuing the uninstall script: sudo bash $SCRIPTS/menu.sh --> Additional Apps --> FullTextSearch"
+        elif [ -d "$FULLTEXTSEARCH_DIR" ]
+        then
+            # Check if new name standard is set, and only update if it is (since it contains the latest tag)
+            if grep -rq "$FULLTEXTSEARCH_IMAGE_NAME" "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
+            then
+                if [ -n "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" ]
+                then
+                    sed -i "s|image: docker.elastic.co/elasticsearch/elasticsearch:.*|image: docker.elastic.co/elasticsearch/elasticsearch:$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG|g" "$FULLTEXTSEARCH_DIR/docker-compose.yaml"
+                    docker-compose_update "$FULLTEXTSEARCH_IMAGE_NAME" 'Full Text Search' "$FULLTEXTSEARCH_DIR"
+                fi
+            else
+                print_text_in_color "$ICyan" "Full Text Search is version based, to upgrade it, please change the version in $FULLTEXTSEARCH_DIR and run 'docker compose pull && docker compose up -d'. Latest tags are here: https://www.docker.elastic.co/r/elasticsearch and release notes here: https://www.elastic.co/guide/en/elasticsearch/reference/current/release-highlights.html"
+            fi
+        fi
+    fi
+    # Talk Recording
+    docker_update_specific 'talk-recording' "Talk Recording"
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
     # Imaginary
@@ -638,7 +720,7 @@ then
     for apacheconf in "${LOOLWSDCONF[@]}"
     do
         sed -i "s|/loleaflet|/browser|g" "${apacheconf}"
-        sed -i "s|loleaflet is the|broswer is the|g" "${apacheconf}"
+        sed -i "s|loleaflet is the|browser is the|g" "${apacheconf}"
         sed -i "s|loolwsd|coolwsd|g" "${apacheconf}"
         sed -i "s|/lool|/cool|g" "${apacheconf}"
     done
@@ -668,10 +750,17 @@ then
     chmod +x "$SCRIPTS"/updatenotification.sh
 fi
 
+# Disable maintenance:mode
+print_text_in_color "$IGreen" "Disabling maintenance:mode..."
+sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
+
+# Make all previous files executable
+print_text_in_color "$ICyan" "Finding all executable files in $NC_APPS_PATH"
+find_executables="$(find $NC_APPS_PATH -type f -executable)"
+
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    nextcloud_occ maintenance:mode --off
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps..."
     UPDATED_APPS="$(nextcloud_occ_no_check app:update --all)"
@@ -704,14 +793,32 @@ else
     print_text_in_color "$IGreen" "Your apps are already up to date!"
 fi
 
-# Restart notify push if existing
-if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
+# Apply correct redirect rule to avoid security check errors
+REDIRECTRULE="$(grep -r "\[R=301,L\]" $SITES_AVAILABLE | cut -d ":" -f1)"
+if [ -n "$REDIRECTRULE" ]
 then
-    systemctl restart notify_push
+    # Change the redirect rule in all files in Apache available
+    mapfile -t REDIRECTRULE <<< "$REDIRECTRULE"
+    for rule in "${REDIRECTRULE[@]}"
+    do
+        sed -i "s|{HTTP_HOST} \[R=301,L\]|{HTTP_HOST}\$1 \[END,NE,R=permanent\]|g" "$rule"
+    done
+    # Restart Apache
+    if check_command apachectl configtest
+    then
+        restart_webserver
+    fi
 fi
 
 # Nextcloud 13 is required.
 lowest_compatible_nc 13
+
+# Restart notify push if existing
+if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
+then
+    chmod +x "$NC_APPS_PATH"/notify_push/bin/x86_64/notify_push
+    systemctl restart notify_push.service
+fi
 
 if [ -f /tmp/minor.version ]
 then
@@ -799,7 +906,7 @@ then
 fi
 
 ############# Don't upgrade to specific version
-DONOTUPDATETO='23.0.0'
+DONOTUPDATETO='29.0.0'
 if [[ "$NCVERSION" == "$DONOTUPDATETO" ]]
 then
     msg_box "Due to major bugs with Nextcloud $DONOTUPDATETO we won't upgrade to that version since it's a risk it will break your server. Please try to upgrade again when the next maintenance release is out."
@@ -878,6 +985,36 @@ If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-
     fi
 fi
 
+# Check if PHP version is compatible with $NCVERSION
+# https://github.com/nextcloud/server/issues/29258
+PHP_VER=81
+NC_VER=31
+if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
+then
+    if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
+    then
+msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+
+If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+        exit
+    fi
+fi
+
+# Check if PHP version is compatible with $NCVERSION
+# https://github.com/nextcloud/server/issues/29258
+PHP_VER=82
+NC_VER=32
+if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
+then
+    if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
+    then
+msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+
+If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+        exit
+    fi
+fi
+
 # Upgrade Nextcloud
 if ! site_200 "$NCREPO"
 then
@@ -894,6 +1031,7 @@ then
 fi
 
 # Stop Apache2
+print_text_in_color "$ICyan" "Stopping Apache2..."
 check_command systemctl stop apache2.service
 
 # Create backup dir (/mnt/NCBACKUP/)
@@ -907,7 +1045,7 @@ if is_this_installed postgresql-common
 then
     cd /tmp
     # Test connection to PostgreSQL
-    if ! sudo -u postgres psql -c "\q"
+    if ! sudo -u postgres psql -w -c "\q"
     then
         # If it fails, trust the 'postgres' user to be able to perform backup
         rsync -a /etc/postgresql/*/main/pg_hba.conf "$BACKUP"/pg_hba.conf_BACKUP
@@ -1024,7 +1162,6 @@ then
     send_mail \
     "New Nextcloud version found!" \
     "We will now start the update to Nextcloud $NCVERSION. $(date +%T)"
-    nextcloud_occ maintenance:mode --on
     countdown "Removing old Nextcloud instance in 5 seconds..." "5"
     rm -rf "$NCPATH"
     print_text_in_color "$IGreen" "Extracting new package...."
@@ -1033,7 +1170,6 @@ then
     print_text_in_color "$IGreen" "Restoring config to Nextcloud..."
     rsync -Aaxz "$BACKUP"/config "$NCPATH"/
     bash "$SECURE" & spinner_loading
-    nextcloud_occ maintenance:mode --off
     # Don't execute the update before all cronjobs are finished
     check_running_cronjobs
     # Execute the update
@@ -1063,17 +1199,25 @@ then
     fi
     if [ "${CURRENTVERSION%%.*}" -ge "23" ]
     then
-        # Raise OPCache
-        if grep -q "opcache.interned_strings_buffer=8" "$PHP_INI"
+        # Update opcache.interned_strings_buffer
+        if ! grep -rq opcache.interned_strings_buffer="$opcache_interned_strings_buffer_value" "$PHP_INI"
         then
-            sed -i "s|opcache.interned_strings_buffer.*|opcache.interned_strings_buffer=16|g" "$PHP_INI"
+            sed -i "s|opcache.interned_strings_buffer=.*|opcache.interned_strings_buffer=$opcache_interned_strings_buffer_value|g" "$PHP_INI"
+            restart_webserver
         fi
+    fi
+    if [ "${CURRENTVERSION%%.*}" -ge "27" ]
+    then
+        nextcloud_occ dav:sync-system-addressbook
     fi
 else
     msg_box "Something went wrong with backing up your old Nextcloud instance
 Please check in $BACKUP if the folders exist."
     exit 1
 fi
+
+# Repair
+nextcloud_occ maintenance:repair --include-expensive
 
 # Update Bitwarden
 if is_docker_running
@@ -1145,7 +1289,6 @@ done
 # Update all Nextcloud apps a second time (if the old backup was outdated)
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
 then
-    nextcloud_occ maintenance:mode --off
     # Check for upgrades
     print_text_in_color "$ICyan" "Trying to automatically update all Nextcloud apps again..."
     nextcloud_occ_no_check app:update --all
@@ -1179,14 +1322,17 @@ nextcloud_occ config:system:set htaccess.RewriteBase --value="/"
 nextcloud_occ maintenance:update:htaccess
 bash "$SECURE" & spinner_loading
 
-# Repair
-nextcloud_occ maintenance:repair
-
 # Create $VMLOGS dir
 if [ ! -d "$VMLOGS" ]
 then
     mkdir -p "$VMLOGS"
 fi
+
+# Make all files in executable again
+for executable in $find_executables
+do
+    chmod +x "$executable"
+done
 
 CURRENTVERSION_after=$(nextcloud_occ status | grep "versionstring" | awk '{print $3}')
 if [[ "$NCVERSION" == "$CURRENTVERSION_after" ]] || [ -n "$PRERELEASE_VERSION" ]
@@ -1200,7 +1346,6 @@ To recover your old apps, please check $BACKUP/apps and copy them to $NCPATH/app
 
 Thank you for using T&M Hansson IT's updater!"
     nextcloud_occ status
-    nextcloud_occ maintenance:mode --off
     # Restart notify push if existing
     if [ -f "$NOTIFY_PUSH_SERVICE_PATH" ]
     then
@@ -1218,6 +1363,8 @@ Thank you for using T&M Hansson IT's updater!"
     if [ -n "$SNAPSHOT_EXISTS" ]
     then
         check_command lvrename /dev/ubuntu-vg/NcVM-snapshot-pending /dev/ubuntu-vg/NcVM-snapshot
+        countdown "Automatically restarting your server in 1 minute since LVM-snapshots are present." "60"
+        shutdown -r
     fi
     exit 0
 else

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Locales"
@@ -30,6 +30,14 @@ then
 elif [ "$KEYBOARD_LAYOUT" = "de" ]
 then
     sudo locale-gen "de_DE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+    # Set a better mirror (only for German servers)
+    if grep -r archive.ubuntu.com /etc/apt/sources.list
+    then
+        sed -i "s|http://archive.ubuntu.com|https://ftp.uni-stuttgart.de|g" /etc/apt/sources.list
+    elif grep -r de.archive.ubuntu.com /etc/apt/sources.list
+    then
+        sed -i "s|http://de.archive.ubuntu.com|https://ftp.uni-stuttgart.de|g" /etc/apt/sources.list
+    fi
 elif [ "$KEYBOARD_LAYOUT" = "fr" ]
 then
     sudo locale-gen "fr_FR.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales

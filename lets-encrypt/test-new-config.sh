@@ -4,7 +4,7 @@ SCRIPT_NAME="Test New Configuration"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -34,8 +34,10 @@ then
     sed -i "s|env\[HOSTNAME\] = .*|env[HOSTNAME] = $(hostname -f)|g" "$PHP_POOL_DIR"/nextcloud.conf
 fi
 
-# Set trusted domains
-run_script NETWORK trusted
+# Set the domain as trusted
+add_to_trusted_domains "$FQDOMAIN"
+nextcloud_occ config:system:set overwrite.cli.url --value="https://$FQDOMAIN"
+nextcloud_occ maintenance:update:htaccess
 
 # Add crontab
 cat << CRONTAB > "$SCRIPTS/letsencryptrenew.sh"

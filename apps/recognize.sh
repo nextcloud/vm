@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Recognize for Nextcloud"
@@ -27,26 +27,6 @@ fi
 # Compatible with NC26 and above
 lowest_compatible_nc 26
 
-# Check if suspicious_login are installed
-# https://github.com/nextcloud/recognize/issues/676
-if is_app_enabled suspicious_login
-then
-    msg_box "Since you have the app Suspicious Login Detection installed, you can't install Recognize. The reason is that it will cause issues with cron.php.\nIf you choose 'No' the installer will exit"
-    if yesno_box_no "Do you want to disable Suspicious Login to be able to install Recognize?"
-    then
-        nextcloud_occ app:disable suspicious_login
-        if ! [ -f /etc/fail2ban/filter.d/nextcloud.conf ] || ! is_this_installed fail2ban
-        then
-            if yesno_box_yes "Do you want to install Fail2ban (IP blocking in Linux) instead?"
-            then
-                run_script APP fail2ban
-            fi
-        fi
-    else
-        exit
-    fi
-fi
-
 # Check if face-recognition is installed and ask to remove it
 if is_app_installed facerecognition
 then
@@ -58,7 +38,7 @@ then
 4. Install
 
 We will run the uninstaller for you now, then exit."
-    wget https://raw.githubusercontent.com/nextcloud/vm/master/old/face-recognition.sh && bash face-recognition.sh && rm -f face-recognition.sh
+    wget https://raw.githubusercontent.com/nextcloud/vm/main/old/face-recognition.sh && bash face-recognition.sh && rm -f face-recognition.sh
     exit
 fi
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Not-supported Menu"
@@ -32,9 +32,9 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "NTFS Mount" "(Mount NTFS drives)" OFF \
 "NTFS Veracrypt" "(Format, encrypt and mount Veracrypt NTFS drives)" OFF \
 "Backup Viewer" "(View your Backups)" OFF \
+"Restic Cloud Backup" "(Backup your server using Restic to multiple clouds)" OFF \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
 "Firewall" "(Setting up a firewall)" OFF \
-"Harden SSH" "(Harden SSH configuration)" OFF \
 "Monitor Link Shares" "(Monitors the creation of link shares)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
@@ -77,13 +77,13 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Daily Backup Wizard script..."
         run_script NOT_SUPPORTED_FOLDER daily-backup-wizard
     ;;&
+    *"Restic Cloud Backup Wizard"*)
+        print_text_in_color "$ICyan" "Downloading the Cloud Backup Wizard script..."
+        run_script NOT_SUPPORTED_FOLDER restic-cloud-backup-wizard
+    ;;&
     *"Firewall"*)
         print_text_in_color "$ICyan" "Downloading the Firewall script..."
         run_script NOT_SUPPORTED_FOLDER firewall
-    ;;&
-    *"Harden SSH"*)
-        print_text_in_color "$ICyan" "Downloading the Harden SSH script..."
-        run_script ADDONS harden-ssh
     ;;&
     *"Monitor Link Shares"*)
         print_text_in_color "$ICyan" "Monitor Link Shares..."

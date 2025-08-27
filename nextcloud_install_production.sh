@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
-# https://github.com/nextcloud/vm/blob/master/LICENSE
+# https://github.com/nextcloud/vm/blob/main/LICENSE
 
 # Prefer IPv4 for apt
 echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
@@ -28,12 +28,20 @@ else
     apt-get install curl -y
 fi
 
+# Install whiptail if not existing
+if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" = "1" ]
+then
+    echo "whiptail OK"
+else
+    apt-get install whiptail -y
+fi
+
 true
 SCRIPT_NAME="Nextcloud Install Script"
 SCRIPT_EXPLAINER="This script is installing all requirements that are needed for Nextcloud to run.
 It's the first of two parts that are necessary to finish your customized Nextcloud installation."
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -53,26 +61,15 @@ is_process_running apt
 is_process_running dpkg
 
 # Check distribution and version
-if ! version 22.04 "$DISTRO" 22.04.10
+if ! version 24.04 "$DISTRO" 24.04.10
 then
-    msg_box "This script can only be run on Ubuntu 22.04 (server)."
+    msg_box "This script can only be run on Ubuntu 24.04 (server)."
     exit 1
 fi
 
 # Automatically restart services
 # Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
 sed -i "s|#\$nrconf{restart} = .*|\$nrconf{restart} = 'a';|g" /etc/needrestart/needrestart.conf
-
-# Install needed dependencies
-install_if_not lshw
-install_if_not net-tools
-install_if_not whiptail
-install_if_not apt-utils
-
-# Nice to have dependencies
-install_if_not bash-completion
-install_if_not htop
-install_if_not iputils-ping
 
 # Check for flags
 if [ "$1" = "" ]
@@ -106,7 +103,8 @@ then
     if ! does_snapshot_exist "NcVM-installation" && yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
 Please note: this feature will not be used by this script but by other scripts later on.
 For now we will only create a placeholder volume that will be used to let some space for snapshot volumes.
-Be aware that you will not be able to use the built-in backup solution if you choose 'No'!"
+Be aware that you will not be able to use the built-in backup solution if you choose 'No'!
+Enabling this will also force an automatic reboot after running the update script!"
     then
         check_free_space
         if [ "$FREE_SPACE" -ge 50 ]
@@ -120,38 +118,6 @@ Be aware that you will not be able to use the built-in backup solution if you ch
             sleep 2
         fi
     fi
-fi
-
-# Download needed libraries before execution of the first script
-mkdir -p "$SCRIPTS"
-download_script GITHUB_REPO lib
-download_script STATIC fetch_lib
-
-# Set locales
-run_script ADDONS locales
-
-# Create new current user
-download_script STATIC adduser
-bash "$SCRIPTS"/adduser.sh "nextcloud_install_production.sh"
-rm -f "$SCRIPTS"/adduser.sh
-
-check_universe
-check_multiverse
-
-# Check if key is available
-if ! site_200 "$NCREPO"
-then
-    msg_box "Nextcloud repo is not available, exiting..."
-    exit 1
-fi
-
-# Test Home/SME function
-if home_sme_server
-then
-    msg_box "This is the Home/SME server, function works!"
-else
-    print_text_in_color "$ICyan" "Home/SME Server not detected. No worries, just testing the function."
-    sleep 3
 fi
 
 # Fix LVM on BASE image
@@ -184,6 +150,50 @@ then
         fi
     done
     fi
+fi
+
+# Install needed dependencies
+install_if_not lshw
+install_if_not net-tools
+install_if_not whiptail
+install_if_not apt-utils
+install_if_not keyboard-configuration
+
+# Nice to have dependencies
+install_if_not bash-completion
+install_if_not htop
+install_if_not iputils-ping
+
+# Download needed libraries before execution of the first script
+mkdir -p "$SCRIPTS"
+download_script GITHUB_REPO lib
+download_script STATIC fetch_lib
+
+# Set locales
+run_script ADDONS locales
+
+# Create new current user
+download_script STATIC adduser
+bash "$SCRIPTS"/adduser.sh "nextcloud_install_production.sh"
+rm -f "$SCRIPTS"/adduser.sh
+
+check_universe
+check_multiverse
+
+# Check if key is available
+if ! site_200 "$NCREPO"
+then
+    msg_box "Nextcloud repo is not available, exiting..."
+    exit 1
+fi
+
+# Test Home/SME function
+if home_sme_server
+then
+    msg_box "This is the Home/SME server, function works!"
+else
+    print_text_in_color "$ICyan" "Home/SME Server not detected. No worries, just testing the function."
+    sleep 3
 fi
 
 # Check if it's a clean server
@@ -375,8 +385,9 @@ a2enmod rewrite \
         dir \
         authz_core \
         alias \
+        mpm_event \
         ssl
-
+        
 # We don't use Apache PHP (just to be sure)
 a2dismod mpm_prefork
 
@@ -500,48 +511,55 @@ download_script STATIC setup_secure_permissions_nextcloud
 bash "$SECURE" & spinner_loading
 
 # Ask to set a custom username
-if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$GUIUSER' to something else?"
+if [ -z "$PROVISIONING" ]
 then
-    while :
-    do
-        GUIUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
+    if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$GUIUSER' to something else?"
+    then
+        while :
+        do
+            GUIUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
 \nThe only allowed characters for the username are:
 'a-z', 'A-Z', '0-9', and '_.@-'")
-        if [[ "$GUIUSER" == *" "* ]]
-        then
-            msg_box "Please don't use spaces."
-        # - has to be escaped otherwise it won't work.
-        # Inspired by: https://unix.stackexchange.com/a/498731/433213
-        elif [ "${GUIUSER//[A-Za-z0-9_.\-@]}" ]
-        then
-            msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
-        else
-            break
-        fi
-    done
-    while :
-    do
-        GUIPASS=$(input_box_flow "Please type in the new password for the new Web Admin ($GUIUSER) in Nextcloud.")
-        if [[ "$GUIPASS" == *" "* ]]
-        then
-            msg_box "Please don't use spaces."
-        fi
-        if [ "${GUIPASS//[A-Za-z0-9_.\-@]}" ]
-        then
-            msg_box "Allowed characters for the password are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
-        else
-        msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $GUIPASS
+            if [[ "$GUIUSER" == *" "* ]]
+            then
+                msg_box "Please don't use spaces."
+            # - has to be escaped otherwise it won't work.
+            # Inspired by: https://unix.stackexchange.com/a/498731/433213
+            elif [ "${GUIUSER//[A-Za-z0-9_.\-@]}" ]
+            then
+                msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+            else
+                break
+            fi
+        done
+        while :
+        do
+            GUIPASS=$(input_box_flow "Please type in the new password for the new Web Admin ($GUIUSER) in Nextcloud.")
+            if [[ "$GUIPASS" == *" "* ]]
+            then
+                msg_box "Please don't use spaces."
+            fi
+            if [ "${GUIPASS//[A-Za-z0-9_.\-@]}" ]
+            then
+                msg_box "Allowed characters for the password are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+            else
+                msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $GUIPASS
 This is used when you login to Nextcloud itself, i.e. on the web."
             break
-        fi
-    done
-
+            fi
+        done
+    fi
 fi
 
 # Install Nextcloud
-print_text_in_color "$ICyan" "Installing Nextcloud..."
+# NC 29 fix ## TODO: is this needed in coming versions?
+chown www-data:www-data "$NCPATH"/data
+# Normal install
+print_text_in_color "$ICyan" "Installing Nextcloud, it might take a while..."
 cd "$NCPATH"
-nextcloud_occ maintenance:install \
+# Don't use nextcloud_occ here as it takes alooong time.
+# https://github.com/nextcloud/vm/issues/2542#issuecomment-1700406020
+check_command sudo -u www-data php "$NCPATH"/occ maintenance:install \
 --data-dir="$NCDATA" \
 --database=pgsql \
 --database-name=nextcloud_db \
@@ -549,115 +567,9 @@ nextcloud_occ maintenance:install \
 --database-pass="$PGDB_PASS" \
 --admin-user="$GUIUSER" \
 --admin-pass="$GUIPASS"
-echo
 print_text_in_color "$ICyan" "Nextcloud version:"
 nextcloud_occ status
 sleep 3
-echo
-
-# Prepare cron.php to be run every 5 minutes
-crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
-
-# Run the updatenotification on a schedule
-nextcloud_occ config:system:set upgrade.disable-web --type=bool --value=true
-nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
-print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
-download_script STATIC updatenotification
-check_command chmod +x "$SCRIPTS"/updatenotification.sh
-crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
-
-# Change values in php.ini (increase max file size)
-# max_execution_time
-sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" "$PHP_INI"
-# max_input_time
-sed -i "s|max_input_time =.*|max_input_time = 3600|g" "$PHP_INI"
-# memory_limit
-sed -i "s|memory_limit =.*|memory_limit = 512M|g" "$PHP_INI"
-# post_max
-sed -i "s|post_max_size =.*|post_max_size = 1100M|g" "$PHP_INI"
-# upload_max
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" "$PHP_INI"
-
-# Set logging
-nextcloud_occ config:system:set log_type --value=file
-nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
-rm -f "$NCDATA/nextcloud.log"
-nextcloud_occ config:system:set loglevel --value=2
-install_and_enable_app admin_audit
-nextcloud_occ config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
-nextcloud_occ config:system:set log.condition apps 0 --value admin_audit
-
-# Set SMTP mail
-nextcloud_occ config:system:set mail_smtpmode --value="smtp"
-
-# Forget login/session after 30 minutes
-nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
-
-# Set logrotate (max 10 MB)
-nextcloud_occ config:system:set log_rotate_size --value="10485760"
-
-# Set trashbin retention obligation (save it in trashbin for 60 days or delete when space is needed)
-nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 60"
-
-# Set versions retention obligation (save versions for 180 days or delete when space is needed)
-nextcloud_occ config:system:set versions_retention_obligation --value="auto, 180"
-
-# Set activity retention obligation (save activity feed for 120 days, defaults to 365 days otherwise)
-nextcloud_occ config:system:set activity_expire_days --value="120"
-
-# Remove simple signup
-nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
-
-# Set chunk_size for files app to 100MB (defaults to 10MB)
-nextcloud_occ config:app:set files max_chunk_size --value="104857600"
-
-# Set product name
-if home_sme_server
-then
-    PRODUCTNAME="Nextcloud HanssonIT Server"
-else
-    PRODUCTNAME="Nextcloud HanssonIT VM"
-fi
-if is_app_installed theming
-then
-    if [ "$(nextcloud_occ config:app:get theming productName)" != "$PRODUCTNAME" ]
-    then
-        nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
-    fi
-fi
-
-# Enable OPCache for PHP
-# https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
-phpenmod opcache
-{
-echo "# OPcache settings for Nextcloud"
-echo "opcache.enable=1"
-echo "opcache.enable_cli=1"
-echo "opcache.interned_strings_buffer=16"
-echo "opcache.max_accelerated_files=10000"
-echo "opcache.memory_consumption=256"
-echo "opcache.save_comments=1"
-echo "opcache.revalidate_freq=1"
-echo "opcache.validate_timestamps=1"
-} >> "$PHP_INI"
-
-# PHP-FPM optimization
-# https://geekflare.com/php-fpm-optimization/
-sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
-sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
-sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
-
-# PostgreSQL values for PHP (https://docs.nextcloud.com/server/latest/admin_manual/configuration_database/linux_database_configuration.html#postgresql-database)
-{
-echo ""
-echo "[PostgresSQL]"
-echo "pgsql.allow_persistent = On"
-echo "pgsql.auto_reset_persistent = Off"
-echo "pgsql.max_persistent = -1"
-echo "pgsql.max_links = -1"
-echo "pgsql.ignore_notice = 0"
-echo "pgsql.log_notice = 0"
-} >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
 # Install PECL dependencies
 install_if_not php"$PHPVER"-dev
@@ -709,6 +621,115 @@ echo "igbinary.compact_strings=On"
 restart_webserver
 fi
 
+# Prepare cron.php to be run every 5 minutes
+crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
+
+# Run the updatenotification on a schedule
+nextcloud_occ config:system:set upgrade.disable-web --type=bool --value=true
+nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
+print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
+download_script STATIC updatenotification
+check_command chmod +x "$SCRIPTS"/updatenotification.sh
+crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
+
+# Change values in php.ini (increase max file size)
+# max_execution_time
+sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" "$PHP_INI"
+# max_input_time
+sed -i "s|max_input_time =.*|max_input_time = 3600|g" "$PHP_INI"
+# memory_limit
+sed -i "s|memory_limit =.*|memory_limit = 512M|g" "$PHP_INI"
+# post_max
+sed -i "s|post_max_size =.*|post_max_size = 1100M|g" "$PHP_INI"
+# upload_max
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" "$PHP_INI"
+
+# Set logging
+nextcloud_occ config:system:set log_type --value=file
+nextcloud_occ config:system:set logfile --value="$VMLOGS/nextcloud.log"
+rm -f "$NCDATA/nextcloud.log"
+rm -f "$NCPATH/data/nextcloud.log"
+nextcloud_occ config:system:set loglevel --value=2
+install_and_enable_app admin_audit
+nextcloud_occ config:app:set admin_audit logfile --value="$VMLOGS/audit.log"
+nextcloud_occ config:system:set log.condition apps 0 --value admin_audit
+
+# Set maintenance window for cron
+# https://docs.nextcloud.com/server/29/admin_manual/configuration_server/background_jobs_configuration.html#background-jobs
+nextcloud_occ config:system:set maintenance_window_start --type=integer --value=2
+
+# Set SMTP mail
+nextcloud_occ config:system:set mail_smtpmode --value="smtp"
+
+# Forget login/session after 30 minutes
+nextcloud_occ config:system:set remember_login_cookie_lifetime --value="1800"
+
+# Set logrotate (max 10 MB)
+nextcloud_occ config:system:set log_rotate_size --value="10485760"
+
+# Set trashbin retention obligation (save it in trashbin for 60 days or delete when space is needed)
+nextcloud_occ config:system:set trashbin_retention_obligation --value="auto, 60"
+
+# Set versions retention obligation (save versions for 180 days or delete when space is needed)
+nextcloud_occ config:system:set versions_retention_obligation --value="auto, 180"
+
+# Set activity retention obligation (save activity feed for 120 days, defaults to 365 days otherwise)
+nextcloud_occ config:system:set activity_expire_days --value="120"
+
+# Remove simple signup
+nextcloud_occ config:system:set simpleSignUpLink.shown --type=bool --value=false
+
+# Set chunk_size for files app to 100MB (defaults to 10MB)
+nextcloud_occ config:app:set files max_chunk_size --value="104857600"
+
+# Set product name
+if home_sme_server
+then
+    PRODUCTNAME="Nextcloud HanssonIT Server"
+else
+    PRODUCTNAME="Nextcloud HanssonIT VM"
+fi
+if is_app_installed theming
+then
+    if [ "$(nextcloud_occ config:app:get theming productName)" != "$PRODUCTNAME" ]
+    then
+        nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
+    fi
+fi
+
+# Enable OPCache for PHP
+# https://docs.nextcloud.com/server/14/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+phpenmod opcache
+{
+echo "# OPcache settings for Nextcloud"
+echo "opcache.enable=1"
+echo "opcache.enable_cli=1"
+echo "opcache.interned_strings_buffer=$opcache_interned_strings_buffer_value"
+echo "opcache.max_accelerated_files=10000"
+echo "opcache.memory_consumption=256"
+echo "opcache.save_comments=1"
+echo "opcache.revalidate_freq=1"
+echo "opcache.validate_timestamps=1"
+} >> "$PHP_INI"
+
+# PHP-FPM optimization
+# https://geekflare.com/php-fpm-optimization/
+sed -i "s|;emergency_restart_threshold.*|emergency_restart_threshold = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+sed -i "s|;emergency_restart_interval.*|emergency_restart_interval = 1m|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+sed -i "s|;process_control_timeout.*|process_control_timeout = 10|g" /etc/php/"$PHPVER"/fpm/php-fpm.conf
+
+# PostgreSQL values for PHP (https://docs.nextcloud.com/server/latest/admin_manual/configuration_database/linux_database_configuration.html#postgresql-database)
+{
+echo ""
+echo "[PostgresSQL]"
+echo "pgsql.allow_persistent = On"
+echo "pgsql.auto_reset_persistent = Off"
+echo "pgsql.max_persistent = -1"
+echo "pgsql.max_links = -1"
+echo "pgsql.ignore_notice = 0"
+echo "pgsql.log_notice = 0"
+} >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
+
 # Fix https://github.com/nextcloud/vm/issues/714
 print_text_in_color "$ICyan" "Optimizing Nextcloud..."
 yes | nextcloud_occ db:convert-filecache-bigint
@@ -741,69 +762,67 @@ then
 
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
-#    ServerName example.com
-#    ServerAlias subdomain.example.com
+#    ServerName cloud.example.com
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
+    # Logs
+    LogLevel warn
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+
+    # Document root folder
     DocumentRoot $NCPATH
 
+    # The Nextcloud folder
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
-    AllowOverride None
-    ### include all .htaccess
-    Include $NCPATH/.htaccess
-    Include $NCPATH/config/.htaccess
-    Include $NCDATA/.htaccess
-    ###
+    AllowOverride All
     Require all granted
     Satisfy Any
+    # This is to include all the Nextcloud rules due to that we use PHP-FPM and .htaccess aren't read
+    Include $NCPATH/.htaccess
+    </Directory>
+
+    # Deny access to your data directory
+    <Directory $NCDATA>
+    Require all denied
+    </Directory>
+
+    # Deny access to the Nextcloud config folder
+    <Directory $NCPATH/config/>
+    Require all denied
     </Directory>
 
     <IfModule mod_dav.c>
     Dav off
     </IfModule>
 
-    <Directory "$NCDATA">
-    # just in case if .htaccess gets disabled
-    Require all denied
-    </Directory>
-
-    # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
+    # The following lines prevent .htaccess and .htpasswd files from being viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
 
+    SetEnv HOME $NCPATH
+    SetEnv HTTP_HOME $NCPATH
+
     # Disable HTTP TRACE method.
     TraceEnable off
-
     # Disable HTTP TRACK method.
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} ^TRACK
     RewriteRule .* - [R=405,L]
 
-    SetEnv HOME $NCPATH
-    SetEnv HTTP_HOME $NCPATH
-
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-
 </VirtualHost>
 HTTP_CREATE
     print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
-fi
-
-# Fix zero file sizes
-# See https://github.com/nextcloud/server/issues/3056
-if version 22.04 "$DISTRO" 26.04.10
-then
-    SETENVPROXY="SetEnv proxy-sendcl 1"
 fi
 
 # Generate $TLS_CONF
@@ -813,7 +832,7 @@ then
     cat << TLS_CREATE > "$SITES_AVAILABLE/$TLS_CONF"
 # <VirtualHost *:80>
 #     RewriteEngine On
-#     RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}\$1 [END,NE,R=permanent]
 # </VirtualHost>
 
 <VirtualHost *:443>
@@ -842,53 +861,56 @@ then
     CustomLog \${APACHE_LOG_DIR}/access.log combined
     ErrorLog \${APACHE_LOG_DIR}/error.log
 
+    # Document root folder
     DocumentRoot $NCPATH
 
+    # The Nextcloud folder
     <Directory $NCPATH>
     Options Indexes FollowSymLinks
-    AllowOverride None
-    ### include all .htaccess
-    Include $NCPATH/.htaccess
-    Include $NCPATH/config/.htaccess
-    Include $NCDATA/.htaccess
-    ###
+    AllowOverride All
     Require all granted
     Satisfy Any
+    # This is to include all the Nextcloud rules due to that we use PHP-FPM and .htaccess aren't read
+    Include $NCPATH/.htaccess
+    </Directory>
+
+    # Deny access to your data directory
+    <Directory $NCDATA>
+    Require all denied
+    </Directory>
+
+    # Deny access to the Nextcloud config folder
+    <Directory $NCPATH/config/>
+    Require all denied
     </Directory>
 
     <IfModule mod_dav.c>
     Dav off
     </IfModule>
 
-    <Directory "$NCDATA">
-    # just in case if .htaccess gets disabled
-    Require all denied
-    </Directory>
-
-    # The following lines prevent .htaccess and .htpasswd files from being
-    # viewed by Web clients.
+    # The following lines prevent .htaccess and .htpasswd files from being viewed by Web clients.
     <Files ".ht*">
     Require all denied
     </Files>
 
+    SetEnv HOME $NCPATH
+    SetEnv HTTP_HOME $NCPATH
+
     # Disable HTTP TRACE method.
     TraceEnable off
-
     # Disable HTTP TRACK method.
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} ^TRACK
     RewriteRule .* - [R=405,L]
 
-    SetEnv HOME $NCPATH
-    SetEnv HTTP_HOME $NCPATH
-
     # Avoid "Sabre\DAV\Exception\BadRequest: expected filesize XXXX got XXXX"
     <IfModule mod_reqtimeout.c>
     RequestReadTimeout body=0
     </IfModule>
-    
-    # Avoid zero byte files (only works in Ubuntu 22.04 -->>)
-    $SETENVPROXY
+
+    # Avoid zero byte files (only works in Ubuntu 24.04 -->>)
+    # See https://github.com/nextcloud/server/issues/3056
+    SetEnv proxy-sendcl 1
 
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
@@ -919,7 +941,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Mail" "" ON \
 "Deck" "" ON \
 "Collectives" "" ON \
-"Suspicios Login detetion" "" ON \
+"Suspicious Login detection" "" ON \
 "IssueTemplate" "" OFF \
 "Group-Folders" "" OFF 3>&1 1>&2 2>&3)
 fi
@@ -960,8 +982,9 @@ case "$choice" in
     ;;&
     *"Collectives"*)
         install_and_enable_app collectives
+        install_if_not php"$PHPVER"-sqlite3
     ;;&
-    *"Suspicios Login detetion"*)
+    *"Suspicious Login detection"*)
         install_and_enable_app suspicios_login
     ;;&
     *"Group-Folders"*)
@@ -1028,11 +1051,11 @@ fi
 # Fix Realtek on PN51
 if asuspn51
 then
-    if ! version 22.04 "$DISTRO" 22.04.10
+    if ! version 24.04 "$DISTRO" 24.04.10
     then
         # Upgrade Realtek drivers
         print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
-        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/master/network/asusnuc pn51.sh "$SCRIPTS"
+        curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/main/network/asusnuc pn51.sh "$SCRIPTS"
         bash "$SCRIPTS"/pn51.sh
     fi
 fi

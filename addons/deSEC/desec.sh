@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="deSEC Registration"
@@ -140,9 +140,9 @@ then
     # Add DNS renewals with the deSEC hoock script
     print_text_in_color "$ICyan" "Preparing for DNS-renewals..."
     mkdir -p "$SCRIPTS"/deSEC
-    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" "hook.sh" "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/main/addons/deSEC" "hook.sh" "$SCRIPTS"/deSEC
     chmod +x "$SCRIPTS"/deSEC/hook.sh
-    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/master/addons/deSEC" ".dedynauth" "$SCRIPTS"/deSEC
+    curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/main/addons/deSEC" ".dedynauth" "$SCRIPTS"/deSEC
     check_command sed -i "s|DEDYN_TOKEN=.*|DEDYN_TOKEN=$DEDYNAUTHTOKEN|g" "$SCRIPTS"/deSEC/.dedynauth
     check_command sed -i "s|DEDYN_NAME=.*|DEDYN_NAME=$DEDYNDOMAIN|g" "$SCRIPTS"/deSEC/.dedynauth
     msg_box "DNS updates for deSEC are now set. This means you don't have to open any ports (80|443) for the renewal process since deSEC TLS renewals will be run with a built in hook. \
@@ -150,7 +150,7 @@ The hook files will end up in $SCRIPTS/deSEC, please don't touch that folder unl
 You can read more about it here: https://github.com/desec-io/desec-certbot-hook
 
 Please remember that you still need to open the port you choose to make your server publicly available.
-You can read more about that here: https://goo.gl/iUGE2U"
+You can read more about that here: http://shortio.hanssonit.se/ffOQOXS6Kh"
 
     # Run the TLS script
     run_script LETS_ENC activate-tls

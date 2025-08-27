@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Format Chosen Disk"
@@ -10,7 +10,7 @@ source /var/scripts/fetch_lib.sh
 # Check if root
 root_check
 
-# Needs to be Ubuntu 20.04 and Multiverse
+# Needs to be Ubuntu 22.04 and Multiverse
 check_distro_version
 check_multiverse
 
@@ -43,9 +43,13 @@ elif [ "$SYSVENDOR" == "Xen" ];
 then
     SYSNAME="Xen/XCP-NG"
     DEVTYPE=xvdb
-elif [[ "$SYSVENDOR" == "QEMU" || "$SYSVENDOR" == "Red Hat" ]];
+elif [[ "$SYSVENDOR" == "QEMU" ]];
 then
-    SYSNAME="KVM/QEMU"
+    SYSNAME="Proxmox/QEMU"
+    DEVTYPE=sdb
+elif [ "$SYSVENDOR" == "Red Hat" ];
+then
+    SYSNAME="Red Hat"
     DEVTYPE=vdb
 elif [ "$SYSVENDOR" == "DigitalOcean" ];
 then
@@ -99,7 +103,7 @@ while
         done
     [[ -z "${devtype_present+x}" ]]
 do
-    printf "${BRed}$DEVTYPE is not a valid disk. Please try again.${Color_Off}\n"
+    print_text_in_color "$BRed" "$DEVTYPE is not a valid disk. Please try again."
     :
 done
 
@@ -172,13 +176,18 @@ then
     check_command zpool create -f -o ashift=12 "$POOLNAME" "$DISKTYPE"
     check_command zpool set failmode=continue "$POOLNAME"
     check_command zfs set mountpoint="$MOUNT_" "$POOLNAME"
-    check_command zfs set compression=lz4 "$POOLNAME"
+    check_command zfs set compression=zstd "$POOLNAME"
     check_command zfs set sync=standard "$POOLNAME"
     check_command zfs set xattr=sa "$POOLNAME"
     check_command zfs set primarycache=all "$POOLNAME"
     check_command zfs set atime=off "$POOLNAME"
     check_command zfs set recordsize=128k "$POOLNAME"
     check_command zfs set logbias=latency "$POOLNAME"
+    if [ -d /sys/firmware/efi ]
+    then
+        # dnodesize can't boot on BIOS, only UEFI mode
+        check_command zfs set dnodesize=auto "$POOLNAME"
+    fi
 
 else
     msg_box "It seems like /dev/$DEVTYPE does not exist.

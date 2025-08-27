@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Netdata"
@@ -21,16 +21,6 @@ debug_mode
 
 # Must be sudo
 root_check
-
-# Can't be run as pure root user
-if [ -z "$UNIXUSER" ]
-then
-    msg_box "You can't run this script as a pure root user. You need to issue the following command:
-sudo -u regular_user sudo bash $SCRIPTS/menu.sh
-
-Then choose Additional Apps --> Netdata"
-    exit 1
-fi
 
 # Check if netdata is already installed
 if ! [ -d /etc/netdata ]
@@ -63,6 +53,8 @@ else
     rm -rf /etc/netdata
     apt-get purge netdata -y
     apt-get autoremove -y
+    rm -rf /var/cache/netdata
+    rm -rf /var/log/netdata
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
@@ -71,8 +63,8 @@ fi
 is_process_running dpkg
 is_process_running apt
 apt-get update -q4 & spinner_loading
-curl_to_dir https://my-netdata.io kickstart.sh $SCRIPTS
-sudo -u "$UNIXUSER" bash $SCRIPTS/kickstart.sh --reinstall-even-if-unsafe --non-interactive --no-updates --stable-channel --disable-cloud
+curl_to_dir https://get.netdata.cloud kickstart.sh $SCRIPTS
+bash $SCRIPTS/kickstart.sh --reinstall-even-if-unsafe --non-interactive --no-updates --stable-channel --disable-cloud
 rm -f $SCRIPTS/kickstart.sh
 
 # Check Netdata instructions after script is done

@@ -1,40 +1,25 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # GNU General Public License v3.0
-# https://github.com/nextcloud/vm/blob/master/LICENSE
+# https://github.com/nextcloud/vm/blob/main/LICENSE
 
 # shellcheck disable=SC2034
 true
 # see https://github.com/koalaman/shellcheck/wiki/Directive
 
-##### LEGACY #####
-## Remove 2022-09-01
-NCPATH=/var/www/nextcloud
-NCPASS=nextcloud
-NCUSER=ncadmin
-PGDB_USER=nextcloud_db_user
-if [ -f "$NCPATH"/config/config.php ]
-then
-    NCCONFIGDBPASS="$(grep 'dbpassword' "$NCPATH"/config/config.php | awk '{print $3}' | sed "s/[',]//g")"
-    NCCONFIGDB="$(grep 'dbname' "$NCPATH"/config/config.php | awk '{print $3}' | sed "s/[',]//g")"
-fi
-
-
 ## VARIABLES
 
 # Dirs
 SCRIPTS=/var/scripts
-NCPATH=/var/www/nextcloud
 HTML=/var/www
+NCPATH="$HTML"/nextcloud
 POOLNAME=ncdata
 NCDATA=/mnt/"$POOLNAME"
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/sha256
 BACKUP=/mnt/NCBACKUP
-RORDIR=/opt/es/
-OPNSDIR=/opt/opensearch
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 
@@ -60,7 +45,6 @@ SYSVENDOR=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 # Network
 IFACE=$(ip r | grep "default via" | awk '{print $5}')
 IFACE2=$(ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d ':' -f 1)
-REPO=$(grep "^deb " /etc/apt/sources.list | grep http | awk '{print $2}' | head -1)
 ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 WANIP4=$(curl -s -k -m 5 -4 https://api64.ipify.org)
 INTERFACES="/etc/netplan/nextcloud.yaml"
@@ -70,8 +54,8 @@ INTERNET_DNS="9.9.9.9"
 # Default Quad9 DNS servers, overwritten by the systemd global DNS defined servers, if set
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
-NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443 9000 9980 9090 9200 9600)
-# 9000 9980 9090 9200 9600 are local docker ports, don't remember if they are needed here or not.
+NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443 9000 9980 9090 9200 9600 1234)
+# 9000 9980 9090 9200 9600 1234 are local docker ports, don't remember if they are needed here or not.
 use_global_systemd_dns() {
 if [ -f "/etc/systemd/resolved.conf" ]
 then
@@ -102,7 +86,7 @@ Confirm by pressing [ENTER]. Cancel by pressing [ESC]."
 MENU_GUIDE="Navigate with the [ARROW] keys and confirm by pressing [ENTER]. Cancel by pressing [ESC]."
 RUN_LATER_GUIDE="You can view this script later by running 'sudo bash $SCRIPTS/menu.sh'."
 # Repo
-GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/master"
+GITHUB_REPO="https://raw.githubusercontent.com/nextcloud/vm/main"
 STATIC="$GITHUB_REPO/static"
 LETS_ENC="$GITHUB_REPO/lets-encrypt"
 APP="$GITHUB_REPO/apps"
@@ -114,7 +98,6 @@ DISK="$GITHUB_REPO/disk"
 NETWORK="$GITHUB_REPO/network"
 VAGRANT_DIR="$GITHUB_REPO/vagrant"
 NOT_SUPPORTED_FOLDER="$GITHUB_REPO/not-supported"
-GEOBLOCKDAT="$GITHUB_REPO/geoblockdat"
 NCREPO="https://download.nextcloud.com/server/releases"
 ISSUES="https://github.com/nextcloud/vm/issues"
 # User information
@@ -146,8 +129,13 @@ nc_update() {
     NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
     STABLEVERSION="nextcloud-$NCVERSION"
     NCMAJOR="${NCVERSION%%.*}"
+    CURRENTMAJOR="${CURRENTVERSION%%.*}"
     NCBAD=$((NCMAJOR-2))
     NCNEXT="$((${CURRENTVERSION%%.*}+1))"
+}
+maxmind_geoip() {
+    # shellcheck source=/dev/null
+    source <(curl -sL https://shortio.hanssonit.se/t3vm7ro4CP)
 }
 # Set the hour for automatic updates. This would be 18:00 as only the hour is configurable.
 AUT_UPDATES_TIME="18"
@@ -164,17 +152,23 @@ HTTP_CONF="nextcloud_http_domain_self_signed.conf"
 # Collabora App
 HTTPS_CONF="$SITES_AVAILABLE/$SUBDOMAIN.conf"
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
+# GeoBlock
+GEOBLOCK_MOD_CONF="/etc/apache2/conf-available/geoblock.conf"
+GEOBLOCK_MOD="/etc/apache2/mods-available/maxminddb.load"
+GEOBLOCK_DIR="/usr/share/GeoIP"
 # PHP-FPM
-PHPVER=8.1
+PHPVER=8.3
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
 PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
+opcache_interned_strings_buffer_value=24
 # Notify push
 NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
 # Adminer
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
+ADMINER_CONF_PLUGIN="$ADMINERDIR/extra_plugins.php"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
@@ -184,20 +178,22 @@ SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
 # Full text Search
-opensearch_install() {
-    INDEX_USER=$(gen_passwd "$SHUF" '[:lower:]')
-    OPNSREST=$(gen_passwd "$SHUF" "A-Za-z0-9")
+fulltextsearch_install() {
+    FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
+    NEXTCLOUD_INDEX=$(gen_passwd "$SHUF" '[:lower:]')
+    ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
+    FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
+    FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
+    # Gets the version from the latest tag here: https://github.com/docker-library/official-images/blob/master/library/elasticsearch
+    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://raw.githubusercontent.com/docker-library/official-images/refs/heads/master/library/elasticsearch | grep "Tags:" | head -1 | awk '{print $2}')"
+    # Legacy, changed 2023-09-21
+    DOCKER_IMAGE_NAME=es01
+    # Legacy, not used at all
+    RORDIR=/opt/es/
+    OPNSDIR=/opt/opensearch
     nc_fts="ark74/nc_fts"
-    opens_fts="opensearchproject/opensearch:1"
+    opens_fts="opensearchproject/opensearch"
     fts_node="fts_os-node"
-}
-create_certs(){
-    download_script APP opensearch_certs
-    check_command sed -i "s|__NCDOMAIN__|$1|" "$SCRIPTS"/opensearch_certs.sh
-    check_command mv "$SCRIPTS"/opensearch_certs.sh "$OPNSDIR"
-    check_command cd "$OPNSDIR"
-    check_command bash opensearch_certs.sh
-    rm -f "$OPNSDIR"/opensearch_certs.sh
 }
 # Name in trusted_config
 ncdomain() {
@@ -209,10 +205,14 @@ turn_install() {
     TURN_PORT=3478
     TURN_DOMAIN=$(sudo -u www-data /var/www/nextcloud/occ config:system:get overwrite.cli.url | sed 's|https://||;s|/||')
     SHUF=$(shuf -i 25-29 -n 1)
-    TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
-    JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
-    NC_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+    TURN_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9")
+    JANUS_API_KEY=$(gen_passwd "$SHUF" "a-zA-Z0-9")
+    SIGNALING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9")
     SIGNALING_SERVER_CONF=/etc/signaling/server.conf
+    TURN_INTERNAL_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9")
+    TURN_RECORDING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9")
+    TURN_RECORDING_HOST=127.0.0.1
+    TURN_RECORDING_HOST_PORT=1234
 }
 
 ## FUNCTIONS
@@ -390,60 +390,68 @@ something is wrong here. Please report this to $ISSUES"
     fi
 }
 
+metadefender-scan() {
+# Usage:
+# metadefender-scan.sh $PATH $APIKEY, for example:
+hash="$(sha256sum "$1")"
+hash="${hash%% *}"
+apikey=7283aa9bbcee83132506659a4e5675bb
+curl "https://api.metadefender.com/v4/hash/$hash" -H "apikey: $apikey"
+}
+
 # Used in geoblock.sh
-get_newest_dat_files() {
-    # IPv4
-    IPV4_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
-    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat' | sort -r | head -1)
-    if [ -z "$IPV4_NAME" ]
+download_geoip_mmdb() {
+    # Rate limit to 1 hour, we have 24 requests per day
+    if [ -f "$GEOBLOCK_DIR/IPInfo-Country.mmdb" ]
     then
-        print_text_in_color "$IRed" "Could not get the latest IPv4 name. Not updating the .dat file"
-        sleep 1
-    else
-        if ! [ -f "$SCRIPTS/$IPV4_NAME" ]
+        if [ "$(( $(date +"%s") - $(stat -c "%Y" "$GEOBLOCK_DIR/IPInfo-Country.mmdb") ))" -lt "3600" ]
         then
-            print_text_in_color "$ICyan" "Downloading new IPv4 dat file..."
-            sleep 1
-            curl_to_dir "$GEOBLOCKDAT" "$IPV4_NAME" "$SCRIPTS"
-            mkdir -p /usr/share/GeoIP
-            rm -f /usr/share/GeoIP/GeoIP.dat
-            check_command cp "$SCRIPTS/$IPV4_NAME" /usr/share/GeoIP
-            check_command mv "/usr/share/GeoIP/$IPV4_NAME" /usr/share/GeoIP/GeoIP.dat
-            chown root:root /usr/share/GeoIP/GeoIP.dat
-            chmod 644 /usr/share/GeoIP/GeoIP.dat
-            find /var/scripts -type f -regex \
-"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv4\.dat" -not -name "$IPV4_NAME" -delete
-        else
-            print_text_in_color "$ICyan" "The latest IPv4 dat file is already downloaded."
-            sleep 1
+            print_text_in_color "$IGreen" "No need to update $GEOBLOCK_DIR/IPInfo-Country.mmdb since it's newer than 1 hour."
+            return 1
         fi
-    fi
-    # IPv6
-    IPV6_NAME=$(curl -s https://github.com/nextcloud/vm/tree/master/geoblockdat \
-    | grep -oP '202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat' | sort -r | head -1)
-    if [ -z "$IPV6_NAME" ]
+    elif [ -f "$GEOBLOCK_DIR/GeoLite2-Country.mmdb" ]
     then
-        print_text_in_color "$IRed" "Could not get the latest IPv6 name. Not updating the .dat file"
-        sleep 1
-    else
-        if ! [ -f "$SCRIPTS/$IPV6_NAME" ]
-        then
-            print_text_in_color "$ICyan" "Downloading new IPv6 dat file..."
-            sleep 1
-            curl_to_dir "$GEOBLOCKDAT" "$IPV6_NAME" "$SCRIPTS"
-            mkdir -p /usr/share/GeoIP
-            rm -f /usr/share/GeoIP/GeoIPv6.dat
-            check_command cp "$SCRIPTS/$IPV6_NAME" /usr/share/GeoIP
-            check_command mv "/usr/share/GeoIP/$IPV6_NAME" /usr/share/GeoIP/GeoIPv6.dat
-            chown root:root /usr/share/GeoIP/GeoIPv6.dat
-            chmod 644 /usr/share/GeoIP/GeoIPv6.dat
-            find /var/scripts -type f -regex \
-"$SCRIPTS/202[0-9]-[01][0-9]-Maxmind-Country-IPv6\.dat" -not -name "$IPV6_NAME" -delete
-        else
-            print_text_in_color "$ICyan" "The latest IPv6 dat file is already downloaded."
-            sleep 1
-        fi
+        print_text_in_color "$ICyan" "Replacing Maxmind with IPInfo GeoIP database..."
     fi
+
+    # Download or update current GeoIP DB
+    maxmind_geoip
+    export x8v8GyVQg2UejdPh
+    print_text_in_color "$ICyan" "Downloading latest GeoIP database from https://ipinfo.io..."
+    if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+    then
+        print_text_in_color "$IRed" "Failed downloading GeoIP database from IPInfo, trying plan B..."
+        export MwKfcYATm43NMT
+        export i9HL69SLnp4ymy
+        {
+        echo "GEOIPUPDATE_ACCOUNT_ID=$MwKfcYATm43NMT"
+        echo "GEOIPUPDATE_LICENSE_KEY=$i9HL69SLnp4ymy"
+        echo "GEOIPUPDATE_EDITION_IDS=GeoLite2-Country"
+        echo "GEOIPUPDATE_FREQUENCY=0"
+        echo "GEOIPUPDATE_PRESERVE_FILE_TIMES=1"
+        echo "GEOIPUPDATE_VERBOSE=1"
+        } > /tmp/dockerenv
+        unset MwKfcYATm43NMT
+        unset i9HL69SLnp4ymy
+        install_docker
+        if docker run --name maxmind --env-file /tmp/dockerenv -v "$GEOBLOCK_DIR":"$GEOBLOCK_DIR" ghcr.io/maxmind/geoipupdate
+        then
+            docker rm -f maxmind
+            rm -f /tmp/dockerenv
+            # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove IPInfos config
+            rm -f "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+            print_text_in_color "$IGreen" "Maxmind GeoIP database downloaded!"
+        else
+            docker rm -f maxmind
+            rm -f /tmp/dockerenv
+            print_text_in_color "$IRed" "Rate limit for Maxmind GeoIP database reached! Can't continue from here, please report this to $ISSUES"
+        fi
+    else
+        # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove MaxMinds config
+        rm -f "$GEOBLOCK_DIR"/GeoLite2-Country.mmdb
+        return 0
+    fi
+    unset x8v8GyVQg2UejdPh
 }
 
 # Check if process is runnnig: is_process_running dpkg
@@ -467,19 +475,28 @@ done
 check_running_cronjobs() {
     while [ -n "$(pgrep -f nextcloud/cron.php)" ]
     do
-        countdown "Waiting for the Nextcloud cronjob to finish..." "30"
+        # Check if virus scan is running, could take ages for it to finish...
+        if ! pgrep -f clamd
+        then
+            # If not running, then keep waiting
+            countdown "Waiting for the Nextcloud cronjob to finish..." "30"
+        else
+            # If virus scan is running, then wait a bit longer, and kill it to release cron.php
+            countdown "Waiting for the Nextcloud cronjob and virusscan to finish..." "120"
+            pkill -f clamd
+        fi
     done
 }
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-print_text_in_color "$ICyan" "Checking connection..."
+print_text_in_color "$ICyan" "Checking connection to ${1}..."
         CURL_STATUS="$(curl -LI "${1}" -o /dev/null -w '%{http_code}\n' -s)"
         if [[ "$CURL_STATUS" = "200" ]]
         then
             return 0
         else
-            print_text_in_color "$IRed" "curl didn't produce a 200 status, is ${1} reachable?"
+            msg_box "curl didn't produce a 200 status, is ${1} reachable? Please report this to $ISSUES."
             return 1
         fi
 }
@@ -504,7 +521,8 @@ You can use this site to check if the IP seems correct: https://www.whatsmydns.n
     fi
 
     # Is the DNS record same as the external IP address of the server?
-    if dig +short "${1}" @resolver1.opendns.com | grep -q "$WANIP4"
+    DIG="$(dig +short "${1}" @resolver1.opendns.com)"
+    if [ "$DIG" = "$WANIP4" ]
     then
         print_text_in_color "$IGreen" "DNS seems correct when checking with dig!"
     else
@@ -704,10 +722,10 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 20.04 "$DISTRO" 22.04.10
+if ! version 22.04 "$DISTRO" 24.04.10
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-20.04 - 22.04.10 to run this script."
+22.04 - 24.04.10 to run this script."
     print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -759,27 +777,37 @@ fi
 
 # Check if Nextcloud is installed with TLS
 check_nextcloud_https() {
-    if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
+if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
+then
+    # Check if it's used by any of the Documentserver apps and adopt the message to that
+    if [ "$1" == 'Collabora (Docker)' ] || [ "$1" == 'OnlyOffice (Docker)' ]
     then
-        if [ "$1" == 'Collabora (Docker)' ] || [ "$1" == 'OnlyOffice (Docker)' ]
+        ncdomain
+        if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
         then
             msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
 You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
-More info here: https://bit.ly/37wRCin
+More info here: http://shortio.hanssonit.se/1EAgBmPyFc
 
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
 Additional Apps --> Documentserver --> $1."
             exit
-        else
+        fi
+    else
+    # Adopt the error message to anything else but the Documentserver apps
+        ncdomain
+        if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
+        then
             msg_box "Sorry, but Nextcloud needs to be run on HTTPS.
 You can easily activate TLS (HTTPS) by running the Let's Encrypt script.
-More info here: https://bit.ly/37wRCin
+More info here: http://shortio.hanssonit.se/1EAgBmPyFc
 
 To run this script again, just exectue 'sudo bash $SCRIPTS/menu.sh' and choose:
 Additional Apps --> $1."
             exit
         fi
     fi
+fi
 }
 
 restart_webserver() {
@@ -841,7 +869,7 @@ local  standalone="certbot certonly --standalone --pre-hook \"systemctl stop apa
 #tls-alpn-01
 local  tls_alpn_01="certbot certonly --preferred-challenges tls-alpn-01 $default_le"
 #dns
-local  dns="certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns $default_le"
+local  dns="certbot certonly --manual --preferred-challenges dns $default_le"
 local  methods=(standalone dns)
 
 for f in "${methods[@]}"
@@ -1074,16 +1102,16 @@ remove_from_trusted_domains() {
 }
 
 check_distro_version() {
-# Subṕport Ubuntu 22.0.4 jammy, and Ubuntu 20.04 focal.
+# Support Ubuntu 22.04 jammy, and Ubuntu 24.04 noble.
 
 # Check Ubuntu version
-if [ "${CODENAME}" == "jammy" ] || [ "${CODENAME}" == "focal" ]
+if [ "${CODENAME}" == "jammy" ] || [ "${CODENAME}" == "noble" ]
 then
     OS=1
 elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
 then
     OS=1
-elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "focal" &> /dev/null
+elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "noble" &> /dev/null
 then
     OS=1
 elif uname -v | grep -ic "Ubuntu" &> /dev/null
@@ -1100,8 +1128,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 20.04 "$DISTRO" 22.04.10; then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
+if ! version 22.04 "$DISTRO" 24.04.10; then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/product/upgrade-ubuntu-os-between-major-versions/"
@@ -1132,6 +1160,12 @@ fi
 install_if_not() {
 if ! dpkg-query -W -f='${Status}' "${1}" | grep -q "ok installed"
 then
+    # https://askubuntu.com/questions/1235914/hash-sum-mismatch-error-due-to-identical-sha1-and-md5-but-different-sha256#1242739
+    #if ! -f /etc/gcrypt/hwf.deny ]
+    #then
+    #    mkdir -p /etc/gcrypt
+    #    echo all > /etc/gcrypt/hwf.deny
+    #fi
     apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install "${1}" -y
 fi
 }
@@ -1200,14 +1234,37 @@ $ISSUES and include the output of the error message. Thank you!" \
 fi
 }
 
-# Example: nextcloud_occ 'maintenance:mode --on'
+
+# Example: nextcloud_occ_no_check 'maintenance:mode --on'
 nextcloud_occ() {
-check_command sudo -u www-data php "$NCPATH"/occ "$@";
+# Check it maintenance:mode is enabled
+if sudo -u www-data php "$NCPATH"/occ maintenance:mode | grep -q enabled >/dev/null 2>&1
+then
+    # Disable maintenance:mode
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off >/dev/null 2>&1
+    # Run the actual command
+    check_command sudo -u www-data php "$NCPATH"/occ "$@";
+    # Enable maintenance:mode again
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on >/dev/null 2>&1
+else
+    check_command sudo -u www-data php "$NCPATH"/occ "$@";
+fi
 }
 
 # Example: nextcloud_occ_no_check 'maintenance:mode --on'
 nextcloud_occ_no_check() {
-sudo -u www-data php "$NCPATH"/occ "$@";
+# Check it maintenance:mode is enabled
+if sudo -u www-data php "$NCPATH"/occ maintenance:mode | grep -q enabled >/dev/null 2>&1
+then
+    # Disable maintenance:mode
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --off >/dev/null 2>&1
+    # Run the actual command
+    sudo -u www-data php "$NCPATH"/occ "$@";
+    # Enable maintenance:mode again
+    sudo -u www-data php "$NCPATH"/occ maintenance:mode --on >/dev/null 2>&1
+else
+    sudo -u www-data php "$NCPATH"/occ "$@";
+fi
 }
 
 # Backwards compatibility (2020-10-08)
@@ -1231,7 +1288,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 20.04 "$DISTRO" 22.04.10
+if version 22.04 "$DISTRO" 24.04.10
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if site_200 github.com
@@ -1256,7 +1313,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -1359,7 +1416,7 @@ fi
 print_text_in_color "$ICyan" "Checking SHA256 checksum..."
 mkdir -p "$SHA256_DIR"
 curl_to_dir "$NCREPO" "$STABLEVERSION.tar.bz2.sha256" "$SHA256_DIR"
-SHA256SUM="$(tail "$SHA256_DIR"/"$STABLEVERSION".tar.bz2.sha256 | awk '{print$1}')"
+SHA256SUM="$(tail "$SHA256_DIR"/"$STABLEVERSION".tar.bz2.sha256 | awk '{print$1}' | head -1)"
 if ! echo "$SHA256SUM" "$STABLEVERSION.tar.bz2" | sha256sum -c
 then
     msg_box "The SHA256 checksums of $STABLEVERSION.tar.bz2 didn't match, please try again."
@@ -1428,7 +1485,7 @@ If it still fails, please report this issue to: $ISSUES."
     fi
 }
 
-# Run any script in ../master
+# Run any script in ../main
 # call like: run_main_script name_of_script
 run_main_script() {
 run_script GITHUB_REPO "${1}"
@@ -1476,7 +1533,7 @@ any_key() {
 
 lowest_compatible_nc() {
 # .ocdata needs to exist to be able to check version, occ relies on everytihgn working
-until [ -f "$NCDATA"/.ocdata ]
+until [ -f "$NCDATA"/.ocdata ] || [ -f "$NCDATA"/.ncdata ]
 do
         # SUPPORT LEGACY: If it's not in the standard path, check for existing datadir in config.php
         if [ -f "$NCPATH"/config/config.php ]
@@ -1489,7 +1546,7 @@ do
 If you think this is a bug, please report it to $ISSUES"
             else
                 # Check again an break if found
-                if [ -f "$NCDATA"/.ocdata ]
+                if [ -f "$NCDATA"/.ocdata ] || [ -f "$NCDATA"/.ncdata ] 
                 then
                     break
                 fi
@@ -1520,7 +1577,7 @@ or experience other issues then please report this to $ISSUES"
 
     # Download the latest updater
 #    cd $NCPATH
-#    curl sLO https://github.com/nextcloud/updater/archive/master.zip
+#    curl sLO https://github.com/nextcloud/updater/archive/main.zip
 #    install_if_not unzip
 #    unzip -q master.zip
 #    rm master.zip*
@@ -1541,10 +1598,8 @@ fi
 
 # Check new version
 # shellcheck source=lib.sh
-if [ -z "$NCVERSION" ]
-then
-    nc_update
-fi
+source /var/scripts/fetch_lib.sh
+nc_update
 if [ "${CURRENTVERSION%%.*}" -ge "$1" ]
 then
     sleep 1
@@ -1712,10 +1767,11 @@ then
   "storage-driver": "overlay2"
 }
 OVERLAY2
-fi
 
-systemctl daemon-reload
-systemctl restart docker.service
+    # Only restart if changed
+    systemctl daemon-reload
+    systemctl restart docker.service
+fi
 }
 
 # Remove all dockers excluding one
@@ -1739,15 +1795,22 @@ fi
 }
 
 # Remove selected Docker image
-# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'nextcloud/aio-imaginary'
+# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'imaginary'
 docker_prune_this() {
 if does_this_docker_exist "$1"
 then
     if yesno_box_yes "Do you want to remove $1?"
     then
-        docker stop "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
-        docker rm "$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)" --volumes
+        CONTAINER="$(docker container ls -a | grep "$1" | awk '{print $1}' | tail -1)"
+        if [ -z "$CONTAINER" ]
+        then
+            # Special solution if the container name is scrambled, then search for the actual name instead 
+            CONTAINER="$(docker container ls -a | grep "$2" | awk '{print $1}' | tail -1)"
+        fi
+        docker stop "$CONTAINER"
+        docker rm "$CONTAINER"
         docker image prune -a -f
+        docker system prune -a -f
     else
         msg_box "OK, this script will now exit, but there's still leftovers to cleanup. You can run it again at any time."
         exit
@@ -1791,19 +1854,21 @@ fi
 docker_update_specific() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
-    docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
-    print_text_in_color "$IGreen" "$2 docker image just got updated!"
-    echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
+    if docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
+    then
+        print_text_in_color "$IGreen" "$2 docker image just got updated!"
+        echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
+    fi
 fi
 }
-# docker-compose_update 'fts_os-node' 'Full Text Search' "$OPNSDIR"
+# docker-compose_update 'fulltextsearch-elasticsearch' 'Full Text Search' "$FTSDIR"
 # (docker conainter name = $1, the name in text = $2 , docker-compose directory = $3)
 docker-compose_update() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
     cd "$3"
-    docker-compose pull
-    docker-compose up -d --remove-orphans
+    docker compose pull
+    docker compose up -d --remove-orphans
     docker image prune -a -f
     print_text_in_color "$IGreen" "$2 docker image just got updated!"
     echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
@@ -1826,10 +1891,14 @@ printf "%b%s%b\n" "$1" "$2" "$Color_Off"
 }
 
 # Apply patch
-# git_apply_patch 15992 server 16.0.2
+# App:
+# git_apply_patch "319" "fulltextsearch_elasticsearch" "27.1.1" "$NCPATH/apps/fulltextsearch_elasticsearch"
+# Server:
+# git_apply_patch "15992" "server" "16.0.2" "$NCPATH"
 # 1 = pull
 # 2 = repository
-# Nextcloud version
+# 3 = Nextcloud version
+# 4 = Folder on system
 git_apply_patch() {
 if [ -z "$NCVERSION" ]
 then
@@ -1839,7 +1908,7 @@ if [[ "$CURRENTVERSION" = "$3" ]]
 then
     curl_to_dir "https://patch-diff.githubusercontent.com/raw/nextcloud/${2}/pull" "${1}.patch" "/tmp"
     install_if_not git
-    cd "$NCPATH"
+    cd "${4}"
     if git apply --check /tmp/"${1}".patch >/dev/null 2>&1
     then
         print_text_in_color "$IGreen" "Applying patch https://github.com/nextcloud/${2}/pull/${1} ..."
@@ -1967,7 +2036,7 @@ zpool_import_if_missing() {
 # ZFS needs to be installed
 if ! is_this_installed zfsutils-linux
 then
-    print_text_in_color "$IRed" "This function is only intened to be run if you have ZFS installed."
+    print_text_in_color "$IRed" "This function is only intended to be run if you have ZFS installed."
     return 1
 elif [ -z "$POOLNAME" ]
 then
@@ -1998,7 +2067,7 @@ fi
 check_free_space() {
     if vgs &>/dev/null
     then
-        FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+[\.,][0-9]" | sed 's|\.||')
+        FREE_SPACE=$(vgs | grep ubuntu-vg | awk '{print $7}' | grep g | grep -oP "[0-9]+[\.,][0-9]" | sed 's|[.,]||')
     fi
     if [ -z "$FREE_SPACE" ]
     then
@@ -2066,6 +2135,15 @@ then
 elif grep 8.3 <<< "$GETPHP" >/dev/null 2>&1
 then
    export PHPVER=8.3
+elif grep 8.4 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.4
+elif grep 8.5 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.5
+elif grep 8.6 <<< "$GETPHP" >/dev/null 2>&1
+then
+   export PHPVER=8.6
 fi
 
 # Export other PHP variables based on PHPVER
@@ -2126,7 +2204,7 @@ add_trusted_key_and_repo() {
     check_distro_version
 
     # Do the magic
-    if version 22.04 "$DISTRO" 22.04.10
+    if version 22.04 "$DISTRO" 24.04.10
     then
         # New recommended way not using apt-key
         print_text_in_color "$ICyan" "Adding trusted key in /etc/apt/keyrings/$1..."

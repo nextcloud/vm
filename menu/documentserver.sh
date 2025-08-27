@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
-SCRIPT_NAME="Documentserver Menu"
+SCRIPT_NAME="Documentserver menu"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -17,12 +17,12 @@ debug_mode
 root_check
 
 choice=$(whiptail --title "$TITLE" --menu \
-"Which Documentserver do you want to install?\n\nAutomatically configure and install the selected Documentserver.
+"Which Documentserver for online editing do you want to install?\n\nWe recomend Collabora with Docker. The subdomain could look like this:\noffice.your-nextcloud.tld\n\nAutomatically configure and install the selected Documentserver.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Collabora (Docker)" "(Online editing - Extra Subdomain required)" \
-"Collabora (Integrated)" "(Online editing - No Subdomain required)" \
-"OnlyOffice (Docker)" "(Online editing - Extra Subdomain required)" \
-"OnlyOffice (Integrated)" "(Online editing - No Subdomain required)" 3>&1 1>&2 2>&3)
+"Collabora (Docker)" "(Extra Subdomain required)" \
+"Collabora (Integrated)" "(No Subdomain required)" \
+"OnlyOffice (Docker)" "(Extra Subdomain required)" \
+"OnlyOffice (Integrated)" "(No Subdomain required)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Collabora (Docker)")

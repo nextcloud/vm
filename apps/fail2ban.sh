@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
-# Inspired by https://github.com/nextcloud/nextcloudpi/blob/master/etc/nextcloudpi-config.d/fail2ban.sh
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# Inspired by https://github.com/nextcloud/nextcloudpi/blob/main/etc/nextcloudpi-config.d/fail2ban.sh
 
 true
 SCRIPT_NAME="Fail2ban"
-SCRIPT_EXPLAINER="Fail2ban provides extra Brute Force protextion for Nextcloud.
+SCRIPT_EXPLAINER="Fail2ban provides extra Brute Force protection for Nextcloud.
 It scans the Nextcloud and SSH log files and bans IPs that show malicious \
 signs -- too many password failures, seeking for exploits, etc. 
 Generally Fail2Ban is then used to update firewall rules to \
@@ -221,7 +221,7 @@ fi
 # Create Fail2ban report script
 cat << FAIL2BAN_REPORT > "$SCRIPTS/daily_fail2ban_report.sh"
 #!/bin/bash
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 # Look for ip addresses
 BANNED_IPS=\$(grep "Ban " /var/log/fail2ban.log | grep "\$(date +%Y-%m-%d)" \

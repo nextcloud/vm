@@ -1,12 +1,15 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Nextcloud Talk"
-SCRIPT_EXPLAINER="This script installs Nextcloud Talk whcih is a replacement for Teams/Skype and similar.\
-You will also be offered the possibility to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app. \
-It's called 'Talk Signaling' and you will be offered to install it as part two of this script."
+SCRIPT_EXPLAINER="This script installs Nextcloud Talk which is a replacement for Teams/Skype and similar.
+
+You will also be offered the possibility to install the so-called High-Performance-Backend, which makes it possible to host more video calls than it would be with the standard Talk app.
+It's called 'Talk Signaling' and you will be offered to install it as part two of this script.
+
+And last but not least, Talk Recording is also offered to be installed. It enables recording of sessions in Talk and it's part three of this script."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -33,29 +36,47 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
+    if [ -f "$SIGNALING_SERVER_CONF" ]
+    then
+        SUBDOMAIN=$(input_box_flow "Please enter the subdomain you were using for Talk Signaling, e.g: talk.yourdomain.com. This will be removed.")
+        if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
+        then
+            yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
+            REMOVE_OLD="$(find "$LETSENCRYPTPATH/" -name "$SUBDOMAIN*")"
+            for remove in $REMOVE_OLD
+                do rm -rf "$remove"
+            done
+        fi
+    fi
     sed "/# Talk Signaling Server/d" /etc/hosts >/dev/null 2>&1
     sed "/127.0.1.1             $SUBDOMAIN/d" /etc/hosts >/dev/null 2>&1
+    systemctl stop nats-server
+    systemctl disable nats-server
+    deluser nats
     nextcloud_occ_no_check config:app:delete spreed stun_servers
     nextcloud_occ_no_check config:app:delete spreed turn_servers
     nextcloud_occ_no_check config:app:delete spreed signaling_servers
+    nextcloud_occ_no_check config:app:delete spreed recording_servers
     nextcloud_occ_no_check app:remove spreed
     rm -rf \
         "$TURN_CONF" \
         "$SIGNALING_SERVER_CONF" \
+        /etc/signaling \
         /etc/nats \
         /etc/janus \
         /etc/apt/trusted.gpg.d/morph027-janus.asc \
         /etc/apt/trusted.gpg.d/morph027-nats-server.asc \
         /etc/apt/trusted.gpg.d/morph027-nextcloud-spreed-signaling.asc \
         /etc/apt/trusted.gpg.d/morph027-coturn.asc \
-        /etc/apt/keyrings/morph027-coturn.asc
-        /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list\
+        /etc/apt/keyrings/morph027-coturn.asc \
+        /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list \
         /etc/apt/sources.list.d/morph027-janus.list \
         /etc/apt/sources.list.d/morph027-nats-server.list \
         /etc/apt/sources.list.d/morph027-coturn.list \
-        $VMLOGS/talk_apache_error.log \
-        $VMLOGS/talk_apache_access.log \
-        $VMLOGS/turnserver.log \
+	/lib/systemd/system/nats-server.service \
+        "$VMLOGS"/talk_apache_error.log \
+        "$VMLOGS"/talk_apache_access.log \
+        "$VMLOGS"/turnserver.log \
         /var/www/html/error
     APPS=(coturn nats-server janus nextcloud-spreed-signaling)
     for app in "${APPS[@]}"
@@ -66,21 +87,23 @@ else
         fi
     done
     apt-get autoremove -y
+    docker_prune_this nextcloud/aio-talk-recording
+    docker_prune_this ghcr.io/nextcloud-releases/aio-talk-recording
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Must be 22.04
-if ! version 20.04 "$DISTRO" 22.04.10
+# Must be 24.04
+if ! version 22.04 "$DISTRO" 24.04.10
 then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 20.04 - 22.04.10 to install Talk"
+    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to install Talk"
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
 exit
 fi
 
-# Nextcloud 19 is required.
+# Nextcloud 20 is required.
 lowest_compatible_nc 20
 
 ####################### TALK (COTURN)
@@ -215,7 +238,7 @@ msg_box "You will now be presented with the option to install the Talk Signaling
 This aims to give you greater performance and ability to have more users in a call at the same time.
 
 You can read more here: 
-https://github.com/strukturag/nextcloud-spreed-signaling/blob/master/README.md
+https://github.com/strukturag/nextcloud-spreed-signaling/blob/main/README.md
 
 We will use apt packages from https://gitlab.com/morph027 which is a trusted contributor to this repository.
 
@@ -278,7 +301,48 @@ curl -sL -o "/etc/apt/trusted.gpg.d/morph027-nats-server.asc" "https://packaging
 echo "deb https://packaging.gitlab.io/nats-server nats main" > /etc/apt/sources.list.d/morph027-nats-server.list
 apt-get update -q4 & spinner_loading
 install_if_not nats-server
+getent passwd nats >/dev/null 2>&1 || adduser \
+  --system \
+  --shell /usr/sbin/nologin \
+  --gecos 'High-Performance server for NATS, the cloud native messaging system.' \
+  --group \
+  --disabled-password \
+  --no-create-home \
+  nats
+
 chown nats:nats /etc/nats/nats.conf
+
+# Check if nats systemd service is in the package or not
+if [ ! -f "/lib/systemd/system/nats-server.service" ];
+then
+# Generate nats systemd service
+cat << NATS_SYSTEMD > /lib/systemd/system/nats-server.service
+[Unit]
+Description=NATS messaging server
+Documentation=https://docs.nats.io/nats-server/
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/nats-server --config /etc/nats/nats.conf
+User=nats
+Group=nats
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+NATS_SYSTEMD
+        if [ -f "/lib/systemd/system/nats-server.service" ];
+        then
+                print_text_in_color "$IGreen" "NATS systemd service  was successfully created."
+        else
+                print_text_in_color "$IRed" "Unable to create NATS systemd service , exiting..."
+                print_text_in_color "$IRed" "Please report this issue here $ISSUES"
+                exit 1
+        fi
+else
+        print_text_in_color "$IGreen" "Nats systemd service is already in place, continuing"
+fi
+
 start_if_stopped nats-server
 check_command systemctl enable nats-server
 
@@ -319,24 +383,34 @@ then
     cat << SIGNALING_CONF_CREATE > "$SIGNALING_SERVER_CONF"
 [http]
 listen = 127.0.0.1:8081
+
 [app]
 debug = false
+
 [sessions]
 hashkey = $(openssl rand -hex 16)
 blockkey = $(openssl rand -hex 16)
+
 [clients]
-internalsecret = $(openssl rand -hex 16)
+internalsecret = ${TURN_INTERNAL_SECRET}
+
 [backend]
-allowed = ${TURN_DOMAIN}
+backends = backend-1
 allowall = false
-secret = ${NC_SECRET}
 timeout = 10
 connectionsperhost = 8
+
+[backend-1]
+url = https://${TURN_DOMAIN}
+secret = ${SIGNALING_SECRET}
+
 [nats]
-url = nats://localhost:4222
+url = nats://127.0.0.1:4222
+
 [mcu]
 type = janus
 url = ws://127.0.0.1:8188
+
 [turn]
 apikey = ${JANUS_API_KEY}
 secret = ${TURN_SECRET}
@@ -361,17 +435,17 @@ a2enmod headers
 a2enmod remoteip
 
 # Allow CustomLog
-touch $VMLOGS/talk_apache_access.log
-touch $VMLOGS/talk_apache_error.log
-chown www-data:www-data $VMLOGS/talk_apache_error.log $VMLOGS/talk_apache_access.log
+touch "$VMLOGS"/talk_apache_access.log
+touch "$VMLOGS"/talk_apache_error.log
+chown root:adm "$VMLOGS"/talk_apache_*
 
 # Prep the error page
 mkdir -p /var/www/html/error
 echo "Hi there! :) If you see this page, the Apache2 proxy for $SCRIPT_NAME is up and running." > /var/www/html/error/404_proxy.html
 chown -R www-data:www-data /var/www/html/error
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi
@@ -403,8 +477,8 @@ then
 
     # Logs
     LogLevel warn
-    CustomLog \${APACHE_LOG_DIR}/access.log combined
-    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog $VMLOGS/talk_apache_access.log common
+    ErrorLog $VMLOGS/talk_apache_error.log
 
     # Just in case - see below
     SSLProxyEngine On
@@ -467,7 +541,7 @@ else
 fi
 
 # Set signaling server strings
-SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$NC_SECRET\"}"
+SIGNALING_SERVERS_STRING="{\"servers\":[{\"server\":\"https://$SUBDOMAIN/\",\"verify\":true}],\"secret\":\"$SIGNALING_SECRET\"}"
 nextcloud_occ config:app:set spreed signaling_servers --value="$SIGNALING_SERVERS_STRING" --output json
 
 # Add to /etc/hosts
@@ -483,6 +557,51 @@ then
     msg_box "Installation failed. :/\n\nPlease run this script again to uninstall if you want to clean the system, or choose to reinstall if you want to try again.\n\nLogging can be found by typing: journalctl -lfu signaling"
     exit 1
 else
-    msg_box "Congratulations, everything is working as intended! The installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
-    exit 0
+    msg_box "Congratulations, everything is working as intended! The Talk Signaling installation succeeded.\n\nLogging can be found by typing: journalctl -lfu signaling"
+fi
+
+####### Talk recording
+if ! yesno_box_yes "Do you want install Talk Recording to be able to record your calls?"
+then
+    exit
+fi
+
+# Nextcloud 26 is required.
+lowest_compatible_nc 26
+
+# It's pretty recource intensive
+cpu_check 4 "Talk Recording"
+ram_check 4 "Talk Recording"
+
+print_text_in_color "$ICyan" "Setting up Talk recording..."
+
+# Pull and start
+docker pull ghcr.io/nextcloud-releases/aio-talk-recording:latest
+docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
+--restart always \
+--name talk-recording \
+--shm-size=2GB \
+-e NC_DOMAIN="${TURN_DOMAIN}" \
+-e HPB_DOMAIN="${SUBDOMAIN}" \
+-e HPB_PATH=/ \
+-e TZ="$(cat /etc/timezone)" \
+-e RECORDING_SECRET="${TURN_RECORDING_SECRET}" \
+-e INTERNAL_SECRET="${TURN_INTERNAL_SECRET}" \
+ghcr.io/nextcloud-releases/aio-talk-recording:latest
+
+# Talk recording
+if [ -d "$NCPATH/apps/spreed" ]
+then
+    if does_this_docker_exist ghcr.io/nextcloud-releases/aio-talk-recording
+    then
+        install_if_not netcat-traditional
+        while ! nc -z "$TURN_RECORDING_HOST" "$TURN_RECORDING_HOST_PORT"
+        do
+            print_text_in_color "$ICyan" "Waiting for Talk Recording to become available..."
+            sleep 5
+        done
+        # Set values in Nextcloud
+        RECORDING_SERVERS_STRING="{\"servers\":[{\"server\":\"http://$TURN_RECORDING_HOST:$TURN_RECORDING_HOST_PORT/\",\"verify\":false}],\"secret\":\"$TURN_RECORDING_SECRET\"}"
+        nextcloud_occ_no_check config:app:set spreed recording_servers --value="$RECORDING_SERVERS_STRING" --output json
+    fi
 fi

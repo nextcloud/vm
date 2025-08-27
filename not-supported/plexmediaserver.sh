@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -71,6 +71,10 @@ DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 2 -type d | grep -v "/mnt/ncdata"
 mapfile -t DIRECTORIES <<< "$DIRECTORIES"
 for directory in "${DIRECTORIES[@]}"
 do
+    # Open directory to make sure that it is accessible
+    ls "$directory" &>/dev/null
+
+    # Continue with the logic
     if mountpoint -q "$directory" && [ "$(stat -c '%a' "$directory")" = "770" ]
     then
         if [ "$(stat -c '%U' "$directory")" = "www-data" ] && [ "$(stat -c '%G' "$directory")" = "www-data" ]
@@ -94,7 +98,7 @@ install_docker
 # Create plex user
 if ! id plex &>/dev/null
 then
-    check_command adduser --no-create-home --quiet --disabled-login --force-badname --gecos "" "plex"
+    check_command adduser --no-create-home --quiet --disabled-login --uid 1005 --gid 1006 --force-badname --gecos "" "plex"
 fi
 
 PLEX_UID="$(id -u plex)"

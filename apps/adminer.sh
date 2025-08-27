@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Adminer"
@@ -28,6 +28,7 @@ else
     # Removal
     check_external_ip # Check that the script can see the external IP (apache fails otherwise)
     a2disconf adminer.conf
+    restart_webserver
     rm -f $ADMINER_CONF
     rm -rf $ADMINERDIR
     check_command apt-get purge adminer -y
@@ -51,18 +52,62 @@ a2enmod ssl
 # Install Adminer
 apt-get update -q4 & spinner_loading
 install_if_not adminer
-curl_to_dir "http://www.adminer.org" "latest.php" "$ADMINERDIR"
-curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
-ln -s "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php
+curl_to_dir "https://download.adminerevo.org/latest/adminer" "adminer-pgsql.zip" "$ADMINERDIR"
+install_if_not unzip
+# Unzip the latest version
+unzip "$ADMINERDIR"/adminer-pgsql.zip -d "$ADMINERDIR"
+rm -f "$ADMINERDIR"/adminer-pgsql.zip
+# curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
+mv "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
 
-# Only add TLS 1.3 on Ubuntu later than 20.04
-if version 20.04 "$DISTRO" 22.04.10
+# Only add TLS 1.3 on Ubuntu later than 22.04
+if version 22.04 "$DISTRO" 24.04.10
 then
     TLS13="+TLSv1.3"
 fi
 
 # Get PHP version for the conf file
 check_php
+
+# shellcheck disable=2154
+
+# Add ability to add plugins easily
+cat << ADMINER_CREATE_PLUGIN > "$ADMINER_CONF_PLUGIN"
+<?php
+function adminer_object() {
+    // required to run any plugin
+    include_once "./plugins/plugin.php";
+
+    // autoloader
+    foreach (glob("plugins/*.php") as $filename) {
+        include_once "./$filename";
+    }
+
+    // enable extra drivers just by including them
+    //~ include "./plugins/drivers/simpledb.php";
+
+    $plugins = array(
+        // specify enabled plugins here
+        new AdminerDumpXml(),
+        new AdminerTinymce(),
+        new AdminerFileUpload("data/"),
+        new AdminerSlugify(),
+        new AdminerTranslation(),
+        new AdminerForeignSystem(),
+    );
+
+    /* It is possible to combine customization and plugins:
+    class AdminerCustomization extends AdminerPlugin {
+    }
+    return new AdminerCustomization($plugins);
+    */
+
+    return new AdminerPlugin($plugins);
+}
+
+// include original Adminer or Adminer Editor
+include "./adminer.php";
+ADMINER_CREATE_PLUGIN
 
 cat << ADMINER_CREATE > "$ADMINER_CONF"
  <VirtualHost *:80>
@@ -107,7 +152,7 @@ Listen 9443
     <IfModule mod_dir.c>
         DirectoryIndex adminer.php
     </IfModule>
-    AllowOverride None
+    AllowOverride All
 
     # Only allow connections from localhost:
     Require ip $GATEWAY/24
@@ -130,7 +175,6 @@ The script will exit."
     exit 1
 else
     # Allow local access:
-    
     check_command sed -i "s|local   all             postgres                                peer|local   all             postgres                                md5|g" /etc/postgresql/*/main/pg_hba.conf
     restart_webserver
 

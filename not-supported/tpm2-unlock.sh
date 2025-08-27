@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -8,7 +8,7 @@ SCRIPT_NAME="TPM2 Unlock"
 SCRIPT_EXPLAINER="This script helps automatically unlocking the root partition during boot \
 and securing your GRUB (bootloader)."
 # shellcheck source=lib.sh
-source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/master/lib.sh)
+source /var/scripts/fetch_lib.sh || source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -22,8 +22,7 @@ root_check
 # Check if already installed
 if is_this_installed clevis-luks || is_this_installed clevis-tpm2 || is_this_installed clevis-initramfs
 then
-    msg_box "It seems like clevis-luks is already installed.\nThis script can unfortunately not run twice."
-    exit 1
+    msg_box "It seems like clevis-luks is already installed. We are trying to do the configuration again."
 else
     # Ask for installation
     install_popup "$SCRIPT_NAME"
@@ -45,7 +44,7 @@ fi
 
 # Test if device is present
 # https://github.com/noobient/noobuntu/wiki/Full-Disk-Encryption#tpm-2
-if ! dmesg | grep -i "tpm" | grep -q "2\.0"
+if ! dmesg | grep -iq "tpm2"
 then
     msg_box "No TPM 2.0 device found."
     exit 1
@@ -99,11 +98,12 @@ PASSWORD=$(input_box_flow "Please enter a new password that will secure your GRU
 GRUB_PASS="$(echo -e "$PASSWORD\n$PASSWORD" | grub-mkpasswd-pbkdf2 | grep -oP 'grub\.pbkdf2\.sha512\.10000\..*')"
 if [ -n "${PASSWORD##grub.pbkdf2.sha512.10000.}" ]
 then
-    cat << GRUB_CONF >> /etc/grub.d/40_custom
-
+    cat << GRUB_CONF > /etc/grub.d/40_custom
+cat << EOF
 # Password-protect GRUB
 set superusers="grub"
 password_pbkdf2 grub $GRUB_PASS
+EOF
 GRUB_CONF
     # Allow to run the default grub options without requiring the grub password
     if ! grep -q '^CLASS=.*--unrestricted"' /etc/grub.d/10_linux && grep -q '^CLASS=.*"$' /etc/grub.d/10_linux

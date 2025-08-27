@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2023, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Nextcloud Configuration Menu"
@@ -118,6 +118,11 @@ This option is recommended to be run after every major Nextcloud update." "Updat
             # Configure logrotate to rotate logs for us (max 10, every day a new one)
             cat << NEXTCLOUD_CONF > /etc/logrotate.d/nextcloud.log.conf
 $VMLOGS/nextcloud.log {
+daily
+rotate 10
+copytruncate
+}
+$VMLOGS/audit.log {
 daily
 rotate 10
 copytruncate
