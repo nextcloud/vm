@@ -584,10 +584,6 @@ nextcloud_occ maintenance:repair --include-expensive
 apt-get autoremove -y
 apt-get autoclean
 
-# Remove preference for IPv4
-rm -f /etc/apt/apt.conf.d/99force-ipv4
-apt-get update
-
 # Success!
 msg_box "The installation process is *almost* done.
 
