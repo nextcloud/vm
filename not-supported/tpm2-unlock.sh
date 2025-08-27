@@ -99,10 +99,11 @@ GRUB_PASS="$(echo -e "$PASSWORD\n$PASSWORD" | grub-mkpasswd-pbkdf2 | grep -oP 'g
 if [ -n "${PASSWORD##grub.pbkdf2.sha512.10000.}" ]
 then
     cat << GRUB_CONF > /etc/grub.d/40_custom
-
+cat << EOF
 # Password-protect GRUB
 set superusers="grub"
 password_pbkdf2 grub $GRUB_PASS
+EOF
 GRUB_CONF
     # Allow to run the default grub options without requiring the grub password
     if ! grep -q '^CLASS=.*--unrestricted"' /etc/grub.d/10_linux && grep -q '^CLASS=.*"$' /etc/grub.d/10_linux

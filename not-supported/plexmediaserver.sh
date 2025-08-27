@@ -71,6 +71,10 @@ DIRECTORIES=$(find /mnt/ -mindepth 1 -maxdepth 2 -type d | grep -v "/mnt/ncdata"
 mapfile -t DIRECTORIES <<< "$DIRECTORIES"
 for directory in "${DIRECTORIES[@]}"
 do
+    # Open directory to make sure that it is accessible
+    ls "$directory" &>/dev/null
+
+    # Continue with the logic
     if mountpoint -q "$directory" && [ "$(stat -c '%a' "$directory")" = "770" ]
     then
         if [ "$(stat -c '%U' "$directory")" = "www-data" ] && [ "$(stat -c '%G' "$directory")" = "www-data" ]
