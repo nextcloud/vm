@@ -19,19 +19,19 @@ debug_mode
 # Check if root
 root_check
 
+# Don't run this script as root user, because we will need the account
+if [ -z "$UNIXUSER" ]
+then
+    msg_box "Please don't run this script as pure root user!"
+    exit 1
+fi
+
 # Check if xrdp is installed
 if ! is_this_installed xrdp
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
     XRDP_INSTALL=1
-    
-    # Don't run this script as root user, because we will need the account
-    if [ -z "$UNIXUSER" ]
-    then
-        msg_box "Please don't run this script as pure root user!"
-        exit 1
-    fi
 
     # Check if gnome-session is installed
     if ! is_this_installed gnome-session 
