@@ -39,7 +39,7 @@ SCRIPT_NAME="Nextcloud Install Script"
 SCRIPT_EXPLAINER="This script is installing all requirements that are needed for Nextcloud to run.
 It's the first of two parts that are necessary to finish your customized Nextcloud installation."
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+source <(curl -sL https://raw.githubusercontent.com/Dieguim25/vm/main/lib.sh)
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -61,7 +61,7 @@ is_process_running dpkg
 # Check distribution and version
 if ! version 24.04 "$DISTRO" 24.04.10
 then
-    msg_box "This script can only be run on Ubuntu 24.04 (server)."
+    msg_box "Este script só pode ser executado no Ubuntu 24.04 (servidor)."
     exit 1
 fi
 
@@ -72,17 +72,17 @@ sed -i "s|#\$nrconf{restart} = .*|\$nrconf{restart} = 'a';|g" /etc/needrestart/n
 # Check for flags
 if [ "$1" = "" ]
 then
-    print_text_in_color "$ICyan" "Running in normal mode..."
+    print_text_in_color "$ICyan" "Executando no modo normal..."
     sleep 1
 elif [ "$1" = "--provisioning" ] || [ "$1" = "-p" ]
 then
-    print_text_in_color "$ICyan" "Running in provisioning mode..."
+    print_text_in_color "$ICyan" "Executando no modo de provisionamento..."
     export PROVISIONING=1
     sleep 1
 elif [ "$1" = "--not-latest" ]
 then
     NOT_LATEST=1
-    print_text_in_color "$ICyan" "Running in not-latest mode..."
+    print_text_in_color "$ICyan" "Executando no modo não mais recente..."
     sleep 1
 else
     msg_box "Failed to get the correct flag. Did you enter it correctly?"
@@ -98,11 +98,11 @@ fi
 # Create a placeholder volume before modifying anything
 if [ -z "$PROVISIONING" ]
 then
-    if ! does_snapshot_exist "NcVM-installation" && yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
-Please note: this feature will not be used by this script but by other scripts later on.
-For now we will only create a placeholder volume that will be used to let some space for snapshot volumes.
-Be aware that you will not be able to use the built-in backup solution if you choose 'No'!
-Enabling this will also force an automatic reboot after running the update script!"
+    if ! does_snapshot_exist "NcVM-installation" && yesno_box_no "Deseja usar snapshots LVM para restaurar sua partição raiz durante atualizações e coisas do tipo?
+Observação: este recurso não será usado por este script, mas por outros scripts posteriormente.
+Por enquanto, criaremos apenas um volume de espaço reservado que será usado para liberar espaço para volumes de snapshot.
+Observe que você não poderá usar a solução de backup integrada se escolher "Não"!
+Habilitar isso também forçará uma reinicialização automática após a execução do script de atualização!"
     then
         check_free_space
         if [ "$FREE_SPACE" -ge 50 ]
@@ -112,7 +112,7 @@ Enabling this will also force an automatic reboot after running the update scrip
             # Create a placeholder snapshot
             check_command lvcreate --size 5G --name "NcVM-installation" ubuntu-vg
         else
-            print_text_in_color "$IRed" "Could not create volume because of insufficient space..."
+            print_text_in_color "$IRed" "Não foi possível criar o volume devido ao espaço insuficiente..."
             sleep 2
         fi
     fi
@@ -121,11 +121,11 @@ fi
 # Fix LVM on BASE image
 if grep -q "LVM" /etc/fstab
 then
-    if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want to make all free space available to your root partition?"
+    if [ -n "$PROVISIONING" ] || yesno_box_yes "Você quer disponibilizar todo o espaço livre para sua partição raiz?"
     then
     # Resize LVM (live installer is &%¤%/!
     # VM
-    print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
+    print_text_in_color "$ICyan" "Estendendo o LVM, isso pode levar muito tempo..."
     lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 
     # Run it again manually just to be sure it's done
@@ -181,16 +181,16 @@ check_multiverse
 # Check if key is available
 if ! site_200 "$NCREPO"
 then
-    msg_box "Nextcloud repo is not available, exiting..."
+    msg_box "O repositório Nextcloud não está disponível, saindo..."
     exit 1
 fi
 
 # Test Home/SME function
 if home_sme_server
 then
-    msg_box "This is the Home/SME server, function works!"
+    msg_box "Este é o servidor Home/SME, a função funciona!"
 else
-    print_text_in_color "$ICyan" "Home/SME Server not detected. No worries, just testing the function."
+    print_text_in_color "$ICyan" "Servidor Home/SME não detectado. Não se preocupe, apenas testando a função.."
     sleep 3
 fi
 
@@ -258,21 +258,21 @@ if [ -n "$PROVISIONING" ]
 then
     choice="2 Disks Auto"
 else
-    msg_box "This server is designed to run with two disks, one for OS and one for DATA. \
-This will get you the best performance since the second disk is using ZFS which is a superior filesystem.
+    msg_box "Este servidor foi projetado para funcionar com dois discos, um para o sistema operacional e outro para DADOS. \
+Isso lhe dará o melhor desempenho, já que o segundo disco está usando ZFS, que é um sistema de arquivos superior.
 
-Though not recommended, you can still choose to only run on one disk, \
-if for example it's your only option on the hypervisor you're running.
+Embora não seja recomendado, você ainda pode optar por executar apenas em um disco, \
+se, por exemplo, for sua única opção no hipervisor que você está executando.
 
-You will now get the option to decide which disk you want to use for DATA, \
-or run the automatic script that will choose the available disk automatically."
+Agora você terá a opção de decidir qual disco deseja usar para DADOS, \
+ou execute o script automático que escolherá o disco disponível automaticamente."
 
     choice=$(whiptail --title "$TITLE - Choose disk format" --nocancel --menu \
-"How would you like to configure your disks?
+"Como você gostaria de configurar seus discos?
 $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"2 Disks Auto" "(Automatically configured)" \
-"2 Disks Manual" "(Choose by yourself)" \
-"1 Disk" "(Only use one disk /mnt/ncdata - NO ZFS!)" 3>&1 1>&2 2>&3)
+"2 Discos Automáticos" (Configurado automaticamente)" \
+"2 Manual" "(Escolha você mesmo)" \
+"1 Disk" "(Use apenas um disco /mnt/ncdata - Sem ZFS!)" 3>&1 1>&2 2>&3)
 fi
 
 case "$choice" in
@@ -318,10 +318,10 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 
     case "$choice" in
         "Quad9")
-            sed -i "s|^#\?DNS=.*$|DNS=9.9.9.9 149.112.112.112 2620:fe::fe 2620:fe::9|g" /etc/systemd/resolved.conf
+            sed -i "s|^#\?DNS=.*$|DNS=9.9.9.9 149.112.112.112|g" /etc/systemd/resolved.conf
         ;;
         "Cloudflare")
-            sed -i "s|^#\?DNS=.*$|DNS=1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001|g" /etc/systemd/resolved.conf
+            sed -i "s|^#\?DNS=.*$|DNS=1.1.1.1 1.0.0.1|g" /etc/systemd/resolved.conf
         ;;
         "Local")
             sed -i "s|^#\?DNS=.*$|DNS=$GATEWAY|g" /etc/systemd/resolved.conf
@@ -335,7 +335,7 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
             fi
         ;;
         "Expert")
-            OWNDNS=$(input_box_flow "Please choose your own DNS server(s) with a space in between, e.g: $GATEWAY 9.9.9.9 (NS1 NS2)")
+            OWNDNS=$(input_box_flow "Por favor, escolha seu(s) próprio(s) servidor(es) DNS com um espaço entre eles, por exemplo: $GATEWAY 9.9.9.9 (NS1 NS2)")
             sed -i "s|^#\?DNS=.*$|DNS=$OWNDNS|g" /etc/systemd/resolved.conf
             systemctl restart systemd-resolved.service
             if network_ok
@@ -343,7 +343,7 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
                 break
                 unset OWNDNS 
             else
-                msg_box "Could not validate the local DNS server. Pick an Internet DNS server and try again."
+                msg_box "Não foi possível validar o servidor DNS local. Selecione um servidor DNS da Internet e tente novamente.."
                 continue
             fi
         ;;
@@ -354,7 +354,7 @@ $MENU_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
     then
         break
     else
-        msg_box "Could not validate the DNS server. Please try again."
+        msg_box "Não foi possível validar o servidor DNS. Tente novamente.."
     fi
 done
 
@@ -415,20 +415,20 @@ install_if_not php"$PHPVER"-mbstring
 install_if_not php"$PHPVER"-soap
 install_if_not php"$PHPVER"-gmp
 install_if_not php"$PHPVER"-bz2
-install_if_not php"$PHPVER"-bcmath
+install_if_not php"$PHPVER"-imagick
 install_if_not php-pear
 
 # Enable php-fpm
 a2enconf php"$PHPVER"-fpm
 
 # Enable HTTP/2 server wide
-print_text_in_color "$ICyan" "Enabling HTTP/2 server wide..."
+print_text_in_color "$ICyan" "Habilitando HTTP/2 em todo o servidor..."
 cat << HTTP2_ENABLE > "$HTTP2_CONF"
 <IfModule http2_module>
     Protocols h2 http/1.1
 </IfModule>
 HTTP2_ENABLE
-print_text_in_color "$IGreen" "$HTTP2_CONF was successfully created"
+print_text_in_color "$IGreen" "$HTTP2_CONF foi criado com sucesso"
 a2enmod http2
 restart_webserver
 
@@ -483,7 +483,7 @@ if [ -n "$NOT_LATEST" ]
 then
     while [ -z "$NCVERSION" ]
     do
-        print_text_in_color "$ICyan" "Fetching the not-latest Nextcloud version..."
+        print_text_in_color "$ICyan" "Obtendo a versão não mais recente do Nextcloud..."
         NCVERSION=$(curl -s -m 900 "$NCREPO"/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' \
 | sort --version-sort | grep -v "\.0$\|\.1$\|\.2$" | tail -1)
         STABLEVERSION="nextcloud-$NCVERSION"
@@ -496,7 +496,7 @@ check_command download_verify_nextcloud_stable
 
 if [ ! -f "$HTML/$STABLEVERSION.tar.bz2" ]
 then
-    msg_box "Aborting,something went wrong with the download of $STABLEVERSION.tar.bz2"
+    msg_box "Abortando, algo deu errado com o download de $STABLEVERSION.tar.bz2"
     exit 1
 fi
 
@@ -511,38 +511,38 @@ bash "$SECURE" & spinner_loading
 # Ask to set a custom username
 if [ -z "$PROVISIONING" ]
 then
-    if yesno_box_no "Nextcloud is about to be installed.\nDo you want to change the standard GUI user '$GUIUSER' to something else?"
+    if yesno_box_no "O Nextcloud está prestes a ser instalado.\nVocê deseja alterar o usuário padrão da GUI '$GUIUSER' para outra coisa?"
     then
         while :
         do
-            GUIUSER=$(input_box_flow "Please type in the name of the Web Admin in Nextcloud.
-\nThe only allowed characters for the username are:
+            GUIUSER=$(input_box_flow "Por favor, digite o nome do administrador da Web no Nextcloud.
+\nOs únicos caracteres permitidos para o nome de usuário são:
 'a-z', 'A-Z', '0-9', and '_.@-'")
             if [[ "$GUIUSER" == *" "* ]]
             then
-                msg_box "Please don't use spaces."
+                msg_box "Por favor, não use espaços."
             # - has to be escaped otherwise it won't work.
             # Inspired by: https://unix.stackexchange.com/a/498731/433213
             elif [ "${GUIUSER//[A-Za-z0-9_.\-@]}" ]
             then
-                msg_box "Allowed characters for the username are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+                msg_box "Os caracteres permitidos para o nome de usuário são:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPor favor, tente novamente."
             else
                 break
             fi
         done
         while :
         do
-            GUIPASS=$(input_box_flow "Please type in the new password for the new Web Admin ($GUIUSER) in Nextcloud.")
+            GUIPASS=$(input_box_flow "Por favor, digite a nova senha para o novo administrador da Web ($GUIUSER) no Nextcloud.")
             if [[ "$GUIPASS" == *" "* ]]
             then
-                msg_box "Please don't use spaces."
+                msg_box "Por favor, não use espaços."
             fi
             if [ "${GUIPASS//[A-Za-z0-9_.\-@]}" ]
             then
-                msg_box "Allowed characters for the password are:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPlease try again."
+                msg_box "Os caracteres permitidos para a senha são:\na-z', 'A-Z', '0-9', and '_.@-'\n\nPor favor, tente novamente."
             else
-                msg_box "The new Web Admin in Nextcloud is now: $GUIUSER\nThe password is set to: $GUIPASS
-This is used when you login to Nextcloud itself, i.e. on the web."
+                msg_box "O novo administrador da Web no Nextcloud agora é: $GUIUSER\nA senha está definida como: $GUIPASS
+Isto é usado quando você faz login no próprio Nextcloud, ou seja, na web."
             break
             fi
         done
@@ -553,7 +553,7 @@ fi
 # NC 29 fix ## TODO: is this needed in coming versions?
 chown www-data:www-data "$NCPATH"/data
 # Normal install
-print_text_in_color "$ICyan" "Installing Nextcloud, it might take a while..."
+print_text_in_color "$ICyan" "Instalando o Nextcloud, pode demorar um pouco..."
 cd "$NCPATH"
 # Don't use nextcloud_occ here as it takes alooong time.
 # https://github.com/nextcloud/vm/issues/2542#issuecomment-1700406020
@@ -596,10 +596,10 @@ if is_this_installed "php$PHPVER"-dev
 then
     if ! yes no | pecl install -Z igbinary
     then
-        msg_box "igbinary PHP module installation failed"
+        msg_box "Falha na instalação do módulo PHP igbinary"
         exit
     else
-        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
+        print_text_in_color "$IGreen" "Instalação do módulo PHP igbinary OK!"
     fi
 {
 echo "# igbinary for PHP"
@@ -625,22 +625,22 @@ crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > 
 # Run the updatenotification on a schedule
 nextcloud_occ config:system:set upgrade.disable-web --type=bool --value=true
 nextcloud_occ config:app:set updatenotification notify_groups --value="[]"
-print_text_in_color "$ICyan" "Configuring update notifications specific for this server..."
+print_text_in_color "$ICyan" "Configurando notificações de atualização específicas para este servidor..."
 download_script STATIC updatenotification
 check_command chmod +x "$SCRIPTS"/updatenotification.sh
 crontab -u root -l | { cat; echo "59 $AUT_UPDATES_TIME * * * $SCRIPTS/updatenotification.sh > /dev/null 2>&1"; } | crontab -u root -
 
 # Change values in php.ini (increase max file size)
 # max_execution_time
-sed -i "s|max_execution_time =.*|max_execution_time = 3500|g" "$PHP_INI"
+sed -i "s|max_execution_time =.*|max_execution_time = 3700|g" "$PHP_INI"
 # max_input_time
-sed -i "s|max_input_time =.*|max_input_time = 3600|g" "$PHP_INI"
+sed -i "s|max_input_time =.*|max_input_time = 3800|g" "$PHP_INI"
 # memory_limit
-sed -i "s|memory_limit =.*|memory_limit = 512M|g" "$PHP_INI"
+sed -i "s|memory_limit =.*|memory_limit = 1g|g" "$PHP_INI"
 # post_max
-sed -i "s|post_max_size =.*|post_max_size = 1100M|g" "$PHP_INI"
+sed -i "s|post_max_size =.*|post_max_size = 16g|g" "$PHP_INI"
 # upload_max
-sed -i "s|upload_max_filesize =.*|upload_max_filesize = 1000M|g" "$PHP_INI"
+sed -i "s|upload_max_filesize =.*|upload_max_filesize = 16g|g" "$PHP_INI"
 
 # Set logging
 nextcloud_occ config:system:set log_type --value=file
@@ -729,7 +729,7 @@ echo "pgsql.log_notice = 0"
 } >> "$PHP_FPM_DIR"/conf.d/20-pdo_pgsql.ini
 
 # Fix https://github.com/nextcloud/vm/issues/714
-print_text_in_color "$ICyan" "Optimizing Nextcloud..."
+print_text_in_color "$ICyan" "Otimizando o Nextcloud..."
 yes | nextcloud_occ db:convert-filecache-bigint
 nextcloud_occ db:add-missing-indices
 while [ -z "$CURRENTVERSION" ]
@@ -820,7 +820,7 @@ then
     </IfModule>
 </VirtualHost>
 HTTP_CREATE
-    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF was successfully created."
+    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$HTTP_CONF foi criado com sucesso."
 fi
 
 # Generate $TLS_CONF
@@ -915,7 +915,7 @@ then
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 </VirtualHost>
 TLS_CREATE
-    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$TLS_CONF was successfully created."
+    print_text_in_color "$IGreen" "$SITES_AVAILABLE/$TLS_CONF foi criado com sucesso."
 fi
 
 # Enable new config
@@ -1052,7 +1052,7 @@ then
     if ! version 24.04 "$DISTRO" 24.04.10
     then
         # Upgrade Realtek drivers
-        print_text_in_color "$ICyan" "Upgrading Realtek firmware..."
+        print_text_in_color "$ICyan" "Atualizando o firmware Realtek..."
         curl_to_dir https://raw.githubusercontent.com/nextcloud/vm/main/network/asusnuc pn51.sh "$SCRIPTS"
         bash "$SCRIPTS"/pn51.sh
     fi
@@ -1062,7 +1062,7 @@ fi
 if home_sme_server
 then
     # Upgrade system
-    print_text_in_color "$ICyan" "System will now upgrade..."
+    print_text_in_color "$ICyan" "O sistema agora será atualizado..."
     run_script STATIC update
 fi
 
@@ -1077,7 +1077,7 @@ fi
 # chmod +x
 # Set permissions for ncadmin in the change scripts
 
-print_text_in_color "$ICyan" "Getting scripts from GitHub to be able to run the first setup..."
+print_text_in_color "$ICyan" "Obtendo scripts do GitHub para poder executar a primeira configuração..."
 
 # Get needed scripts for first bootup
 download_script GITHUB_REPO nextcloud-startup-script
@@ -1111,8 +1111,8 @@ systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 # Reboot
 if [ -z "$PROVISIONING" ]
 then
-    msg_box "Installation almost done, system will reboot when you hit OK.
+    msg_box "A instalação está quase concluída, o sistema será reiniciado quando você clicar em OK.
 
-After reboot, please login to run the setup script."
+Após a reinicialização, faça login para executar o script de configuração."
 fi
 reboot
