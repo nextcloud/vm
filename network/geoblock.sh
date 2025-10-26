@@ -81,32 +81,103 @@ then
 fi
 
 ##### GeoIP script (Apache Setup)
-# Install  requirements
+# Install requirements
 yes | add-apt-repository ppa:maxmind/ppa
 apt-get update -q4 & spinner_loading
 install_if_not libmaxminddb0
 install_if_not libmaxminddb-dev
 install_if_not mmdb-bin
-install_if_not apache2-dev
+
+# Install apache2-dev with dependency resolution
+# Handle conflicts with Sury PPA packages
+print_text_in_color "$ICyan" "Installing apache2-dev (this may take a moment)..."
+if ! apt-get install -y apache2-dev 2>&1 | tee /tmp/apache2-dev-install.log
+then
+    print_text_in_color "$IYellow" "Warning: apache2-dev installation encountered issues."
+    print_text_in_color "$ICyan" "Attempting to resolve dependency conflicts..."
+    
+    # Try to fix broken dependencies
+    if apt-get install -f -y
+    then
+        print_text_in_color "$IGreen" "Dependencies fixed, retrying apache2-dev installation..."
+        if ! apt-get install -y apache2-dev
+        then
+            msg_box "Failed to install apache2-dev even after fixing dependencies.
+
+This is likely due to conflicts with PHP PPA packages (e.g., Sury PPA).
+The error log has been saved to /tmp/apache2-dev-install.log
+
+Please report this issue to: $ISSUES
+Include the contents of /tmp/apache2-dev-install.log"
+            exit 1
+        fi
+    else
+        msg_box "Could not resolve apache2-dev dependency conflicts.
+
+The error log has been saved to /tmp/apache2-dev-install.log
+
+Please report this issue to: $ISSUES
+Include the contents of /tmp/apache2-dev-install.log"
+        exit 1
+    fi
+fi
+
+# Verify apxs is available before attempting compilation
+if ! command -v apxs2 >/dev/null 2>&1 && ! command -v apxs >/dev/null 2>&1
+then
+    msg_box "Error: apxs/apxs2 tool not found even after installing apache2-dev.
+
+This tool is required to compile the MaxMindDB Apache module.
+Please report this issue to: $ISSUES"
+    exit 1
+fi
+
+print_text_in_color "$IGreen" "apache2-dev and apxs successfully installed!"
 
 # maxminddb_module https://github.com/maxmind/mod_maxminddb
 cd /tmp
 curl_to_dir https://github.com/maxmind/mod_maxminddb/releases/download/1.2.0/ mod_maxminddb-1.2.0.tar.gz /tmp
 tar -xzf mod_maxminddb-1.2.0.tar.gz
 cd mod_maxminddb-1.2.0
+
+print_text_in_color "$ICyan" "Compiling MaxMindDB Apache module..."
 if ./configure
 then
-    make install
+    if make
+    then
+        if make install
+        then
+            print_text_in_color "$IGreen" "MaxMindDB Apache module compiled and installed successfully!"
+        else
+            msg_box "Failed to install MaxMindDB module. Please report this to $ISSUES"
+            exit 1
+        fi
+    else
+        msg_box "Failed to compile MaxMindDB module. Please report this to $ISSUES"
+        exit 1
+    fi
+    
     # Delete conf made by module
     rm -f /etc/apache2/mods-enabled/maxminddb.conf
+    
     # Check if module is enabled
     if ! apachectl -M | grep -i "maxminddb"
     then
-       msg_box "Couldn't install the Apache module for MaxMind. Please report this to $ISSUES"
+       msg_box "Couldn't load the Apache module for MaxMind after installation. Please report this to $ISSUES"
        exit 1
     fi
+    
+    print_text_in_color "$IGreen" "MaxMindDB module loaded in Apache successfully!"
+    
     # Cleanup
+    cd /tmp
     rm -rf mod_maxminddb-1.2.0 mod_maxminddb-1.2.0.tar.gz
+else
+    msg_box "Failed to configure MaxMindDB module compilation.
+    
+This usually means apxs/apxs2 is not properly installed.
+Please report this issue to: $ISSUES"
+    exit 1
 fi
 
 # Enable modules

@@ -362,13 +362,26 @@ done
 apt-get update -q4 & spinner_loading
 install_if_not postgresql
 
-# Create DB
+# Create DB with proper permissions for Nextcloud 30+
+# PostgreSQL 15+ requires explicit schema permissions
 cd /tmp
 sudo -u postgres psql <<END
 CREATE USER $PGDB_USER WITH PASSWORD '$PGDB_PASS';
 CREATE DATABASE nextcloud_db WITH OWNER $PGDB_USER TEMPLATE template0 ENCODING 'UTF8';
+\c nextcloud_db
+GRANT CREATE ON SCHEMA public TO $PGDB_USER;
+GRANT ALL ON SCHEMA public TO $PGDB_USER;
+ALTER DATABASE nextcloud_db OWNER TO $PGDB_USER;
 END
+
+if [ $? -ne 0 ]; then
+    print_text_in_color "$IRed" "Failed to create PostgreSQL database with proper permissions!"
+    print_text_in_color "$ICyan" "Please report this to $ISSUES"
+    exit 1
+fi
+
 print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
+print_text_in_color "$IGreen" "PostgreSQL database created with schema permissions for Nextcloud 30+"
 systemctl restart postgresql.service
 
 # Install Apache
