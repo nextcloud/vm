@@ -41,8 +41,8 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# install needed tool
-apt-get update -q4 & spinner_loading
+# Install curl for ddclient to work around 3.10.0 parsing bug (see #2754)
+install_if_not curl
 DEBIAN_FRONTEND=noninteractive apt-get install ddclient -y
 
 # Test if file exists
@@ -181,6 +181,11 @@ cat << DDCLIENT_CONF > "/etc/ddclient.conf"
 # Default system settings
 use=if, if=$IFACE
 use=web, web=https://api.ipify.org
+
+# Work around ddclient 3.10.0+ parsing bug by using curl
+# See: https://github.com/ddclient/ddclient/issues/499
+# and: https://github.com/nextcloud/vm/issues/2754
+curl=yes
 
 # DDNS-service specific setting
 # Provider=$PROVIDER
