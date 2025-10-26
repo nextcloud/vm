@@ -520,15 +520,41 @@ check_running_cronjobs() {
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-print_text_in_color "$ICyan" "Checking connection to ${1}..."
-        CURL_STATUS="$(curl -LI "${1}" -o /dev/null -w '%{http_code}\n' -s)"
-        if [[ "$CURL_STATUS" = "200" ]]
-        then
-            return 0
-        else
-            msg_box "curl didn't produce a 200 status, is ${1} reachable? Please report this to $ISSUES."
-            return 1
-        fi
+    local url="${1}"
+    local display_url="${1}"
+    
+    # If URL doesn't start with http:// or https://, prepend https://
+    if [[ ! "$url" =~ ^https?:// ]]
+    then
+        url="https://${url}"
+    fi
+    
+    print_text_in_color "$ICyan" "Checking connection to ${display_url}..."
+    
+    # Use curl with:
+    # -L: follow redirects
+    # -I: HEAD request only
+    # -s: silent mode
+    # -f: fail silently on HTTP errors
+    # --connect-timeout: timeout for connection (10 seconds)
+    # --max-time: maximum time for the entire operation (15 seconds)
+    if curl -LI -s -f --connect-timeout 10 --max-time 15 \
+        -o /dev/null -w '%{http_code}' "${url}" | grep -q '^200$'
+    then
+        return 0
+    else
+        msg_box "Could not reach ${display_url} with a 200 OK response.
+        
+This could mean:
+- The site is temporarily down
+- Your internet connection has issues
+- A firewall is blocking the connection
+- The URL is incorrect
+
+Please check your network connection and try again.
+If the problem persists, report this to $ISSUES"
+        return 1
+    fi
 }
 
 # Do a DNS lookup and compare the WAN address with the A record
