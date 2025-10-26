@@ -92,7 +92,7 @@ then
     ncdb
     
     # Check if we need to apply the fix (test if user can create tables)
-    if sudo -u postgres psql -d "$NCDB" -c "SELECT has_schema_privilege('$NCUSER', 'public', 'CREATE');" 2>/dev/null | grep -q "f"
+    if sudo -u postgres psql -d "$NCDB" -c "SELECT has_schema_privilege('$NCDBUSER', 'public', 'CREATE');" 2>/dev/null | grep -q "f"
     then
         print_text_in_color "$ICyan" "Applying PostgreSQL schema permission fix for Nextcloud 30+..."
         

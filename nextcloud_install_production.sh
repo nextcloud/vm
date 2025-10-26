@@ -365,7 +365,7 @@ install_if_not postgresql
 # Create DB with proper permissions for Nextcloud 30+
 # PostgreSQL 15+ requires explicit schema permissions
 cd /tmp
-sudo -u postgres psql <<END
+if ! sudo -u postgres psql <<END
 CREATE USER $PGDB_USER WITH PASSWORD '$PGDB_PASS';
 CREATE DATABASE nextcloud_db WITH OWNER $PGDB_USER TEMPLATE template0 ENCODING 'UTF8';
 \c nextcloud_db
@@ -373,8 +373,7 @@ GRANT CREATE ON SCHEMA public TO $PGDB_USER;
 GRANT ALL ON SCHEMA public TO $PGDB_USER;
 ALTER DATABASE nextcloud_db OWNER TO $PGDB_USER;
 END
-
-if [ $? -ne 0 ]; then
+then
     print_text_in_color "$IRed" "Failed to create PostgreSQL database with proper permissions!"
     print_text_in_color "$ICyan" "Please report this to $ISSUES"
     exit 1
