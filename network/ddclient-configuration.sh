@@ -185,7 +185,7 @@ use=web, web=https://api.ipify.org
 # Work around ddclient 3.10.0+ parsing bug by using curl
 # See: https://github.com/ddclient/ddclient/issues/499
 # and: https://github.com/nextcloud/vm/issues/2754
-curl=yes
+# curl=yes
 
 # DDNS-service specific setting
 # Provider=$PROVIDER
