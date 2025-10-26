@@ -169,6 +169,22 @@ NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
 ADMINER_CONF_PLUGIN="$ADMINERDIR/extra_plugins.php"
+# Get latest AdminNeo version dynamically from GitHub releases
+get_adminneo_version() {
+    local version
+    version=$(curl -s -m 30 "https://api.github.com/repos/adminneo-org/adminneo/releases/latest" | grep -oP '"tag_name":\s*"v\K[^"]+')
+    
+    # Validate version format (X.X.X)
+    if echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'
+    then
+        echo "$version"
+    else
+        # Fallback to known stable version
+        echo "5.1.1"
+    fi
+}
+ADMINER_VERSION=$(get_adminneo_version)
+ADMINER_DOWNLOAD_URL="https://www.adminneo.org/files/${ADMINER_VERSION}/pgsql_en_default/adminneo-${ADMINER_VERSION}.php"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
@@ -184,8 +200,22 @@ fulltextsearch_install() {
     ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
     FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
     FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
+    
     # Gets the version from the latest tag here: https://github.com/docker-library/official-images/blob/master/library/elasticsearch
-    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://raw.githubusercontent.com/docker-library/official-images/refs/heads/master/library/elasticsearch | grep "Tags:" | head -1 | awk '{print $2}')"
+    # Use limit=500 to ensure we get version tags, not just SHA tags
+    # Extract version numbers (format: X.XX.X), sort them, and get the latest
+    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 'https://raw.githubusercontent.com/docker-library/official-images/refs/heads/master/library/elasticsearch' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)"
+    
+    # Validate that we got a proper version number
+    if ! echo "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'
+    then
+        print_text_in_color "$IRed" "Failed to detect ElasticSearch version. Got: '$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG'"
+        print_text_in_color "$ICyan" "Falling back to known stable version..."
+        FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="8.16.1"
+    fi
+    
+    print_text_in_color "$ICyan" "ElasticSearch version detected: $FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG"
+    
     # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
     # Legacy, not used at all

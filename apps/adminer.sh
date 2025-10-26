@@ -3,8 +3,10 @@
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
-SCRIPT_NAME="Adminer"
-SCRIPT_EXPLAINER="Adminer is a full-featured database management tool written in PHP."
+SCRIPT_NAME="AdminNeo"
+SCRIPT_EXPLAINER="AdminNeo is a full-featured database management tool written in PHP.
+It's a continuation of Adminer development after AdminerEvo was archived.
+More info: https://www.adminneo.org"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -52,13 +54,35 @@ a2enmod ssl
 # Install Adminer
 apt-get update -q4 & spinner_loading
 install_if_not adminer
-curl_to_dir "https://download.adminerevo.org/latest/adminer" "adminer-pgsql.zip" "$ADMINERDIR"
-install_if_not unzip
-# Unzip the latest version
-unzip "$ADMINERDIR"/adminer-pgsql.zip -d "$ADMINERDIR"
-rm -f "$ADMINERDIR"/adminer-pgsql.zip
-# curl_to_dir "https://raw.githubusercontent.com/Niyko/Hydra-Dark-Theme-for-Adminer/master" "adminer.css" "$ADMINERDIR"
-mv "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
+
+# AdminerEvo project has been archived, switching to AdminNeo (www.adminneo.org)
+# See: https://github.com/adminneo-org/adminneo
+print_text_in_color "$ICyan" "Downloading AdminNeo version ${ADMINER_VERSION}..."
+if ! curl_to_dir "https://www.adminneo.org/files/${ADMINER_VERSION}/pgsql_en_default/" "adminneo-${ADMINER_VERSION}.php" "$ADMINERDIR"
+then
+    msg_box "Failed to download AdminNeo. The download URL may have changed.
+    
+Please report this issue to: $ISSUES
+
+Attempted to download from:
+$ADMINER_DOWNLOAD_URL"
+    exit 1
+fi
+
+# Rename to standard adminer.php name
+if [ -f "$ADMINERDIR/adminneo-${ADMINER_VERSION}.php" ]
+then
+    mv "$ADMINERDIR/adminneo-${ADMINER_VERSION}.php" "$ADMINERDIR/adminer.php"
+elif [ -f "$ADMINERDIR/adminerneo-${ADMINER_VERSION}-pgsql.php" ]
+then
+    # Fallback for old naming if somehow still exists
+    mv "$ADMINERDIR/adminerneo-${ADMINER_VERSION}-pgsql.php" "$ADMINERDIR/adminer.php"
+else
+    msg_box "Failed to find downloaded AdminNeo file. Please report this to $ISSUES"
+    exit 1
+fi
+
+print_text_in_color "$IGreen" "AdminNeo ${ADMINER_VERSION} successfully downloaded!"
 
 # Only add TLS 1.3 on Ubuntu later than 22.04
 if version 22.04 "$DISTRO" 24.04.10
