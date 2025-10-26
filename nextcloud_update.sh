@@ -84,34 +84,6 @@ then
     fi
 fi
 
-# Fix PostgreSQL schema permissions for Nextcloud 30+ (if PostgreSQL is installed)
-# PostgreSQL 15+ requires explicit schema permissions that weren't needed before
-if is_this_installed postgresql-common
-then
-    # Get database info
-    ncdb
-    
-    # Check if we need to apply the fix (test if user can create tables)
-    if sudo -u postgres psql -d "$NCDB" -c "SELECT has_schema_privilege('$NCDBUSER', 'public', 'CREATE');" 2>/dev/null | grep -q "f"
-    then
-        print_text_in_color "$ICyan" "Applying PostgreSQL schema permission fix for Nextcloud 30+..."
-        
-        # Apply the fix
-        if sudo -u postgres psql -d "$NCDB" <<END
-GRANT CREATE ON SCHEMA public TO $NCDBUSER;
-GRANT ALL ON SCHEMA public TO $NCDBUSER;
-END
-        then
-            print_text_in_color "$IGreen" "PostgreSQL schema permissions updated successfully!"
-        else
-            print_text_in_color "$IYellow" "Warning: Could not update PostgreSQL schema permissions."
-            print_text_in_color "$IYellow" "This may cause issues with Nextcloud 30+ upgrades."
-            print_text_in_color "$ICyan" "You can try to fix this manually by running:"
-            print_text_in_color "$ICyan" "sudo -u postgres psql -d $NCDB -c 'GRANT CREATE ON SCHEMA public TO $NCDBUSER;'"
-        fi
-    fi
-fi
-
 # Set product name
 if home_sme_server
 then
