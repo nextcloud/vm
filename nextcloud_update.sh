@@ -98,8 +98,8 @@ then
         
         # Apply the fix
         if sudo -u postgres psql -d "$NCDB" <<END
-GRANT CREATE ON SCHEMA public TO $NCUSER;
-GRANT ALL ON SCHEMA public TO $NCUSER;
+GRANT CREATE ON SCHEMA public TO $NCDBUSER;
+GRANT ALL ON SCHEMA public TO $NCDBUSER;
 END
         then
             print_text_in_color "$IGreen" "PostgreSQL schema permissions updated successfully!"
@@ -107,7 +107,7 @@ END
             print_text_in_color "$IYellow" "Warning: Could not update PostgreSQL schema permissions."
             print_text_in_color "$IYellow" "This may cause issues with Nextcloud 30+ upgrades."
             print_text_in_color "$ICyan" "You can try to fix this manually by running:"
-            print_text_in_color "$ICyan" "sudo -u postgres psql -d $NCDB -c 'GRANT CREATE ON SCHEMA public TO $NCUSER;'"
+            print_text_in_color "$ICyan" "sudo -u postgres psql -d $NCDB -c 'GRANT CREATE ON SCHEMA public TO $NCDBUSER;'"
         fi
     fi
 fi

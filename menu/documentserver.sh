@@ -17,7 +17,7 @@ debug_mode
 root_check
 
 choice=$(whiptail --title "$TITLE" --menu \
-"Which Documentserver for online editing do you want to install?\n\nWe recomend Collabora with Docker. The subdomain could look like this:\noffice.your-nextcloud.tld\n\nAutomatically configure and install the selected Documentserver.
+"Which Documentserver for online editing do you want to install?\n\nWe recommend Collabora with Docker. The subdomain could look like this:\noffice.your-nextcloud.tld\n\nAutomatically configure and install the selected Documentserver.
 $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Collabora (Docker)" "(Extra Subdomain required)" \
 "Collabora (Integrated)" "(No Subdomain required)" \

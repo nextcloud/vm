@@ -7,7 +7,7 @@
 #########
 
 ## This script will install Transmission, download the latest version of the VM, create a torrent of the file and seed it using Transmission 
-## Improvments to the script are welcome!
+## Improvements to the script are welcome!
 
 # shellcheck source=lib.sh
 # shellcheck disable=SC2046

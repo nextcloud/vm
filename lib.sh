@@ -169,6 +169,22 @@ NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
 ADMINERDIR=/usr/share/adminer
 ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
 ADMINER_CONF_PLUGIN="$ADMINERDIR/extra_plugins.php"
+# Get latest AdminNeo version dynamically from GitHub releases
+get_adminneo_version() {
+    local version
+    version=$(curl -s -m 30 "https://api.github.com/repos/adminneo-org/adminneo/releases/latest" | grep -oP '"tag_name":\s*"v\K[^"]+')
+    
+    # Validate version format (X.X.X)
+    if echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'
+    then
+        echo "$version"
+    else
+        # Fallback to known stable version
+        echo "5.1.1"
+    fi
+}
+ADMINER_VERSION=$(get_adminneo_version)
+ADMINER_DOWNLOAD_URL="https://www.adminneo.org/files/${ADMINER_VERSION}/pgsql_en_default/adminneo-${ADMINER_VERSION}.php"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock

@@ -57,9 +57,6 @@ install_if_not adminer
 
 # AdminerEvo project has been archived, switching to AdminNeo (www.adminneo.org)
 # See: https://github.com/adminneo-org/adminneo
-ADMINER_VERSION="5.1.1"
-ADMINER_DOWNLOAD_URL="https://www.adminneo.org/files/${ADMINER_VERSION}/pgsql_en_default/adminneo-${ADMINER_VERSION}.php"
-
 print_text_in_color "$ICyan" "Downloading AdminNeo version ${ADMINER_VERSION}..."
 if ! curl_to_dir "https://www.adminneo.org/files/${ADMINER_VERSION}/pgsql_en_default/" "adminneo-${ADMINER_VERSION}.php" "$ADMINERDIR"
 then
