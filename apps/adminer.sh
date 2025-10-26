@@ -3,10 +3,10 @@
 # T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
 
 true
-SCRIPT_NAME="AdminerNeo"
-SCRIPT_EXPLAINER="AdminerNeo is a full-featured database management tool written in PHP.
-It's a fork of Adminer, continuing development after AdminerEvo was archived.
-More info: https://github.com/adminerneo/adminerneo"
+SCRIPT_NAME="AdminNeo"
+SCRIPT_EXPLAINER="AdminNeo is a full-featured database management tool written in PHP.
+It's a continuation of Adminer development after AdminerEvo was archived.
+More info: https://www.adminneo.org"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -55,15 +55,15 @@ a2enmod ssl
 apt-get update -q4 & spinner_loading
 install_if_not adminer
 
-# AdminerEvo project has been archived, switching to AdminerNeo
-# See: https://github.com/adminerneo/adminerneo
-ADMINER_VERSION="1.0.2"
-ADMINER_DOWNLOAD_URL="https://github.com/adminerneo/adminerneo/releases/download/v${ADMINER_VERSION}/adminerneo-${ADMINER_VERSION}-pgsql.zip"
+# AdminerEvo project has been archived, switching to AdminNeo (www.adminneo.org)
+# See: https://github.com/adminneo-org/adminneo
+ADMINER_VERSION="5.1.1"
+ADMINER_DOWNLOAD_URL="https://www.adminneo.org/files/${ADMINER_VERSION}/pgsql_en_default/adminneo-${ADMINER_VERSION}.php"
 
-print_text_in_color "$ICyan" "Downloading AdminerNeo version ${ADMINER_VERSION}..."
-if ! curl_to_dir "https://github.com/adminerneo/adminerneo/releases/download/v${ADMINER_VERSION}/" "adminerneo-${ADMINER_VERSION}-pgsql.zip" "$ADMINERDIR"
+print_text_in_color "$ICyan" "Downloading AdminNeo version ${ADMINER_VERSION}..."
+if ! curl_to_dir "https://www.adminneo.org/files/${ADMINER_VERSION}/pgsql_en_default/" "adminneo-${ADMINER_VERSION}.php" "$ADMINERDIR"
 then
-    msg_box "Failed to download AdminerNeo. The download URL may have changed.
+    msg_box "Failed to download AdminNeo. The download URL may have changed.
     
 Please report this issue to: $ISSUES
 
@@ -72,33 +72,20 @@ $ADMINER_DOWNLOAD_URL"
     exit 1
 fi
 
-install_if_not unzip
-# Unzip the latest version
-if ! unzip -o "$ADMINERDIR"/adminerneo-${ADMINER_VERSION}-pgsql.zip -d "$ADMINERDIR"
+# Rename to standard adminer.php name
+if [ -f "$ADMINERDIR/adminneo-${ADMINER_VERSION}.php" ]
 then
-    msg_box "Failed to extract AdminerNeo archive. Please report this to $ISSUES"
+    mv "$ADMINERDIR/adminneo-${ADMINER_VERSION}.php" "$ADMINERDIR/adminer.php"
+elif [ -f "$ADMINERDIR/adminerneo-${ADMINER_VERSION}-pgsql.php" ]
+then
+    # Fallback for old naming if somehow still exists
+    mv "$ADMINERDIR/adminerneo-${ADMINER_VERSION}-pgsql.php" "$ADMINERDIR/adminer.php"
+else
+    msg_box "Failed to find downloaded AdminNeo file. Please report this to $ISSUES"
     exit 1
 fi
 
-rm -f "$ADMINERDIR"/adminerneo-${ADMINER_VERSION}-pgsql.zip
-
-# AdminerNeo uses different naming convention
-if [ -f "$ADMINERDIR"/adminerneo-${ADMINER_VERSION}-pgsql.php ]; then
-    mv "$ADMINERDIR"/adminerneo-${ADMINER_VERSION}-pgsql.php "$ADMINERDIR"/adminer.php
-elif [ -f "$ADMINERDIR"/adminerneo-pgsql.php ]; then
-    mv "$ADMINERDIR"/adminerneo-pgsql.php "$ADMINERDIR"/adminer.php
-else
-    # Fallback: find any .php file and use it
-    ADMINER_PHP_FILE=$(find "$ADMINERDIR" -maxdepth 1 -name "*.php" -type f | head -1)
-    if [ -n "$ADMINER_PHP_FILE" ]; then
-        mv "$ADMINER_PHP_FILE" "$ADMINERDIR"/adminer.php
-    else
-        msg_box "Could not find AdminerNeo PHP file after extraction. Please report this to $ISSUES"
-        exit 1
-    fi
-fi
-
-print_text_in_color "$IGreen" "AdminerNeo ${ADMINER_VERSION} successfully downloaded and extracted!"
+print_text_in_color "$IGreen" "AdminNeo ${ADMINER_VERSION} successfully downloaded!"
 
 # Only add TLS 1.3 on Ubuntu later than 22.04
 if version 22.04 "$DISTRO" 24.04.10
