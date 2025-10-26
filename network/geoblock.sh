@@ -87,42 +87,9 @@ apt-get update -q4 & spinner_loading
 install_if_not libmaxminddb0
 install_if_not libmaxminddb-dev
 install_if_not mmdb-bin
+install_if_not apache2-dev
 
-# Install apache2-dev with dependency resolution
-# Handle conflicts with Sury PPA packages
-print_text_in_color "$ICyan" "Installing apache2-dev (this may take a moment)..."
-if ! apt-get install -y apache2-dev 2>&1 | tee /tmp/apache2-dev-install.log
-then
-    print_text_in_color "$IYellow" "Warning: apache2-dev installation encountered issues."
-    print_text_in_color "$ICyan" "Attempting to resolve dependency conflicts..."
-    
-    # Try to fix broken dependencies
-    if apt-get install -f -y
-    then
-        print_text_in_color "$IGreen" "Dependencies fixed, retrying apache2-dev installation..."
-        if ! apt-get install -y apache2-dev
-        then
-            msg_box "Failed to install apache2-dev even after fixing dependencies.
-
-This is likely due to conflicts with PHP PPA packages (e.g., Sury PPA).
-The error log has been saved to /tmp/apache2-dev-install.log
-
-Please report this issue to: $ISSUES
-Include the contents of /tmp/apache2-dev-install.log"
-            exit 1
-        fi
-    else
-        msg_box "Could not resolve apache2-dev dependency conflicts.
-
-The error log has been saved to /tmp/apache2-dev-install.log
-
-Please report this issue to: $ISSUES
-Include the contents of /tmp/apache2-dev-install.log"
-        exit 1
-    fi
-fi
-
-# Verify apxs is available before attempting compilation
+# Verify apxs is available after installing apache2-dev
 if ! command -v apxs2 >/dev/null 2>&1 && ! command -v apxs >/dev/null 2>&1
 then
     msg_box "Error: apxs/apxs2 tool not found even after installing apache2-dev.
@@ -131,8 +98,6 @@ This tool is required to compile the MaxMindDB Apache module.
 Please report this issue to: $ISSUES"
     exit 1
 fi
-
-print_text_in_color "$IGreen" "apache2-dev and apxs successfully installed!"
 
 # maxminddb_module https://github.com/maxmind/mod_maxminddb
 cd /tmp
