@@ -45,12 +45,30 @@ then
     DEVTYPE=xvdb
 elif [[ "$SYSVENDOR" == "QEMU" ]];
 then
-    SYSNAME="Proxmox/QEMU"
-    DEVTYPE=sdb
+    # Check if using virtio (vd*) or scsi/ide (sd*) disks
+    if lsblk -e7 -e11 | grep -q vdb
+    then
+        SYSNAME="Proxmox/QEMU (VirtIO)"
+        DEVTYPE=vdb
+    else
+        SYSNAME="Proxmox/QEMU"
+        DEVTYPE=sdb
+    fi
 elif [ "$SYSVENDOR" == "Red Hat" ];
 then
     SYSNAME="Red Hat"
     DEVTYPE=vdb
+elif [[ "$SYSVENDOR" == *"Packer"* ]];
+then
+    # Packer build environment - check for virtio disks
+    if lsblk -e7 -e11 | grep -q vdb
+    then
+        SYSNAME="Packer (VirtIO)"
+        DEVTYPE=vdb
+    else
+        SYSNAME="Packer"
+        DEVTYPE=sdb
+    fi
 elif [ "$SYSVENDOR" == "DigitalOcean" ];
 then
     SYSNAME="DigitalOcean"
