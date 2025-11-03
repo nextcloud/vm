@@ -49,9 +49,6 @@ ncdb
 # Check if root
 root_check
 
-# Import if missing and export again to import it with UUID
-zpool_import_if_missing
-
 # Create a snapshot before modifying anything
 check_free_space
 if does_snapshot_exist "NcVM-installation" || [ "$FREE_SPACE" -ge 50 ]
@@ -156,6 +153,9 @@ true
 SCRIPT_NAME="Nextcloud Startup Script"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
+
+# Import if missing and export again to import it with UUID
+zpool_import_if_missing
 
 # Get all needed variables from the library
 ncdb
