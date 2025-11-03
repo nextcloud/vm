@@ -17,6 +17,9 @@ source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
 ncdb
 nc_update
 
+# Create local backup of repository (for fallback if GitHub has issues)
+ensure_local_backup_repo
+
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF

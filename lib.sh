@@ -618,6 +618,7 @@ fi
 }
 
 # A function to fetch a file with curl to a directory
+# Falls back to local backup if download fails
 # 1 = https://example.com
 # 2 = name of file
 # 3 = directory that the file should end up in
@@ -629,18 +630,29 @@ fi
     rm -f "$3"/"$2"
     if [ -n "$download_script_function_in_use" ]
     then
-        curl -sfL "$1"/"$2" -o "$3"/"$2"
+        if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
+        then
+            # Try local backup
+            try_local_backup "$1" "$2" "$3"
+        fi
     else
         local retries=0
         while :
         do
             if [ "$retries" -ge 10 ]
             then
-                if yesno_box_yes "Tried 10 times but didn't succeed. We will now exit the script because it might break things. You can choose 'No' to continue on your own risk."
+                # Exhausted retries, try local backup
+                if try_local_backup "$1" "$2" "$3"
                 then
-                    exit 1
+                    print_text_in_color "$IGreen" "✓ Used local backup copy"
+                    break
                 else
-                    return 1
+                    if yesno_box_yes "Tried 10 times but didn't succeed. We will now exit the script because it might break things. You can choose 'No' to continue on your own risk."
+                    then
+                        exit 1
+                    else
+                        return 1
+                    fi
                 fi
             fi
             if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
@@ -2283,6 +2295,71 @@ Please contact T&M Hansson IT AB to help you with upgrading between major versio
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
     exit 1
 fi
+}
+
+## LOCAL REPOSITORY BACKUP FUNCTIONS
+# These functions provide fallback to a local clone when GitHub is unavailable
+
+# Clone or refresh local backup of repository
+# This runs during update to keep a fresh copy as fallback
+ensure_local_backup_repo() {
+    local BACKUP_REPO="/var/scripts/vm-repo-backup"
+    
+    # Install git if needed
+    install_if_not git
+    
+    # Remove old clone and get fresh copy
+    print_text_in_color "$ICyan" "Creating local backup of repository (in case of network issues)..."
+    rm -rf "$BACKUP_REPO"
+    
+    # Clone with timeout, don't fail if it doesn't work
+    if timeout 120 git clone --depth 1 --branch main \
+        https://github.com/nextcloud/vm.git "$BACKUP_REPO" &>/dev/null
+    then
+        chmod -R +rx "$BACKUP_REPO"
+        print_text_in_color "$IGreen" "✓ Local backup ready"
+        return 0
+    else
+        print_text_in_color "$IYellow" "Could not create local backup (continuing anyway)"
+        return 1
+    fi
+}
+
+# Try to copy file from local backup repository
+# Called when curl download fails (rate limits, network issues)
+try_local_backup() {
+    local url="$1"
+    local file="$2"
+    local dest_dir="$3"
+    local BACKUP_REPO="/var/scripts/vm-repo-backup"
+    
+    # Check if backup exists
+    if [ ! -d "$BACKUP_REPO" ]
+    then
+        return 1
+    fi
+    
+    # Convert URL to local path
+    # https://raw.githubusercontent.com/nextcloud/vm/main/apps/script.sh -> apps/script.sh
+    local path_part
+    path_part=$(echo "$url" | sed 's|https://raw.githubusercontent.com/nextcloud/vm/main/||' | sed 's|https://raw.githubusercontent.com/nextcloud/vm/master/||')
+    
+    # If path_part is empty, we're downloading from root
+    if [ -z "$path_part" ]
+    then
+        local local_file="$BACKUP_REPO/$file"
+    else
+        local local_file="$BACKUP_REPO/$path_part/$file"
+    fi
+    
+    if [ -f "$local_file" ]
+    then
+        print_text_in_color "$IYellow" "⚠ GitHub unavailable, using local backup: $file"
+        cp "$local_file" "$dest_dir/$file"
+        return 0
+    else
+        return 1
+    fi
 }
 
 ## bash colors
