@@ -200,22 +200,17 @@ fulltextsearch_install() {
     ELASTIC_USER_PASSWORD=$(gen_passwd "$SHUF" '[:lower:]')
     FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
     FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
-    
     # Gets the version from the latest tag here: https://github.com/docker-library/official-images/blob/master/library/elasticsearch
     # Use limit=500 to ensure we get version tags, not just SHA tags
     # Extract version numbers (format: X.XX.X), sort them, and get the latest
     FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 'https://raw.githubusercontent.com/docker-library/official-images/refs/heads/master/library/elasticsearch' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)"
-    
     # Validate that we got a proper version number
     if ! echo "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'
     then
         print_text_in_color "$IRed" "Failed to detect ElasticSearch version. Got: '$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG'"
         print_text_in_color "$ICyan" "Falling back to known stable version..."
         FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="8.16.1"
-    fi
-    
-    print_text_in_color "$ICyan" "ElasticSearch version detected: $FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG"
-    
+    fi    
     # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
     # Legacy, not used at all
