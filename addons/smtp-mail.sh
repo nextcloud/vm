@@ -139,7 +139,15 @@ fi
 # Enter your SMTP username
 if [ -n "$NEEDS_CREDENTIALS" ] || yesno_box_yes "Does $MAIL_SERVER require any credentials, like username and password?"
 then
-    MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com, or just the actual 'username'.")
+    if [ "$choice" = "mail.de" ]
+    then
+        # For mail.de, ask for email address first
+        MAIL_FROM=$(input_box_flow "Please enter your email address for mail.de.\nE.g. you@mail.de")
+        # Then ask for username (which may differ from email)
+        MAIL_USERNAME=$(input_box_flow "Please enter your username for mail.de.\nThis is the username you use to log in (may differ from your email address).")
+    else
+        MAIL_USERNAME=$(input_box_flow "Please enter the SMTP username to your email provider.\nE.g. you@mail.com, or just the actual 'username'.")
+    fi
 
     # Enter your mail user password
     MAIL_PASSWORD=$(input_box_flow "Please enter the SMTP password to your email provider.")
@@ -166,6 +174,7 @@ SMTP Relay URL=$MAIL_SERVER
 Encryption=$PROTOCOL
 SMTP Port=$SMTP_PORT
 SMTP Username=$MAIL_USERNAME
+$(if [ -n "$MAIL_FROM" ]; then echo "From Email Address=$MAIL_FROM"; fi)
 SMTP Password=$MAIL_PASSWORD
 Recipient=$RECIPIENT
 Self-signed TLS/SSL certificate=$SELF_SIGNED_CERT"
@@ -265,7 +274,7 @@ logfile         /var/log/msmtp
 account         $MAIL_USERNAME
 host            $MAIL_SERVER
 port            $SMTP_PORT
-from            $MAIL_USERNAME
+from            ${MAIL_FROM:-$MAIL_USERNAME}
 user            $MAIL_USERNAME
 password        $MAIL_PASSWORD
 
@@ -376,13 +385,17 @@ if [ -n "$SMTP2GO" ]
 then
     nextcloud_occ config:system:set mail_from_address --value="no-reply"
 else
-    nextcloud_occ config:system:set mail_from_address --value="${MAIL_USERNAME%%@*}"
+    # Use MAIL_FROM if set (for mail.de with separate username), otherwise use MAIL_USERNAME
+    MAIL_ADDRESS="${MAIL_FROM:-$MAIL_USERNAME}"
+    nextcloud_occ config:system:set mail_from_address --value="${MAIL_ADDRESS%%@*}"
 fi
 if [ -n "$SMTP2GO" ]
 then
     nextcloud_occ config:system:set mail_domain --value="nextcloudvm.com"
 else
-    nextcloud_occ config:system:set mail_domain --value="${MAIL_USERNAME##*@}"
+    # Use MAIL_FROM if set (for mail.de with separate username), otherwise use MAIL_USERNAME
+    MAIL_ADDRESS="${MAIL_FROM:-$MAIL_USERNAME}"
+    nextcloud_occ config:system:set mail_domain --value="${MAIL_ADDRESS##*@}"
 fi
 nextcloud_occ config:system:set mail_smtphost --value="$MAIL_SERVER"
 nextcloud_occ config:system:set mail_smtpport --value="$SMTP_PORT"
