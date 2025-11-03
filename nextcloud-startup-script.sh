@@ -49,6 +49,9 @@ ncdb
 # Check if root
 root_check
 
+# Import if missing and export again to import it with UUID
+zpool_import_if_missing
+
 # Create a snapshot before modifying anything
 check_free_space
 if does_snapshot_exist "NcVM-installation" || [ "$FREE_SPACE" -ge 50 ]
@@ -172,9 +175,6 @@ if network_ok
 then
     run_script STATIC temporary-fix-beginning
 fi
-
-# Import if missing and export again to import it with UUID
-zpool_import_if_missing
 
 # Set phone region (needs the latest KEYBOARD_LAYOUT from lib)
 # shellcheck source=lib.sh
