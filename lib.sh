@@ -1437,12 +1437,23 @@ do
 done
 
 # Download the file
+# Use GitHub releases for NC 32+ for faster downloads
+# GitHub URL format: https://github.com/nextcloud-releases/server/releases/download/v{VERSION}/nextcloud-{VERSION}.tar.bz2
+if [ "${NCVERSION%%.*}" -ge 32 ]
+then
+    NCGITHUB="https://github.com/nextcloud-releases/server/releases/download"
+    DOWNLOAD_URL="$NCGITHUB/v$NCVERSION/$STABLEVERSION.tar.bz2"
+    print_text_in_color "$ICyan" "Downloading $STABLEVERSION from GitHub releases (faster)..."
+else
+    DOWNLOAD_URL="$NCREPO/$STABLEVERSION.tar.bz2"
+    print_text_in_color "$ICyan" "Downloading $STABLEVERSION..."
+fi
+
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
 cd $HTML
-print_text_in_color "$ICyan" "Downloading $STABLEVERSION..."
 if network_ok
 then
-    curl -fSLO --retry 3 "$NCREPO"/"$STABLEVERSION".tar.bz2
+    curl -fSLO --retry 3 "$DOWNLOAD_URL"
 else
     msg_box "There seems to be an issue with your network, please try again later.\nThis script will now exit."
     exit 1
