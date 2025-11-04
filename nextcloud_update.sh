@@ -11,7 +11,23 @@
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+if ! source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+then
+    # Try Statically.io CDN
+    if source <(curl -sL https://cdn.statically.io/gh/nextcloud/vm/main/lib.sh)
+    then
+        echo "✓ Used Statically.io CDN"
+    # Try local backup
+    elif [ -f /var/scripts/vm-repo-backup/lib.sh ]
+    then
+        echo "⚠ GitHub unavailable, using local backup: lib.sh"
+        # shellcheck source=lib.sh
+        source /var/scripts/vm-repo-backup/lib.sh
+    else
+        echo "Failed to download lib.sh from all sources. Exiting."
+        exit 1
+    fi
+fi
 
 # Get all needed variables from the library
 ncdb

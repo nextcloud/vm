@@ -627,6 +627,16 @@ fi
     then
         if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
         then
+            # Try Statically.io CDN if this is a GitHub URL
+            if [[ "$1" == *"raw.githubusercontent.com"* ]]
+            then
+                local cdn_url="${1/raw.githubusercontent.com/cdn.statically.io\/gh}"
+                cdn_url="${cdn_url//\/nextcloud\/vm\//\/nextcloud\/vm\/main\/}"
+                if curl -sfL "$cdn_url"/"$2" -o "$3"/"$2"
+                then
+                    return 0
+                fi
+            fi
             # Try local backup
             try_local_backup "$1" "$2" "$3"
         fi
@@ -636,6 +646,17 @@ fi
         do
             if [ "$retries" -ge 10 ]
             then
+                # Try Statically.io CDN if this is a GitHub URL
+                if [[ "$1" == *"raw.githubusercontent.com"* ]]
+                then
+                    local cdn_url="${1/raw.githubusercontent.com/cdn.statically.io\/gh}"
+                    cdn_url="${cdn_url//\/nextcloud\/vm\//\/nextcloud\/vm\/main\/}"
+                    if curl -sfL "$cdn_url"/"$2" -o "$3"/"$2"
+                    then
+                        print_text_in_color "$IGreen" "✓ Used Statically.io CDN"
+                        break
+                    fi
+                fi
                 # Exhausted retries, try local backup
                 if try_local_backup "$1" "$2" "$3"
                 then
