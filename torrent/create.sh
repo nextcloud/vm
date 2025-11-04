@@ -11,7 +11,14 @@
 
 # shellcheck source=lib.sh
 # shellcheck disable=SC2046
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+if [ -f /var/scripts/fetch_lib.sh ]
+then
+    # shellcheck source=static/fetch_lib.sh
+    source /var/scripts/fetch_lib.sh
+elif ! source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/static/fetch_lib.sh)
+then
+    source <(curl -sL https://cdn.statically.io/gh/nextcloud/vm/main/static/fetch_lib.sh)
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
