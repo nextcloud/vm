@@ -625,15 +625,15 @@ fi
     rm -f "$3"/"$2"
     if [ -n "$download_script_function_in_use" ]
     then
-        if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
+        if ! curl -sfL --max-time 10 --connect-timeout 5 "$1"/"$2" -o "$3"/"$2"
         then
             # Try Statically.io CDN if this is a GitHub URL
             if [[ "$1" == *"raw.githubusercontent.com"* ]]
             then
                 local cdn_url="${1/raw.githubusercontent.com/cdn.statically.io\/gh}"
-                cdn_url="${cdn_url//\/nextcloud\/vm\//\/nextcloud\/vm\/main\/}"
-                if curl -sfL "$cdn_url"/"$2" -o "$3"/"$2"
+                if curl -sfL --max-time 10 --connect-timeout 5 "$cdn_url"/"$2" -o "$3"/"$2"
                 then
+                    print_text_in_color "$IGreen" "✓ Used Statically.io CDN"
                     return 0
                 fi
             fi
@@ -650,8 +650,7 @@ fi
                 if [[ "$1" == *"raw.githubusercontent.com"* ]]
                 then
                     local cdn_url="${1/raw.githubusercontent.com/cdn.statically.io\/gh}"
-                    cdn_url="${cdn_url//\/nextcloud\/vm\//\/nextcloud\/vm\/main\/}"
-                    if curl -sfL "$cdn_url"/"$2" -o "$3"/"$2"
+                    if curl -sfL --max-time 10 --connect-timeout 5 "$cdn_url"/"$2" -o "$3"/"$2"
                     then
                         print_text_in_color "$IGreen" "✓ Used Statically.io CDN"
                         break
@@ -671,7 +670,7 @@ fi
                     fi
                 fi
             fi
-            if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
+            if ! curl -sfL --max-time 10 --connect-timeout 5 "$1"/"$2" -o "$3"/"$2"
             then
                 msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred. We will now try again.
 Please report this issue to $ISSUES"
@@ -2357,8 +2356,9 @@ try_local_backup() {
     
     # Convert URL to local path
     # https://raw.githubusercontent.com/nextcloud/vm/main/apps/script.sh -> apps/script.sh
+    # https://raw.githubusercontent.com/nextcloud/vm/main -> (empty, root level)
     local path_part
-    path_part=$(echo "$url" | sed 's|https://raw.githubusercontent.com/nextcloud/vm/main/||' | sed 's|https://raw.githubusercontent.com/nextcloud/vm/master/||')
+    path_part=$(echo "$url" | sed 's|https://raw.githubusercontent.com/nextcloud/vm/main||' | sed 's|https://raw.githubusercontent.com/nextcloud/vm/master||' | sed 's|^/||')
     
     # If path_part is empty, we're downloading from root
     if [ -z "$path_part" ]

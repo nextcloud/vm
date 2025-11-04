@@ -4,6 +4,7 @@ true
 
 IRed='\e[0;91m'         # Red
 IGreen='\e[0;92m'       # Green
+IYellow='\e[0;93m'      # Yellow
 ICyan='\e[0;96m'        # Cyan
 Color_Off='\e[0m'       # Text Reset
 print_text_in_color() {
