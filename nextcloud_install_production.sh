@@ -164,6 +164,10 @@ install_if_not iputils-ping
 
 # Download needed libraries before execution of the first script
 mkdir -p "$SCRIPTS"
+
+# Create local backup (in case GitHub is rate limited during install)
+ensure_local_backup_repo
+
 download_script GITHUB_REPO lib
 download_script STATIC fetch_lib
 
