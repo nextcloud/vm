@@ -1,0 +1,51 @@
+name: 'Update Copyright Year'
+
+on:
+  schedule:
+    # Run on January 1st at 00:00 UTC every year
+    - cron: '0 0 1 1 *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-copyright:
+    name: Update Copyright Year to Current Year
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get current year
+        id: year
+        run: echo "current_year=$(date +'%Y')" >> $GITHUB_OUTPUT
+
+      - name: Get previous year
+        id: prev_year
+        run: echo "previous_year=$(date -d 'last year' +'%Y')" >> $GITHUB_OUTPUT
+
+      - name: Update copyright year in all .sh files
+        run: |
+          find . -type f -name "*.sh" -exec sed -i 's/© - ${{ steps.prev_year.outputs.previous_year }}/© - ${{ steps.year.outputs.current_year }}/g' {} \;
+
+      - name: Check for changes
+        id: verify_diff
+        run: |
+          git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.verify_diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'Update copyright year to ${{ steps.year.outputs.current_year }}'
+          title: 'Update copyright year to ${{ steps.year.outputs.current_year }}'
+          body: |
+            Automated update of copyright year from ${{ steps.prev_year.outputs.previous_year }} to ${{ steps.year.outputs.current_year }}.
+            
+            Updated all `© - ${{ steps.prev_year.outputs.previous_year }}` to `© - ${{ steps.year.outputs.current_year }}` in .sh files.
+          branch: 'automated/copyright-${{ steps.year.outputs.current_year }}'
+          delete-branch: true
+          labels: |
+            automated
+            maintenance
