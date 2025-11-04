@@ -18,7 +18,7 @@ then
 fi
 
 # Install curl if not existing
-if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" = "1" ]
+if dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -q "ok installed"
 then
     echo "curl OK"
 else
@@ -27,7 +27,7 @@ else
 fi
 
 # Install whiptail if not existing
-if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" = "1" ]
+if dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -q "ok installed"
 then
     echo "whiptail OK"
 else
