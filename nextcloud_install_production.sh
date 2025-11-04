@@ -31,6 +31,7 @@ if dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -q "ok installed"
 then
     echo "whiptail OK"
 else
+    apt-get update -q4
     apt-get install whiptail -y
 fi
 
@@ -99,6 +100,8 @@ then
 fi
 
 # Create a placeholder volume before modifying anything
+# Ask about snapshots first
+SNAPSHOTS_ENABLED=""
 if [ -z "$PROVISIONING" ]
 then
     if ! does_snapshot_exist "NcVM-installation" && yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
@@ -113,7 +116,8 @@ Enabling this will also force an automatic reboot after running the update scrip
             print_text_in_color "$ICyan" "Creating volume..."
             sleep 1
             # Create a placeholder snapshot
-            check_command lvcreate --size 5G --name "NcVM-installation" ubuntu-vg
+            check_command lvcreate --size 10G --name "NcVM-installation" ubuntu-vg
+            SNAPSHOTS_ENABLED="yes"
         else
             print_text_in_color "$IRed" "Could not create volume because of insufficient space..."
             sleep 2
@@ -122,10 +126,21 @@ Enabling this will also force an automatic reboot after running the update scrip
 fi
 
 # Fix LVM on BASE image
+# Ask about disk space - now snapshots have been reserved, we can use remaining space
+USE_ALL_DISK_SPACE=""
 if grep -q "LVM" /etc/fstab
 then
+    # In provisioning mode, always extend
+    # In normal mode, ask the user
     if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want to make all free space available to your root partition?"
     then
+        USE_ALL_DISK_SPACE="yes"
+    fi
+fi
+
+# Extend LVM if requested
+if [ "$USE_ALL_DISK_SPACE" = "yes" ]
+then
     # Resize LVM (live installer is &%¤%/!
     # VM
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
@@ -150,7 +165,6 @@ then
             fi
         fi
     done
-    fi
 fi
 
 # Install needed dependencies
