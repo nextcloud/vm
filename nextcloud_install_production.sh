@@ -116,7 +116,7 @@ Enabling this will also force an automatic reboot after running the update scrip
             print_text_in_color "$ICyan" "Creating volume..."
             sleep 1
             # Create a placeholder snapshot
-            check_command lvcreate --size 10G --name "NcVM-installation" ubuntu-vg
+            check_command lvcreate --size 5G --name "NcVM-installation" ubuntu-vg
             export SNAPSHOTS_ENABLED="yes"
         else
             print_text_in_color "$IRed" "Could not create volume because of insufficient space..."
