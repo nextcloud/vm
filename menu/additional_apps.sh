@@ -46,7 +46,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Webmin" "(Server GUI like Cpanel)" OFF \
 "Talk" "(Video calls and chat for Nextcloud - requires port 3478)" "$STARTUP_SWITCH" \
 "SMB-mount" "(Mount SMB-shares from your local network)" OFF \
-"Adminer" "(PostgreSQL GUI)" OFF \
+"AdminNeo" "(PostgreSQL GUI)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
@@ -71,8 +71,8 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Fail2ban Menu..."
         run_script MENU fail2ban_menu
     ;;&
-    *"Adminer"*)
-        print_text_in_color "$ICyan" "Downloading the Adminer script..."
+    *"AdminNeo"*)
+        print_text_in_color "$ICyan" "Downloading the AdminNeo script..."
         run_script APP adminer
     ;;&
     *"ClamAV"*)
