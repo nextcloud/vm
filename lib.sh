@@ -2318,17 +2318,24 @@ fi
 # Clone or refresh local backup of repository
 # This runs during update to keep a fresh copy as fallback
 ensure_local_backup_repo() {
-    local BACKUP_REPO="/var/scripts/vm-repo-backup"
+    local BACKUP_REPO="$SCRIPTS/vm-repo-backup"
     
-    # Install git if needed
+    # Check if we can reach GitHub before deleting existing backup
+    if ! site_200 github.com
+    then
+        print_text_in_color "$IYellow" "Cannot reach GitHub - keeping existing local backup"
+        return 1
+    fi
+    
+    # Install git if needed (after confirming we have internet)
     install_if_not git
     
     # Remove old clone and get fresh copy
     print_text_in_color "$ICyan" "Creating local backup of repository (in case of network issues)..."
     rm -rf "$BACKUP_REPO"
     
-    # Clone with timeout, don't fail if it doesn't work
-    if timeout 120 git clone --depth 1 --branch main \
+    # Clone repository
+    if git clone --depth 1 --branch main \
         https://github.com/nextcloud/vm.git "$BACKUP_REPO" &>/dev/null
     then
         chmod -R +rx "$BACKUP_REPO"
@@ -2346,7 +2353,7 @@ try_local_backup() {
     local url="$1"
     local file="$2"
     local dest_dir="$3"
-    local BACKUP_REPO="/var/scripts/vm-repo-backup"
+    local BACKUP_REPO="$SCRIPTS/vm-repo-backup"
     
     # Check if backup exists
     if [ ! -d "$BACKUP_REPO" ]
