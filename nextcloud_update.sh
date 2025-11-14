@@ -425,47 +425,55 @@ fi
 # Fix PHP error message
 mkdir -p /tmp/pear/cache
 
-# Just in case PECLs XML are bad
-if ! pecl channel-update pecl.php.net
-then
-    curl_to_dir http://pecl.php.net channel.xml /tmp
-    pear channel-update /tmp/channel.xml
-    rm -f /tmp/channel.xml
-fi
-
-# Update Redis PHP extension (18.04 -->, since 16.04 already is deprecated in the top of this script)
-print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
+# Migrate from PECL to OS packages for redis, igbinary, smbclient
+# This is a one-time migration for existing installations
+print_text_in_color "$ICyan" "Checking PHP extensions (migrating from PECL to OS packages if needed)..."
 
 # Check current PHP version
 check_php
 
-# Do the upgrade
-if pecl list | grep redis >/dev/null 2>&1
-then
-    if is_this_installed php"$PHPVER"-common
-    then
-        install_if_not php"$PHPVER"-dev
+# Migrate each extension from PECL to OS package
+for ext in redis igbinary smbclient; do
+    if pecl list 2>/dev/null | grep -q "^$ext "; then
+        print_text_in_color "$ICyan" "Migrating $ext from PECL to OS package..."
+        # Disable extension first
+        phpdismod -v ALL "$ext" 2>/dev/null || true
+        # Uninstall from PECL
+        yes | pecl uninstall "$ext" 2>/dev/null || true
+        # Remove manual .ini if it exists
+        rm -f "$PHP_MODS_DIR/$ext.ini"
+        # Install OS package
+        install_if_not php"$PHPVER"-"$ext"
+        print_text_in_color "$IGreen" "Migrated $ext to OS package (php$PHPVER-$ext)"
+    elif ! is_this_installed php"$PHPVER"-"$ext"; then
+        # Not installed via PECL, but also not installed as OS package - install it
+        print_text_in_color "$ICyan" "Installing $ext as OS package..."
+        install_if_not php"$PHPVER"-"$ext"
     fi
+done
 
-    yes no | pecl upgrade redis
-    systemctl restart redis-server.service
-fi
-# Remove old redis
-if grep -qFx extension=redis.so "$PHP_INI"
-then
-    sed -i "/extension=redis.so/d" "$PHP_INI"
-fi
-# Check if redis is enabled and create the file if not
-if [ ! -f "$PHP_MODS_DIR"/redis.ini ]
-then
-    touch "$PHP_MODS_DIR"/redis.ini
-fi
-# Enable new redis
-if ! grep -qFx extension=redis.so "$PHP_MODS_DIR"/redis.ini
-then
-    echo "# PECL redis" > "$PHP_MODS_DIR"/redis.ini
-    echo "extension=redis.so" >> "$PHP_MODS_DIR"/redis.ini
-    check_command phpenmod -v ALL redis
+# Remove old extension references from php.ini if they exist
+for ext in redis igbinary smbclient; do
+    if grep -qFx "extension=$ext.so" "$PHP_INI" 2>/dev/null; then
+        sed -i "/extension=$ext.so/d" "$PHP_INI"
+    fi
+done
+
+# Clean up no longer needed build dependencies if no PECL packages remain
+if pecl list 2>/dev/null | tail -n +4 | grep -qv "^no packages"; then
+    print_text_in_color "$ICyan" "PECL packages still installed, keeping build dependencies..."
+else
+    # No more PECL packages, safe to remove build deps
+    if is_this_installed php"$PHPVER"-dev; then
+        print_text_in_color "$ICyan" "Removing php-dev (no longer needed)..."
+        apt-get purge php"$PHPVER"-dev -y
+        apt-get autoremove -y
+    fi
+    if is_this_installed libsmbclient-dev; then
+        print_text_in_color "$ICyan" "Removing libsmbclient-dev (no longer needed)..."
+        apt-get purge libsmbclient-dev -y
+        apt-get autoremove -y
+    fi
 fi
 
 # Remove APCu https://github.com/nextcloud/vm/issues/2039
@@ -500,76 +508,6 @@ if is_this_installed php"$PHPVER"-apcu
 then
     apt-get purge php"$PHPVER"-apcu
     apt-get autoremove -y
-fi
-
-# Upgrade other PECL dependencies
-if [ "${CURRENTVERSION%%.*}" -ge "17" ]
-then
-    if [ -f "$PHP_INI" ]
-    then
-        print_text_in_color "$ICyan" "Trying to upgrade igbinary, and smbclient..."
-        if pecl list | grep igbinary >/dev/null 2>&1
-        then
-            yes no | pecl upgrade igbinary
-            # Remove old igbinary
-            if grep -qFx extension=igbinary.so "$PHP_INI"
-            then
-                sed -i "/extension=igbinary.so/d" "$PHP_INI"
-            fi
-            # Check if igbinary is enabled and create the file if not
-            if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
-            then
-                touch "$PHP_MODS_DIR"/igbinary.ini
-            fi
-            # Enable new igbinary
-            if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
-            then
-                echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
-                echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
-                check_command phpenmod -v ALL igbinary
-            fi
-        fi
-        if pecl list | grep -q smbclient
-        then
-            yes no | pecl upgrade smbclient
-            # Check if smbclient is enabled and create the file if not
-            if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
-            then
-               touch "$PHP_MODS_DIR"/smbclient.ini
-            fi
-            # Enable new smbclient
-            if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
-            then
-                echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
-                echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
-                check_command phpenmod -v ALL smbclient
-            fi
-            # Remove old smbclient
-            if grep -qFx extension=smbclient.so "$PHP_INI"
-            then
-                sed -i "/extension=smbclient.so/d" "$PHP_INI"
-            fi
-        fi
-        if pecl list | grep -q inotify
-        then
-            # Remove old inotify
-            if grep -qFx extension=inotify.so "$PHP_INI"
-            then
-                sed -i "/extension=inotify.so/d" "$PHP_INI"
-            fi
-            yes no | pecl upgrade inotify
-            if [ ! -f "$PHP_MODS_DIR"/inotify.ini ]
-            then
-                touch "$PHP_MODS_DIR"/inotify.ini
-            fi
-            if ! grep -qFx extension=inotify.so "$PHP_MODS_DIR"/inotify.ini
-            then
-                echo "# PECL inotify" > "$PHP_MODS_DIR"/inotify.ini
-                echo "extension=inotify.so" >> "$PHP_MODS_DIR"/inotify.ini
-                check_command phpenmod -v ALL inotify
-            fi
-        fi
-    fi
 fi
 
 # Make sure services are restarted
