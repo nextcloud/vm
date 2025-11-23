@@ -575,18 +575,29 @@ fi
 # Make sure services are restarted
 restart_webserver
 
-# Update adminer
-if [ -d "$ADMINERDIR" ]
+# Remove any legacy Adminer files before ensuring AdminNeo is up-to-date
+cleanup_legacy_adminer_files
+
+# Update adminneo
+if [ -d "$ADMINNEODIR" ]
 then
-    print_text_in_color "$ICyan" "Updating Adminer..."
-    rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php "$ADMINERDIR"/adminer-pgsql.php
-    # Download the latest version
-    curl_to_dir "https://download.adminerevo.org/latest/adminer" "adminer-pgsql.zip" "$ADMINERDIR"
-    install_if_not unzip
-    # Unzip the latest version
-    unzip "$ADMINERDIR"/adminer-pgsql.zip -d "$ADMINERDIR"
-    rm -f "$ADMINERDIR"/adminer-pgsql.zip
-    mv "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
+    print_text_in_color "$ICyan" "Updating AdminNeo..."
+    rm -f "$ADMINNEODIR"/latest.php "$ADMINNEODIR"/adminneo.php "$ADMINNEODIR"/adminneo-pgsql.php
+
+    if curl_to_dir "https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_en_default/" "adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR"
+    then
+        if [ -f "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" ]
+        then
+            mv "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR/adminneo.php"
+        elif [ -f "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" ]
+        then
+            mv "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" "$ADMINNEODIR/adminneo.php"
+        else
+            print_text_in_color "$IRed" "AdminNeo download completed but expected files were not found."
+        fi
+    else
+        print_text_in_color "$IRed" "Failed to update AdminNeo from $ADMINNEO_DOWNLOAD_URL"
+    fi
 fi
 
 # Get latest Maxmind databse for Geoblock

@@ -73,7 +73,7 @@ Please report any issues you can find. Improvements are welcome!
 ## First look
 #### Nextcloud
 ![alt tag](https://github.com/nextcloud/nextcloud.com/blob/master/assets/img/features/VMwelcome.png)
-#### Adminer (Database Administration) *not default*
+#### AdminNeo (Database Administration) *not default*
 ![alt tag](https://i.imgur.com/tiF4chg.png)
 #### Webmin (Server Administration GUI) *not default*
 ![alt tag](https://i.imgur.com/hLkmA1D.png)
