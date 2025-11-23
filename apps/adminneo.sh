@@ -20,7 +20,7 @@ debug_mode
 root_check
 
 # Check if adminneo is already installed
-if ! is_this_installed adminneo
+if ! is_this_installed adminer && [ ! -f "$ADMINNEODIR/adminneo.php" ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -44,9 +44,9 @@ else
         rm -f /etc/apache2/sites-available/adminer.conf
         rm -f /etc/apache2/sites-enabled/adminer.conf
         rm -rf /usr/share/adminer
+        check_command apt-get purge adminer -y
     fi
 
-    check_command apt-get purge adminneo -y
     restart_webserver
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
@@ -63,10 +63,6 @@ install_if_not apache2
 a2enmod headers
 a2enmod rewrite
 a2enmod ssl
-
-# Install AdminNeo
-apt-get update -q4 & spinner_loading
-install_if_not adminneo
 
 # The legacy Evo project has been archived, switching to AdminNeo (www.adminneo.org)
 # See: https://github.com/adminneo-org/adminneo
