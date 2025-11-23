@@ -169,6 +169,10 @@ NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
 ADMINNEODIR=/usr/share/adminneo
 ADMINNEO_CONF="$SITES_AVAILABLE/adminneo.conf"
 ADMINNEO_CONF_PLUGIN="$ADMINNEODIR/extra_plugins.php"
+# Legacy Adminer references kept for cleanup purposes
+LEGACY_ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
+LEGACY_ADMINER_CONF_ENABLED="/etc/apache2/sites-enabled/adminer.conf"
+LEGACY_ADMINERDIR=/usr/share/adminer
 # Get latest AdminNeo version dynamically from GitHub releases
 get_adminneo_version() {
     local version
