@@ -11,7 +11,7 @@
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-if [ -f /var/scripts/fetch_lib.sh 
+if [ -f /var/scripts/fetch_lib.sh ]
 then
     # shellcheck source=static/fetch_lib.sh
     source /var/scripts/fetch_lib.sh
