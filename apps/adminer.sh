@@ -30,6 +30,7 @@ else
     # Removal
     check_external_ip # Check that the script can see the external IP (apache fails otherwise)
     a2disconf adminer.conf
+    a2dissite adminer.conf
     restart_webserver
     rm -f $ADMINER_CONF
     rm -rf $ADMINERDIR
