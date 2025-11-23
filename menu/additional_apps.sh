@@ -73,7 +73,7 @@ case "$choice" in
     ;;&
     *"AdminNeo"*)
         print_text_in_color "$ICyan" "Downloading the AdminNeo script..."
-        run_script APP adminer
+        run_script APP adminneo
     ;;&
     *"ClamAV"*)
         print_text_in_color "$ICyan" "Downloading the ClamAV script..."

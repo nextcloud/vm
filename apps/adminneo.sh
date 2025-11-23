@@ -5,7 +5,7 @@
 true
 SCRIPT_NAME="AdminNeo"
 SCRIPT_EXPLAINER="AdminNeo is a full-featured database management tool written in PHP.
-It's a continuation of Adminer development after AdminerEvo was archived.
+It's a continuation of AdminNeo development after the legacy Evo fork was archived.
 More info: https://www.adminneo.org"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
@@ -19,8 +19,8 @@ debug_mode
 # Check if root
 root_check
 
-# Check if adminer is already installed
-if ! is_this_installed adminer
+# Check if adminneo is already installed
+if ! is_this_installed adminneo
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -29,12 +29,24 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     check_external_ip # Check that the script can see the external IP (apache fails otherwise)
-    a2disconf adminer.conf
-    a2dissite adminer.conf
+    a2disconf adminneo.conf
+    a2dissite adminneo.conf
     restart_webserver
-    rm -f $ADMINER_CONF
-    rm -rf $ADMINERDIR
-    check_command apt-get purge adminer -y
+    rm -f $ADMINNEO_CONF
+    rm -rf $ADMINNEODIR
+
+    # Cleanup of legacy Adminer files if they still exist
+    if [ -f "$LEGACY_ADMINER_CONF" ] || [ -f "$LEGACY_ADMINER_CONF_ENABLED" ] || [ -d "$LEGACY_ADMINERDIR" ]
+    then
+        print_text_in_color "$ICyan" "Removing legacy Adminer files..."
+        a2disconf adminer.conf >/dev/null 2>&1
+        a2dissite adminer.conf >/dev/null 2>&1
+        rm -f /etc/apache2/sites-available/adminer.conf
+        rm -f /etc/apache2/sites-enabled/adminer.conf
+        rm -rf /usr/share/adminer
+    fi
+
+    check_command apt-get purge adminneo -y
     restart_webserver
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
@@ -52,38 +64,38 @@ a2enmod headers
 a2enmod rewrite
 a2enmod ssl
 
-# Install Adminer
+# Install AdminNeo
 apt-get update -q4 & spinner_loading
-install_if_not adminer
+install_if_not adminneo
 
-# AdminerEvo project has been archived, switching to AdminNeo (www.adminneo.org)
+# The legacy Evo project has been archived, switching to AdminNeo (www.adminneo.org)
 # See: https://github.com/adminneo-org/adminneo
-print_text_in_color "$ICyan" "Downloading AdminNeo version ${ADMINER_VERSION}..."
-if ! curl_to_dir "https://www.adminneo.org/files/${ADMINER_VERSION}/pgsql_en_default/" "adminneo-${ADMINER_VERSION}.php" "$ADMINERDIR"
+print_text_in_color "$ICyan" "Downloading AdminNeo version ${ADMINNEO_VERSION}..."
+if ! curl_to_dir "https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_en_default/" "adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR"
 then
     msg_box "Failed to download AdminNeo. The download URL may have changed.
     
 Please report this issue to: $ISSUES
 
 Attempted to download from:
-$ADMINER_DOWNLOAD_URL"
+$ADMINNEO_DOWNLOAD_URL"
     exit 1
 fi
 
-# Rename to standard adminer.php name
-if [ -f "$ADMINERDIR/adminneo-${ADMINER_VERSION}.php" ]
+# Rename to standard adminneo.php name
+if [ -f "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" ]
 then
-    mv "$ADMINERDIR/adminneo-${ADMINER_VERSION}.php" "$ADMINERDIR/adminer.php"
-elif [ -f "$ADMINERDIR/adminerneo-${ADMINER_VERSION}-pgsql.php" ]
+    mv "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR/adminneo.php"
+elif [ -f "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" ]
 then
     # Fallback for old naming if somehow still exists
-    mv "$ADMINERDIR/adminerneo-${ADMINER_VERSION}-pgsql.php" "$ADMINERDIR/adminer.php"
+    mv "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" "$ADMINNEODIR/adminneo.php"
 else
     msg_box "Failed to find downloaded AdminNeo file. Please report this to $ISSUES"
     exit 1
 fi
 
-print_text_in_color "$IGreen" "AdminNeo ${ADMINER_VERSION} successfully downloaded!"
+print_text_in_color "$IGreen" "AdminNeo ${ADMINNEO_VERSION} successfully downloaded!"
 
 # Only add TLS 1.3 on Ubuntu later than 22.04
 if version 22.04 "$DISTRO" 24.04.10
@@ -97,7 +109,7 @@ check_php
 # shellcheck disable=2154
 
 # Add ability to add plugins easily
-cat << ADMINER_CREATE_PLUGIN > "$ADMINER_CONF_PLUGIN"
+cat << ADMINNEO_CREATE_PLUGIN > "$ADMINNEO_CONF_PLUGIN"
 <?php
 function adminer_object() {
     // required to run any plugin
@@ -130,11 +142,11 @@ function adminer_object() {
     return new AdminerPlugin($plugins);
 }
 
-// include original Adminer or Adminer Editor
-include "./adminer.php";
-ADMINER_CREATE_PLUGIN
+// include the AdminNeo runtime
+include "./adminneo.php";
+ADMINNEO_CREATE_PLUGIN
 
-cat << ADMINER_CREATE > "$ADMINER_CONF"
+cat << ADMINNEO_CREATE > "$ADMINNEO_CONF"
  <VirtualHost *:80>
      RewriteEngine On
      RewriteRule ^(.*)$ https://%{HTTP_HOST}$1:9443 [R=301,L]
@@ -164,18 +176,18 @@ Listen 9443
 
 ### YOUR SERVER ADDRESS ###
 #    ServerAdmin admin@example.com
-#    ServerName adminer.example.com
+#    ServerName adminneo.example.com
 
 ### SETTINGS ###
     <FilesMatch "\.php$">
         SetHandler "proxy:unix:/run/php/php$PHPVER-fpm.nextcloud.sock|fcgi://localhost"
     </FilesMatch>
 
-    DocumentRoot $ADMINERDIR
+    DocumentRoot $ADMINNEODIR
 
-<Directory $ADMINERDIR>
+<Directory $ADMINNEODIR>
     <IfModule mod_dir.c>
-        DirectoryIndex adminer.php
+        DirectoryIndex adminneo.php
     </IfModule>
     AllowOverride All
 
@@ -188,10 +200,10 @@ Listen 9443
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 
 </VirtualHost>
-ADMINER_CREATE
+ADMINNEO_CREATE
 
 # Enable config
-check_command a2ensite adminer.conf
+check_command a2ensite adminneo.conf
 
 if ! restart_webserver
 then
@@ -203,11 +215,11 @@ else
     check_command sed -i "s|local   all             postgres                                peer|local   all             postgres                                md5|g" /etc/postgresql/*/main/pg_hba.conf
     restart_webserver
 
-    msg_box "Adminer was successfully installed and can be reached here:
+    msg_box "AdminNeo was successfully installed and can be reached here:
 https://$ADDRESS:9443
 
 You can download more plugins and get more information here: 
-https://www.adminer.org
+https://www.adminneo.org
 
 Your PostgreSQL connection information can be found in $NCPATH/config/config.php.
 These are the current values:
@@ -217,6 +229,6 @@ $(grep dbuser $NCPATH/config/config.php)
 $(grep dbpassword $NCPATH/config/config.php)
 $(grep dbname $NCPATH/config/config.php)
 
-In case you try to access Adminer and get 'Forbidden' you need to change the IP in:
-$ADMINER_CONF"
+In case you try to access AdminNeo and get 'Forbidden' you need to change the IP in:
+$ADMINNEO_CONF"
 fi

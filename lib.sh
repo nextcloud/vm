@@ -165,10 +165,14 @@ PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 opcache_interned_strings_buffer_value=24
 # Notify push
 NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
-# Adminer
-ADMINERDIR=/usr/share/adminer
-ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
-ADMINER_CONF_PLUGIN="$ADMINERDIR/extra_plugins.php"
+# AdminNeo
+ADMINNEODIR=/usr/share/adminneo
+ADMINNEO_CONF="$SITES_AVAILABLE/adminneo.conf"
+ADMINNEO_CONF_PLUGIN="$ADMINNEODIR/extra_plugins.php"
+# Legacy Adminer references kept for cleanup purposes
+LEGACY_ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
+LEGACY_ADMINER_CONF_ENABLED="/etc/apache2/sites-enabled/adminer.conf"
+LEGACY_ADMINERDIR=/usr/share/adminer
 # Get latest AdminNeo version dynamically from GitHub releases
 get_adminneo_version() {
     local version
@@ -183,8 +187,8 @@ get_adminneo_version() {
         echo "5.1.1"
     fi
 }
-ADMINER_VERSION=$(get_adminneo_version)
-ADMINER_DOWNLOAD_URL="https://www.adminneo.org/files/${ADMINER_VERSION}/pgsql_en_default/adminneo-${ADMINER_VERSION}.php"
+ADMINNEO_VERSION=$(get_adminneo_version)
+ADMINNEO_DOWNLOAD_URL="https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_en_default/adminneo-${ADMINNEO_VERSION}.php"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
@@ -847,7 +851,7 @@ return 0
 }
 
 
-# Check that the script can see the external IP (apache fails otherwise), used e.g. in the adminer app script.
+# Check that the script can see the external IP (apache fails otherwise), used e.g. in the adminneo app script.
 check_external_ip() {
 if [ -z "$WANIP4" ]
 then

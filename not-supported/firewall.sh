@@ -54,9 +54,9 @@ ufw allow https comment https
 print_text_in_color "$ICyan" "UPnP"
 ufw allow proto udp from 192.168.0.0/16 comment UPnP
 
-# Adminer
-print_text_in_color "$ICyan" "Allow Adminer"
-ufw allow 9443/tcp comment Adminer
+# AdminNeo
+print_text_in_color "$ICyan" "Allow AdminNeo"
+ufw allow 9443/tcp comment AdminNeo
 
 # Netdata
 print_text_in_color "$ICyan" "Allow Netdata"
