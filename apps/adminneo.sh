@@ -29,7 +29,6 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
     check_external_ip # Check that the script can see the external IP (apache fails otherwise)
-    a2disconf adminneo.conf
     a2dissite adminneo.conf
     restart_webserver
     rm -f $ADMINNEO_CONF
