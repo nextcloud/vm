@@ -11,7 +11,7 @@
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-if [ -f /var/scripts/fetch_lib.sh ]
+if [ -f /var/scripts/fetch_lib.sh 
 then
     # shellcheck source=static/fetch_lib.sh
     source /var/scripts/fetch_lib.sh
@@ -574,9 +574,6 @@ fi
 
 # Make sure services are restarted
 restart_webserver
-
-# Remove any legacy Adminer files before ensuring AdminNeo is up-to-date
-cleanup_legacy_adminer_files
 
 # Update adminneo
 if [ -d "$ADMINNEODIR" ]
