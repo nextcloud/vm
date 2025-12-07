@@ -339,6 +339,11 @@ then
     # Hold veracrypt if installed since unmounting all drives, updating and mounting them again is not feasible
     # If you desperately need the update, you can do so manually
     apt-mark hold veracrypt
+
+    # Also do not restart services automatically when running apt-get dist-upgrade later on
+    # As this otherwise restarts the veracrypt automount service and unmounts all drives unexpectedly 
+    export NEEDRESTART_MODE=l
+    export NEEDRESTART_SUSPEND=1
 fi
 
 # Enter maintenance:mode
