@@ -182,7 +182,7 @@ cat << DDCLIENT_CONF > "/etc/ddclient.conf"
 # /etc/ddclient.conf
 
 # Default system settings
-use=web, web=https://api.ipify.org
+usev4=webv4, webv4=https://api.ipify.org
 
 # Workaround for ddclient 3.10.0+ parsing bug disabled
 # The 'curl=yes' option causes "curl not found" errors even with curl installed
