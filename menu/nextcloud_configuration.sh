@@ -31,6 +31,7 @@ fi
 choice=$(whiptail --title "$TITLE" --checklist \
 "Which settings do you want to configure?
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+"AppAPI" "(Configure External Apps framework - AppAPI daemon)" OFF \
 "CookieLifetime" "(Configure forced logout timeout for users using the web GUI)" OFF \
 "Share-folder" "(Shares from other users will appear in a folder named 'Shared')" OFF \
 "Disable workspaces" "(Disable top notes in GUI)" OFF \
@@ -40,6 +41,10 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Enable logrotate" "(Use logrotate to keep more Nextcloud logs)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
+    *"AppAPI"*)
+        print_text_in_color "$ICyan" "Downloading the AppAPI configuration script..."
+        run_script ADDONS appapi
+    ;;&
     *"CookieLifetime"*)
         print_text_in_color "$ICyan" "Downloading the CookieLifetime script..."
         run_script ADDONS cookielifetime
