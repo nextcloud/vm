@@ -102,11 +102,21 @@ then
         nextcloud_occ_no_check app:disable app_api
     fi
     
-    # Remove HaRP container if it exists
-    if docker ps -a --format '{{.Names}}' | grep -q "^appapi-harp$"
+    # Remove HaRP and ExApp containers
+    if is_docker_running
     then
-        print_text_in_color "$ICyan" "Removing HaRP container..."
-        docker rm -f appapi-harp 2>/dev/null || true
+        # Remove HaRP container (ghcr.io/nextcloud/nextcloud-appapi-harp)
+        docker_prune_this 'nextcloud-appapi-harp'
+        
+        # Remove all ExApp containers
+        DOCKERPS=$(docker ps -a --format '{{.Names}}' | grep '^nc_app_' || true)
+        if [ -n "$DOCKERPS" ]
+        then
+            for container_name in $DOCKERPS
+            do
+                docker_prune_this "$container_name"
+            done
+        fi
     fi
     
     # Remove Apache proxy configuration for ExApps
@@ -175,17 +185,24 @@ fi
 # If we get here, we're installing/configuring
 install_popup "$SCRIPT_NAME"
 
-# Check if Docker is available
+# Install Docker if not available
 if ! is_docker_running || [ ! -S /var/run/docker.sock ]
 then
-    msg_box "Docker is not running on this system.
+    msg_box "Docker is not installed or not running on this system.
 
-AppAPI requires Docker to deploy External Apps. Please install Docker first:
+AppAPI requires Docker to deploy External Apps.
 
-curl -fsSL https://get.docker.com | sh
+Docker will now be installed automatically."
+    install_docker
+    
+    # Verify Docker is now running
+    if ! is_docker_running || [ ! -S /var/run/docker.sock ]
+    then
+        msg_box "Failed to install or start Docker.
 
-After installing Docker, run this script again."
-    exit 1
+Please check your system logs and try again."
+        exit 1
+    fi
 fi
 
 # Check if www-data user can access docker socket
@@ -533,6 +550,22 @@ This is the same test available in AppAPI Admin Settings."
 then
     print_text_in_color "$ICyan" "Starting test deployment..."
     print_text_in_color "$ICyan" "This may take 1-2 minutes for the first run (Docker image download)..."
+    
+    # Clean up any existing test apps first
+    if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "test-deploy"
+    then
+        print_text_in_color "$ICyan" "Removing existing test-deploy ExApp..."
+        nextcloud_occ_no_check app_api:app:disable test-deploy 2>/dev/null || true
+        nextcloud_occ_no_check app_api:app:unregister test-deploy --silent --rm-data 2>/dev/null || true
+        docker rm -f nc_app_test-deploy 2>/dev/null || true
+    fi
+    if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "app-skeleton-python"
+    then
+        print_text_in_color "$ICyan" "Removing existing app-skeleton-python ExApp..."
+        nextcloud_occ_no_check app_api:app:disable app-skeleton-python 2>/dev/null || true
+        nextcloud_occ_no_check app_api:app:unregister app-skeleton-python --silent --rm-data 2>/dev/null || true
+        docker rm -f nc_app_app-skeleton-python 2>/dev/null || true
+    fi
     
     # Register test ExApp using the official test-deploy app
     print_text_in_color "$ICyan" "Step 1/6: Registering test ExApp..."
