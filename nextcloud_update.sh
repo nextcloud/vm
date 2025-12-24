@@ -734,6 +734,15 @@ $DOCKER_RUN_OUTPUT"
     docker_update_specific 'imaginary' "Imaginary"
 fi
 
+
+if [ "${CURRENTVERSION%%.*}" -ge "22" ]
+then
+    if ! nextcloud_occ config:system:get maintenance_window_start
+    then
+        nextcloud_occ config:system:set maintenance_window_start --type=integer --value=2
+    fi
+fi
+
 # Fix Collabora change too coolwsd
 if grep -r loolwsd "$SITES_AVAILABLE"/*.conf
 then
