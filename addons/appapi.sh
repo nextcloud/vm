@@ -110,14 +110,44 @@ then
     fi
     
     # Remove Apache proxy configuration for ExApps
-    if [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ] 2>/dev/null
+    # Find Apache vhost config - check expected location first
+    VHOST_CONF=""
+    if [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
     then
-        if grep -q "#ExApps-HaRP-start" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+        VHOST_CONF="$SITES_AVAILABLE/$NCDOMAIN.conf"
+    else
+        # Try to find in enabled sites
+        if [ -d "/etc/apache2/sites-enabled" ]
         then
-            print_text_in_color "$ICyan" "Removing Apache ExApps proxy configuration..."
-            sed -i "/#ExApps-HaRP-start/,/#ExApps-HaRP-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+            # Look for config containing ExApps-HaRP marker
+            for conf_file in /etc/apache2/sites-enabled/*.conf
+            do
+                if [ -f "$conf_file" ] && grep -q "#ExApps-HaRP" "$conf_file"
+                then
+                    VHOST_CONF="$conf_file"
+                    break
+                fi
+            done
+        fi
+    fi
+    
+    # Remove Include directive from vhost if found
+    if [ -n "$VHOST_CONF" ] && [ -f "$VHOST_CONF" ]
+    then
+        if grep -q "#ExApps-HaRP" "$VHOST_CONF"
+        then
+            print_text_in_color "$ICyan" "Removing Apache ExApps proxy configuration from: $VHOST_CONF"
+            sed -i "/#ExApps-HaRP/d" "$VHOST_CONF"
+            sed -i "\|Include /etc/apache2/exapps-harp.conf|d" "$VHOST_CONF"
             systemctl restart apache2
         fi
+    fi
+    
+    # Remove separate ExApps config file
+    if [ -f "/etc/apache2/exapps-harp.conf" ]
+    then
+        print_text_in_color "$ICyan" "Removing ExApps Apache config file..."
+        rm -f /etc/apache2/exapps-harp.conf
     fi
     
     # Optionally remove HaRP data
@@ -342,60 +372,84 @@ Check logs: docker logs $HARP_CONTAINER_NAME"
     # Configure Apache reverse proxy for /exapps/
     print_text_in_color "$ICyan" "Configuring Apache reverse proxy for ExApps..."
     
-    # Check if Apache vhost exists
+    # Enable proxy modules
+    a2enmod proxy proxy_http proxy_wstunnel &>/dev/null
+    
+    # Create separate ExApps config file
+    EXAPPS_CONF="/etc/apache2/exapps-harp.conf"
+    cat << APACHE_EXAPPS_CONF > "$EXAPPS_CONF"
+# AppAPI ExApps Reverse Proxy Configuration
+# This file is managed by the Nextcloud VM AppAPI configuration script
+# Do not modify manually - changes may be overwritten
+
+ProxyPass /exapps/ http://127.0.0.1:8780/exapps/
+ProxyPassReverse /exapps/ http://127.0.0.1:8780/exapps/
+APACHE_EXAPPS_CONF
+    
+    # Find Apache vhost config - check expected location first
+    VHOST_CONF=""
     if [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
     then
-        # Check if /exapps/ proxy already configured
-        if ! grep -q "ProxyPass /exapps/" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+        VHOST_CONF="$SITES_AVAILABLE/$NCDOMAIN.conf"
+    else
+        # Try to find in enabled sites
+        if [ -d "/etc/apache2/sites-enabled" ]
         then
-            # Enable proxy modules
-            a2enmod proxy proxy_http proxy_wstunnel &>/dev/null
-            
-            # Add proxy configuration for ExApps
-            cat << APACHE_EXAPPS_CONF > /tmp/exapps_proxy.conf
-    #ExApps-HaRP-start - Please don't remove or change this line
-    ProxyPass /exapps/ http://127.0.0.1:8780/exapps/
-    ProxyPassReverse /exapps/ http://127.0.0.1:8780/exapps/
-    #ExApps-HaRP-end - Please don't remove or change this line
-APACHE_EXAPPS_CONF
-            
-            # Insert after <VirtualHost *:443>
-            if grep -q "<VirtualHost \*:443>" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+            # Look for config containing VirtualHost and DocumentRoot pointing to Nextcloud
+            for conf_file in /etc/apache2/sites-enabled/*.conf
+            do
+                if [ -f "$conf_file" ] && grep -q "VirtualHost" "$conf_file" && grep -q "$NCPATH" "$conf_file" 2>/dev/null
+                then
+                    VHOST_CONF="$conf_file"
+                    break
+                fi
+            done
+        fi
+    fi
+    
+    # Configure Apache if we found a vhost
+    if [ -n "$VHOST_CONF" ]
+    then
+        # Check if Include for ExApps config already exists
+        if ! grep -q "Include.*exapps-harp.conf" "$VHOST_CONF"
+        then
+            # Add Include directive after <VirtualHost *:443>
+            if grep -q "<VirtualHost \*:443>" "$VHOST_CONF"
             then
-                sed -i '/<VirtualHost \*:443>/r /tmp/exapps_proxy.conf' "$SITES_AVAILABLE/$NCDOMAIN.conf"
+                sed -i "/<VirtualHost \*:443>/a\    #ExApps-HaRP - Please don't remove or change this line\n    Include $EXAPPS_CONF" "$VHOST_CONF"
             else
                 # Try port 80 if no 443
-                sed -i '/<VirtualHost \*:80>/r /tmp/exapps_proxy.conf' "$SITES_AVAILABLE/$NCDOMAIN.conf"
+                sed -i "/<VirtualHost \*:80>/a\    #ExApps-HaRP - Please don't remove or change this line\n    Include $EXAPPS_CONF" "$VHOST_CONF"
             fi
-            rm -f /tmp/exapps_proxy.conf
             
             # Restart Apache
             if ! systemctl restart apache2
             then
                 msg_box "Failed to restart Apache. Restoring config..."
-                sed -i "/#ExApps-HaRP-start/,/#ExApps-HaRP-end/d" "$SITES_AVAILABLE/$NCDOMAIN.conf"
+                sed -i "/#ExApps-HaRP/d" "$VHOST_CONF"
+                sed -i "\|Include $EXAPPS_CONF|d" "$VHOST_CONF"
+                rm -f "$EXAPPS_CONF"
                 systemctl restart apache2
                 docker rm -f "$HARP_CONTAINER_NAME"
                 exit 1
             fi
             
-            print_text_in_color "$IGreen" "Apache proxy configured successfully!"
+            print_text_in_color "$IGreen" "Apache proxy configured successfully in: $VHOST_CONF"
         else
             print_text_in_color "$ICyan" "ExApps proxy already configured in Apache."
         fi
     else
-        msg_box "Warning: Apache vhost file not found at $SITES_AVAILABLE/$NCDOMAIN.conf
+        msg_box "Warning: Could not find Apache vhost configuration for Nextcloud.
 
-You need to manually configure your reverse proxy to forward /exapps/ to http://127.0.0.1:8780
+Required Apache modules have been enabled and ExApps proxy configuration
+has been created at: $EXAPPS_CONF
 
-Example for NGINX:
-  location /exapps/ {
-      proxy_pass http://127.0.0.1:8780;
-      proxy_set_header Host \$host;
-      proxy_set_header X-Real-IP \$remote_addr;
-      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto \$scheme;
-  }
+You need to manually include this file in your Apache vhost:
+  Include $EXAPPS_CONF
+
+Or manually add the proxy configuration:
+  ProxyPass /exapps/ http://127.0.0.1:8780/exapps/
+  ProxyPassReverse /exapps/ http://127.0.0.1:8780/exapps/
 
 Press OK to continue with daemon registration."
     fi
