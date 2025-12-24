@@ -556,14 +556,16 @@ then
     then
         print_text_in_color "$ICyan" "Removing existing test-deploy ExApp..."
         nextcloud_occ_no_check app_api:app:disable test-deploy 2>/dev/null || true
-        nextcloud_occ_no_check app_api:app:unregister test-deploy --silent --rm-data 2>/dev/null || true
+        nextcloud_occ_no_check app_api:app:unregister test-deploy --rm-data 2>/dev/null || true
+        docker stop nc_app_test-deploy 2>/dev/null || true
         docker rm -f nc_app_test-deploy 2>/dev/null || true
     fi
     if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "app-skeleton-python"
     then
         print_text_in_color "$ICyan" "Removing existing app-skeleton-python ExApp..."
         nextcloud_occ_no_check app_api:app:disable app-skeleton-python 2>/dev/null || true
-        nextcloud_occ_no_check app_api:app:unregister app-skeleton-python --silent --rm-data 2>/dev/null || true
+        nextcloud_occ_no_check app_api:app:unregister app-skeleton-python --rm-data 2>/dev/null || true
+        docker stop nc_app_app-skeleton-python 2>/dev/null || true
         docker rm -f nc_app_app-skeleton-python 2>/dev/null || true
     fi
     
