@@ -84,8 +84,8 @@ else
     # Remove HaRP and ExApp containers
     if is_docker_running
     then
-        # Remove HaRP container (ghcr.io/nextcloud/nextcloud-appapi-harp)
-        docker_prune_this 'appapi-harp'
+        # Remove HaRP container
+        docker_prune_this 'ghcr.io/nextcloud/nextcloud-appapi-harp'
         # Remove all ExApp containers
         DOCKERPS=$(docker ps -a --format '{{.Names}}' | grep '^nc_app_' || true)
         if [ -n "$DOCKERPS" ]
