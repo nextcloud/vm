@@ -248,8 +248,9 @@ appapi_install() {
     # ExApps API (AppAPI) - Docker daemon configuration
     APPAPI_DOCKER_DAEMON_NAME="docker_local_sock"
     APPAPI_HARP_DAEMON_NAME="harp_proxy_host"
-    # Get list of existing AppAPI daemons
-    DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep "name:" | sed 's/.*name: //' || true)
+    # Get list of existing AppAPI daemons from table format output
+    # Parses the table: extracts Name column (field 3), filters out header and empty names, removes duplicates
+    DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep -E '^\|' | awk -F'|' '{print $3}' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' | grep -v 'Name' | sort -u || true)
     # Get list of all External Apps
     EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
     # AppAPI test application URLs
