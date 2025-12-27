@@ -104,7 +104,7 @@ else
     if [ -f /etc/apache2/conf-available/exapps-harp.conf ]
     then
         print_text_in_color "$ICyan" "Disabling ExApps Apache configuration..."
-        2disconf exapps-harp &>/dev/null
+        a2disconf exapps-harp &>/dev/null
         rm -f /etc/apache2/conf-available/exapps-harp.conf
     fi
 
