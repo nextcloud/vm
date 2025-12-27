@@ -28,29 +28,49 @@ debug_mode
 # Must be root
 root_check
 
-# Get NCDOMAIN for Apache config management
-NEXTCLOUD_URL_EARLY=$(nextcloud_occ_no_check config:system:get overwrite.cli.url 2>/dev/null || echo "")
-if [ -n "$NEXTCLOUD_URL_EARLY" ]
+# Get Nextcloud domain
+ncdomain
+
+# Determine protocol (https or http) from Nextcloud config
+if echo "$NCDOMAIN" | grep -q "^https://"
 then
-    NCDOMAIN=$(echo "$NEXTCLOUD_URL_EARLY" | sed -e 's|^[^/]*//||' -e 's|/.*$||')
+    NC_PROTOCOL="https"
+else
+    NC_PROTOCOL="http"
 fi
 
-# Check if AppAPI is installed and enabled, or if daemon is configured
-DAEMON_CONFIGURED=false
+# Load AppAPI-specific functions and variables
+appapi_install
 
-if is_app_installed app_api && is_app_enabled app_api && nextcloud_occ app_api:daemon:list 2>/dev/null | grep -q "name:"
+# Check if appapi is already installed
+if ! is_app_installed app_api
 then
-    DAEMON_CONFIGURED=true
-fi
-
-# Check if AppAPI is already enabled or configured
-if is_app_enabled app_api || [ "$DAEMON_CONFIGURED" = true ]
-then
+    # Ask for installing
+    install_popup "$SCRIPT_NAME"
+else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
-    # Removal
-    print_text_in_color "$ICyan" "Removing AppAPI configuration..."
 
+    ############### Removal
+
+    # DAEMONS
+    DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep "name:" | sed 's/.*name: //' || true)
+
+    # Unregister all daemons
+    if [ -n "$DAEMON_LIST" ]
+    then
+        print_text_in_color "$ICyan" "Unregistering all Deploy Daemons..."
+        while IFS= read -r daemon_name
+        do
+            if [ -n "$daemon_name" ]
+            then
+                print_text_in_color "$ICyan" "Unregistering daemon: $daemon_name"
+                nextcloud_occ_no_check app_api:daemon:unregister "$daemon_name" 2>/dev/null || true
+            fi
+        done <<< "$DAEMON_LIST"
+    fi
+
+    ####### EXAPPS
     # Get list of all External Apps
     EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
 
@@ -70,36 +90,11 @@ then
         done <<< "$EXAPPS_LIST"
     fi
 
-    # Get list of all daemons
-    DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep "name:" | sed 's/.*name: //' || true)
-
-    # Unregister all daemons
-    if [ -n "$DAEMON_LIST" ]
-    then
-        print_text_in_color "$ICyan" "Unregistering all Deploy Daemons..."
-        while IFS= read -r daemon_name
-        do
-            if [ -n "$daemon_name" ]
-            then
-                print_text_in_color "$ICyan" "Unregistering daemon: $daemon_name"
-                nextcloud_occ_no_check app_api:daemon:unregister "$daemon_name" 2>/dev/null || true
-            fi
-        done <<< "$DAEMON_LIST"
-    fi
-
-    # Disable the app
-    if is_app_enabled app_api
-    then
-        print_text_in_color "$ICyan" "Disabling AppAPI app..."
-        nextcloud_occ_no_check app:disable app_api
-    fi
-    
     # Remove HaRP and ExApp containers
     if is_docker_running
     then
         # Remove HaRP container (ghcr.io/nextcloud/nextcloud-appapi-harp)
         docker_prune_this 'nextcloud-appapi-harp'
-        
         # Remove all ExApp containers
         DOCKERPS=$(docker ps -a --format '{{.Names}}' | grep '^nc_app_' || true)
         if [ -n "$DOCKERPS" ]
@@ -110,65 +105,22 @@ then
             done
         fi
     fi
-    
+
     # Remove Apache proxy configuration for ExApps
-    # Find Apache vhost config - check expected location first
-    VHOST_CONF=""
-    if [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
+    if a2disconf exapps-harp &>/dev/null
     then
-        VHOST_CONF="$SITES_AVAILABLE/$NCDOMAIN.conf"
-    else
-        # Try to find in enabled sites
-        if [ -d "/etc/apache2/sites-enabled" ]
-        then
-            # Look for config containing ExApps-HaRP marker
-            for conf_file in /etc/apache2/sites-enabled/*.conf
-            do
-                if [ -f "$conf_file" ] && grep -q "#ExApps-HaRP" "$conf_file"
-                then
-                    VHOST_CONF="$conf_file"
-                    break
-                fi
-            done
-        fi
-    fi
-    
-    # Remove Include directive from vhost if found
-    if [ -n "$VHOST_CONF" ] && [ -f "$VHOST_CONF" ]
-    then
-        if grep -q "#ExApps-HaRP" "$VHOST_CONF"
-        then
-            print_text_in_color "$ICyan" "Removing Apache ExApps proxy configuration from: $VHOST_CONF"
-            sed -i "/#ExApps-HaRP/d" "$VHOST_CONF"
-            sed -i "\|Include /etc/apache2/exapps-harp.conf|d" "$VHOST_CONF"
-            systemctl restart apache2
-        fi
-    fi
-    
-    # Remove separate ExApps config file
-    if [ -f "/etc/apache2/exapps-harp.conf" ]
-    then
-        print_text_in_color "$ICyan" "Removing ExApps Apache config file..."
-        rm -f /etc/apache2/exapps-harp.conf
-    fi
-    
-    # Optionally remove HaRP data
-    if [ -d "/var/lib/appapi-harp" ]
-    then
-        if yesno_box_no "Do you want to remove HaRP data directory (/var/lib/appapi-harp)?
-This includes certificates and configuration."
-        then
-            rm -rf /var/lib/appapi-harp
-        fi
+        print_text_in_color "$ICyan" "Disabling ExApps Apache configuration..."
     fi
 
-    # Optionally remove the app completely
-    if yesno_box_yes "Do you want to completely remove the AppAPI app from your system?
-This will delete the app files. You can reinstall it from the App Store later if needed."
+    # Remove separate ExApps config file
+    if [ -f "/etc/apache2/conf-available/exapps-harp.conf" ]
     then
-        print_text_in_color "$ICyan" "Removing AppAPI app..."
-        nextcloud_occ_no_check app:remove app_api 2>/dev/null || true
+        print_text_in_color "$ICyan" "Removing ExApps Apache config file..."
+        rm -f /etc/apache2/conf-available/exapps-harp.conf
     fi
+
+    print_text_in_color "$ICyan" "Removing AppAPI app..."
+    nextcloud_occ_no_check app:remove app_api 2>/dev/null || true
 
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
@@ -227,15 +179,8 @@ Then run this script again."
     msg_box "Successfully granted Docker access to www-data user."
 fi
 
-# Get Nextcloud URL
-NEXTCLOUD_URL=$(nextcloud_occ_no_check config:system:get overwrite.cli.url)
-if [ -z "$NEXTCLOUD_URL" ]
-then
-    NEXTCLOUD_URL="http://$ADDRESS"
-fi
-
 # Check for TLS/HTTPS
-if [[ "$NEXTCLOUD_URL" == "https://"* ]]
+if [ "$NC_PROTOCOL" = "https" ]
 then
     HTTPS_ENABLED=true
 else
@@ -314,9 +259,15 @@ esac
 if [ "$DEPLOY_METHOD" = "harp" ]
 then
     # Generate secure shared key
-    HP_SHARED_KEY=$(gen_passwd 32 "a]")
+    HP_SHARED_KEY=$(gen_passwd 32 "a-zA-Z0-9")
     HARP_CONTAINER_NAME="appapi-harp"
-    DAEMON_NAME="$APPAPI_HARP_DAEMON_NAME"
+    # Use daemon name from lib.sh (defined as: APPAPI_HARP_DAEMON_NAME="harp_proxy_host")
+    if [ -z "$APPAPI_HARP_DAEMON_NAME" ]
+    then
+        DAEMON_NAME="harp_proxy_host"
+    else
+        DAEMON_NAME="$APPAPI_HARP_DAEMON_NAME"
+    fi
     
     msg_box "Setting up HaRP (HaProxy Reversed Proxy) for AppAPI.
 
@@ -330,7 +281,7 @@ Configuration:
 • ExApps HTTP Port: 8780
 • FRP Port: 8782
 • Compute Device: ${COMPUTE_DEVICE^^}
-• Nextcloud URL: $NEXTCLOUD_URL"
+• Nextcloud URL: $NC_PROTOCOL://$NCDOMAIN"
 
     # Check for existing HaRP container
     if docker ps -a --format '{{.Names}}' | grep -q "^${HARP_CONTAINER_NAME}$"
@@ -347,7 +298,7 @@ Configuration:
     print_text_in_color "$ICyan" "Deploying HaRP container..."
     if ! docker run \
         -e HP_SHARED_KEY="$HP_SHARED_KEY" \
-        -e NC_INSTANCE_URL="$NEXTCLOUD_URL" \
+        -e NC_INSTANCE_URL="$NC_PROTOCOL://$NCDOMAIN" \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v "$HARP_CERTS_DIR":/certs \
         --name "$HARP_CONTAINER_NAME" -h "$HARP_CONTAINER_NAME" \
@@ -381,8 +332,8 @@ Check logs: docker logs $HARP_CONTAINER_NAME"
     # Enable proxy modules
     a2enmod proxy proxy_http proxy_wstunnel &>/dev/null
     
-    # Create separate ExApps config file
-    EXAPPS_CONF="/etc/apache2/exapps-harp.conf"
+    # Create separate ExApps config file in conf-available
+    EXAPPS_CONF="/etc/apache2/conf-available/exapps-harp.conf"
     cat << APACHE_EXAPPS_CONF > "$EXAPPS_CONF"
 # AppAPI ExApps Reverse Proxy Configuration
 # This file is managed by the Nextcloud VM AppAPI configuration script
@@ -392,83 +343,35 @@ ProxyPass /exapps/ http://127.0.0.1:8780/exapps/
 ProxyPassReverse /exapps/ http://127.0.0.1:8780/exapps/
 APACHE_EXAPPS_CONF
     
-    # Find Apache vhost config - check expected location first
-    VHOST_CONF=""
-    if [ -f "$SITES_AVAILABLE/$NCDOMAIN.conf" ]
+    # Enable ExApps proxy configuration using a2enconf
+    print_text_in_color "$ICyan" "Enabling ExApps Apache configuration..."
+    if ! a2enconf exapps-harp &>/dev/null
     then
-        VHOST_CONF="$SITES_AVAILABLE/$NCDOMAIN.conf"
-    else
-        # Try to find in enabled sites
-        if [ -d "/etc/apache2/sites-enabled" ]
-        then
-            # Look for config containing VirtualHost and DocumentRoot pointing to Nextcloud
-            for conf_file in /etc/apache2/sites-enabled/*.conf
-            do
-                if [ -f "$conf_file" ] && grep -q "VirtualHost" "$conf_file" && grep -q "$NCPATH" "$conf_file" 2>/dev/null
-                then
-                    VHOST_CONF="$conf_file"
-                    break
-                fi
-            done
-        fi
-    fi
-    
-    # Configure Apache if we found a vhost
-    if [ -n "$VHOST_CONF" ]
-    then
-        # Check if Include for ExApps config already exists
-        if ! grep -q "Include.*exapps-harp.conf" "$VHOST_CONF"
-        then
-            # Add Include directive after <VirtualHost *:443>
-            if grep -q "<VirtualHost \*:443>" "$VHOST_CONF"
-            then
-                sed -i "/<VirtualHost \*:443>/a\    #ExApps-HaRP - Please don't remove or change this line\n    Include $EXAPPS_CONF" "$VHOST_CONF"
-            else
-                # Try port 80 if no 443
-                sed -i "/<VirtualHost \*:80>/a\    #ExApps-HaRP - Please don't remove or change this line\n    Include $EXAPPS_CONF" "$VHOST_CONF"
-            fi
-            
-            # Restart Apache
-            if ! systemctl restart apache2
-            then
-                msg_box "Failed to restart Apache. Restoring config..."
-                sed -i "/#ExApps-HaRP/d" "$VHOST_CONF"
-                sed -i "\|Include $EXAPPS_CONF|d" "$VHOST_CONF"
-                rm -f "$EXAPPS_CONF"
-                systemctl restart apache2
-                docker rm -f "$HARP_CONTAINER_NAME"
-                exit 1
-            fi
-            
-            print_text_in_color "$IGreen" "Apache proxy configured successfully in: $VHOST_CONF"
-        else
-            print_text_in_color "$ICyan" "ExApps proxy already configured in Apache."
-        fi
-    else
-        msg_box "Warning: Could not find Apache vhost configuration for Nextcloud.
+        msg_box "Warning: Failed to enable ExApps Apache configuration.
 
-Required Apache modules have been enabled and ExApps proxy configuration
-has been created at: $EXAPPS_CONF
-
-You need to manually include this file in your Apache vhost:
-  Include $EXAPPS_CONF
-
-Or manually add the proxy configuration:
-  ProxyPass /exapps/ http://127.0.0.1:8780/exapps/
-  ProxyPassReverse /exapps/ http://127.0.0.1:8780/exapps/
+Manually enable it with:
+  sudo a2enconf exapps-harp
+  sudo systemctl restart apache2
 
 Press OK to continue with daemon registration."
+    else
+        # Restart Apache
+        if ! systemctl restart apache2
+        then
+            msg_box "Failed to restart Apache. Disabling configuration..."
+            a2disconf exapps-harp &>/dev/null
+            rm -f "$EXAPPS_CONF"
+            systemctl restart apache2
+            docker rm -f "$HARP_CONTAINER_NAME"
+            exit 1
+        fi
+        
+        print_text_in_color "$IGreen" "Apache ExApps proxy configured successfully."
     fi
     
     # Register HaRP daemon
-    print_text_in_color "$ICyan" "Registering HaRP Deploy Daemon..."
-    if ! nextcloud_occ app_api:daemon:register \
-        "$DAEMON_NAME" \
-        "HaRP Proxy (Host)" \
-        "docker-install" \
-        "http" \
-        "localhost:8780" \
-        "$NEXTCLOUD_URL" \
+    if ! register_daemon "$DAEMON_NAME" "HaRP Proxy (Host)" \
+        "localhost:8780" "$NC_PROTOCOL://$NCDOMAIN" \
         --net="host" \
         --harp \
         --harp_frp_address="localhost:8782" \
@@ -476,9 +379,6 @@ Press OK to continue with daemon registration."
         --compute_device="$COMPUTE_DEVICE" \
         --set-default
     then
-        msg_box "Failed to register HaRP Deploy Daemon.
-
-Please check Nextcloud logs for details."
         exit 1
     fi
     
@@ -486,14 +386,20 @@ Please check Nextcloud logs for details."
 
 # Docker Socket Deployment Method (Legacy/Simple)
 else
-    DAEMON_NAME="$APPAPI_DOCKER_DAEMON_NAME"
+    # Use daemon name from lib.sh (defined as: APPAPI_DOCKER_DAEMON_NAME="docker_local_sock")
+    if [ -z "$APPAPI_DOCKER_DAEMON_NAME" ]
+    then
+        DAEMON_NAME="docker_local_sock"
+    else
+        DAEMON_NAME="$APPAPI_DOCKER_DAEMON_NAME"
+    fi
     
     msg_box "Setting up Direct Docker Socket access for AppAPI.
 
 This will configure a local Docker daemon using:
 • Docker Socket: /var/run/docker.sock
 • Network: host
-• Nextcloud URL: $NEXTCLOUD_URL
+• Nextcloud URL: https://$NCDOMAIN
 • Compute Device: ${COMPUTE_DEVICE^^}
 
 Note: For production use with external access, consider using HaRP instead."
@@ -501,25 +407,12 @@ Note: For production use with external access, consider using HaRP instead."
     # Configure the daemon
     print_text_in_color "$ICyan" "Configuring local Docker Deploy Daemon..."
 
-    if ! nextcloud_occ app_api:daemon:register \
-        "$DAEMON_NAME" \
-        "Local Docker" \
-        "docker-install" \
-        "http" \
-        "/var/run/docker.sock" \
-        "$NEXTCLOUD_URL" \
+    if ! register_daemon "$DAEMON_NAME" "Local Docker" \
+        "/var/run/docker.sock" "$NC_PROTOCOL://$NCDOMAIN" \
         --net="host" \
         --compute_device="$COMPUTE_DEVICE" \
         --set-default
     then
-        msg_box "Failed to register the Deploy Daemon.
-
-This might happen if:
-1. A daemon with the name '$DAEMON_NAME' already exists
-2. Docker is not accessible
-3. There's a configuration issue
-
-Please check the Nextcloud logs for more details."
         exit 1
     fi
 fi
@@ -541,33 +434,19 @@ then
     print_text_in_color "$ICyan" "This may take 1-2 minutes for the first run (Docker image download)..."
     
     # Clean up any existing test apps first
-    if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "test-deploy"
-    then
-        print_text_in_color "$ICyan" "Removing existing test-deploy ExApp..."
-        nextcloud_occ_no_check app_api:app:disable test-deploy 2>/dev/null || true
-        nextcloud_occ_no_check app_api:app:unregister test-deploy --rm-data 2>/dev/null || true
-        docker stop nc_app_test-deploy 2>/dev/null || true
-        docker rm -f nc_app_test-deploy 2>/dev/null || true
-    fi
-    if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "app-skeleton-python"
-    then
-        print_text_in_color "$ICyan" "Removing existing app-skeleton-python ExApp..."
-        nextcloud_occ_no_check app_api:app:disable app-skeleton-python 2>/dev/null || true
-        nextcloud_occ_no_check app_api:app:unregister app-skeleton-python --rm-data 2>/dev/null || true
-        docker stop nc_app_app-skeleton-python 2>/dev/null || true
-        docker rm -f nc_app_app-skeleton-python 2>/dev/null || true
-    fi
+    cleanup_test_app "test-deploy"
+    cleanup_test_app "app-skeleton-python"
     
     # Register test ExApp using the official test-deploy app
     print_text_in_color "$ICyan" "Step 1/6: Registering test ExApp..."
     if ! nextcloud_occ app_api:app:register test-deploy "$DAEMON_NAME" \
-        --info-xml https://raw.githubusercontent.com/nextcloud/test-deploy/main/appinfo/info.xml 2>&1
+        --info-xml "${TEST_APP_URLS[0]}" 2>&1
     then
         # Try with app-skeleton-python as fallback
         print_text_in_color "$IYellow" "test-deploy not available, trying app-skeleton-python..."
         TEST_APP="app-skeleton-python"
         if ! nextcloud_occ app_api:app:register app-skeleton-python "$DAEMON_NAME" \
-            --info-xml https://raw.githubusercontent.com/nextcloud/app-skeleton-python/main/appinfo/info.xml 2>&1
+            --info-xml "${TEST_APP_URLS[1]}" 2>&1
         then
             msg_box "Failed to register test ExApp. The daemon might not be working correctly.
         
@@ -707,53 +586,5 @@ Cleaning up..."
 The Deploy Daemon is working correctly and ready for production use!"
 fi
 
-# Success message
-if [ "$DEPLOY_METHOD" = "harp" ]
-then
-    msg_box "Congratulations! $SCRIPT_NAME was successfully configured with HaRP!
-
-Deployment Method: HaRP (Recommended)
-Daemon Name: $DAEMON_NAME
-Compute Device: ${COMPUTE_DEVICE^^}
-HaRP Container: $HARP_CONTAINER_NAME
-
-You can now install External Apps from the Apps page in Nextcloud.
-
-To view available External Apps, visit:
-Settings > Apps > External Apps
-
-Manage via CLI:
-• List daemons: sudo -u www-data php $NCPATH/occ app_api:daemon:list
-• List ExApps: sudo -u www-data php $NCPATH/occ app_api:app:list
-• Test Deploy: Use 3-dot menu in AppAPI Admin Settings
-
-HaRP Container Management:
-• Logs: docker logs $HARP_CONTAINER_NAME
-• Restart: docker restart $HARP_CONTAINER_NAME
-• Status: docker ps | grep $HARP_CONTAINER_NAME
-
-Documentation:
-https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/"
-else
-    msg_box "Congratulations! $SCRIPT_NAME was successfully configured!
-
-Deployment Method: Direct Docker Socket
-Daemon Name: $DAEMON_NAME
-Compute Device: ${COMPUTE_DEVICE^^}
-
-You can now install External Apps from the Apps page in Nextcloud.
-
-To view available External Apps, visit:
-Settings > Apps > External Apps
-
-Manage via CLI:
-• List daemons: sudo -u www-data php $NCPATH/occ app_api:daemon:list
-• List ExApps: sudo -u www-data php $NCPATH/occ app_api:app:list
-• Unregister daemon: sudo -u www-data php $NCPATH/occ app_api:daemon:unregister <name>
-
-Note: For production deployments with external access,
-consider switching to HaRP for better security and performance.
-
-Documentation:
-https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/"
-fi
+# Show success message
+show_success_message "$DEPLOY_METHOD"
