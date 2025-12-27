@@ -264,7 +264,7 @@ then
         DAEMON_NAME="$APPAPI_HARP_DAEMON_NAME"
     fi
 
-    msg_box "Setting up HaRP (HaProxy Reversed Proxy) for AppAPI.
+    msg_box "Setting up HaRP (HaProxy Reverse Proxy) for AppAPI.
 
 This will:
 1. Deploy a HaRP container to proxy Docker and ExApp communication
