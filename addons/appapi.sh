@@ -297,7 +297,7 @@ Please check Docker logs:
     sleep 5
 
     # Verify HaRP is running
-    if ! docker ps --format '{{.Names}}' | grep -q "^${HARP_CONTAINER_NAME}$"
+    if ! docker ps | grep -q "$HARP_CONTAINER_NAME"
     then
         msg_box "HaRP container failed to start.
 
@@ -502,7 +502,7 @@ You can test it manually from the AppAPI Admin Settings page."
             CONTAINER_NAME="nc_app_${TEST_APP}"
             while [ $WAIT_COUNT -lt $MAX_WAIT ]
             do
-                if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
+                if docker ps | grep -q "$CONTAINER_NAME"
                 then
                     print_text_in_color "$IGreen" "✓ Container started!"
                     break
@@ -517,7 +517,7 @@ You can test it manually from the AppAPI Admin Settings page."
             done
             
             # Check if container is running
-            if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
+            if ! docker ps | grep -q "$CONTAINER_NAME"
             then
                 msg_box "Note: Test ExApp container failed to start within 120 seconds.
 
@@ -539,7 +539,7 @@ You can test it manually from the AppAPI Admin Settings page."
                     print_text_in_color "$IGreen" "✓ Container is healthy!"
                 else
                     # Container might not have health check, check if running
-                    if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
+                    if docker ps | grep -q "$CONTAINER_NAME"
                     then
                         print_text_in_color "$IGreen" "✓ Container is running!"
                     fi
@@ -587,7 +587,7 @@ You can test it manually from the AppAPI Admin Settings page."
                 nextcloud_occ_no_check app_api:app:unregister "$TEST_APP" --rm-data 2>/dev/null || true
                 
                 # Verify cleanup
-                if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
+                if docker ps -a | grep -q "$CONTAINER_NAME" 2>/dev/null
                 then
                     print_text_in_color "$ICyan" "Removing test container..."
                     docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
