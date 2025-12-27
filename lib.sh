@@ -193,6 +193,9 @@ ADMINNEO_DOWNLOAD_URL="https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
 REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
+# ExApps API (AppAPI) - Docker daemon configuration
+APPAPI_DOCKER_DAEMON_NAME="docker_local_sock"
+APPAPI_HARP_DAEMON_NAME="harp_proxy_host"
 # Extra security
 SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
@@ -2462,6 +2465,3 @@ On_IBlue='\e[0;104m'    # Blue
 On_IPurple='\e[0;105m'  # Purple
 On_ICyan='\e[0;106m'    # Cyan
 On_IWhite='\e[0;107m'   # White
-# ExApps API (AppAPI) - Docker daemon configuration
-APPAPI_DOCKER_DAEMON_NAME="docker_local_sock"
-APPAPI_HARP_DAEMON_NAME="harp_proxy_host"
