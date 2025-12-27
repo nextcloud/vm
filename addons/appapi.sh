@@ -28,9 +28,6 @@ debug_mode
 # Must be root
 root_check
 
-# Variables
-DAEMON_NAME="docker_local_sock"
-
 # Get NCDOMAIN for Apache config management
 NEXTCLOUD_URL_EARLY=$(nextcloud_occ_no_check config:system:get overwrite.cli.url 2>/dev/null || echo "")
 if [ -n "$NEXTCLOUD_URL_EARLY" ]
@@ -39,16 +36,11 @@ then
 fi
 
 # Check if AppAPI is installed and enabled, or if daemon is configured
-APP_API_INSTALLED=false
 DAEMON_CONFIGURED=false
 
-if is_app_installed app_api
+if is_app_installed app_api && is_app_enabled app_api && nextcloud_occ app_api:daemon:list 2>/dev/null | grep -q "name:"
 then
-    APP_API_INSTALLED=true
-    if is_app_enabled app_api && nextcloud_occ app_api:daemon:list 2>/dev/null | grep -q "name:"
-    then
-        DAEMON_CONFIGURED=true
-    fi
+    DAEMON_CONFIGURED=true
 fi
 
 # Check if AppAPI is already enabled or configured
@@ -250,9 +242,6 @@ else
     HTTPS_ENABLED=false
 fi
 
-# Extract domain from URL for reverse proxy config
-NCDOMAIN=$(echo "$NEXTCLOUD_URL" | sed -e 's|^[^/]*//||' -e 's|/.*$||')
-
 # Detect GPU support
 COMPUTE_DEVICE="cpu"
 GPU_INFO=""
@@ -327,7 +316,7 @@ then
     # Generate secure shared key
     HP_SHARED_KEY=$(gen_passwd 32 "a]")
     HARP_CONTAINER_NAME="appapi-harp"
-    DAEMON_NAME="harp_proxy_host"
+    DAEMON_NAME="$APPAPI_HARP_DAEMON_NAME"
     
     msg_box "Setting up HaRP (HaProxy Reversed Proxy) for AppAPI.
 
@@ -497,7 +486,7 @@ Please check Nextcloud logs for details."
 
 # Docker Socket Deployment Method (Legacy/Simple)
 else
-    DAEMON_NAME="docker_local_sock"
+    DAEMON_NAME="$APPAPI_DOCKER_DAEMON_NAME"
     
     msg_box "Setting up Direct Docker Socket access for AppAPI.
 
