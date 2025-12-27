@@ -225,11 +225,11 @@ HaRP (Recommended for NC 32+):
   • Simplest setup with best performance
   • Direct communication between browser and ExApps
   • Built-in brute-force protection
-  • Requires reverse proxy configuration
+  • Requires reverse proxy configuration and a publicly accessible Nextcloud URL
 
 Docker Socket (Simple):
   • Direct Docker socket access
-  • Good for local-only installations
+  • Good for local-only installations without external access
   • No additional containers needed
   • Less secure than HaRP
 
