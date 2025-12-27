@@ -43,7 +43,7 @@ fi
 appapi_install
 
 # Check if appapi is already installed
-if ! is_app_installed app_api || [ -z "$DAEMON_LIST" ]
+if ! is_app_installed app_api && [ -z "$DAEMON_LIST" ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -347,8 +347,14 @@ Press OK to continue with daemon registration."
     fi
     
     # Register HaRP daemon
-    if ! register_daemon "$DAEMON_NAME" "HaRP Proxy (Host)" \
-        "localhost:8780" "$NC_PROTOCOL://$NCDOMAIN" \
+    print_text_in_color "$ICyan" "Registering HaRP Deploy Daemon..."
+    if ! nextcloud_occ app_api:daemon:register \
+        "$DAEMON_NAME" \
+        "HaRP Proxy (Host)" \
+        "docker-install" \
+        "http" \
+        "localhost:8780" \
+        "$NC_PROTOCOL://$NCDOMAIN" \
         --net="host" \
         --harp \
         --harp_frp_address="localhost:8782" \
@@ -356,6 +362,9 @@ Press OK to continue with daemon registration."
         --compute_device="$COMPUTE_DEVICE" \
         --set-default
     then
+        msg_box "Failed to register HaRP Deploy Daemon.
+
+Please check Nextcloud logs for details."
         exit 1
     fi
     
@@ -384,13 +393,21 @@ Note: For production use with external access, consider using HaRP instead."
     # Configure the daemon
     print_text_in_color "$ICyan" "Configuring local Docker Deploy Daemon..."
 
-    if ! register_daemon "$DAEMON_NAME" "Local Docker" \
-        "/var/run/docker.sock" "$NC_PROTOCOL://$NCDOMAIN" \
+    if ! nextcloud_occ app_api:daemon:register \
+        "$DAEMON_NAME" \
+        "Local Docker" \
+        "docker-install" \
+        "http" \
+        "/var/run/docker.sock" \
+        "$NC_PROTOCOL://$NCDOMAIN" \
         --net="host" \
         --compute_device="$COMPUTE_DEVICE" \
         --set-default
     then
-        exit 1
+        msg_box "Failed to register Local Docker Deploy Daemon.
+
+Please check Nextcloud logs for details."
+        return 1
     fi
 fi
 
