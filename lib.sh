@@ -255,6 +255,9 @@ appapi_install() {
         "https://raw.githubusercontent.com/nextcloud/app-skeleton-python/main/appinfo/info.xml"
     )
 
+    # Get list of existing AppAPI daemons
+    DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep "name:" | sed 's/.*name: //' || true)
+
     # Function to clean up test app
     cleanup_test_app() {
         local app_id="$1"

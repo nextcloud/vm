@@ -43,7 +43,7 @@ fi
 appapi_install
 
 # Check if appapi is already installed
-if ! is_app_installed app_api
+if ! is_app_installed app_api || [ -z "$DAEMON_LIST" ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -52,9 +52,6 @@ else
     reinstall_remove_menu "$SCRIPT_NAME"
 
     ############### Removal
-
-    # DAEMONS
-    DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep "name:" | sed 's/.*name: //' || true)
 
     # Unregister all daemons
     if [ -n "$DAEMON_LIST" ]
