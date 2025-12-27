@@ -86,15 +86,17 @@ else
     then
         # Remove HaRP container
         docker_prune_this 'ghcr.io/nextcloud/nextcloud-appapi-harp'
-        # Remove all ExApp containers
-        DOCKERPS=$(docker ps -a --format '{{.Names}}' | grep '^nc_app_' || true)
-        if [ -n "$DOCKERPS" ]
-        then
-            for container_name in $DOCKERPS
-            do
-                docker_prune_this "$container_name"
-            done
-        fi
+        # Remove all ExApp containers and their images
+        docker ps -a --format '{{.Names}}' | grep '^nc_app_' | while read -r container_name
+        do
+            docker_prune_this "$container_name"
+        done
+        
+        # Clean up ExApp images
+        docker images --format '{{.Repository}}:{{.Tag}}' | grep '^ghcr.io/nextcloud/.*:' | while read -r image_name
+        do
+            docker rmi -f "$image_name" 2>/dev/null || true
+        done
     fi
 
     # Remove Apache proxy configuration for ExApps
@@ -295,7 +297,7 @@ Please check Docker logs:
     sleep 5
 
     # Verify HaRP is running
-    if ! docker ps | grep -q "$HARP_CONTAINER_NAME"
+    if ! docker ps --format '{{.Names}}' | grep -q "^${HARP_CONTAINER_NAME}$"
     then
         msg_box "HaRP container failed to start.
 
@@ -500,7 +502,7 @@ You can test it manually from the AppAPI Admin Settings page."
             CONTAINER_NAME="nc_app_${TEST_APP}"
             while [ $WAIT_COUNT -lt $MAX_WAIT ]
             do
-                if docker ps | grep -q "$CONTAINER_NAME"
+                if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
                 then
                     print_text_in_color "$IGreen" "✓ Container started!"
                     break
@@ -515,7 +517,7 @@ You can test it manually from the AppAPI Admin Settings page."
             done
             
             # Check if container is running
-            if ! docker ps | grep -q "$CONTAINER_NAME"
+            if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
             then
                 msg_box "Note: Test ExApp container failed to start within 120 seconds.
 
@@ -537,7 +539,7 @@ You can test it manually from the AppAPI Admin Settings page."
                     print_text_in_color "$IGreen" "✓ Container is healthy!"
                 else
                     # Container might not have health check, check if running
-                    if docker ps | grep -q "$CONTAINER_NAME"
+                    if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
                     then
                         print_text_in_color "$IGreen" "✓ Container is running!"
                     fi
@@ -585,7 +587,7 @@ You can test it manually from the AppAPI Admin Settings page."
                 nextcloud_occ_no_check app_api:app:unregister "$TEST_APP" --rm-data 2>/dev/null || true
                 
                 # Verify cleanup
-                if docker ps -a | grep -q "$CONTAINER_NAME" 2>/dev/null
+                if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
                 then
                     print_text_in_color "$ICyan" "Removing test container..."
                     docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
