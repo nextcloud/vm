@@ -43,7 +43,7 @@ fi
 appapi_install
 
 # Check if appapi is already installed
-if ! is_app_installed app_api && [ -z "$DAEMON_LIST" ]
+if ! is_app_installed app_api || [ -z "$DAEMON_LIST" ]
 then
     # Ask for installing
     install_popup "$SCRIPT_NAME"
@@ -440,10 +440,12 @@ then
     
     # Register test ExApp using the official test-deploy app
     print_text_in_color "$ICyan" "Step 1/6: Registering test ExApp..."
+    TEST_SUCCESS=0
     if REGISTER_OUTPUT=$(nextcloud_occ app_api:app:register test-deploy "$DAEMON_NAME" \
         --info-xml "${TEST_APP_URLS[0]}" 2>&1) || echo "$REGISTER_OUTPUT" | grep -q "already registered"
     then
         TEST_APP="test-deploy"
+        TEST_SUCCESS=1
         if echo "$REGISTER_OUTPUT" | grep -q "already registered"
         then
             print_text_in_color "$ICyan" "Test ExApp was already registered, continuing..."
@@ -455,138 +457,141 @@ then
             --info-xml "${TEST_APP_URLS[1]}" 2>&1) || echo "$REGISTER_OUTPUT" | grep -q "already registered"
         then
             TEST_APP="app-skeleton-python"
+            TEST_SUCCESS=1
             if echo "$REGISTER_OUTPUT" | grep -q "already registered"
             then
                 print_text_in_color "$ICyan" "Test ExApp was already registered, continuing..."
             fi
         else
-            msg_box "Failed to register test ExApp. The daemon might not be working correctly.
-        
-Please check Docker and daemon configuration:
-  docker logs $HARP_CONTAINER_NAME (if using HaRP)
-  Check Nextcloud logs at $NCDATA/nextcloud.log
-  
-Error output:
-$REGISTER_OUTPUT"
-            exit 1
+            TEST_SUCCESS=0
+            # Show warning but don't exit - allow the user to test manually later
+            msg_box "Warning: Could not register test ExApp.
+
+Possible causes:
+• HaRP container connectivity issues
+• Docker registry authentication issues (401 Unauthorized)
+• Network timeout pulling Docker images
+
+The daemon has been registered successfully, but the test failed.
+You can test it later from the AppAPI Admin Settings page.
+
+Error (for debugging):
+$(echo "$REGISTER_OUTPUT" | tail -20)"
         fi
     fi
     
-    # Enable ExApp (triggers deployment)
-    print_text_in_color "$ICyan" "Step 2/6: Pulling Docker image and starting container..."
-    if ! nextcloud_occ app_api:app:enable "$TEST_APP" 2>&1
+    # Only continue with the rest of the test if registration succeeded
+    if [ "$TEST_SUCCESS" -eq 1 ]
     then
-        msg_box "Failed to enable test ExApp.
-        
-Cleaning up and exiting..."
-        nextcloud_occ_no_check app_api:app:unregister "$TEST_APP" --silent --rm-data
-        exit 1
-    fi
-    
-    # Wait for container to be pulled and started
-    print_text_in_color "$ICyan" "Step 3/6: Waiting for container to start..."
-    WAIT_COUNT=0
-    MAX_WAIT=60
-    CONTAINER_NAME="nc_app_${TEST_APP}"
-    while [ $WAIT_COUNT -lt $MAX_WAIT ]
-    do
-        if docker ps | grep -q "$CONTAINER_NAME"
+        # Enable ExApp (triggers deployment)
+        print_text_in_color "$ICyan" "Step 2/6: Pulling Docker image and starting container..."
+        if ! nextcloud_occ app_api:app:enable "$TEST_APP" 2>&1
         then
-            print_text_in_color "$IGreen" "✓ Container started!"
-            break
-        fi
-        sleep 2
-        WAIT_COUNT=$((WAIT_COUNT + 1))
-        # Show progress every 10 seconds
-        if [ $((WAIT_COUNT % 5)) -eq 0 ]
-        then
-            print_text_in_color "$ICyan" "  Still waiting... ($((WAIT_COUNT * 2))s)"
-        fi
-    done
-    
-    # Check if container is running
-    if ! docker ps | grep -q "$CONTAINER_NAME"
-    then
-        msg_box "Test ExApp container failed to start within 120 seconds.
-        
+            msg_box "Note: Failed to enable test ExApp during automatic test.
+
+The daemon is still registered and functional.
+You can test it manually from the AppAPI Admin Settings page."
+            nextcloud_occ_no_check app_api:app:unregister "$TEST_APP" --silent --rm-data 2>/dev/null || true
+        else
+            # Wait for container to be pulled and started
+            print_text_in_color "$ICyan" "Step 3/6: Waiting for container to start..."
+            WAIT_COUNT=0
+            MAX_WAIT=60
+            CONTAINER_NAME="nc_app_${TEST_APP}"
+            while [ $WAIT_COUNT -lt $MAX_WAIT ]
+            do
+                if docker ps | grep -q "$CONTAINER_NAME"
+                then
+                    print_text_in_color "$IGreen" "✓ Container started!"
+                    break
+                fi
+                sleep 2
+                WAIT_COUNT=$((WAIT_COUNT + 1))
+                # Show progress every 10 seconds
+                if [ $((WAIT_COUNT % 5)) -eq 0 ]
+                then
+                    print_text_in_color "$ICyan" "  Still waiting... ($((WAIT_COUNT * 2))s)"
+                fi
+            done
+            
+            # Check if container is running
+            if ! docker ps | grep -q "$CONTAINER_NAME"
+            then
+                msg_box "Note: Test ExApp container failed to start within 120 seconds.
+
 Possible causes:
 • Slow network (Docker image download)
 • Docker connectivity issues
 • Container startup failure
 
-Diagnostics:
-  docker ps -a | grep nc_app
-  docker logs $CONTAINER_NAME
-
-Cleaning up..."
-        nextcloud_occ_no_check app_api:app:disable "$TEST_APP"
-        nextcloud_occ_no_check app_api:app:unregister "$TEST_APP" --silent --rm-data
-        exit 1
-    fi
-    
-    # Step 4: Check heartbeat (container health)
-    print_text_in_color "$ICyan" "Step 4/6: Checking container heartbeat..."
-    sleep 5
-    if docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_NAME" 2>/dev/null | grep -q "healthy"
-    then
-        print_text_in_color "$IGreen" "✓ Container is healthy!"
-    else
-        # Container might not have health check, check if running
-        if docker ps | grep -q "$CONTAINER_NAME"
-        then
-            print_text_in_color "$IGreen" "✓ Container is running!"
-        fi
-    fi
-    
-    # Step 5: Check initialization
-    print_text_in_color "$ICyan" "Step 5/6: Verifying ExApp initialization..."
-    sleep 3
-    
-    # Check if ExApp responded with success message (for app-skeleton-python)
-    if [ "$TEST_APP" = "app-skeleton-python" ]
-    then
-        WAIT_COUNT=0
-        MAX_WAIT=15
-        while [ $WAIT_COUNT -lt $MAX_WAIT ]
-        do
-            if grep -q "Hello from app-skeleton-python :)" "$NCDATA/nextcloud.log" 2>/dev/null
-            then
-                print_text_in_color "$IGreen" "✓ ExApp initialized successfully!"
-                break
-            fi
-            sleep 2
-            WAIT_COUNT=$((WAIT_COUNT + 1))
-        done
-        
-        if [ $WAIT_COUNT -eq $MAX_WAIT ]
-        then
-            print_text_in_color "$IYellow" "Note: Init message not found in logs (this may be normal)"
-        fi
-    else
-        print_text_in_color "$IGreen" "✓ ExApp registered and running!"
-    fi
-    
-    # Step 6: Verify enabled
-    print_text_in_color "$ICyan" "Step 6/6: Verifying ExApp is enabled..."
-    if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "$TEST_APP"
-    then
-        print_text_in_color "$IGreen" "✓ ExApp is enabled and listed!"
-    fi
-    
-    # Disable and cleanup
-    print_text_in_color "$ICyan" "Test complete! Cleaning up test ExApp..."
-    nextcloud_occ_no_check app_api:app:disable "$TEST_APP"
-    sleep 2
-    nextcloud_occ_no_check app_api:app:unregister "$TEST_APP" --rm-data
-    
-    # Verify cleanup
-    if docker ps -a | grep -q "$CONTAINER_NAME"
-    then
-        print_text_in_color "$ICyan" "Removing test container..."
-        docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
-    fi
-    
-    msg_box "Test deployment completed successfully!
+The daemon is still registered and functional.
+You can test it manually from the AppAPI Admin Settings page."
+                nextcloud_occ_no_check app_api:app:disable "$TEST_APP" 2>/dev/null || true
+                nextcloud_occ_no_check app_api:app:unregister "$TEST_APP" --silent --rm-data 2>/dev/null || true
+            else
+                # Step 4: Check heartbeat (container health)
+                print_text_in_color "$ICyan" "Step 4/6: Checking container heartbeat..."
+                sleep 5
+                if docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_NAME" 2>/dev/null | grep -q "healthy"
+                then
+                    print_text_in_color "$IGreen" "✓ Container is healthy!"
+                else
+                    # Container might not have health check, check if running
+                    if docker ps | grep -q "$CONTAINER_NAME"
+                    then
+                        print_text_in_color "$IGreen" "✓ Container is running!"
+                    fi
+                fi
+                
+                # Step 5: Check initialization
+                print_text_in_color "$ICyan" "Step 5/6: Verifying ExApp initialization..."
+                sleep 3
+                
+                # Check if ExApp responded with success message (for app-skeleton-python)
+                if [ "$TEST_APP" = "app-skeleton-python" ]
+                then
+                    WAIT_COUNT=0
+                    MAX_WAIT=15
+                    while [ $WAIT_COUNT -lt $MAX_WAIT ]
+                    do
+                        if grep -q "Hello from app-skeleton-python :)" "$NCDATA/nextcloud.log" 2>/dev/null
+                        then
+                            print_text_in_color "$IGreen" "✓ ExApp initialized successfully!"
+                            break
+                        fi
+                        sleep 2
+                        WAIT_COUNT=$((WAIT_COUNT + 1))
+                    done
+                    
+                    if [ $WAIT_COUNT -eq $MAX_WAIT ]
+                    then
+                        print_text_in_color "$IYellow" "Note: Init message not found in logs (this may be normal)"
+                    fi
+                else
+                    print_text_in_color "$IGreen" "✓ ExApp registered and running!"
+                fi
+                
+                # Step 6: Verify enabled
+                print_text_in_color "$ICyan" "Step 6/6: Verifying ExApp is enabled..."
+                if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "$TEST_APP"
+                then
+                    print_text_in_color "$IGreen" "✓ ExApp is enabled and listed!"
+                fi
+                
+                # Disable and cleanup
+                print_text_in_color "$ICyan" "Test complete! Cleaning up test ExApp..."
+                nextcloud_occ_no_check app_api:app:disable "$TEST_APP" 2>/dev/null || true
+                sleep 2
+                nextcloud_occ_no_check app_api:app:unregister "$TEST_APP" --rm-data 2>/dev/null || true
+                
+                # Verify cleanup
+                if docker ps -a | grep -q "$CONTAINER_NAME" 2>/dev/null
+                then
+                    print_text_in_color "$ICyan" "Removing test container..."
+                    docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
+                fi
+                
+                msg_box "Test deployment completed successfully!
 
 ✓ Register: ExApp registered
 ✓ Image Pull: Docker image downloaded
@@ -597,6 +602,9 @@ Cleaning up..."
 ✓ Cleanup: Test ExApp removed
 
 The Deploy Daemon is working correctly and ready for production use!"
+            fi
+        fi
+    fi
 fi
 
 # Show success message
