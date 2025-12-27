@@ -4,14 +4,7 @@
 
 true
 SCRIPT_NAME="AppAPI Configuration"
-SCRIPT_EXPLAINER="AppAPI is required to run External Apps (ExApps) which are containerized applications
-that extend Nextcloud's capabilities, particularly AI applications.
-
-This script supports two deployment methods:
-1. HaRP (recommended for NC 32+) - Modern deployment with reverse proxy
-2. Direct Docker Socket - Simple setup for local installations
-
-If you don't plan to use External Apps, you can run this script again to disable AppAPI"
+SCRIPT_EXPLAINER="$SCRIPT_NAME enables External Apps (ExApps) support in your Nextcloud, allowing containerized AI and other applications."
 
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/enoch85/vm/refs/heads/main/lib.sh)
