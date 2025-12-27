@@ -433,7 +433,7 @@ Note: For production use with external access, consider using HaRP instead."
         msg_box "Failed to register Local Docker Deploy Daemon.
 
 Please check Nextcloud logs for details."
-        return 1
+        exit 1
     fi
 fi
 
