@@ -193,9 +193,6 @@ ADMINNEO_DOWNLOAD_URL="https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
 REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
-# ExApps API (AppAPI) - Docker daemon configuration
-APPAPI_DOCKER_DAEMON_NAME="docker_local_sock"
-APPAPI_HARP_DAEMON_NAME="harp_proxy_host"
 # Extra security
 SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
@@ -248,21 +245,22 @@ turn_install() {
 }
 # AppAPI installation - loaded on demand for appapi.sh script
 appapi_install() {
+    # ExApps API (AppAPI) - Docker daemon configuration
+    APPAPI_DOCKER_DAEMON_NAME="docker_local_sock"
+    APPAPI_HARP_DAEMON_NAME="harp_proxy_host"
+    # Get list of existing AppAPI daemons
+    DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep "name:" | sed 's/.*name: //' || true)
+    # Get list of all External Apps
+    EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
     # AppAPI test application URLs
     TEST_APPS=("test-deploy" "app-skeleton-python")
     TEST_APP_URLS=(
         "https://raw.githubusercontent.com/nextcloud/test-deploy/main/appinfo/info.xml"
         "https://raw.githubusercontent.com/nextcloud/app-skeleton-python/main/appinfo/info.xml"
     )
-
-    # Get list of existing AppAPI daemons
-    DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep "name:" | sed 's/.*name: //' || true)
-
-    # Get list of all External Apps
-    EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
 }
 
-# Function to clean up test app
+# Function to clean up test app for AppAPI
 cleanup_test_app() {
     local app_id="$1"
     if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "$app_id"
@@ -275,7 +273,7 @@ cleanup_test_app() {
     fi
 }
 
-# Function to register daemon
+# Function to register daemon for AppAPI
 register_daemon() {
     local daemon_name="$1"
     local daemon_label="$2"
@@ -298,7 +296,7 @@ Please check Nextcloud logs for details."
     return 0
 }
 
-# Function to show success message
+# Function to show success message for AppAPI
 show_success_message() {
     local deploy_method="$1"
     
