@@ -38,7 +38,7 @@ else
     NC_PROTOCOL="http"
 fi
 
-print_text_in_color "$ICyan" "Running $SCRIPT_NAME..."
+print_text_in_color "$ICyan" "Fetching variables for $SCRIPT_NAME..."
 
 # Load AppAPI-specific functions and variables
 appapi_install
