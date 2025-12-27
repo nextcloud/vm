@@ -104,8 +104,8 @@ else
         rm -f /etc/apache2/conf-available/exapps-harp.conf
     fi
 
-    print_text_in_color "$ICyan" "Removing AppAPI app..."
-    nextcloud_occ_no_check app:remove app_api
+    print_text_in_color "$ICyan" "Disabling AppAPI app..."
+    nextcloud_occ_no_check app:disable app_api
 
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
