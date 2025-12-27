@@ -16,7 +16,7 @@ This script supports two deployment methods:
 If you don't plan to use External Apps, you can run this script again to disable AppAPI"
 
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/enoch85/vm/refs/heads/main/lib.sh)
+source /var/scripts/fetch_lib.sh
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
