@@ -34,6 +34,13 @@ ncdomain
 if echo "$NCDOMAIN" | grep -q "^https://"
 then
     NC_PROTOCOL="https"
+    # Strip protocol prefix from NCDOMAIN for consistent usage
+    NCDOMAIN="${NCDOMAIN#https://}"
+elif echo "$NCDOMAIN" | grep -q "^http://"
+then
+    NC_PROTOCOL="http"
+    # Strip protocol prefix from NCDOMAIN for consistent usage
+    NCDOMAIN="${NCDOMAIN#http://}"
 else
     NC_PROTOCOL="http"
 fi
