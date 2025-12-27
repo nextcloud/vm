@@ -9,12 +9,11 @@ SCRIPT_EXPLAINER="$SCRIPT_NAME helps you configure the Nextcloud AppAPI (Externa
 AppAPI is required to run External Apps (ExApps) which are containerized applications
 that extend Nextcloud's capabilities, particularly AI applications.
 
-This script supports three deployment methods:
-1. HaRP (recommended for NC 32+) - Simplified deployment with reverse proxy
-2. Docker Socket Proxy - Traditional method with more control
-3. Direct Docker Socket - Simplest setup for local installations
+This script supports two deployment methods:
+1. HaRP (recommended for NC 32+) - Modern deployment with reverse proxy
+2. Direct Docker Socket - Simple setup for local installations
 
-If you don't plan to use External Apps, you can disable AppAPI to remove admin warnings."
+If you don't plan to use External Apps, you can run this script again to disable AppAPI"
 
 # shellcheck source=lib.sh
 source <(curl -sL https://raw.githubusercontent.com/enoch85/vm/refs/heads/main/lib.sh)
@@ -38,6 +37,8 @@ then
 else
     NC_PROTOCOL="http"
 fi
+
+print_text_in_color "$ICyan" "Running $SCRIPT_NAME..."
 
 # Load AppAPI-specific functions and variables
 appapi_install
@@ -100,9 +101,10 @@ else
     fi
 
     # Remove Apache proxy configuration for ExApps
-    if a2disconf exapps-harp
+    if [ -f /etc/apache2/conf-available/exapps-harp.conf ]
     then
         print_text_in_color "$ICyan" "Disabling ExApps Apache configuration..."
+        2disconf exapps-harp &>/dev/null
         rm -f /etc/apache2/conf-available/exapps-harp.conf
     fi
 
@@ -120,7 +122,6 @@ else
         gpasswd -d www-data docker
         
         # Restart Apache to apply group changes
-        print_text_in_color "$ICyan" "Restarting Apache to apply group membership changes..."
         restart_webserver
     fi
 
