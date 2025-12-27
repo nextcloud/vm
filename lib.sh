@@ -249,8 +249,15 @@ appapi_install() {
     APPAPI_DOCKER_DAEMON_NAME="docker_local_sock"
     APPAPI_HARP_DAEMON_NAME="harp_proxy_host"
     # Get list of existing AppAPI daemons from table format output
-    # Parses the table: extracts Name column (field 3), filters out header and empty names, removes duplicates
-    DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep -E '^\|' | awk -F'|' '{print $3}' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' | grep -v 'Name' | sort -u || true)
+    # Parses the table: extracts Name column (field 3), filters out header and empty names, removes duplicates.
+    # Adds basic validation so that if the output format changes and no table rows are found, DAEMON_LIST is empty.
+    local daemon_raw
+    daemon_raw=$(nextcloud_occ app_api:daemon:list 2>/dev/null || true)
+    if printf '%s\n' "$daemon_raw" | grep -qE '^[[:space:]]*\|'; then
+        DAEMON_LIST=$(printf '%s\n' "$daemon_raw" | grep -E '^[[:space:]]*\|' | awk -F'|' '{print $3}' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' | grep -v 'Name' | sort -u)
+    else
+        DAEMON_LIST=""
+    fi
     # Get list of all External Apps
     EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
     # AppAPI test application URLs
