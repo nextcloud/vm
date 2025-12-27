@@ -4,9 +4,7 @@
 
 true
 SCRIPT_NAME="AppAPI Configuration"
-SCRIPT_EXPLAINER="$SCRIPT_NAME helps you configure the Nextcloud AppAPI (External Apps framework).
-
-AppAPI is required to run External Apps (ExApps) which are containerized applications
+SCRIPT_EXPLAINER="AppAPI is required to run External Apps (ExApps) which are containerized applications
 that extend Nextcloud's capabilities, particularly AI applications.
 
 This script supports two deployment methods:
