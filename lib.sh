@@ -258,49 +258,53 @@ appapi_install() {
     # Get list of existing AppAPI daemons
     DAEMON_LIST=$(nextcloud_occ app_api:daemon:list 2>/dev/null | grep "name:" | sed 's/.*name: //' || true)
 
-    # Function to clean up test app
-    cleanup_test_app() {
-        local app_id="$1"
-        if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "$app_id"
-        then
-            print_text_in_color "$ICyan" "Removing existing $app_id ExApp..."
-            nextcloud_occ_no_check app_api:app:disable "$app_id" 2>/dev/null || true
-            nextcloud_occ_no_check app_api:app:unregister "$app_id" --rm-data 2>/dev/null || true
-            docker stop "nc_app_${app_id}" 2>/dev/null || true
-            docker rm -f "nc_app_${app_id}" 2>/dev/null || true
-        fi
-    }
+    # Get list of all External Apps
+    EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
+}
 
-    # Function to register daemon
-    register_daemon() {
-        local daemon_name="$1"
-        local daemon_label="$2"
-        shift 2
-        local extra_args=("$@")
-        
-        print_text_in_color "$ICyan" "Registering $daemon_label Deploy Daemon..."
-        if ! nextcloud_occ app_api:daemon:register \
-            "$daemon_name" \
-            "$daemon_label" \
-            "docker-install" \
-            "http" \
-            "${extra_args[@]}"
-        then
-            msg_box "Failed to register $daemon_label Deploy Daemon.
+# Function to clean up test app
+cleanup_test_app() {
+    local app_id="$1"
+    if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "$app_id"
+    then
+        print_text_in_color "$ICyan" "Removing existing $app_id ExApp..."
+        nextcloud_occ_no_check app_api:app:disable "$app_id" 2>/dev/null || true
+        nextcloud_occ_no_check app_api:app:unregister "$app_id" --rm-data 2>/dev/null || true
+        docker stop "nc_app_${app_id}" 2>/dev/null || true
+        docker rm -f "nc_app_${app_id}" 2>/dev/null || true
+    fi
+}
+
+# Function to register daemon
+register_daemon() {
+    local daemon_name="$1"
+    local daemon_label="$2"
+    shift 2
+    local extra_args=("$@")
+    
+    print_text_in_color "$ICyan" "Registering $daemon_label Deploy Daemon..."
+    if ! nextcloud_occ app_api:daemon:register \
+        "$daemon_name" \
+        "$daemon_label" \
+        "docker-install" \
+        "http" \
+        "${extra_args[@]}"
+    then
+        msg_box "Failed to register $daemon_label Deploy Daemon.
 
 Please check Nextcloud logs for details."
-            return 1
-        fi
-        return 0
-    }
+        return 1
+    fi
+    return 0
+}
 
-    # Function to show success message
-    show_success_message() {
-        local deploy_method="$1"
-        
-        if [ "$deploy_method" = "harp" ]
-        then
-            msg_box "Congratulations! $SCRIPT_NAME was successfully configured with HaRP!
+# Function to show success message
+show_success_message() {
+    local deploy_method="$1"
+    
+    if [ "$deploy_method" = "harp" ]
+    then
+        msg_box "Congratulations! $SCRIPT_NAME was successfully configured with HaRP!
 
 Deployment Method: HaRP (Recommended)
 Daemon Name: $DAEMON_NAME
@@ -324,8 +328,8 @@ HaRP Container Management:
 
 Documentation:
 https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/"
-        else
-            msg_box "Congratulations! $SCRIPT_NAME was successfully configured!
+    else
+        msg_box "Congratulations! $SCRIPT_NAME was successfully configured!
 
 Deployment Method: Direct Docker Socket
 Daemon Name: $DAEMON_NAME
@@ -346,8 +350,7 @@ consider switching to HaRP for better security and performance.
 
 Documentation:
 https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/"
-        fi
-    }
+    fi
 }
 
 ## FUNCTIONS

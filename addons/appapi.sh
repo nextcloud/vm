@@ -65,9 +65,6 @@ else
         done <<< "$DAEMON_LIST"
     fi
 
-    # Get list of all External Apps
-    EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
-
     # Unregister all External Apps
     if [ -n "$EXAPPS_LIST" ]
     then
