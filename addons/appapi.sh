@@ -51,8 +51,6 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
 
-    ############### Removal
-
     # Unregister all daemons
     if [ -n "$DAEMON_LIST" ]
     then
@@ -67,7 +65,6 @@ else
         done <<< "$DAEMON_LIST"
     fi
 
-    ####### EXAPPS
     # Get list of all External Apps
     EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
 
@@ -91,7 +88,7 @@ else
     if is_docker_running
     then
         # Remove HaRP container (ghcr.io/nextcloud/nextcloud-appapi-harp)
-        docker_prune_this 'nextcloud-appapi-harp'
+        docker_prune_this 'appapi-harp'
         # Remove all ExApp containers
         DOCKERPS=$(docker ps -a --format '{{.Names}}' | grep '^nc_app_' || true)
         if [ -n "$DOCKERPS" ]
@@ -104,20 +101,14 @@ else
     fi
 
     # Remove Apache proxy configuration for ExApps
-    if a2disconf exapps-harp &>/dev/null
+    if a2disconf exapps-harp
     then
         print_text_in_color "$ICyan" "Disabling ExApps Apache configuration..."
-    fi
-
-    # Remove separate ExApps config file
-    if [ -f "/etc/apache2/conf-available/exapps-harp.conf" ]
-    then
-        print_text_in_color "$ICyan" "Removing ExApps Apache config file..."
         rm -f /etc/apache2/conf-available/exapps-harp.conf
     fi
 
     print_text_in_color "$ICyan" "Removing AppAPI app..."
-    nextcloud_occ_no_check app:remove app_api 2>/dev/null || true
+    nextcloud_occ_no_check app:remove app_api
 
     # Show successful uninstall if applicable
     removal_popup "$SCRIPT_NAME"
@@ -135,7 +126,7 @@ AppAPI requires Docker to deploy External Apps.
 
 Docker will now be installed automatically."
     install_docker
-    
+
     # Verify Docker is now running
     if ! is_docker_running || [ ! -S /var/run/docker.sock ]
     then
@@ -173,15 +164,7 @@ Then run this script again."
         exit 1
     fi
 
-    msg_box "Successfully granted Docker access to www-data user."
-fi
-
-# Check for TLS/HTTPS
-if [ "$NC_PROTOCOL" = "https" ]
-then
-    HTTPS_ENABLED=true
-else
-    HTTPS_ENABLED=false
+    print_text_in_color "$IGreen" "Successfully granted Docker access to www-data user."
 fi
 
 # Detect GPU support
@@ -265,7 +248,7 @@ then
     else
         DAEMON_NAME="$APPAPI_HARP_DAEMON_NAME"
     fi
-    
+
     msg_box "Setting up HaRP (HaProxy Reversed Proxy) for AppAPI.
 
 This will:
@@ -286,11 +269,11 @@ Configuration:
         print_text_in_color "$ICyan" "Removing existing HaRP container..."
         docker rm -f "$HARP_CONTAINER_NAME" 2>/dev/null || true
     fi
-    
+
     # Create certs directory for HaRP
     HARP_CERTS_DIR="/var/lib/appapi-harp/certs"
     mkdir -p "$HARP_CERTS_DIR"
-    
+
     # Deploy HaRP container with host networking
     print_text_in_color "$ICyan" "Deploying HaRP container..."
     if ! docker run \
@@ -309,11 +292,11 @@ Please check Docker logs:
   docker logs $HARP_CONTAINER_NAME"
         exit 1
     fi
-    
+
     # Wait for HaRP to start
     print_text_in_color "$ICyan" "Waiting for HaRP container to start..."
     sleep 5
-    
+
     # Verify HaRP is running
     if ! docker ps | grep -q "$HARP_CONTAINER_NAME"
     then
@@ -322,13 +305,13 @@ Please check Docker logs:
 Check logs: docker logs $HARP_CONTAINER_NAME"
         exit 1
     fi
-    
+
     # Configure Apache reverse proxy for /exapps/
     print_text_in_color "$ICyan" "Configuring Apache reverse proxy for ExApps..."
-    
+
     # Enable proxy modules
     a2enmod proxy proxy_http proxy_wstunnel &>/dev/null
-    
+
     # Create separate ExApps config file in conf-available
     EXAPPS_CONF="/etc/apache2/conf-available/exapps-harp.conf"
     cat << APACHE_EXAPPS_CONF > "$EXAPPS_CONF"
