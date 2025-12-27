@@ -23,9 +23,9 @@ Server installation. Simplified. :cloud:
 - Apache 2.4
 - PostgreSQL 16
 - PHP-FPM 8.3
-- Redis Memcache (latest stable version from PECL)
-- PHP-igbinary (latest stable version from PECL
-- PHP-smbclient (latest stable version from PECL)
+- Redis Memcache (Ubuntu package)
+- PHP-igbinary (Ubuntu package)
+- PHP-smbclient (Ubuntu package)
 - Nextcloud Server Latest
 
 ## Support the development
