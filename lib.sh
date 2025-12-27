@@ -297,61 +297,6 @@ Please check Nextcloud logs for details."
     return 0
 }
 
-# Function to show success message for AppAPI
-show_success_message() {
-    local deploy_method="$1"
-    
-    if [ "$deploy_method" = "harp" ]
-    then
-        msg_box "Congratulations! $SCRIPT_NAME was successfully configured with HaRP!
-
-Deployment Method: HaRP (Recommended)
-Daemon Name: $DAEMON_NAME
-Compute Device: ${COMPUTE_DEVICE^^}
-HaRP Container: $HARP_CONTAINER_NAME
-
-You can now install External Apps from the Apps page in Nextcloud.
-
-To view available External Apps, visit:
-Settings > Apps > External Apps
-
-Manage via CLI:
-• List daemons: sudo -u www-data php $NCPATH/occ app_api:daemon:list
-• List ExApps: sudo -u www-data php $NCPATH/occ app_api:app:list
-• Test Deploy: Use 3-dot menu in AppAPI Admin Settings
-
-HaRP Container Management:
-• Logs: docker logs $HARP_CONTAINER_NAME
-• Restart: docker restart $HARP_CONTAINER_NAME
-• Status: docker ps | grep $HARP_CONTAINER_NAME
-
-Documentation:
-https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/"
-    else
-        msg_box "Congratulations! $SCRIPT_NAME was successfully configured!
-
-Deployment Method: Direct Docker Socket
-Daemon Name: $DAEMON_NAME
-Compute Device: ${COMPUTE_DEVICE^^}
-
-You can now install External Apps from the Apps page in Nextcloud.
-
-To view available External Apps, visit:
-Settings > Apps > External Apps
-
-Manage via CLI:
-• List daemons: sudo -u www-data php $NCPATH/occ app_api:daemon:list
-• List ExApps: sudo -u www-data php $NCPATH/occ app_api:app:list
-• Unregister daemon: sudo -u www-data php $NCPATH/occ app_api:daemon:unregister <name>
-
-Note: For production deployments with external access,
-consider switching to HaRP for better security and performance.
-
-Documentation:
-https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/"
-    fi
-}
-
 ## FUNCTIONS
 
 # If script is running as root?

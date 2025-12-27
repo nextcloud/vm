@@ -391,7 +391,8 @@ Please check Nextcloud logs for details."
     print_text_in_color "$IGreen" "HaRP deployment configured successfully!"
 
 # Docker Socket Deployment Method (Legacy/Simple)
-else
+elif [ "$DEPLOY_METHOD" = "socket" ]
+then
     # Use daemon name from lib.sh (defined as: APPAPI_DOCKER_DAEMON_NAME="docker_local_sock")
     if [ -z "$APPAPI_DOCKER_DAEMON_NAME" ]
     then
@@ -628,4 +629,65 @@ The Deploy Daemon is working correctly and ready for production use!"
 fi
 
 # Show success message
-show_success_message "$DEPLOY_METHOD"
+# Get Docker information
+DOCKER_VERSION=$(docker --version 2>/dev/null | awk '{print $3}' | sed 's/,//' || echo "unknown")
+DOCKER_SOCKET="/var/run/docker.sock"
+
+if [ "$DEPLOY_METHOD" = "harp" ]
+then
+    msg_box "Congratulations! $SCRIPT_NAME was successfully configured with HaRP!
+
+Deployment Method: HaRP (Recommended)
+Daemon Name: $DAEMON_NAME
+Compute Device: ${COMPUTE_DEVICE^^}
+HaRP Container: $HARP_CONTAINER_NAME
+Docker Version: $DOCKER_VERSION
+
+You can now install External Apps from the Apps page in Nextcloud.
+
+To view available External Apps, visit:
+Settings > Apps > External Apps
+
+Manage via CLI:
+• List daemons: sudo -u www-data php $NCPATH/occ app_api:daemon:list
+• List ExApps: sudo -u www-data php $NCPATH/occ app_api:app:list
+• Test Deploy: Use 3-dot menu in AppAPI Admin Settings
+
+HaRP Container Management:
+• Logs: docker logs $HARP_CONTAINER_NAME
+• Restart: docker restart $HARP_CONTAINER_NAME
+• Status: docker ps | grep $HARP_CONTAINER_NAME
+
+Documentation:
+https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/"
+elif [ "$DEPLOY_METHOD" = "socket" ]
+then
+    msg_box "Congratulations! $SCRIPT_NAME was successfully configured!
+
+Deployment Method: Direct Docker Socket
+Daemon Name: $DAEMON_NAME
+Compute Device: ${COMPUTE_DEVICE^^}
+Docker Version: $DOCKER_VERSION
+Docker Socket: $DOCKER_SOCKET
+
+You can now install External Apps from the Apps page in Nextcloud.
+
+To view available External Apps, visit:
+Settings > Apps > External Apps
+
+Manage via CLI:
+• List daemons: sudo -u www-data php $NCPATH/occ app_api:daemon:list
+• List ExApps: sudo -u www-data php $NCPATH/occ app_api:app:list
+• Unregister daemon: sudo -u www-data php $NCPATH/occ app_api:daemon:unregister <name>
+
+Docker Information:
+• Version: docker --version
+• Containers: docker ps
+• Socket: ls -l $DOCKER_SOCKET
+
+Note: For production deployments with external access,
+consider switching to HaRP for better security and performance.
+
+Documentation:
+https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/"
+fi
