@@ -106,6 +106,24 @@ else
         rm -f /etc/apache2/conf-available/exapps-harp.conf
     fi
 
+    # Remove HaRP certs directory
+    if [ -d "/var/lib/appapi-harp" ]
+    then
+        print_text_in_color "$ICyan" "Removing HaRP data directory..."
+        rm -rf /var/lib/appapi-harp
+    fi
+
+    # Remove www-data from docker group
+    if id -nG www-data | grep -qw docker
+    then
+        print_text_in_color "$ICyan" "Removing www-data from docker group..."
+        gpasswd -d www-data docker
+        
+        # Restart Apache to apply group changes
+        print_text_in_color "$ICyan" "Restarting Apache to apply group membership changes..."
+        restart_webserver
+    fi
+
     print_text_in_color "$ICyan" "Disabling AppAPI app..."
     nextcloud_occ_no_check app:disable app_api
 
@@ -148,7 +166,7 @@ Adding www-data to the docker group to grant access..."
 
     # Restart apache to apply group changes
     print_text_in_color "$ICyan" "Restarting Apache to apply group membership..."
-    systemctl restart apache2
+    restart_webserver
 
     # Test again
     if ! sudo -u www-data docker ps &>/dev/null
@@ -157,7 +175,7 @@ Adding www-data to the docker group to grant access..."
 
 Please manually add www-data to the docker group:
   sudo usermod -aG docker www-data
-  sudo systemctl restart apache2
+  sudo restart_webserver
 
 Then run this script again."
         exit 1
@@ -330,17 +348,17 @@ APACHE_EXAPPS_CONF
 
 Manually enable it with:
   sudo a2enconf exapps-harp
-  sudo systemctl restart apache2
+  sudo restart_webserver
 
 Press OK to continue with daemon registration."
     else
         # Restart Apache
-        if ! systemctl restart apache2
+        if ! restart_webserver
         then
             msg_box "Failed to restart Apache. Disabling configuration..."
             a2disconf exapps-harp &>/dev/null
             rm -f "$EXAPPS_CONF"
-            systemctl restart apache2
+            restart_webserver
             docker rm -f "$HARP_CONTAINER_NAME"
             exit 1
         fi
