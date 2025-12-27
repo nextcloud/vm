@@ -411,7 +411,7 @@ then
 This will configure a local Docker daemon using:
 • Docker Socket: /var/run/docker.sock
 • Network: host
-• Nextcloud URL: https://$NCDOMAIN
+• Nextcloud URL: $NC_PROTOCOL://$NCDOMAIN
 • Compute Device: ${COMPUTE_DEVICE^^}
 
 Note: For production use with external access, consider using HaRP instead."
