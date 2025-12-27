@@ -414,26 +414,45 @@ then
     cleanup_test_app "test-deploy"
     cleanup_test_app "app-skeleton-python"
     
+    # Give the daemon a moment to be ready
+    if [ "$DEPLOY_METHOD" = "harp" ]
+    then
+        print_text_in_color "$ICyan" "Waiting for HaRP daemon to be ready..."
+        sleep 3
+    fi
+    
     # Register test ExApp using the official test-deploy app
     print_text_in_color "$ICyan" "Step 1/6: Registering test ExApp..."
-    if ! nextcloud_occ app_api:app:register test-deploy "$DAEMON_NAME" \
-        --info-xml "${TEST_APP_URLS[0]}" 2>&1
+    if REGISTER_OUTPUT=$(nextcloud_occ app_api:app:register test-deploy "$DAEMON_NAME" \
+        --info-xml "${TEST_APP_URLS[0]}" 2>&1) || echo "$REGISTER_OUTPUT" | grep -q "already registered"
     then
+        TEST_APP="test-deploy"
+        if echo "$REGISTER_OUTPUT" | grep -q "already registered"
+        then
+            print_text_in_color "$ICyan" "Test ExApp was already registered, continuing..."
+        fi
+    else
         # Try with app-skeleton-python as fallback
         print_text_in_color "$IYellow" "test-deploy not available, trying app-skeleton-python..."
-        TEST_APP="app-skeleton-python"
-        if ! nextcloud_occ app_api:app:register app-skeleton-python "$DAEMON_NAME" \
-            --info-xml "${TEST_APP_URLS[1]}" 2>&1
+        if REGISTER_OUTPUT=$(nextcloud_occ app_api:app:register app-skeleton-python "$DAEMON_NAME" \
+            --info-xml "${TEST_APP_URLS[1]}" 2>&1) || echo "$REGISTER_OUTPUT" | grep -q "already registered"
         then
+            TEST_APP="app-skeleton-python"
+            if echo "$REGISTER_OUTPUT" | grep -q "already registered"
+            then
+                print_text_in_color "$ICyan" "Test ExApp was already registered, continuing..."
+            fi
+        else
             msg_box "Failed to register test ExApp. The daemon might not be working correctly.
         
 Please check Docker and daemon configuration:
   docker logs $HARP_CONTAINER_NAME (if using HaRP)
-  Check Nextcloud logs at $NCDATA/nextcloud.log"
+  Check Nextcloud logs at $NCDATA/nextcloud.log
+  
+Error output:
+$REGISTER_OUTPUT"
             exit 1
         fi
-    else
-        TEST_APP="test-deploy"
     fi
     
     # Enable ExApp (triggers deployment)

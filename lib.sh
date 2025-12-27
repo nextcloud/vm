@@ -267,7 +267,7 @@ cleanup_test_app() {
     then
         print_text_in_color "$ICyan" "Removing existing $app_id ExApp..."
         nextcloud_occ_no_check app_api:app:disable "$app_id" 2>/dev/null || true
-        nextcloud_occ_no_check app_api:app:unregister "$app_id" --rm-data 2>/dev/null || true
+        nextcloud_occ_no_check app_api:app:unregister "$app_id" --force --rm-data 2>/dev/null || true
         docker stop "nc_app_${app_id}" 2>/dev/null || true
         docker rm -f "nc_app_${app_id}" 2>/dev/null || true
     fi
