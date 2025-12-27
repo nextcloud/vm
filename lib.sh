@@ -243,6 +243,66 @@ turn_install() {
     TURN_RECORDING_HOST=127.0.0.1
     TURN_RECORDING_HOST_PORT=1234
 }
+# AppAPI installation - loaded on demand for appapi.sh script
+appapi_install() {
+    # ExApps API (AppAPI) - Docker daemon configuration
+    APPAPI_DOCKER_DAEMON_NAME="docker_local_sock"
+    APPAPI_HARP_DAEMON_NAME="harp_proxy_host"
+    # Get list of existing AppAPI daemons from table format output
+    # Parses the table: extracts Name column (field 3), filters out header and empty names, removes duplicates.
+    # Adds basic validation so that if the output format changes and no table rows are found, DAEMON_LIST is empty.
+    local daemon_raw
+    daemon_raw=$(nextcloud_occ app_api:daemon:list 2>/dev/null || true)
+    if printf '%s\n' "$daemon_raw" | grep -qE '^[[:space:]]*\|'; then
+        DAEMON_LIST=$(printf '%s\n' "$daemon_raw" | grep -E '^[[:space:]]*\|' | awk -F'|' '{print $3}' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' | grep -v 'Name' | sort -u)
+    else
+        DAEMON_LIST=""
+    fi
+    # Get list of all External Apps
+    EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
+    # AppAPI test application URLs
+    TEST_APPS=("test-deploy" "app-skeleton-python")
+    TEST_APP_URLS=(
+        "https://raw.githubusercontent.com/nextcloud/test-deploy/main/appinfo/info.xml"
+        "https://raw.githubusercontent.com/nextcloud/app-skeleton-python/main/appinfo/info.xml"
+    )
+}
+
+# Function to clean up test app for AppAPI
+cleanup_test_app() {
+    local app_id="$1"
+    if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "$app_id"
+    then
+        print_text_in_color "$ICyan" "Removing existing $app_id ExApp..."
+        nextcloud_occ_no_check app_api:app:disable "$app_id" 2>/dev/null || true
+        nextcloud_occ_no_check app_api:app:unregister "$app_id" --force --rm-data 2>/dev/null || true
+        docker stop "nc_app_${app_id}" 2>/dev/null || true
+        docker rm -f "nc_app_${app_id}" 2>/dev/null || true
+    fi
+}
+
+# Function to register daemon for AppAPI
+register_daemon() {
+    local daemon_name="$1"
+    local daemon_label="$2"
+    shift 2
+    local extra_args=("$@")
+    
+    print_text_in_color "$ICyan" "Registering $daemon_label Deploy Daemon..."
+    if ! nextcloud_occ app_api:daemon:register \
+        "$daemon_name" \
+        "$daemon_label" \
+        "docker-install" \
+        "http" \
+        "${extra_args[@]}"
+    then
+        msg_box "Failed to register $daemon_label Deploy Daemon.
+
+Please check Nextcloud logs for details."
+        return 1
+    fi
+    return 0
+}
 
 ## FUNCTIONS
 
