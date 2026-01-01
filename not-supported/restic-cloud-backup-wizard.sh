@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # Sami Nieminen - 2024 https://nenimein.fi
 
 # This script helps creating a backup script for your Nextcloud instance to various cloud storage providers.
@@ -310,7 +310,7 @@ cat << BACKUP_SCRIPT > "$BACKUP_SCRIPT_NAME"
 #!/bin/bash
 
 true
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # Sami Nieminen - 2024 https://nenimein.fi
 
 # shellcheck source=lib.sh
