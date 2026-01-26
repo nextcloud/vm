@@ -10,9 +10,9 @@ jobs:
     name: Github Actions
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
     - name: Run Shellcheck
-      uses: ludeeus/action-shellcheck@master
+      uses: ludeeus/action-shellcheck@00b27aa7cb85167568cb48a3838b75f4265f2bca # master
       with:
         check_together: 'yes'
       env:
