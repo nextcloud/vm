@@ -11,9 +11,9 @@ jobs:
     name: Shellcheck testing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: shellcheck
-        uses: reviewdog/action-shellcheck@v1
+        uses: reviewdog/action-shellcheck@4410ae3f82f068bdb0234069a9bf2367923fb39a # v1
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
@@ -25,9 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: spelling or typos
-        uses: actions/checkout@v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - name: misspell
-        uses: reviewdog/action-misspell@v1
+        uses: reviewdog/action-misspell@0789410278cba39afd488d97a0e305ba35776bbf # v1
         with:
           github_token: ${{ secrets.github_token }}
           locale: "US"
