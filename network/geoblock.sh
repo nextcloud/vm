@@ -177,16 +177,17 @@ Please report this to $ISSUES"
     fi
 
     # Extract country codes (column 10: ISO3166-1-Alpha-2) and
-    # names (column 41: official_name_en) from the CSV.
+    # names (column 41: official_name_en) from the CSV to CODE,"Name" format.
     # Custom field parser handles quoted fields that contain commas.
-    CSV_DATA=$(awk 'NR>1{n=split($0,c,"");q=0;f=1;v="";for(i=1;i<=n;i++){if(c[i]=="\"")q=!q;else if(c[i]==","&&!q){if(f==10)code=v;if(f==41)name=v;f++;v=""}else v=v c[i]}if(f==10)code=v;if(f==41)name=v;if(code!=""&&name!="")print code",\""name"\""}' "$SCRIPTS/country-codes.csv" | sort)
+    awk 'NR>1{n=split($0,c,"");q=0;f=1;v="";for(i=1;i<=n;i++){if(c[i]=="\"")q=!q;else if(c[i]==","&&!q){if(f==10)code=v;if(f==41)name=v;f++;v=""}else v=v c[i]}if(f==10)code=v;if(f==41)name=v;if(code!=""&&name!="")print code",\""name"\""}' "$SCRIPTS/country-codes.csv" | sort > "$SCRIPTS/country-codes.csv.tmp"
+    mv "$SCRIPTS/country-codes.csv.tmp" "$SCRIPTS/country-codes.csv"
 
     # Get country names
-    COUNTRY_NAMES=$(sed 's|.*,"||;s|"$||' <<< "$CSV_DATA")
+    COUNTRY_NAMES=$(sed 's|.*,"||;s|"$||' "$SCRIPTS/country-codes.csv")
     mapfile -t COUNTRY_NAMES <<< "$COUNTRY_NAMES"
 
     # Get country codes
-    COUNTRY_CODES=$(sed 's|,.*||' <<< "$CSV_DATA")
+    COUNTRY_CODES=$(sed 's|,.*||' "$SCRIPTS/country-codes.csv")
     mapfile -t COUNTRY_CODES <<< "$COUNTRY_CODES"
 
     # Remove the csv file since no longer needed
