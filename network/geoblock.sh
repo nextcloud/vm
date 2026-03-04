@@ -37,6 +37,9 @@ else
     find "$GEOBLOCK_DIR" -type f -regex \
 "*.dat" -delete
     rm -f "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+    # Remove old csv files
+    rm -f "$SCRIPTS/iso3166.csv"
+    rm -f "$SCRIPTS/country-codes.csv"
     # Remove Apache2 mod
     if [ -f "$GEOBLOCK_MOD" ]
     then
@@ -121,25 +124,25 @@ then
         msg_box "Failed to compile MaxMindDB module. Please report this to $ISSUES"
         exit 1
     fi
-    
+
     # Delete conf made by module
     rm -f /etc/apache2/mods-enabled/maxminddb.conf
-    
+
     # Check if module is enabled
     if ! apachectl -M | grep -i "maxminddb"
     then
        msg_box "Couldn't load the Apache module for MaxMind after installation. Please report this to $ISSUES"
        exit 1
     fi
-    
+
     print_text_in_color "$IGreen" "MaxMindDB module loaded in Apache successfully!"
-    
+
     # Cleanup
     cd /tmp
     rm -rf mod_maxminddb-1.2.0 mod_maxminddb-1.2.0.tar.gz
 else
     msg_box "Failed to configure MaxMindDB module compilation.
-    
+
 This usually means apxs/apxs2 is not properly installed.
 Please report this issue to: $ISSUES"
     exit 1
@@ -166,23 +169,29 @@ fi
 if [[ "$choice" = *"Countries"* ]]
 then
     # Download csv file
-    if ! curl_to_dir "https://dev.maxmind.com/static/csv/codes" "iso3166.csv" "$SCRIPTS"
+    if ! curl_to_dir "https://raw.githubusercontent.com/datasets/country-codes/main/data" "country-codes.csv" "$SCRIPTS"
     then
-        msg_box "Could not download the iso3166.csv file.
+        msg_box "Could not download the country-codes.csv file.
 Please report this to $ISSUES"
         exit 1
     fi
 
+    # Extract country codes (column 10: ISO3166-1-Alpha-2) and
+    # names (column 41: official_name_en) from the CSV to CODE,"Name" format.
+    # Custom field parser handles quoted fields that contain commas.
+    awk 'NR>1{n=split($0,c,"");q=0;f=1;v="";for(i=1;i<=n;i++){if(c[i]=="\"")q=!q;else if(c[i]==","&&!q){if(f==10)code=v;if(f==41)name=v;f++;v=""}else v=v c[i]}if(f==10)code=v;if(f==41)name=v;if(code!=""&&name!="")print code",\""name"\""}' "$SCRIPTS/country-codes.csv" | sort > "$SCRIPTS/country-codes.csv.tmp"
+    mv "$SCRIPTS/country-codes.csv.tmp" "$SCRIPTS/country-codes.csv"
+
     # Get country names
-    COUNTRY_NAMES=$(sed 's|.*,"||;s|"$||' "$SCRIPTS/iso3166.csv")
+    COUNTRY_NAMES=$(sed 's|.*,"||;s|"$||' "$SCRIPTS/country-codes.csv")
     mapfile -t COUNTRY_NAMES <<< "$COUNTRY_NAMES"
 
     # Get country codes
-    COUNTRY_CODES=$(sed 's|,.*||' "$SCRIPTS/iso3166.csv")
+    COUNTRY_CODES=$(sed 's|,.*||' "$SCRIPTS/country-codes.csv")
     mapfile -t COUNTRY_CODES <<< "$COUNTRY_CODES"
 
     # Remove the csv file since no longer needed
-    check_command rm "$SCRIPTS/iso3166.csv"
+    check_command rm "$SCRIPTS/country-codes.csv"
 
     # Check if both arrays match
     if [ "${#COUNTRY_NAMES[@]}" != "${#COUNTRY_CODES[@]}" ]
