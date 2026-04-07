@@ -359,15 +359,6 @@ then
     export NEEDRESTART_SUSPEND=1
 fi
 
-# Save the list of enabled apps before upgrade (to re-enable them after upgrade)
-# https://github.com/nextcloud/vm/issues/2797
-print_text_in_color "$ICyan" "Saving list of enabled apps before upgrade..."
-if [ ! -d "$BACKUP" ]
-then
-    mkdir -p "$BACKUP"
-fi
-nextcloud_occ app:list --enabled | sed '\|Disabled|,$d' | awk '{print$2}' | tr -d ':' | sed '\|^$|d' > "$BACKUP/enabled_apps_before_upgrade.txt"
-
 # Enter maintenance:mode
 print_text_in_color "$IGreen" "Enabling maintenance:mode..."
 sudo -u www-data php "$NCPATH"/occ maintenance:mode --on
@@ -1163,6 +1154,11 @@ then
     rm -rf "$BACKUP"
     mkdir -p "$BACKUP"
 fi
+
+# Save the list of enabled apps before upgrade (to re-enable them after upgrade)
+# https://github.com/nextcloud/vm/issues/2797
+print_text_in_color "$ICyan" "Saving list of enabled apps before upgrade..."
+nextcloud_occ app:list --enabled | sed '\|Disabled|,$d' | awk '{print$2}' | tr -d ':' | sed '\|^$|d' > "$BACKUP/enabled_apps_before_upgrade.txt"
 
 # Do a backup of the ZFS mount
 if is_this_installed zfs-auto-snapshot
