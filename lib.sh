@@ -19,7 +19,7 @@ NCDATA=/mnt/"$POOLNAME"
 SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 SHA256_DIR=/tmp/sha256
-BACKUP=/mnt/NCBACKUP
+BACKUP=/mnt/NCBACKUP/"$(date +%Y-%m-%d-%H%M%S)"
 NC_APPS_PATH=$NCPATH/apps
 VMLOGS=/var/log/nextcloud
 

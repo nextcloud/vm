@@ -359,7 +359,8 @@ then
     export NEEDRESTART_SUSPEND=1
 fi
 
-# Save the list of enabled apps before upgrade (to re-enable them after upgrade)
+# Create the backup dir (/mnt/NCBACKUP/"$(date +%Y-%m-%d-%H%M%S)") and save
+# the list of enabled apps before upgrade (to re-enable them after upgrade)
 # https://github.com/nextcloud/vm/issues/2797
 print_text_in_color "$ICyan" "Saving list of enabled apps before upgrade..."
 if [ ! -d "$BACKUP" ]
@@ -367,6 +368,9 @@ then
     mkdir -p "$BACKUP"
 fi
 nextcloud_occ app:list --enabled | sed '\|Disabled|,$d' | awk '{print$2}' | tr -d ':' | sed '\|^$|d' > "$BACKUP/enabled_apps_before_upgrade.txt"
+
+# Remove backups older than one year
+find /mnt/NCBACKUP/ -maxdepth 1 -mindepth 1 -type d -name "$(date --date='1 year ago' +%Y)*" -exec rm -rf {} +
 
 # Enter maintenance:mode
 print_text_in_color "$IGreen" "Enabling maintenance:mode..."
@@ -1094,10 +1098,12 @@ fi
 print_text_in_color "$ICyan" "Stopping Apache2..."
 check_command systemctl stop apache2.service
 
-# Create backup dir (/mnt/NCBACKUP/)
-if [ ! -d "$BACKUP" ]
+# Move backups to location according to $VAR into a separate subfolder
+if [ -d /var/NCBACKUP/ ]
 then
-    mkdir -p "$BACKUP"
+    mv /var/NCBACKUP "$(dirname "$BACKUP")/$(date -r /var/NCBACKUP +%Y-%m-%d-%H%M%S)"
+    mv /var/NCBACKUP-OLD/* "$(dirname "$BACKUP")"/
+    rm -rf /var/NCBACKUP-OLD
 fi
 
 # Backup PostgreSQL
@@ -1143,25 +1149,6 @@ if [ "${CURRENTVERSION%%.*}" -lt "${NCVERSION%%.*}" ]
 then
     print_text_in_color "$ICyan" "Deleting 'app_install_overwrite array' to prevent app breakage..."
     nextcloud_occ config:system:delete app_install_overwrite
-fi
-
-# Move backups to location according to $VAR
-if [ -d /var/NCBACKUP/ ]
-then
-    mv /var/NCBACKUP "$BACKUP"
-    mv /var/NCBACKUP-OLD "$BACKUP"-OLD/
-fi
-
-# Check if backup exists and move to old
-print_text_in_color "$ICyan" "Backing up data..."
-if [ -d "$BACKUP" ]
-then
-    install_if_not rsync
-    mkdir -p "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
-    rsync -Aaxz "$BACKUP"/* "$BACKUP"-OLD/"$(date +%Y-%m-%d-%H%M%S)"
-    rm -rf "$BACKUP"-OLD/"$(date --date='1 year ago' +%Y)"*
-    rm -rf "$BACKUP"
-    mkdir -p "$BACKUP"
 fi
 
 # Do a backup of the ZFS mount
