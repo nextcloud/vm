@@ -66,6 +66,7 @@ fi
 # Install Redis
 print_text_in_color "$ICyan" "Installing Redis server and PHP extension..."
 install_if_not php"$PHPVER"-redis
+phpenmod -v "$PHPVER" redis
 install_if_not redis-server
 
 ## Redis performance tweaks ##

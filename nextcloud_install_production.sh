@@ -611,10 +611,12 @@ run_script ADDONS redis-server-ubuntu
 
 # Install smbclient (OS package - no longer built from PECL)
 install_if_not php"$PHPVER"-smbclient
+phpenmod -v "$PHPVER" smbclient
 
 # Install igbinary for PHP (OS package - no longer built from PECL)
 # https://github.com/igbinary/igbinary
 install_if_not php"$PHPVER"-igbinary
+phpenmod -v "$PHPVER" igbinary
 # Set igbinary as session serializer (igbinary.compact_strings is already set in the package .ini)
 {
 echo "# igbinary for PHP"
