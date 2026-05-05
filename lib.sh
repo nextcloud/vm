@@ -125,7 +125,12 @@ ncdb() {
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Nextcloud version
 nc_update() {
-    CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+    CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status 2>/dev/null | grep "versionstring" | awk '{print $3}')
+    # Fallback: read version directly from version.php if occ fails (e.g. PHP extension not loaded)
+    if [ -z "$CURRENTVERSION" ]
+    then
+        CURRENTVERSION=$(grep "OC_VersionString" "$NCPATH"/version.php 2>/dev/null | awk -F "'" '{print $2}')
+    fi
     NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
     STABLEVERSION="nextcloud-$NCVERSION"
     NCMAJOR="${NCVERSION%%.*}"
