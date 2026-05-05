@@ -465,12 +465,14 @@ do
         rm -f "$PHP_MODS_DIR/$ext.ini"
         # Install OS package (use --allow-change-held-packages in case the package was previously held)
         apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install -y --allow-change-held-packages php"$PHPVER"-"$ext"
+        phpenmod -v "$PHPVER" "$ext"
         print_text_in_color "$IGreen" "Migrated $ext to OS package (php$PHPVER-$ext)"
     elif ! is_this_installed php"$PHPVER"-"$ext"
     then
         # Not installed via PECL, but also not installed as OS package - install it
         print_text_in_color "$ICyan" "Installing $ext as OS package..."
         apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install -y --allow-change-held-packages php"$PHPVER"-"$ext"
+        phpenmod -v "$PHPVER" "$ext"
     fi
 done
 
