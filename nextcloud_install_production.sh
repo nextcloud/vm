@@ -606,55 +606,21 @@ print_text_in_color "$ICyan" "Nextcloud version:"
 nextcloud_occ status
 sleep 3
 
-# Install PECL dependencies
-install_if_not php"$PHPVER"-dev
-
 # Install Redis (distributed cache)
 run_script ADDONS redis-server-ubuntu
 
-# Install smbclient
-# php"$PHPVER"-smbclient does not yet work in PHP 7.4
-install_if_not libsmbclient-dev
-yes no | pecl install smbclient
-if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
-then
-    touch "$PHP_MODS_DIR"/smbclient.ini
-fi
-if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
-then
-    echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
-    echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
-    check_command phpenmod -v ALL smbclient
-fi
+# Install smbclient (OS package - no longer built from PECL)
+install_if_not php"$PHPVER"-smbclient
 
-# Enable igbinary for PHP
+# Install igbinary for PHP (OS package - no longer built from PECL)
 # https://github.com/igbinary/igbinary
-if is_this_installed "php$PHPVER"-dev
-then
-    if ! yes no | pecl install -Z igbinary
-    then
-        msg_box "igbinary PHP module installation failed"
-        exit
-    else
-        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
-    fi
+install_if_not php"$PHPVER"-igbinary
+# Set igbinary as session serializer (igbinary.compact_strings is already set in the package .ini)
 {
 echo "# igbinary for PHP"
 echo "session.serialize_handler=igbinary"
-echo "igbinary.compact_strings=On"
 } >> "$PHP_INI"
-    if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
-    then
-        touch "$PHP_MODS_DIR"/igbinary.ini
-    fi
-    if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
-    then
-        echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
-        echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
-        check_command phpenmod -v ALL igbinary
-    fi
 restart_webserver
-fi
 
 # Prepare cron.php to be run every 5 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
