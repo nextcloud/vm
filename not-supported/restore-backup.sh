@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=SC2024
@@ -718,7 +718,7 @@ msg_box "Restore completed!\n
 You can now simply reinstall all apps and addons that were installed on your server before!\n
 Those need to get installed (if they were installed on the old server before):
 Geoblocking, Disk Monitoring, Fail2Ban, ClamAV, SMTP Mail, DDclient, Activate TLS, OnlyOffice, Push Notifications for Nextcloud, \
-High-Performance backend for Nextcloud Talk, Whiteboard for Nextcloud, Extract for Nextcloud, Vaultwarden, Pi-hole, PiVPN, \
+High-Performance backend for Nextcloud Talk, Whiteboard for Nextcloud, Vaultwarden, Pi-hole, PiVPN, \
 Plex Media Server, Previewgenerator, Remotedesktop and Midnight Commander.\n
 Note:
 Vaultwarden and Plex Media Server files were restored (if they were installed before) but the containers need to get \

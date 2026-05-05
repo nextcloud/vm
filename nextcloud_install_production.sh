@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/main/LICENSE
 
-# Prefer IPv4 for apt
-echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
 
 # Fix fancy progress bar for apt-get
 # https://askubuntu.com/a/754653
@@ -20,7 +18,7 @@ then
 fi
 
 # Install curl if not existing
-if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" = "1" ]
+if dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -q "ok installed"
 then
     echo "curl OK"
 else
@@ -29,10 +27,11 @@ else
 fi
 
 # Install whiptail if not existing
-if [ "$(dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -c "ok installed")" = "1" ]
+if dpkg-query -W -f='${Status}' "whiptail" 2>/dev/null | grep -q "ok installed"
 then
     echo "whiptail OK"
 else
+    apt-get update -q4
     apt-get install whiptail -y
 fi
 
@@ -41,7 +40,10 @@ SCRIPT_NAME="Nextcloud Install Script"
 SCRIPT_EXPLAINER="This script is installing all requirements that are needed for Nextcloud to run.
 It's the first of two parts that are necessary to finish your customized Nextcloud installation."
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+if ! source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/static/fetch_lib.sh)
+then
+    source <(curl -sL https://cdn.statically.io/gh/nextcloud/vm/main/static/fetch_lib.sh)
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -98,6 +100,8 @@ then
 fi
 
 # Create a placeholder volume before modifying anything
+# Ask about snapshots first
+export SNAPSHOTS_ENABLED=""
 if [ -z "$PROVISIONING" ]
 then
     if ! does_snapshot_exist "NcVM-installation" && yesno_box_no "Do you want to use LVM snapshots to be able to restore your root partition during upgrades and such?
@@ -113,6 +117,7 @@ Enabling this will also force an automatic reboot after running the update scrip
             sleep 1
             # Create a placeholder snapshot
             check_command lvcreate --size 5G --name "NcVM-installation" ubuntu-vg
+            export SNAPSHOTS_ENABLED="yes"
         else
             print_text_in_color "$IRed" "Could not create volume because of insufficient space..."
             sleep 2
@@ -121,10 +126,21 @@ Enabling this will also force an automatic reboot after running the update scrip
 fi
 
 # Fix LVM on BASE image
+# Ask about disk space - now snapshots have been reserved, we can use remaining space
+export USE_ALL_DISK_SPACE=""
 if grep -q "LVM" /etc/fstab
 then
+    # In provisioning mode, always extend
+    # In normal mode, ask the user
     if [ -n "$PROVISIONING" ] || yesno_box_yes "Do you want to make all free space available to your root partition?"
     then
+        export USE_ALL_DISK_SPACE="yes"
+    fi
+fi
+
+# Extend LVM if requested
+if [ "$USE_ALL_DISK_SPACE" = "yes" ]
+then
     # Resize LVM (live installer is &%¤%/!
     # VM
     print_text_in_color "$ICyan" "Extending LVM, this may take a long time..."
@@ -149,8 +165,11 @@ then
             fi
         fi
     done
-    fi
 fi
+
+# Cleanup environment variables
+unset SNAPSHOTS_ENABLED
+unset USE_ALL_DISK_SPACE
 
 # Install needed dependencies
 install_if_not lshw
@@ -166,6 +185,10 @@ install_if_not iputils-ping
 
 # Download needed libraries before execution of the first script
 mkdir -p "$SCRIPTS"
+
+# Create local backup (in case GitHub is rate limited during install)
+ensure_local_backup_repo
+
 download_script GITHUB_REPO lib
 download_script STATIC fetch_lib
 
@@ -364,13 +387,25 @@ done
 apt-get update -q4 & spinner_loading
 install_if_not postgresql
 
-# Create DB
+# Create DB with proper permissions for Nextcloud 30+
+# PostgreSQL 15+ requires explicit schema permissions
 cd /tmp
-sudo -u postgres psql <<END
+if ! sudo -u postgres psql <<END
 CREATE USER $PGDB_USER WITH PASSWORD '$PGDB_PASS';
 CREATE DATABASE nextcloud_db WITH OWNER $PGDB_USER TEMPLATE template0 ENCODING 'UTF8';
+\c nextcloud_db
+GRANT CREATE ON SCHEMA public TO $PGDB_USER;
+GRANT ALL ON SCHEMA public TO $PGDB_USER;
+ALTER DATABASE nextcloud_db OWNER TO $PGDB_USER;
 END
+then
+    print_text_in_color "$IRed" "Failed to create PostgreSQL database with proper permissions!"
+    print_text_in_color "$ICyan" "Please report this to $ISSUES"
+    exit 1
+fi
+
 print_text_in_color "$ICyan" "PostgreSQL password: $PGDB_PASS"
+print_text_in_color "$IGreen" "PostgreSQL database created with schema permissions for Nextcloud 30+"
 systemctl restart postgresql.service
 
 # Install Apache
@@ -571,55 +606,23 @@ print_text_in_color "$ICyan" "Nextcloud version:"
 nextcloud_occ status
 sleep 3
 
-# Install PECL dependencies
-install_if_not php"$PHPVER"-dev
-
 # Install Redis (distributed cache)
 run_script ADDONS redis-server-ubuntu
 
-# Install smbclient
-# php"$PHPVER"-smbclient does not yet work in PHP 7.4
-install_if_not libsmbclient-dev
-yes no | pecl install smbclient
-if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
-then
-    touch "$PHP_MODS_DIR"/smbclient.ini
-fi
-if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
-then
-    echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
-    echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
-    check_command phpenmod -v ALL smbclient
-fi
+# Install smbclient (OS package - no longer built from PECL)
+install_if_not php"$PHPVER"-smbclient
+phpenmod -v "$PHPVER" smbclient
 
-# Enable igbinary for PHP
+# Install igbinary for PHP (OS package - no longer built from PECL)
 # https://github.com/igbinary/igbinary
-if is_this_installed "php$PHPVER"-dev
-then
-    if ! yes no | pecl install -Z igbinary
-    then
-        msg_box "igbinary PHP module installation failed"
-        exit
-    else
-        print_text_in_color "$IGreen" "igbinary PHP module installation OK!"
-    fi
+install_if_not php"$PHPVER"-igbinary
+phpenmod -v "$PHPVER" igbinary
+# Set igbinary as session serializer (igbinary.compact_strings is already set in the package .ini)
 {
 echo "# igbinary for PHP"
 echo "session.serialize_handler=igbinary"
-echo "igbinary.compact_strings=On"
 } >> "$PHP_INI"
-    if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
-    then
-        touch "$PHP_MODS_DIR"/igbinary.ini
-    fi
-    if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
-    then
-        echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
-        echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
-        check_command phpenmod -v ALL igbinary
-    fi
 restart_webserver
-fi
 
 # Prepare cron.php to be run every 5 minutes
 crontab -u www-data -l | { cat; echo "*/5  *  *  *  * php -f $NCPATH/cron.php > /dev/null 2>&1"; } | crontab -u www-data -
@@ -928,7 +931,7 @@ restart_webserver
 
 if [ -n "$PROVISIONING" ]
 then
-    choice="Calendar Contacts IssueTemplate PDFViewer Extract Text Mail Deck Group-Folders"
+    choice="Calendar Contacts IssueTemplate PDFViewer Text Mail Deck Group-Folders"
 else
     choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
 "Automatically configure and install selected apps or software
@@ -936,7 +939,6 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "" ON \
 "Contacts" "" ON \
 "PDFViewer" "" ON \
-"Extract" "" ON \
 "Text" "" ON \
 "Mail" "" ON \
 "Deck" "" ON \
@@ -962,14 +964,6 @@ case "$choice" in
     ;;&
     *"PDFViewer"*)
         install_and_enable_app files_pdfviewer
-    ;;&
-    *"Extract"*)
-        if install_and_enable_app extract
-        then
-            install_if_not unrar
-            install_if_not p7zip
-            install_if_not p7zip-full
-        fi
     ;;&
     *"Text"*)
         install_and_enable_app text

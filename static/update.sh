@@ -1,11 +1,18 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Update Server + Nextcloud"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+if [ -f /var/scripts/fetch_lib.sh ]
+then
+    # shellcheck source=static/fetch_lib.sh
+    source /var/scripts/fetch_lib.sh
+elif ! source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/static/fetch_lib.sh)
+then
+    source <(curl -sL https://cdn.statically.io/gh/nextcloud/vm/main/static/fetch_lib.sh)
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

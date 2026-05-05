@@ -119,7 +119,7 @@
             <p>Note: To access Webmin externally you have to open port 10000 in your router, it's not recommended though due to security concerns.</p>
         </div>
 
-        <h2>Access Adminer</h2>
+    <h2>Access AdminNeo</h2>
 
         <div class="information">
             <p>Use the following address:
@@ -132,7 +132,7 @@
             <h3>
                 <a href="https://docs.hanssonit.se/s/W6fMouPiqQz3_Mog/virtual-machines-vm/d/W6fMquPiqQz3_Moi/nextcloud-vm-first-setup-instructions?currentPageId=W6ypBePiqQz3_Mp0" target="_blank">Login details</a>
             </h3>
-            <p>Note: Your LAN IP is set as approved in /etc/apache2/sites-available/adminer.conf, all other access is forbidden.</p>
+            <p>Note: Your LAN IP is set as approved in /etc/apache2/sites-available/adminneo.conf, all other access is forbidden.</p>
         </div>
 
         <h2>Follow us on Social Media</h2>

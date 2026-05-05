@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/main/LICENSE
 
@@ -125,7 +125,12 @@ ncdb() {
 SECURE="$SCRIPTS/setup_secure_permissions_nextcloud.sh"
 # Nextcloud version
 nc_update() {
-    CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
+    CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status 2>/dev/null | grep "versionstring" | awk '{print $3}')
+    # Fallback: read version directly from version.php if occ fails (e.g. PHP extension not loaded)
+    if [ -z "$CURRENTVERSION" ]
+    then
+        CURRENTVERSION=$(grep "OC_VersionString" "$NCPATH"/version.php 2>/dev/null | awk -F "'" '{print $2}')
+    fi
     NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+\).zip.asc".*/\1/p' | sort --version-sort | tail -1)
     STABLEVERSION="nextcloud-$NCVERSION"
     NCMAJOR="${NCVERSION%%.*}"
@@ -165,10 +170,30 @@ PHP_MODS_DIR=/etc/php/"$PHPVER"/mods-available
 opcache_interned_strings_buffer_value=24
 # Notify push
 NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
-# Adminer
-ADMINERDIR=/usr/share/adminer
-ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
-ADMINER_CONF_PLUGIN="$ADMINERDIR/extra_plugins.php"
+# AdminNeo
+ADMINNEODIR=/usr/share/adminneo
+ADMINNEO_CONF="$SITES_AVAILABLE/adminneo.conf"
+ADMINNEO_CONF_PLUGIN="$ADMINNEODIR/extra_plugins.php"
+# Legacy Adminer references kept for cleanup purposes
+LEGACY_ADMINER_CONF="$SITES_AVAILABLE/adminer.conf"
+LEGACY_ADMINER_CONF_ENABLED="/etc/apache2/sites-enabled/adminer.conf"
+LEGACY_ADMINERDIR=/usr/share/adminer
+# Get latest AdminNeo version dynamically from GitHub releases
+get_adminneo_version() {
+    local version
+    version=$(curl -s -m 30 "https://api.github.com/repos/adminneo-org/adminneo/releases/latest" | grep -oP '"tag_name":\s*"v\K[^"]+')
+    
+    # Validate version format (X.X.X)
+    if echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'
+    then
+        echo "$version"
+    else
+        # Fallback to known stable version
+        echo "5.1.1"
+    fi
+}
+ADMINNEO_VERSION=$(get_adminneo_version)
+ADMINNEO_DOWNLOAD_URL="https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_en_default/adminneo-${ADMINNEO_VERSION}.php"
 # Redis
 REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
@@ -185,7 +210,16 @@ fulltextsearch_install() {
     FULLTEXTSEARCH_IMAGE_NAME=fulltextsearch_es01
     FULLTEXTSEARCH_SERVICE=nextcloud-fulltext-elasticsearch-worker.service
     # Gets the version from the latest tag here: https://github.com/docker-library/official-images/blob/master/library/elasticsearch
-    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 https://raw.githubusercontent.com/docker-library/official-images/refs/heads/master/library/elasticsearch | grep "Tags:" | head -1 | awk '{print $2}')"
+    # Use limit=500 to ensure we get version tags, not just SHA tags
+    # Extract version numbers (format: X.XX.X), sort them, and get the latest
+    FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="$(curl -s -m 900 'https://raw.githubusercontent.com/docker-library/official-images/refs/heads/master/library/elasticsearch' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)"
+    # Validate that we got a proper version number
+    if ! echo "$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'
+    then
+        print_text_in_color "$IRed" "Failed to detect ElasticSearch version. Got: '$FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG'"
+        print_text_in_color "$ICyan" "Falling back to known stable version..."
+        FULLTEXTSEARCH_IMAGE_NAME_LATEST_TAG="8.16.1"
+    fi    
     # Legacy, changed 2023-09-21
     DOCKER_IMAGE_NAME=es01
     # Legacy, not used at all
@@ -213,6 +247,66 @@ turn_install() {
     TURN_RECORDING_SECRET=$(gen_passwd "$SHUF" "a-zA-Z0-9")
     TURN_RECORDING_HOST=127.0.0.1
     TURN_RECORDING_HOST_PORT=1234
+}
+# AppAPI installation - loaded on demand for appapi.sh script
+appapi_install() {
+    # ExApps API (AppAPI) - Docker daemon configuration
+    APPAPI_DOCKER_DAEMON_NAME="docker_local_sock"
+    APPAPI_HARP_DAEMON_NAME="harp_proxy_host"
+    # Get list of existing AppAPI daemons from table format output
+    # Parses the table: extracts Name column (field 3), filters out header and empty names, removes duplicates.
+    # Adds basic validation so that if the output format changes and no table rows are found, DAEMON_LIST is empty.
+    local daemon_raw
+    daemon_raw=$(nextcloud_occ app_api:daemon:list 2>/dev/null || true)
+    if printf '%s\n' "$daemon_raw" | grep -qE '^[[:space:]]*\|'; then
+        DAEMON_LIST=$(printf '%s\n' "$daemon_raw" | grep -E '^[[:space:]]*\|' | awk -F'|' '{print $3}' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' | grep -v 'Name' | sort -u)
+    else
+        DAEMON_LIST=""
+    fi
+    # Get list of all External Apps
+    EXAPPS_LIST=$(nextcloud_occ app_api:app:list 2>/dev/null | grep -E "^\s*-\s" | sed 's/^\s*-\s*//' || true)
+    # AppAPI test application URLs
+    TEST_APPS=("test-deploy" "app-skeleton-python")
+    TEST_APP_URLS=(
+        "https://raw.githubusercontent.com/nextcloud/test-deploy/main/appinfo/info.xml"
+        "https://raw.githubusercontent.com/nextcloud/app-skeleton-python/main/appinfo/info.xml"
+    )
+}
+
+# Function to clean up test app for AppAPI
+cleanup_test_app() {
+    local app_id="$1"
+    if nextcloud_occ app_api:app:list 2>/dev/null | grep -q "$app_id"
+    then
+        print_text_in_color "$ICyan" "Removing existing $app_id ExApp..."
+        nextcloud_occ_no_check app_api:app:disable "$app_id" 2>/dev/null || true
+        nextcloud_occ_no_check app_api:app:unregister "$app_id" --force --rm-data 2>/dev/null || true
+        docker stop "nc_app_${app_id}" 2>/dev/null || true
+        docker rm -f "nc_app_${app_id}" 2>/dev/null || true
+    fi
+}
+
+# Function to register daemon for AppAPI
+register_daemon() {
+    local daemon_name="$1"
+    local daemon_label="$2"
+    shift 2
+    local extra_args=("$@")
+    
+    print_text_in_color "$ICyan" "Registering $daemon_label Deploy Daemon..."
+    if ! nextcloud_occ app_api:daemon:register \
+        "$daemon_name" \
+        "$daemon_label" \
+        "docker-install" \
+        "http" \
+        "${extra_args[@]}"
+    then
+        msg_box "Failed to register $daemon_label Deploy Daemon.
+
+Please check Nextcloud logs for details."
+        return 1
+    fi
+    return 0
 }
 
 ## FUNCTIONS
@@ -490,15 +584,41 @@ check_running_cronjobs() {
 
 # Checks if site is reachable with a HTTP 200 status
 site_200() {
-print_text_in_color "$ICyan" "Checking connection to ${1}..."
-        CURL_STATUS="$(curl -LI "${1}" -o /dev/null -w '%{http_code}\n' -s)"
-        if [[ "$CURL_STATUS" = "200" ]]
-        then
-            return 0
-        else
-            msg_box "curl didn't produce a 200 status, is ${1} reachable? Please report this to $ISSUES."
-            return 1
-        fi
+    local url="${1}"
+    local display_url="${1}"
+    
+    # If URL doesn't start with http:// or https://, prepend https://
+    if [[ ! "$url" =~ ^https?:// ]]
+    then
+        url="https://${url}"
+    fi
+    
+    print_text_in_color "$ICyan" "Checking connection to ${display_url}..."
+    
+    # Use curl with:
+    # -L: follow redirects
+    # -I: HEAD request only
+    # -s: silent mode
+    # -f: fail silently on HTTP errors
+    # --connect-timeout: timeout for connection (10 seconds)
+    # --max-time: maximum time for the entire operation (15 seconds)
+    if curl -LI -s -f --connect-timeout 10 --max-time 15 \
+        -o /dev/null -w '%{http_code}' "${url}" | grep -q '^200$'
+    then
+        return 0
+    else
+        msg_box "Could not reach ${display_url} with a 200 OK response.
+        
+This could mean:
+- The site is temporarily down
+- Your internet connection has issues
+- A firewall is blocking the connection
+- The URL is incorrect
+
+Please check your network connection and try again.
+If the problem persists, report this to $ISSUES"
+        return 1
+    fi
 }
 
 # Do a DNS lookup and compare the WAN address with the A record
@@ -562,6 +682,7 @@ fi
 }
 
 # A function to fetch a file with curl to a directory
+# Falls back to local backup if download fails
 # 1 = https://example.com
 # 2 = name of file
 # 3 = directory that the file should end up in
@@ -573,21 +694,52 @@ fi
     rm -f "$3"/"$2"
     if [ -n "$download_script_function_in_use" ]
     then
-        curl -sfL "$1"/"$2" -o "$3"/"$2"
+        if ! curl -sfL --max-time 10 --connect-timeout 5 "$1"/"$2" -o "$3"/"$2"
+        then
+            # Try Statically.io CDN if this is a GitHub URL
+            if [[ "$1" == *"raw.githubusercontent.com"* ]]
+            then
+                local cdn_url="${1/raw.githubusercontent.com/cdn.statically.io\/gh}"
+                if curl -sfL --max-time 10 --connect-timeout 5 "$cdn_url"/"$2" -o "$3"/"$2"
+                then
+                    print_text_in_color "$IGreen" "✓ Used Statically.io CDN"
+                    return 0
+                fi
+            fi
+            # Try local backup
+            try_local_backup "$1" "$2" "$3"
+        fi
     else
         local retries=0
         while :
         do
             if [ "$retries" -ge 10 ]
             then
-                if yesno_box_yes "Tried 10 times but didn't succeed. We will now exit the script because it might break things. You can choose 'No' to continue on your own risk."
+                # Try Statically.io CDN if this is a GitHub URL
+                if [[ "$1" == *"raw.githubusercontent.com"* ]]
                 then
-                    exit 1
+                    local cdn_url="${1/raw.githubusercontent.com/cdn.statically.io\/gh}"
+                    if curl -sfL --max-time 10 --connect-timeout 5 "$cdn_url"/"$2" -o "$3"/"$2"
+                    then
+                        print_text_in_color "$IGreen" "✓ Used Statically.io CDN"
+                        break
+                    fi
+                fi
+                # Exhausted retries, try local backup
+                if try_local_backup "$1" "$2" "$3"
+                then
+                    print_text_in_color "$IGreen" "✓ Used local backup copy"
+                    break
                 else
-                    return 1
+                    if yesno_box_yes "Tried 10 times but didn't succeed. We will now exit the script because it might break things. You can choose 'No' to continue on your own risk."
+                    then
+                        exit 1
+                    else
+                        return 1
+                    fi
                 fi
             fi
-            if ! curl -sfL "$1"/"$2" -o "$3"/"$2"
+            if ! curl -sfL --max-time 10 --connect-timeout 5 "$1"/"$2" -o "$3"/"$2"
             then
                 msg_box "We just tried to fetch '$1/$2', but it seems like the server for the download isn't reachable, or that a temporary error occurred. We will now try again.
 Please report this issue to $ISSUES"
@@ -764,7 +916,7 @@ return 0
 }
 
 
-# Check that the script can see the external IP (apache fails otherwise), used e.g. in the adminer app script.
+# Check that the script can see the external IP (apache fails otherwise), used e.g. in the adminneo app script.
 check_external_ip() {
 if [ -z "$WANIP4" ]
 then
@@ -1402,12 +1554,23 @@ do
 done
 
 # Download the file
+# Use GitHub releases for NC 32+ for faster downloads
+# GitHub URL format: https://github.com/nextcloud-releases/server/releases/download/v{VERSION}/nextcloud-{VERSION}.tar.bz2
+if [ "${NCVERSION%%.*}" -ge 32 ]
+then
+    NCGITHUB="https://github.com/nextcloud-releases/server/releases/download"
+    DOWNLOAD_URL="$NCGITHUB/v$NCVERSION/$STABLEVERSION.tar.bz2"
+    print_text_in_color "$ICyan" "Downloading $STABLEVERSION from GitHub releases (faster)..."
+else
+    DOWNLOAD_URL="$NCREPO/$STABLEVERSION.tar.bz2"
+    print_text_in_color "$ICyan" "Downloading $STABLEVERSION..."
+fi
+
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
 cd $HTML
-print_text_in_color "$ICyan" "Downloading $STABLEVERSION..."
 if network_ok
 then
-    curl -fSLO --retry 3 "$NCREPO"/"$STABLEVERSION".tar.bz2
+    curl -fSLO --retry 3 "$DOWNLOAD_URL"
 else
     msg_box "There seems to be an issue with your network, please try again later.\nThis script will now exit."
     exit 1
@@ -1854,7 +2017,7 @@ fi
 docker_update_specific() {
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^$1$"
 then
-    if docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --run-once "$1"
+    if docker run --rm --name temporary_watchtower -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/nicholas-fedor/watchtower:latest --cleanup --run-once "$1"
     then
         print_text_in_color "$IGreen" "$2 docker image just got updated!"
         echo "Docker image just got updated! We just updated $2 docker image automatically! $(date +%Y%m%d)" >> "$VMLOGS"/update.log
@@ -1926,14 +2089,14 @@ fi
 home_sme_server() {
 # OLD DISKS: "Samsung SSD 860" || ST5000LM000-2AN1  || ST5000LM015-2E81
 # OLD MEMORY: BLS16G4 (Balistix Sport) || 18ASF2G72HZ (ECC)
-if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH\|PN50\|PN51\|PN52"
+if lshw -c system | grep -q "NUC8i3BEH\|NUC10i3FNH\|PN50\|PN51\|PN52\|MGF8BSW"
 then
-    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1\|9905744\|HMA82GS6JJR8N\|HMA82GS6CJR8N\|9905703-023\|9905744-110"
+    if lshw -c memory | grep -q "BLS16G4\|18ASF2G72HZ\|16ATF2G64HZ\|CT16G4SFD8266\|M471A4G43MB1\|9905744\|HMA82GS6JJR8N\|HMA82GS6CJR8N\|9905703-023\|9905744-110\|CBDAD5S560016G\|SODIMM"
     then
         if lshw -c disk | grep -q "ST2000LM015-2E81\|WDS400\|ST5000LM000-2AN1\|ST5000LM015-2E81\|Samsung SSD 860\|WDS500G1R0B"
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
-        elif lshw -c storage | grep -q "SN700"
+        elif lshw -c storage | grep -q "SN700\|Micron\|SN7100"
         then
             NEXTCLOUDHOMESME=yes-this-is-the-home-sme-server
         fi
@@ -2237,6 +2400,79 @@ Please contact T&M Hansson IT AB to help you with upgrading between major versio
 https://shop.hanssonit.se/product/upgrade-between-major-owncloud-nextcloud-versions/"
     exit 1
 fi
+}
+
+## LOCAL REPOSITORY BACKUP FUNCTIONS
+# These functions provide fallback to a local clone when GitHub is unavailable
+
+# Clone or refresh local backup of repository
+# This runs during update to keep a fresh copy as fallback
+ensure_local_backup_repo() {
+    local BACKUP_REPO="$SCRIPTS/vm-repo-backup"
+    
+    # Check if we can reach GitHub before deleting existing backup
+    if ! site_200 github.com
+    then
+        print_text_in_color "$IYellow" "Cannot reach GitHub - keeping existing local backup"
+        return 1
+    fi
+    
+    # Install git if needed (after confirming we have internet)
+    install_if_not git
+    
+    # Remove old clone and get fresh copy
+    print_text_in_color "$ICyan" "Creating local backup of repository (in case of network issues)..."
+    rm -rf "$BACKUP_REPO"
+    
+    # Clone repository
+    if git clone --depth 1 --branch main \
+        https://github.com/nextcloud/vm.git "$BACKUP_REPO" &>/dev/null
+    then
+        chmod -R +rx "$BACKUP_REPO"
+        print_text_in_color "$IGreen" "✓ Local backup ready"
+        return 0
+    else
+        print_text_in_color "$IYellow" "Could not create local backup (continuing anyway)"
+        return 1
+    fi
+}
+
+# Try to copy file from local backup repository
+# Called when curl download fails (rate limits, network issues)
+try_local_backup() {
+    local url="$1"
+    local file="$2"
+    local dest_dir="$3"
+    local BACKUP_REPO="$SCRIPTS/vm-repo-backup"
+    
+    # Check if backup exists
+    if [ ! -d "$BACKUP_REPO" ]
+    then
+        return 1
+    fi
+    
+    # Convert URL to local path
+    # https://raw.githubusercontent.com/nextcloud/vm/main/apps/script.sh -> apps/script.sh
+    # https://raw.githubusercontent.com/nextcloud/vm/main -> (empty, root level)
+    local path_part
+    path_part=$(echo "$url" | sed 's|https://raw.githubusercontent.com/nextcloud/vm/main||' | sed 's|https://raw.githubusercontent.com/nextcloud/vm/master||' | sed 's|^/||')
+    
+    # If path_part is empty, we're downloading from root
+    if [ -z "$path_part" ]
+    then
+        local local_file="$BACKUP_REPO/$file"
+    else
+        local local_file="$BACKUP_REPO/$path_part/$file"
+    fi
+    
+    if [ -f "$local_file" ]
+    then
+        print_text_in_color "$IYellow" "⚠ GitHub unavailable, using local backup: $file"
+        cp "$local_file" "$dest_dir/$file"
+        return 0
+    else
+        return 1
+    fi
 }
 
 ## bash colors

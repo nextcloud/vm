@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -41,8 +41,10 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# install needed tool
-apt-get update -q4 & spinner_loading
+# Install curl for ddclient to work around 3.10.0 parsing bug (see #2754)
+install_if_not curl
+# Also ensure curl is installed before ddclient installation
+apt-get install curl -y
 DEBIAN_FRONTEND=noninteractive apt-get install ddclient -y
 
 # Test if file exists
@@ -76,6 +78,7 @@ case "$choice" in
         PROTOCOL="cloudflare"
         SERVER="www.cloudflare.com"
         USE_SSL="yes"
+        USE_ZONE="yes"
     ;;
     "deSEC")
         PROVIDER="deSEC"
@@ -179,8 +182,13 @@ cat << DDCLIENT_CONF > "/etc/ddclient.conf"
 # /etc/ddclient.conf
 
 # Default system settings
-use=if, if=$IFACE
-use=web, web=https://api.ipify.org
+usev4=webv4, webv4=https://api.ipify.org
+
+# Workaround for ddclient 3.10.0+ parsing bug disabled
+# The 'curl=yes' option causes "curl not found" errors even with curl installed
+# See: https://github.com/ddclient/ddclient/issues/499
+# and: https://github.com/nextcloud/vm/issues/2754
+# curl=yes
 
 # DDNS-service specific setting
 # Provider=$PROVIDER
@@ -193,9 +201,13 @@ login=$LOGIN
 password=$PASSWORD
 
 # Hostname follows:
-zone=$HOSTNAME
-$HOSTNAME
 DDCLIENT_CONF
+
+if [ "$USE_ZONE" = "yes" ]
+then
+    echo "zone=$HOSTNAME" >> /etc/ddclient.conf
+fi
+echo "$HOSTNAME" >> /etc/ddclient.conf
 
 # Test connection
 msg_box "Everything is set up by now and we will check the connection."
@@ -203,8 +215,8 @@ if ! ddclient -verbose
 then
     msg_box "Something failed while testing the DDNS update.
 Please try again by running this script again!"
+    exit 1
 else
     msg_box "Congratulations, it seems like the initial DDNS update worked!
 DDclient is now set up correctly!"
 fi
-exit

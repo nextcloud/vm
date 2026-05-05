@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 true
@@ -54,9 +54,9 @@ ufw allow https comment https
 print_text_in_color "$ICyan" "UPnP"
 ufw allow proto udp from 192.168.0.0/16 comment UPnP
 
-# Adminer
-print_text_in_color "$ICyan" "Allow Adminer"
-ufw allow 9443/tcp comment Adminer
+# AdminNeo
+print_text_in_color "$ICyan" "Allow AdminNeo"
+ufw allow 9443/tcp comment AdminNeo
 
 # Netdata
 print_text_in_color "$ICyan" "Allow Netdata"

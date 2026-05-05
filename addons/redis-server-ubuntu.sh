@@ -4,7 +4,7 @@ SCRIPT_NAME="Redis Server Ubuntu"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -53,32 +53,20 @@ then
     then
         pecl uninstall redis
     fi
+    # Also remove OS package if installed
+    if is_this_installed php"$PHPVER"-redis
+    then
+        apt-get purge php"$PHPVER"-redis -y
+    fi
     apt-get purge redis-server -y
     apt-get autoremove -y
     apt-get autoclean
 fi
 
 # Install Redis
-print_text_in_color "$ICyan" "Installing Redis server..."
-install_if_not php"$PHPVER"-dev
-pecl channel-update pecl.php.net
-if ! yes no | pecl install -Z redis
-then
-    msg_box "Redis PHP module installation failed"
-exit 1
-else
-    print_text_in_color "$IGreen" "Redis PHP module installation OK!"
-fi
-if [ ! -f $PHP_MODS_DIR/redis.ini ]
-then
-    touch $PHP_MODS_DIR/redis.ini
-fi
-if ! grep -qFx extension=redis.so $PHP_MODS_DIR/redis.ini
-then
-    echo "# PECL redis" > $PHP_MODS_DIR/redis.ini
-    echo "extension=redis.so" >> $PHP_MODS_DIR/redis.ini
-    check_command phpenmod -v ALL redis
-fi
+print_text_in_color "$ICyan" "Installing Redis server and PHP extension..."
+install_if_not php"$PHPVER"-redis
+phpenmod -v "$PHPVER" redis
 install_if_not redis-server
 
 ## Redis performance tweaks ##

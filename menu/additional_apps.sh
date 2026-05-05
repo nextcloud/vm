@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Additional Apps Menu"
@@ -46,7 +46,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Webmin" "(Server GUI like Cpanel)" OFF \
 "Talk" "(Video calls and chat for Nextcloud - requires port 3478)" "$STARTUP_SWITCH" \
 "SMB-mount" "(Mount SMB-shares from your local network)" OFF \
-"Adminer" "(PostgreSQL GUI)" OFF \
+"AdminNeo" "(PostgreSQL GUI)" OFF \
 "LDAP" "(Windows Active directory for Nextcloud)" OFF \
 "Notify Push" "(High Performance Files Backend for Nextcloud)" OFF \
 "Netdata" "(Real-time server monitoring in Web GUI)" OFF \
@@ -55,8 +55,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
 "Pico CMS" "(Lightweight CMS integration in Nextcloud)" OFF \
-"Whiteboard" "(Whiteboard for Nextcloud)" OFF \
-"Extract" "(Archive extraction for Nextcloud)" OFF 3>&1 1>&2 2>&3)
+"Whiteboard" "(Whiteboard for Nextcloud)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Documentserver"*)
@@ -71,17 +70,13 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Fail2ban Menu..."
         run_script MENU fail2ban_menu
     ;;&
-    *"Adminer"*)
-        print_text_in_color "$ICyan" "Downloading the Adminer script..."
-        run_script APP adminer
+    *"AdminNeo"*)
+        print_text_in_color "$ICyan" "Downloading the AdminNeo script..."
+        run_script APP adminneo
     ;;&
     *"ClamAV"*)
         print_text_in_color "$ICyan" "Downloading the ClamAV script..."
         run_script APP clamav
-    ;;&
-    *"Extract"*)
-        print_text_in_color "$ICyan" "Downloading the Extract script..."
-        run_script APP extract
     ;;&
     *"Netdata"*)
         print_text_in_color "$ICyan" "Downloading the Netdata script..."

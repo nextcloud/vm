@@ -2,7 +2,14 @@
 true
 SCRIPT_NAME="Test Connection (old)"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+if [ -f /var/scripts/fetch_lib.sh ]
+then
+    # shellcheck source=static/fetch_lib.sh
+    source /var/scripts/fetch_lib.sh
+elif ! source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/static/fetch_lib.sh)
+then
+    source <(curl -sL https://cdn.statically.io/gh/nextcloud/vm/main/static/fetch_lib.sh)
+fi
 
 # This is needed since we removed this from the startup script, or changed name so it can't be downloaded anymore
 msg_box "You are running an outdated release.

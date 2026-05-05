@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/main/LICENSE
 
@@ -154,6 +154,9 @@ SCRIPT_NAME="Nextcloud Startup Script"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
+# Import if missing and export again to import it with UUID
+zpool_import_if_missing
+
 # Get all needed variables from the library
 ncdb
 nc_update
@@ -172,9 +175,6 @@ if network_ok
 then
     run_script STATIC temporary-fix-beginning
 fi
-
-# Import if missing and export again to import it with UUID
-zpool_import_if_missing
 
 # Set phone region (needs the latest KEYBOARD_LAYOUT from lib)
 # shellcheck source=lib.sh
@@ -583,10 +583,6 @@ nextcloud_occ maintenance:repair --include-expensive
 # Cleanup 2
 apt-get autoremove -y
 apt-get autoclean
-
-# Remove preference for IPv4
-rm -f /etc/apt/apt.conf.d/99force-ipv4
-apt-get update
 
 # Success!
 msg_box "The installation process is *almost* done.

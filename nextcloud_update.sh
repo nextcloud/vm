@@ -4,18 +4,28 @@
 # DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
 #################################################################################################################
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/main/LICENSE
 
 true
 SCRIPT_NAME="Nextcloud Update Script"
 # shellcheck source=lib.sh
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+if [ -f /var/scripts/fetch_lib.sh ]
+then
+    # shellcheck source=static/fetch_lib.sh
+    source /var/scripts/fetch_lib.sh
+elif ! source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/static/fetch_lib.sh)
+then
+    source <(curl -sL https://cdn.statically.io/gh/nextcloud/vm/main/static/fetch_lib.sh)
+fi
 
 # Get all needed variables from the library
 ncdb
 nc_update
+
+# Create local backup of repository (for fallback if GitHub has issues)
+ensure_local_backup_repo
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
@@ -75,7 +85,7 @@ fi
 # https://github.com/nextcloud/vm/pull/2040
 if pecl list | grep apcu >/dev/null 2>&1
 then
-    sed -i "/memcache.local/d" "$NCPATH"/config/config.php
+    sed -i "\|memcache.local|d" "$NCPATH"/config/config.php
     if pecl list | grep redis >/dev/null 2>&1
     then
         nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
@@ -253,9 +263,22 @@ then
     fi
 fi
 
+# Check if reboot was enabled before downloading new script
+if [ -f "$SCRIPTS/update.sh" ] && grep -q "shutdown -r" "$SCRIPTS/update.sh"
+then
+    REBOOT_ENABLED=1
+fi
+
 # Since the branch change, always get the latest update script
 download_script STATIC update
-chmod +x $SCRIPTS/update.sh
+chmod +x "$SCRIPTS"/update.sh
+
+# Restore reboot if it was enabled
+if [ "$REBOOT_ENABLED" = 1 ]
+then
+    sed -i "s|exit|/sbin/shutdown -r +10|g" "$SCRIPTS"/update.sh
+    echo "exit" >> "$SCRIPTS"/update.sh
+fi
 
 # Ubuntu 16.04 is deprecated
 check_distro_version
@@ -329,6 +352,11 @@ then
     # Hold veracrypt if installed since unmounting all drives, updating and mounting them again is not feasible
     # If you desperately need the update, you can do so manually
     apt-mark hold veracrypt
+
+    # Also do not restart services automatically when running apt-get dist-upgrade later on
+    # As this otherwise restarts the veracrypt automount service and unmounts all drives unexpectedly 
+    export NEEDRESTART_MODE=l
+    export NEEDRESTART_SUSPEND=1
 fi
 
 # Enter maintenance:mode
@@ -415,47 +443,66 @@ fi
 # Fix PHP error message
 mkdir -p /tmp/pear/cache
 
-# Just in case PECLs XML are bad
-if ! pecl channel-update pecl.php.net
-then
-    curl_to_dir http://pecl.php.net channel.xml /tmp
-    pear channel-update /tmp/channel.xml
-    rm -f /tmp/channel.xml
-fi
-
-# Update Redis PHP extension (18.04 -->, since 16.04 already is deprecated in the top of this script)
-print_text_in_color "$ICyan" "Trying to upgrade the Redis PECL extension..."
+# Migrate from PECL to OS packages for redis, igbinary, smbclient
+# This is a one-time migration for existing installations
+print_text_in_color "$ICyan" "Checking PHP extensions (migrating from PECL to OS packages if needed)..."
 
 # Check current PHP version
 check_php
 
-# Do the upgrade
-if pecl list | grep redis >/dev/null 2>&1
-then
-    if is_this_installed php"$PHPVER"-common
+# Migrate each extension from PECL to OS package
+# igbinary must come before redis since php-redis depends on php-igbinary
+for ext in igbinary smbclient redis
+do
+    if pecl list 2>/dev/null | grep -q "^$ext "
     then
-        install_if_not php"$PHPVER"-dev
+        print_text_in_color "$ICyan" "Migrating $ext from PECL to OS package..."
+        # Disable extension first
+        phpdismod -v ALL "$ext" 2>/dev/null || true
+        # Uninstall from PECL
+        yes | pecl uninstall "$ext" 2>/dev/null || true
+        # Remove manual .ini if it exists
+        rm -f "$PHP_MODS_DIR/$ext.ini"
+        # Install OS package (use --allow-change-held-packages in case the package was previously held)
+        apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install -y --allow-change-held-packages php"$PHPVER"-"$ext"
+        phpenmod -v "$PHPVER" "$ext"
+        print_text_in_color "$IGreen" "Migrated $ext to OS package (php$PHPVER-$ext)"
+    elif ! is_this_installed php"$PHPVER"-"$ext"
+    then
+        # Not installed via PECL, but also not installed as OS package - install it
+        print_text_in_color "$ICyan" "Installing $ext as OS package..."
+        apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install -y --allow-change-held-packages php"$PHPVER"-"$ext"
+        phpenmod -v "$PHPVER" "$ext"
     fi
+done
 
-    yes no | pecl upgrade redis
-    systemctl restart redis-server.service
-fi
-# Remove old redis
-if grep -qFx extension=redis.so "$PHP_INI"
+# Remove old extension references from php.ini if they exist
+for ext in redis igbinary smbclient
+do
+    if grep -qFx "extension=$ext.so" "$PHP_INI" 2>/dev/null
+    then
+        sed -i "/extension=$ext.so/d" "$PHP_INI"
+    fi
+done
+
+# Clean up no longer needed build dependencies if no PECL packages remain
+if pecl list 2>/dev/null | tail -n +4 | grep -qv "^no packages"
 then
-    sed -i "/extension=redis.so/d" "$PHP_INI"
-fi
-# Check if redis is enabled and create the file if not
-if [ ! -f "$PHP_MODS_DIR"/redis.ini ]
-then
-    touch "$PHP_MODS_DIR"/redis.ini
-fi
-# Enable new redis
-if ! grep -qFx extension=redis.so "$PHP_MODS_DIR"/redis.ini
-then
-    echo "# PECL redis" > "$PHP_MODS_DIR"/redis.ini
-    echo "extension=redis.so" >> "$PHP_MODS_DIR"/redis.ini
-    check_command phpenmod -v ALL redis
+    print_text_in_color "$ICyan" "PECL packages still installed, keeping build dependencies..."
+else
+    # No more PECL packages, safe to remove build deps
+    if is_this_installed php"$PHPVER"-dev
+    then
+        print_text_in_color "$ICyan" "Removing php-dev (no longer needed)..."
+        apt-get purge php"$PHPVER"-dev -y --allow-change-held-packages
+        apt-get autoremove -y
+    fi
+    if is_this_installed libsmbclient-dev
+    then
+        print_text_in_color "$ICyan" "Removing libsmbclient-dev (no longer needed)..."
+        apt-get purge libsmbclient-dev -y
+        apt-get autoremove -y
+    fi
 fi
 
 # Remove APCu https://github.com/nextcloud/vm/issues/2039
@@ -474,9 +521,9 @@ then
         check_command phpdismod -v ALL apcu
         rm -f "$PHP_MODS_DIR"/apcu.ini
         rm -f "$PHP_MODS_DIR"/apcu_bc.ini
-        sed -i "/extension=apcu.so/d" "$PHP_INI"
-        sed -i "/APCu/d" "$PHP_INI"
-        sed -i "/apc./d" "$PHP_INI"
+        sed -i "\|extension=apcu.so|d" "$PHP_INI"
+        sed -i "\|APCu|d" "$PHP_INI"
+        sed -i "\|apc.|d" "$PHP_INI"
     fi
 fi
 
@@ -492,60 +539,17 @@ then
     apt-get autoremove -y
 fi
 
-# Upgrade other PECL dependencies
+# Upgrade inotify PECL dependency
 if [ "${CURRENTVERSION%%.*}" -ge "17" ]
 then
     if [ -f "$PHP_INI" ]
     then
-        print_text_in_color "$ICyan" "Trying to upgrade igbinary, and smbclient..."
-        if pecl list | grep igbinary >/dev/null 2>&1
-        then
-            yes no | pecl upgrade igbinary
-            # Remove old igbinary
-            if grep -qFx extension=igbinary.so "$PHP_INI"
-            then
-                sed -i "/extension=igbinary.so/d" "$PHP_INI"
-            fi
-            # Check if igbinary is enabled and create the file if not
-            if [ ! -f "$PHP_MODS_DIR"/igbinary.ini ]
-            then
-                touch "$PHP_MODS_DIR"/igbinary.ini
-            fi
-            # Enable new igbinary
-            if ! grep -qFx extension=igbinary.so "$PHP_MODS_DIR"/igbinary.ini
-            then
-                echo "# PECL igbinary" > "$PHP_MODS_DIR"/igbinary.ini
-                echo "extension=igbinary.so" >> "$PHP_MODS_DIR"/igbinary.ini
-                check_command phpenmod -v ALL igbinary
-            fi
-        fi
-        if pecl list | grep -q smbclient
-        then
-            yes no | pecl upgrade smbclient
-            # Check if smbclient is enabled and create the file if not
-            if [ ! -f "$PHP_MODS_DIR"/smbclient.ini ]
-            then
-               touch "$PHP_MODS_DIR"/smbclient.ini
-            fi
-            # Enable new smbclient
-            if ! grep -qFx extension=smbclient.so "$PHP_MODS_DIR"/smbclient.ini
-            then
-                echo "# PECL smbclient" > "$PHP_MODS_DIR"/smbclient.ini
-                echo "extension=smbclient.so" >> "$PHP_MODS_DIR"/smbclient.ini
-                check_command phpenmod -v ALL smbclient
-            fi
-            # Remove old smbclient
-            if grep -qFx extension=smbclient.so "$PHP_INI"
-            then
-                sed -i "/extension=smbclient.so/d" "$PHP_INI"
-            fi
-        fi
         if pecl list | grep -q inotify
         then
             # Remove old inotify
             if grep -qFx extension=inotify.so "$PHP_INI"
             then
-                sed -i "/extension=inotify.so/d" "$PHP_INI"
+                sed -i "\|extension=inotify.so|d" "$PHP_INI"
             fi
             yes no | pecl upgrade inotify
             if [ ! -f "$PHP_MODS_DIR"/inotify.ini ]
@@ -565,18 +569,26 @@ fi
 # Make sure services are restarted
 restart_webserver
 
-# Update adminer
-if [ -d "$ADMINERDIR" ]
+# Update adminneo
+if [ -d "$ADMINNEODIR" ]
 then
-    print_text_in_color "$ICyan" "Updating Adminer..."
-    rm -f "$ADMINERDIR"/latest.php "$ADMINERDIR"/adminer.php "$ADMINERDIR"/adminer-pgsql.php
-    # Download the latest version
-    curl_to_dir "https://download.adminerevo.org/latest/adminer" "adminer-pgsql.zip" "$ADMINERDIR"
-    install_if_not unzip
-    # Unzip the latest version
-    unzip "$ADMINERDIR"/adminer-pgsql.zip -d "$ADMINERDIR"
-    rm -f "$ADMINERDIR"/adminer-pgsql.zip
-    mv "$ADMINERDIR"/adminer-pgsql.php "$ADMINERDIR"/adminer.php
+    print_text_in_color "$ICyan" "Updating AdminNeo..."
+    rm -f "$ADMINNEODIR"/latest.php "$ADMINNEODIR"/adminneo.php "$ADMINNEODIR"/adminneo-pgsql.php
+
+    if curl_to_dir "https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_en_default/" "adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR"
+    then
+        if [ -f "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" ]
+        then
+            mv "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR/adminneo.php"
+        elif [ -f "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" ]
+        then
+            mv "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" "$ADMINNEODIR/adminneo.php"
+        else
+            print_text_in_color "$IRed" "AdminNeo download completed but expected files were not found."
+        fi
+    else
+        print_text_in_color "$IRed" "Failed to update AdminNeo from $ADMINNEO_DOWNLOAD_URL"
+    fi
 fi
 
 # Get latest Maxmind databse for Geoblock
@@ -756,7 +768,7 @@ sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
 
 # Make all previous files executable
 print_text_in_color "$ICyan" "Finding all executable files in $NC_APPS_PATH"
-find_executables="$(find $NC_APPS_PATH -type f -executable)"
+find_executables="$(find "$NC_APPS_PATH" -type f -executable)"
 
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
@@ -794,7 +806,7 @@ else
 fi
 
 # Apply correct redirect rule to avoid security check errors
-REDIRECTRULE="$(grep -r "\[R=301,L\]" $SITES_AVAILABLE | cut -d ":" -f1)"
+REDIRECTRULE="$(grep -r "\[R=301,L\]" "$SITES_AVAILABLE" | cut -d ":" -f1)"
 if [ -n "$REDIRECTRULE" ]
 then
     # Change the redirect rule in all files in Apache available
@@ -1002,8 +1014,23 @@ fi
 
 # Check if PHP version is compatible with $NCVERSION
 # https://github.com/nextcloud/server/issues/29258
-PHP_VER=82
+PHP_VER=81
 NC_VER=32
+if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
+then
+    if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
+    then
+msg_box "Your PHP version isn't compatible with the new version of Nextcloud. Please upgrade your PHP stack and try again.
+
+If you need support, please visit https://shop.hanssonit.se/product/upgrade-php-version-including-dependencies/"
+        exit
+    fi
+fi
+
+# Check if PHP version is compatible with $NCVERSION
+# https://github.com/nextcloud/server/issues/29258
+PHP_VER=82
+NC_VER=33
 if [ "${NCVERSION%%.*}" -ge "$NC_VER" ]
 then
     if [ "$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,3)" -lt "$PHP_VER" ]
@@ -1104,6 +1131,11 @@ then
     mkdir -p "$BACKUP"
 fi
 
+# Save the list of enabled apps before upgrade (to re-enable them after upgrade)
+# https://github.com/nextcloud/vm/issues/2797
+print_text_in_color "$ICyan" "Saving list of enabled apps before upgrade..."
+nextcloud_occ app:list --enabled | sed '\|Disabled|,$d' | awk '{print$2}' | tr -d ':' | sed '\|^$|d' > "$BACKUP/enabled_apps_before_upgrade.txt"
+
 # Do a backup of the ZFS mount
 if is_this_installed zfs-auto-snapshot
 then
@@ -1197,6 +1229,13 @@ then
             nextcloud_occ config:system:set default_phone_region --value="$KEYBOARD_LAYOUT"
         fi
     fi
+    if [ "${CURRENTVERSION%%.*}" -ge "22" ]
+    then
+        if [ -z "$(nextcloud_occ_no_check config:system:get maintenance_window_start)" ];
+        then
+            nextcloud_occ config:system:set maintenance_window_start --type=integer --value=100
+        fi
+    fi
     if [ "${CURRENTVERSION%%.*}" -ge "23" ]
     then
         # Update opcache.interned_strings_buffer
@@ -1267,7 +1306,8 @@ then
     fi
 fi
 
-# If the app isn't installed (maybe because it's incompatible), then at least restore from backup and make sure it's disabled
+# Restore apps from backup that are missing in the new Nextcloud installation
+# (occ upgrade will automatically disable incompatible apps)
 BACKUP_APPS="$(find "$BACKUP/apps" -maxdepth 1 -mindepth 1 -type d)"
 mapfile -t BACKUP_APPS <<< "$BACKUP_APPS"
 for app in "${BACKUP_APPS[@]}"
@@ -1278,10 +1318,9 @@ do
             print_text_in_color "$ICyan" "Restoring $app from $BACKUP/apps..."
             rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
             bash "$SECURE"
-            nextcloud_occ_no_check app:disable "$app"
             # Don't execute the update before all cronjobs are finished
             check_running_cronjobs
-            # Execute the update
+            # Execute the update (will disable incompatible apps automatically)
             nextcloud_occ upgrade
     fi
 done
@@ -1294,12 +1333,40 @@ then
     nextcloud_occ_no_check app:update --all
 fi
 
+# Re-enable previously enabled apps after upgrade
+# https://github.com/nextcloud/vm/issues/2797
+if [ -f "$BACKUP/enabled_apps_before_upgrade.txt" ]
+then
+    print_text_in_color "$ICyan" "Attempting to re-enable previously enabled apps..."
+    while IFS= read -r app
+    do
+        # Skip empty lines
+        if [ -z "$app" ]
+        then
+            continue
+        fi
+        # Check if app directory exists and try to enable it
+        if [ -d "$NC_APPS_PATH/$app" ]
+        then
+            if ! is_app_enabled "$app"
+            then
+                if nextcloud_occ_no_check app:enable "$app" >/dev/null 2>&1
+                then
+                    print_text_in_color "$IGreen" "Re-enabled $app"
+                else
+                    print_text_in_color "$IRed" "Could not re-enable $app (may be incompatible with Nextcloud $CURRENTVERSION_after)"
+                fi
+            fi
+        fi
+    done < "$BACKUP/enabled_apps_before_upgrade.txt"
+fi
+
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
 then
     if grep -q 'Header always set Referrer-Policy' /etc/apache2/sites-available/"$(hostname -f)".conf
     then
-        sed -i '/Header always set Referrer-Policy/d' /etc/apache2/sites-available/"$(hostname -f)".conf
+        sed -i '\|Header always set Referrer-Policy|d' /etc/apache2/sites-available/"$(hostname -f)".conf
         restart_webserver
     fi
 fi

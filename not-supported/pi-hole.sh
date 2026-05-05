@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # Copyright © 2021 Simon Lindner (https://github.com/szaimen)
 
 # shellcheck disable=2016,2034,2059,2178,2317
@@ -226,7 +226,13 @@ mkdir -p "$SCRIPTS"
 # Insert the new lines into pihole-update.sh
 cat << PIHOLE_UPDATE > "$SCRIPTS/pihole-update.sh"
 #!/bin/bash
-. <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+if [ -f /var/scripts/fetch_lib.sh ]
+then
+    source /var/scripts/fetch_lib.sh
+elif ! source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/static/fetch_lib.sh)
+then
+    source <(curl -sL https://cdn.statically.io/gh/nextcloud/vm/main/static/fetch_lib.sh)
+fi
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 notify_admin_gui "Starting the Pi-hole update." "You will be notified when it is done."
 # Create backup first

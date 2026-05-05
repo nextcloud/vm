@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="ClamAV"
@@ -72,14 +72,14 @@ check_command systemctl restart clamav-daemon
 
 print_text_in_color "$ICyan" "Waiting for ClamAV daemon to start up. This can take a while... (max 60s)"
 counter=0
-while ! [ -a "/var/run/clamav/clamd.ctl" ] && [ "$counter" -lt 12 ]
+while ! [ -e "/var/run/clamav/clamd.ctl" ] && [ "$counter" -lt 12 ]
 do
     countdown "Waiting for ClamAV to start..." "10"
     ((counter++))
 done
 
 # Check if clamd exists now
-if ! [ -a "/var/run/clamav/clamd.ctl" ]
+if ! [ -e "/var/run/clamav/clamd.ctl" ]
 then
     msg_box "Failed to start the ClamAV daemon.
 Please report this to $ISSUES"
@@ -198,7 +198,7 @@ esac
 cat << CLAMAV_REPORT > "$SCRIPTS"/clamav-fullscan.sh
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 source /var/scripts/fetch_lib.sh
 

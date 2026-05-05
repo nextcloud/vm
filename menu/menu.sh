@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Main Menu"
@@ -19,10 +19,7 @@ root_check
 mkdir -p "$SCRIPTS"
 print_text_in_color "$ICyan" "Running the main menu script..."
 
-if network_ok
-then
-    # Delete, download, run
-    run_script MENU main_menu
-fi
+# Try to run main_menu - will use local backup if GitHub unavailable
+run_script MENU main_menu
 
 exit

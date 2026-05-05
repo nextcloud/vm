@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/main/LICENSE
 
@@ -21,7 +21,7 @@ debug_mode
 root_check
 
 # Check recources
-# If we can calculate the cpu and ram, then set it to the lowest possible, if not, then hardcode it to a recomended minimum.
+# If we can calculate the cpu and ram, then set it to the lowest possible, if not, then hardcode it to a recommended minimum.
 if which nproc >/dev/null 2>&1
 then
     ram_check 2 Imaginary

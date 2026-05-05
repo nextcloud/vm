@@ -1,17 +1,24 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2024, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/main/LICENSE
 
 #########
 
 ## This script will install Transmission, download the latest version of the VM, create a torrent of the file and seed it using Transmission 
-## Improvments to the script are welcome!
+## Improvements to the script are welcome!
 
 # shellcheck source=lib.sh
 # shellcheck disable=SC2046
-source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/lib.sh)
+if [ -f /var/scripts/fetch_lib.sh ]
+then
+    # shellcheck source=static/fetch_lib.sh
+    source /var/scripts/fetch_lib.sh
+elif ! source <(curl -sL https://raw.githubusercontent.com/nextcloud/vm/main/static/fetch_lib.sh)
+then
+    source <(curl -sL https://cdn.statically.io/gh/nextcloud/vm/main/static/fetch_lib.sh)
+fi
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
