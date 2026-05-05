@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
-# SwITNet Ltd © - 2025, https://switnet.net/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
+# SwITNet Ltd © - 2026, https://switnet.net/
 
 true
 SCRIPT_NAME="Full Text Search"

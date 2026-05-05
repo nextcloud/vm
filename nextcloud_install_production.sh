@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/main/LICENSE
 
@@ -929,7 +929,7 @@ restart_webserver
 
 if [ -n "$PROVISIONING" ]
 then
-    choice="Calendar Contacts IssueTemplate PDFViewer Extract Text Mail Deck Group-Folders"
+    choice="Calendar Contacts IssueTemplate PDFViewer Text Mail Deck Group-Folders"
 else
     choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
 "Automatically configure and install selected apps or software
@@ -937,7 +937,6 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Calendar" "" ON \
 "Contacts" "" ON \
 "PDFViewer" "" ON \
-"Extract" "" ON \
 "Text" "" ON \
 "Mail" "" ON \
 "Deck" "" ON \
@@ -963,14 +962,6 @@ case "$choice" in
     ;;&
     *"PDFViewer"*)
         install_and_enable_app files_pdfviewer
-    ;;&
-    *"Extract"*)
-        if install_and_enable_app extract
-        then
-            install_if_not unrar
-            install_if_not p7zip
-            install_if_not p7zip-full
-        fi
     ;;&
     *"Text"*)
         install_and_enable_app text

@@ -4,7 +4,7 @@
 # DO NOT USE THIS SCRIPT WHEN UPDATING NEXTCLOUD / YOUR SERVER! RUN `sudo bash /var/scripts/update.sh` INSTEAD. #
 #################################################################################################################
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/main/LICENSE
 
@@ -85,7 +85,7 @@ fi
 # https://github.com/nextcloud/vm/pull/2040
 if pecl list | grep apcu >/dev/null 2>&1
 then
-    sed -i "/memcache.local/d" "$NCPATH"/config/config.php
+    sed -i "\|memcache.local|d" "$NCPATH"/config/config.php
     if pecl list | grep redis >/dev/null 2>&1
     then
         nextcloud_occ config:system:set memcache.local --value='\OC\Memcache\Redis'
@@ -263,9 +263,22 @@ then
     fi
 fi
 
+# Check if reboot was enabled before downloading new script
+if [ -f "$SCRIPTS/update.sh" ] && grep -q "shutdown -r" "$SCRIPTS/update.sh"
+then
+    REBOOT_ENABLED=1
+fi
+
 # Since the branch change, always get the latest update script
 download_script STATIC update
-chmod +x $SCRIPTS/update.sh
+chmod +x "$SCRIPTS"/update.sh
+
+# Restore reboot if it was enabled
+if [ "$REBOOT_ENABLED" = 1 ]
+then
+    sed -i "s|exit|/sbin/shutdown -r +10|g" "$SCRIPTS"/update.sh
+    echo "exit" >> "$SCRIPTS"/update.sh
+fi
 
 # Ubuntu 16.04 is deprecated
 check_distro_version
@@ -497,9 +510,9 @@ then
         check_command phpdismod -v ALL apcu
         rm -f "$PHP_MODS_DIR"/apcu.ini
         rm -f "$PHP_MODS_DIR"/apcu_bc.ini
-        sed -i "/extension=apcu.so/d" "$PHP_INI"
-        sed -i "/APCu/d" "$PHP_INI"
-        sed -i "/apc./d" "$PHP_INI"
+        sed -i "\|extension=apcu.so|d" "$PHP_INI"
+        sed -i "\|APCu|d" "$PHP_INI"
+        sed -i "\|apc.|d" "$PHP_INI"
     fi
 fi
 
@@ -513,6 +526,33 @@ if is_this_installed php"$PHPVER"-apcu
 then
     apt-get purge php"$PHPVER"-apcu
     apt-get autoremove -y
+fi
+
+# Upgrade inotify PECL dependency
+if [ "${CURRENTVERSION%%.*}" -ge "17" ]
+then
+    if [ -f "$PHP_INI" ]
+    then
+        if pecl list | grep -q inotify
+        then
+            # Remove old inotify
+            if grep -qFx extension=inotify.so "$PHP_INI"
+            then
+                sed -i "\|extension=inotify.so|d" "$PHP_INI"
+            fi
+            yes no | pecl upgrade inotify
+            if [ ! -f "$PHP_MODS_DIR"/inotify.ini ]
+            then
+                touch "$PHP_MODS_DIR"/inotify.ini
+            fi
+            if ! grep -qFx extension=inotify.so "$PHP_MODS_DIR"/inotify.ini
+            then
+                echo "# PECL inotify" > "$PHP_MODS_DIR"/inotify.ini
+                echo "extension=inotify.so" >> "$PHP_MODS_DIR"/inotify.ini
+                check_command phpenmod -v ALL inotify
+            fi
+        fi
+    fi
 fi
 
 # Make sure services are restarted
@@ -717,7 +757,7 @@ sudo -u www-data php "$NCPATH"/occ maintenance:mode --off
 
 # Make all previous files executable
 print_text_in_color "$ICyan" "Finding all executable files in $NC_APPS_PATH"
-find_executables="$(find $NC_APPS_PATH -type f -executable)"
+find_executables="$(find "$NC_APPS_PATH" -type f -executable)"
 
 # Update all Nextcloud apps
 if [ "${CURRENTVERSION%%.*}" -ge "15" ]
@@ -755,7 +795,7 @@ else
 fi
 
 # Apply correct redirect rule to avoid security check errors
-REDIRECTRULE="$(grep -r "\[R=301,L\]" $SITES_AVAILABLE | cut -d ":" -f1)"
+REDIRECTRULE="$(grep -r "\[R=301,L\]" "$SITES_AVAILABLE" | cut -d ":" -f1)"
 if [ -n "$REDIRECTRULE" ]
 then
     # Change the redirect rule in all files in Apache available
@@ -1080,6 +1120,11 @@ then
     mkdir -p "$BACKUP"
 fi
 
+# Save the list of enabled apps before upgrade (to re-enable them after upgrade)
+# https://github.com/nextcloud/vm/issues/2797
+print_text_in_color "$ICyan" "Saving list of enabled apps before upgrade..."
+nextcloud_occ app:list --enabled | sed '\|Disabled|,$d' | awk '{print$2}' | tr -d ':' | sed '\|^$|d' > "$BACKUP/enabled_apps_before_upgrade.txt"
+
 # Do a backup of the ZFS mount
 if is_this_installed zfs-auto-snapshot
 then
@@ -1175,9 +1220,9 @@ then
     fi
     if [ "${CURRENTVERSION%%.*}" -ge "22" ]
     then
-        if ! nextcloud_occ config:system:get maintenance_window_start
+        if [ -z "$(nextcloud_occ_no_check config:system:get maintenance_window_start)" ];
         then
-            nextcloud_occ config:system:set maintenance_window_start --type=integer --value=2
+            nextcloud_occ config:system:set maintenance_window_start --type=integer --value=100
         fi
     fi
     if [ "${CURRENTVERSION%%.*}" -ge "23" ]
@@ -1250,7 +1295,8 @@ then
     fi
 fi
 
-# If the app isn't installed (maybe because it's incompatible), then at least restore from backup and make sure it's disabled
+# Restore apps from backup that are missing in the new Nextcloud installation
+# (occ upgrade will automatically disable incompatible apps)
 BACKUP_APPS="$(find "$BACKUP/apps" -maxdepth 1 -mindepth 1 -type d)"
 mapfile -t BACKUP_APPS <<< "$BACKUP_APPS"
 for app in "${BACKUP_APPS[@]}"
@@ -1261,10 +1307,9 @@ do
             print_text_in_color "$ICyan" "Restoring $app from $BACKUP/apps..."
             rsync -Aaxz "$BACKUP/apps/$app" "$NC_APPS_PATH/"
             bash "$SECURE"
-            nextcloud_occ_no_check app:disable "$app"
             # Don't execute the update before all cronjobs are finished
             check_running_cronjobs
-            # Execute the update
+            # Execute the update (will disable incompatible apps automatically)
             nextcloud_occ upgrade
     fi
 done
@@ -1277,12 +1322,40 @@ then
     nextcloud_occ_no_check app:update --all
 fi
 
+# Re-enable previously enabled apps after upgrade
+# https://github.com/nextcloud/vm/issues/2797
+if [ -f "$BACKUP/enabled_apps_before_upgrade.txt" ]
+then
+    print_text_in_color "$ICyan" "Attempting to re-enable previously enabled apps..."
+    while IFS= read -r app
+    do
+        # Skip empty lines
+        if [ -z "$app" ]
+        then
+            continue
+        fi
+        # Check if app directory exists and try to enable it
+        if [ -d "$NC_APPS_PATH/$app" ]
+        then
+            if ! is_app_enabled "$app"
+            then
+                if nextcloud_occ_no_check app:enable "$app" >/dev/null 2>&1
+                then
+                    print_text_in_color "$IGreen" "Re-enabled $app"
+                else
+                    print_text_in_color "$IRed" "Could not re-enable $app (may be incompatible with Nextcloud $CURRENTVERSION_after)"
+                fi
+            fi
+        fi
+    done < "$BACKUP/enabled_apps_before_upgrade.txt"
+fi
+
 # Remove header for Nextcloud 14 (already in .htaccess)
 if [ -f /etc/apache2/sites-available/"$(hostname -f)".conf ]
 then
     if grep -q 'Header always set Referrer-Policy' /etc/apache2/sites-available/"$(hostname -f)".conf
     then
-        sed -i '/Header always set Referrer-Policy/d' /etc/apache2/sites-available/"$(hostname -f)".conf
+        sed -i '\|Header always set Referrer-Policy|d' /etc/apache2/sites-available/"$(hostname -f)".conf
         restart_webserver
     fi
 fi

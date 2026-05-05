@@ -4,7 +4,7 @@ SCRIPT_NAME="Set trusted domain"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON

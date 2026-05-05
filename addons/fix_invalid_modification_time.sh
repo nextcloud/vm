@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # Based on: https://raw.githubusercontent.com/nextcloud-gmbh/mtime_fixer_tool_kit/main/solvable_files.sh
 
 true

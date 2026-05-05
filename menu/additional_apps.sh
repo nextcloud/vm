@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Additional Apps Menu"
@@ -55,8 +55,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "ClamAV" "(Antivirus for Nextcloud and files)" OFF \
 "Midnight Commander" "(CLI file manager)" OFF \
 "Pico CMS" "(Lightweight CMS integration in Nextcloud)" OFF \
-"Whiteboard" "(Whiteboard for Nextcloud)" OFF \
-"Extract" "(Archive extraction for Nextcloud)" OFF 3>&1 1>&2 2>&3)
+"Whiteboard" "(Whiteboard for Nextcloud)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"Documentserver"*)
@@ -78,10 +77,6 @@ case "$choice" in
     *"ClamAV"*)
         print_text_in_color "$ICyan" "Downloading the ClamAV script..."
         run_script APP clamav
-    ;;&
-    *"Extract"*)
-        print_text_in_color "$ICyan" "Downloading the Extract script..."
-        run_script APP extract
     ;;&
     *"Netdata"*)
         print_text_in_color "$ICyan" "Downloading the Netdata script..."

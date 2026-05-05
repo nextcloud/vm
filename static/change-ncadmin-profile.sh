@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="Change ncadmin Profile"
@@ -13,7 +13,7 @@ source /var/scripts/fetch_lib.sh
 DEBUG=0
 debug_mode
 
-rm "/home/$UNIXUSER/.profile"
+rm -f "/home/$UNIXUSER/.profile"
 
 cat <<-UNIXUSER-PROFILE > "$UNIXUSER_PROFILE"
 # ~/.profile: executed by the command interpreter for login shells.

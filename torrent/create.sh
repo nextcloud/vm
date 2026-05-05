@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 # GNU General Public License v3.0
 # https://github.com/nextcloud/vm/blob/main/LICENSE
 

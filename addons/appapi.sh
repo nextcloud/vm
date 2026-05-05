@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# T&M Hansson IT AB © - 2025, https://www.hanssonit.se/
+# T&M Hansson IT AB © - 2026, https://www.hanssonit.se/
 
 true
 SCRIPT_NAME="AppAPI Configuration"
@@ -10,7 +10,7 @@ AppAPI is required to run External Apps (ExApps) which are containerized applica
 that extend Nextcloud's capabilities, particularly AI applications.
 
 This script supports two deployment methods:
-1. HaRP (recommended for NC 32+) - Modern deployment with reverse proxy
+1. HaRP - Modern deployment with reverse proxy
 2. Direct Docker Socket - Simple setup for local installations
 
 If you don't plan to use External Apps, you can run this script again to disable AppAPI"
@@ -228,20 +228,21 @@ fi
 choice=$(whiptail --title "$TITLE" --menu \
 "Choose a deployment method for AppAPI:
 
-HaRP (Recommended for NC 32+):
-  • Simplest setup with best performance
+HaRP (Requires public domain):
+  • Requires reverse proxy configuration and a publicly accessible Nextcloud URL
+  • Best performance
+  • Nextcloud 32+ only!
   • Direct communication between browser and ExApps
   • Built-in brute-force protection
-  • Requires reverse proxy configuration and a publicly accessible Nextcloud URL
 
-Docker Socket (Simple):
-  • Direct Docker socket access
+Docker Socket (Local installations):
   • Good for local-only installations without external access
+  • Direct Docker socket access
   • No additional containers needed
   • Less secure than HaRP
 
 ${GPU_INFO:-No GPU detected - CPU will be used}" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"HaRP" "(Recommended) Modern proxy-based deployment" \
+"HaRP" "Modern proxy-based deployment" \
 "Docker Socket" "Direct socket access (simpler)" \
 "Cancel" "Exit without changes" 3>&1 1>&2 2>&3)
 
@@ -642,7 +643,7 @@ if [ "$DEPLOY_METHOD" = "harp" ]
 then
     msg_box "Congratulations! $SCRIPT_NAME was successfully configured with HaRP!
 
-Deployment Method: HaRP (Recommended)
+Deployment Method: HaRP
 Daemon Name: $DAEMON_NAME
 Compute Device: ${COMPUTE_DEVICE^^}
 HaRP Container: $HARP_CONTAINER_NAME
