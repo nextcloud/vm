@@ -451,8 +451,11 @@ print_text_in_color "$ICyan" "Checking PHP extensions (migrating from PECL to OS
 check_php
 
 # Migrate each extension from PECL to OS package
-for ext in redis igbinary smbclient; do
-    if pecl list 2>/dev/null | grep -q "^$ext "; then
+# igbinary must come before redis since php-redis depends on php-igbinary
+for ext in igbinary smbclient redis
+do
+    if pecl list 2>/dev/null | grep -q "^$ext "
+    then
         print_text_in_color "$ICyan" "Migrating $ext from PECL to OS package..."
         # Disable extension first
         phpdismod -v ALL "$ext" 2>/dev/null || true
@@ -460,34 +463,40 @@ for ext in redis igbinary smbclient; do
         yes | pecl uninstall "$ext" 2>/dev/null || true
         # Remove manual .ini if it exists
         rm -f "$PHP_MODS_DIR/$ext.ini"
-        # Install OS package
-        install_if_not php"$PHPVER"-"$ext"
+        # Install OS package (use --allow-change-held-packages in case the package was previously held)
+        apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install -y --allow-change-held-packages php"$PHPVER"-"$ext"
         print_text_in_color "$IGreen" "Migrated $ext to OS package (php$PHPVER-$ext)"
-    elif ! is_this_installed php"$PHPVER"-"$ext"; then
+    elif ! is_this_installed php"$PHPVER"-"$ext"
+    then
         # Not installed via PECL, but also not installed as OS package - install it
         print_text_in_color "$ICyan" "Installing $ext as OS package..."
-        install_if_not php"$PHPVER"-"$ext"
+        apt-get update -q4 & spinner_loading && RUNLEVEL=1 apt-get install -y --allow-change-held-packages php"$PHPVER"-"$ext"
     fi
 done
 
 # Remove old extension references from php.ini if they exist
-for ext in redis igbinary smbclient; do
-    if grep -qFx "extension=$ext.so" "$PHP_INI" 2>/dev/null; then
+for ext in redis igbinary smbclient
+do
+    if grep -qFx "extension=$ext.so" "$PHP_INI" 2>/dev/null
+    then
         sed -i "/extension=$ext.so/d" "$PHP_INI"
     fi
 done
 
 # Clean up no longer needed build dependencies if no PECL packages remain
-if pecl list 2>/dev/null | tail -n +4 | grep -qv "^no packages"; then
+if pecl list 2>/dev/null | tail -n +4 | grep -qv "^no packages"
+then
     print_text_in_color "$ICyan" "PECL packages still installed, keeping build dependencies..."
 else
     # No more PECL packages, safe to remove build deps
-    if is_this_installed php"$PHPVER"-dev; then
+    if is_this_installed php"$PHPVER"-dev
+    then
         print_text_in_color "$ICyan" "Removing php-dev (no longer needed)..."
-        apt-get purge php"$PHPVER"-dev -y
+        apt-get purge php"$PHPVER"-dev -y --allow-change-held-packages
         apt-get autoremove -y
     fi
-    if is_this_installed libsmbclient-dev; then
+    if is_this_installed libsmbclient-dev
+    then
         print_text_in_color "$ICyan" "Removing libsmbclient-dev (no longer needed)..."
         apt-get purge libsmbclient-dev -y
         apt-get autoremove -y
