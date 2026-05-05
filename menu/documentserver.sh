@@ -27,7 +27,7 @@ $MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 case "$choice" in
     "Collabora (Docker)")
         print_text_in_color "$ICyan" "Downloading the Collabora (Docker) script..."
-        run_script APP collabora_docker
+        desec_app_tls_menu "DESEC collabora_docker_desec" "APP collabora_docker"
     ;;
     "Collabora (Integrated)")
         print_text_in_color "$ICyan" "Downloading the Collabora (Integrated) script..."
@@ -35,7 +35,7 @@ case "$choice" in
     ;;
     "OnlyOffice (Docker)")
         print_text_in_color "$ICyan" "Downloading the OnlyOffice (Docker) script..."
-        run_script APP onlyoffice_docker
+        desec_app_tls_menu "DESEC onlyoffice_docker_desec" "APP onlyoffice_docker"
     ;;
     "OnlyOffice (Integrated)")
         print_text_in_color "$ICyan" "Downloading the OnlyOffice (Integrated) script..."
