@@ -161,8 +161,14 @@ HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
 GEOBLOCK_MOD_CONF="/etc/apache2/conf-available/geoblock.conf"
 GEOBLOCK_MOD="/etc/apache2/mods-available/maxminddb.load"
 GEOBLOCK_DIR="/usr/share/GeoIP"
+# Supported Ubuntu range — single source of truth. Bump these on the next OS upgrade.
+SUPPORTED_VERSION_MIN=24.04
+SUPPORTED_VERSION_MAX=26.04.10
+# Latest release without the trailing point version (e.g. 26.04.10 -> 26.04)
+LATEST_VERSION="${SUPPORTED_VERSION_MAX%.*}"
+SUPPORTED_CODENAMES=(noble resolute)
 # PHP-FPM
-PHPVER=8.3
+PHPVER=8.5
 PHP_FPM_DIR=/etc/php/$PHPVER/fpm
 PHP_INI=$PHP_FPM_DIR/php.ini
 PHP_POOL_DIR=$PHP_FPM_DIR/pool.d
@@ -874,10 +880,10 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if ! version 22.04 "$DISTRO" 24.04.10
+if ! version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"
 then
     print_text_in_color "$IRed" "Your current Ubuntu version is $DISTRO but must be between \
-22.04 - 24.04.10 to run this script."
+$SUPPORTED_VERSION_MIN - $SUPPORTED_VERSION_MAX to run this script."
     print_text_in_color "$ICyan" "Please contact us for support upgrading your server:"
     print_text_in_color "$ICyan" "https://www.hanssonit.se/#contact"
     print_text_in_color "$ICyan" "https://shop.hanssonit.se/"
@@ -1233,19 +1239,14 @@ remove_from_trusted_domains() {
 }
 
 check_distro_version() {
-# Support Ubuntu 22.04 jammy, and Ubuntu 24.04 noble.
+# Supported Ubuntu codenames are listed in $SUPPORTED_CODENAMES (lib.sh).
 
-# Check Ubuntu version
-if [ "${CODENAME}" == "jammy" ] || [ "${CODENAME}" == "noble" ]
-then
-    OS=1
-elif lsb_release -i | grep -ic "Ubuntu" &> /dev/null
-then
-    OS=1
-elif uname -a | grep -ic "jammy" &> /dev/null || uname -a | grep -ic "noble" &> /dev/null
-then
-    OS=1
-elif uname -v | grep -ic "Ubuntu" &> /dev/null
+# Check Ubuntu version: codename match, or any Ubuntu identifier in lsb_release/uname.
+local CODENAMES_RE
+CODENAMES_RE="$(IFS='|'; echo "${SUPPORTED_CODENAMES[*]}")"
+if [[ " ${SUPPORTED_CODENAMES[*]} " == *" $CODENAME "* ]] \
+   || lsb_release -ds 2>/dev/null | grep -Eiq "ubuntu|$CODENAMES_RE" \
+   || uname -a | grep -Eiq "ubuntu|$CODENAMES_RE"
 then
     OS=1
 fi
@@ -1259,8 +1260,8 @@ You can find the download link here: https://www.ubuntu.com/download/server"
     exit 1
 fi
 
-if ! version 22.04 "$DISTRO" 24.04.10; then
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to run this script."
+if ! version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"; then
+    msg_box "Your current Ubuntu version is $DISTRO but must be between $SUPPORTED_VERSION_MIN - $SUPPORTED_VERSION_MAX to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/product/upgrade-ubuntu-os-between-major-versions/"
@@ -1419,7 +1420,7 @@ version(){
 
     [[ $2 != "$h" && $2 != "$t" ]]
 }
-if version 22.04 "$DISTRO" 24.04.10
+if version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"
 then
     print_text_in_color "$ICyan" "Testing if network is OK..."
     if site_200 github.com
@@ -1444,7 +1445,7 @@ then
         fi
     fi
 else
-    msg_box "Your current Ubuntu version is $DISTRO but must be between 22.04 - 24.04.10 to run this script."
+    msg_box "Your current Ubuntu version is $DISTRO but must be between $SUPPORTED_VERSION_MIN - $SUPPORTED_VERSION_MAX to run this script."
     msg_box "Please contact us to get support for upgrading your server:
 https://www.hanssonit.se/#contact
 https://shop.hanssonit.se/"
@@ -2242,7 +2243,16 @@ does_snapshot_exist() {
 
 check_php() {
 print_text_in_color "$ICyan" "Getting current PHP-version..."
-GETPHP="$(php -v | grep -m 1 PHP | awk '{print $2}' | cut -d '-' -f1)"
+# Extract MAJOR.MINOR (e.g. "8.5") from `php -v`. Works for any future PHP version
+# without needing to extend a hardcoded list.
+GETPHP="$(php -v 2>/dev/null | grep -m 1 -oE '^PHP [0-9]+\.[0-9]+' | awk '{print $2}')"
+
+# Fallback: pick the highest /etc/php/X.Y directory if `php -v` failed (e.g. CLI not installed yet)
+if [ -z "$GETPHP" ] && [ -d /etc/php ]
+then
+    GETPHP="$(find /etc/php -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null \
+        | grep -E '^[0-9]+\.[0-9]+$' | sort -V | tail -n1)"
+fi
 
 if [ -z "$GETPHP" ]
 then
@@ -2250,43 +2260,7 @@ then
     exit 1
 fi
 
-if grep 7.0 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=7.0
-elif grep 7.1 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=7.1
-elif grep 7.2 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=7.2
-elif grep 7.3 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=7.3
-elif grep 7.4 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=7.4
-elif grep 8.0 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=8.0
-elif grep 8.1 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=8.1
-elif grep 8.2 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=8.2
-elif grep 8.3 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=8.3
-elif grep 8.4 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=8.4
-elif grep 8.5 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=8.5
-elif grep 8.6 <<< "$GETPHP" >/dev/null 2>&1
-then
-   export PHPVER=8.6
-fi
+export PHPVER="$GETPHP"
 
 # Export other PHP variables based on PHPVER
 export PHP_FPM_DIR=/etc/php/$PHPVER/fpm
@@ -2339,14 +2313,14 @@ add_trusted_key_and_repo() {
     # $1 = whatever.asc
     # $2 = Key URL e.g. https://download.webmin.com
     # $3 = Deb URL e.g. https://download.webmin.com/download/repository
-    # $4 = "$CODENAME $CODENAME main" (e.g. jammy jammy main)
+    # $4 = "$CODENAME $CODENAME main" (e.g. noble noble main)
     # $5 = debpackage-name.list
 
     # This function is only supported in the currently supported release
     check_distro_version
 
     # Do the magic
-    if version 22.04 "$DISTRO" 24.04.10
+    if version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"
     then
         # New recommended way not using apt-key
         print_text_in_color "$ICyan" "Adding trusted key in /etc/apt/keyrings/$1..."
