@@ -485,12 +485,6 @@ do
     fi
 done
 
-# Remove Redis password from config.php if set (no longer used with unix socket)
-if [ -n "$(nextcloud_occ_no_check config:system:get redis password 2>/dev/null)" ]
-then
-    nextcloud_occ config:system:delete redis password
-fi
-
 # Clean up no longer needed build dependencies if no PECL packages remain
 if pecl list 2>/dev/null | tail -n +4 | grep -qv "^no packages"
 then
