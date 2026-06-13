@@ -209,11 +209,11 @@ then
   ProxyPass           /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities retry=0
   ProxyPassReverse    /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities
 
-  # Main websocket
-  ProxyPassMatch "/cool/(.*)/ws$" wss://127.0.0.1:9980/cool/\$1/ws nocanon
+  # Main websocket (legacy URL, with the document path encoded into it)
+  ProxyPassMatch      "/cool/(.*)/ws$"      wss://127.0.0.1:9980/cool/$1/ws nocanon
 
-  # Websocket for CODE v26+
-  ProxyPass /cool/ws wss://127.0.0.1:9980/cool/ws nocanon
+  # Main websocket (compact URL, used since 26.04, with the document passed via the WOPISrc query parameter)
+  ProxyPass           /cool/ws wss://127.0.0.1:9980/cool/ws nocanon
 
   # Admin Console websocket
   ProxyPass   /cool/adminws wss://127.0.0.1:9980/cool/adminws
