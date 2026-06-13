@@ -212,6 +212,9 @@ then
   # Main websocket
   ProxyPassMatch "/cool/(.*)/ws$" wss://127.0.0.1:9980/cool/\$1/ws nocanon
 
+  # Websocket for CODE v26+
+  ProxyPass /cool/ws wss://127.0.0.1:9980/cool/ws nocanon
+
   # Admin Console websocket
   ProxyPass   /cool/adminws wss://127.0.0.1:9980/cool/adminws
 
