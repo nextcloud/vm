@@ -717,7 +717,7 @@ If yes, just press '[ENTER]'."
 msg_box "Restore completed!\n
 You can now simply reinstall all apps and addons that were installed on your server before!\n
 Those need to get installed (if they were installed on the old server before):
-Geoblocking, Disk Monitoring, Fail2Ban, ClamAV, SMTP Mail, DDclient, Activate TLS, OnlyOffice, Push Notifications for Nextcloud, \
+Geoblocking, Disk Monitoring, Fail2Ban, ClamAV, SMTP Mail, DDclient, Activate TLS, EuroOffice, Push Notifications for Nextcloud, \
 High-Performance backend for Nextcloud Talk, Whiteboard for Nextcloud, Vaultwarden, Pi-hole, PiVPN, \
 Plex Media Server, Previewgenerator, Remotedesktop and Midnight Commander.\n
 Note:
