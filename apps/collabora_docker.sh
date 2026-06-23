@@ -35,12 +35,12 @@ else
     removal_popup "$SCRIPT_NAME"
 fi
 
-# Check if OnlyOffice is previously installed
+# Check if EuroOffice (or the legacy OnlyOffice) is previously installed
 # If yes, then stop and prune the docker container
-if does_this_docker_exist 'onlyoffice/documentserver'
+if does_this_docker_exist 'ghcr.io/euro-office/documentserver' || does_this_docker_exist 'onlyoffice/documentserver'
 then
-    # Removal
-    remove_onlyoffice_docker
+    # Removal (also cleans up a legacy OnlyOffice install)
+    remove_eurooffice_docker
 fi
 
 # Remove all office apps
