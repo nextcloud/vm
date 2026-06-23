@@ -141,7 +141,7 @@ check_nextcloud_https "EuroOffice (Docker)"
 # Install Docker
 install_docker
 
-EUROOFFICE_SECRET="$(gen_passwd "$SHUF" "a-zA-Z0-9")"
+EUROOFFICE_SECRET="$(gen_passwd "64" "a-zA-Z0-9")"
 
 # Install EuroOffice docker
 docker pull ghcr.io/euro-office/documentserver:latest
