@@ -46,11 +46,11 @@ then
     remove_collabora_docker
 fi
 
-# Check if Onlyoffice is installed and remove every trace of it
-if does_this_docker_exist 'onlyoffice/documentserver'
+# Check if EuroOffice (or the legacy OnlyOffice) is installed and remove every trace of it
+if does_this_docker_exist 'ghcr.io/euro-office/documentserver' || does_this_docker_exist 'onlyoffice/documentserver'
 then
-    # Removal
-    remove_onlyoffice_docker
+    # Removal (also cleans up a legacy OnlyOffice install)
+    remove_eurooffice_docker
 fi
 
 # Remove all office apps

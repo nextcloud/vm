@@ -18,11 +18,10 @@ root_check
 
 choice=$(whiptail --title "$TITLE" --menu \
 "Which Documentserver for online editing do you want to install?\n\nWe recommend Collabora with Docker. The subdomain could look like this:\noffice.your-nextcloud.tld\n\nAutomatically configure and install the selected Documentserver.
-$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
+$MENU_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 3 \
 "Collabora (Docker)" "(Extra Subdomain required)" \
 "Collabora (Integrated)" "(No Subdomain required)" \
-"OnlyOffice (Docker)" "(Extra Subdomain required)" \
-"OnlyOffice (Integrated)" "(No Subdomain required)" 3>&1 1>&2 2>&3)
+"EuroOffice (Docker)" "(Extra Subdomain required)" 3>&1 1>&2 2>&3)
 
 case "$choice" in
     "Collabora (Docker)")
@@ -33,13 +32,9 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Collabora (Integrated) script..."
         run_script APP collabora_integrated
     ;;
-    "OnlyOffice (Docker)")
-        print_text_in_color "$ICyan" "Downloading the OnlyOffice (Docker) script..."
-        run_script APP onlyoffice_docker
-    ;;
-    "OnlyOffice (Integrated)")
-        print_text_in_color "$ICyan" "Downloading the OnlyOffice (Integrated) script..."
-        run_script APP onlyoffice_integrated
+    "EuroOffice (Docker)")
+        print_text_in_color "$ICyan" "Downloading the EuroOffice (Docker) script..."
+        run_script APP eurooffice_docker
     ;;
     *)
     ;;
