@@ -999,7 +999,7 @@ apt-get autoremove -y
 apt-get autoclean
 find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 
-# Install virtual kernels for Hyper-V, (and extra for UTF8 kernel module + Collabora and OnlyOffice)
+# Install virtual kernels for Hyper-V, (and extra for UTF8 kernel module + Collabora and EuroOffice)
 # Kernel 5.4
 if ! home_sme_server
 then

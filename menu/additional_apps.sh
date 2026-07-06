@@ -38,7 +38,7 @@ fi
 choice=$(whiptail --title "$TITLE" --checklist \
 "Which apps do you want to install?\n\nAutomatically configure and install selected apps
 $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Documentserver" "(OnlyOffice or Collabora - Docker or Integrated)" OFF \
+"Documentserver" "(EuroOffice or Collabora - Docker or Integrated)" OFF \
 "Bitwarden" "(External password manager) [4GB RAM]" OFF \
 "Fail2ban  " "(Extra Bruteforce protection)" "$STARTUP_SWITCH" \
 "Recognize" "(Use [local] AI on your photos in Nextcloud) [8GB RAM]" OFF \

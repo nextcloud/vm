@@ -824,7 +824,7 @@ You now have two choices:
    in the same way as you just have.
 2. Import this VM again without raising the RAM, but don't install any of the following apps:
    1) Collabora
-   2) OnlyOffice
+   2) EuroOffice
    3) Full Text Search
 
 This script will now exit.
@@ -938,7 +938,7 @@ check_nextcloud_https() {
 if ! nextcloud_occ_no_check config:system:get overwrite.cli.url | grep -q "https"
 then
     # Check if it's used by any of the Documentserver apps and adopt the message to that
-    if [ "$1" == 'Collabora (Docker)' ] || [ "$1" == 'OnlyOffice (Docker)' ]
+    if [ "$1" == 'Collabora (Docker)' ] || [ "$1" == 'EuroOffice (Docker)' ]
     then
         ncdomain
         if ! curl -s https://"$NCDOMAIN"/status.php | grep -q 'installed":true'
@@ -1818,12 +1818,15 @@ remove_collabora_docker() {
     remove_from_trusted_domains "$SUBDOMAIN"
 }
 
-remove_onlyoffice_docker() {
-    # Check if Onlyoffice is previously installed
+remove_eurooffice_docker() {
+    # Check if EuroOffice or the legacy OnlyOffice is previously installed
     # If yes, then stop and prune the docker container
+    # The legacy OnlyOffice image (onlyoffice/documentserver) is still removed
+    # here so that older installs are cleaned up before switching solution.
     docker_prune_this 'onlyoffice/documentserver'
+    docker_prune_this 'ghcr.io/euro-office/documentserver'
     # Revoke LE
-    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for OnlyOffice, e.g: office.yourdomain.com")
+    SUBDOMAIN=$(input_box_flow "Please enter the subdomain you are using for EuroOffice, e.g: office.yourdomain.com")
     if [ -f "$CERTFILES/$SUBDOMAIN/cert.pem" ]
     then
         yes no | certbot revoke --cert-path "$CERTFILES/$SUBDOMAIN/cert.pem"
@@ -1839,7 +1842,12 @@ remove_onlyoffice_docker() {
         restart_webserver
         rm -f "$SITES_AVAILABLE/$SUBDOMAIN.conf"
     fi
-    # Disable onlyoffice if activated
+    # Disable eurooffice if activated
+    if is_app_installed eurooffice
+    then
+        nextcloud_occ app:remove eurooffice
+    fi
+    # Disable the legacy onlyoffice app if it's still activated
     if is_app_installed onlyoffice
     then
         nextcloud_occ app:remove onlyoffice
@@ -1850,13 +1858,19 @@ remove_onlyoffice_docker() {
 
 # Remove all office apps
 remove_all_office_apps() {
-    # remove OnlyOffice-documentserver if installed
+    # remove EuroOffice-documentserver if installed
     if is_app_installed documentserver_community
     then
         nextcloud_occ app:remove documentserver_community
     fi
 
-    # Disable OnlyOffice App if installed
+    # Disable EuroOffice App if installed
+    if is_app_installed eurooffice
+    then
+        nextcloud_occ app:remove eurooffice
+    fi
+
+    # Disable the legacy OnlyOffice App if it's still installed
     if is_app_installed onlyoffice
     then
         nextcloud_occ app:remove onlyoffice
@@ -1938,7 +1952,7 @@ fi
 }
 
 # Remove selected Docker image
-# docker_prune_this 'collabora/code' 'onlyoffice/documentserver' 'ark74/nc_fts' 'imaginary'
+# docker_prune_this 'collabora/code' 'eurooffice/documentserver' 'ark74/nc_fts' 'imaginary'
 docker_prune_this() {
 if does_this_docker_exist "$1"
 then

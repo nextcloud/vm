@@ -684,10 +684,16 @@ $DOCKER_RUN_OUTPUT"
     fi
     # Collabora CODE
     docker_update_specific 'code' 'Collabora'
-    # OnlyOffice
+    # EuroOffice
     ## Don't upgrade to community if EE is installed
-    if ! does_this_docker_exist onlyoffice-ee
+    if ! does_this_docker_exist eurooffice-ee && ! does_this_docker_exist onlyoffice-ee
     then
+        # New EuroOffice install (container name: eurooffice)
+        if does_this_docker_exist 'ghcr.io/euro-office/documentserver'
+        then
+            docker_update_specific 'eurooffice' 'EuroOffice'
+        fi
+        # Legacy OnlyOffice install (container name: onlyoffice)
         if does_this_docker_exist 'onlyoffice/documentserver'
         then
             docker_update_specific 'onlyoffice' 'OnlyOffice'

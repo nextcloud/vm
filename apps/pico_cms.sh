@@ -151,7 +151,7 @@ then
     exit
 fi
 
-# Ask for the domain for OnlyOffice
+# Ask for the domain for EuroOffice
 SUBDOMAIN=$(input_box_flow "Please enter your Sites subdomain e.g: 'sites.yourdomain.com' or 'blog.yourdomain.com'
 NOTE: This domain must be different than your Nextcloud domain. \
 They can however be hosted on the same server, but would require separate DNS entries.")
@@ -226,7 +226,7 @@ then
     rm -f "$HTTPS_CONF"
 fi
 
-# Create Vhost for OnlyOffice Docker online in Apache2
+# Create Vhost for EuroOffice Docker online in Apache2
 if [ ! -f "$HTTPS_CONF" ];
 then
     cat << HTTPS_CREATE > "$HTTPS_CONF"
