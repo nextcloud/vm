@@ -210,7 +210,7 @@ then
   ProxyPassReverse    /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities
 
   # Main websocket (legacy URL, with the document path encoded into it)
-  ProxyPassMatch      "/cool/(.*)/ws$"      wss://127.0.0.1:9980/cool/$1/ws nocanon
+  ProxyPassMatch      "/cool/(.*)/ws$"      wss://127.0.0.1:9980/cool/\$1/ws nocanon
 
   # Main websocket (compact URL, used since 26.04, with the document passed via the WOPISrc query parameter)
   ProxyPass           /cool/ws wss://127.0.0.1:9980/cool/ws nocanon
