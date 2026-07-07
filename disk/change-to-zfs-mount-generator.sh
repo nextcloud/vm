@@ -18,7 +18,7 @@ source /var/scripts/fetch_lib.sh
 # Check if root
 root_check
 
-# Needs to be Ubuntu 22.04 and Multiverse
+# Needs a supported Ubuntu release (see lib.sh) and Multiverse
 check_distro_version
 check_multiverse
 

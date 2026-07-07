@@ -115,21 +115,21 @@ fi
 # To get the correct version for the Apache conf file
 check_php
 
-# Only add TLS 1.3 on Ubuntu later than 22.04
-if version 22.04 "$DISTRO" 24.04.10
+# Only add TLS 1.3 on supported Ubuntu releases
+if version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"
 then
     TLS13="+TLSv1.3"
 fi
 
 # Fix zero file sizes
 # See https://github.com/nextcloud/server/issues/3056
-if version 24.04 "$DISTRO" 26.04.10
+if version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"
 then
     SETENVPROXY="SetEnv proxy-sendcl 1"
 fi
 
 # Install Brotli
-if version 24.04 "$DISTRO" 26.04.10
+if version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"
 then
     if ! [ -f /etc/apache2/conf-available/brotli.conf ]
     then

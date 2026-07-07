@@ -17,12 +17,12 @@ Server installation. Simplified. :cloud:
 --------------------
 
 ## Dependencies:
-(Ubuntu Server 24.04 LTS *minimal* 64-bit)
+(Ubuntu Server 26.04 LTS *minimal* 64-bit)
 <br>
-(Linux Kernel: 6.8)
+(Linux Kernel: 7.0)
 - Apache 2.4
-- PostgreSQL 16
-- PHP-FPM 8.3
+- PostgreSQL 18
+- PHP-FPM 8.5
 - Redis Memcache (Ubuntu package)
 - PHP-igbinary (Ubuntu package)
 - PHP-smbclient (Ubuntu package)

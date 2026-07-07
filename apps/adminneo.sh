@@ -92,8 +92,8 @@ fi
 
 print_text_in_color "$IGreen" "AdminNeo ${ADMINNEO_VERSION} successfully downloaded!"
 
-# Only add TLS 1.3 on Ubuntu later than 22.04
-if version 22.04 "$DISTRO" 24.04.10
+# Only add TLS 1.3 on supported Ubuntu releases
+if version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"
 then
     TLS13="+TLSv1.3"
 fi
