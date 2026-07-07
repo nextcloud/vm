@@ -42,8 +42,8 @@ root_check
 is_process_running apt
 is_process_running dpkg
 
-# Automatically restart services (Ubuntu 24.04)
-if ! version 16.04.10 "$DISTRO" 22.04.10
+# Automatically restart services (latest Ubuntu LTS)
+if version "$LATEST_VERSION" "$DISTRO" "$SUPPORTED_VERSION_MAX"
 then
     if [ ! -f /etc/needrestart/needrestart.conf ]
     then
@@ -396,7 +396,7 @@ fi
 # Fix Realtek on PN51
 if asuspn51
 then
-    if ! version 24.04 "$DISTRO" 24.04.10
+    if ! version "$LATEST_VERSION" "$DISTRO" "$SUPPORTED_VERSION_MAX"
     then
         # Upgrade Realtek drivers
         print_text_in_color "$ICyan" "Upgrading Realtek firmware..."

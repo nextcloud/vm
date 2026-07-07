@@ -63,9 +63,9 @@ is_process_running apt
 is_process_running dpkg
 
 # Check distribution and version
-if ! version 24.04 "$DISTRO" 24.04.10
+if ! version "$LATEST_VERSION" "$DISTRO" "$SUPPORTED_VERSION_MAX"
 then
-    msg_box "This script can only be run on Ubuntu 24.04 (server)."
+    msg_box "This script can only be run on Ubuntu $LATEST_VERSION (server)."
     exit 1
 fi
 
@@ -221,19 +221,24 @@ fi
 
 # Check if it's a clean server
 stop_if_installed postgresql
+# Stop if any versioned PostgreSQL is already installed (covers PG 9.x through 30)
+for PG_VER in 9.{0..9} {10..30}
+do
+    stop_if_installed postgresql-"$PG_VER"
+done
 stop_if_installed apache2
 stop_if_installed nginx
 stop_if_installed php
 stop_if_installed php-fpm
 stop_if_installed php-common
-stop_if_installed php"$PHPVER"-fpm
-stop_if_installed php7.0-fpm
-stop_if_installed php7.1-fpm
-stop_if_installed php7.2-fpm
-stop_if_installed php7.3-fpm
-stop_if_installed php8.0-fpm
-stop_if_installed php8.1-fpm
-stop_if_installed php8.2-fpm
+# Stop if any php-fpm (current or older) is already installed — must be a clean server
+for PHP_MAJOR in 7 8
+do
+    for PHP_MINOR in 0 1 2 3 4 5 6 7 8 9
+    do
+        stop_if_installed php"$PHP_MAJOR.$PHP_MINOR"-fpm
+    done
+done
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
@@ -442,7 +447,8 @@ fi
 install_if_not php"$PHPVER"-fpm
 install_if_not php"$PHPVER"-intl
 install_if_not php"$PHPVER"-ldap
-install_if_not php"$PHPVER"-imap
+# php-imap was deprecated in PHP 8.4 and removed in PHP 8.5 (no longer in Ubuntu).
+# Nextcloud Mail uses bytestream/horde-imap-client (pure PHP) and does not need it.
 install_if_not php"$PHPVER"-gd
 install_if_not php"$PHPVER"-pgsql
 install_if_not php"$PHPVER"-curl
@@ -1045,7 +1051,7 @@ fi
 # Fix Realtek on PN51
 if asuspn51
 then
-    if ! version 24.04 "$DISTRO" 24.04.10
+    if ! version "$LATEST_VERSION" "$DISTRO" "$SUPPORTED_VERSION_MAX"
     then
         # Upgrade Realtek drivers
         print_text_in_color "$ICyan" "Upgrading Realtek firmware..."

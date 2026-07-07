@@ -1,5 +1,5 @@
 # Nextcloud VM with vagrant
-This subrepo contains all the Vagrant config to get an Ubuntu 24.04 VM with the latest version of Nextcloud installed.
+This subrepo contains all the Vagrant config to get an Ubuntu 26.04 VM with the latest version of Nextcloud installed.
 
 **Please note that this is __not__ the preferred way to install Nextcloud. It's also untested in the current state.**
 

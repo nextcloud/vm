@@ -350,14 +350,14 @@ We please you to do the math yourself if the number is high enough for your setu
             # Get installed php version
             check_php
             # Enable Inotify
-            if [ ! -f $PHP_MODS_DIR/inotify.ini ]
+            if [ ! -f "$PHP_MODS_DIR"/inotify.ini ]
             then
-                touch $PHP_MODS_DIR/inotify.ini
+                touch "$PHP_MODS_DIR"/inotify.ini
             fi
-            if ! grep -qFx extension=inotify.so $PHP_MODS_DIR/inotify.ini
+            if ! grep -qFx extension=inotify.so "$PHP_MODS_DIR"/inotify.ini
             then
-                echo "# PECL inotify" > $PHP_MODS_DIR/inotify.ini
-                echo "extension=inotify.so" >> $PHP_MODS_DIR/inotify.ini
+                echo "# PECL inotify" > "$PHP_MODS_DIR"/inotify.ini
+                echo "extension=inotify.so" >> "$PHP_MODS_DIR"/inotify.ini
                 check_command phpenmod -v ALL inotify
             fi
 

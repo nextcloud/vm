@@ -1,0 +1,135 @@
+name: 'install-smoke-test'
+
+# Manual / scheduled smoke test that runs nextcloud_install_production.sh
+# end-to-end inside a privileged Ubuntu 26.04 container. Catches:
+#   - apt package availability changes between LTS releases
+#   - PHP/PG/Apache config breakage
+#   - Nextcloud download + occ install regressions
+#   - lib.sh sourcing / version-gate regressions
+#
+# Does NOT cover:
+#   - real LVM snapshot / lvextend behavior (loopback approximation)
+#   - hypervisor-specific kernel installs (Hyper-V, VMware, QEMU)
+#   - reboot path (stubbed)
+#
+# Manual trigger only — runtime ~25 min, ~3 GB RAM.
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      ubuntu_image:
+        description: 'Ubuntu image to test against (e.g. ubuntu:26.04, ubuntu:24.04)'
+        default: 'ubuntu:26.04'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    name: 'Run nextcloud_install_production.sh -p'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          # Default checks out the ref that fired workflow_dispatch (so picking
+          # `upgrade-os-26.04` from the UI tests that branch).
+          ref: ${{ github.ref }}
+
+      - name: Run install script in privileged container
+        env:
+          UBUNTU_IMAGE: ${{ inputs.ubuntu_image || 'ubuntu:26.04' }}
+        run: |
+          set -e
+          docker run --rm \
+            --privileged \
+            --user 0:0 \
+            --name nc-install \
+            -v "$PWD:/repo:ro" \
+            -e DEBIAN_FRONTEND=noninteractive \
+            -e SUDO_USER=root \
+            -e RUNLEVEL=1 \
+            -e TERM=dumb \
+            -e LANG=C.UTF-8 \
+            -e LC_ALL=C.UTF-8 \
+            "$UBUNTU_IMAGE" \
+            bash -c '
+              set -e
+              # Diagnostics — confirm we are root inside the container
+              id
+              # Bare image bootstrap so the install script can run
+              apt-get update -qq
+              apt-get install -qqy --no-install-recommends \
+                sudo curl ca-certificates lsb-release iproute2 \
+                netcat-openbsd whiptail locales mount util-linux
+              # Generate the C.UTF-8 locale so ram_check can parse meminfo
+              locale-gen C.UTF-8 en_US.UTF-8
+              update-locale LANG=C.UTF-8 LC_ALL=C.UTF-8
+              # Override the default policy-rc.d that blocks service starts in
+              # apt postinst. Without this, postgresql installs but its cluster
+              # never gets started.
+              printf "#!/bin/sh\nexit 0\n" > /usr/sbin/policy-rc.d
+              chmod 0755 /usr/sbin/policy-rc.d
+              # Re-enable Install-Recommends. Ubuntu Docker images ship with
+              # APT::Install-Recommends "false" which prevents php-fpm from
+              # pulling in php-cli (needed for occ, etc.).
+              printf "APT::Install-Recommends \"true\";\nAPT::Install-Suggests \"false\";\n" \
+                > /etc/apt/apt.conf.d/00recommends
+              # systemctl shim — container has no PID-1 systemd. Translate
+              # start/restart/stop to /etc/init.d/<svc> or no-op.
+              printf "%s\n" \
+                "#!/bin/bash" \
+                "cmd=\${1:-}" \
+                "svc=\${2:-}" \
+                "svc=\${svc%.service}" \
+                "case \"\$cmd\" in" \
+                "  start|stop|restart|reload|status)" \
+                "    if [ -x \"/etc/init.d/\$svc\" ]; then" \
+                "      /etc/init.d/\$svc \"\$cmd\"" \
+                "    else" \
+                "      echo \"[systemctl shim] no-op: \$cmd \$svc\" >&2" \
+                "      exit 0" \
+                "    fi" \
+                "    ;;" \
+                "  *)" \
+                "    echo \"[systemctl shim] no-op: \$*\" >&2" \
+                "    exit 0" \
+                "    ;;" \
+                "esac" \
+                > /usr/local/bin/systemctl
+              chmod +x /usr/local/bin/systemctl
+              # Pre-seed /var/scripts so fetch_lib.sh uses THIS branch'"'"'s lib.sh
+              # instead of downloading the stale copy from main.
+              # fetch_lib.sh skips the download when both files already exist.
+              mkdir -p /var/scripts
+              cp /repo/lib.sh /var/scripts/lib.sh
+              touch /var/scripts/nextcloud-startup-script.sh
+              # Loop device for /dev/sdb (script expects a second disk for ZFS).
+              # Best-effort: skip silently if losetup unavailable in this kernel.
+              # `loop` is built into the host kernel on GH runners, no modprobe needed.
+              set +e
+              truncate -s 6G /tmp/disk-sdb.img
+              LOOP=$(losetup -f 2>/dev/null)
+              if [ -n "$LOOP" ] && losetup -P "$LOOP" /tmp/disk-sdb.img 2>/dev/null; then
+                ln -sf "$LOOP" /dev/sdb
+                echo "Created /dev/sdb -> $LOOP"
+              else
+                echo "WARNING: could not create loop device; format-sdb step will fail" >&2
+              fi
+              set -e
+              # Stub reboot so the script does not actually try to reboot.
+              # (printf instead of heredoc — closing heredoc tag cannot be indented
+              # inside a YAML run block.)
+              printf "#!/bin/sh\necho \"[reboot stubbed in CI: \$*]\" >&2\nexit 0\n" \
+                > /usr/local/sbin/reboot
+              chmod +x /usr/local/sbin/reboot
+              ln -sf /usr/local/sbin/reboot /usr/local/sbin/shutdown
+              # Make a copy we can edit (script lives in read-only mount)
+              cp -a /repo /work
+              cd /work
+              # Run installer in provisioning mode (no prompts)
+              bash nextcloud_install_production.sh -p
+            '
