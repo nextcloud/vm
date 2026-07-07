@@ -1495,7 +1495,13 @@ if ! is_app_installed "$1"
 then
     print_text_in_color "$ICyan" "Installing $1..."
     # nextcloud_occ not possible here because it uses check_command and will exit if nextcloud_occ fails
-    installcmd="$(nextcloud_occ_no_check app:install "$1")"
+    # Retry the appstore download; a transient appstore hiccup shouldn't skip the app
+    for attempt in 1 2 3
+    do
+        installcmd="$(nextcloud_occ_no_check app:install "$1")"
+        { is_app_installed "$1" || grep -q 'dependencies are not fulfilled' <<< "$installcmd"; } && break
+        countdown "Trying again in 30 seconds..." "30"
+    done
     if grep 'dependencies are not fulfilled' <<< "$installcmd"
     then
     msg_box "The $1 app could not be installed.
