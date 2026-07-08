@@ -341,24 +341,40 @@ We please you to do the math yourself if the number is high enough for your setu
 
             # Install the inotify PHP extension
             # https://github.com/icewind1991/files_inotify/blob/main/README.md
-            if ! pecl list | grep -q inotify
-            then 
-                print_text_in_color "$ICyan" "Installing the PHP inotify extension..."
-                yes no | pecl install inotify
-                local INOTIFY_INSTALL=1
-            fi
             # Get installed php version
             check_php
-            # Enable Inotify
-            if [ ! -f "$PHP_MODS_DIR"/inotify.ini ]
+            if apt-cache show php"$PHPVER"-inotify >/dev/null 2>&1
             then
-                touch "$PHP_MODS_DIR"/inotify.ini
-            fi
-            if ! grep -qFx extension=inotify.so "$PHP_MODS_DIR"/inotify.ini
-            then
-                echo "# PECL inotify" > "$PHP_MODS_DIR"/inotify.ini
-                echo "extension=inotify.so" >> "$PHP_MODS_DIR"/inotify.ini
+                # Available as OS package (Ubuntu 25.10 and later, e.g. php8.5-inotify on 26.04)
+                # https://github.com/nextcloud/vm/issues/2827
+                if ! is_this_installed php"$PHPVER"-inotify
+                then
+                    print_text_in_color "$ICyan" "Installing the PHP inotify extension..."
+                    install_if_not php"$PHPVER"-inotify
+                    local INOTIFY_INSTALL=1
+                fi
                 check_command phpenmod -v ALL inotify
+            else
+                # Not packaged on Ubuntu 24.04 - build it with PECL instead
+                # php-dev is needed for the build (the update script removes it when no PECL packages remain)
+                install_if_not php"$PHPVER"-dev
+                if ! pecl list | grep -q inotify
+                then
+                    print_text_in_color "$ICyan" "Installing the PHP inotify extension..."
+                    yes no | pecl install inotify
+                    local INOTIFY_INSTALL=1
+                fi
+                # Enable Inotify
+                if [ ! -f "$PHP_MODS_DIR"/inotify.ini ]
+                then
+                    touch "$PHP_MODS_DIR"/inotify.ini
+                fi
+                if ! grep -qFx extension=inotify.so "$PHP_MODS_DIR"/inotify.ini
+                then
+                    echo "# PECL inotify" > "$PHP_MODS_DIR"/inotify.ini
+                    echo "extension=inotify.so" >> "$PHP_MODS_DIR"/inotify.ini
+                    check_command phpenmod -v ALL inotify
+                fi
             fi
 
             # Set fs.inotify.max_user_watches to 524288
