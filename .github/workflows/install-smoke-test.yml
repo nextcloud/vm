@@ -33,7 +33,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Default checks out the ref that fired workflow_dispatch (so picking
           # `upgrade-os-26.04` from the UI tests that branch).
