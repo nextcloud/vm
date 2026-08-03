@@ -20,7 +20,7 @@ debug_mode
 root_check
 
 # Check if already installed
-if is_this_installed clevis-luks || is_this_installed clevis-tpm2 || is_this_installed clevis-initramfs
+if is_this_installed clevis-luks || is_this_installed clevis-tpm2 || is_this_installed clevis-initramfs || is_this_installed clevis-dracut
 then
     msg_box "It seems like clevis-luks is already installed. We are trying to do the configuration again."
 else
@@ -71,7 +71,7 @@ then
 fi
 
 # Install needed tools
-apt-get install clevis-tpm2 clevis-luks clevis-initramfs -y
+apt-get install clevis-tpm2 clevis-luks clevis-initramfs clevis-dracut -y
 
 # Execute the script
 print_text_in_color "$ICyan" "Setting up automatic unlocking via TPM2..."
@@ -79,13 +79,13 @@ if ! echo "$PASSWORD" | clevis luks bind -k - -d "/dev/${ENCRYPTED_DEVICE[*]}" t
 then
     msg_box "Something has failed while trying to configure clevis luks.
 We will now uninstall all needed packets again, so that you are able to start over."
-    apt-get purge clevis-tpm2 clevis-luks clevis-initramfs -y
+    apt-get purge clevis-tpm2 clevis-luks clevis-initramfs clevis-dracut -y
     apt-get autoremove -y
     msg_box "All installed packets were successfully removed."
     exit 1
 fi
 print_text_in_color "$ICyan" "Updating initramfs..."
-if ! update-initramfs -u -k 'all'
+if ! dracut -f
 then
     msg_box "Errors during initramfs update"
     exit 1
