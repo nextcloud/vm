@@ -19,6 +19,18 @@ debug_mode
 # Check if root
 root_check
 
+# Noble (24.04) generates the initramfs with initramfs-tools,
+# later releases use dracut
+# https://ubuntu.com/server/docs/how-to/security/tpm-backed-luks-decryption-with-clevis/
+if [ "$CODENAME" = "noble" ]
+then
+    CLEVIS_INITRAMFS_PACKAGE="clevis-initramfs"
+    INITRAMFS_UPDATE=(update-initramfs -u -k 'all')
+else
+    CLEVIS_INITRAMFS_PACKAGE="clevis-dracut"
+    INITRAMFS_UPDATE=(dracut -f)
+fi
+
 # Check if already installed
 if is_this_installed clevis-luks || is_this_installed clevis-tpm2 || is_this_installed clevis-initramfs || is_this_installed clevis-dracut
 then
@@ -71,7 +83,7 @@ then
 fi
 
 # Install needed tools
-apt-get install clevis-tpm2 clevis-luks clevis-initramfs clevis-dracut -y
+apt-get install clevis-tpm2 clevis-luks "$CLEVIS_INITRAMFS_PACKAGE" -y
 
 # Execute the script
 print_text_in_color "$ICyan" "Setting up automatic unlocking via TPM2..."
@@ -79,13 +91,13 @@ if ! echo "$PASSWORD" | clevis luks bind -k - -d "/dev/${ENCRYPTED_DEVICE[*]}" t
 then
     msg_box "Something has failed while trying to configure clevis luks.
 We will now uninstall all needed packets again, so that you are able to start over."
-    apt-get purge clevis-tpm2 clevis-luks clevis-initramfs clevis-dracut -y
+    apt-get purge clevis-tpm2 clevis-luks "$CLEVIS_INITRAMFS_PACKAGE" -y
     apt-get autoremove -y
     msg_box "All installed packets were successfully removed."
     exit 1
 fi
 print_text_in_color "$ICyan" "Updating initramfs..."
-if ! dracut -f
+if ! "${INITRAMFS_UPDATE[@]}"
 then
     msg_box "Errors during initramfs update"
     exit 1
