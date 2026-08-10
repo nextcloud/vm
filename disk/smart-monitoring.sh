@@ -19,6 +19,32 @@ debug_mode
 # Check if root
 root_check
 
+# Determines whether and which -d option smartctl needs for a given drive.
+# Returns "" if no option is needed, the matching option value (e.g. "sat"),
+# or "NONE" if no working option could be found.
+get_smart_device_option() {
+    local drive="$1"
+    local output opt
+
+    output=$(smartctl -a "$drive" 2>&1)
+    if echo "$output" | grep -q 'SMART overall-health self-assessment test result:'
+    then
+        echo ""
+        return
+    fi
+
+    for opt in sat sat,12 sat,16 usbjmicron usbsunplus usbcypress
+    do
+        if smartctl -a -d "$opt" "$drive" 2>&1 | grep -q 'SMART overall-health self-assessment test result:'
+        then
+            echo "$opt"
+            return
+        fi
+    done
+
+    echo "NONE"
+}
+
 # Check if bpytop is already installed
 if ! is_this_installed smartmontools
 then
@@ -63,29 +89,52 @@ fi
 # Install needed tools
 install_if_not smartmontools
 
+# Update the local drive database so more USB bridges/controllers can be
+# recognized automatically without needing an explicit -d option below.
+print_text_in_color "$ICyan" "Updating smartctl drive database..."
+update-smart-drivedb || print_text_in_color "$IRed" "Could not update the drive database, continuing anyway..."
+
 # Test drives
 print_text_in_color "$ICyan" "Testing if all drives support smart monitoring and are healthy..."
 mapfile -t DRIVES <<< "$DRIVES"
+declare -A DRIVE_OPTS
+VALID_DRIVES=""
 for drive in "${DRIVES[@]}"
 do
     echo '#########################'
     print_text_in_color "$ICyan" "Testing /dev/$drive"
-    OUTPUT=$(smartctl -a "/dev/$drive")
-    if ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result:'
+
+    SMART_TYPE=$(get_smart_device_option "/dev/$drive")
+    if [ "$SMART_TYPE" = "NONE" ]
     then
         print_text_in_color "$IRed" "/dev/$drive doesn't support smart monitoring"
-        echo "$OUTPUT"
         msg_box "It seems like /dev/$drive doesn't support smart monitoring.
+Already tried without success: sat, sat,12, sat,16, usbjmicron, usbsunplus, usbcypress.
 Please check this script's output for more info!
-Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
-    elif ! echo "$OUTPUT" | grep -q 'No Errors Logged' \
+Alternatively, run 'sudo smartctl -a -d <type> /dev/$drive' manually with a different -d type,
+or check 'sudo smartctl -h' for all available device types."
+        continue
+    fi
+
+    DRIVE_OPTS["$drive"]="$SMART_TYPE"
+
+    if [ -n "$SMART_TYPE" ]
+    then
+        OUTPUT=$(smartctl -a -d "$SMART_TYPE" "/dev/$drive")
+        MANUAL_CMD="sudo smartctl -a -d $SMART_TYPE /dev/$drive"
+    else
+        OUTPUT=$(smartctl -a "/dev/$drive")
+        MANUAL_CMD="sudo smartctl -a /dev/$drive"
+    fi
+
+    if ! echo "$OUTPUT" | grep -q 'No Errors Logged' \
 || ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result: PASSED'
     then
         print_text_in_color "$IRed" "/dev/$drive isn't healthy"
         echo "$OUTPUT"
         msg_box "It seems like /dev/$drive isn't healthy.
 Please check this script's output for more info!
-Alternatively, run 'sudo smartctl -a /dev/$drive' to check it manually."
+Alternatively, run '$MANUAL_CMD' to check it manually."
         VALID_DRIVES+="$drive"
     else
         print_text_in_color "$IGreen" "/dev/$drive supports smart monitoring and is healthy"
@@ -110,6 +159,17 @@ check_command systemctl stop smartmontools
 # Weekly notification
 if [ "$choice" = "Weekly" ]
 then
+    # Build a literal "declare -A DRIVE_OPTS=(...)" block from the options
+    # detected above, so the generated script doesn't need to re-detect
+    # anything at runtime. This assumes the USB enclosure/bridge for each
+    # drive does not change between runs.
+    DRIVE_OPTS_DECL="declare -A DRIVE_OPTS=("
+    for drive in "${!DRIVE_OPTS[@]}"
+    do
+        DRIVE_OPTS_DECL+=$'\n'"    [$drive]=\"${DRIVE_OPTS[$drive]}\""
+    done
+    DRIVE_OPTS_DECL+=$'\n'")"
+
     # Create smart notification script
     cat << SMART_NOTIFICATION > "$SCRIPTS/smart-notification.sh"
 #!/bin/bash
@@ -126,10 +186,27 @@ source /var/scripts/fetch_lib.sh
 
 # Check if root
 root_check
+
+# Options detected during setup, per drive (KNAME -> smartctl -d value).
+# Assumes USB enclosures/bridges don't change between runs.
+$DRIVE_OPTS_DECL
+
+run_smartctl_all() {
+    local drive="\$1"
+    local kname
+    kname=\$(basename "\$drive")
+    if [ -v "DRIVE_OPTS[\$kname]" ] && [ -n "\${DRIVE_OPTS[\$kname]}" ]
+    then
+        smartctl --all -d "\${DRIVE_OPTS[\$kname]}" "\$drive"
+    else
+        smartctl --all "\$drive"
+    fi
+}
+
 if home_sme_server
 then
-    notify_admin_gui "S.M.A.R.T results weekly scan (nvme0n1)" "\$(smartctl --all /dev/nvme0n1)"
-    notify_admin_gui "S.M.A.R.T results weekly scan (sda)" "\$(smartctl --all /dev/sda)"
+    notify_admin_gui "S.M.A.R.T results weekly scan (nvme0n1)" "\$(run_smartctl_all /dev/nvme0n1)"
+    notify_admin_gui "S.M.A.R.T results weekly scan (sda)" "\$(run_smartctl_all /dev/sda)"
 else
     # get all disks into an array
     disks="\$(fdisk -l | grep Disk | grep /dev/sd | awk '{print\$2}' | cut -d ":" -f1)"
@@ -138,7 +215,7 @@ else
     do
         if [ -n "\$disks" ]
         then
-             notify_admin_gui "S.M.A.R.T results weekly scan (\$disk)" "\$(smartctl --all \$disk)"
+             notify_admin_gui "S.M.A.R.T results weekly scan (\$disk)" "\$(run_smartctl_all \$disk)"
         fi
     done
 fi
@@ -152,10 +229,21 @@ SMART_NOTIFICATION
 # Direct notification
 elif [ "$choice" = "Directly" ]
 then
-    # Write conf to file
+    # Write conf to file - one line per drive, so the per-drive detected
+    # -d option (e.g. for USB enclosures) is taken into account.
     # https://wiki.debianforum.de/Festplattendiagnostik-_und_%C3%9Cberwachung#Beispiel_3
-    echo "DEVICESCAN -a -I 194 -W 5,45,55 -r 5 -R 5 -n standby,24 -m <nomailer> -M exec \
-$SCRIPTS/smart-notification.sh -s (S/../.././01|L/../../6/02)" > /etc/smartd.conf
+    : > /etc/smartd.conf
+    for drive in "${!DRIVE_OPTS[@]}"
+    do
+        opt="${DRIVE_OPTS[$drive]}"
+        DEV_OPT=""
+        if [ -n "$opt" ]
+        then
+            DEV_OPT="-d $opt"
+        fi
+        echo "/dev/$drive $DEV_OPT -a -I 194 -W 5,45,55 -r 5 -R 5 -n standby,24 -m <nomailer> -M exec \
+$SCRIPTS/smart-notification.sh -s (S/../.././01|L/../../6/02)" >> /etc/smartd.conf
+    done
 
     # Create smart notification script
     cat << SMART_NOTIFICATION > "$SCRIPTS/smart-notification.sh"
