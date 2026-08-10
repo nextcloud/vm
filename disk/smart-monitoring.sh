@@ -127,7 +127,25 @@ or check 'sudo smartctl -h' for all available device types."
         MANUAL_CMD="sudo smartctl -a /dev/$drive"
     fi
 
-    if ! echo "$OUTPUT" | grep -q 'No Errors Logged' \
+    if [[ "$drive" == nvme* ]]
+    then
+        # NVMe drives report their overall health via the PASSED status
+        # and the "Critical Warning" field; the Error Information Log can
+        # contain many harmless "Invalid Field in Command" entries which
+        # don't indicate a real problem, so "No Errors Logged" isn't a
+        # reliable check here.
+        if ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result: PASSED'
+        then
+            print_text_in_color "$IRed" "/dev/$drive isn't healthy"
+            echo "$OUTPUT"
+            msg_box "It seems like /dev/$drive isn't healthy.
+Please check this script's output for more info!
+Alternatively, run '$MANUAL_CMD' to check it manually."
+        else
+            print_text_in_color "$IGreen" "/dev/$drive supports smart monitoring and is healthy"
+        fi
+        VALID_DRIVES+="$drive"
+    elif ! echo "$OUTPUT" | grep -q 'No Errors Logged' \
 || ! echo "$OUTPUT" | grep -q 'SMART overall-health self-assessment test result: PASSED'
     then
         print_text_in_color "$IRed" "/dev/$drive isn't healthy"
