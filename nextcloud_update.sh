@@ -749,6 +749,8 @@ $DOCKER_RUN_OUTPUT"
     docker_update_specific 'talk-recording' "Talk Recording"
     # Plex
     docker_update_specific 'plex' "Plex Media Server"
+    # Jellyfin
+    docker_update_specific 'jellyfin' "Jellyfin Media Server"
     # Imaginary
     docker_update_specific 'imaginary' "Imaginary"
 fi

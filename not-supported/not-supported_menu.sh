@@ -35,6 +35,7 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Restic Cloud Backup" "(Backup your server using Restic to multiple clouds)" OFF \
 "Daily Backup Wizard" "(Create a Daily Backup script)" OFF \
 "Firewall" "(Setting up a firewall)" OFF \
+"Jellyfin" "(Multimedia server application)" OFF \
 "Monitor Link Shares" "(Monitors the creation of link shares)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
@@ -84,6 +85,10 @@ case "$choice" in
     *"Firewall"*)
         print_text_in_color "$ICyan" "Downloading the Firewall script..."
         run_script NOT_SUPPORTED_FOLDER firewall
+    ;;&
+    *"Jellyfin"*)
+        print_text_in_color "$ICyan" "Downloading the Jellyfin script..."
+        run_script NOT_SUPPORTED_FOLDER jellyfin
     ;;&
     *"Monitor Link Shares"*)
         print_text_in_color "$ICyan" "Monitor Link Shares..."
