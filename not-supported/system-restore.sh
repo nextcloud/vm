@@ -435,7 +435,8 @@ done
 
 # Exclude some dirs; mnt, media, sys, prob don't need to be excluded because of the usage of --one-file-system flag
 EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache root/.config/borg var/cache \
-lost+found run var/run tmp var/tmp etc/lvm/archive snap "home/plex/config/Library/Application Support/Plex Media Server/Cache")
+lost+found run var/run tmp var/tmp etc/lvm/archive snap "home/plex/config/Library/Application Support/Plex Media Server/Cache" \
+home/plex/jellyfin/cache)
 
 # Allow to disable restoring of Previews
 if ! yesno_box_yes "Do you want to restore Nextclouds previews? This might slow down the restore process by a lot.

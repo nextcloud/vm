@@ -219,6 +219,39 @@ This can take a while. Please be patient!"
             msg_box "No need to update Plex, since the drive is already mounted to Plex."
         fi
     fi
+
+    # Test if Jellyfin is installed
+    if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^jellyfin$"
+    then
+        # Reconfiguring Jellyfin
+        msg_box "Jellyfin found. We are now adjusting Jellyfin to be able to use the new drive.
+This can take a while. Please be patient!"
+        print_text_in_color "$ICyan" "Downloading the needed tool to get the current Jellyfin config..."
+        docker pull assaflavie/runlike
+        echo '#!/bin/bash' > /tmp/jellyfin-conf
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p jellyfin >> /tmp/jellyfin-conf
+        if ! grep -q "$MOUNT_PATH:$MOUNT_PATH:ro" /tmp/jellyfin-conf
+        then
+            MOUNT_PATH_SED="${MOUNT_PATH//\//\\/}"
+            sed -i "0,/--volume/s// -v $MOUNT_PATH_SED:$MOUNT_PATH_SED:ro \\\\\n&/" /tmp/jellyfin-conf
+            docker stop jellyfin
+            if ! docker rm jellyfin
+            then
+                msg_box "Something failed while removing the old container."
+                return
+            fi
+            if ! bash /tmp/jellyfin-conf
+            then
+                msg_box "Starting the new container failed. You can find the config here: '/tmp/jellyfin-conf'"
+                return
+            fi
+            rm /tmp/jellyfin-conf
+            msg_box "Jellyfin was adjusted!"
+        else
+            rm /tmp/jellyfin-conf
+            msg_box "No need to update Jellyfin, since the drive is already mounted to Jellyfin."
+        fi
+    fi
     return
 fi
 
