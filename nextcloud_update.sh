@@ -753,6 +753,10 @@ $DOCKER_RUN_OUTPUT"
     docker_update_specific 'jellyfin' "Jellyfin Media Server"
     # Imaginary
     docker_update_specific 'imaginary' "Imaginary"
+    # Pi-hole
+    docker_update_specific 'pihole' "Pi-hole"
+    # WireGuard: the image is pinned to a major tag, hence this only updates within it
+    docker_update_specific 'wg-easy' "WireGuard"
 fi
 
 # Fix Collabora change too coolwsd
