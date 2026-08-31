@@ -87,7 +87,7 @@ then
 fi
 
 # Pi-hole
-if pihole &>/dev/null
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^pihole$"
 then
     print_text_in_color "$ICyan" "Allow Pi-hole"
     ufw allow 53/tcp comment 'Pi-hole TCP'
@@ -95,11 +95,12 @@ then
     ufw allow 8094/tcp comment 'Pi-hole Web'
 fi
 
-# PiVPN
-if pivpn &>/dev/null
+# WireGuard
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^wg-easy$"
 then
-    print_text_in_color "$ICyan" "Allow PiVPN"
-    ufw allow 51820/udp comment 'PiVPN'
+    print_text_in_color "$ICyan" "Allow WireGuard"
+    ufw allow 51820/udp comment 'WireGuard VPN'
+    ufw allow 51822/tcp comment 'WireGuard Web'
 fi
 
 # Plex
