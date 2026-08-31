@@ -295,7 +295,10 @@ against brute-force attacks.
 
 Please note that this requires the Jellyfin log level to stay at its default 'Information' \
 since Jellyfin doesn't log failed logins on higher log levels. So please don't raise the \
-log level in '/home/plex/jellyfin/config/logging.json' if you want to keep fail2ban working."
+log level in '/home/plex/jellyfin/config/logging.json' if you want to keep fail2ban working.
+
+It will also require one manual step in Jellyfin afterwards to make fail2ban work at all. \
+We will show you the needed instructions at the end of this script."
 
 # Install fail2ban
 install_if_not fail2ban
@@ -329,6 +332,8 @@ JELLYFIN_CONF
 # regular INPUT chain of the host and not the DOCKER-USER chain. Hence we use the
 # default chain here and not 'chain=DOCKER-USER' as the Jellyfin documentation
 # recommends for containers that publish their ports via the docker bridge.
+# This only bans anyone if '127.0.0.1' was added to the 'Known proxies' of Jellyfin,
+# which the user has to do manually. See the final msg_box of this script.
 cat << JELLYFIN_JAIL_CONF > /etc/fail2ban/jail.d/jellyfin.local
 [jellyfin]
 backend = auto
@@ -392,6 +397,7 @@ a2enmod proxy_http
 a2enmod ssl
 a2enmod headers
 a2enmod rewrite
+a2enmod remoteip
 
 # Only add TLS 1.3 on supported Ubuntu releases
 if version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"
@@ -445,6 +451,10 @@ then
 
     # contra mixed content warnings
     RequestHeader set X-Forwarded-Proto "https"
+
+    # Let Jellyfin log the real ip of failed logins instead of 127.0.0.1 for fail2ban.
+    # 'set' overwrites the header so that it can't get spoofed to ban an innocent ip.
+    RequestHeader set X-Forwarded-For %{REMOTE_ADDR}s
 
     # basic proxy settings
     ProxyRequests off
@@ -509,12 +519,25 @@ discovery of the Jellyfin clients work. This means that Jellyfin is additionally
 unencrypted inside your local network on 'http://$ADDRESS:8096'. \
 It is recommended to always use 'https://$SUBDOMAIN' instead.
 
-fail2ban was set up as well and bans ip addresses that failed to log in 10 times within 30 minutes. \
+fail2ban was set up as well and bans ip addresses that failed to log in 20 times within 30 minutes. \
 You can unban ip addresses by executing the following command:
 'sudo fail2ban-client set jellyfin unbanip XX.XX.XX.XX'
 
+ATTENTION! One manual step is required to make fail2ban work!
+
+Jellyfin runs behind a reverse proxy, which is why it logs '127.0.0.1' for every failed \
+login instead of the real ip address of the attacker. Since '127.0.0.1' is on the ignore \
+list of fail2ban, nobody would ever get banned like this.
+
+To fix this, please do the following after you have created your admin user:
+1. Go to 'Dashboard' --> 'Networking' in Jellyfin
+2. Enter '127.0.0.1' in the 'Known proxies' field
+3. Click on 'Save'
+4. Restart Jellyfin by running 'sudo docker restart jellyfin'
+
 Once you have at least one failed login attempt, you can test the jail with this command:
 'sudo fail2ban-regex /home/plex/jellyfin/config/log/log_*.log \
-/etc/fail2ban/filter.d/jellyfin.local --print-all-matched'"
+/etc/fail2ban/filter.d/jellyfin.local --print-all-matched'
+The ip addresses shown there must be real ip addresses and not '127.0.0.1'."
 
 exit
