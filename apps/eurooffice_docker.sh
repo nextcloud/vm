@@ -205,6 +205,8 @@ then
     Header set X-XSS-Protection "1; mode=block"
     Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     Header set X-Content-Type-Options nosniff
+    # Only 'frame-ancestors' on purpose: EuroOffice documents no CSP for their Apache proxy
+    # example, and a self-invented one would just break the editor iframe inside Nextcloud.
     Header set Content-Security-Policy "frame-ancestors 'self' $NCDOMAIN"
 
     # contra mixed content warnings

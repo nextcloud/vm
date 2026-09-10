@@ -112,6 +112,16 @@ then
     done
 fi
 
+# Jellyfin
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^jellyfin$"
+then
+    print_text_in_color "$ICyan" "Allow Jellyfin"
+    for port in 8096/tcp 8920/tcp 1900/udp 7359/udp
+    do
+        ufw allow "$port" comment "Jellyfin $port"
+    done
+fi
+
 # Enable firewall
 print_text_in_color "$ICyan" "Enable Firewall"
 ufw --force enable

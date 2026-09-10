@@ -398,7 +398,8 @@ Please don't restart or shutdown your server until then!"
 
     # System backup
     EXCLUDED_DIRECTORIES=(home/*/.cache root/.cache home/plex/transcode var/cache lost+found \
-    run var/run dev tmp "home/plex/config/Library/Application Support/Plex Media Server/Cache")
+    run var/run dev tmp "home/plex/config/Library/Application Support/Plex Media Server/Cache" \
+    home/plex/jellyfin/cache)
     # mnt, media, sys, prob don't need to be excluded because of the usage of lvm-snapshots and the --one-file-system flag
     for directory in "${EXCLUDED_DIRECTORIES[@]}"
     do

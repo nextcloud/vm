@@ -34,7 +34,10 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    if ! does_this_docker_exist vaultwarden && ! does_this_docker_exist bitwarden_rs
+    # Jellyfin brings its own fail2ban jail, which is why fail2ban must not get
+    # purged completely if Jellyfin is installed
+    if ! does_this_docker_exist vaultwarden && ! does_this_docker_exist bitwarden_rs \
+&& ! does_this_docker_exist 'jellyfin/jellyfin'
     then
         print_text_in_color "$ICyan" "Unbanning all currently blocked IPs..."
         fail2ban-client unban --all

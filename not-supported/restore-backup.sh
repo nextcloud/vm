@@ -482,7 +482,7 @@ do
 done
 
 # Exclude some dirs
-EXCLUDE_DIRECTORIES=("home/plex/config/Library/Application Support/Plex Media Server/Cache" "$NCDATA"/appdata_*/preview "$NCDATA"/*/files_trashbin "$NCDATA"/*/files_versions mnt/NCBACKUP mnt/NCBACKUP-OLD "$NCDATA"/*/uploads)
+EXCLUDE_DIRECTORIES=("home/plex/config/Library/Application Support/Plex Media Server/Cache" home/plex/jellyfin/cache "$NCDATA"/appdata_*/preview "$NCDATA"/*/files_trashbin "$NCDATA"/*/files_versions mnt/NCBACKUP mnt/NCBACKUP-OLD "$NCDATA"/*/uploads)
 for directory in "${EXCLUDE_DIRECTORIES[@]}"
 do
     directory="${directory#/*}"
@@ -719,7 +719,7 @@ You can now simply reinstall all apps and addons that were installed on your ser
 Those need to get installed (if they were installed on the old server before):
 Geoblocking, Disk Monitoring, Fail2Ban, ClamAV, SMTP Mail, DDclient, Activate TLS, EuroOffice, Push Notifications for Nextcloud, \
 High-Performance backend for Nextcloud Talk, Whiteboard for Nextcloud, Vaultwarden, Pi-hole, PiVPN, \
-Plex Media Server, Previewgenerator, Remotedesktop and Midnight Commander.\n
+Plex Media Server, Jellyfin, Previewgenerator, Remotedesktop and Midnight Commander.\n
 Note:
-Vaultwarden and Plex Media Server files were restored (if they were installed before) but the containers need to get \
+Vaultwarden, Plex Media Server and Jellyfin files were restored (if they were installed before) but the containers need to get \
 installed again to make them run with the restored files."
