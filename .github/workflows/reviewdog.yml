@@ -27,7 +27,7 @@ jobs:
       - name: spelling or typos
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
       - name: misspell
-        uses: reviewdog/action-misspell@ba7ac4030fa6812f8c8b2d4e516af8bc99553c32 # v1
+        uses: reviewdog/action-misspell@v1
         with:
           github_token: ${{ secrets.github_token }}
           locale: "US"
