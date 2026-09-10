@@ -718,7 +718,7 @@ msg_box "Restore completed!\n
 You can now simply reinstall all apps and addons that were installed on your server before!\n
 Those need to get installed (if they were installed on the old server before):
 Geoblocking, Disk Monitoring, Fail2Ban, ClamAV, SMTP Mail, DDclient, Activate TLS, EuroOffice, Push Notifications for Nextcloud, \
-High-Performance backend for Nextcloud Talk, Whiteboard for Nextcloud, Vaultwarden, Pi-hole, PiVPN, \
+High-Performance backend for Nextcloud Talk, Whiteboard for Nextcloud, Vaultwarden, Pi-hole, WireGuard, \
 Plex Media Server, Jellyfin, Previewgenerator, Remotedesktop and Midnight Commander.\n
 Note:
 Vaultwarden, Plex Media Server and Jellyfin files were restored (if they were installed before) but the containers need to get \
