@@ -447,7 +447,9 @@ then
     Header set X-XSS-Protection "1; mode=block"
     Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     Header set X-Content-Type-Options nosniff
-    Header set Content-Security-Policy "frame-ancestors 'self' $NCDOMAIN"
+    # Jellyfin sends no CSP itself and only publishes one in its nginx example (not the apache
+    # one), so we translate that policy to apache: https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/nginx/
+    Header set Content-Security-Policy "default-src https: data: blob:; img-src 'self' https://* data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.youtube.com blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; font-src 'self'; frame-ancestors 'self'"
 
     # contra mixed content warnings
     RequestHeader set X-Forwarded-Proto "https"
