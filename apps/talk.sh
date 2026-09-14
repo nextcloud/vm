@@ -70,6 +70,7 @@ else
         /etc/apt/trusted.gpg.d/morph027-coturn.asc \
         /etc/apt/keyrings/morph027-coturn.asc \
         /etc/apt/sources.list.d/morph027-nextcloud-spreed-signaling.list \
+        /etc/apt/preferences.d/morph027-nextcloud-spreed-signaling \
         /etc/apt/sources.list.d/morph027-janus.list \
         /etc/apt/sources.list.d/morph027-nats-server.list \
         /etc/apt/sources.list.d/morph027-coturn.list \
@@ -376,8 +377,21 @@ add_trusted_key_and_repo "gpg.key" \
 "https://packaging.gitlab.io/nextcloud-spreed-signaling" \
 "signaling main" \
 "morph027-nextcloud-spreed-signaling.list"
-install_if_not nextcloud-spreed-signaling
+# Ubuntu 26.04 ships its own nextcloud-spreed-signaling with different paths,
+# so pin the packaging.gitlab.io one to get the layout this script expects.
+mkdir -p /etc/apt/preferences.d
+cat << SIGNALING_PIN_CREATE > /etc/apt/preferences.d/morph027-nextcloud-spreed-signaling
+Package: nextcloud-spreed-signaling*
+Pin: origin packaging.gitlab.io
+Pin-Priority: 1001
+SIGNALING_PIN_CREATE
+apt-get update -q4 & spinner_loading
+# Pin-Priority 1001 lets apt replace an already installed Ubuntu package.
+check_command env RUNLEVEL=1 apt-get install nextcloud-spreed-signaling -y --allow-downgrades
 ## Configuration
+# The systemd unit only creates the directory via ConfigurationDirectory= once
+# the service starts, but we need to write the config before that.
+mkdir -p "$(dirname "$SIGNALING_SERVER_CONF")"
 if [ ! -f "$SIGNALING_SERVER_CONF" ];
 then
     cat << SIGNALING_CONF_CREATE > "$SIGNALING_SERVER_CONF"
