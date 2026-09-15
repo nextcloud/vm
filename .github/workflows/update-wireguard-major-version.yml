@@ -1,0 +1,88 @@
+name: 'Update WireGuard Major Version'
+
+on:
+  schedule:
+    # Run on the first day of every month at 04:00 UTC
+    - cron: '0 4 1 * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-wireguard:
+    name: Update the pinned wg-easy major version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Update the pinned major version
+        id: update
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CURRENT="$(grep -oP '(?<=ghcr\.io/wg-easy/wg-easy:)\d+' not-supported/wireguard.sh | head -1)"
+          if [ -z "$CURRENT" ]
+          then
+              echo "Could not find the pinned wg-easy version in not-supported/wireguard.sh"
+              exit 1
+          fi
+          # The 'latest' endpoint never returns drafts or prereleases,
+          # which is important since wg-easy publishes beta releases as well
+          TAG="$(gh api repos/wg-easy/wg-easy/releases/latest --jq '.tag_name')"
+          # '|| true' since a non-matching grep would otherwise abort the step
+          # before the error message below can run, as GitHub runs this with 'bash -e'
+          LATEST="$(echo "$TAG" | grep -oP '(?<=^v)\d+' || true)"
+          if [ -z "$LATEST" ]
+          then
+              echo "Could not parse a major version from the tag '$TAG'"
+              exit 1
+          fi
+          # Compare numerically here so that e.g. 9 -> 10 is handled correctly
+          if [ "$LATEST" -le "$CURRENT" ]
+          then
+              echo "The pinned version $CURRENT is already up to date"
+              exit 0
+          fi
+          # Make sure that we don't pin a tag that isn't published on ghcr.io,
+          # since the release and the image don't necessarily appear at once
+          if ! docker manifest inspect "ghcr.io/wg-easy/wg-easy:$LATEST" &>/dev/null
+          then
+              echo "The image tag '$LATEST' doesn't exist (yet) on ghcr.io"
+              exit 0
+          fi
+          sed -i "s|ghcr.io/wg-easy/wg-easy:$CURRENT|ghcr.io/wg-easy/wg-easy:$LATEST|g" not-supported/wireguard.sh
+          if ! git diff --quiet .
+          then
+              echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+              echo "version=$LATEST" >> "$GITHUB_OUTPUT"
+              echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.update.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: 'Update WireGuard to major version ${{ steps.update.outputs.version }}'
+          title: 'Update WireGuard to major version ${{ steps.update.outputs.version }}'
+          body: |
+            Automated update of the pinned wg-easy image from major version `${{ steps.update.outputs.current }}` to `${{ steps.update.outputs.version }}` (latest release: `${{ steps.update.outputs.tag }}`).
+
+            The image in `not-supported/wireguard.sh` is pinned to a major tag so that `nextcloud_update.sh` only pulls patch releases automatically. Major upgrades are intentionally not automatic and need this PR.
+
+            > [!WARNING]
+            > Please **do not merge this without testing it first**. Major releases of wg-easy have contained breaking changes in the past, which can affect:
+            > - the `INIT_*` environment variables that create the admin account
+            > - the format of the config in the `wg_easy` docker volume, which existing installs keep across a reinstall
+            > - the sysctls, capabilities and the web interface port
+            >
+            > Please check the [release notes](https://github.com/wg-easy/wg-easy/releases/tag/${{ steps.update.outputs.tag }}) and run a fresh install **and** a reinstall over an existing volume before merging.
+          branch: 'automated/wireguard-version'
+          delete-branch: true
+          labels: |
+            automated
+            maintenance
+          reviewers: 'szaimen'
+          assignees: 'szaimen'
