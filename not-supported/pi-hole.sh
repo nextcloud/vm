@@ -75,12 +75,14 @@ else
     if [ -f /etc/unbound/unbound.conf.d/pi-hole.conf ]
     then
         rm -f /etc/unbound/unbound.conf.d/pi-hole.conf
+        # Remove the daily restart cron job
+        crontab -u root -l 2>/dev/null | grep -v "restart unbound" | crontab -u root -
         rm -f /etc/systemd/system/unbound.service.d/ncvm-pihole.conf
         rmdir /etc/systemd/system/unbound.service.d &>/dev/null
         systemctl daemon-reload
-        if is_this_installed unbound
+        if is_this_installed unbound || is_this_installed unbound-anchor
         then
-            apt-get purge unbound -y
+            apt-get purge unbound unbound-anchor -y
             apt-get autoremove -y
         fi
     fi
@@ -376,11 +378,36 @@ ufw allow "$PIHOLE_PROXY_PORT"/tcp comment 'Pi-hole Web' &>/dev/null
 if [ "$UNBOUND" = "yes" ]
 then
     # Install unbound. We do not use install_if_not here, since it installs
-    # with RUNLEVEL=1, which skips the postinst that creates the DNSSEC anchor.
-    if ! is_this_installed unbound
+    # with RUNLEVEL=1, which skips parts of the package setup.
+    if ! is_this_installed unbound || ! is_this_installed unbound-anchor
     then
         apt-get update -q4 & spinner_loading
-        check_command apt-get install unbound -y
+        check_command apt-get install unbound unbound-anchor -y
+    fi
+
+    # Ubuntu makes unbound listen on 127.0.0.1:53 via resolvconf, which
+    # conflicts with port 53 that the Pi-hole container publishes
+    systemctl disable --now unbound-resolvconf.service &>/dev/null
+    rm -f /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf
+
+    # The DNSSEC root trust anchor is not always created by the package,
+    # but unbound refuses to start without it
+    if ! [ -f /var/lib/unbound/root.key ]
+    then
+        print_text_in_color "$ICyan" "Creating the DNSSEC root trust anchor..."
+        mkdir -p /var/lib/unbound
+        # It returns 1 when it had to bootstrap the key from its built-in
+        # copy, which is the expected case on a fresh installation
+        unbound-anchor -a /var/lib/unbound/root.key || true
+        chown unbound:unbound /var/lib/unbound/root.key &>/dev/null
+        if ! [ -f /var/lib/unbound/root.key ]
+        then
+            msg_box "Could not create the DNSSEC root trust anchor in \
+'/var/lib/unbound/root.key', which means that unbound cannot start.
+
+Please report this to $ISSUES"
+            exit 1
+        fi
     fi
 
     # unbound listens on the docker bridge gateway so that the container can
@@ -442,25 +469,61 @@ After=docker.service
 UNBOUND_SERVICE
     systemctl daemon-reload
 
-    # Restart unbound
-    print_text_in_color "$ICyan" "Restarting unbound..."
-    check_command systemctl restart unbound
-    countdown "Waiting for unbound to start... " 10
+    # Allow the container to reach unbound on the docker bridge
+    ufw allow in on docker0 to "$DOCKER_GATEWAY" port 5335 comment 'Pi-hole unbound' &>/dev/null
 
-    # Testing DNSSEC
-    install_if_not dnsutils
-    if ! dig sigfail.verteiltesysteme.net @"$DOCKER_GATEWAY" -p 5335 | grep -q "SERVFAIL"
+    # Restart unbound. A former failed start can latch the unit into a failed
+    # state with 'start request repeated too quickly', which we clear first
+    print_text_in_color "$ICyan" "Restarting unbound..."
+    systemctl reset-failed unbound &>/dev/null
+    systemctl restart unbound &>/dev/null
+
+    # Wait for unbound to actually answer instead of guessing a delay, since
+    # a restart can still end in a failed unit or a not yet ready resolver
+    UNBOUND_READY=no
+    for _ in $(seq 1 30)
+    do
+        if docker exec pihole dig +time=2 +tries=1 @"$DOCKER_GATEWAY" -p 5335 \
+nextcloud.com &>/dev/null
+        then
+            UNBOUND_READY=yes
+            break
+        fi
+        sleep 1
+    done
+    if [ "$UNBOUND_READY" != "yes" ]
     then
-        msg_box "Something went wrong while testing SERVFAIL.
+        msg_box "unbound did not start correctly and does not answer queries.
+
 Please report this to $ISSUES"
-    elif ! dig sigok.verteiltesysteme.net @"$DOCKER_GATEWAY" -p 5335 | grep -q "NOERROR"
+        exit 1
+    fi
+
+    # Testing DNSSEC from inside the container, since unbound refuses queries
+    # from the host. A validated answer carries the 'ad' flag.
+    if ! docker exec pihole dig +time=10 +tries=1 @"$DOCKER_GATEWAY" -p 5335 \
+sigok.verteiltesysteme.net | grep -q "flags:.* ad[;,]"
     then
-        msg_box "Something went wrong while testing NOERROR.
+        msg_box "Something went wrong while testing DNSSEC validation.
+unbound did not return an authenticated answer for a signed domain.
+
+Please report this to $ISSUES"
+    # A domain with a broken signature must not resolve. unbound either answers
+    # with SERVFAIL or doesn't answer at all while it retries the nameservers
+    elif docker exec pihole dig +time=10 +tries=1 @"$DOCKER_GATEWAY" -p 5335 \
+sigfail.verteiltesysteme.net | grep -q "flags:.* ad[;,]"
+    then
+        msg_box "Something went wrong while testing DNSSEC validation.
+unbound validated a domain with a broken signature.
+
 Please report this to $ISSUES"
     fi
 
-    # Allow the container to reach unbound on the docker bridge
-    ufw allow in on docker0 to "$DOCKER_GATEWAY" port 5335 comment 'Pi-hole unbound' &>/dev/null
+    # Restart unbound daily, since a failed start at boot latches the unit and
+    # would leave the Pi-hole without its upstream DNS server until fixed by hand
+    crontab -u root -l 2>/dev/null | grep -v "restart unbound" | crontab -u root -
+    crontab -u root -l 2>/dev/null | { cat; echo "0 4 * * * systemctl reset-failed \
+unbound && systemctl restart unbound"; } | crontab -u root -
 
     # Configure Pi-hole to use unbound as its upstream DNS server
     print_text_in_color "$ICyan" "Configuring Pi-hole to use unbound..."
@@ -529,14 +592,5 @@ which will generate and show you a new password while keeping all your settings.
 
 Please also note that the DHCP functionality of Pi-hole is not enabled since the \
 container doesn't run in the host network."
-
-# Inform about updates
-msg_box "Concerning updates:
-Pi-hole runs in a Docker container, which means that you can update it \
-by running the following commands:
-'sudo docker pull pihole/pihole:latest'
-and afterwards running this script again and choosing 'Reinstall'.
-
-Your settings and statistics in '$PIHOLE_DIR' will be kept in that process."
 
 exit
