@@ -179,17 +179,7 @@ msg_box "To make WireGuard work, you will need to open port $WIREGUARD_PORT UDP 
 in your router and forward it to this server.
 
 Attention! The web interface on port $WIREGUARD_PROXY_PORT TCP must NOT be \
-forwarded, since it is only meant to be reachable inside your local network!
-
-You will have the option to automatically open port $WIREGUARD_PORT UDP by \
-using UPNP after the installation succeeded."
-
-if yesno_box_no "Do you want to use UPNP to open port $WIREGUARD_PORT UDP?"
-then
-    # The forward is only created after the installation succeeded, so that a
-    # failing install doesn't leave an open port to a non-existing VPN server
-    USE_UPNP=yes
-fi
+forwarded, since it is only meant to be reachable inside your local network!"
 
 # Check the port
 if ! yesno_box_yes "Unfortunately we are not able to check automatically if port \
@@ -383,14 +373,6 @@ $(docker logs --tail 20 wg-easy 2>&1)
 
 Please report this issue here $ISSUES if you can't solve it yourself."
     exit 1
-fi
-
-# Now that the server actually runs, open the port in the router if chosen
-if [ "$USE_UPNP" = "yes" ]
-then
-    unset FAIL
-    open_port "$WIREGUARD_PORT" UDP
-    cleanup_open_port
 fi
 
 # Inform the user about the successful installation
