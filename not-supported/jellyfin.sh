@@ -176,18 +176,7 @@ source /var/scripts/fetch_lib.sh
 msg_box "Before continuing, please make sure that you have \
 edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
 directly to this servers IP. A full extensive guide can be found here:
-https://www.techandme.se/open-port-80-443
-
-This can be done automatically if you have UPNP enabled in your firewall/router. \
-You will be offered to use UPNP in the next step."
-
-if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
-then
-    unset FAIL
-    open_port 80 TCP
-    open_port 443 TCP
-    cleanup_open_port
-fi
+https://www.techandme.se/open-port-80-443"
 
 # Get the latest packages
 apt-get update -q4 & spinner_loading
