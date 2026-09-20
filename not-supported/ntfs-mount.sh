@@ -150,7 +150,7 @@ If you want to cancel, type 'exit' and press [ENTER].")
         msg_box "Please don't use spaces!"
     elif ! echo "$MOUNT_PATH" | grep -q "^/mnt/"
     then
-        msg_box "The directory has to stat with '/mnt/'"
+        msg_box "The directory has to start with '/mnt/'"
     elif grep -q " $MOUNT_PATH " /etc/fstab
     then
         msg_box "The mountpoint already exists in fstab. Please try a different one."

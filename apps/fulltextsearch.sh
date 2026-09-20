@@ -5,7 +5,7 @@
 
 true
 SCRIPT_NAME="Full Text Search"
-SCRIPT_EXPLAINER="Full Text Search provides ElastichSearch for Nextcloud, which makes it possible to search for text inside files."
+SCRIPT_EXPLAINER="Full Text Search provides ElasticSearch for Nextcloud, which makes it possible to search for text inside files."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -66,7 +66,7 @@ else
             nextcloud_occ app:remove "$app"
         fi
     done
-    # Removal Elastichsearch Docker image
+    # Removal Elasticsearch Docker image
     docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
     if docker network ls | grep "$FULLTEXTSEARCH_IMAGE_NAME"-network
     then
@@ -220,7 +220,7 @@ countdown "Waiting for a few seconds before indexing starts..." "10"
 if nextcloud_occ fulltextsearch:test
 then
     # Turn off swap temporarily https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html
-    print_text_in_color "Turning of swap temporarily..."
+    print_text_in_color "Turning off swap temporarily..."
     swapoff -a
     if nextcloud_occ fulltextsearch:index < /dev/null
     then
