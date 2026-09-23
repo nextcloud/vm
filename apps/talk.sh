@@ -197,20 +197,9 @@ check_command systemctl restart coturn.service
 # Warn user to open port
 msg_box "You have to open $TURN_PORT TCP/UDP in your firewall or your TURN/STUN server won't work!
 
-This can be done automatically if you have UPNP enabled in your firewall/router. \
-You will be offered to use UPNP in the next step.
-
 After you hit OK, the script will check if the port is open or not. If it fails \
 and you want to run this script again, just execute this in your CLI:
 sudo bash /var/scripts/menu.sh, and choose 'Talk'."
-
-if yesno_box_no "Do you want to use UPNP to open port $TURN_PORT?"
-then
-    unset FAIL
-    open_port "$TURN_PORT" TCP
-    open_port "$TURN_PORT" UDP
-    cleanup_open_port
-fi
 
 # Check if the port is open
 check_open_port "$TURN_PORT" "$TURN_DOMAIN"
@@ -269,21 +258,10 @@ edited the DNS settings for $SUBDOMAIN, and opened port 80 and 443 \
 directly to this servers IP. A full extensive guide can be found here:
 https://www.techandme.se/open-port-80-443
 
-This can be done automatically if you have UPNP enabled in your firewall/router. \
-You will be offered to use UPNP in the next step.
-
 PLEASE NOTE:
 Using other ports than the default 80 and 443 is not supported, \
 though it may be possible with some custom modification:
 https://help.nextcloud.com/t/domain-refused-to-connect-collabora/91303/17"
-
-if yesno_box_no "Do you want to use UPNP to open port 80 and 443?"
-then
-    unset FAIL
-    open_port 80 TCP
-    open_port 443 TCP
-    cleanup_open_port
-fi
 
 # Check if $SUBDOMAIN exists and is reachable
 print_text_in_color "$ICyan" "Checking if $SUBDOMAIN exists and is reachable..."

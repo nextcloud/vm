@@ -54,7 +54,7 @@ INTERNET_DNS="9.9.9.9"
 # Default Quad9 DNS servers, overwritten by the systemd global DNS defined servers, if set
 DNS1="9.9.9.9"
 DNS2="149.112.112.112"
-NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8983 10000 8081 8443 9443 9000 9980 9090 9200 9600 1234)
+NONO_PORTS=(22 25 53 80 443 1024 3012 3306 5178 5179 5432 7867 7983 8094 8573 8983 10000 8081 8443 9443 9000 9980 9090 9200 9600 1234 51820 51821 51822)
 # 9000 9980 9090 9200 9600 1234 are local docker ports, don't remember if they are needed here or not.
 use_global_systemd_dns() {
 if [ -f "/etc/systemd/resolved.conf" ]
@@ -1142,26 +1142,6 @@ fi
 
 # Restart webserver services
 restart_webserver
-}
-
-# Use like this: open_port 443 TCP
-# or e.g. open_port 3478 UDP
-open_port() {
-    install_if_not miniupnpc
-    print_text_in_color "$ICyan" "Trying to open port $1 automatically..."
-    if ! upnpc -a "$ADDRESS" "$1" "$1" "$2" &>/dev/null
-    then
-        msg_box "Failed to open port $1 $2 automatically. You have to do this manually."
-        FAIL=1
-    fi
-}
-
-cleanup_open_port() {
-    if [ -n "$FAIL" ]
-    then
-        apt-get purge miniupnpc -y
-        apt-get autoremove -y
-    fi
 }
 
 # Check if port is open # check_open_port 443 domain.example.com
