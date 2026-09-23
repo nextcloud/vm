@@ -39,11 +39,11 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Monitor Link Shares" "(Monitors the creation of link shares)" OFF \
 "Off-Shore Backup Wizard" "(Create an Off-Shore Backup script)" OFF \
 "Pi-hole" "(Network wide ads- and tracker blocking)" OFF \
-"PiVPN" "(Install a Wireguard VPN server with PiVPN)" OFF \
 "PLEX Media Server" "(Multimedia server application)" OFF \
 "Remotedesktop" "(Install a remotedesktop based on xrdp)" OFF \
 "SMB-server" "(Create and manage a SMB-server on OS level)" OFF \
-"System Restore" "(Restore the system partition from a backup)" OFF 3>&1 1>&2 2>&3)
+"System Restore" "(Restore the system partition from a backup)" OFF \
+"WireGuard" "(Install a WireGuard VPN server)" OFF 3>&1 1>&2 2>&3)
 
 case "$choice" in
     *"BTRFS Format"*)
@@ -102,10 +102,6 @@ case "$choice" in
         print_text_in_color "$ICyan" "Downloading the Pi-hole script..."
         run_script NOT_SUPPORTED_FOLDER pi-hole
     ;;&
-    *"PiVPN"*)
-        print_text_in_color "$ICyan" "Downloading the PiVPN script..."
-        run_script NOT_SUPPORTED_FOLDER pivpn
-    ;;&
     *"PLEX Media Server"*)
         print_text_in_color "$ICyan" "Downloading the PLEX Media Server script..."
         run_script NOT_SUPPORTED_FOLDER plexmediaserver
@@ -121,6 +117,10 @@ case "$choice" in
     *"System Restore"*)
         print_text_in_color "$ICyan" "Downloading the System Restore script..."
         run_script NOT_SUPPORTED_FOLDER system-restore
+    ;;&
+    *"WireGuard"*)
+        print_text_in_color "$ICyan" "Downloading the WireGuard script..."
+        run_script NOT_SUPPORTED_FOLDER wireguard
     ;;&
     *)
     ;;

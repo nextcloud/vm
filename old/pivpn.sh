@@ -151,15 +151,7 @@ It should most likely point to your home ip address via DDNS.")
 fi
 
 # Inform user to open Port
-msg_box "To make Wireguard work, you will need to open port 51820 UDP.
-
-You will have the option to automatically open this port by using UPNP in the next step."
-if yesno_box_no "Do you want to use UPNP to open port 51820 UDP?"
-then
-    unset FAIL
-    open_port 51820 UDP
-    cleanup_open_port
-fi
+msg_box "To make Wireguard work, you will need to open port 51820 UDP in your router."
 
 # Check the port
 if ! yesno_box_yes "Unfortunately we are not able to check automatically if port 51820 UDP is open. So please make sure to open it correctly!\nDo you still want to continue?"

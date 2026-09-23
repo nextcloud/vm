@@ -150,14 +150,7 @@ This script is not at the end yet so please continue."
 # Ask if external acces shall get activated
 if yesno_box_yes "Do you want to enable access for PLEX from outside of your LAN?"
 then
-    msg_box "You will have to open port 32400 TCP to make this work.
-You will have the option to automatically open this port by using UPNP in the next step."
-    if yesno_box_no "Do you want to use UPNP to open port 32400 TCP?"
-    then
-        unset FAIL
-        open_port 32400 TCP
-        cleanup_open_port
-    fi
+    msg_box "You will have to open port 32400 TCP in your router to make this work."
     msg_box "After you hit okay, we will check if port 32400 TCP is open."
     check_open_port 32400 "$WANIP4"
 fi

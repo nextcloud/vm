@@ -86,20 +86,31 @@ then
     ufw allow samba comment Samba
 fi
 
-# Pi-hole
-if pihole &>/dev/null
+# Pi-hole. Port 53 is published by the container, which docker opens in the
+# nat table before ufw, hence only the proxy port needs a rule.
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^pihole$"
 then
     print_text_in_color "$ICyan" "Allow Pi-hole"
-    ufw allow 53/tcp comment 'Pi-hole TCP'
-    ufw allow 53/udp comment 'Pi-hole UDP'
     ufw allow 8094/tcp comment 'Pi-hole Web'
+    # unbound runs on the host and is reached via the docker bridge,
+    # which does hit the INPUT chain and hence needs a rule
+    if [ -f /etc/unbound/unbound.conf.d/pi-hole.conf ]
+    then
+        DOCKER_GATEWAY="$(docker network inspect bridge --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}' 2>/dev/null)"
+        if [ -z "$DOCKER_GATEWAY" ]
+        then
+            DOCKER_GATEWAY=172.17.0.1
+        fi
+        ufw allow in on docker0 to "$DOCKER_GATEWAY" port 5335 comment 'Pi-hole unbound'
+    fi
 fi
 
-# PiVPN
-if pivpn &>/dev/null
+# WireGuard
+# The VPN port is published by the container, see the Pi-hole comment above
+if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^wg-easy$"
 then
-    print_text_in_color "$ICyan" "Allow PiVPN"
-    ufw allow 51820/udp comment 'PiVPN'
+    print_text_in_color "$ICyan" "Allow WireGuard"
+    ufw allow 51822/tcp comment 'WireGuard Web'
 fi
 
 # Plex
