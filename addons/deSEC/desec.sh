@@ -33,7 +33,7 @@ done
 new_domain_email_info_1(){
 ### TODO, is it possible to check if the email address already exists with deSEC? In that case we could skip this whole info and replace it with a function instead.
 # Email address
-msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter it a 100% valid one! deSEC will verify your email address by sending you a verification link.
+msg_box "You will now be prompted to enter an email address. It's very important that the email address you enter is a 100% valid one! deSEC will verify your email address by sending you a verification link.
 
 Every 6 months you will get an email asking you to confirm your domain. If you don't react within a few weeks, your domain will be destroyed!
 
@@ -134,10 +134,10 @@ EOF
 
 prompt_tls(){
 # Ask if the user wants to add TLS (use script)
-if yesno_box_yes "Do you want to set this domain as your Nextcoud domain \
+if yesno_box_yes "Do you want to set this domain as your Nextcloud domain \
 and activate TLS for your Nextcloud using Let's Encrypt?"
 then
-    # Add DNS renewals with the deSEC hoock script
+    # Add DNS renewals with the deSEC hook script
     print_text_in_color "$ICyan" "Preparing for DNS-renewals..."
     mkdir -p "$SCRIPTS"/deSEC
     curl_to_dir "https://raw.githubusercontent.com/nextcloud/vm/main/addons/deSEC" "hook.sh" "$SCRIPTS"/deSEC
