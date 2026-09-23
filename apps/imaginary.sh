@@ -7,7 +7,7 @@
 true
 SCRIPT_NAME="Imaginary Docker"
 SCRIPT_EXPLAINER="This script will install Imaginary which is a replacement for the less secure Imagick.
-It can speedup the loading of previews in Nextcloud a lot."
+It can speed up the loading of previews in Nextcloud a lot."
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
@@ -20,7 +20,7 @@ debug_mode
 # Check if root
 root_check
 
-# Check recources
+# Check resources
 # If we can calculate the cpu and ram, then set it to the lowest possible, if not, then hardcode it to a recommended minimum.
 if which nproc >/dev/null 2>&1
 then
@@ -43,7 +43,7 @@ else
     # Ask for removal or reinstallation
     reinstall_remove_menu "$SCRIPT_NAME"
     # Removal
-    if yesno_box_yes "Do you want to remove the Imaginary and all it's settings?"
+    if yesno_box_yes "Do you want to remove the Imaginary and all its settings?"
     then
         # Remove docker container
         docker_prune_this 'nextcloud/aio-imaginary' 'imaginary'
@@ -72,13 +72,13 @@ fi
 # Remove everything that is related to previewgenerator
 if crontab -u www-data -l | grep -q "preview:pre-generate"
 then
-    if yesno_box_yes "We noticed that you have Preview Generator enabled. Imagniary replaces this, and the old app Preview Generator is now legacy.\nWe recommend you to remove it. Do you want to do that?"
+    if yesno_box_yes "We noticed that you have Preview Generator enabled. Imaginary replaces this, and the old app Preview Generator is now legacy.\nWe recommend you to remove it. Do you want to do that?"
     then
         # Remove the app
         nextcloud_occ_no_check app:remove previewgenerator
         # Remove the cronjob
         crontab -u www-data -l | grep -v 'preview:pre-generate'  | crontab -u www-data -
-        # Remove dependecies
+        # Remove dependencies
         DEPENDENCY=(php-imagick php"$PHPVER"-imagick libmagickcore-6.q16-3-extra imagemagick-6.q16-extra)
         for installeddependency in "${DEPENDENCY[@]}"
         do
@@ -92,7 +92,7 @@ then
         rm -rf /etc/ImageMagick-6
         # Remove previews
         if yesno_box_yes "Do you want to remove all previews that were generated until now?
-This will most likely clear a lot of space! Also, pre-generated previews are not needed anymore once Imaginary are installed."
+This will most likely clear a lot of space! Also, pre-generated previews are not needed anymore once Imaginary is installed."
         then
             countdown "Removing the preview folder. This can take a while..." "5"
             rm -rfv "$NCDATA"/appdata_*/preview/*
@@ -115,7 +115,7 @@ docker pull ghcr.io/nextcloud-releases/aio-imaginary:latest
 docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary ghcr.io/nextcloud-releases/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -return-size -log-level debug
 
 # Test if imaginary is working
-countdown "Testing if it works in 3 sedonds" "3"
+countdown "Testing if it works in 3 seconds" "3"
 if curl -O "http://127.0.0.1:9000/crop?width=500&height=400&url=https://raw.githubusercontent.com/h2non/imaginary/master/testdata/large.jpg"
 then
     print_text_in_color "$IGreen" "imaginary seems to be working OK!"
