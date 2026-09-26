@@ -938,7 +938,7 @@ restart_webserver
 
 if [ -n "$PROVISIONING" ]
 then
-    choice="Calendar Contacts IssueTemplate PDFViewer Text Mail Deck Group-Folders"
+    choice="Calendar Contacts PDFViewer Text Mail Deck Group-Folders"
 else
     choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
 "Automatically configure and install selected apps or software
@@ -951,7 +951,6 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Deck" "" ON \
 "Collectives" "" ON \
 "Suspicious Login detection" "" ON \
-"IssueTemplate" "" OFF \
 "Group-Folders" "" OFF 3>&1 1>&2 2>&3)
 fi
 
@@ -961,13 +960,6 @@ case "$choice" in
     ;;&
     *"Contacts"*)
         install_and_enable_app contacts
-    ;;&
-    *"IssueTemplate"*)
-        # install_and_enable_app issuetemplate
-        rm -rf "$NCPATH"apps/issuetemplate
-        nextcloud_occ app:install --force --keep-disabled issuetemplate
-        sed -i "s|20|${CURRENTVERSION%%.*}|g" "$NCPATH"/apps/issuetemplate/appinfo/info.xml
-        nextcloud_occ_no_check app:enable issuetemplate
     ;;&
     *"PDFViewer"*)
         install_and_enable_app files_pdfviewer
