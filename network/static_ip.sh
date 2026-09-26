@@ -42,7 +42,8 @@ msg_box "Copying old netplan.io config files file to:
 if [ -d /etc/netplan/ ]
 then
     mkdir -p /tmp/netplan_io_backup
-    check_command cp -vR /etc/netplan/* /tmp/netplan_io_backup/
+    # Use /. instead of /* so that it doesn't fail if /etc/netplan is empty
+    check_command cp -vR /etc/netplan/. /tmp/netplan_io_backup/
 fi
 
 msg_box "Please note that if the IP address changes during an (remote) SSH connection \
