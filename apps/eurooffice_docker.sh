@@ -130,7 +130,8 @@ check_nextcloud_https "EuroOffice (Docker)"
 # Install Docker
 install_docker
 
-EUROOFFICE_SECRET="$(gen_passwd "$SHUF" "a-zA-Z0-9")"
+# The eurooffice app (php-jwt) requires at least 256 bits (32 chars) for HS256
+EUROOFFICE_SECRET="$(gen_passwd 64 "$SHUF" "a-zA-Z0-9")"
 
 # Install EuroOffice docker
 docker pull ghcr.io/euro-office/documentserver:latest
