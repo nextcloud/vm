@@ -242,6 +242,10 @@ done
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
+# Make sure add-apt-repository exists (needed in lib.sh)
+# Install it before the purge below, python3-software-properties recommends unattended-upgrades
+install_if_not software-properties-common
+
 # We don't want automatic updates since they might fail (we use our own script)
 if is_this_installed unattended-upgrades
 then
@@ -279,9 +283,6 @@ install_if_not cron
 
 # Make sure sudo exists (needed in adduser.sh)
 install_if_not sudo
-
-# Make sure add-apt-repository exists (needed in lib.sh)
-install_if_not software-properties-common
 
 # Set dual or single drive setup
 if [ -n "$PROVISIONING" ]
