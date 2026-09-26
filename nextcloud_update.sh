@@ -276,7 +276,7 @@ chmod +x "$SCRIPTS"/update.sh
 # Restore reboot if it was enabled
 if [ "$REBOOT_ENABLED" = 1 ]
 then
-    sed -i "s|exit|/sbin/shutdown -r +10|g" "$SCRIPTS"/update.sh
+    sed -i '$ s|^exit$|/sbin/shutdown -r +10|' "$SCRIPTS"/update.sh
     echo "exit" >> "$SCRIPTS"/update.sh
 fi
 
