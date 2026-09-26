@@ -1,7 +1,7 @@
 name: 'install-smoke-test'
 
-# Manual / scheduled smoke test that runs nextcloud_install_production.sh
-# end-to-end inside a privileged Ubuntu 26.04 container. Catches:
+# Smoke test that runs nextcloud_install_production.sh end-to-end inside a
+# privileged Ubuntu 26.04 container, using this branch's lib.sh and scripts. Catches:
 #   - apt package availability changes between LTS releases
 #   - PHP/PG/Apache config breakage
 #   - Nextcloud download + occ install regressions
@@ -12,7 +12,7 @@ name: 'install-smoke-test'
 #   - hypervisor-specific kernel installs (Hyper-V, VMware, QEMU)
 #   - reboot path (stubbed)
 #
-# Manual trigger only — runtime ~25 min, ~3 GB RAM.
+# Runs on every PR and manually — runtime ~8 min, ~3 GB RAM.
 
 on:
   pull_request:
@@ -104,11 +104,15 @@ jobs:
                 "esac" \
                 > /usr/local/bin/systemctl
               chmod +x /usr/local/bin/systemctl
-              # Pre-seed /var/scripts so fetch_lib.sh uses THIS branch'"'"'s lib.sh
-              # instead of downloading the stale copy from main.
+              # Make a copy we can edit (script lives in read-only mount)
+              cp -a /repo /work
+              # Fetch lib.sh and all sub-scripts from THIS branch instead of main:
+              # point GITHUB_REPO at the copy (not under /root or /home, the
+              # installer deletes *.sh files there) and pre-seed /var/scripts,
               # fetch_lib.sh skips the download when both files already exist.
+              sed -i "s|^GITHUB_REPO=.*|GITHUB_REPO=\"file:///work\"|" /work/lib.sh
               mkdir -p /var/scripts
-              cp /repo/lib.sh /var/scripts/lib.sh
+              cp /work/lib.sh /var/scripts/lib.sh
               touch /var/scripts/nextcloud-startup-script.sh
               # Loop device for /dev/sdb (script expects a second disk for ZFS).
               # Best-effort: skip silently if losetup unavailable in this kernel.
@@ -130,8 +134,6 @@ jobs:
                 > /usr/local/sbin/reboot
               chmod +x /usr/local/sbin/reboot
               ln -sf /usr/local/sbin/reboot /usr/local/sbin/shutdown
-              # Make a copy we can edit (script lives in read-only mount)
-              cp -a /repo /work
               cd /work
               # Run installer in provisioning mode (no prompts)
               bash nextcloud_install_production.sh -p
