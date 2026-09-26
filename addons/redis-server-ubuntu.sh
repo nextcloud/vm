@@ -70,10 +70,9 @@ phpenmod -v "$PHPVER" redis
 install_if_not redis-server
 
 ## Redis performance tweaks ##
-if ! grep -Fxq "vm.overcommit_memory = 1" /etc/sysctl.conf
-then
-    echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
-fi
+# /etc/sysctl.conf isn't read at boot on Ubuntu 26.04, so use sysctl.d
+echo 'vm.overcommit_memory = 1' > /etc/sysctl.d/90-redis.conf
+sysctl -w vm.overcommit_memory=1
 
 # Disable THP
 if ! grep -Fxq "never" /sys/kernel/mm/transparent_hugepage/enabled
