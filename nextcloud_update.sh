@@ -381,6 +381,9 @@ apt-get update -q4
 export DEBIAN_FRONTEND=noninteractive ; apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 apt-mark hold php* >/dev/null 2>&1
 
+# Check current PHP version
+check_php
+
 # Improve Apache for PHP-FPM
 if is_this_installed php"$PHPVER"-fpm
 then
@@ -446,9 +449,6 @@ mkdir -p /tmp/pear/cache
 # Migrate from PECL to OS packages for redis, igbinary, smbclient
 # This is a one-time migration for existing installations
 print_text_in_color "$ICyan" "Checking PHP extensions (migrating from PECL to OS packages if needed)..."
-
-# Check current PHP version
-check_php
 
 # Remove PECL leftovers (the PECL .so lives in the same directory as the OS package one,
 # so uninstalling it may delete a file owned by an already installed OS package - repaired below)
