@@ -45,6 +45,7 @@ $CHECKLIST_GUIDE\n\n$RUN_LATER_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF \
 "Automatic updates" "(Automatically update your server every week on Sundays)" OFF \
 "GeoBlock" "(Only allow certain countries to access your server)" OFF \
+"Restrict Admin Login" "(Only allow admin actions from private IP-ranges)" OFF \
 "Disk Monitoring" "(Check for S.M.A.R.T errors on your disks)" OFF \
 "Extra Security" "(Add extra security to prevent attacks)" OFF \
 "Database Shrinking" "(Shrink the database if it got too big)" OFF \
@@ -105,7 +106,11 @@ https://www.techandme.se/open-port-80-443/" "$SUBTITLE"
     ;;&
     *"GeoBlock"*)
         print_text_in_color "$ICyan" "Downloading the Geoblock script..."
-        run_script NETWORK geoblock 
+        run_script NETWORK geoblock
+    ;;&
+    *"Restrict Admin Login"*)
+        print_text_in_color "$ICyan" "Downloading the Restrict Admin Login script..."
+        run_script NETWORK restrict-admin-to-ip
     ;;&
     *"Automatic updates"*)
         print_text_in_color "$ICyan" "Downloading the Automatic Updates script..."
