@@ -242,6 +242,10 @@ done
 stop_if_installed mysql-common
 stop_if_installed mariadb-server
 
+# Make sure add-apt-repository exists (needed in lib.sh)
+# Install it before the purge below, python3-software-properties recommends unattended-upgrades
+install_if_not software-properties-common
+
 # We don't want automatic updates since they might fail (we use our own script)
 if is_this_installed unattended-upgrades
 then
@@ -279,9 +283,6 @@ install_if_not cron
 
 # Make sure sudo exists (needed in adduser.sh)
 install_if_not sudo
-
-# Make sure add-apt-repository exists (needed in lib.sh)
-install_if_not software-properties-common
 
 # Set dual or single drive setup
 if [ -n "$PROVISIONING" ]
@@ -937,7 +938,7 @@ restart_webserver
 
 if [ -n "$PROVISIONING" ]
 then
-    choice="Calendar Contacts IssueTemplate PDFViewer Text Mail Deck Group-Folders"
+    choice="Calendar Contacts PDFViewer Text Mail Deck Group-Folders"
 else
     choice=$(whiptail --title "$TITLE - Install apps or software" --checklist \
 "Automatically configure and install selected apps or software
@@ -950,7 +951,6 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4 \
 "Deck" "" ON \
 "Collectives" "" ON \
 "Suspicious Login detection" "" ON \
-"IssueTemplate" "" OFF \
 "Group-Folders" "" OFF 3>&1 1>&2 2>&3)
 fi
 
@@ -960,13 +960,6 @@ case "$choice" in
     ;;&
     *"Contacts"*)
         install_and_enable_app contacts
-    ;;&
-    *"IssueTemplate"*)
-        # install_and_enable_app issuetemplate
-        rm -rf "$NCPATH"apps/issuetemplate
-        nextcloud_occ app:install --force --keep-disabled issuetemplate
-        sed -i "s|20|${CURRENTVERSION%%.*}|g" "$NCPATH"/apps/issuetemplate/appinfo/info.xml
-        nextcloud_occ_no_check app:enable issuetemplate
     ;;&
     *"PDFViewer"*)
         install_and_enable_app files_pdfviewer
