@@ -551,15 +551,15 @@ then
     fi
 fi
 
-# Also remove php-acpu if installed
-if is_this_installed php-acpu
+# Also remove php-apcu if installed
+if is_this_installed php-apcu
 then
-    apt-get purge php-apcu
+    apt-get purge php-apcu -y --allow-change-held-packages
     apt-get autoremove -y
 fi
 if is_this_installed php"$PHPVER"-apcu
 then
-    apt-get purge php"$PHPVER"-apcu
+    apt-get purge php"$PHPVER"-apcu -y --allow-change-held-packages
     apt-get autoremove -y
 fi
 
