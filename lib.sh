@@ -1762,15 +1762,15 @@ fi
 }
 
 set_max_count() {
-if grep -F 'vm.max_map_count=512000' /etc/sysctl.conf ; then
+# /etc/sysctl.conf isn't read at boot on Ubuntu 26.04, so use sysctl.d
+if grep -Fqs 'vm.max_map_count=512000' /etc/sysctl.d/90-max_map_count.conf ; then
     print_text_in_color "$ICyan" "Max map count already set, skipping..."
 else
     sysctl -w vm.max_map_count=512000
     {
-        echo "###################################################################"
         echo "# Docker ES max virtual memory"
         echo "vm.max_map_count=512000"
-    } >> /etc/sysctl.conf
+    } > /etc/sysctl.d/90-max_map_count.conf
 fi
 }
 

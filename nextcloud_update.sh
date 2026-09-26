@@ -529,6 +529,12 @@ else
     fi
 fi
 
+# /etc/sysctl.conf isn't read at boot on Ubuntu 26.04, but older scripts saved settings there
+if [ -f /etc/sysctl.conf ] && [ ! -e /etc/sysctl.d/99-sysctl.conf ]
+then
+    ln -s ../sysctl.conf /etc/sysctl.d/99-sysctl.conf
+fi
+
 # Remove APCu https://github.com/nextcloud/vm/issues/2039
 if is_this_installed "php$PHPVER"-dev
 then
