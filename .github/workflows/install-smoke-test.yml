@@ -29,7 +29,10 @@ permissions:
 jobs:
   install:
     name: 'Run nextcloud_install_production.sh -p'
-    runs-on: ubuntu-latest
+    # Not ubuntu-latest: nextcloud's self-hosted (GARM) runners also pick up that
+    # label, and the privileged container doesn't work there (no loop devices,
+    # sysctl denied, PAM account checks fail), so the install fails at PostgreSQL.
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - name: Checkout
@@ -132,4 +135,7 @@ jobs:
               cd /work
               # Run installer in provisioning mode (no prompts)
               bash nextcloud_install_production.sh -p
+              # Verify that Nextcloud actually got installed
+              sudo -u www-data php /var/www/nextcloud/occ status
+              sudo -u www-data php /var/www/nextcloud/occ status --output=json | grep -q "\"installed\":true"
             '
