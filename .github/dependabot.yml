@@ -1,6 +1,18 @@
 version: 2
 updates:
-- package-ecosystem: "github-actions"
-  directory: "/"
-  schedule:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
       interval: "weekly"
+    # Let fresh releases age before adopting them, so a hijacked or yanked
+    # release is caught upstream first. Security updates skip the cooldown.
+    cooldown:
+      default-days: 3
+    # One PR per week. Majors stay separate: they are not auto-merged.
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

@@ -1,0 +1,31 @@
+name: Dependabot auto-merge
+
+on: pull_request
+
+permissions: {}
+
+jobs:
+  automerge:
+    # Dependabot's own PRs only, and only when Dependabot triggered the run:
+    # a human push to its branch must not inherit auto-merge.
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # Also verifies the commits are signed by Dependabot.
+      - id: meta
+        uses: dependabot/fetch-metadata@v3.1.0
+
+      # Majors can break the scripts and need a human. Everything else is
+      # merged by GitHub once branch protection's required checks pass; --auto
+      # never bypasses them.
+      - if: steps.meta.outputs.update-type != 'version-update:semver-major'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          [ "$(gh pr view "$PR_URL" --json reviewDecision -q .reviewDecision)" = APPROVED ] \
+            || gh pr review --approve "$PR_URL"
+          gh pr merge --auto --squash "$PR_URL"
