@@ -2175,6 +2175,48 @@ send_mail() {
     return 1
 }
 
+# Export the pool and import it again from the first location that works
+zpool_reimport() {
+local import_location
+local zfs_cache=/etc/zfs/zpool.cache
+local zfs_cache_backup="$zfs_cache.before-reimport"
+if [ -s "$zfs_cache" ]
+then
+    if ! cp -a "$zfs_cache" "$zfs_cache_backup"
+    then
+        return 1
+    fi
+fi
+if ! zpool export "$POOLNAME"
+then
+    # The pool is still imported, but a failed export can leave the dataset unmounted
+    zfs mount "$POOLNAME" 2>/dev/null
+    rm -f "$zfs_cache_backup"
+    return 1
+fi
+# Export removes the pool from the cache file, and zfs-import-scan is disabled.
+# Put it back, or a power cut before the import below leaves the pool missing at boot.
+if [ -f "$zfs_cache_backup" ]
+then
+    mv -f "$zfs_cache_backup" "$zfs_cache"
+fi
+partprobe -s >/dev/null 2>&1
+for import_location in "$@"
+do
+    udevadm settle
+    if zpool import -d "$import_location" "$POOLNAME" 2>/dev/null
+    then
+        return 0
+    fi
+done
+return 1
+}
+
+# True for one single disk imported from /dev/disk/by-uuid. It then shows the pool GUID as its name.
+zpool_disk_is_named_by_uuid() {
+[ "$(zpool list -vHP "$POOLNAME" 2>/dev/null | awk 'NR>1 {print $1}')" = "/dev/disk/by-uuid/$(zpool get -H -o value guid "$POOLNAME" 2>/dev/null)" ]
+}
+
 zpool_import_if_missing() {
 # ZFS needs to be installed
 if ! is_this_installed zfsutils-linux
@@ -2191,18 +2233,14 @@ if ! zpool list "$POOLNAME" >/dev/null 2>&1
 then
     zpool import -f "$POOLNAME"
 fi
-# Check if UUID is used
-if zpool list -v | grep sdb
+# Give the disk a name that is stable and can be expanded. sdb isn't stable, and a number comes from
+# an earlier import from /dev/disk/by-uuid. Never import from there: the UUID of a ZFS disk is the
+# pool GUID, which zpool reads as the pool itself instead of the disk. Expanding that name crashes
+# the ZFS module: https://github.com/openzfs/zfs/issues/19659
+if zpool list -vH "$POOLNAME" | awk 'NR>1 {print $1}' | grep -Eq '^(sdb[0-9]*|[0-9]+)$'
 then
-    # Get UUID
-    check_command partprobe -s
-    if fdisk -l /dev/sdb1 >/dev/null 2>&1
-    then
-        UUID_SDB1=$(blkid -o value -s UUID /dev/sdb1)
-    fi
-    # Export / import the correct way (based on UUID)
-    check_command zpool export "$POOLNAME"
-    check_command zpool import -d /dev/disk/by-uuid/"$UUID_SDB1" "$POOLNAME"
+    # by-id is empty on VMware without disk.EnableUUID
+    check_command zpool_reimport /dev/disk/by-id /dev/disk/by-path
 fi
 }
 

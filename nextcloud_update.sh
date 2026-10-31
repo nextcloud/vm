@@ -798,6 +798,26 @@ then
     fi
 fi
 
+# A ZFS disk named by the pool GUID can't be expanded, and using that name crashes the ZFS module
+if is_this_installed zfsutils-linux
+then
+    if grep -rq ncdata /etc/mtab
+    then
+        if zpool_disk_is_named_by_uuid
+        then
+            # Not run_script, because nothing here is allowed to stop the update.
+            # The script notifies the admin if something goes wrong.
+            # download_script_function_in_use makes curl_to_dir return instead of asking and exiting.
+            download_script_function_in_use=yes
+            if curl_to_dir "$DISK" fix-zfs-disk-name.sh "$SCRIPTS"
+            then
+                bash "$SCRIPTS"/fix-zfs-disk-name.sh
+            fi
+            rm -f "$SCRIPTS"/fix-zfs-disk-name.sh
+        fi
+    fi
+fi
+
 # Update updatenotification.sh (gets updated after each nextcloud update as well; see down below the script)
 if [ -f "$SCRIPTS"/updatenotification.sh ] && ! grep -q "Check for supported Nextcloud version" "$SCRIPTS/updatenotification.sh"
 then
