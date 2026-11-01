@@ -601,7 +601,7 @@ fi
 if [ -d "$ADMINNEODIR" ]
 then
     print_text_in_color "$ICyan" "Updating AdminNeo..."
-    rm -f "$ADMINNEODIR"/latest.php "$ADMINNEODIR"/adminneo.php "$ADMINNEODIR"/adminneo-pgsql.php
+    rm -f "$ADMINNEODIR"/latest.php "$ADMINNEODIR"/adminneo-pgsql.php
 
     if curl_to_dir "https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_en_default/" "adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR"
     then
