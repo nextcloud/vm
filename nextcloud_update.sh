@@ -812,7 +812,8 @@ then
             download_script_function_in_use=yes
             if curl_to_dir "$DISK" fix-zfs-disk-name.sh "$SCRIPTS"
             then
-                bash "$SCRIPTS"/fix-zfs-disk-name.sh
+                echo ""
+                #bash "$SCRIPTS"/fix-zfs-disk-name.sh
             fi
             rm -f "$SCRIPTS"/fix-zfs-disk-name.sh
         fi
