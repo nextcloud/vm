@@ -597,9 +597,6 @@ then
     fi
 fi
 
-# Make sure services are restarted
-restart_webserver
-
 # Update adminneo
 if [ -d "$ADMINNEODIR" ]
 then
@@ -642,6 +639,9 @@ then
         print_text_in_color "$IGreen" "GeoBlock database updated!"
     fi
 fi
+
+# Make sure services are restarted, Apache loads a new GeoBlock database here
+restart_webserver
 
 # Update docker containers and remove Watchtower if Bitwarden is present due to compatibility issue
 # If Watchtower is installed, but Bitwarden is missing, then let watchtower do its thing
