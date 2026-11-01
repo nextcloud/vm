@@ -604,14 +604,21 @@ restart_webserver
 if [ -d "$ADMINNEODIR" ]
 then
     print_text_in_color "$ICyan" "Updating AdminNeo..."
-    # The installed version stays in place until the new one is downloaded
-    if curl_to_dir "$ADMINNEO_REPO" "adminneo-latest.php" "$ADMINNEODIR"
+    rm -f "$ADMINNEODIR"/latest.php "$ADMINNEODIR"/adminneo-pgsql.php
+
+    if curl_to_dir "https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_en_default/" "adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR"
     then
-        mv "$ADMINNEODIR/adminneo-latest.php" "$ADMINNEODIR/adminneo.php"
-        rm -f "$ADMINNEODIR"/latest.php "$ADMINNEODIR"/adminneo-pgsql.php
+        if [ -f "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" ]
+        then
+            mv "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR/adminneo.php"
+        elif [ -f "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" ]
+        then
+            mv "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" "$ADMINNEODIR/adminneo.php"
+        else
+            print_text_in_color "$IRed" "AdminNeo download completed but expected files were not found."
+        fi
     else
-        rm -f "$ADMINNEODIR/adminneo-latest.php"
-        print_text_in_color "$IRed" "Failed to update AdminNeo from $ADMINNEO_REPO/adminneo-latest.php, keeping the current version."
+        print_text_in_color "$IRed" "Failed to update AdminNeo from $ADMINNEO_DOWNLOAD_URL"
     fi
 fi
 

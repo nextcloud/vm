@@ -65,22 +65,32 @@ a2enmod ssl
 
 # The legacy Evo project has been archived, switching to AdminNeo (www.adminneo.org)
 # See: https://github.com/adminneo-org/adminneo
-print_text_in_color "$ICyan" "Downloading AdminNeo..."
-if ! curl_to_dir "$ADMINNEO_REPO" "adminneo-latest.php" "$ADMINNEODIR"
+print_text_in_color "$ICyan" "Downloading AdminNeo version ${ADMINNEO_VERSION}..."
+if ! curl_to_dir "https://www.adminneo.org/files/${ADMINNEO_VERSION}/pgsql_en_default/" "adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR"
 then
     msg_box "Failed to download AdminNeo. The download URL may have changed.
     
 Please report this issue to: $ISSUES
 
 Attempted to download from:
-$ADMINNEO_REPO/adminneo-latest.php"
+$ADMINNEO_DOWNLOAD_URL"
     exit 1
 fi
 
 # Rename to standard adminneo.php name
-mv "$ADMINNEODIR/adminneo-latest.php" "$ADMINNEODIR/adminneo.php"
+if [ -f "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" ]
+then
+    mv "$ADMINNEODIR/adminneo-${ADMINNEO_VERSION}.php" "$ADMINNEODIR/adminneo.php"
+elif [ -f "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" ]
+then
+    # Fallback for old naming if somehow still exists
+    mv "$ADMINNEODIR/adminerneo-${ADMINNEO_VERSION}-pgsql.php" "$ADMINNEODIR/adminneo.php"
+else
+    msg_box "Failed to find downloaded AdminNeo file. Please report this to $ISSUES"
+    exit 1
+fi
 
-print_text_in_color "$IGreen" "AdminNeo successfully downloaded!"
+print_text_in_color "$IGreen" "AdminNeo ${ADMINNEO_VERSION} successfully downloaded!"
 
 # Only add TLS 1.3 on supported Ubuntu releases
 if version "$SUPPORTED_VERSION_MIN" "$DISTRO" "$SUPPORTED_VERSION_MAX"
