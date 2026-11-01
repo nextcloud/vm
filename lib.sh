@@ -523,7 +523,7 @@ download_geoip_mmdb() {
     export x8v8GyVQg2UejdPh
     print_text_in_color "$ICyan" "Downloading latest GeoIP database from https://ipinfo.io..."
     if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$geoip_download" \
-    || ! mmdblookup --file "$geoip_download" --ip 8.8.8.8 >/dev/null 2>&1
+    || ! mmdblookup --file "$geoip_download" --ip "$INTERNET_DNS" >/dev/null 2>&1
     then
         rm -f "$geoip_download"
         print_text_in_color "$IRed" "Failed downloading GeoIP database from IPInfo, trying plan B..."
