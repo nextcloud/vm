@@ -515,11 +515,17 @@ download_geoip_mmdb() {
     fi
 
     # Download or update current GeoIP DB
+    # Apache has the live file mapped into memory and won't start with a broken one,
+    # so a new file is checked first, and then replaces the old one instead of overwriting it
+    local geoip_download="$GEOBLOCK_DIR/IPInfo-Country.mmdb.new"
+    install_if_not mmdb-bin
     maxmind_geoip
     export x8v8GyVQg2UejdPh
     print_text_in_color "$ICyan" "Downloading latest GeoIP database from https://ipinfo.io..."
-    if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+    if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$geoip_download" \
+    || ! mmdblookup --file "$geoip_download" --ip 8.8.8.8 >/dev/null 2>&1
     then
+        rm -f "$geoip_download"
         print_text_in_color "$IRed" "Failed downloading GeoIP database from IPInfo, trying plan B..."
         export MwKfcYATm43NMT
         export i9HL69SLnp4ymy
@@ -545,8 +551,11 @@ download_geoip_mmdb() {
             docker rm -f maxmind
             rm -f /tmp/dockerenv
             print_text_in_color "$IRed" "Rate limit for Maxmind GeoIP database reached! Can't continue from here, please report this to $ISSUES"
+            unset x8v8GyVQg2UejdPh
+            return 1
         fi
     else
+        mv -f "$geoip_download" "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
         # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove MaxMinds config
         rm -f "$GEOBLOCK_DIR"/GeoLite2-Country.mmdb
         return 0

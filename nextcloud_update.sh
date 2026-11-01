@@ -640,6 +640,8 @@ then
     if download_geoip_mmdb
     then
         print_text_in_color "$IGreen" "GeoBlock database updated!"
+        # Apache keeps using the old database until it restarts
+        restart_webserver
     fi
 fi
 
