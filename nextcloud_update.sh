@@ -451,64 +451,77 @@ mkdir -p /tmp/pear/cache
 # This is a one-time migration for existing installations
 print_text_in_color "$ICyan" "Checking PHP extensions (migrating from PECL to OS packages if needed)..."
 
-# Remove PECL leftovers (the PECL .so lives in the same directory as the OS package one,
-# so uninstalling it may delete a file owned by an already installed OS package - repaired below)
-for ext in igbinary smbclient redis
-do
-    if pecl list 2>/dev/null | grep -q "^$ext "
-    then
-        print_text_in_color "$ICyan" "Removing PECL version of $ext..."
-        yes | pecl uninstall "$ext" 2>/dev/null || true
-        rm -f "$PHP_MODS_DIR/$ext.ini"
-    fi
-done
-
 # Install as OS packages, or repair systems broken by an earlier version of this migration
 # https://github.com/nextcloud/vm/issues/2820
 # The check is based on what actually loads (php -m) rather than package state, since broken
 # systems typically have the packages installed while the .so and/or .ini files are gone.
-BROKEN_PHP_EXTENSIONS=""
+PHP_EXTENSIONS_TO_INSTALL=""
 for ext in igbinary smbclient redis
 do
-    # Broken if the extension doesn't load, or is loaded twice (stale PECL-era enable symlinks)
-    if ! php -m 2>/dev/null | grep -qix "$ext" \
+    # Still from PECL, doesn't load, or is loaded twice (stale PECL-era enable symlinks)
+    if pecl list 2>/dev/null | grep -q "^$ext " \
+    || ! php -m 2>/dev/null | grep -qix "$ext" \
     || php -m 2>&1 | grep -qi "Module \"$ext\" is already loaded"
     then
-        BROKEN_PHP_EXTENSIONS+=" $ext"
+        PHP_EXTENSIONS_TO_INSTALL+=" $ext"
     fi
 done
-if [ -n "$BROKEN_PHP_EXTENSIONS" ]
+if [ -n "$PHP_EXTENSIONS_TO_INSTALL" ]
 then
-    print_text_in_color "$ICyan" "Installing PHP extensions:$BROKEN_PHP_EXTENSIONS"
-    # Purge and reinstall all three as one unit (php-redis depends on php-igbinary, so they
-    # can't be repaired one at a time) to make dpkg lay down fresh .so and .ini files again
-    apt-get purge php"$PHPVER"-igbinary php"$PHPVER"-smbclient php"$PHPVER"-redis -y --allow-change-held-packages
-    # Remove stale enable symlinks (e.g. PECL-era priority 20) so modules can't get loaded twice
-    rm -f /etc/php/*/*/conf.d/*-igbinary.ini /etc/php/*/*/conf.d/*-smbclient.ini /etc/php/*/*/conf.d/*-redis.ini
+    PHP_EXTENSION_PACKAGES=(php"$PHPVER"-igbinary php"$PHPVER"-smbclient php"$PHPVER"-redis)
     apt-get update -q4 & spinner_loading
-    RUNLEVEL=1 apt-get install php"$PHPVER"-igbinary php"$PHPVER"-smbclient php"$PHPVER"-redis -y \
-        --allow-change-held-packages \
-        -o Dpkg::Options::="--force-confmiss" -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-    phpenmod -v ALL igbinary smbclient redis
-    for ext in igbinary smbclient redis
-    do
-        if php -m 2>/dev/null | grep -qix "$ext"
-        then
-            print_text_in_color "$IGreen" "$ext is now installed and enabled (php$PHPVER-$ext)"
-        else
-            msg_box "The PHP extension $ext couldn't be enabled. Please report this to $ISSUES"
-        fi
-    done
+    # Download before anything is removed: occ can't run without Redis, which also
+    # means that maintenance mode can't be turned off again
+    if apt-get install --reinstall --download-only "${PHP_EXTENSION_PACKAGES[@]}" -y --allow-change-held-packages
+    then
+        print_text_in_color "$ICyan" "Installing PHP extensions:$PHP_EXTENSIONS_TO_INSTALL"
+        # Remove PECL leftovers (the PECL .so lives in the same directory as the OS package one,
+        # so uninstalling it may delete a file owned by an already installed OS package - repaired below)
+        for ext in igbinary smbclient redis
+        do
+            if pecl list 2>/dev/null | grep -q "^$ext "
+            then
+                print_text_in_color "$ICyan" "Removing PECL version of $ext..."
+                yes | pecl uninstall "$ext" 2>/dev/null || true
+                rm -f "$PHP_MODS_DIR/$ext.ini"
+            fi
+        done
+        # Purge and reinstall all three as one unit (php-redis depends on php-igbinary, so they
+        # can't be repaired one at a time) to make dpkg lay down fresh .so and .ini files again
+        apt-get purge "${PHP_EXTENSION_PACKAGES[@]}" -y --allow-change-held-packages
+        # Remove stale enable symlinks (e.g. PECL-era priority 20) so modules can't get loaded twice
+        rm -f /etc/php/*/*/conf.d/*-igbinary.ini /etc/php/*/*/conf.d/*-smbclient.ini /etc/php/*/*/conf.d/*-redis.ini
+        RUNLEVEL=1 apt-get install "${PHP_EXTENSION_PACKAGES[@]}" -y \
+            --allow-change-held-packages \
+            -o Dpkg::Options::="--force-confmiss" -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+        phpenmod -v ALL igbinary smbclient redis
+        for ext in igbinary smbclient redis
+        do
+            if php -m 2>/dev/null | grep -qix "$ext"
+            then
+                print_text_in_color "$IGreen" "$ext is now installed and enabled (php$PHPVER-$ext)"
+            else
+                msg_box "The PHP extension $ext couldn't be enabled. Please report this to $ISSUES"
+            fi
+        done
+    else
+        PHP_EXTENSIONS_NOT_DOWNLOADED=1
+        print_text_in_color "$IRed" "Couldn't download the PHP extensions, keeping the current ones. The next update will try again."
+    fi
 fi
 
 # Remove old extension references from php.ini if they exist
-for ext in redis igbinary smbclient
-do
-    if grep -qFx "extension=$ext.so" "$PHP_INI" 2>/dev/null
-    then
-        sed -i "/extension=$ext.so/d" "$PHP_INI"
-    fi
-done
+# PECL extensions can be enabled from there, so they have to stay until the migration has run
+if [ -z "$PHP_EXTENSIONS_NOT_DOWNLOADED" ]
+then
+    for ext in redis igbinary smbclient
+    do
+        if grep -qFx "extension=$ext.so" "$PHP_INI" 2>/dev/null
+        then
+            sed -i "/extension=$ext.so/d" "$PHP_INI"
+        fi
+    done
+fi
 
 # Clean up no longer needed build dependencies if no PECL packages remain
 if pecl list 2>/dev/null | tail -n +4 | grep -qv "^no packages"
