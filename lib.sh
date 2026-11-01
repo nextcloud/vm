@@ -518,7 +518,7 @@ download_geoip_mmdb() {
     maxmind_geoip
     export x8v8GyVQg2UejdPh
     print_text_in_color "$ICyan" "Downloading latest GeoIP database from https://ipinfo.io..."
-    if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
+    if ! curl -sfL https://ipinfo.io/data/free/country.mmdb?token="$x8v8GyVQg2UejdPh" -o "$GEOBLOCK_DIR"/IPInfo-Country.mmdb.new
     then
         print_text_in_color "$IRed" "Failed downloading GeoIP database from IPInfo, trying plan B..."
         export MwKfcYATm43NMT
@@ -547,6 +547,8 @@ download_geoip_mmdb() {
             print_text_in_color "$IRed" "Rate limit for Maxmind GeoIP database reached! Can't continue from here, please report this to $ISSUES"
         fi
     else
+        # Apache has the old file mapped into memory, so it has to be replaced and not overwritten
+        mv "$GEOBLOCK_DIR"/IPInfo-Country.mmdb.new "$GEOBLOCK_DIR"/IPInfo-Country.mmdb
         # Since only one mmdb file can exist at the same time due to Apache "if" confitions, remove MaxMinds config
         rm -f "$GEOBLOCK_DIR"/GeoLite2-Country.mmdb
         return 0
