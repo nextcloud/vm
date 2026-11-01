@@ -790,7 +790,7 @@ apt-get autoclean
 update-grub
 
 # Free some space (ZFS snapshots)
-if is_this_installed libzfs4linux
+if is_this_installed zfs-auto-snapshot
 then
     if grep -rq ncdata /etc/mtab
     then

@@ -1451,7 +1451,7 @@ calc_wt_size() {
 
 # example: is_app_enabled documentserver_community
 is_app_enabled() {
-if nextcloud_occ app:list | sed '/Disabled/,$d' | awk '{print$2}' | tr -d ':' | sed '/^$/d' | grep -q "^$1$"
+if nextcloud_occ_no_check app:list | sed '/Disabled/,$d' | awk '{print$2}' | tr -d ':' | sed '/^$/d' | grep -q "^$1$"
 then
     return 0
 else
@@ -2180,6 +2180,8 @@ zpool_reimport() {
 local import_location
 local zfs_cache=/etc/zfs/zpool.cache
 local zfs_cache_backup="$zfs_cache.before-reimport"
+local zpool_guid
+zpool_guid=$(zpool get -H -o value guid "$POOLNAME")
 if [ -s "$zfs_cache" ]
 then
     if ! cp -a "$zfs_cache" "$zfs_cache_backup"
@@ -2204,7 +2206,8 @@ partprobe -s >/dev/null 2>&1
 for import_location in "$@"
 do
     udevadm settle
-    if zpool import -d "$import_location" "$POOLNAME" 2>/dev/null
+    # By GUID, because another disk can have a pool with the same name
+    if zpool import -d "$import_location" "$zpool_guid" 2>/dev/null
     then
         return 0
     fi
