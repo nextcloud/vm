@@ -154,7 +154,7 @@ SCRIPT_NAME="Nextcloud Startup Script"
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
-# Import if missing and export again to import it with UUID
+# Import if missing and export again to import it by ID or path
 zpool_import_if_missing
 
 # Get all needed variables from the library

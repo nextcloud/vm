@@ -701,7 +701,7 @@ else
 fi
 if is_app_installed theming
 then
-    if [ "$(nextcloud_occ config:app:get theming productName)" != "$PRODUCTNAME" ]
+    if [ "$(nextcloud_occ_no_check config:app:get theming productName)" != "$PRODUCTNAME" ]
     then
         nextcloud_occ config:app:set theming productName --value "$PRODUCTNAME"
     fi
