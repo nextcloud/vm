@@ -28,7 +28,7 @@ lowest_compatible_nc 21
 
 # Variables
 NOTIFY_PUSH_SERVICE_PATH="/etc/systemd/system/notify_push.service"
-ARCHITECTURE=$(uname -p)
+ARCHITECTURE=$(uname -m)
 
 # Test prequesites
 print_text_in_color "$ICyan" "Checking if Nextcloud is installed..."
