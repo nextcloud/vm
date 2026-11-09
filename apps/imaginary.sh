@@ -112,11 +112,11 @@ install_docker
 
 # Pull and start
 docker pull ghcr.io/nextcloud-releases/aio-imaginary:latest
-docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary ghcr.io/nextcloud-releases/aio-imaginary –cap-add=sys_nice -concurrency 50 -enable-url-source -return-size -log-level debug
+docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary --cap-add=sys_nice ghcr.io/nextcloud-releases/aio-imaginary -concurrency 50 -enable-url-source -return-size -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 seconds" "3"
-if curl -O "http://127.0.0.1:9000/crop?width=500&height=400&url=https://raw.githubusercontent.com/h2non/imaginary/master/testdata/large.jpg"
+if curl -fO "http://127.0.0.1:9000/crop?width=500&height=400&url=https://raw.githubusercontent.com/h2non/imaginary/master/testdata/large.jpg"
 then
     print_text_in_color "$IGreen" "imaginary seems to be working OK!"
     rm -f large.jpg
