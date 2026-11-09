@@ -753,6 +753,20 @@ $DOCKER_RUN_OUTPUT"
             fi
         fi
     fi
+    # The AIO images tell Watchtower to skip them, so recreate these containers once with that label set to true
+    for aio in talk-recording imaginary
+    do
+        if [ "$(docker inspect -f '{{index .Config.Labels "com.centurylinklabs.watchtower.enable"}}' "$aio" 2>/dev/null)" = "false" ]
+        then
+            docker pull assaflavie/runlike &>/dev/null
+            if AIO_RUN=$(docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike "$aio")
+            then
+                docker stop "$aio"
+                docker rm "$aio"
+                bash -c "${AIO_RUN/docker run/docker run --label com.centurylinklabs.watchtower.enable=true}"
+            fi
+        fi
+    done
     # Talk Recording
     docker_update_specific 'talk-recording' "Talk Recording"
     # Plex
