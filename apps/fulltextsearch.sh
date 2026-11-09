@@ -68,6 +68,7 @@ else
     done
     # Removal Elasticsearch Docker image
     docker_prune_this "docker.elastic.co/elasticsearch/elasticsearch"
+    docker_prune_volume fulltextsearch_"$FULLTEXTSEARCH_IMAGE_NAME"-data
     if docker network ls | grep "$FULLTEXTSEARCH_IMAGE_NAME"-network
     then
         docker network rm "$FULLTEXTSEARCH_IMAGE_NAME"-network
@@ -147,6 +148,8 @@ services:
     restart: always
     ports:
       - 127.0.0.1:9200:9200
+    volumes:
+      - $FULLTEXTSEARCH_IMAGE_NAME-data:/usr/share/elasticsearch/data
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=true
