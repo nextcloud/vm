@@ -763,6 +763,9 @@ $DOCKER_RUN_OUTPUT"
             then
                 docker stop "$aio"
                 docker rm "$aio"
+                # The latest tag on Docker Hub isn't updated anymore, so move to ghcr.io
+                docker tag nextcloud/aio-"$aio" ghcr.io/nextcloud-releases/aio-"$aio" &>/dev/null
+                AIO_RUN="${AIO_RUN/ nextcloud\/aio-/ ghcr.io/nextcloud-releases/aio-}"
                 bash -c "${AIO_RUN/docker run/docker run --label com.centurylinklabs.watchtower.enable=true}"
             fi
         fi
