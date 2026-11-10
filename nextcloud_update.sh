@@ -1352,6 +1352,9 @@ Please check in $BACKUP if the folders exist."
     exit 1
 fi
 
+# Keep Nextcloud's protection against requests to local addresses active
+nextcloud_occ config:system:delete allow_local_remote_servers
+
 # Repair
 nextcloud_occ maintenance:repair --include-expensive
 
