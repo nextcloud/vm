@@ -112,7 +112,7 @@ install_docker
 
 # Pull and start
 docker pull ghcr.io/nextcloud-releases/aio-imaginary:latest
-docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary --cap-add=sys_nice ghcr.io/nextcloud-releases/aio-imaginary -concurrency 50 -enable-url-source -return-size -log-level debug
+docker run -t -d -p 127.0.0.1:9000:9000 --restart always --name imaginary --label com.centurylinklabs.watchtower.enable=true --cap-add=sys_nice ghcr.io/nextcloud-releases/aio-imaginary -concurrency 50 -enable-url-source -return-size -log-level debug
 
 # Test if imaginary is working
 countdown "Testing if it works in 3 seconds" "3"

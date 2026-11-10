@@ -572,6 +572,7 @@ docker pull ghcr.io/nextcloud-releases/aio-talk-recording:latest
 docker run -t -d -p "$TURN_RECORDING_HOST":"$TURN_RECORDING_HOST_PORT":"$TURN_RECORDING_HOST_PORT" \
 --restart always \
 --name talk-recording \
+--label com.centurylinklabs.watchtower.enable=true \
 --shm-size=2GB \
 -e NC_DOMAIN="${TURN_DOMAIN}" \
 -e HPB_DOMAIN="${SUBDOMAIN}" \
