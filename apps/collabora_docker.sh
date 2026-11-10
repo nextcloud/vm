@@ -252,8 +252,6 @@ then
     chown -R www-data:www-data "$NC_APPS_PATH"
     # Appending the new domain to trusted domains
     add_to_trusted_domains "$SUBDOMAIN"
-    # Allow remote servers with local addresses e.g. in federated shares, webcal services and more
-    nextcloud_occ config:system:set allow_local_remote_servers --value="true"
     # Add prune command
     add_dockerprune
     print_text_in_color "$ICyan" "Restarting Docker..."
