@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: shellcheck
-        uses: reviewdog/action-shellcheck@v1.35.0
+        uses: reviewdog/action-shellcheck@v1.35.1
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
