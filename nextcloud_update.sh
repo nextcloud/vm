@@ -782,6 +782,8 @@ $DOCKER_RUN_OUTPUT"
     docker_update_specific 'pihole' "Pi-hole"
     # WireGuard: the image is pinned to a major tag, hence this only updates within it
     docker_update_specific 'wg-easy' "WireGuard"
+    # AppAPI HaRP
+    docker_update_specific 'appapi-harp' "AppAPI HaRP"
 fi
 
 # Fix Collabora change too coolwsd
