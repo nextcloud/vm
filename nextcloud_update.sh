@@ -753,23 +753,33 @@ $DOCKER_RUN_OUTPUT"
             fi
         fi
     fi
-    # The AIO images tell Watchtower to skip them, so recreate these containers once with that label set to true
-    for aio in talk-recording imaginary
+    # These images opt out of Watchtower. Override their inherited label once.
+    for container in talk-recording imaginary appapi-harp
     do
-        if [ "$(docker inspect -f '{{index .Config.Labels "com.centurylinklabs.watchtower.enable"}}' "$aio" 2>/dev/null)" = "false" ]
+        if [ "$(docker inspect -f '{{.State.Running}} {{index .Config.Labels "com.centurylinklabs.watchtower.enable"}}' "$container" 2>/dev/null)" = "true false" ]
         then
             docker pull assaflavie/runlike &>/dev/null
-            if AIO_RUN=$(docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike "$aio")
+            if CONTAINER_RUN=$(docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike "$container")
             then
-                docker stop "$aio"
-                docker rm "$aio"
-                # The latest tag on Docker Hub isn't updated anymore, so move to ghcr.io
-                docker tag nextcloud/aio-"$aio" ghcr.io/nextcloud-releases/aio-"$aio" &>/dev/null
-                AIO_RUN="${AIO_RUN/ nextcloud\/aio-/ ghcr.io/nextcloud-releases/aio-}"
-                bash -c "${AIO_RUN/docker run/docker run --label com.centurylinklabs.watchtower.enable=true}"
+                if [[ "$(docker inspect -f '{{.Config.Image}}' "$container")" == nextcloud/aio-* ]]
+                then
+                    # The latest tag on Docker Hub is no longer updated.
+                    docker tag "nextcloud/aio-$container" "ghcr.io/nextcloud-releases/aio-$container" || continue
+                    CONTAINER_RUN="${CONTAINER_RUN/ nextcloud\/aio-/ ghcr.io/nextcloud-releases/aio-}"
+                fi
+                previous_container="$container-before-watchtower"
+                docker rename "$container" "$previous_container" || continue
+                if docker stop "$previous_container" && bash <<< "${CONTAINER_RUN/docker run/docker run --label com.centurylinklabs.watchtower.enable=true}"
+                then
+                    docker rm "$previous_container"
+                else
+                    docker rm "$container" 2>/dev/null || true
+                    docker rename "$previous_container" "$container" && docker start "$container"
+                fi
             fi
         fi
     done
+    docker_update_specific 'appapi-harp' 'AppAPI HaRP'
     # Talk Recording
     docker_update_specific 'talk-recording' "Talk Recording"
     # Plex

@@ -305,6 +305,7 @@ Configuration:
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v "$HARP_CERTS_DIR":/certs \
         --name "$HARP_CONTAINER_NAME" -h "$HARP_CONTAINER_NAME" \
+        --label com.centurylinklabs.watchtower.enable=true \
         --restart unless-stopped \
         --network host \
         -d ghcr.io/nextcloud/nextcloud-appapi-harp:release
