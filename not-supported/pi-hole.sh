@@ -59,6 +59,7 @@ else
     fi
     # Delete firewall entries
     ufw delete allow "$PIHOLE_PROXY_PORT/tcp" &>/dev/null
+    ufw_delete_private_networks "$PIHOLE_PROXY_PORT/tcp" &>/dev/null
     # Delete the leftover rules of former installations that added them for port 53
     for port in 53/tcp 53/udp
     do
@@ -137,6 +138,16 @@ abused for DNS amplification attacks."
 
 if ! yesno_box_yes "Is this server running in a trusted home network?"
 then
+    exit 1
+fi
+
+# Port 53 gets published on $ADDRESS only, which must hence be a private ip address
+if ! [[ "$ADDRESS" =~ ^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.) ]]
+then
+    msg_box "The ip address of this server ($ADDRESS) is not a private ip address.
+
+Pi-hole would be reachable from the internet as an open DNS resolver. \
+The script will exit."
     exit 1
 fi
 
@@ -270,12 +281,14 @@ fi
 
 # Create Pi-hole. DHCP is not enabled on purpose, hence no NET_ADMIN capability.
 # 'dns_listeningMode=all' is needed for queries from outside the bridge network.
+# Port 53 is only published on $ADDRESS since docker opens published ports
+# in the nat table before ufw, which means that ufw can't restrict them.
 print_text_in_color "$ICyan" "Installing Pi-hole..."
 if ! docker run -d \
 --name pihole \
 --restart always \
--p 53:53/tcp \
--p 53:53/udp \
+-p "$ADDRESS":53:53/tcp \
+-p "$ADDRESS":53:53/udp \
 -p 127.0.0.1:"$PIHOLE_WEB_PORT":"$PIHOLE_WEB_PORT"/tcp \
 -e TZ="$(cat /etc/timezone)" \
 -e FTLCONF_webserver_api_password="$PASSWORD" \
@@ -349,6 +362,12 @@ Listen $PIHOLE_PROXY_PORT
     ProxyPassReverse / "http://127.0.0.1:$PIHOLE_WEB_PORT/"
     ProxyPreserveHost On
 
+    # Only allow access from inside the local network
+    <Location />
+        Require local
+        Require ip ${PRIVATE_NETWORKS[*]}
+    </Location>
+
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
@@ -366,13 +385,14 @@ The script will exit."
     exit 1
 fi
 
-# Add firewall rules. Port 53 is published by the container, which docker opens
-# in the nat table before ufw. Former host installations opened it directly.
+# Add firewall rules. Port 53 is published by the container, see above.
+# Former host installations opened it directly.
 for port in 53/tcp 53/udp
 do
     ufw delete allow "$port" &>/dev/null
 done
-ufw allow "$PIHOLE_PROXY_PORT"/tcp comment 'Pi-hole Web' &>/dev/null
+ufw delete allow "$PIHOLE_PROXY_PORT"/tcp &>/dev/null
+ufw_allow_private_networks "$PIHOLE_PROXY_PORT"/tcp 'Pi-hole Web' &>/dev/null
 
 # Set up unbound if chosen
 if [ "$UNBOUND" = "yes" ]
