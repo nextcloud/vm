@@ -406,27 +406,28 @@ then
 This can take a while. Please be patient!"
     print_text_in_color "$ICyan" "Downloading the needed tool to get the current Plex config..."
     docker pull assaflavie/runlike
-    echo '#/bin/bash' > /tmp/pms-conf
-    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p plex >> /tmp/pms-conf
-    if ! grep -q "$MOUNT_PATH:$MOUNT_PATH:ro" /tmp/pms-conf
+    PMS_CONF="$(mktemp)"
+    echo '#!/bin/bash' > "$PMS_CONF"
+    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p plex >> "$PMS_CONF"
+    if ! grep -q "$MOUNT_PATH:$MOUNT_PATH:ro" "$PMS_CONF"
     then
         MOUNT_PATH_SED="${MOUNT_PATH//\//\\/}"
-        sed -i "0,/--volume/s// -v $MOUNT_PATH_SED:$MOUNT_PATH_SED:ro \\\\\n&/" /tmp/pms-conf
+        sed -i "0,/--volume/s// -v $MOUNT_PATH_SED:$MOUNT_PATH_SED:ro \\\\\n&/" "$PMS_CONF"
         docker stop plex
         if ! docker rm plex
         then
             msg_box "Something failed while removing the old container."
             exit 1
         fi
-        if ! bash /tmp/pms-conf
+        if ! bash "$PMS_CONF"
         then
-            msg_box "Starting the new container failed. You can find the config here: '/tmp/pms-conf'"
+            msg_box "Starting the new container failed. You can find the config here: '$PMS_CONF'"
             exit 1
         fi
-        rm /tmp/pms-conf
+        rm -f "$PMS_CONF"
         msg_box "Plex was adjusted!"
     else
-        rm /tmp/pms-conf
+        rm -f "$PMS_CONF"
         msg_box "No need to update Plex, since the drive is already mounted to Plex."
     fi
 fi
@@ -439,27 +440,28 @@ then
 This can take a while. Please be patient!"
     print_text_in_color "$ICyan" "Downloading the needed tool to get the current Jellyfin config..."
     docker pull assaflavie/runlike
-    echo '#!/bin/bash' > /tmp/jellyfin-conf
-    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p jellyfin >> /tmp/jellyfin-conf
-    if ! grep -q "$MOUNT_PATH:$MOUNT_PATH:ro" /tmp/jellyfin-conf
+    JELLYFIN_CONF="$(mktemp)"
+    echo '#!/bin/bash' > "$JELLYFIN_CONF"
+    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p jellyfin >> "$JELLYFIN_CONF"
+    if ! grep -q "$MOUNT_PATH:$MOUNT_PATH:ro" "$JELLYFIN_CONF"
     then
         MOUNT_PATH_SED="${MOUNT_PATH//\//\\/}"
-        sed -i "0,/--volume/s// -v $MOUNT_PATH_SED:$MOUNT_PATH_SED:ro \\\\\n&/" /tmp/jellyfin-conf
+        sed -i "0,/--volume/s// -v $MOUNT_PATH_SED:$MOUNT_PATH_SED:ro \\\\\n&/" "$JELLYFIN_CONF"
         docker stop jellyfin
         if ! docker rm jellyfin
         then
             msg_box "Something failed while removing the old container."
             exit 1
         fi
-        if ! bash /tmp/jellyfin-conf
+        if ! bash "$JELLYFIN_CONF"
         then
-            msg_box "Starting the new container failed. You can find the config here: '/tmp/jellyfin-conf'"
+            msg_box "Starting the new container failed. You can find the config here: '$JELLYFIN_CONF'"
             exit 1
         fi
-        rm /tmp/jellyfin-conf
+        rm -f "$JELLYFIN_CONF"
         msg_box "Jellyfin was adjusted!"
     else
-        rm /tmp/jellyfin-conf
+        rm -f "$JELLYFIN_CONF"
         msg_box "No need to update Jellyfin, since the drive is already mounted to Jellyfin."
     fi
 fi
