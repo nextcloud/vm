@@ -142,10 +142,10 @@ then
     # Create backup first
     if [ -f "$SCRIPTS/daily-borg-backup.sh" ] && does_snapshot_exist "NcVM-snapshot"
     then
-        rm -f /tmp/DAILY_BACKUP_CREATION_SUCCESSFUL
+        rm -f /run/DAILY_BACKUP_CREATION_SUCCESSFUL
         export SKIP_DAILY_BACKUP_CHECK=1
         bash "$SCRIPTS/daily-borg-backup.sh"
-        if ! [ -f "/tmp/DAILY_BACKUP_CREATION_SUCCESSFUL" ]
+        if ! [ -f "/run/DAILY_BACKUP_CREATION_SUCCESSFUL" ]
         then
             notify_admin_gui "Update failed because backup could not be created!" \
             "Could not create a backup! $(date +%T)"
@@ -689,15 +689,15 @@ we have removed Watchtower from this server. Updates will now happen for each co
     then
         print_text_in_color "$ICyan" "Updating Bitwarden RS. This can take a while..."
         docker pull assaflavie/runlike &>/dev/null
-        echo '#/bin/bash' > /tmp/bitwarden-conf
-        chmod 700 /tmp/bitwarden-conf
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p bitwarden_rs >> /tmp/bitwarden-conf
-        sed -i 's|bitwardenrs/server:latest|vaultwarden/server:latest|' /tmp/bitwarden-conf
+        BITWARDEN_CONF="$(mktemp)"
+        echo '#!/bin/bash' > "$BITWARDEN_CONF"
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p bitwarden_rs >> "$BITWARDEN_CONF"
+        sed -i 's|bitwardenrs/server:latest|vaultwarden/server:latest|' "$BITWARDEN_CONF"
         docker stop bitwarden_rs
         docker rm bitwarden_rs
-        if ! DOCKER_RUN_OUTPUT=$(bash /tmp/bitwarden-conf 2>&1)
+        if ! DOCKER_RUN_OUTPUT=$(bash "$BITWARDEN_CONF" 2>&1)
         then
-            check_command cp /tmp/bitwarden-conf "$SCRIPTS"
+            check_command cp "$BITWARDEN_CONF" "$SCRIPTS/bitwarden-conf"
             chmod 700 "$SCRIPTS/bitwarden-conf"
             notify_admin_gui "Could not update Bitwarden RS." "Please recreate the docker container yourself.
 You can find its config here: $SCRIPTS/bitwarden-conf
@@ -710,7 +710,7 @@ $DOCKER_RUN_OUTPUT"
         else
             docker image prune -a -f
         fi
-        rm -f /tmp/bitwarden-conf
+        rm -f "$BITWARDEN_CONF"
     else
         docker_update_specific 'bitwarden_rs' "Bitwarden RS"
     fi

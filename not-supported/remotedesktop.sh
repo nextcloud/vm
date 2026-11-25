@@ -344,15 +344,26 @@ This can set your server under risk, though!" "$SUBTITLE"
             then
                 print_text_in_color "$ICyan" "Installing $SUBTITLE"
                 # From https://helpcenter.onlyoffice.com/installation/desktop-install-ubuntu.aspx
-                mkdir -p ~/.gnupg
-                gpg --no-default-keyring --keyring gnupg-ring:/tmp/onlyoffice.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CB2DE8E5
-                chmod 644 /tmp/onlyoffice.gpg
-                chown root:root /tmp/onlyoffice.gpg
-                mv /tmp/onlyoffice.gpg /usr/share/keyrings/onlyoffice.gpg
-                echo "deb [signed-by=/usr/share/keyrings/onlyoffice.gpg] https://download.onlyoffice.com/repo/debian squeeze main" > "/etc/apt/sources.list.d/onlyoffice-desktopeditors.list"
-                apt-get update -q4 & spinner_loading
-                install_if_not onlyoffice-desktopeditors
-                print_text_in_color "$ICyan" "$SUBTITLE was successfully installed"
+                # Fetch the key over HTTPS and pin its full fingerprint instead of trusting a short key ID
+                ONLYOFFICE_KEY_FPR="E09CA29F6E178040EF22B4098320CA65CB2DE8E5"
+                ONLYOFFICE_KEY_TMP="$(mktemp -d)"
+                if curl -fsSL https://download.onlyoffice.com/GPG-KEY-ONLYOFFICE -o "$ONLYOFFICE_KEY_TMP/onlyoffice.asc" \
+&& [ "$(gpg --show-keys --with-colons "$ONLYOFFICE_KEY_TMP/onlyoffice.asc" 2>/dev/null \
+| awk -F: '$1=="pub"{p=1;next} $1=="fpr"&&p{print $10;p=0}')" = "$ONLYOFFICE_KEY_FPR" ] \
+&& gpg --dearmor --yes -o "$ONLYOFFICE_KEY_TMP/onlyoffice.gpg" "$ONLYOFFICE_KEY_TMP/onlyoffice.asc"
+                then
+                    install -m 644 -o root -g root "$ONLYOFFICE_KEY_TMP/onlyoffice.gpg" /usr/share/keyrings/onlyoffice.gpg
+                    rm -rf "$ONLYOFFICE_KEY_TMP"
+                    echo "deb [signed-by=/usr/share/keyrings/onlyoffice.gpg] https://download.onlyoffice.com/repo/debian squeeze main" > "/etc/apt/sources.list.d/onlyoffice-desktopeditors.list"
+                    apt-get update -q4 & spinner_loading
+                    install_if_not onlyoffice-desktopeditors
+                    print_text_in_color "$ICyan" "$SUBTITLE was successfully installed"
+                else
+                    rm -rf "$ONLYOFFICE_KEY_TMP"
+                    msg_box "Could not download or verify the OnlyOffice signing key (expected fingerprint $ONLYOFFICE_KEY_FPR).
+$SUBTITLE will not be installed." "$SUBTITLE"
+                fi
+                unset ONLYOFFICE_KEY_FPR ONLYOFFICE_KEY_TMP
             fi
         fi
         unset SUBTITLE

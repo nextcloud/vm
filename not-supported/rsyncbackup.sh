@@ -170,10 +170,10 @@ then
 fi
 
 # Check daily backup
-rm -f /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
+rm -f /run/DAILY_BACKUP_CHECK_SUCCESSFUL
 export SKIP_DAILY_BACKUP_CREATION=1
 bash "$SCRIPTS/daily-borg-backup.sh"
-if ! [ -f "/tmp/DAILY_BACKUP_CHECK_SUCCESSFUL" ]
+if ! [ -f "/run/DAILY_BACKUP_CHECK_SUCCESSFUL" ]
 then
     send_error_mail "Daily backup check failed!" \
     "Backup check was unsuccessful! $(date +%T)"
