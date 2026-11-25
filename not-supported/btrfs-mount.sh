@@ -284,10 +284,10 @@ SNAPSHOT
         msg_box "Plex Media Server found. We are now adjusting Plex to be able to use the new drive.
 This can take a while. Please be patient!"
         print_text_in_color "$ICyan" "Downloading the needed tool to get the current Plex config..."
-        docker pull assaflavie/runlike
+        docker pull "$RUNLIKE_IMAGE"
         PMS_CONF="$(mktemp)"
         echo '#!/bin/bash' > "$PMS_CONF"
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p plex >> "$PMS_CONF"
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$RUNLIKE_IMAGE" -p plex >> "$PMS_CONF"
         if ! grep -q "$MOUNT_PATH:$MOUNT_PATH:ro" "$PMS_CONF"
         then
             MOUNT_PATH_SED="${MOUNT_PATH//\//\\/}"
@@ -318,10 +318,10 @@ This can take a while. Please be patient!"
         msg_box "Jellyfin found. We are now adjusting Jellyfin to be able to use the new drive.
 This can take a while. Please be patient!"
         print_text_in_color "$ICyan" "Downloading the needed tool to get the current Jellyfin config..."
-        docker pull assaflavie/runlike
+        docker pull "$RUNLIKE_IMAGE"
         JELLYFIN_CONF="$(mktemp)"
         echo '#!/bin/bash' > "$JELLYFIN_CONF"
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p jellyfin >> "$JELLYFIN_CONF"
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$RUNLIKE_IMAGE" -p jellyfin >> "$JELLYFIN_CONF"
         if ! grep -q "$MOUNT_PATH:$MOUNT_PATH:ro" "$JELLYFIN_CONF"
         then
             MOUNT_PATH_SED="${MOUNT_PATH//\//\\/}"

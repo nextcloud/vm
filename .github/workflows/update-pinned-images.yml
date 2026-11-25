@@ -1,4 +1,4 @@
-name: 'Update WireGuard Major Version'
+name: 'Update Pinned Images'
 
 on:
   schedule:
@@ -86,3 +86,69 @@ jobs:
             maintenance
           reviewers: 'szaimen'
           assignees: 'szaimen'
+
+  update-runlike:
+    name: Update the pinned runlike image digest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Update the pinned digest
+        id: update
+        run: |
+          CURRENT="$(sed -nE 's|^RUNLIKE_IMAGE="assaflavie/runlike:([^@"]+)@sha256:[0-9a-f]{64}"$|\1|p' lib.sh)"
+          if [ -z "$CURRENT" ]
+          then
+              echo "Could not find the pinned runlike image in lib.sh"
+              exit 1
+          fi
+          docker pull assaflavie/runlike:latest
+          # '|| true' since a non-matching grep would otherwise abort the step
+          # before the error messages below can run, as GitHub runs this with 'bash -e'
+          LATEST="$(docker run --rm assaflavie/runlike:latest --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)"
+          if [ -z "$LATEST" ]
+          then
+              echo "Could not get the version of runlike:latest"
+              exit 1
+          fi
+          DIGEST="$(docker inspect --format '{{index .RepoDigests 0}}' assaflavie/runlike:latest | grep -oE 'sha256:[0-9a-f]{64}' || true)"
+          if [ -z "$DIGEST" ]
+          then
+              echo "Could not get the digest of runlike:latest"
+              exit 1
+          fi
+          sed -i -E "s|^RUNLIKE_IMAGE=.*|RUNLIKE_IMAGE=\"assaflavie/runlike:$LATEST@$DIGEST\"|" lib.sh
+          if ! git diff --quiet .
+          then
+              echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+              echo "version=$LATEST" >> "$GITHUB_OUTPUT"
+              echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+              if [ "${CURRENT%%.*}" != "${LATEST%%.*}" ]
+              then
+                  echo "major=true" >> "$GITHUB_OUTPUT"
+              fi
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.update.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: 'Update runlike to ${{ steps.update.outputs.version }}'
+          title: 'Update runlike to ${{ steps.update.outputs.version }}'
+          body: |
+            Automated update of the pinned runlike image in `lib.sh` from `${{ steps.update.outputs.current }}` to `${{ steps.update.outputs.version }}` (`${{ steps.update.outputs.digest }}`).
+
+            runlike gets access to `docker.sock` and its output is executed as root, which is why it is pinned to a digest. Please check the [changes upstream](https://github.com/lavie/runlike/compare/v${{ steps.update.outputs.current }}...v${{ steps.update.outputs.version }}) before merging.
+            ${{ steps.update.outputs.major == 'true' && '
+            > [!WARNING]
+            > This is a **major** version bump. The scripts edit the output of runlike with `sed` and run it with `bash`, so please verify that the output format is unchanged, e.g. by recreating a container with the AIO loop in `nextcloud_update.sh` or one of the `not-supported/*-mount.sh` scripts.' || '' }}
+          branch: 'automated/runlike-version'
+          delete-branch: true
+          labels: |
+            automated
+            maintenance

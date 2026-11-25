@@ -208,6 +208,8 @@ REDIS_PASS=$(gen_passwd "$SHUF" "a-zA-Z0-9@#*")
 SPAMHAUS=/etc/spamhaus.wl
 ENVASIVE=/etc/apache2/mods-available/mod-evasive.load
 APACHE2=/etc/apache2/apache2.conf
+# runlike gets docker.sock access and its output is run as root, so pin it to a digest
+RUNLIKE_IMAGE="assaflavie/runlike:2.0.0@sha256:90b74fceea77502052583be3592cc29bfe6e56d74a6269df5e725dda11723492"
 # Full text Search
 fulltextsearch_install() {
     FULLTEXTSEARCH_DIR="$SCRIPTS"/fulltextsearch
