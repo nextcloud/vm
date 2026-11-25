@@ -69,7 +69,9 @@ fi
 install_if_not samba
 
 # Add firewall rules
-ufw allow samba comment Samba &>/dev/null
+ufw delete allow samba &>/dev/null
+ufw_allow_private_networks 137,138/udp Samba &>/dev/null
+ufw_allow_private_networks 139,445/tcp Samba &>/dev/null
 
 # Use SMB3
 if ! grep -q "^protocol" "$SMB_CONF"
