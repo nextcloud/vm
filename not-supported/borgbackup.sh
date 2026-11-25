@@ -285,14 +285,12 @@ Please don't restart or shutdown your server until then!"
     if sudo -Hiu postgres psql -c "SELECT 1 AS result FROM pg_database WHERE datname='$NCDB'" | grep -q "1 row"
     then
         inform_user "$ICyan" "Doing pgdump of $NCDB..."
+        install -m 600 -o root -g root /dev/null "$SCRIPTS"/nextclouddb.dump
         sudo -Hiu postgres pg_dump "$NCDB"  > "$SCRIPTS"/nextclouddb.dump
-        chown root:root "$SCRIPTS"/nextclouddb.dump
-        chmod 600 "$SCRIPTS"/nextclouddb.dump
     else
         inform_user "$ICyan" "Doing pgdump of all databases..."
+        install -m 600 -o root -g root /dev/null "$SCRIPTS"/alldatabases.dump
         sudo -Hiu postgres pg_dumpall > "$SCRIPTS"/alldatabases.dump
-        chown root:root "$SCRIPTS"/alldatabases.dump
-        chmod 600 "$SCRIPTS"/alldatabases.dump
     fi
     systemctl stop postgresql
 
