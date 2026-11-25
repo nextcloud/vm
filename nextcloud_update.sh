@@ -688,10 +688,10 @@ we have removed Watchtower from this server. Updates will now happen for each co
     if is_docker_running && docker ps -a --format '{{.Image}}' | grep -Eq "bitwardenrs/server:latest";
     then
         print_text_in_color "$ICyan" "Updating Bitwarden RS. This can take a while..."
-        docker pull assaflavie/runlike &>/dev/null
+        docker pull "$RUNLIKE_IMAGE" &>/dev/null
         BITWARDEN_CONF="$(mktemp)"
         echo '#!/bin/bash' > "$BITWARDEN_CONF"
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike -p bitwarden_rs >> "$BITWARDEN_CONF"
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$RUNLIKE_IMAGE" -p bitwarden_rs >> "$BITWARDEN_CONF"
         sed -i 's|bitwardenrs/server:latest|vaultwarden/server:latest|' "$BITWARDEN_CONF"
         docker stop bitwarden_rs
         docker rm bitwarden_rs
@@ -758,8 +758,8 @@ $DOCKER_RUN_OUTPUT"
     do
         if [ "$(docker inspect -f '{{index .Config.Labels "com.centurylinklabs.watchtower.enable"}}' "$aio" 2>/dev/null)" = "false" ]
         then
-            docker pull assaflavie/runlike &>/dev/null
-            if AIO_RUN=$(docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assaflavie/runlike "$aio")
+            docker pull "$RUNLIKE_IMAGE" &>/dev/null
+            if AIO_RUN=$(docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$RUNLIKE_IMAGE" "$aio")
             then
                 docker stop "$aio"
                 docker rm "$aio"
