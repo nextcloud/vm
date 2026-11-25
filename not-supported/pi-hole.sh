@@ -141,16 +141,6 @@ then
     exit 1
 fi
 
-# Port 53 gets published on $ADDRESS only, which must hence be a private ip address
-if ! [[ "$ADDRESS" =~ ^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.) ]]
-then
-    msg_box "The ip address of this server ($ADDRESS) is not a private ip address.
-
-Pi-hole would be reachable from the internet as an open DNS resolver. \
-The script will exit."
-    exit 1
-fi
-
 # Check for a leftover Pi-hole installation from former versions of this script.
 # It runs Pi-hole on the host and occupies port 53 and the lighttpd web interface.
 if [ -d /etc/.pihole ] || [ -f /usr/local/bin/pihole ] || [ -f /usr/bin/pihole-FTL ]
@@ -281,14 +271,16 @@ fi
 
 # Create Pi-hole. DHCP is not enabled on purpose, hence no NET_ADMIN capability.
 # 'dns_listeningMode=all' is needed for queries from outside the bridge network.
-# Port 53 is only published on $ADDRESS since docker opens published ports
-# in the nat table before ufw, which means that ufw can't restrict them.
+# Port 53 is published on all interfaces, which docker opens in the nat table
+# before ufw, so ufw can't restrict it. This is acceptable since Pi-hole is only
+# meant for trusted home networks (see the check above) where the router doesn't
+# forward port 53. Binding it to $ADDRESS would break when the ip address changes.
 print_text_in_color "$ICyan" "Installing Pi-hole..."
 if ! docker run -d \
 --name pihole \
 --restart always \
--p "$ADDRESS":53:53/tcp \
--p "$ADDRESS":53:53/udp \
+-p 53:53/tcp \
+-p 53:53/udp \
 -p 127.0.0.1:"$PIHOLE_WEB_PORT":"$PIHOLE_WEB_PORT"/tcp \
 -e TZ="$(cat /etc/timezone)" \
 -e FTLCONF_webserver_api_password="$PASSWORD" \
