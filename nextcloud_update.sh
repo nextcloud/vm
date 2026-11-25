@@ -142,10 +142,10 @@ then
     # Create backup first
     if [ -f "$SCRIPTS/daily-borg-backup.sh" ] && does_snapshot_exist "NcVM-snapshot"
     then
-        rm -f /tmp/DAILY_BACKUP_CREATION_SUCCESSFUL
+        rm -f /run/DAILY_BACKUP_CREATION_SUCCESSFUL
         export SKIP_DAILY_BACKUP_CHECK=1
         bash "$SCRIPTS/daily-borg-backup.sh"
-        if ! [ -f "/tmp/DAILY_BACKUP_CREATION_SUCCESSFUL" ]
+        if ! [ -f "/run/DAILY_BACKUP_CREATION_SUCCESSFUL" ]
         then
             notify_admin_gui "Update failed because backup could not be created!" \
             "Could not create a backup! $(date +%T)"

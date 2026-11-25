@@ -1367,10 +1367,12 @@ do
     if [ -n "\$CACHE" ]
     then
         SMB_PATH=\$(echo "\$CACHE" | grep "path =" | grep -oP '/.*')
-        if [ -d "\$SMB_PATH" ] && [ -d "\$SMB_PATH/.recycle/" ]
+        # The share is writable by users, so never follow a .recycle symlink.
+        # find -P without a trailing slash does not dereference the start point.
+        if [ -d "\$SMB_PATH" ] && [ ! -L "\$SMB_PATH" ] && [ ! -L "\$SMB_PATH/.recycle" ] && [ -d "\$SMB_PATH/.recycle" ]
         then
-            find "\$SMB_PATH/.recycle/" -type f -atime +2 -delete
-            find "\$SMB_PATH/.recycle/" -empty -delete
+            find -P "\$SMB_PATH/.recycle" -xdev -type f -atime +2 -delete
+            find -P "\$SMB_PATH/.recycle" -xdev -empty -delete
         fi
     fi
     count=\$((count+1))
@@ -1418,8 +1420,9 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
         CACHE=$(sed -n "/^#SMB$count-start/,/^#SMB$count-end/p" "$SMB_CONF")
         if [ -n "$CACHE" ]
         then
-            SMB_PATH="$(echo "$CACHE" | grep "path =" | grep -oP '/.*')/.recycle/"
-            if [ -d "$SMB_PATH" ]
+            # No trailing slash, so that a .recycle symlink is never dereferenced
+            SMB_PATH="$(echo "$CACHE" | grep "path =" | grep -oP '/.*')/.recycle"
+            if [ -d "$SMB_PATH" ] && [ ! -L "$SMB_PATH" ]
             then
                 FOLDER_SIZE="$(du -sh "$SMB_PATH" | awk '{print $1}')"
             else
@@ -1448,10 +1451,17 @@ $CHECKLIST_GUIDE" "$WT_HEIGHT" "$WT_WIDTH" 4)
     mapfile -t selected_options <<< "$selected_options"
     for element in "${selected_options[@]}"
     do
+        element="${element%/}"
+        if [ -L "$element" ]
+        then
+            print_text_in_color "$IRed" "Skipping $element because it is a symlink."
+            continue
+        fi
         print_text_in_color "$ICyan" "Emptying $element"
         if [ -d "$element" ]
         then
-            rm -r "$element"
+            # rm -r does not follow symlinks below the given path
+            rm -r --one-file-system "$element"
         fi
     done
     msg_box "All selected recycle folders were emptied!

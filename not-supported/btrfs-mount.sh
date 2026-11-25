@@ -204,8 +204,9 @@ chmod 700 "$SCRIPTS/adjust-startup-permissions.sh"
 PERMISSIONS
     fi
     cat << PERMISSIONS >> "$SCRIPTS/adjust-startup-permissions.sh"
-find "$MOUNT_PATH/" -not -path "$MOUNT_PATH/.snapshots/*" \\( ! -perm 770 -o ! -group plex \
--o ! -user plex \\) -exec chmod 770 {} \\; -exec chown plex:plex {} \\;
+find "$MOUNT_PATH/" -xdev -not -path "$MOUNT_PATH/.snapshots/*" \\( -type d -o -type f \\) \
+\\( ! -perm 770 -o ! -group plex -o ! -user plex \\) \
+-exec chown -h plex:plex {} \\; -exec chmod 770 {} \\;
 PERMISSIONS
     chown root:root "$SCRIPTS/adjust-startup-permissions.sh"
     chmod 700 "$SCRIPTS/adjust-startup-permissions.sh"
