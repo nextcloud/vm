@@ -597,8 +597,8 @@ Please don't restart or shutdown your server until then!"
     fi
 
     # Create a file that can be checked for
-    rm -f /tmp/DAILY_BACKUP_CREATION_SUCCESSFUL
-    touch /tmp/DAILY_BACKUP_CREATION_SUCCESSFUL
+    rm -f /run/DAILY_BACKUP_CREATION_SUCCESSFUL
+    touch /run/DAILY_BACKUP_CREATION_SUCCESSFUL
 
     # Exit here if the backup doesn't shall get checked
     if [ -z "$CHECK_BACKUP" ]
@@ -722,7 +722,7 @@ else
 fi
 
 # Create a file that can be checked for
-rm -f /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
-touch /tmp/DAILY_BACKUP_CHECK_SUCCESSFUL
+rm -f /run/DAILY_BACKUP_CHECK_SUCCESSFUL
+touch /run/DAILY_BACKUP_CHECK_SUCCESSFUL
 
 exit
