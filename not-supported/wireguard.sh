@@ -55,6 +55,7 @@ else
     fi
     # Delete firewall entries
     ufw delete allow "$WIREGUARD_PROXY_PORT/tcp" &>/dev/null
+    ufw_delete_private_networks "$WIREGUARD_PROXY_PORT/tcp" &>/dev/null
     # Delete the leftover rule of former installations that added it for the VPN port
     ufw delete allow "$WIREGUARD_PORT/udp" &>/dev/null
     # The user-data is kept on purpose so that a reinstallation doesn't lose the clients
@@ -339,6 +340,12 @@ Listen $WIREGUARD_PROXY_PORT
     ProxyPassReverse / "http://127.0.0.1:$WIREGUARD_WEB_PORT/"
     ProxyPreserveHost On
 
+    # Only allow access from inside the local network
+    <Location />
+        Require local
+        Require ip ${PRIVATE_NETWORKS[*]}
+    </Location>
+
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
@@ -359,7 +366,8 @@ fi
 # Add firewall rules. The VPN port is published by the container, which docker
 # opens in the nat table before ufw. A former PiVPN rule for it is stale now.
 ufw delete allow "$WIREGUARD_PORT"/udp &>/dev/null
-ufw allow "$WIREGUARD_PROXY_PORT"/tcp comment 'WireGuard Web' &>/dev/null
+ufw delete allow "$WIREGUARD_PROXY_PORT"/tcp &>/dev/null
+ufw_allow_private_networks "$WIREGUARD_PROXY_PORT"/tcp 'WireGuard Web' &>/dev/null
 
 # Check if the container is actually running, since it exits on startup
 # if e.g. the wireguard kernel module cannot be loaded
