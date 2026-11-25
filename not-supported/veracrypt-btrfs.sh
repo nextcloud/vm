@@ -287,9 +287,9 @@ chmod 700 "$SCRIPTS/adjust-startup-permissions.sh"
 PERMISSIONS
 fi
 cat << PERMISSIONS >> "$SCRIPTS/adjust-startup-permissions.sh"
-find "$MOUNT_PATH/" -not -path "$MOUNT_PATH/.snapshots/*" \\( ! -perm 770 -o ! -group www-data \
--o ! -user www-data \\) -exec chmod 770 {} \\; \
--exec chown www-data:www-data {} \\;
+find "$MOUNT_PATH/" -xdev -not -path "$MOUNT_PATH/.snapshots/*" \\( -type d -o -type f \\) \
+\\( ! -perm 770 -o ! -group www-data -o ! -user www-data \\) \
+-exec chown -h www-data:www-data {} \\; -exec chmod 770 {} \\;
 PERMISSIONS
 
 chown root:root "$SCRIPTS/adjust-startup-permissions.sh"
