@@ -113,10 +113,10 @@ then
     then
         exit 1
     fi
-    rm -f /tmp/DAILY_BACKUP_CREATION_SUCCESSFUL
+    rm -f /run/DAILY_BACKUP_CREATION_SUCCESSFUL
     export SKIP_DAILY_BACKUP_CHECK=1
     bash "$DAILY_BACKUP_FILE"
-    if ! [ -f "/tmp/DAILY_BACKUP_CREATION_SUCCESSFUL" ]
+    if ! [ -f "/run/DAILY_BACKUP_CREATION_SUCCESSFUL" ]
     then
         if ! yesno_box_no "It seems like the backup was not successful. Do you want to continue nonetheless? (Not recommended!)"
         then
