@@ -98,7 +98,8 @@ POWER
     usermod --append --groups www-data,plex "$UNIXUSER"
 
     # Add firewall rule
-    ufw allow 3389/tcp comment Remotedesktop &>/dev/null
+    ufw delete allow 3389/tcp &>/dev/null
+    ufw_allow_private_networks 3389/tcp Remotedesktop &>/dev/null
 
     # Inform the user
     msg_box "XRDP was successfully installed. 
@@ -277,6 +278,7 @@ picard sound-juicer vlc acpid gnome-shell-extension-dash-to-panel gnome-shell-ex
             rm -f /home/"$UNIXUSER"/.local/share/applications/org.gnome.Nautilus.desktop
             rm -f /home/"$UNIXUSER"/.config/gtk-3.0/bookmarks
             ufw delete allow 3389/tcp &>/dev/null
+            ufw_delete_private_networks 3389/tcp &>/dev/null
             msg_box "XRDP and all desktop applications were successfully uninstalled." "$SUBTITLE"
             exit
         fi
