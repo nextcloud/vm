@@ -52,16 +52,16 @@ ufw allow https comment https
 
 # UPnP
 print_text_in_color "$ICyan" "UPnP"
-ufw allow proto udp from 192.168.0.0/16 comment UPnP
+ufw_allow_private_networks 1900/udp UPnP
 
 # AdminNeo
 print_text_in_color "$ICyan" "Allow AdminNeo"
-ufw allow 9443/tcp comment AdminNeo
+ufw_allow_private_networks 9443/tcp AdminNeo
 
 # Netdata
 print_text_in_color "$ICyan" "Allow Netdata"
-ufw allow 19999/tcp comment 'Netdata TCP'
-ufw allow 19999/udp comment 'Netdata UDP'
+ufw_allow_private_networks 19999/tcp 'Netdata TCP'
+ufw_allow_private_networks 19999/udp 'Netdata UDP'
 
 # Talk (no custom port possible)
 print_text_in_color "$ICyan" "Allow Talk"
@@ -70,20 +70,21 @@ ufw allow 3478/udp comment 'Talk UDP'
 
 # Webmin
 print_text_in_color "$ICyan" "Allow Webmin"
-ufw allow 10000/tcp comment Webmin
+ufw_allow_private_networks 10000/tcp Webmin
 
 # RDP
 if is_this_installed xrdp
 then
     print_text_in_color "$ICyan" "Allow RDP"
-    ufw allow 3389/tcp comment Remotedesktop
+    ufw_allow_private_networks 3389/tcp Remotedesktop
 fi
 
 # Samba
 if is_this_installed samba
 then
     print_text_in_color "$ICyan" "Allow Samba"
-    ufw allow samba comment Samba
+    ufw_allow_private_networks 137,138/udp Samba
+    ufw_allow_private_networks 139,445/tcp Samba
 fi
 
 # Pi-hole. Port 53 is published by the container, which docker opens in the
@@ -91,7 +92,7 @@ fi
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^pihole$"
 then
     print_text_in_color "$ICyan" "Allow Pi-hole"
-    ufw allow 8094/tcp comment 'Pi-hole Web'
+    ufw_allow_private_networks 8094/tcp 'Pi-hole Web'
     # unbound runs on the host and is reached via the docker bridge,
     # which does hit the INPUT chain and hence needs a rule
     if [ -f /etc/unbound/unbound.conf.d/pi-hole.conf ]
@@ -110,7 +111,7 @@ fi
 if is_docker_running && docker ps -a --format "{{.Names}}" | grep -q "^wg-easy$"
 then
     print_text_in_color "$ICyan" "Allow WireGuard"
-    ufw allow 51822/tcp comment 'WireGuard Web'
+    ufw_allow_private_networks 51822/tcp 'WireGuard Web'
 fi
 
 # Plex
@@ -129,7 +130,7 @@ then
     print_text_in_color "$ICyan" "Allow Jellyfin"
     for port in 8096/tcp 8920/tcp 1900/udp 7359/udp
     do
-        ufw allow "$port" comment "Jellyfin $port"
+        ufw_allow_private_networks "$port" "Jellyfin $port"
     done
 fi
 
