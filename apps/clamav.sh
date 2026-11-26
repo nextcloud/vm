@@ -10,6 +10,9 @@ At the end of the script, you will be able to choose to set up a weekly full sca
 # shellcheck source=lib.sh
 source /var/scripts/fetch_lib.sh
 
+# Root writes the full-scan log, so keep it out of the www-data owned $VMLOGS
+CLAMAV_LOG_DIR=/var/log/clamav-fullscan
+
 # Check for errors + debug code and abort if something isn't right
 # 1 = ON
 # 0 = OFF
@@ -35,6 +38,7 @@ else
     rm -f /etc/systemd/system/clamav-daemon.service
     rm -f "$SCRIPTS"/clamav-fullscan.sh
     rm -f "$VMLOGS"/clamav-fullscan.log
+    rm -rf "$CLAMAV_LOG_DIR"
     rm -f "$SCRIPTS/nextcloud-av-notification.sh"
     crontab -u root -l | grep -v 'clamav-fullscan.sh'  | crontab -u root -
     crontab -u root -l | grep -v 'nextcloud-av-notification.sh'  | crontab -u root -
@@ -234,7 +238,7 @@ clamscan \
 --max-filesize=1000M \
 --pcre-max-filesize=1000M \
 "$EXCLUDE_AV_PATH" \
-| tee "$VMLOGS/clamav-fullscan.log" \
+| tee "$CLAMAV_LOG_DIR/clamav-fullscan.log" \
 && rm -f /tmp/scanlist
 
 # Set the full-scan variable to done
@@ -243,8 +247,8 @@ then
     sed -i "s|^FULLSCAN_DONE.*|FULLSCAN_DONE=1|"  "$SCRIPTS"/clamav-fullscan.sh
 fi
 
-INFECTED_FILES_LOG="\$(sed -n '/----------- SCAN SUMMARY -----------/,\$p' $VMLOGS/clamav-fullscan.log)"
-INFECTED_FILES="\$(grep 'FOUND$' $VMLOGS/clamav-fullscan.log)"
+INFECTED_FILES_LOG="\$(sed -n '/----------- SCAN SUMMARY -----------/,\$p' "$CLAMAV_LOG_DIR/clamav-fullscan.log")"
+INFECTED_FILES="\$(grep 'FOUND$' "$CLAMAV_LOG_DIR/clamav-fullscan.log")"
 
 if [ -z "$INFECTED_FILES" ]
 then
@@ -267,9 +271,8 @@ chmod +x "$SCRIPTS"/clamav-fullscan.sh
 crontab -u root -l | grep -v "$SCRIPTS/clamav-fullscan.sh" | crontab -u root -
 crontab -u root -l | { cat; echo "0 10 * * 7 $SCRIPTS/clamav-fullscan.sh > /dev/null"; } | crontab -u root -
 
-# Create the log-file
-touch "$VMLOGS"/clamav-fullscan.log
-chown clamav:clamav "$VMLOGS"/clamav-fullscan.log
+# Create the log directory, writable only by root
+install -d -o root -g root -m 750 "$CLAMAV_LOG_DIR"
 
 # Inform the user
 msg_box "The full scan was successfully set up.
