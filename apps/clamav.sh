@@ -224,18 +224,19 @@ then
     FIND_OPTS+=(-ctime -7)
 fi
 
-# Find all applicable files
-find / "\${FIND_OPTS[@]}" | tee /tmp/scanlist
+# Find all applicable files (mktemp creates the list readable only by root)
+SCANLIST="\$(mktemp)"
+trap 'rm -f "\$SCANLIST"' EXIT
+find / "\${FIND_OPTS[@]}" | tee "\$SCANLIST"
 
-# Run the scan and delete the temp file afterwards
+# Run the scan
 clamscan \
 "$ARGUMENT$AV_PATH" \
---file-list=/tmp/scanlist \
+--file-list="\$SCANLIST" \
 --max-filesize=1000M \
 --pcre-max-filesize=1000M \
 "$EXCLUDE_AV_PATH" \
-| tee "$VMLOGS/clamav-fullscan.log" \
-&& rm -f /tmp/scanlist
+| tee "$VMLOGS/clamav-fullscan.log"
 
 # Set the full-scan variable to done
 if [ -z "\$FULLSCAN_DONE" ]
