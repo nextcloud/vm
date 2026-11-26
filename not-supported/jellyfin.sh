@@ -60,6 +60,7 @@ e.g: jellyfin.yourdomain.com. Its certificate and Apache2 configuration will be 
     for port in 8096/tcp 8920/tcp 1900/udp 7359/udp
     do
         ufw delete allow "$port" &>/dev/null
+        ufw_delete_private_networks "$port" &>/dev/null
     done
     # Remove the daily jail reload timer
     if [ -f /etc/systemd/system/fail2ban-jellyfin-reload.timer ]
@@ -272,10 +273,12 @@ fi
 # Add prune command
 add_dockerprune
 
-# Add firewall rules
+# Add firewall rules. These ports are only needed inside the local network,
+# since Jellyfin is reachable from the internet via Apache2.
 for port in 8096/tcp 8920/tcp 1900/udp 7359/udp
 do
-    ufw allow "$port" comment "Jellyfin $port" &>/dev/null
+    ufw delete allow "$port" &>/dev/null
+    ufw_allow_private_networks "$port" "Jellyfin $port" &>/dev/null
 done
 
 # Inform about fail2ban
@@ -461,6 +464,13 @@ then
     <Location />
         ProxyPassReverse /
     </Location>
+
+    # The startup wizard lets anyone create the admin user as long as none exists,
+    # hence only allow it from inside the local network
+    <LocationMatch "(?i)/startup">
+        Require local
+        Require ip ${PRIVATE_NETWORKS[*]}
+    </LocationMatch>
 </VirtualHost>
 HTTPS_CREATE
 
@@ -500,8 +510,9 @@ fi
 # Inform the user
 msg_box "Jellyfin was successfully installed and is now reachable via https://$SUBDOMAIN
 
-Please visit 'https://$SUBDOMAIN' to set up your Jellyfin Media Server next and \
-make sure to directly create your admin user since Jellyfin isn't protected before you did that.
+Please set up your Jellyfin Media Server next and make sure to directly create \
+your admin user since Jellyfin isn't protected before you did that. \
+The setup is only possible from inside your local network, e.g. on 'http://$ADDRESS:8096'.
 
 Advice: All your drives should be mounted in a subfolder of '/mnt'
 

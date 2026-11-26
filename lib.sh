@@ -49,6 +49,8 @@ ADDRESS=$(hostname -I | cut -d ' ' -f 1)
 WANIP4=$(curl -s -k -m 5 -4 https://api64.ipify.org)
 INTERFACES="/etc/netplan/nextcloud.yaml"
 GATEWAY=$(ip route | grep default | awk '{print $3}')
+# Source networks for services that are only meant to be reachable inside the local network
+PRIVATE_NETWORKS=(10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 fc00::/7 fe80::/10)
 # Internet DNS required when a check needs to be made to a server outside the home/SME
 INTERNET_DNS="9.9.9.9"
 # Default Quad9 DNS servers, overwritten by the systemd global DNS defined servers, if set
@@ -1882,6 +1884,27 @@ remove_all_office_apps() {
 # Check if docker is installed
 is_docker_running() {
     docker ps -a > /dev/null 2>&1
+}
+
+# Allow a port in ufw only from $PRIVATE_NETWORKS
+# ufw_allow_private_networks 3389/tcp Remotedesktop
+# ufw_allow_private_networks 139,445/tcp Samba
+ufw_allow_private_networks() {
+    local network
+    for network in "${PRIVATE_NETWORKS[@]}"
+    do
+        ufw allow from "$network" to any port "${1%/*}" proto "${1#*/}" comment "$2"
+    done
+}
+
+# Remove the rules that ufw_allow_private_networks added
+# ufw_delete_private_networks 3389/tcp
+ufw_delete_private_networks() {
+    local network
+    for network in "${PRIVATE_NETWORKS[@]}"
+    do
+        ufw delete allow from "$network" to any port "${1%/*}" proto "${1#*/}"
+    done
 }
 
 # Check if specific docker image is present

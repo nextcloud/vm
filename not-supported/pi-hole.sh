@@ -59,6 +59,7 @@ else
     fi
     # Delete firewall entries
     ufw delete allow "$PIHOLE_PROXY_PORT/tcp" &>/dev/null
+    ufw_delete_private_networks "$PIHOLE_PROXY_PORT/tcp" &>/dev/null
     # Delete the leftover rules of former installations that added them for port 53
     for port in 53/tcp 53/udp
     do
@@ -349,6 +350,12 @@ Listen $PIHOLE_PROXY_PORT
     ProxyPassReverse / "http://127.0.0.1:$PIHOLE_WEB_PORT/"
     ProxyPreserveHost On
 
+    # Only allow access from inside the local network
+    <Location />
+        Require local
+        Require ip ${PRIVATE_NETWORKS[*]}
+    </Location>
+
 ### LOCATION OF CERT FILES ###
     SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
     SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
@@ -372,7 +379,8 @@ for port in 53/tcp 53/udp
 do
     ufw delete allow "$port" &>/dev/null
 done
-ufw allow "$PIHOLE_PROXY_PORT"/tcp comment 'Pi-hole Web' &>/dev/null
+ufw delete allow "$PIHOLE_PROXY_PORT"/tcp &>/dev/null
+ufw_allow_private_networks "$PIHOLE_PROXY_PORT"/tcp 'Pi-hole Web' &>/dev/null
 
 # Set up unbound if chosen
 if [ "$UNBOUND" = "yes" ]
