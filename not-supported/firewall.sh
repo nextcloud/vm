@@ -60,8 +60,8 @@ ufw_allow_private_networks 9443/tcp AdminNeo
 
 # Netdata
 print_text_in_color "$ICyan" "Allow Netdata"
-ufw_allow_private_networks 19999/tcp 'Netdata TCP'
-ufw_allow_private_networks 19999/udp 'Netdata UDP'
+ufw allow 19999/tcp comment 'Netdata TCP'
+ufw allow 19999/udp comment 'Netdata UDP'
 
 # Talk (no custom port possible)
 print_text_in_color "$ICyan" "Allow Talk"

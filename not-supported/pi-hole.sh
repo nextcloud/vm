@@ -271,10 +271,6 @@ fi
 
 # Create Pi-hole. DHCP is not enabled on purpose, hence no NET_ADMIN capability.
 # 'dns_listeningMode=all' is needed for queries from outside the bridge network.
-# Port 53 is published on all interfaces, which docker opens in the nat table
-# before ufw, so ufw can't restrict it. This is acceptable since Pi-hole is only
-# meant for trusted home networks (see the check above) where the router doesn't
-# forward port 53. Binding it to $ADDRESS would break when the ip address changes.
 print_text_in_color "$ICyan" "Installing Pi-hole..."
 if ! docker run -d \
 --name pihole \
@@ -377,8 +373,8 @@ The script will exit."
     exit 1
 fi
 
-# Add firewall rules. Port 53 is published by the container, see above.
-# Former host installations opened it directly.
+# Add firewall rules. Port 53 is published by the container, which docker opens
+# in the nat table before ufw. Former host installations opened it directly.
 for port in 53/tcp 53/udp
 do
     ufw delete allow "$port" &>/dev/null
